@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
+import collections.abc as cabc
+import contextlib
 import hashlib
 import io
 import logging
@@ -112,6 +116,42 @@ class GitFileHandler(FileHandler):
             short_rev=revparse("--short", self.revision),
             rev_hash=revparse(self.revision),
         )
+
+    @contextlib.contextmanager
+    def write_transaction(
+        self,
+        *,
+        dry_run: bool = False,
+        author_name: str | None = None,
+        author_email: str | None = None,
+        commit_msg: str | None = None,
+        remote_branch: str | None = None,
+        push_options: cabc.Sequence[str] | None = None,
+        **kw: t.Any,
+    ) -> cabc.Generator[cabc.Mapping[str, t.Any], None, None]:
+        """Start a transaction that records the changes as a new commit.
+
+        Parameters
+        ----------
+        author_name
+            The name of the commit author.
+        author_email
+            The e-mail address of the commit author.
+        commit_msg
+            The commit message.
+        dry_run
+            If True, do not actually commit and push anything, just as
+            if an exception had been raised.
+        remote_branch
+            An alternative branch name to push to on the remote, instead
+            of pushing back to the same branch.  This is required if the
+            ``revision`` that was passed to the constructor does not
+            refer to a branch.
+        push_options
+            Additional git push options.  See ``--push-option`` in
+            ``git-push(1)``.
+        """
+        raise NotImplementedError("Writing to git is not yet implemented")
 
     def __get_git_env(self) -> t.Dict:
         git_env = os.environ.copy()

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import contextlib
 import logging
 import os
 import pathlib
@@ -63,6 +64,24 @@ class LocalFileHandler(FileHandler):
                 rev_hash=self.__git_rev_parse("HEAD"),
             )
         return ModelInfo(title=self.path.name)
+
+    @contextlib.contextmanager
+    def write_transaction(
+        self, *, dry_run: bool = False, **kw: t.Any
+    ) -> t.Generator[t.Mapping[str, t.Any], None, None]:
+        """Start a write transaction.
+
+        During the transaction, file writes are redirected to temporary
+        files next to the target files, and if the transaction ends
+        successfully they are moved to their destinations all at once.
+
+        Parameters
+        ----------
+        dry_run
+            Discard the temporary files after a successful transaction
+            instead of committing them to their destinations.
+        """
+        raise NotImplementedError("Write transactions not supported yet")
 
     def __git_rev_parse(self, *options: str) -> t.Optional[str]:
         assert isinstance(self.path, pathlib.Path)
