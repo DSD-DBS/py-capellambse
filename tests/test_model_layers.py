@@ -235,21 +235,19 @@ def test_appearances(model):
     )
     rel_repr = "<RequirementsOutRelation from <Requirement 'Test Module/This is a folder./<p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>\\n\\n<p>&lt; &gt; &quot; &#39;</p>\\n\\n<ul>\\n\\t<li>This&nbsp;is a list</li>\\n\\t<li>an unordered one</li>\\n</ul>\\n\\n<ol>\\n\\t<li>Ordered list</li>\\n\\t<li>Ok</li>\\n</ol>\\n' (3c2d312c-37c9-41b5-8c32-67578fa52dc3)> to <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)> (57033242-3766-4961-8091-ce3d9326ed67)>"
 
-    module = model.oa.requirement_modules[0]
+    module = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
     assert module_repr == repr(module)
 
-    folder = module.folders[0]
+    folder = model.by_uuid("e16f5cc1-3299-43d0-b1a0-82d31a137111")
     assert folder_repr == repr(folder)
 
-    subfolder = folder.folders[0]
+    subfolder = model.by_uuid("e179d6ff-5301-42a6-bf6f-4fec79b18827")
     assert subfolder_repr == repr(subfolder)
 
-    requirement = subfolder.requirements[0]
+    requirement = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
     assert req_repr == repr(requirement)
 
-    relation = requirement.relations.by_uuid(
-        "57033242-3766-4961-8091-ce3d9326ed67"
-    )
+    relation = model.by_uuid("57033242-3766-4961-8091-ce3d9326ed67")
     assert rel_repr == repr(relation)
 
 
