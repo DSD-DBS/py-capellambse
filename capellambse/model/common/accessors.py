@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import abc
-import functools
 import itertools
 import operator
 import typing as t
@@ -80,14 +79,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         "xtypes",
     )
 
-    aslist: t.Callable[
-        ...,
-        t.Union[
-            element.GenericElement,
-            element.DecoupledElementList[element.GenericElement],
-            None,
-        ],
-    ]
+    aslist: t.Optional[t.Type[element.DecoupledElementList]]
     class_: t.Type[T]
     xtypes: t.AbstractSet[str]
 
@@ -100,7 +92,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
             t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
         ] = None,
         *,
-        aslist: t.Type[element.DecoupledElementList[T]] = None,
+        aslist: t.Optional[t.Type[element.DecoupledElementList[T]]] = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -119,9 +111,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
                 i if isinstance(i, str) else build_xtype(i) for i in xtypes
             }
 
-        self.aslist = aslist or functools.partial(  # type: ignore[assignment]
-            no_list, self  # type: ignore[arg-type]
-        )
+        self.aslist = aslist
         self.class_ = class_
 
 
@@ -206,6 +196,8 @@ class ProxyAccessor(PhysicalAccessor[T]):
 
         elems = [self.__follow_attr(obj, e) for e in self.__getsubelems(obj)]
         elems = [x for x in elems if x is not None]
+        if self.aslist is None:
+            return no_list(self, obj._model, elems, self.class_)
         return self.aslist(obj._model, elems, self.class_, parent=obj._element)
 
     def __getsubelems(
@@ -322,6 +314,8 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
             else:
                 next_xtype = elemref
 
+        if self.aslist is None:
+            return no_list(self, obj._model, elems, self.class_)
         return self.aslist(obj._model, elems, self.class_, parent=None)
 
 
@@ -420,6 +414,8 @@ class CustomAccessor(PhysicalAccessor[T]):
             for e in elms
             if self.elmmatcher(self.matchtransform(e), obj)
         ]
+        if self.aslist is None:
+            return no_list(self, obj._model, matches, self.class_)
         return self.aslist(obj._model, matches, self.class_, parent=None)
 
 
@@ -438,16 +434,14 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
             t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
         ] = None,
         *,
-        aslist: t.Type[element.DecoupledElementList] = None,
+        aslist: t.Optional[t.Type[element.DecoupledElementList]] = None,
         attributes: t.Dict[str, t.Any],
         **kwargs,
     ) -> None:
         super().__init__(
             class_, xtypes, aslist=element.DecoupledMixedElementList, **kwargs
         )
-        self.__aslist = aslist or functools.partial(
-            no_list, self  # type: ignore[arg-type]
-        )
+        self.__aslist = aslist
         self.attributes = attributes
 
     def __get__(self, obj, objtype=None):
@@ -466,6 +460,8 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
             except AttributeError:
                 pass
 
+        if self.__aslist is None:
+            return no_list(self, obj._model, matches, self.class_)
         return self.__aslist(obj._model, matches, self.class_, parent=None)
 
 
@@ -595,6 +591,8 @@ class ReferenceSearchingAccessor(PhysicalAccessor):
                 ):
                     matches.append(candidate._element)
                     break
+        if self.aslist is None:
+            return no_list(self, obj._model, matches, self.class_)
         return self.aslist(obj._model, matches, self.class_, parent=None)
 
 
@@ -603,8 +601,6 @@ def no_list(
     model: capellambse.MelodyModel,
     elems: t.Sequence[etree._Element],
     class_: t.Type[T],
-    *,
-    parent: t.Any = None,
 ) -> t.Optional[T]:
     """Return a single element or None instead of a list of elements.
 
@@ -621,7 +617,6 @@ def no_list(
     parent
         Ignored.
     """
-    del parent
     if not elems:  # pragma: no cover
         return None
     if len(elems) > 1:  # pragma: no cover
