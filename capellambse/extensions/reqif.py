@@ -36,8 +36,6 @@ XT_REQ_ATTR_INTEGERVALUE = "Requirements:IntegerValueAttribute"
 XT_REQ_ATTR_DATEVALUE = "Requirements:DateValueAttribute"
 XT_REQ_ATTR_BOOLEANVALUE = "Requirements:BooleanValueAttribute"
 XT_REQ_ATTR_ENUMVALUE = "Requirements:EnumerationValueAttribute"
-XT_REQ_TYPES_F = "CapellaRequirements:CapellaTypesFolder"
-
 XT_REQ_ATTRIBUTES = {
     XT_REQ_ATTR_ENUMVALUE,
     XT_REQ_ATTR_STRINGVALUE,
@@ -52,9 +50,26 @@ XT_INT_RELATION = "Requirements:InternalRelation"
 XT_MODULE = "CapellaRequirements:CapellaModule"
 XT_FOLDER = "Requirements:Folder"
 
+XT_REQ_TYPES_F = "CapellaRequirements:CapellaTypesFolder"
+XT_REQ_TYPES_DATA_DEF = "Requirements:DataTypeDefinition"
 XT_REQ_TYPE = "Requirements:RequirementType"
 XT_RELATION_TYPE = "Requirements:RelationType"
 XT_MODULE_TYPE = "Requirements:ModuleType"
+XT_REQ_TYPE_ENUM = "Requirements:EnumerationDataTypeDefinition"
+XT_REQ_TYPE_ATTR_ENUM = "Requirements:EnumValue"
+XT_REQ_TYPE_ATTR_DEF = "Requirements:AttributeDefinition"
+XT_REQ_TYPE_ENUM_DEF = "Requirements:AttributeDefinitionEnumeration"
+XT_REQ_TYPES = {
+    XT_REQ_TYPES_F,
+    XT_REQ_TYPES_DATA_DEF,
+    XT_REQ_TYPE,
+    XT_RELATION_TYPE,
+    XT_MODULE_TYPE,
+    XT_REQ_TYPE_ENUM,
+    XT_REQ_TYPE_ATTR_ENUM,
+    XT_REQ_TYPE_ATTR_DEF,
+    XT_REQ_TYPE_ENUM_DEF,
+}
 
 
 class RequirementsRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
@@ -257,6 +272,8 @@ class ReqIFElement(c.GenericElement):
                 f"<{mytype} from {self.source!r} to {self.target!r} "
                 f"({self.uuid})>"
             )
+        elif self.xtype in XT_REQ_TYPES:
+            return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
         while parent is not None:
             path.append(
                 parent.get("ReqIFText")
@@ -418,6 +435,84 @@ class RequirementsIntRelation(AbstractRequirementsRelation):
     target = c.AttrProxyAccessor(Requirement, "target")
 
 
+@c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
+class DataTypeDefinition(ReqIFElement):
+    """A data type definition for requirement types"""
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ENUM)
+class EnumDataTypeDefinition(ReqIFElement):
+    enum_values = c.ProxyAccessor(
+        None, XT_REQ_TYPE_ENUM_DEF, aslist=c.DecoupledElementList
+    )
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ATTR_DEF)
+class AttributeDefinition(ReqIFElement):
+    data_type = c.AttrProxyAccessor(DataTypeDefinition, "definitionType")
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ENUM_DEF)
+class AttributeDefinitionEnumeration(ReqIFElement):
+    data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
+    multi_valued = xmltools.AttributeProperty(
+        "_element",
+        "multiValued",
+        optional=True,
+        default=False,
+        returntype=bool,
+    )
+
+
+class AbstractType(ReqIFElement):
+    attribute_definitions = c.ProxyAccessor(
+        AttributeDefinition,
+        XT_REQ_TYPE_ATTR_DEF,
+        aslist=c.DecoupledElementList,
+    )
+    enum_definitions = c.ProxyAccessor(
+        AttributeDefinitionEnumeration,
+        XT_REQ_TYPE_ENUM_DEF,
+        aslist=c.DecoupledElementList,
+    )
+
+
+@c.xtype_handler(None, XT_MODULE_TYPE)
+class ModuleType(AbstractType):
+    """A requirement-module type"""
+
+
+@c.xtype_handler(None, XT_RELATION_TYPE)
+class RelationType(AbstractType):
+    """A requirement-relation type"""
+
+
+@c.xtype_handler(None, XT_REQ_TYPE)
+class RequirementType(AbstractType):
+    """A requirement type"""
+
+
+@c.xtype_handler(None, XT_REQ_TYPES_F)
+class RequirementsTypesFolder(ReqIFElement):
+    data_type_definitions = c.ProxyAccessor(
+        DataTypeDefinition,
+        XT_REQ_TYPES_DATA_DEF,
+        aslist=c.DecoupledElementList,
+    )
+    enum_data_type_definitions = c.ProxyAccessor(
+        EnumDataTypeDefinition, XT_REQ_TYPE_ENUM, aslist=c.DecoupledElementList
+    )
+    module_types = c.ProxyAccessor(
+        ModuleType, XT_MODULE_TYPE, aslist=c.DecoupledElementList
+    )
+    relation_types = c.ProxyAccessor(
+        RelationType, XT_RELATION_TYPE, aslist=c.DecoupledElementList
+    )
+    requirement_types = c.ProxyAccessor(
+        RequirementType, XT_REQ_TYPE, aslist=c.DecoupledElementList
+    )
+
+
 def init() -> None:
     c.set_accessor(
         RequirementsFolder,
@@ -439,5 +534,14 @@ def init() -> None:
             aslist=c.DecoupledElementList,
             rootelem=XT_MODULE,
             deep=True,
+        ),
+    )
+    c.set_accessor(
+        crosslayer.BaseArchitectureLayer,
+        "requirement_types_folders",
+        c.ProxyAccessor(
+            RequirementsTypesFolder,
+            XT_REQ_TYPES_F,
+            aslist=c.DecoupledElementList,
         ),
     )
