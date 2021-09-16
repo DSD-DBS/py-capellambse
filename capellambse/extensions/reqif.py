@@ -354,6 +354,34 @@ class RequirementsAttributes(collections.abc.Mapping):
         raise KeyError(key)
 
 
+@c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
+class DataTypeDefinition(ReqIFElement):
+    """A data type definition for requirement types"""
+
+    _xmltag = "ownedDefinitionTypes"
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ATTR_DEF)
+class AttributeDefinition(ReqIFElement):
+    """An attribute definition for requirement types"""
+
+    _xmltag = "ownedAttributes"
+
+    data_type = c.AttrProxyAccessor(DataTypeDefinition, "definitionType")
+
+
+@c.xtype_handler(None, *XT_REQ_ATTRIBUTES)
+class RequirementsAttribute(c.GenericElement):
+    """Handles extension attributes on Requirements."""
+
+    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
+    value = xmltools.AttributeProperty("_element", "value")
+
+    def __repr__(self) -> str:
+        mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
+        return f"<{mytype} [{self.definition.name}] ({self.uuid})>"
+
+
 @c.xtype_handler(None, XT_REQUIREMENT)
 class Requirement(ReqIFElement):
     """A ReqIF Requirement."""
@@ -369,7 +397,9 @@ class Requirement(ReqIFElement):
     text = xmltools.AttributeProperty(
         "_element", "ReqIFText", optional=True, returntype=c.markuptype
     )
-    attributes = c.AlternateAccessor(RequirementsAttributes)
+    attributes = c.ProxyAccessor(
+        RequirementsAttribute, XT_REQ_ATTRIBUTES, aslist=c.ElementList
+    )
     relations = RequirementsRelationAccessor()
     type = RequirementTypeAccessor("requirementType", XT_REQ_TYPE)
 
@@ -435,25 +465,23 @@ class RequirementsIntRelation(AbstractRequirementsRelation):
     target = c.AttrProxyAccessor(Requirement, "target")
 
 
-@c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
-class DataTypeDefinition(ReqIFElement):
-    """A data type definition for requirement types"""
-
-
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM)
 class EnumDataTypeDefinition(ReqIFElement):
+    """An enumeration data type definition for requirement types"""
+
+    _xmltag = "ownedDefinitionTypes"
+
     enum_values = c.ProxyAccessor(
         None, XT_REQ_TYPE_ENUM_DEF, aslist=c.DecoupledElementList
     )
 
 
-@c.xtype_handler(None, XT_REQ_TYPE_ATTR_DEF)
-class AttributeDefinition(ReqIFElement):
-    data_type = c.AttrProxyAccessor(DataTypeDefinition, "definitionType")
-
-
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM_DEF)
 class AttributeDefinitionEnumeration(ReqIFElement):
+    """An enumeration attribute definition for requirement types"""
+
+    _xmltag = "enumeration"
+
     data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
     multi_valued = xmltools.AttributeProperty(
         "_element",
