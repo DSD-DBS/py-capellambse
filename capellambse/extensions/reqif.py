@@ -17,8 +17,8 @@
 """
 from __future__ import annotations
 
-import collections.abc
 import itertools
+import logging
 import typing as t
 
 from lxml import etree
@@ -71,8 +71,18 @@ XT_REQ_TYPES = {
     XT_REQ_TYPE_ENUM_DEF,
 }
 
+logger = logging.getLogger("reqif")
+attr_type_map = {
+    XT_REQ_ATTR_STRINGVALUE: str,
+    XT_REQ_ATTR_REALVALUE: float,
+    XT_REQ_ATTR_INTEGERVALUE: int,
+    XT_REQ_ATTR_DATEVALUE: str,
+    XT_REQ_ATTR_BOOLEANVALUE: bool,
+}
+undefined_value = "undefined"
 
-class RequirementsRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
+
+class RelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
     """Searches for requirement relations in the architecture layer."""
 
     __slots__ = ()
@@ -136,7 +146,7 @@ class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
             )
             return rel.target
 
-        return RequirementRelationsList(
+        return RelationsList(
             obj._model,
             list(
                 itertools.chain(
@@ -200,44 +210,6 @@ class RequirementTypeAccessor(c.Accessor):
             )
 
 
-class RequirementRelationsList(c.ElementList["AbstractRequirementsRelation"]):
-    def __init__(
-        self,
-        model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
-        elemclass: t.Type[t.Any] = None,
-        *,
-        parent: t.Optional[etree._Element],
-        side: str = None,
-    ) -> None:
-        del elemclass
-        assert side in {"source", "target"}
-        super().__init__(model, elements, c.GenericElement, parent=parent)
-        self._side = side
-
-    def __getitem__(self, idx: int) -> c.GenericElement:
-        return getattr(
-            c.GenericElement.from_model(self._model, self._elements[idx]),
-            self._side,
-        )
-
-    def by_relation_type(self, reltype: str) -> RequirementRelationsList:
-        matches = []
-        for elm in self._elements:
-            rel_elm = c.GenericElement.from_model(self._model, elm)
-            assert isinstance(rel_elm, ReqIFElement)
-            if rel_elm.type == reltype:
-                matches.append(elm)
-        return type(self)(
-            self._model, matches, None, side=self._side, parent=None
-        )
-
-    def _newlist(self, elements):
-        return type(self)(
-            self._model, elements, None, side=self._side, parent=None
-        )
-
-
 class ReqIFElement(c.GenericElement):
     """Attributes shared by all ReqIF elements."""
 
@@ -288,70 +260,11 @@ class ReqIFElement(c.GenericElement):
 
         return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
 
-
-# TODO: Document and refactor attributes
-class RequirementsAttributes(collections.abc.Mapping):
-    """Handles extension attributes on Requirements."""
-
-    _model: capellambse.MelodyModel
-    _element: etree._Element
-
-    @classmethod
-    def from_model(
-        cls,
-        model: capellambse.MelodyModel,
-        element: etree._Element,
-    ) -> RequirementsAttributes:
-        """Create RequirementsAttributes for a model Requirement."""
-        self = cls.__new__(cls)
-        self._model = model
-        self._element = element
-        return self
-
-    def __init__(self) -> None:
-        raise TypeError("Cannot create RequirementsAttributes this way")
-
-    def __len__(self) -> int:
-        return sum(1 for i in self)
-
-    def __iter__(self) -> t.Iterator[str]:
-        for child in self._element.iterchildren():
-            if child.get(helpers.ATT_XT) not in XT_REQ_ATTRIBUTES:
-                continue
-            try:
-                definition = self._model._loader[child.attrib["definition"]]
-            except KeyError:
-                continue
-
-            name = definition.get("ReqIFLongName") or definition.get(
-                "ReqIFName"
-            )
-            if name:
-                yield name
-
-    def __getitem__(self, key: str) -> t.Optional[str]:
-        for child in self._element.iterchildren():
-            if child.get(helpers.ATT_XT) not in XT_REQ_ATTRIBUTES:
-                continue
-
-            try:
-                definition = self._model._loader[child.attrib["definition"]]
-            except KeyError:
-                continue
-            if not (
-                definition.get("ReqIFLongName") == key
-                or definition.get("ReqIFName") == key
-            ):
-                continue
-
-            if child.get(helpers.ATT_XT) == XT_REQ_ATTR_ENUMVALUE:
-                elm = self._model._loader[child.get("values")]
-                return elm.get("ReqIFLongName") or elm.get("ReqIFName") or None
-            elif child.get(helpers.ATT_XT) == XT_REQ_ATTR_STRINGVALUE:
-                return child.get("value")
-            else:
-                break
-        raise KeyError(key)
+    @property
+    def name(self) -> str:
+        if (name := self._element.get("ReqIFName")) is None:
+            return self.long_name
+        return name
 
 
 @c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
@@ -370,16 +283,191 @@ class AttributeDefinition(ReqIFElement):
     data_type = c.AttrProxyAccessor(DataTypeDefinition, "definitionType")
 
 
-@c.xtype_handler(None, *XT_REQ_ATTRIBUTES)
-class RequirementsAttribute(c.GenericElement):
-    """Handles extension attributes on Requirements."""
+class AbstractRequirementsAttribute(c.GenericElement):
+    _xmltag = "ownedAttributes"
 
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
-    value = xmltools.AttributeProperty("_element", "value")
 
     def __repr__(self) -> str:
         mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
-        return f"<{mytype} [{self.definition.name}] ({self.uuid})>"
+        try:
+            name = self.definition.long_name
+        except AttributeError:
+            logger.warning(
+                "This requirement(%s) attribute has no definition.",
+                self._element.getparent().get("id"),
+            )
+            name = undefined_value
+        return f"<{mytype} [{name}] ({self.uuid})>"
+
+
+class AttributeAccessor(c.PhysicalAccessor):
+    def __init__(self) -> None:
+        ...
+
+    def __get__(self, obj, objtype=None):
+        del objtype
+        if obj is None:  # pragma: no cover
+            return self
+
+        elm: etree._Element = obj._element
+        xmltag = AbstractRequirementsAttribute._xmltag
+        xt_xsi = f"{{{capellambse.NAMESPACES['xsi']}}}type"
+        attrs = [
+            attr
+            for attr in elm.iterchildren(xmltag)
+            if attr.get(xt_xsi) in XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}
+        ]
+        enums = [
+            attr
+            for attr in elm.iterchildren(xmltag)
+            if attr.get(xt_xsi) == XT_REQ_ATTR_ENUMVALUE
+        ]
+        if not enums:
+            return c.ElementList(
+                obj._model, attrs, RequirementsAttribute, parent=elm
+            )
+
+        return c.MixedElementList(
+            obj._model,
+            attrs + enums,
+            (RequirementsAttribute, EnumerationValueAttribute),
+            parent=elm,
+        )
+
+
+class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
+    def __init__(
+        self,
+        model: capellambse.MelodyModel,
+        elements: t.List[etree._Element],
+        elemclass: t.Type[t.Any] = None,
+        *,
+        parent: t.Optional[etree._Element],
+        side: str = None,
+    ) -> None:
+        del elemclass
+        assert side in {"source", "target"}
+        super().__init__(model, elements, c.GenericElement, parent=parent)
+        self._side = side
+
+    def __getitem__(self, idx: int) -> c.GenericElement:
+        return getattr(
+            c.GenericElement.from_model(self._model, self._elements[idx]),
+            self._side,
+        )
+
+    def by_relation_type(self, reltype: str) -> RelationsList:
+        matches = []
+        for elm in self._elements:
+            rel_elm = c.GenericElement.from_model(self._model, elm)
+            assert isinstance(rel_elm, ReqIFElement)
+            if rel_elm.type == reltype:
+                matches.append(elm)
+        return type(self)(
+            self._model, matches, None, side=self._side, parent=None
+        )
+
+    def _newlist(self, elements):
+        return type(self)(
+            self._model, elements, None, side=self._side, parent=None
+        )
+
+
+@c.xtype_handler(None, *(XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}))
+class RequirementsAttribute(AbstractRequirementsAttribute):
+    """Handles attributes on Requirements."""
+
+    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
+
+    @property
+    def value(self) -> int | float | str | bool:
+        if not (value := self._element.get("value", "")):
+            logger.warning("This requirement(%s) attribute has no value set.")
+            return undefined_value
+        return attr_type_map[self.xtype](value)
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ENUM)
+class EnumDataTypeDefinition(ReqIFElement):
+    """An enumeration data type definition for requirement types"""
+
+    _xmltag = "ownedDefinitionTypes"
+
+    enum_values = c.ProxyAccessor(
+        None, XT_REQ_TYPE_ENUM_DEF, aslist=c.DecoupledElementList
+    )
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ENUM_DEF)
+class AttributeDefinitionEnumeration(ReqIFElement):
+    """An enumeration attribute definition for requirement types"""
+
+    _xmltag = "enumeration"
+
+    data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
+    multi_valued = xmltools.AttributeProperty(
+        "_element",
+        "multiValued",
+        optional=True,
+        default=False,
+        returntype=bool,
+    )
+
+
+@c.xtype_handler(None, XT_REQ_ATTR_ENUMVALUE)
+class EnumerationValueAttribute(AbstractRequirementsAttribute):
+    """An enumeration attribute."""
+
+    definition = c.AttrProxyAccessor(
+        AttributeDefinitionEnumeration, "definition"
+    )
+
+    @property
+    def values(self) -> str | tuple[str]:
+        def aslist(
+            model: capellambse.MelodyModel,
+            elems: t.Sequence[etree._Element],
+            class_: t.Type[c.T],
+            *,
+            parent: t.Any = None,
+        ) -> tuple[str] | str:
+            assert elems
+            if len(elems) > 1:
+                return tuple(
+                    (e.get("ReqIFLongName", undefined_value) for e in elems)
+                )
+            return elems[0].get("ReqIFLongName", undefined_value)
+
+        return c.AttrProxyAccessor(str, "values", aslist=aslist).__get__(self)
+
+
+class AbstractType(ReqIFElement):
+    attribute_definitions = c.ProxyAccessor(
+        AttributeDefinition,
+        XT_REQ_TYPE_ATTR_DEF,
+        aslist=c.DecoupledElementList,
+    )
+    enum_definitions = c.ProxyAccessor(
+        AttributeDefinitionEnumeration,
+        XT_REQ_TYPE_ENUM_DEF,
+        aslist=c.DecoupledElementList,
+    )
+
+
+@c.xtype_handler(None, XT_MODULE_TYPE)
+class ModuleType(AbstractType):
+    """A requirement-module type"""
+
+
+@c.xtype_handler(None, XT_RELATION_TYPE)
+class RelationType(AbstractType):
+    """A requirement-relation type"""
+
+
+@c.xtype_handler(None, XT_REQ_TYPE)
+class RequirementType(AbstractType):
+    """A requirement type"""
 
 
 @c.xtype_handler(None, XT_REQUIREMENT)
@@ -397,11 +485,9 @@ class Requirement(ReqIFElement):
     text = xmltools.AttributeProperty(
         "_element", "ReqIFText", optional=True, returntype=c.markuptype
     )
-    attributes = c.ProxyAccessor(
-        RequirementsAttribute, XT_REQ_ATTRIBUTES, aslist=c.ElementList
-    )
-    relations = RequirementsRelationAccessor()
-    type = RequirementTypeAccessor("requirementType", XT_REQ_TYPE)
+    attributes = AttributeAccessor()
+    relations = RelationAccessor()
+    type = c.AttrProxyAccessor(RequirementType, "requirementType")
 
 
 @c.xtype_handler(None, XT_FOLDER)
@@ -428,11 +514,12 @@ class RequirementsModule(ReqIFElement):
     requirements = c.ProxyAccessor(
         Requirement, XT_REQUIREMENT, aslist=c.ElementList
     )
-    type = RequirementTypeAccessor("moduleType", XT_MODULE_TYPE)
+    type = c.AttrProxyAccessor(ModuleType, "moduleType")
+    attributes = AttributeAccessor()
 
 
 class AbstractRequirementsRelation(ReqIFElement):
-    type = RequirementTypeAccessor("relationType", XT_RELATION_TYPE)
+    type = c.AttrProxyAccessor(RelationType, "relationType")
 
 
 @c.xtype_handler(None, XT_OUT_RELATION)
@@ -463,61 +550,6 @@ class RequirementsIntRelation(AbstractRequirementsRelation):
 
     source = c.AttrProxyAccessor(Requirement, "source")
     target = c.AttrProxyAccessor(Requirement, "target")
-
-
-@c.xtype_handler(None, XT_REQ_TYPE_ENUM)
-class EnumDataTypeDefinition(ReqIFElement):
-    """An enumeration data type definition for requirement types"""
-
-    _xmltag = "ownedDefinitionTypes"
-
-    enum_values = c.ProxyAccessor(
-        None, XT_REQ_TYPE_ENUM_DEF, aslist=c.DecoupledElementList
-    )
-
-
-@c.xtype_handler(None, XT_REQ_TYPE_ENUM_DEF)
-class AttributeDefinitionEnumeration(ReqIFElement):
-    """An enumeration attribute definition for requirement types"""
-
-    _xmltag = "enumeration"
-
-    data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
-    multi_valued = xmltools.AttributeProperty(
-        "_element",
-        "multiValued",
-        optional=True,
-        default=False,
-        returntype=bool,
-    )
-
-
-class AbstractType(ReqIFElement):
-    attribute_definitions = c.ProxyAccessor(
-        AttributeDefinition,
-        XT_REQ_TYPE_ATTR_DEF,
-        aslist=c.DecoupledElementList,
-    )
-    enum_definitions = c.ProxyAccessor(
-        AttributeDefinitionEnumeration,
-        XT_REQ_TYPE_ENUM_DEF,
-        aslist=c.DecoupledElementList,
-    )
-
-
-@c.xtype_handler(None, XT_MODULE_TYPE)
-class ModuleType(AbstractType):
-    """A requirement-module type"""
-
-
-@c.xtype_handler(None, XT_RELATION_TYPE)
-class RelationType(AbstractType):
-    """A requirement-relation type"""
-
-
-@c.xtype_handler(None, XT_REQ_TYPE)
-class RequirementType(AbstractType):
-    """A requirement type"""
 
 
 @c.xtype_handler(None, XT_REQ_TYPES_F)
@@ -571,5 +603,38 @@ def init() -> None:
             RequirementsTypesFolder,
             XT_REQ_TYPES_F,
             aslist=c.DecoupledElementList,
+        ),
+    )
+    c.set_accessor(
+        crosslayer.BaseArchitectureLayer,
+        "all_requirement_types",
+        c.ProxyAccessor(
+            RequirementType,
+            XT_REQ_TYPE,
+            aslist=c.ElementList,
+            rootelem=XT_MODULE,
+            deep=True,
+        ),
+    )
+    c.set_accessor(
+        crosslayer.BaseArchitectureLayer,
+        "all_module_types",
+        c.ProxyAccessor(
+            ModuleType,
+            XT_MODULE_TYPE,
+            aslist=c.ElementList,
+            rootelem=XT_MODULE,
+            deep=True,
+        ),
+    )
+    c.set_accessor(
+        crosslayer.BaseArchitectureLayer,
+        "all_relation_types",
+        c.ProxyAccessor(
+            RelationType,
+            XT_RELATION_TYPE,
+            aslist=c.ElementList,
+            rootelem=XT_MODULE,
+            deep=True,
         ),
     )
