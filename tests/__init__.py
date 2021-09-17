@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pathlib
+import re
 
 __all__ = ["CapellaMBSETestCase"]
 
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
 TEST_MODEL = "MelodyModelTest.aird"
+RE_VALID_IDREF = re.compile(
+    r"([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})"
+)
