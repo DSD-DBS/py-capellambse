@@ -98,7 +98,8 @@
           </ownedRequirements>
         </ownedRequirements>
         <ownedRequirements xsi:type="Requirements:Requirement" id="85d41db2-9e17-438b-95cf-49342452ddf3"
-            ReqIFName="TypedReq1" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+            ReqIFName="TypedReq1" ReqIFPrefix="" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
+            ReqIFChapterName="">
           <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="a44b41f3-598c-4250-bca6-1329647e7a02"
               definition="#c316ab07-c5c3-4866-a896-92e34733055c" values="#efd6e108-3461-43c6-ad86-24168339ed3c"/>
         </ownedRequirements>

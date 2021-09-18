@@ -82,29 +82,6 @@ attr_type_map = {
 undefined_value = "undefined"
 
 
-class RelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
-    """Searches for requirement relations in the architecture layer."""
-
-    __slots__ = ()
-
-    def __get__(self, obj, objtype=None):
-        del objtype
-        if obj is None:  # pragma: no cover
-            return self
-
-        # FIXME temporary hack to enable creating relations
-        # This might lead to this error when trying to delete elements:
-        #   RuntimeError: Illegal state: Element <...> is not a child of <...>
-        rel_objs = []
-        rel_objs += obj._model._loader.iterall_xt(XT_OUT_RELATION)
-        rel_objs += obj._model._loader.iterchildren_xt(
-            obj._element, XT_INC_RELATION, XT_INT_RELATION
-        )
-        return c.ElementList(
-            obj._model, rel_objs, c.GenericElement, parent=obj._element
-        )
-
-
 class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
     """Provides access to RequirementsRelations of a GenericElement."""
 
@@ -158,56 +135,6 @@ class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
             parent=None,
             side="source",
         )
-
-
-class RequirementTypeAccessor(c.Accessor):
-    """Provides access to requirement and relation types."""
-
-    __slots__ = (
-        "attr",
-        "xtype",
-    )
-
-    def __init__(self, attr, xtype):
-        super().__init__()
-        self.attr = attr
-        self.xtype = xtype
-
-    def __get__(self, obj, objtype):
-        del objtype
-        if obj is None:  # pragma: no cover
-            return self
-
-        type_link = obj._element.get(self.attr)
-        if type_link is None:
-            return None
-
-        try:
-            type_elm = obj._model._loader.follow_link(obj._element, type_link)
-        except KeyError:
-            return None
-        else:
-            return type_elm.get("ReqIFLongName")
-
-    def __set__(self, obj, value) -> None:
-        # pylint: disable=undefined-loop-variable
-        # <https://github.com/PyCQA/pylint/issues/1175>
-        if value is None:
-            try:
-                del obj._element.attrib[self.attr]
-            except KeyError:
-                pass
-        else:
-            for type_elm in obj._model._loader.iterall_xt(self.xtype):
-                if type_elm.get("ReqIFLongName") == value:
-                    break
-            else:
-                raise ValueError(f"Invalid {self.attr}: {value}")
-
-            obj._element.set(
-                self.attr,
-                obj._model._loader.create_link(obj._element, type_elm),
-            )
 
 
 class ReqIFElement(c.GenericElement):
@@ -312,17 +239,12 @@ class AttributeAccessor(c.PhysicalAccessor):
 
         elm: etree._Element = obj._element
         xmltag = AbstractRequirementsAttribute._xmltag
-        xt_xsi = f"{{{capellambse.NAMESPACES['xsi']}}}type"
-        attrs = [
-            attr
-            for attr in elm.iterchildren(xmltag)
-            if attr.get(xt_xsi) in XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}
-        ]
-        enums = [
-            attr
-            for attr in elm.iterchildren(xmltag)
-            if attr.get(xt_xsi) == XT_REQ_ATTR_ENUMVALUE
-        ]
+        attrs = [attr for attr in elm.iterchildren(xmltag)]
+        enums = elm.xpath(
+            f"./{xmltag}[@xsi:type='{XT_REQ_ATTR_ENUMVALUE}']",
+            namespaces=capellambse.NAMESPACES,
+        )
+
         if not enums:
             return c.ElementList(
                 obj._model, attrs, RequirementsAttribute, parent=elm
@@ -330,7 +252,7 @@ class AttributeAccessor(c.PhysicalAccessor):
 
         return c.MixedElementList(
             obj._model,
-            attrs + enums,
+            attrs,
             (RequirementsAttribute, EnumerationValueAttribute),
             parent=elm,
         )
@@ -344,14 +266,16 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         elemclass: t.Type[t.Any] = None,
         *,
         parent: t.Optional[etree._Element],
-        side: str = None,
+        side: str = "source",
     ) -> None:
         del elemclass
         assert side in {"source", "target"}
         super().__init__(model, elements, c.GenericElement, parent=parent)
         self._side = side
 
-    def __getitem__(self, idx: int) -> c.GenericElement:
+    def __getitem__(self, idx: int | slice) -> c.GenericElement:
+        if isinstance(idx, slice):
+            return self._newlist(self._elements[idx])
         return getattr(
             c.GenericElement.from_model(self._model, self._elements[idx]),
             self._side,
@@ -361,16 +285,51 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         matches = []
         for elm in self._elements:
             rel_elm = c.GenericElement.from_model(self._model, elm)
-            assert isinstance(rel_elm, ReqIFElement)
-            if rel_elm.type == reltype:
+            assert isinstance(
+                rel_elm,
+                (
+                    RequirementsIncRelation,
+                    RequirementsOutRelation,
+                    RequirementsIntRelation,
+                ),
+            )
+            if rel_elm.type is not None and rel_elm.type.name == reltype:
                 matches.append(elm)
         return type(self)(
             self._model, matches, None, side=self._side, parent=None
         )
 
+    @property
+    def incoming(self) -> RelationsList:
+        return self._filter_by_relcls(RequirementsIncRelation)
+
+    @property
+    def outgoing(self) -> RelationsList:
+        return self._filter_by_relcls(RequirementsOutRelation)
+
     def _newlist(self, elements):
         return type(self)(
             self._model, elements, None, side=self._side, parent=None
+        )
+
+    def _filter_by_relcls(
+        self,
+        relcls: t.Type[
+            RequirementsIncRelation
+            | RequirementsOutRelation
+            | RequirementsIntRelation
+        ],
+    ):
+        matches = [
+            rel_elm._element
+            for elm in self._elements
+            if isinstance(
+                rel_elm := c.GenericElement.from_model(self._model, elm),
+                relcls,
+            )
+        ]
+        return type(self)(
+            self._model, matches, None, side=self._side, parent=None
         )
 
 
@@ -486,7 +445,11 @@ class Requirement(ReqIFElement):
         "_element", "ReqIFText", optional=True, returntype=c.markuptype
     )
     attributes = AttributeAccessor()
-    relations = RelationAccessor()
+    relations = c.ProxyAccessor(
+        c.GenericElement,
+        (XT_INC_RELATION, XT_OUT_RELATION, XT_INT_RELATION),
+        aslist=c.ElementList,
+    )
     type = c.AttrProxyAccessor(RequirementType, "requirementType")
 
 
@@ -519,7 +482,11 @@ class RequirementsModule(ReqIFElement):
 
 
 class AbstractRequirementsRelation(ReqIFElement):
+    _xmltag = "ownedRelations"
+
     type = c.AttrProxyAccessor(RelationType, "relationType")
+    source = c.AttrProxyAccessor(Requirement, "source")
+    target = c.AttrProxyAccessor(c.GenericElement, "target")
 
 
 @c.xtype_handler(None, XT_OUT_RELATION)
@@ -536,20 +503,10 @@ class RequirementsOutRelation(AbstractRequirementsRelation):
 class RequirementsIncRelation(AbstractRequirementsRelation):
     """A Relation between a requirement and an object."""
 
-    _xmltag = "ownedRelations"
-
-    source = c.AttrProxyAccessor(Requirement, "source")
-    target = c.AttrProxyAccessor(c.GenericElement, "target")
-
 
 @c.xtype_handler(None, XT_INT_RELATION)
 class RequirementsIntRelation(AbstractRequirementsRelation):
     """A Relation between two requirements."""
-
-    _xmltag = "ownedRelations"
-
-    source = c.AttrProxyAccessor(Requirement, "source")
-    target = c.AttrProxyAccessor(Requirement, "target")
 
 
 @c.xtype_handler(None, XT_REQ_TYPES_F)

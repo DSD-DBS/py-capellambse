@@ -79,7 +79,7 @@ def test_path_nesting(model: capellambse.MelodyModel) -> None:
         ),
         pytest.param(
             "<EnumerationValueAttribute [MultiEnum] (148bdf2f-6dc2-4a83-833b-596886ce5b07)>",
-            id="EnumAttribute",
+            id="Enum Attribute",
         ),
         pytest.param(
             "<RequirementsTypesFolder 'Types' (67bba9cf-953c-4f0b-9986-41991c68d241)>",
@@ -112,6 +112,10 @@ def test_path_nesting(model: capellambse.MelodyModel) -> None:
         pytest.param(
             "<AttributeDefinitionEnumeration 'AttrDefEnum' (c316ab07-c5c3-4866-a896-92e34733055c)>",
             id="Enumeration Attribute Definition",
+        ),
+        pytest.param(
+            "<BooleanValueAttribute [undefined] (9c692405-b8aa-4caa-b988-51d27db5cd1b)>",
+            id="Attribute with Undefined definition",
         ),
     ],
 )
@@ -234,12 +238,16 @@ class TestRequirementAttributes:
     ) -> None:
         test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         bool_attr, undefined_attr = test_req.attributes[0:2]
+        test_req2 = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
+        multi_enum = test_req2.attributes[0]
 
         assert len(test_req.attributes) == 5
         assert undefined_attr.value == reqif.undefined_value
         assert isinstance(bool_attr.value, bool)
         for attr, typ in zip(test_req.attributes[2:], [int, float, str]):
             assert isinstance(attr.value, typ)
+
+        assert multi_enum.values == ("enum_val1", "enum_val2")
 
 
 class TestRequirementRelations:
@@ -258,7 +266,24 @@ class TestRequirementRelations:
     def test_well_defined_on_requirements(
         self, model: capellambse.MelodyModel
     ) -> None:
-        test_req = model.oa.all_requirements.by_uuid(
-            "3c2d312c-37c9-41b5-8c32-67578fa52dc3"
+        test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+
+        assert len(test_req.relations) == 3
+
+    def test_well_defined_on_generic_elements(
+        self, model: capellambse.MelodyModel
+    ) -> None:
+        test_ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        test_req3 = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        test_req_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
+
+        assert isinstance(test_ge.requirements, reqif.RelationsList)
+        assert len(test_ge.requirements) == 3
+        assert (
+            len(test_ge.requirements.by_relation_type(test_req_type.name)) == 1
         )
-        assert len(test_req.relations) == 5
+        assert len(test_ge.requirements.outgoing) == 1
+        assert test_ge.requirements.outgoing[0] == test_req
+        assert len(test_ge.requirements.incoming) == 2
+        assert test_ge.requirements.incoming[:] == [test_req, test_req3]
