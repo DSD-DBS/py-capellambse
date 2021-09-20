@@ -1,0 +1,39 @@
+name: Lint Python code
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Upgrade pip
+        run: |-
+          python -m pip install -U pip
+      - name: Install pylint
+        run: |-
+          python -m pip install pylint
+      - name: Run pylint
+        run: |-
+          pylint -- capellambse
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Upgrade pip
+        run: |-
+          python -m pip install -U pip
+      - name: Install mypy
+        run: |-
+          python -m pip install mypy
+      - name: Run mypy
+        run: |-
+          mypy .
