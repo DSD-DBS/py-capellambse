@@ -5,14 +5,6 @@ Welcome to the documentation!
 Python Capella MBSE Tools
 =========================
 
-.. image::
-    https://git.tech.rz.db.de/dbb_sea/python-capella-mbse/badges/master/pipeline.svg
-    :target: https://git.tech.rz.db.de/dbb_sea/python-capella-mbse/
-    :alt: Pipelines
-.. image::
-    https://git.tech.rz.db.de/dbb_sea/python-capella-mbse/badges/master/coverage.svg
-    :target: https://git.tech.rz.db.de/dbb_sea/python-capella-mbse/
-    :alt: Coverage
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
     :alt: Black
