@@ -1,4 +1,6 @@
-# capellambse -  a Python 3 headless implementation of Capella modeling tool (almost)
+# capellambse
+
+*A Python 3 headless implementation of the Capella modeling tool (almost)*
 
 ## Intro
 
