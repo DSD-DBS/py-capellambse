@@ -1,0 +1,140 @@
+# Copyright 2021 DB Netz AG
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+[tool.black]
+line-length = 79
+target-version = ['py38']
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.nox
+    | \.tox
+    | \.venv
+    | \.svn
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  | versioneer.py
+  | capellambse/_version.py
+)
+'''
+
+[tool.isort]
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 79
+multi_line_output = 3
+skip = [
+  "capellambse/_version.py",
+  "versioneer.py",
+]
+skip_glob = [
+  ".*",
+]
+use_parentheses = true
+
+[tool.pydocstyle]
+convention = "numpy"
+add-select = [
+  "D212",  # Multi-line docstring summary should start at the first line
+  "D402",  # First line should not be the function’s “signature”
+  "D417",  # Missing argument descriptions in the docstring
+]
+add-ignore = [
+  "D201",  # No blank lines allowed before function docstring  # auto-formatting
+  "D202",  # No blank lines allowed after function docstring  # auto-formatting
+  "D203",  # 1 blank line required before class docstring  # auto-formatting
+  "D204",  # 1 blank line required after class docstring  # auto-formatting
+  "D211",  # No blank lines allowed before class docstring  # auto-formatting
+  "D213",  # Multi-line docstring summary should start at the second line
+]
+
+[tool.pylint.format]
+expected-line-ending-format = "LF"
+
+[tool.pylint.master]
+extension-pkg-allow-list = [
+  "lxml.etree",
+]
+ignore = [
+  "_version.py",
+]
+
+[tool.pylint.messages_control]
+disable = [
+  "arguments-differ",  # handled by mypy
+  "assignment-from-no-return",  # handled by mypy
+  "bad-indentation",  # auto-formatting
+  "broad-except",
+  "global-statement",
+  "import-error",  # handled by mypy
+  "import-outside-toplevel",
+  "inconsistent-quotes",  # auto-formatting
+  "invalid-name",
+  "line-too-long",  # auto-formatting
+  "missing-class-docstring",
+  "missing-final-newline",  # auto-formatting
+  "missing-function-docstring",
+  "missing-kwoa",  # handled by mypy
+  "missing-method-docstring",
+  "missing-module-docstring",
+  "mixed-line-endings",  # auto-formatting
+  "multiple-imports",  # auto-formatting
+  "multiple-statements",  # auto-formatting
+  "no-else-break",
+  "no-else-continue",
+  "no-else-raise",
+  "no-else-return",
+  "no-member",  # handled by mypy
+  "no-value-for-parameter",  # handled by mypy
+  "protected-access",
+  "redefined-builtin",
+  "redundant-keyword-arg",  # handled by mypy
+  "signature-differs",  # handled by mypy
+  "syntax-error",  # handled by mypy
+  "too-few-public-methods",
+  "too-many-ancestors",
+  "too-many-arguments",
+  "too-many-boolean-expressions",
+  "too-many-branches",
+  "too-many-function-args",  # handled by mypy
+  "too-many-instance-attributes",
+  "too-many-lines",
+  "too-many-locals",
+  "too-many-public-methods",
+  "too-many-return-statements",
+  "too-many-statements",
+  "trailing-newlines",  # auto-formatting
+  "trailing-whitespace",  # auto-formatting
+  "unbalanced-tuple-unpacking",  # handled by mypy
+  "undefined-variable",  # handled by mypy
+  "unexpected-keyword-arg",  # handled by mypy
+  "unexpected-line-ending-format",  # auto-formatting
+  "ungrouped-imports",  # auto-formatting
+  "wrong-import-order",  # auto-formatting
+  "wrong-import-position",  # auto-formatting
+]
+enable = [
+  "c-extension-no-member",
+  "deprecated-pragma",
+  "use-symbolic-message-instead",
+  "useless-suppression",
+]

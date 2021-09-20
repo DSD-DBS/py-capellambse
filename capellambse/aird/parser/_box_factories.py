@@ -1,0 +1,579 @@
+# Copyright 2021 DB Netz AG
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Factory functions for different types of Boxes."""
+from __future__ import annotations
+
+import collections
+import functools
+import itertools
+import re
+import typing as t
+
+from capellambse import aird, helpers
+
+from . import _common as C
+from . import _filters, _styling
+
+_T = t.TypeVar("_T", bound=aird.Box)
+
+
+@t.overload
+def generic_factory(
+    seb: C.SemanticElementBuilder, *, minsize: aird.Vector2D = ...
+) -> aird.Box:
+    ...
+
+
+@t.overload
+def generic_factory(
+    seb: C.SemanticElementBuilder,
+    *,
+    boxtype: t.Union[t.Type[aird.Box], functools.partial[aird.Box]],
+    minsize: aird.Vector2D = ...,
+) -> _T:
+    ...
+
+
+def generic_factory(
+    seb: C.SemanticElementBuilder,
+    *,
+    boxtype: t.Union[t.Type[aird.Box], functools.partial[aird.Box]] = aird.Box,
+    minsize: aird.Vector2D = aird.Vector2D(148, 69),
+) -> aird.Box:
+    """Construct a Box from the diagram XML."""
+    if seb.diag_element.getparent() is not seb.diagram_tree:
+        parent_uid = seb.diag_element.getparent().attrib.get("uid")
+    else:
+        parent_uid = None
+
+    if parent_uid is None:
+        parent = None
+        refpos = aird.Vector2D(0, 0)
+    else:
+        try:
+            # reference position (top left of parent box)
+            parent = seb.target_diagram[parent_uid]
+            refpos = parent.bounds.pos
+        except KeyError:
+            C.LOGGER.error(
+                "Parent not in diagram, cannot draw box with uid %r",
+                seb.data_element.attrib["element"],
+            )
+            raise C.SkipObject() from None
+    assert parent is None or isinstance(parent, aird.Box)
+
+    try:
+        layout = next(seb.data_element.iterchildren("layoutConstraint")).attrib
+        ostyle = next(seb.diag_element.iterchildren("ownedStyle"))
+    except StopIteration:
+        C.LOGGER.error(
+            "Cannot find style or layout for %r",
+            seb.data_element.attrib["element"],
+        )
+        raise C.SkipObject() from None
+
+    box_is_port = seb.diag_element.tag == "ownedBorderedNodes"
+    box_is_symbol = ostyle.get("workspacePath") is not None
+
+    pos = refpos + (int(layout.get("x", 0)), int(layout.get("y", 0)))
+    if box_is_port:
+        size = C.PORT_SIZE
+    else:
+        size = aird.Vector2D(
+            int(layout.get("width", 0)), int(layout.get("height", 0))
+        )
+        style_type = ostyle.attrib[C.ATT_XMT].split(":")[-1]
+        if style_type == "FlatContainerStyle":
+            # Remove drop shadows
+            size -= (2 if size.x >= 2 else 0, 2 if size.y >= 2 else 0)
+    styleoverrides = _styling.apply_style_overrides(
+        seb.target_diagram.styleclass, f"Box.{seb.styleclass}", ostyle
+    )
+
+    if seb.melodyobj is None:
+        label = seb.diag_element.attrib.get("name")
+    else:
+        label = seb.melodyobj.attrib.get("name")
+    pos += (
+        int(seb.diag_element.attrib.get("width", "0")),
+        int(seb.diag_element.attrib.get("height", "0")),
+    )
+
+    if box_is_port and parent is not None and seb.melodyobj is not None:
+        parent.add_context(seb.data_element.attrib["element"])
+
+    if label:
+        if box_is_port:
+            label = _make_portlabel(pos, size, label, seb)
+        elif box_is_symbol:
+            label = _make_free_floating_label(pos, size, label, seb)
+    box = boxtype(
+        pos,
+        size,
+        label=label,
+        parent=parent,
+        collapsed=_is_collapsed(seb),
+        port=box_is_port,
+        uuid=seb.data_element.attrib["element"],
+        styleclass=seb.styleclass,
+        styleoverrides=styleoverrides,
+        minsize=minsize,
+    )
+    if box_is_symbol:
+        box.JSON_TYPE = "symbol"
+        box.minsize = (30, 30)
+    return _filters.setfilters(seb, box)
+
+
+def generic_stacked_factory(seb: C.SemanticElementBuilder) -> C.StackingBox:
+    """Construct a Box whose children stack."""
+    child_layout = (
+        seb.diag_element.get("childrenPresentation") or "VerticalStack"
+    )
+    return generic_factory(
+        seb,
+        boxtype=functools.partial(
+            C.StackingBox, features=[], stacking_mode=child_layout
+        ),
+    )
+
+
+def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create a Class.
+
+    Classes contain multiple `Property` sub-elements.  These aren't
+    actual boxes, but should instead be shown as part of the Class'
+    regular label text.
+    """
+    box = generic_factory(seb)
+
+    features = collections.defaultdict(list)
+    for feature in seb.melodyobj.iterchildren("ownedFeatures"):
+        feat_name = feature.attrib["name"]
+        feat_type = feature.attrib[C.ATT_XST].split(":")[-1]
+
+        abstract_type = feature.attrib.get("abstractType")
+        if abstract_type is not None:
+            abstract_type = seb.melodyloader[
+                helpers.fragment_link(seb.melodyfrag, abstract_type)
+            ]
+
+        if feat_type == "Property":
+            if abstract_type is not None:
+                feat_name += f" : {abstract_type.attrib['name']}"
+        elif feat_type == "Service":
+            params = []
+            ret = []
+            throw = []
+
+            for param in feature.iterchildren("ownedParameters"):
+                param_type = param.attrib[C.ATT_XST].split(":")[-1]
+                if param_type != "Parameter":
+                    C.LOGGER.warning(
+                        "Unknown parameter type %r for service %r",
+                        param_type,
+                        feat_name,
+                    )
+                    continue
+                param_name = param.attrib["name"]
+                param_abstrtype = param.attrib.get("abstractType")
+                if param_abstrtype is not None:
+                    param_abstrtype = seb.melodyloader[
+                        helpers.fragment_link(seb.melodyfrag, param_abstrtype)
+                    ]
+                    param_name += f":{param_abstrtype.attrib['name']}"
+                param_dir = param.attrib.get("direction", "IN")
+                if param_dir == "RETURN":
+                    ret.append(param_name)
+                elif param_dir == "EXCEPTION":
+                    throw.append(param_name)
+                else:
+                    params.append(f"{param_dir} {param_name}")
+
+            feat_name += f"({', '.join(params)})"
+            if ret or throw:
+                feat_name += " : "
+            if ret:
+                feat_name += f" returns {', '.join(ret)}"
+            if throw:
+                feat_name += f" throws {', '.join(throw)}"
+        else:
+            C.LOGGER.warning("Unknown feature type %r", feat_type)
+        features[feat_type].append(feat_name)
+
+    box.features = sum(features.values(), [])
+    return box
+
+
+def component_port_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    box = generic_factory(seb)
+    try:
+        box.styleclass = "CP_" + (seb.melodyobj.attrib["orientation"])
+    except KeyError:
+        box.styleclass = "CP_UNSET"
+
+    return box
+
+
+def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create the box for a Constraint.
+
+    Constraints are comprised of two parts: A Box and some Edges.  The
+    Box' label must be extracted from the semantic object, because it
+    isn't always easily accessible for the ``generic_factory``.
+
+    See Also
+    --------
+    capellambse.aird.parser._edge_factories.constraint_factory :
+        The accompanying edge factory.
+    """
+    box = generic_factory(seb)
+    box.label = C.get_spec_text(seb) or seb.melodyobj.attrib.get("name")
+    return box
+
+
+def control_node_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    r"""Differentiate ``ControlNode``\ s based on their KIND."""
+    assert seb.styleclass is not None
+    kind = seb.melodyobj.get("kind", "OR")
+    seb.styleclass = "".join((kind.capitalize(), seb.styleclass))
+    return generic_factory(seb)
+
+
+def enumeration_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create an Enumeration.
+
+    These work similar to Classes, but use different element tags.
+    """
+    box = generic_factory(seb)
+    box.features = []
+
+    for lit_elm in seb.melodyobj.iterchildren("ownedLiterals"):
+        lit_type = lit_elm.attrib[C.ATT_XST]
+        if lit_type.split(":")[-1] != "EnumerationLiteral":
+            C.LOGGER.warning(
+                "Unknown enumeration literal type %r, skipping", lit_type
+            )
+            continue
+        box.features.append(lit_elm.attrib["name"])
+
+    return box
+
+
+def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Resolve the ``Part`` meta-styleclass and creates its Box."""
+    dgel_type = seb.diag_element.attrib[C.ATT_XMT]
+    if dgel_type in {"diagram:DNodeContainer", "diagram:DNode"}:
+        # resolve abstractType reference
+        abstract_obj = seb.melodyobj
+        abstract_type = abstract_obj.attrib.get("abstractType")
+        if abstract_type is not None:
+            abstract_obj = seb.melodyloader[
+                helpers.fragment_link(seb.melodyfrag, abstract_type)
+            ]
+
+        seb.styleclass = abstract_obj.attrib[C.ATT_XST].split(":")[-1]
+        assert seb.styleclass is not None
+        if seb.styleclass.endswith("Component"):
+            seb.styleclass = "".join(
+                (
+                    seb.styleclass[: -len("Component")],
+                    "Human" * (abstract_obj.get("human") == "true"),
+                    ("Component", "Actor")[
+                        abstract_obj.get("actor") == "true"
+                    ],
+                )
+            )
+
+        return generic_factory(seb)
+
+    C.LOGGER.error("Unhandled Part type: %r; skipping", dgel_type)
+    raise C.SkipObject()
+
+
+def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create a Requirement.
+
+    Requirements' text is split in two parts, which have to be joined
+    together again for display in diagrams.
+    """
+    # Only handle the top-level <ownedDiagramElements>,
+    # not the nested <ownedElements>.
+    if seb.diag_element.tag != "ownedDiagramElements":
+        raise C.SkipObject()
+
+    try:
+        targethref = next(seb.diag_element.iterchildren("target")).attrib[
+            "href"
+        ]
+    except (StopIteration, KeyError):
+        raise C.SkipObject() from None
+
+    seb.melodyobj = seb.melodyloader[
+        helpers.fragment_link(seb.fragment, targethref)
+    ]
+    text = [
+        seb.melodyobj.get("ReqIF" + suffix, "")
+        for suffix in ("LongName", "Name", "ChapterName")
+    ]
+    if "ReqIFText" in seb.melodyobj.attrib:
+        text.append(helpers.repair_html(seb.melodyobj.attrib["ReqIFText"]))
+
+    box = generic_factory(seb, minsize=aird.Vector2D(0, 0))
+    box.features = [f"- {i}" for i in text if i is not None]
+    if not (box.label or box.features):
+        raise ValueError(
+            "Requirements text is empty for {!r}".format(
+                seb.data_element.attrib["element"]
+            )
+        )
+    return box
+
+
+def region_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    r"""Perform special handling for ``Region``\ s.
+
+    *   Adjust the styleclass of Regions to ``StateRegion`` or
+        ``ModeRegion``, depending on what the parent box is
+    *   Fix the Region's label text
+    *   Set the Region's specific minimum / default size (because
+        they're different from the usual values)
+    """
+    try:
+        parent = seb.target_diagram[seb.diag_element.getparent().attrib["uid"]]
+    except KeyError:
+        pass
+    else:
+        seb.styleclass = f'{parent.styleclass or ""}Region'
+
+    box = generic_factory(seb)
+    if box.label is None:
+        pass
+    elif isinstance(box.label, str):
+        box.label = f"[{box.label}]"
+    else:
+        box.label.label = f"[{box.label.label}]"
+    box.minsize = (27, 21)
+    box.size = aird.Vector2D(box._size.x or 55, box._size.y or 41)
+    return box
+
+
+def statemode_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create a State or Mode.
+
+    Unlike other elements, these have their immediate children rendered
+    as stacked boxes.  The child boxes themselves can in turn have more
+    children either in floating or stacked form.
+
+    Additionally, States and Modes can have associated activities.
+    These are displayed after the label, separated by a horizontal line.
+    """
+    xmt = seb.diag_element.get(C.ATT_XMT)
+    if xmt == "diagram:DNodeContainer":
+        return generic_stacked_factory(seb)
+    if xmt == "diagram:DNodeList":
+        return statemode_activities_factory(seb)
+    C.LOGGER.warning("Unknown State/Mode xmi:type %r", xmt)
+    raise C.SkipObject()
+
+
+def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Attach the activities to a State or Mode as features."""
+    assert seb.melodyobj is not None
+    parent_id = seb.diag_element.getparent().attrib["uid"]
+    try:
+        parent = seb.target_diagram[parent_id]
+    except KeyError:
+        C.LOGGER.error("Cannot find a box with UID %r in diagram", parent_id)
+        raise C.SkipObject() from None
+    assert isinstance(parent, aird.Box)
+
+    entry: t.List[str] = []
+    do: t.List[str] = []
+    exit: t.List[str] = []
+    for elm in seb.diag_element.iterchildren("ownedElements"):
+        elm_id = elm.get("uid")
+        try:
+            target = next(elm.iterchildren("target")).attrib
+            target = " ".join((target[C.ATT_XMT], target["href"]))
+            target = seb.melodyloader[target]
+            mapping = next(elm.iterchildren("actualMapping")).attrib["href"]
+        except (KeyError, StopIteration):
+            C.LOGGER.error("No usable target or mapping for %r", elm_id)
+            continue
+
+        mapping = re.search(
+            "@subNodeMappings\\[name=(?P<q>[\"'])(?P<n>.*?)(?P=q)\\]$", mapping
+        )
+        if mapping is not None:
+            mapping = mapping.group("n")
+        try:
+            act_list = {
+                "MSM_DoActivity": do,
+                "MSM_Entry": entry,
+                "MSM_Exit": exit,
+            }[mapping]
+        except KeyError:
+            C.LOGGER.error("Unknown activity mapping type %r", mapping)
+            continue
+        act_list.append(target.get("name"))
+
+    parent.features = list(
+        itertools.chain(
+            map(" entry / {}".format, entry),
+            map(" do / {}".format, do),
+            map(" exit / {}".format, exit),
+        )
+    )
+    raise C.SkipObject()
+
+
+def fcif_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create a FunctionalChainInvolvementFunction.
+
+    These are special boxes that point to another element via their
+    ``involved`` attribute.  As there's no relevant information stored
+    in the original target attribute, we can simply use the "involved"
+    element for constructing the actual box.
+    """
+    seb.melodyobj = seb.melodyloader.follow_link(
+        seb.melodyobj, seb.melodyobj.get("involved")
+    )
+    xtype = helpers.xtype_of(seb.melodyobj)
+    assert xtype is not None
+    seb.styleclass = xtype.split(":")[-1]
+    return generic_factory(seb)
+
+
+def pseudo_symbol_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Create a [Fork|Choice]PseudoState.
+
+    These are boxes that behave like symbols. Capella doesn't store the
+    usual workspacePath attribute that references the used image for
+    symbols.
+    """
+    style = next(seb.diag_element.iterchildren("ownedStyle"))
+    style.attrib["workspacePath"] = ""
+    box = generic_factory(seb)
+    box.JSON_TYPE = "box_symbol"
+    return box
+
+
+def _make_portlabel(
+    ppos: aird.Vector2D,
+    psize: aird.Vector2D,
+    text: str,
+    seb: C.SemanticElementBuilder,
+) -> aird.Box:
+    snapsides = {"5001": (1, 0), "5010": (0, 1)}
+    try:
+        child_elm = next(
+            i
+            for i in seb.data_element.iterchildren("children")
+            if i.get("type") in snapsides
+        )
+        loc_elm = next(
+            i
+            for i in child_elm.iterchildren("layoutConstraint")
+            if i.get(C.ATT_XMT) == "notation:Location"
+        )
+    except StopIteration:
+        snapside = aird.Vector2D(1, 0)
+    else:
+        snapside = (
+            aird.Vector2D(
+                int(loc_elm.get("x", "0")), int(loc_elm.get("y", "0"))
+            )
+            @ snapsides[child_elm.get("type")]
+        )
+        if snapside == (0, 0):
+            snapside = aird.Vector2D(1, 0)
+        else:
+            snapside //= snapside.length
+    return _make_snapped_floating_label(ppos, psize, text, snapside)
+
+
+def _make_free_floating_label(
+    ppos: aird.Vector2D,
+    psize: aird.Vector2D,
+    text: str,
+    seb: C.SemanticElementBuilder,
+) -> aird.Box:
+    """Try to construct the label from the real location found in aird file."""
+    try:
+        child_elm = next(
+            i
+            for i in seb.data_element.iterchildren("children")
+            if i.get("type") == "5002"
+        )
+        loc_elm = next(
+            i
+            for i in child_elm.iterchildren("layoutConstraint")
+            if i.get(C.ATT_XMT) == "notation:Location"
+        )
+    except StopIteration:
+        return _make_snapped_floating_label(
+            ppos, psize, text, aird.Vector2D(0, -1)
+        )
+    pos = ppos + (float(loc_elm.get("x", "0")), float(loc_elm.get("y", "0")))
+    return aird.Box(pos, (0, 0), label=text, styleclass="BoxAnnotation")
+
+
+def _make_snapped_floating_label(
+    ppos: aird.Vector2D,
+    psize: aird.Vector2D,
+    text: str,
+    snapside: aird.Vector2D,
+) -> aird.Box:
+    if not isinstance(snapside.x, int) or not isinstance(snapside.y, int):
+        raise TypeError("snapside must be an int-vector")
+    if not (-1 <= snapside.x <= 1 and -1 <= snapside.y <= 1):
+        raise ValueError("snapside values must be in interval [-1, 1]")
+    if snapside.x and snapside.y:
+        raise ValueError("snapside can only have one non-zero value")
+    if snapside.x == snapside.y == 0:
+        raise ValueError("snapside must have one non-zero value")
+    labelbox = aird.Box((0, 0), (0, 0), label=text, styleclass="BoxAnnotation")
+    lsize = labelbox.size
+    labelbox.pos = (
+        (
+            (lambda: ppos.x - (lsize.x - psize.x) / 2),
+            (lambda: ppos.x + psize.x + aird.Box.PORT_OVERHANG),
+            (lambda: ppos.x - lsize.x - aird.Box.PORT_OVERHANG),
+        )[snapside.x](),
+        (
+            (lambda: ppos.y - (lsize.y - psize.y) / 2),
+            (lambda: ppos.y + psize.y + aird.Box.PORT_OVERHANG),
+            (lambda: ppos.y - lsize.y - aird.Box.PORT_OVERHANG),
+        )[snapside.y](),
+    )
+    return labelbox
+
+
+def _is_collapsed(seb: C.SemanticElementBuilder) -> bool:
+    # pylint: disable=undefined-loop-variable
+    # <https://github.com/PyCQA/pylint/issues/1175>
+    for data_container in seb.data_element.iterchildren():
+        if data_container.get("type") == "7002":
+            break
+    else:
+        return False
+
+    for collapsed_container in data_container.iterchildren():
+        if collapsed_container.get(C.ATT_XMT) == "notation:DrawerStyle":
+            break
+    else:
+        return False
+
+    return collapsed_container.get("collapsed") == "true"

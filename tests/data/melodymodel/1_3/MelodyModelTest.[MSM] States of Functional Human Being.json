@@ -1,0 +1,660 @@
+{
+    "name": "[MSM] States of Functional Human Being",
+    "uuid": "_7FWu4KrxEeqOgqWuHJrXFA",
+    "class": "Mode State Machine",
+    "x": 22,
+    "y": 29,
+    "width": 965,
+    "height": 472,
+    "contents": [
+        {
+            "type": "symbol",
+            "id": "_A-wLMKryEeqOgqWuHJrXFA",
+            "class": "InitialPseudoState",
+            "x": 25,
+            "y": 202,
+            "width": 20,
+            "height": 17,
+            "context": [
+                "_DEZpEKryEeqOgqWuHJrXFA"
+            ],
+            "label": {
+                "x": 22.0,
+                "y": 190,
+                "width": 26,
+                "height": 10,
+                "label": "Birth"
+            }
+        },
+        {
+            "type": "box",
+            "id": "_-7hvMKrxEeqOgqWuHJrXFA",
+            "class": "State",
+            "x": 847,
+            "y": 305,
+            "width": 77,
+            "height": 85,
+            "context": [
+                "_QuJKUKr0EeqOgqWuHJrXFA",
+                "_j0qaJKryEeqOgqWuHJrXFA"
+            ],
+            "label": "Sleeping",
+            "features": [
+                " do / Sleep"
+            ]
+        },
+        {
+            "type": "box",
+            "id": "_-76wwKrxEeqOgqWuHJrXFA",
+            "class": "StateRegion",
+            "x": 847,
+            "y": 362,
+            "width": 77,
+            "height": 28,
+            "context": [],
+            "label": "[region]",
+            "parent": "_-7hvMKrxEeqOgqWuHJrXFA"
+        },
+        {
+            "type": "box",
+            "id": "_arWFMKryEeqOgqWuHJrXFA",
+            "class": "State",
+            "x": 847,
+            "y": 29,
+            "width": 77,
+            "height": 83,
+            "context": [
+                "_i8e08KryEeqOgqWuHJrXFA",
+                "_j0qaJKryEeqOgqWuHJrXFA"
+            ],
+            "label": "Eating",
+            "features": [
+                " do / Eat"
+            ]
+        },
+        {
+            "type": "box",
+            "id": "_arnyAKryEeqOgqWuHJrXFA",
+            "class": "StateRegion",
+            "x": 847,
+            "y": 84,
+            "width": 77,
+            "height": 28,
+            "context": [],
+            "label": "[region]",
+            "parent": "_arWFMKryEeqOgqWuHJrXFA"
+        },
+        {
+            "type": "box",
+            "id": "_Y_5QAKryEeqOgqWuHJrXFA",
+            "class": "State",
+            "x": 657,
+            "y": 29,
+            "width": 91,
+            "height": 83,
+            "context": [
+                "_CNeHcKr6EeqOgqWuHJrXFA",
+                "_i8e08KryEeqOgqWuHJrXFA"
+            ],
+            "label": "Cooking",
+            "features": [
+                " do / Make Food"
+            ]
+        },
+        {
+            "type": "box",
+            "id": "_ZAHScKryEeqOgqWuHJrXFA",
+            "class": "StateRegion",
+            "x": 657,
+            "y": 84,
+            "width": 91,
+            "height": 28,
+            "context": [],
+            "label": "[region]",
+            "parent": "_Y_5QAKryEeqOgqWuHJrXFA"
+        },
+        {
+            "type": "box",
+            "id": "_BhQhsqr6EeqOgqWuHJrXFA",
+            "class": "ChoicePseudoState",
+            "x": 531,
+            "y": 186,
+            "width": 50,
+            "height": 50,
+            "context": [
+                "_BhVaMqr6EeqOgqWuHJrXFA",
+                "_BhVaN6r6EeqOgqWuHJrXFA",
+                "_CNeugKr6EeqOgqWuHJrXFA"
+            ],
+            "label": {
+                "x": 582,
+                "y": 202,
+                "width": 203,
+                "height": 12,
+                "label": "Does the hunted animal want revenge?"
+            }
+        },
+        {
+            "type": "box",
+            "id": "_CNbEJKr6EeqOgqWuHJrXFA",
+            "class": "ChoicePseudoState",
+            "x": 531,
+            "y": 50,
+            "width": 50,
+            "height": 50,
+            "context": [
+                "_CNdggKr6EeqOgqWuHJrXFA",
+                "_CNeHcKr6EeqOgqWuHJrXFA",
+                "_CNeugKr6EeqOgqWuHJrXFA"
+            ],
+            "label": {
+                "x": 400,
+                "y": 50,
+                "width": 129,
+                "height": 10,
+                "label": "Was the hunt successful?"
+            }
+        },
+        {
+            "type": "box",
+            "id": "_nG7msKrzEeqOgqWuHJrXFA",
+            "class": "State",
+            "x": 337,
+            "y": 181,
+            "width": 91,
+            "height": 53,
+            "context": [
+                "_7OcukKrzEeqOgqWuHJrXFA",
+                "_BhVaMqr6EeqOgqWuHJrXFA",
+                "_YeUqgAIGEeuKMPMWe5uErQ"
+            ],
+            "label": "Running away"
+        },
+        {
+            "type": "box",
+            "id": "_nHIbAqrzEeqOgqWuHJrXFA",
+            "class": "StateRegion",
+            "x": 337,
+            "y": 214,
+            "width": 91,
+            "height": 20,
+            "context": [],
+            "label": "[region]",
+            "parent": "_nG7msKrzEeqOgqWuHJrXFA"
+        },
+        {
+            "type": "box",
+            "id": "_SJgnAKryEeqOgqWuHJrXFA",
+            "class": "State",
+            "x": 97,
+            "y": 35,
+            "width": 121,
+            "height": 83,
+            "context": [
+                "_53EE4KrzEeqOgqWuHJrXFA",
+                "_CNdggKr6EeqOgqWuHJrXFA"
+            ],
+            "label": "Hunting",
+            "features": [
+                " do / Hunt wild animal"
+            ]
+        },
+        {
+            "type": "box",
+            "id": "_SJy64KryEeqOgqWuHJrXFA",
+            "class": "StateRegion",
+            "x": 97,
+            "y": 90,
+            "width": 121,
+            "height": 28,
+            "context": [],
+            "label": "[region]",
+            "parent": "_SJgnAKryEeqOgqWuHJrXFA"
+        },
+        {
+            "type": "box",
+            "id": "_wVbWkKrzEeqOgqWuHJrXFA",
+            "class": "State",
+            "x": 97,
+            "y": 181,
+            "width": 121,
+            "height": 119,
+            "context": [
+                "_53EE4KrzEeqOgqWuHJrXFA",
+                "_7OcukKrzEeqOgqWuHJrXFA",
+                "_BhVaN6r6EeqOgqWuHJrXFA",
+                "_DEZpEKryEeqOgqWuHJrXFA",
+                "_QuJKUKr0EeqOgqWuHJrXFA",
+                "_qMmDUOtuEeq3j_7pYQdn7g"
+            ],
+            "label": "Waiting",
+            "features": [
+                " entry / Play games",
+                " do / Build house",
+                " exit / Search for animals"
+            ]
+        },
+        {
+            "type": "box",
+            "id": "_wVr1QKrzEeqOgqWuHJrXFA",
+            "class": "StateRegion",
+            "x": 97,
+            "y": 272,
+            "width": 121,
+            "height": 28,
+            "context": [],
+            "label": "[region]",
+            "parent": "_wVbWkKrzEeqOgqWuHJrXFA"
+        },
+        {
+            "type": "box",
+            "id": "_juTKMOtuEeq3j_7pYQdn7g",
+            "class": "ForkPseudoState",
+            "x": 171,
+            "y": 397,
+            "width": 10,
+            "height": 70,
+            "context": [
+                "_KQkWJutvEeq3j_7pYQdn7g",
+                "_qMmDUOtuEeq3j_7pYQdn7g",
+                "_qv36GOtvEeq3j_7pYQdn7g"
+            ],
+            "label": {
+                "x": 105,
+                "y": 468,
+                "width": 128,
+                "height": 12,
+                "label": "Split out soul from body"
+            }
+        },
+        {
+            "type": "symbol",
+            "id": "_opCl4OtuEeq3j_7pYQdn7g",
+            "class": "TerminatePseudoState",
+            "x": 232,
+            "y": 432,
+            "width": 20,
+            "height": 20,
+            "context": [
+                "_KQkWJutvEeq3j_7pYQdn7g"
+            ],
+            "label": {
+                "x": 204.5,
+                "y": 418,
+                "width": 75,
+                "height": 12,
+                "label": "Physical Death"
+            }
+        },
+        {
+            "type": "symbol",
+            "id": "_pB3gIOtvEeq3j_7pYQdn7g",
+            "class": "FinalState",
+            "x": 232,
+            "y": 402,
+            "width": 20,
+            "height": 20,
+            "context": [
+                "_qv36GOtvEeq3j_7pYQdn7g"
+            ],
+            "label": {
+                "x": 193.0,
+                "y": 388,
+                "width": 98,
+                "height": 12,
+                "label": "Spiritual Ascension"
+            }
+        },
+        {
+            "type": "box",
+            "id": "_WyBgwAIGEeuKMPMWe5uErQ",
+            "class": "Note",
+            "x": 510,
+            "y": 404,
+            "width": 148,
+            "height": 97,
+            "context": [
+                "_YeUqgAIGEeuKMPMWe5uErQ"
+            ],
+            "label": "This a note!",
+            "style": {
+                "stroke-width": "1"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_j0qaJKryEeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    886,
+                    112
+                ],
+                [
+                    886,
+                    305
+                ]
+            ],
+            "label": {
+                "x": 890,
+                "y": 123,
+                "width": 97,
+                "height": 16,
+                "name": " [Actor feels sated]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_i8e08KryEeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    748,
+                    71
+                ],
+                [
+                    847,
+                    71
+                ]
+            ],
+            "label": {
+                "x": 749,
+                "y": 36,
+                "width": 97,
+                "height": 36,
+                "name": "Prepared food [Food is cooked]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_CNeHcKr6EeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    581,
+                    75
+                ],
+                [
+                    657,
+                    75
+                ]
+            ],
+            "label": {
+                "x": 575,
+                "y": 41,
+                "width": 84,
+                "height": 34,
+                "name": "Hunted animal [Success]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_CNeugKr6EeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    556,
+                    100
+                ],
+                [
+                    556,
+                    186
+                ]
+            ],
+            "label": {
+                "x": 565,
+                "y": 135,
+                "width": 70,
+                "height": 20,
+                "name": " [Hunt failed]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_BhVaMqr6EeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    531,
+                    210
+                ],
+                [
+                    428,
+                    210
+                ]
+            ],
+            "label": {
+                "x": 462,
+                "y": 191,
+                "width": 56,
+                "height": 18,
+                "name": " [Revenge]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_CNdggKr6EeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    218,
+                    71
+                ],
+                [
+                    531,
+                    71
+                ]
+            ],
+            "label": {
+                "x": 236,
+                "y": 51,
+                "width": 74,
+                "height": 18,
+                "name": " [Hunt ended]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_DEZpEKryEeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    45,
+                    213
+                ],
+                [
+                    97,
+                    213
+                ]
+            ],
+            "label": {
+                "x": 58,
+                "y": 198,
+                "width": 6,
+                "height": 10,
+                "name": " []"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_53EE4KrzEeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    109,
+                    181
+                ],
+                [
+                    109,
+                    118
+                ]
+            ],
+            "label": {
+                "x": 116,
+                "y": 130,
+                "width": 104,
+                "height": 37,
+                "name": "Hunt wild animal [Actor feels hungry]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_7OcukKrzEeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    337,
+                    206
+                ],
+                [
+                    218,
+                    206
+                ]
+            ],
+            "label": {
+                "x": 229,
+                "y": 186,
+                "width": 100,
+                "height": 21,
+                "name": " [Reached safety]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_QuJKUKr0EeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    847,
+                    348
+                ],
+                [
+                    159,
+                    348
+                ],
+                [
+                    159,
+                    300
+                ]
+            ],
+            "label": {
+                "x": 428,
+                "y": 331,
+                "width": 131,
+                "height": 14,
+                "name": " [Actor feels well rested]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_BhVaN6r6EeqOgqWuHJrXFA",
+            "class": "StateTransition",
+            "points": [
+                [
+                    556,
+                    236
+                ],
+                [
+                    556,
+                    255
+                ],
+                [
+                    218,
+                    255
+                ]
+            ],
+            "label": {
+                "x": 565,
+                "y": 238,
+                "width": 71,
+                "height": 18,
+                "name": " [No revenge]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_qMmDUOtuEeq3j_7pYQdn7g",
+            "class": "StateTransition",
+            "points": [
+                [
+                    119,
+                    300
+                ],
+                [
+                    119,
+                    421
+                ],
+                [
+                    171,
+                    421
+                ]
+            ],
+            "label": {
+                "x": 120,
+                "y": 354,
+                "width": 109,
+                "height": 20,
+                "name": " [Actor gets too old]"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_KQkWJutvEeq3j_7pYQdn7g",
+            "class": "StateTransition",
+            "points": [
+                [
+                    181,
+                    448
+                ],
+                [
+                    232,
+                    448
+                ]
+            ],
+            "label": {
+                "x": 207,
+                "y": 433,
+                "width": 6,
+                "height": 10,
+                "name": " []"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_qv36GOtvEeq3j_7pYQdn7g",
+            "class": "StateTransition",
+            "points": [
+                [
+                    181,
+                    417
+                ],
+                [
+                    232,
+                    417
+                ]
+            ],
+            "label": {
+                "x": 203,
+                "y": 402,
+                "width": 6,
+                "height": 10,
+                "name": " []"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_YeUqgAIGEeuKMPMWe5uErQ",
+            "class": "Connector",
+            "points": [
+                [
+                    427,
+                    234
+                ],
+                [
+                    511,
+                    404
+                ]
+            ]
+        }
+    ]
+}

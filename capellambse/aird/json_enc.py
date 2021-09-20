@@ -1,0 +1,156 @@
+# Copyright 2021 DB Netz AG
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""This module handles converting diagrams to the intermediary JSON format."""
+import collections.abc
+import json
+import typing as t
+
+from capellambse import aird
+
+__all__ = ["DiagramJSONEncoder"]
+
+_CSSStyle = t.Union[aird.RGB, t.Iterable[t.Union[aird.RGB, str]], str]
+
+
+class DiagramJSONEncoder(json.JSONEncoder):
+    """JSON encoder that knows how to handle AIRD diagrams."""
+
+    def default(self, o: object) -> object:
+        if isinstance(o, aird.Diagram):
+            return self.__encode_diagram(o)
+        if isinstance(o, aird.Box):
+            return self.__encode_box(o)
+        if isinstance(o, aird.Edge):
+            return self.__encode_edge(o)
+        if isinstance(o, aird.Circle):
+            return self.__encode_circle(o)
+        if isinstance(o, aird.RGB):
+            return str(o)
+        if isinstance(o, collections.abc.Sequence):
+            return list(o)
+        return super().default(o)
+
+    @staticmethod
+    def __encode_diagram(o: aird.Diagram) -> object:
+        return {
+            "name": o.name,
+            "uuid": o.uuid,
+            "class": o.styleclass,
+            "x": (
+                _intround(o.viewport.pos.x) if o.viewport is not None else 0
+            ),
+            "y": (
+                _intround(o.viewport.pos.y) if o.viewport is not None else 0
+            ),
+            "width": (
+                _intround(o.viewport.size.x) if o.viewport is not None else 0
+            ),
+            "height": (
+                _intround(o.viewport.size.y) if o.viewport is not None else 0
+            ),
+            "contents": [e for e in o if not e.hidden],
+        }
+
+    @staticmethod
+    def __encode_box(o: aird.Box) -> object:
+        children = [
+            c.uuid
+            for c in o.children
+            if isinstance(c, aird.Box) and not c.port
+        ]
+        ports = [p.uuid for p in o.children if p.port]
+        jsonobj: t.Dict[str, object] = {
+            "type": o.JSON_TYPE,
+            "id": o.uuid,
+            "class": o.styleclass,
+            "x": _intround(o.pos.x),
+            "y": _intround(o.pos.y),
+            "width": _intround(o.size.x),
+            "height": _intround(o.size.y),
+            "context": sorted(o.context),
+        }
+        if o.label is not None and not o.hidelabel:
+            if isinstance(o.label, str):
+                jsonobj["label"] = o.label
+            else:
+                jsonobj["label"] = {
+                    "x": o.label.pos.x,
+                    "y": o.label.pos.y,
+                    "width": o.label.size.x,
+                    "height": o.label.size.y,
+                    "text": o.label.label,
+                }
+        if o.styleoverrides:
+            jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
+        if o.features:
+            jsonobj["features"] = o.features
+        if o.parent:
+            jsonobj["parent"] = o.parent.uuid
+        if children:
+            jsonobj["children"] = children
+        if ports:
+            jsonobj["ports"] = ports
+
+        return jsonobj
+
+    @staticmethod
+    def __encode_edge(o: aird.Edge) -> object:
+        jsonobj: t.Dict[str, object] = {
+            "type": o.JSON_TYPE,
+            "id": o.uuid,
+            "class": o.styleclass,
+            "points": [[_intround(x), _intround(y)] for x, y in o.points],
+        }
+        if not o.hidelabel and o.label and o.label.label:
+            jsonobj["label"] = {
+                "x": _intround(o.label.pos.x),
+                "y": _intround(o.label.pos.y),
+                "width": _intround(o.label.size.x),
+                "height": _intround(o.label.size.y),
+                "text": o.label.label,
+            }
+        if o.styleoverrides:
+            jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
+        return jsonobj
+
+    @staticmethod
+    def __encode_circle(o: aird.Circle) -> object:
+        jsonobj: t.Dict[str, object] = {
+            "type": o.JSON_TYPE,
+            "id": o.uuid,
+            "class": o.styleclass,
+            "center": [_intround(p) for p in o.center],
+            "radius": _intround(o.radius),
+        }
+        if o.styleoverrides:
+            jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
+        return jsonobj
+
+
+def _intround(val: t.Union[int, float]) -> int:
+    return int(val + 0.5)
+
+
+def _encode_styleoverrides(
+    overrides: t.Mapping[str, _CSSStyle]
+) -> t.Dict[str, object]:
+    return {k: _encode_style(v) for k, v in overrides.items()}
+
+
+def _encode_style(style: _CSSStyle) -> object:
+    if isinstance(style, aird.RGB):
+        return str(style)
+    if isinstance(style, (list, tuple)):
+        return [_encode_style(i) for i in style]
+    return style

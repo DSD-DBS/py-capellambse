@@ -1,0 +1,678 @@
+# Copyright 2021 DB Netz AG
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""The color palette and default style definitions used by Capella."""
+from __future__ import annotations
+
+import logging
+import typing as t
+
+from capellambse import helpers
+
+__all__ = ["COLORS", "CSSdef", "STYLES", "RGB", "get_style"]
+
+LOGGER = logging.getLogger(__name__)
+
+
+class RGB(t.NamedTuple):
+    """A color.
+
+    Each color component (red, green, blue) is an integer in the range
+    of 0..255 (inclusive).  The alpha channel is a float between 0.0 and
+    1.0 (inclusive).  If it is 1, then the ``str()`` form does not
+    include transparency information.
+    """
+
+    r: int = 0
+    g: int = 0
+    b: int = 0
+    a: float = 1.0
+
+    def __str__(self) -> str:
+        return "#" + self.tohex()
+
+    def tohex(self) -> str:
+        # pylint: disable=unsubscriptable-object
+        assert all(0 <= n <= 255 for n in self[:3])
+        assert 0.0 <= self.a <= 1.0
+        if self.a >= 1.0:
+            return f"{self.r:02X}{self.g:02X}{self.b:02X}"
+        return f"{self.r:02X}{self.g:02X}{self.b:02X}{int(self.a * 255):02X}"
+
+    @classmethod
+    def fromcss(cls, cssstring: t.Union[str, RGB]) -> RGB:
+        """Create an RGB from a CSS color definition.
+
+        Examples of recognized color definitions and their equivalent
+        constructor calls::
+
+            "rgb(10, 20, 30)" -> RGB(10, 20, 30)
+            "rgba(50, 60, 70, 0.5)" -> RGB(50, 60, 70, 0.5)
+            "#FF00FF" -> RGB(255, 0, 255)
+            "#ff00ff" -> RGB(255, 0, 255)
+            "#f0f" -> RGB(255, 0, 255)
+            "#FF00FF80" -> RGB(255, 0, 255, 0.5)
+            "#f0fa" -> RGB(255, 0, 255, 2/3)
+        """
+        if isinstance(cssstring, RGB):
+            return cssstring
+
+        cssstring = cssstring.strip().lower()
+        if cssstring.startswith(("rgb(", "rgba(")) and cssstring.endswith(")"):
+            return cls.fromcsv(cssstring[cssstring.find("(") : -1])
+        if cssstring.startswith("#"):
+            return cls.fromhex(cssstring[1:])
+        raise ValueError(f"Bad CSS color: {cssstring!r}")
+
+    @classmethod
+    def fromcsv(cls, csvstring: str) -> RGB:
+        """Create an RGB from a ``"r, g, b[, a]"`` string."""
+        split = csvstring.split(",")
+        if len(split) == 4:
+            alpha = float(split.pop())
+        else:
+            alpha = 1.0
+        if len(split) == 3:
+            r, g, b = (int(c) for c in split)
+            return cls(r, g, b, alpha)
+        raise ValueError(f"Expected 3 or 4 values: {csvstring}")
+
+    @classmethod
+    def fromhex(cls, hexstring: str) -> RGB:
+        """Create an RGB from a hexadecimal string.
+
+        The string can have 3, 4, 6 or 8 hexadecimal characters.  In the
+        cases of 3 and 6 characters, the alpha channel is set to 1.0
+        (fully opaque) and the remaining characters are interpreted as
+        the red, green and blue components.
+        """
+        if hexstring.startswith("#"):
+            hs = hexstring[1:]
+        else:
+            hs = hexstring
+        alpha = 1.0
+        slen = len(hs)
+
+        if slen == 4:
+            hs, alpha = hs[:3], int(hs[3:], base=16) / 16
+            slen = 3
+        if slen == 3:
+            r, g, b = (int(x * 2, base=16) for x in hs)
+            return cls(r, g, b, alpha)
+
+        if slen == 8:
+            hs, alpha = hs[:6], int(hs[6:], base=16) / 255
+            slen = 6
+        if slen == 6:
+            r, g, b = (
+                int("".join(x), base=16) for x in helpers.ntuples(2, hs)
+            )
+            return cls(r, g, b, alpha)
+
+        raise ValueError(
+            "Invalid length of hex string, expected 3, 4, 6 or 8 characters"
+        )
+
+
+def get_style(diagramclass: str, objectclass: str) -> t.Dict[str, t.Any]:
+    r"""Fetch the default style for the given drawtype and styleclass.
+
+    The style is returned as a dict with key-value pairs as used by CSS
+    inside SVG graphics.
+
+    All values contained in this dict are either of type :class:`str`,
+    or of a class whose ``str()`` representation results in a valid CSS
+    value for its respective key -- with one exception: color gradients.
+
+    Flat colors are represented using the :class:`RGB` tuple subclass.
+    Gradients are returned as a two-element list of :class:`RGB`\ s the
+    first one is the color at the top of the object, the second one at
+    the bottom.
+
+    Parameters
+    ----------
+    diagramclass
+        The style class of the diagram.
+    objectclass
+        A packed :class:`str` describing the element's type and style
+        class in the form::
+
+            Type.StyleClass
+
+        The type can be: ``Box``, ``Edge``.  The style class can be any
+        known style class.
+    """
+    if "symbol" in objectclass.lower():
+        return {}
+
+    if objectclass not in STYLES[
+        "__GLOBAL__"
+    ] and objectclass not in STYLES.get(diagramclass, {}):
+        LOGGER.warning(
+            "No default style for %r in %r", objectclass, diagramclass
+        )
+    try:
+        retval = STYLES["__GLOBAL__"][objectclass].copy()
+    except KeyError:
+        retval = {}
+    retval.update(STYLES.get(diagramclass, {}).get(objectclass, {}))
+    return retval
+
+
+#: This dict maps the color names used by Capella to RGB tuples.
+COLORS: t.Dict[str, RGB] = {
+    # System palette
+    "black": RGB(0, 0, 0),
+    "dark_gray": RGB(69, 69, 69),
+    "dark_orange": RGB(224, 133, 3),
+    "dark_purple": RGB(114, 73, 110),
+    "gray": RGB(136, 136, 136),
+    "light_purple": RGB(217, 196, 215),
+    "light_yellow": RGB(255, 245, 181),
+    "red": RGB(239, 41, 41),
+    "white": RGB(255, 255, 255),
+    # "Migration Palette" from common.odesign
+    "_CAP_Activity_Border_Orange": RGB(91, 64, 64),
+    "_CAP_Activity_Orange": RGB(247, 218, 116),
+    "_CAP_Activity_Orange_min": RGB(255, 255, 197),
+    "_CAP_Actor_Blue": RGB(198, 230, 255),
+    "_CAP_Actor_Blue_label": RGB(0, 0, 0),
+    "_CAP_Actor_Blue_min": RGB(218, 253, 255),
+    "_CAP_Actor_Border_Blue": RGB(74, 74, 151),
+    "_CAP_Association_Color": RGB(0, 0, 0),
+    "_CAP_ChoicePseudoState_Border_Gray": RGB(0, 0, 0),
+    "_CAP_ChoicePseudoState_Color": RGB(168, 168, 168),
+    "_CAP_Class_Border_Brown": RGB(123, 105, 79),
+    "_CAP_Class_Brown": RGB(232, 224, 210),
+    "_CAP_CombinedFragment_Gray": RGB(242, 242, 242),
+    "_CAP_Component_Blue": RGB(150, 177, 218),
+    "_CAP_Component_Blue_min": RGB(195, 230, 255),
+    "_CAP_Component_Border_Blue": RGB(74, 74, 151),
+    "_CAP_Component_Label_Blue": RGB(74, 74, 151),
+    "_CAP_ConfigurationItem_Gray": RGB(242, 238, 225),
+    "_CAP_ConfigurationItem_Gray_min": RGB(249, 248, 245),
+    "_CAP_Datatype_Border_Gray": RGB(103, 103, 103),
+    "_CAP_Datatype_Gray": RGB(225, 223, 215),
+    "_CAP_Datatype_LightBrown": RGB(232, 224, 210),
+    "_CAP_Entity_Gray": RGB(221, 221, 200),
+    "_CAP_Entity_Gray_border": RGB(69, 69, 69),
+    "_CAP_Entity_Gray_label": RGB(0, 0, 0),
+    "_CAP_Entity_Gray_min": RGB(249, 248, 245),
+    "_CAP_ExchangeItem_Pinkkish": RGB(246, 235, 235),
+    "_CAP_FCD": RGB(233, 243, 222),
+    "_CAP_FCinFCD_Green": RGB(148, 199, 97),
+    "_CAP_InterfaceDataPackage_LightGray": RGB(250, 250, 250),
+    "_CAP_Interface_Border_Reddish": RGB(124, 61, 61),
+    "_CAP_Interface_Pink": RGB(240, 221, 221),
+    "_CAP_Lifeline_Gray": RGB(128, 128, 128),
+    "_CAP_MSM_Mode_Gray": RGB(195, 208, 208),
+    "_CAP_MSM_Mode_Gray_min": RGB(234, 239, 239),
+    "_CAP_MSM_State_Gray": RGB(208, 208, 208),
+    "_CAP_MSM_State_Gray_min": RGB(239, 239, 239),
+    "_CAP_Mode_Gray": RGB(165, 182, 180),
+    "_CAP_Node_Yellow": RGB(255, 252, 183),
+    "_CAP_Node_Yellow_Border": RGB(123, 105, 79),
+    "_CAP_Node_Yellow_Label": RGB(0, 0, 0),
+    "_CAP_Node_Yellow_min": RGB(255, 255, 220),
+    "_CAP_OperationalRole_Purple": RGB(203, 174, 200),
+    "_CAP_Operational_Process_Reference_Orange": RGB(250, 239, 203),
+    "_CAP_PhysicalPort_Yellow": RGB(255, 244, 119),
+    "_CAP_StateMode_Border_Gray": RGB(117, 117, 117),
+    "_CAP_StateTransition_Color": RGB(0, 0, 0),
+    "_CAP_State_Gray": RGB(228, 228, 228),
+    "_CAP_Unit_LightBrown": RGB(214, 197, 171),
+    "_CAP_Value_LightBrown": RGB(254, 253, 250),
+    "_CAP_xAB_Activity_Label_Orange": RGB(91, 64, 64),
+    "_CAP_xAB_Function_Border_Green": RGB(9, 92, 46),
+    "_CAP_xAB_Function_Green": RGB(197, 255, 166),
+    "_CAP_xAB_Function_Label_Green": RGB(9, 92, 46),
+    "_CAP_xBD_ControlNode": RGB(223, 223, 223),
+    "_CAP_xDFB_Function_Border_Green": RGB(77, 137, 20),
+    "_CAP_xDFB_Function_Green": RGB(197, 255, 166),
+    "_CAP_xDFB_Function_Green_Label": RGB(0, 0, 0),
+    "_CAP_xDFB_Function_Green_min": RGB(244, 255, 224),
+    "_CAP_xDF_Activity_Label_Orange": RGB(0, 0, 0),
+}
+
+
+#: This dict contains the default styles that Capella applies, grouped
+#: by the diagram class they belong to.
+#:
+#: The first level of keys are the diagrams' styleclasses.  The special
+#: key "__GLOBAL__" applies to all diagrams.
+#:
+#: The second level contains the style definitions for each element that
+#: can appear in the diagram.  The keys work in the following way:
+#:
+#:     Type.Class
+#:
+#: * ``Type`` is the element type; one of "Box" or "Edge" (note casing!)
+#: * ``Class`` is the element's styleclass, e.g. "LogicalComponent"
+#:
+#: The ``Class`` and the preceding dot may be absent, in which case that
+#: styling applies to all elements of that ``Type`` regardless of their
+#: style class.
+#:
+#: The order of precedence for the four possible cases is the following,
+#: from most to least important:
+#:
+#: 1. Diagram class specific, element type and class
+#: 2. __GLOBAL__, element type and class
+#: 3. Diagram class specific, only element type
+#: 4. __GLOBAL__, only element type
+CSSdef = t.Union[None, str, int, RGB, t.List[RGB]]
+STYLES: t.Dict[str, t.Dict[str, t.Dict[str, CSSdef]]] = {
+    "__GLOBAL__": {  # Global defaults
+        "Box": {
+            "fill": "transparent",
+            "stroke": COLORS["black"],
+            "stroke-width": "1",
+        },
+        "Box.Annotation": {
+            "fill": None,
+            "stroke": None,
+        },
+        "Box.Constraint": {  # DT_Contraint [sic]
+            "fill": COLORS["light_yellow"],
+            "stroke": COLORS["gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.Note": {
+            "fill": RGB(255, 255, 203),
+            "stroke": RGB(255, 204, 102),
+            "text_fill": RGB(0, 0, 0),
+        },
+        "Box.Requirement": {  # ReqVP_Requirement
+            "fill": COLORS["light_purple"],
+            "stroke": COLORS["dark_purple"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.Text": {
+            "stroke": "transparent",
+        },
+        "Edge": {
+            "stroke-width": "2",
+        },
+        "Edge.Connector": {
+            "stroke": RGB(176, 176, 176),
+            "stroke-dasharray": "1",
+            "stroke-width": "1",
+        },
+        "Edge.Constraint": {
+            "stroke": COLORS["black"],
+            "stroke-dasharray": "1, 3",
+            "stroke-width": "1",
+            "marker-end": "FineArrowMark",
+            "stroke-linecap": "round",
+        },
+        "Edge.Note": {
+            "stroke": COLORS["black"],
+            "stroke-dasharray": "1, 3",
+            "stroke-width": "1",
+        },
+        "Edge.RequirementRelation": {  # ReqVP_IncomingRelation
+            "stroke": COLORS["dark_purple"],
+            "marker-end": "FineArrowMark",
+            "stroke-dasharray": "5",
+            "text_fill": COLORS["dark_purple"],
+        },
+    },
+    "Class Diagram Blank": {
+        "Box.Class": {  # DT_Class
+            "fill": [COLORS["white"], COLORS["_CAP_Class_Brown"]],
+            "rx": "10px",
+            "ry": "10px",
+            "stroke": COLORS["_CAP_Class_Border_Brown"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.DataPkg": {  # DT_DataPkg
+            "fill": [
+                COLORS["white"],
+                COLORS["_CAP_InterfaceDataPackage_LightGray"],
+            ],
+            "stroke": COLORS["dark_gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.Enumeration": {  # DT_DataType
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.ExchangeItem": {  # DT_ExchangeItem
+            "fill": COLORS["_CAP_ExchangeItem_Pinkkish"],
+            "stroke": COLORS["_CAP_Interface_Border_Reddish"],
+            "text_fill": COLORS["black"],
+        },
+        "Edge.ExchangeItemElement": {  # DT_ExchangeItemElement
+            "stroke": COLORS["black"],
+            "stroke-dasharray": "5",
+            "text_fill": COLORS["black"],
+            "marker-start": "DiamondMark",
+            "marker-end": "ArrowMark",
+        },
+    },
+    "Contextual Capability": {
+        "Edge.CapabilityExploitation": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.AbstractCapabilityExtend": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.AbstractCapabilityGeneralization": {
+            "marker-end": "GeneralizationMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.AbstractCapabilityInclude": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+    },
+    "Mode State Machine": {  # (from common.odesign)
+        "Box.ChoicePseudoState": {
+            "fill": COLORS["_CAP_ChoicePseudoState_Color"],
+            "stroke": COLORS["_CAP_ChoicePseudoState_Border_Gray"],
+        },
+        "Box.ForkPseudoState": {
+            "fill": COLORS["black"],
+        },
+        "Box.JoinPseudoState": {
+            "fill": COLORS["black"],
+        },
+        "Box.Mode": {
+            "fill": COLORS["_CAP_MSM_Mode_Gray_min"],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Box.ModeRegion": {
+            "fill": [
+                COLORS["_CAP_MSM_Mode_Gray_min"],
+                COLORS["_CAP_MSM_Mode_Gray"],
+            ],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Box.State": {
+            "fill": COLORS["_CAP_MSM_State_Gray_min"],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Box.StateRegion": {
+            "fill": [
+                COLORS["_CAP_MSM_State_Gray_min"],
+                COLORS["_CAP_MSM_State_Gray"],
+            ],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Edge.StateTransition": {
+            "stroke-width": "1",
+            "marker-end": "FineArrowMark",
+        },
+    },
+    "Logical Architecture Blank": {  # (from logical.odesign)
+        **dict.fromkeys(
+            ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],
+            {
+                "fill": COLORS["white"],
+                "stroke": COLORS["black"],
+            },
+        ),
+        "Box.CP_UNSET": {
+            "fill": [COLORS["red"], COLORS["white"]],
+        },
+        "Box.FIP": {
+            "fill": COLORS["dark_orange"],
+            "stroke-width": 0,
+        },
+        "Box.FOP": {
+            "fill": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 0,
+        },
+        "Box.LogicalActor": {  # Logical Actors
+            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+        },
+        "Box.LogicalComponent": {  # LAB Logical Component
+            "fill": [
+                COLORS["_CAP_Component_Blue_min"],
+                COLORS["_CAP_Component_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_fill": COLORS["_CAP_Component_Label_Blue"],
+        },
+        "Box.LogicalHumanActor": {  # LAB Logical Human Actor
+            "fill": [
+                COLORS["_CAP_Component_Blue_min"],
+                COLORS["_CAP_Component_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_fill": COLORS["_CAP_Component_Label_Blue"],
+        },
+        "Box.LogicalHumanComponent": {  # LAB Logical Human Component
+            "fill": [
+                COLORS["_CAP_Component_Blue_min"],
+                COLORS["_CAP_Component_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_fill": COLORS["_CAP_Component_Label_Blue"],
+        },
+        "Box.LogicalFunction": {  # LAB Logical Function
+            "fill": COLORS["_CAP_xAB_Function_Green"],
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "text_fill": COLORS["_CAP_xAB_Function_Label_Green"],
+        },
+        "Edge.FunctionalExchange": {  # LAB DataFlow between Function
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+        "Edge.ComponentExchange": {  # LAB DataFlow between Logical Components
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_fill": COLORS["_CAP_Component_Border_Blue"],
+        },
+        "Edge.FIPAllocation": {  # LAB PortAllocation
+            "stroke": COLORS["dark_orange"],
+            "stroke-dasharray": "5",
+        },
+        "Edge.FOPAllocation": {
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-dasharray": "5",
+        },
+    },
+    "Logical Data Flow Blank": {
+        "Box.FIP": {
+            "fill": COLORS["dark_orange"],
+            "stroke-width": 0,
+        },
+        "Box.FOP": {
+            "fill": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 0,
+        },
+        "Box.LogicalFunction": {  # LDFB_Function
+            "fill": [
+                COLORS["_CAP_xDFB_Function_Green_min"],
+                COLORS["_CAP_xDFB_Function_Green"],
+            ],
+            "rx": "10px",
+            "ry": "10px",
+            "stroke": COLORS["_CAP_xDFB_Function_Border_Green"],
+            "text_fill": COLORS["_CAP_xDFB_Function_Green_Label"],
+        },
+        "Edge.FunctionalExchange": {  # LDFB_Exchange
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+    },
+    "Operational Capabilities Blank": {
+        "Box.Entity": {
+            "fill": [
+                COLORS["_CAP_Entity_Gray_min"],
+                COLORS["_CAP_Entity_Gray"],
+            ],
+            "stroke": COLORS["_CAP_Entity_Gray_border"],
+            "text_fill": COLORS["_CAP_Entity_Gray_label"],
+        },
+        "Box.OperationalActor": {
+            "fill": [
+                COLORS["_CAP_Entity_Gray_min"],
+                COLORS["_CAP_Entity_Gray"],
+            ],
+            "stroke": COLORS["_CAP_Entity_Gray_border"],
+            "text_fill": COLORS["_CAP_Entity_Gray_label"],
+        },
+        "Edge.AbstractCapabilityExtend": {
+            "marker-end": "FineArrowMark",
+            "stroke-width": "1",
+        },
+        "Edge.AbstractCapabilityGeneralization": {
+            "marker-end": "GeneralizationMark",
+            "stroke": COLORS["black"],
+            "stroke-width": "1",
+        },
+        "Edge.AbstractCapabilityInclude": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": "1",
+        },
+        "Edge.CommunicationMean": {
+            "marker-end": "ArrowMark",
+            "stroke-width": "1",
+            "stroke": COLORS["gray"],
+        },
+        "Edge.Entity": {
+            "stroke-width": "1",
+        },
+        "Edge.EntityOperationalCapabilityInvolvement": {
+            "marker-end": "FineArrowMark",
+            "stroke-width": "1",
+        },
+        "Edge.OperationalActor": {
+            "stroke-width": "1",
+        },
+    },
+    "Operational Entity Blank": {  # "Operational Architecture Blank" in GUI
+        "Box.Entity": {
+            "fill": [
+                COLORS["_CAP_Entity_Gray_min"],
+                COLORS["_CAP_Entity_Gray"],
+            ],
+            "stroke": COLORS["_CAP_Entity_Gray_border"],
+            "text_fill": COLORS["_CAP_Entity_Gray_label"],
+        },
+        "Box.OperationalActivity": {
+            "fill": COLORS["_CAP_Activity_Orange"],
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
+            "text_fill": COLORS["_CAP_xAB_Activity_Label_Orange"],
+        },
+        "Box.OperationalActor": {
+            "fill": [
+                COLORS["_CAP_Entity_Gray_min"],
+                COLORS["_CAP_Entity_Gray"],
+            ],
+            "stroke": COLORS["_CAP_Entity_Gray_border"],
+            "text_fill": COLORS["_CAP_Entity_Gray_label"],
+        },
+        "Box.Role": {
+            "fill": [COLORS["white"], COLORS["_CAP_OperationalRole_Purple"]],
+            "stroke": COLORS["dark_purple"],
+            "text_fill": COLORS["black"],
+        },
+        "Edge.CommunicationMean": {
+            "marker-end": "ArrowMark",
+            "stroke-width": "1",
+            "stroke": COLORS["dark_gray"],
+        },
+        "Edge.FunctionalExchange": {
+            "marker-end": "ArrowMark",
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
+            "stroke-width": "1",
+        },
+    },
+    "Operational Entity Breakdown": {
+        "Box.Entity": {
+            "fill": COLORS["_CAP_Entity_Gray"],
+            "stroke": COLORS["_CAP_Entity_Gray_border"],
+            "text_fill": COLORS["_CAP_Entity_Gray_label"],
+        },
+        "Edge.Entity": {
+            "marker-end": "FineArrowMark",
+            "stroke-width": "1",
+            "stroke": COLORS["gray"],
+        },
+        "Edge.OperationalActor": {
+            "marker-end": "FineArrowMark",
+            "stroke-width": "1",
+            "stroke": COLORS["gray"],
+        },
+    },
+    "Operational Process Description": {
+        "Box.OperationalActivity": {
+            "fill": COLORS["_CAP_Activity_Orange"],
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
+        },
+        "Edge.FunctionalExchange": {
+            "marker-end": "ArrowMark",
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
+            "stroke-width": "1",
+        },
+        "Edge.SequenceLink": {
+            "marker-end": "FineArrowMark",
+            "stroke-width": "1",
+            "stroke-dasharray": "5",
+        },
+    },
+    "Physical Architecture Blank": {
+        "Box.PP": {
+            "fill": COLORS["_CAP_PhysicalPort_Yellow"],
+            "stroke": COLORS["_CAP_Class_Border_Brown"],
+        },
+        "Box.PhysicalComponent": {
+            "fill": [
+                COLORS["_CAP_Node_Yellow_min"],
+                COLORS["_CAP_Node_Yellow"],
+            ],
+            "stroke": COLORS["_CAP_Node_Yellow_Border"],
+            "text_fill": COLORS["_CAP_Node_Yellow_Label"],
+        },
+        "Edge.PhysicalLink": {
+            "stroke": COLORS["red"],
+            "text_fill": COLORS["red"],
+        },
+    },
+    "System Data Flow Blank": {
+        "Box.FIP": {
+            "fill": COLORS["dark_orange"],
+            "stroke-width": 0,
+        },
+        "Box.FOP": {
+            "fill": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 0,
+        },
+        "Box.SystemFunction": {  # SDFB_Function
+            "fill": [
+                COLORS["_CAP_xDFB_Function_Green_min"],
+                COLORS["_CAP_xDFB_Function_Green"],
+            ],
+            "rx": "10px",
+            "ry": "10px",
+            "stroke": COLORS["_CAP_xDFB_Function_Border_Green"],
+            "text_fill": COLORS["_CAP_xDFB_Function_Green_Label"],
+        },
+        "Edge.FunctionalExchange": {  # SDFB_Exchange
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+    },
+}

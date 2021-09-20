@@ -1,0 +1,11 @@
+MSManagement.ModeStateMixed.Allowed=false
+componentInheritance.allowed=false
+data.physical.component.nature.change=false
+data.primitive.synchro=true
+deployment.allowed=true
+eclipse.preferences.version=1
+inheritance.allowed=false
+reuse.components.allowed=true
+sync.componentport2functionport.allowed=true
+sync.physicalport2componentport.physicallink.allowed=true
+sync.physicalport2componentport.physicalpath.allowed=true

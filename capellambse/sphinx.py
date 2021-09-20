@@ -1,0 +1,143 @@
+# Copyright 2021 DB Netz AG
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+"""Sphinx extension for python-capella-mbse.
+
+This extension is be used to display diagrams in Sphinx-generated
+documentation.
+
+Usage
+-----
+
+To enable this extension, add it to your list of extensions in Sphinx'
+``conf.py``.
+
+.. code:: python
+
+    # conf.py
+
+    extensions = [
+        ...,
+        'capellambse.sphinx',
+    ]
+
+Configuration
+-------------
+
+The following configuration variables are understood by this extension:
+
+*   ``capellambse_model``: Path to the Capella model.
+
+    Set this variable to the root ``.aird`` file of the model you want
+    to use in the documentation.  The path must be relative to Sphinx'
+    current working directory, which should be the directory containing
+    the ``conf.py`` file.
+
+Known limitations
+-----------------
+
+*   The extension currently does not detect changes to the model, nor
+    does it track which source files are using it.  This means that,
+    after changing the model, you need to force a full rebuild of all
+    pages by passing ``--fresh-env`` to Sphinx' build command.
+"""
+import pathlib
+import typing as t
+
+import sphinx.util.docutils
+from docutils import nodes
+from docutils.parsers import rst
+
+import capellambse
+
+if t.TYPE_CHECKING:
+    import sphinx.application
+    import sphinx.environment
+
+
+def setup(app: sphinx.application.Sphinx) -> t.Dict[str, t.Any]:
+    """Called by Sphinx to set up the extension."""
+    app.add_config_value(
+        "capellambse_model", "../model/Documentation.aird", "html"
+    )
+    app.add_directive("diagram", DiagramDirective)
+
+    app.connect("env-before-read-docs", load_model)
+    app.connect("env-updated", unload_model)
+
+    return {
+        "version": capellambse.__version__,
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
+
+
+def load_model(
+    app: sphinx.application.Sphinx,
+    env: sphinx.environment.BuildEnvironment,
+    *_: t.Any,
+) -> None:
+    """Load the model."""
+    if app.confdir is None:
+        raise ValueError("Cannot load model: No confdir defined for Sphinx")
+
+    env.capellambse_loaded_model = capellambse.MelodyModel(  # type: ignore[attr-defined]
+        pathlib.Path(app.confdir, app.config.capellambse_model)
+    )
+
+
+def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
+    """Unload the model.
+
+    The LXML tree cannot be pickled together with the rest of the build
+    environment.  This means we need to unload the model again after
+    processing the source files.
+    """
+    if hasattr(env, "capellambse_loaded_model"):
+        del env.capellambse_loaded_model  # type: ignore[attr-defined]
+
+
+class DiagramDirective(sphinx.util.docutils.SphinxDirective):
+    """The "``.. diagram::``" reST directive."""
+
+    has_content = ...
+    required_arguments = 1
+    final_argument_whitespace = True
+    option_spec = {
+        "alt": rst.directives.unchanged,
+        "height": rst.directives.nonnegative_int,
+        "width": rst.directives.nonnegative_int,
+        "align": lambda arg: rst.directives.choice(
+            arg, ("left", "center", "right")
+        ),
+    }
+
+    def run(self) -> t.List[nodes.Node]:
+        name = self.arguments[0]
+        if not hasattr(self.env, "capellambse_loaded_model"):
+            raise self.error(
+                f"Cannot show diagram {name!r}: No model configured"
+            )
+
+        model = self.env.capellambse_loaded_model  # type: ignore[attr-defined]
+        try:
+            diagram = model.diagrams.by_name(name)
+        except KeyError as error:
+            raise self.error(
+                f"Cannot find diagram {name!r} in the configured model"
+            ) from error
+
+        uri = diagram.as_datauri_svg
+        return [
+            nodes.image(rawsource=self.block_text, uri=uri, **self.options)
+        ]

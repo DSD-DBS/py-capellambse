@@ -1,0 +1,397 @@
+{
+    "name": "[LAB] Logical System",
+    "uuid": "_LhNgIDCaEeqaMom-z8XNAg",
+    "class": "Logical Architecture Blank",
+    "x": 70,
+    "y": 100,
+    "width": 911,
+    "height": 400,
+    "contents": [
+        {
+            "type": "box",
+            "id": "__YP4UDCbEeqaMom-z8XNAg",
+            "class": "Requirement",
+            "x": 680,
+            "y": 100,
+            "width": 301,
+            "height": 71,
+            "context": [
+                "_-hSsYDt2EeqVgZfye5VSwA"
+            ],
+            "label": "- Requirement 1\n- This is a requirement for logical component 1."
+        },
+        {
+            "type": "box",
+            "id": "_HHfDYDE1EeqbxrxMczNyBA",
+            "class": "Requirement",
+            "x": 680,
+            "y": 220,
+            "width": 301,
+            "height": 71,
+            "context": [
+                "_3tvU8Dt2EeqVgZfye5VSwA"
+            ],
+            "label": "- Requirement 2\n- This is a requirement for logical component 2."
+        },
+        {
+            "type": "box",
+            "id": "_2CjlgDt2EeqVgZfye5VSwA",
+            "class": "LogicalComponent",
+            "x": 70,
+            "y": 210,
+            "width": 211,
+            "height": 104,
+            "context": [
+                "_-g5DwDt2EeqVgZfye5VSwA",
+                "_2Cn28Dt2EeqVgZfye5VSwA",
+                "_3tXhgDt2EeqVgZfye5VSwA"
+            ],
+            "label": "LC 1"
+        },
+        {
+            "type": "box",
+            "id": "_-geNADt2EeqVgZfye5VSwA",
+            "class": "LogicalFunction",
+            "x": 80,
+            "y": 257,
+            "width": 141,
+            "height": 50,
+            "context": [
+                "_-g2AcDt2EeqVgZfye5VSwA",
+                "_-g5DwDt2EeqVgZfye5VSwA",
+                "_-gfbIDt2EeqVgZfye5VSwA",
+                "_-hSsYDt2EeqVgZfye5VSwA"
+            ],
+            "label": "LogicalFunction 1",
+            "parent": "_2CjlgDt2EeqVgZfye5VSwA"
+        },
+        {
+            "type": "symbol",
+            "id": "_-gfbIDt2EeqVgZfye5VSwA",
+            "class": "FOP",
+            "x": 213,
+            "y": 280,
+            "width": 10,
+            "height": 10,
+            "context": [
+                "_-g2AcDt2EeqVgZfye5VSwA",
+                "_-g5DwDt2EeqVgZfye5VSwA"
+            ],
+            "label": {
+                "x": 226,
+                "y": 280.5,
+                "width": 29,
+                "height": 9,
+                "label": "FOP 1"
+            },
+            "parent": "_-geNADt2EeqVgZfye5VSwA"
+        },
+        {
+            "type": "symbol",
+            "id": "_2Cn28Dt2EeqVgZfye5VSwA",
+            "class": "CP",
+            "x": 273,
+            "y": 241,
+            "width": 10,
+            "height": 10,
+            "context": [
+                "_-g5DwDt2EeqVgZfye5VSwA",
+                "_3tXhgDt2EeqVgZfye5VSwA"
+            ],
+            "label": {
+                "x": 268.0,
+                "y": 230,
+                "width": 22,
+                "height": 9,
+                "label": "CP 1"
+            },
+            "parent": "_2CjlgDt2EeqVgZfye5VSwA"
+        },
+        {
+            "type": "box",
+            "id": "_3s8qwDt2EeqVgZfye5VSwA",
+            "class": "LogicalComponent",
+            "x": 340,
+            "y": 210,
+            "width": 211,
+            "height": 106,
+            "context": [
+                "_-g6R4Dt2EeqVgZfye5VSwA",
+                "_3s_uEDt2EeqVgZfye5VSwA",
+                "_3tXhgDt2EeqVgZfye5VSwA",
+                "_3tvU8Dt2EeqVgZfye5VSwA"
+            ],
+            "label": "LC 2"
+        },
+        {
+            "type": "box",
+            "id": "_-ggpQDt2EeqVgZfye5VSwA",
+            "class": "LogicalFunction",
+            "x": 400,
+            "y": 259,
+            "width": 141,
+            "height": 50,
+            "context": [
+                "_-g2AcDt2EeqVgZfye5VSwA",
+                "_-g6R4Dt2EeqVgZfye5VSwA",
+                "_-ghQUTt2EeqVgZfye5VSwA"
+            ],
+            "label": "LogicalFunction 2",
+            "parent": "_3s8qwDt2EeqVgZfye5VSwA"
+        },
+        {
+            "type": "symbol",
+            "id": "_-ghQUTt2EeqVgZfye5VSwA",
+            "class": "FIP",
+            "x": 398,
+            "y": 280,
+            "width": 10,
+            "height": 10,
+            "context": [
+                "_-g2AcDt2EeqVgZfye5VSwA",
+                "_-g6R4Dt2EeqVgZfye5VSwA"
+            ],
+            "label": {
+                "x": 374,
+                "y": 280.5,
+                "width": 23,
+                "height": 9,
+                "label": "FIP 1"
+            },
+            "parent": "_-ggpQDt2EeqVgZfye5VSwA"
+        },
+        {
+            "type": "symbol",
+            "id": "_3s_uEDt2EeqVgZfye5VSwA",
+            "class": "CP",
+            "x": 338,
+            "y": 241,
+            "width": 10,
+            "height": 10,
+            "context": [
+                "_-g6R4Dt2EeqVgZfye5VSwA",
+                "_3tXhgDt2EeqVgZfye5VSwA"
+            ],
+            "label": {
+                "x": 333.0,
+                "y": 253,
+                "width": 22,
+                "height": 9,
+                "label": "CP 1"
+            },
+            "parent": "_3s8qwDt2EeqVgZfye5VSwA"
+        },
+        {
+            "type": "edge",
+            "id": "_3tXhgDt2EeqVgZfye5VSwA",
+            "class": "ComponentExchange",
+            "points": [
+                [
+                    283,
+                    246
+                ],
+                [
+                    338,
+                    246
+                ]
+            ],
+            "label": {
+                "x": 302,
+                "y": 242,
+                "width": 16,
+                "height": 9,
+                "name": "C 1"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_3tvU8Dt2EeqVgZfye5VSwA",
+            "class": "RequirementRelation",
+            "points": [
+                [
+                    680,
+                    257
+                ],
+                [
+                    551,
+                    257
+                ]
+            ]
+        },
+        {
+            "type": "edge",
+            "id": "_-g2AcDt2EeqVgZfye5VSwA",
+            "class": "FunctionalExchange",
+            "points": [
+                [
+                    218,
+                    290
+                ],
+                [
+                    240,
+                    360
+                ],
+                [
+                    240,
+                    420
+                ],
+                [
+                    180,
+                    420
+                ],
+                [
+                    170,
+                    470
+                ],
+                [
+                    130,
+                    500
+                ],
+                [
+                    410,
+                    500
+                ],
+                [
+                    410,
+                    490
+                ],
+                [
+                    420,
+                    490
+                ],
+                [
+                    420,
+                    500
+                ],
+                [
+                    500,
+                    500
+                ],
+                [
+                    500,
+                    490
+                ],
+                [
+                    510,
+                    490
+                ],
+                [
+                    510,
+                    500
+                ],
+                [
+                    860,
+                    500
+                ],
+                [
+                    860,
+                    420
+                ],
+                [
+                    510,
+                    420
+                ],
+                [
+                    510,
+                    480
+                ],
+                [
+                    500,
+                    480
+                ],
+                [
+                    500,
+                    430
+                ],
+                [
+                    420,
+                    440
+                ],
+                [
+                    420,
+                    480
+                ],
+                [
+                    410,
+                    480
+                ],
+                [
+                    410,
+                    420
+                ],
+                [
+                    260,
+                    420
+                ],
+                [
+                    260,
+                    360
+                ],
+                [
+                    398,
+                    285
+                ]
+            ],
+            "label": {
+                "x": 210,
+                "y": 460,
+                "width": 181,
+                "height": 30,
+                "name": "Choo Choo Motherfucker!"
+            }
+        },
+        {
+            "type": "edge",
+            "id": "_-g5DwDt2EeqVgZfye5VSwA",
+            "class": "FOPAllocation",
+            "points": [
+                [
+                    273,
+                    246
+                ],
+                [
+                    223,
+                    285
+                ]
+            ]
+        },
+        {
+            "type": "edge",
+            "id": "_-g6R4Dt2EeqVgZfye5VSwA",
+            "class": "FIPAllocation",
+            "points": [
+                [
+                    348,
+                    246
+                ],
+                [
+                    398,
+                    285
+                ]
+            ]
+        },
+        {
+            "type": "edge",
+            "id": "_-hSsYDt2EeqVgZfye5VSwA",
+            "class": "RequirementRelation",
+            "points": [
+                [
+                    680,
+                    136
+                ],
+                [
+                    571,
+                    136
+                ],
+                [
+                    104,
+                    136
+                ],
+                [
+                    104,
+                    257
+                ]
+            ]
+        }
+    ]
+}
