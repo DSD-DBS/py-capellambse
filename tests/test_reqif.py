@@ -205,7 +205,6 @@ class TestRequirementAttributes:
         test_obj = model.by_uuid(attributes["uuid"])
         for attr_name, value in attributes.items():
             if isinstance(value, type):
-                assert isinstance(value, type)
                 assert isinstance(getattr(test_obj, attr_name), value)
                 continue
             if "." in attr_name:
