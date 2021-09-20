@@ -228,10 +228,7 @@ class AbstractRequirementsAttribute(c.GenericElement):
         return f"<{mytype} [{name}] ({self.uuid})>"
 
 
-class AttributeAccessor(c.PhysicalAccessor):
-    def __init__(self) -> None:
-        ...
-
+class AttributeAccessor(c.Accessor):
     def __get__(self, obj, objtype=None):
         del objtype
         if obj is None:  # pragma: no cover
@@ -569,7 +566,7 @@ def init() -> None:
             RequirementType,
             XT_REQ_TYPE,
             aslist=c.ElementList,
-            rootelem=XT_MODULE,
+            rootelem=XT_REQ_TYPES_F,
             deep=True,
         ),
     )
@@ -580,7 +577,7 @@ def init() -> None:
             ModuleType,
             XT_MODULE_TYPE,
             aslist=c.ElementList,
-            rootelem=XT_MODULE,
+            rootelem=XT_REQ_TYPES_F,
             deep=True,
         ),
     )
@@ -591,7 +588,7 @@ def init() -> None:
             RelationType,
             XT_RELATION_TYPE,
             aslist=c.ElementList,
-            rootelem=XT_MODULE,
+            rootelem=XT_REQ_TYPES_F,
             deep=True,
         ),
     )
