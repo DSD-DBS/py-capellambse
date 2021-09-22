@@ -88,7 +88,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return f"<Diagram {self.name!r}>"
 
     @property
-    def nodes(self) -> c.DecoupledMixedElementList:
+    def nodes(self) -> c.MixedElementList:
         """Return a list of all nodes visible in this diagram."""
         allids = {e.uuid for e in self.render(None)}
         assert None not in allids
@@ -110,9 +110,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 if frag.suffix not in {".aird", ".airdfragment"}:
                     elems.append(elem)
 
-        return c.DecoupledMixedElementList(
-            self._model, elems, c.GenericElement
-        )
+        return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
     def render(self, fmt: None) -> aird.Diagram:
@@ -287,7 +285,6 @@ class DiagramAccessor(c.Accessor):
             descriptors,
             Diagram,
             cacheattr=self.cacheattr,
-            parent=None,
         )
 
 

@@ -81,7 +81,7 @@ class StateTransition(c.GenericElement):
     source = c.AttrProxyAccessor(c.GenericElement, "source")
     destination = c.AttrProxyAccessor(c.GenericElement, "target")
     triggers = c.AttrProxyAccessor(
-        c.GenericElement, "triggers", aslist=c.DecoupledMixedElementList
+        c.GenericElement, "triggers", aslist=c.MixedElementList
     )
     guard = c.AttrProxyAccessor(capellacore.Constraint, "guard")
 

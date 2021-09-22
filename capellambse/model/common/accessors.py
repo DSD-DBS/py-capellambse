@@ -23,7 +23,10 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import T, U, build_xtype, element
+from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
+
+_NOT_SPECIFIED = object()
+"Used to detect unspecified optional arguments"
 
 
 class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
@@ -47,7 +50,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         obj: T,
         objtype: t.Optional[t.Type[T]] = None,
     ) -> t.Union[
-        element.DecoupledElementList[element.GenericElement],
+        element.ElementList[element.GenericElement],
         element.GenericElement,
     ]:
         ...
@@ -57,7 +60,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self, obj: t.Optional[T], objtype: t.Optional[t.Type[t.Any]] = None
     ) -> t.Union[
         Accessor,
-        element.DecoupledElementList[element.GenericElement],
+        element.ElementList[element.GenericElement],
         element.GenericElement,
     ]:
         pass
@@ -70,6 +73,133 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self.__name__ = name
 
 
+class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
+    """An Accessor that also provides write support on lists it returns."""
+
+    __slots__ = ()
+
+    aslist: t.Optional[t.Type[ElementListCouplingMixin]]
+
+    def __init__(
+        self,
+        *args: t.Any,
+        aslist: t.Optional[t.Type[element.ElementList]],
+        **kw: t.Any,
+    ) -> None:
+        super().__init__(*args, **kw)  # type: ignore[call-arg]
+
+        if aslist is not None:
+            self.aslist = type(
+                "Coupled" + aslist.__name__,
+                (ElementListCouplingMixin, aslist),
+                {"_accessor": self},
+            )
+            self.aslist.__module__ = __name__
+        else:
+            self.aslist = None
+
+    def create(
+        self,
+        elmlist: ElementListCouplingMixin,
+        /,
+        *type_hints: t.Optional[str],
+        **kw: t.Any,
+    ) -> T:
+        """Create and return a new element of type ``elmclass``.
+
+        Parameters
+        ----------
+        elmlist
+            The (coupled) ``ElementList`` to insert the new object into.
+        xtype
+            The ``xsi:type`` of the new object.
+        elmclass
+            The concrete ``GenericElement`` subclass to instantiate.
+        kw
+            Additional keyword arguments that are passed to the
+            ``elmclass`` constructor.
+        """
+        raise TypeError("Cannot create objects")
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        """Insert the ``value`` object into the model.
+
+        The object must be inserted at an appropriate place, so that, if
+        ``elmlist`` were to be created afresh, ``value`` would show at
+        at index ``index``.
+        """
+        raise NotImplementedError("Objects cannot be inserted into this list")
+
+    def delete(
+        self,
+        elmlist: ElementListCouplingMixin,
+        obj: element.ModelObject,
+    ) -> None:
+        """Delete the ``obj`` from the model."""
+        raise NotImplementedError("Objects in this list cannot be deleted")
+
+    def _match_xtype(
+        self,
+        type_1: t.Union[str, object, None] = _NOT_SPECIFIED,
+        type_2: t.Union[str, object] = _NOT_SPECIFIED,
+        /,
+    ) -> t.Tuple[t.Type[T], str]:
+        r"""Find the right class for the given ``xsi:type``\ (s)."""
+        if type_1 is _NOT_SPECIFIED and type_2 is _NOT_SPECIFIED:
+            elmclass = getattr(self, "elmclass", None)
+            if elmclass not in (None, element.GenericElement):
+                return elmclass
+            raise TypeError("No object type specified")
+
+        def match_xt(xtp: S, itr: t.Iterable[S]) -> S:
+            matches: t.List[S] = []
+            for i in itr:
+                if (
+                    xtp is i is None
+                    or i is not None
+                    and xtp in (i, i.split(":")[-1])
+                ):
+                    matches.append(i)
+            if not matches:
+                raise ValueError(f"Invalid or unknown xsi:type {xtp!r}")
+            if len(matches) > 1:
+                raise ValueError(
+                    f"Ambiguous xsi:type {xtp!r}, please qualify: "
+                    + ", ".join(repr(i) for i in matches)
+                )
+            return matches[0]
+
+        if not isinstance(type_1, str):
+            raise TypeError(
+                f"Expected str as first type, got {type(type_1).__name__!r}"
+            )
+        candidate_classes: t.Dict[str, t.Type[element.GenericElement]]
+        if type_2 is _NOT_SPECIFIED:
+            candidate_classes = dict(
+                itertools.chain.from_iterable(
+                    i.items() for i in XTYPE_HANDLERS.values()
+                )
+            )
+            objtype = type_1
+        elif not isinstance(type_2, str):
+            raise TypeError(
+                f"Expected a str objtype, not {type(objtype).__name__}"
+            )
+        else:
+            candidate_classes = XTYPE_HANDLERS[
+                match_xt(type_1, XTYPE_HANDLERS)
+            ]
+            objtype = type_2
+
+        objtype = match_xt(objtype, candidate_classes)
+        return candidate_classes[objtype], objtype
+
+
 class PhysicalAccessor(t.Generic[T], Accessor[T]):
     """Helper super class for accessors that work with real elements."""
 
@@ -79,7 +209,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         "xtypes",
     )
 
-    aslist: t.Optional[t.Type[element.DecoupledElementList]]
+    aslist: t.Optional[t.Type[element.ElementList]]
     class_: t.Type[T]
     xtypes: t.AbstractSet[str]
 
@@ -92,7 +222,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
             t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
         ] = None,
         *,
-        aslist: t.Optional[t.Type[element.DecoupledElementList[T]]] = None,
+        aslist: t.Optional[t.Type[element.ElementList[T]]] = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -115,7 +245,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         self.class_ = class_
 
 
-class ProxyAccessor(PhysicalAccessor[T]):
+class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Creates proxy objects on the fly."""
 
     __slots__ = (
@@ -124,6 +254,8 @@ class ProxyAccessor(PhysicalAccessor[T]):
         "follow_abstract",
         "rootelem",
     )
+
+    aslist: t.Optional[t.Type[ElementListCouplingMixin]]
 
     def __init__(
         self,
@@ -134,7 +266,7 @@ class ProxyAccessor(PhysicalAccessor[T]):
             t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
         ] = None,
         *,
-        aslist: t.Type[element.DecoupledElementList] = None,
+        aslist: t.Type[element.ElementList] = None,
         deep: bool = False,
         follow: str = None,
         follow_abstract: bool = True,
@@ -198,7 +330,7 @@ class ProxyAccessor(PhysicalAccessor[T]):
         elems = [x for x in elems if x is not None]
         if self.aslist is None:
             return no_list(self, obj._model, elems, self.class_)
-        return self.aslist(obj._model, elems, self.class_, parent=obj._element)
+        return self.aslist(obj._model, elems, self.class_, parent=obj)
 
     def __getsubelems(
         self, obj: element.GenericElement
@@ -253,6 +385,59 @@ class ProxyAccessor(PhysicalAccessor[T]):
                 elem = obj._model._loader[abstype]
         return elem
 
+    def create(
+        self,
+        elmlist: ElementListCouplingMixin,
+        /,
+        *type_hints: t.Optional[str],
+        **kw: t.Any,
+    ) -> T:
+        if self.deep or self.follow or self.rootelem:
+            raise AttributeError("Cannot create objects here")
+
+        elmclass, xtype = self._match_xtype(*type_hints)
+
+        assert elmclass is not None
+        assert isinstance(elmlist._parent, element.GenericElement)
+        assert issubclass(elmclass, element.GenericElement)
+
+        parent = elmlist._parent._element
+        with elmlist._model._loader.new_uuid(parent) as obj_id:
+            obj = elmclass(
+                elmlist._model, parent, **kw, xtype=xtype, uuid=obj_id
+            )
+        return obj
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        if value._model is not elmlist._model:
+            raise ValueError("Cannot move elements between models")
+        try:
+            indexof = elmlist._parent._element.index
+            if index > 0:
+                parent_index = indexof(elmlist._elements[index - 1]) + 1
+            elif index < -1:
+                parent_index = indexof(elmlist._elements[index + 1]) - 1
+            else:
+                parent_index = index
+        except ValueError:
+            parent_index = len(self._parent)
+        elmlist._parent._element.insert(parent_index, value._element)
+        elmlist._model._loader.idcache_index(value._element)
+
+    def delete(
+        self,
+        elmlist: ElementListCouplingMixin,
+        obj: element.ModelObject,
+    ) -> None:
+        assert obj._model is elmlist._model
+        elmlist._model._loader.idcache_remove(obj._element)
+        elmlist._parent._element.remove(obj._element)
+
 
 class AttrProxyAccessor(PhysicalAccessor[T]):
     """Provides access to elements that are linked in an attribute."""
@@ -264,7 +449,7 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
         class_: t.Type[T],
         attr: str,
         *,
-        aslist: t.Type[element.DecoupledElementList] = None,
+        aslist: t.Type[element.ElementList] = None,
     ):
         """Create an AttrProxyAccessor.
 
@@ -316,7 +501,29 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
 
         if self.aslist is None:
             return no_list(self, obj._model, elems, self.class_)
-        return self.aslist(obj._model, elems, self.class_, parent=None)
+        return self.aslist(obj._model, elems, self.class_)
+
+    def __set__(
+        self,
+        obj: element.GenericElement,
+        values: t.Union[T, t.Iterable[T]],
+    ) -> None:
+        if not isinstance(values, t.Iterable):
+            values = (values,)
+        elif self.aslist is None:
+            raise TypeError(
+                f"{self.__objclass__.__name__}.{self.__name__}"
+                " requires a single item, not an iterable"
+            )
+
+        assert isinstance(values, t.Iterable)
+        parts: t.List[str] = []
+        for value in values:
+            if not value._model is obj._model:
+                raise ValueError("Cannot set elements from different models")
+            link = obj._model._loader.create_link(obj._element, value._element)
+            parts.append(link)
+        obj._element.set(self.attr, " ".join(parts))
 
 
 class AlternateAccessor(PhysicalAccessor[T]):
@@ -379,7 +586,7 @@ class CustomAccessor(PhysicalAccessor[T]):
         matchtransform: t.Callable[[element.GenericElement], U] = (
             lambda e: e
         ),
-        aslist: t.Type[element.DecoupledElementList] = None,
+        aslist: t.Type[element.ElementList] = None,
     ) -> None:
         """Create a CustomAccessor.
 
@@ -416,7 +623,7 @@ class CustomAccessor(PhysicalAccessor[T]):
         ]
         if self.aslist is None:
             return no_list(self, obj._model, matches, self.class_)
-        return self.aslist(obj._model, matches, self.class_, parent=None)
+        return self.aslist(obj._model, matches, self.class_)
 
 
 class AttributeMatcherAccessor(ProxyAccessor[T]):
@@ -434,12 +641,12 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
             t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
         ] = None,
         *,
-        aslist: t.Optional[t.Type[element.DecoupledElementList]] = None,
+        aslist: t.Optional[t.Type[element.ElementList]] = None,
         attributes: t.Dict[str, t.Any],
         **kwargs,
     ) -> None:
         super().__init__(
-            class_, xtypes, aslist=element.DecoupledMixedElementList, **kwargs
+            class_, xtypes, aslist=element.MixedElementList, **kwargs
         )
         self.__aslist = aslist
         self.attributes = attributes
@@ -450,19 +657,18 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
 
         elements = super().__get__(obj, objtype)
         matches = []
-        for element in elements:
+        for elm in elements:
             try:
                 if all(
-                    getattr(element, k) == v
-                    for k, v in self.attributes.items()
+                    getattr(elm, k) == v for k, v in self.attributes.items()
                 ):
-                    matches.append(element._element)
+                    matches.append(elm._element)
             except AttributeError:
                 pass
 
         if self.__aslist is None:
             return no_list(self, obj._model, matches, self.class_)
-        return self.__aslist(obj._model, matches, self.class_, parent=None)
+        return self.__aslist(obj._model, matches, self.class_)
 
 
 class SpecificationAccessor(Accessor):
@@ -472,10 +678,10 @@ class SpecificationAccessor(Accessor):
 
     class _Specification(t.MutableMapping[str, str]):
         def __init__(
-            self, model: capellambse.MelodyModel, element: etree._Element
+            self, model: capellambse.MelodyModel, elm: etree._Element
         ) -> None:
             self._model = model
-            self.element = element
+            self.element = elm
 
         def __delitem__(self, k: str) -> None:
             i, lang_elem = self._index_of(k)
@@ -511,11 +717,9 @@ class SpecificationAccessor(Accessor):
                 body.text = v
 
         def _index_of(self, k: str) -> t.Tuple[int, etree._Element]:
-            for i, element in enumerate(
-                self.element.iterchildren("languages")
-            ):
-                if element.text == k:
-                    return i, element
+            for i, elm in enumerate(self.element.iterchildren("languages")):
+                if elm.text == k:
+                    return i, elm
 
             raise KeyError(k)
 
@@ -566,7 +770,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor):
         self,
         class_: t.Type[element.GenericElement],
         *attrs: str,
-        aslist: t.Type[element.DecoupledElementList] = None,
+        aslist: t.Type[element.ElementList] = None,
     ) -> None:
         super().__init__(class_, aslist=aslist)
         self.attrs = attrs
@@ -584,7 +788,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor):
                 except AttributeError:
                     continue
                 if (
-                    isinstance(value, element.DecoupledElementList)
+                    isinstance(value, element.ElementList)
                     and obj in value
                     or isinstance(value, element.GenericElement)
                     and obj == value
@@ -593,7 +797,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor):
                     break
         if self.aslist is None:
             return no_list(self, obj._model, matches, self.class_)
-        return self.aslist(obj._model, matches, self.class_, parent=None)
+        return self.aslist(obj._model, matches, self.class_)
 
 
 def no_list(
@@ -626,3 +830,105 @@ def no_list(
             )
         )
     return class_.from_model(model, elems[0])
+
+
+class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
+    """Couples an ElementList with an Accessor to enable write support.
+
+    This class is meant to be subclassed further, where the subclass has
+    both this class and the originally intended one as base classes (but
+    no other ones, i.e. there must be exactly two bases).  The Accessor
+    then inserts itself as the ``_accessor`` class variable on the new
+    subclass.  This allows the mixed-in methods to delegate actual model
+    modifications to the Accessor.
+    """
+
+    _accessor: t.ClassVar[WritableAccessor[T]]
+
+    def __init__(
+        self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
+    ) -> None:
+        assert type(self)._accessor
+        assert isinstance(parent, element.GenericElement)
+
+        super().__init__(*args, **kw)
+        self._parent = parent
+
+    @t.overload
+    def __setitem__(self, index: int, value: T) -> None:
+        ...
+
+    @t.overload
+    def __setitem__(self, index: slice, value: t.Iterable[T]) -> None:
+        ...
+
+    def __setitem__(self, index, value):
+        assert self._parent is not None
+        del self[index]
+        if isinstance(index, slice):
+            for i, elm in enumerate(value, start=index.start):
+                self.insert(i, elm)
+        else:
+            self.insert(index, value)
+
+    def __delitem__(self, index: t.Union[int, slice]) -> None:
+        assert self._parent is not None
+        if not isinstance(index, slice):
+            index = slice(index, index + 1)
+        for obj in self[index]:
+            type(self)._accessor.delete(self, obj)
+        super().__delitem__(index)
+
+    def _newlist_type(self) -> t.Type[element.ElementList[T]]:
+        assert len(type(self).__bases__) == 2
+        assert type(self).__bases__[0] is ElementListCouplingMixin
+        return type(self).__bases__[1]
+
+    def create(
+        self, *args: t.Optional[str], **kw: t.Any
+    ) -> element.GenericElement:
+        """Make a new model object (instance of GenericElement).
+
+        Instead of specifying the full ``xsi:type`` including the
+        namespace, you can also pass in just the part after the ``:``
+        separator.  If this is unambiguous, the appropriate
+        layer-specific type will be selected automatically.
+
+        This method can be called with or without the ``layertype``
+        argument.  If a layertype is not given, all layers will be tried
+        to find an appropriate ``xsi:type`` handler.  Note that setting
+        the layertype to ``None`` explicitly is different from not
+        specifying it at all; ``None`` tries only the "Transverse
+        modelling" type elements.
+
+        Parameters
+        ----------
+        layertype
+            The ``xsi:type`` of the architectural layer on which this
+            element will eventually live (see above).
+        objtype
+            The ``xsi:type`` of the object to create.
+        """
+        assert self._parent is not None
+        acc = type(self)._accessor
+        assert isinstance(acc, WritableAccessor)
+        newobj = acc.create(self, *args, **kw)
+        self._newlist_type().insert(self, len(self), newobj)
+        return newobj
+
+    def delete_all(self, **kw: t.Any) -> None:
+        """Delete all matching objects from the model."""
+        indices: t.List[int] = []
+        for i, obj in enumerate(self):
+            if all(getattr(obj, k) == v for k, v in kw.items()):
+                indices.append(i)
+
+        for index in reversed(indices):
+            del self[index]
+
+    def insert(self, index: int, value: T) -> None:
+        assert self._parent is not None
+        acc = type(self)._accessor
+        assert isinstance(acc, WritableAccessor)
+        acc.insert(self, index, value)
+        self._newlist_type().insert(self, index, value)

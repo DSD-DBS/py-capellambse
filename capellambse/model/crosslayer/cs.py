@@ -86,7 +86,7 @@ class ComponentRealization(c.GenericElement):
 c.set_accessor(
     Component,
     "parts",
-    c.ReferenceSearchingAccessor(Part, "type", aslist=c.DecoupledElementList),
+    c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList),
 )
 c.set_accessor(
     InterfacePkg,

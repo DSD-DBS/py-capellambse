@@ -111,16 +111,14 @@ class ComponentExchange(AbstractExchange):
     allocated_exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem,
         "convoyedInformations",
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
 
     @property
     def exchange_items(
         self,
-    ) -> c.DecoupledElementList[information.ExchangeItem]:
+    ) -> c.ElementList[information.ExchangeItem]:
         items = self.allocated_exchange_items
-        assert isinstance(items, c.DecoupledElementList)
-        assert not isinstance(items, c.ElementList)
         for exchange in self.func_exchanges:
             items += exchange.exchange_items
         return items
@@ -138,7 +136,7 @@ for _port, _exchange in [
             _exchange,
             "source_port",
             "target_port",
-            aslist=c.DecoupledElementList,
+            aslist=c.ElementList,
         ),
     )
 del _port, _exchange
