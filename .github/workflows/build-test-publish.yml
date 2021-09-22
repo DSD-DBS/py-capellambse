@@ -21,6 +21,10 @@ jobs:
       - name: Build wheel package
         run: |-
           python -m pip wheel --no-deps .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Wheel package
+          path: '*.whl'
   test:
     name: Test with Python ${{matrix.python_version}} on ${{matrix.os}}
     runs-on: ${{matrix.os}}
