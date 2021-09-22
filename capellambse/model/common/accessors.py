@@ -244,6 +244,16 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         self.aslist = aslist
         self.class_ = class_
 
+    def _guess_xtype(self) -> t.Tuple[t.Type[T], str]:
+        """Try to guess the type of element that should be created."""
+        if self.class_ is element.GenericElement or self.class_ is None:
+            raise ValueError("Multiple object types that can be created")
+        if not self.xtypes:
+            raise ValueError("No matching `xsi:type` found")
+        if len(self.xtypes) > 1:
+            raise ValueError("Multiple matching `xsi:type`s")
+        return self.class_, next(iter(self.xtypes))
+
 
 class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Creates proxy objects on the fly."""
@@ -395,7 +405,10 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         if self.deep or self.follow or self.rootelem:
             raise AttributeError("Cannot create objects here")
 
-        elmclass, xtype = self._match_xtype(*type_hints)
+        if type_hints:
+            elmclass, xtype = self._match_xtype(*type_hints)
+        else:
+            elmclass, xtype = self._guess_xtype()
 
         assert elmclass is not None
         assert isinstance(elmlist._parent, element.GenericElement)
