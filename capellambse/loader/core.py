@@ -298,14 +298,21 @@ class MelodyLoader:
         _, tree = self._find_fragment(parent)
         new_uuid = self.generate_uuid(parent)
 
+        def cleanup_after_failure() -> None:
+            tree.idcache_remove(new_uuid)
+            for child in parent:
+                for id_attr in IDTYPES_RESOLVED:
+                    if child.get(id_attr) == new_uuid:
+                        parent.remove(child)
+
         try:
             yield new_uuid
         except BaseException:
-            tree.idcache_remove(new_uuid)
+            cleanup_after_failure()
             raise
 
         if self[new_uuid] is None:
-            tree.idcache_remove(new_uuid)
+            cleanup_after_failure()
             raise RuntimeError("New UUID was requested but never used")
 
     def xpath(
