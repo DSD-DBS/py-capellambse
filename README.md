@@ -2,6 +2,9 @@
 
 *A Python 3 headless implementation of the Capella modeling tool (almost)*
 
+![CI build](https://github.com/DSD-DBS/py-capella-mbse/actions/workflows/build-test-publish.yml/badge.svg)
+![CI lint](https://github.com/DSD-DBS/py-capella-mbse/actions/workflows/lint.yml/badge.svg)
+
 ## Intro
 
 ***Copyright 2021 DB Netz AG, licensed under Apache 2.0 (see full text in `LICENSE.txt`)***
