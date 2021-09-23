@@ -102,6 +102,8 @@
             ReqIFChapterName="">
           <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="a44b41f3-598c-4250-bca6-1329647e7a02"
               definition="#c316ab07-c5c3-4866-a896-92e34733055c" values="#efd6e108-3461-43c6-ad86-24168339ed3c"/>
+          <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="8882f320-c887-496a-933f-29a1ca62cc44"
+              definition="#0bd40628-10a5-451e-86da-187c93bc3b10"/>
         </ownedRequirements>
       </ownedExtensions>
       <ownedExtensions xsi:type="CapellaRequirements:CapellaTypesFolder" id="67bba9cf-953c-4f0b-9986-41991c68d241"
@@ -141,12 +143,17 @@
           <ownedAttributes xsi:type="Requirements:AttributeDefinitionEnumeration"
               id="f31d4dd3-99f7-41d1-b1ce-f07b20d26eac" ReqIFLongName="MultiEnum"
               definitionType="#637caf95-3229-4607-99a0-7d7b990bc97f" multiValued="true"/>
+          <ownedAttributes xsi:type="Requirements:AttributeDefinition" id="0bd40628-10a5-451e-86da-187c93bc3b10"
+              ReqIFLongName="version" definitionType="#3b7ec38a-e26a-4c23-9fa3-275af3f629ee"/>
         </ownedTypes>
       </ownedExtensions>
       <ownedExtensions xsi:type="CapellaRequirements:CapellaModule" id="637aeba7-4125-4bf4-95e4-3ce603ac3d40"
           ReqIFLongName="Module" ReqIFName="Next Module" moduleType="#3a284e44-3b63-48a7-85e9-caeb967c930c">
         <ownedRequirements xsi:type="Requirements:Requirement" id="1092f69a-5f3a-4fe6-a8fd-b2dffde90650"
-            ReqIFLongName="TestReq" ReqIFName="TestReq" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"/>
+            ReqIFLongName="TestReq" ReqIFName="TestReq" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+          <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="911816fb-60e8-4730-90b1-69bbf63afa90"
+              definition="#0bd40628-10a5-451e-86da-187c93bc3b10" value="1"/>
+        </ownedRequirements>
       </ownedExtensions>
       <ownedExtensions xsi:type="CapellaRequirements:CapellaTypesFolder" id="8748fafc-57e0-4b76-ae0c-36f005272daf"
           ReqIFLongName="Additional Types">
@@ -1037,6 +1044,13 @@ The predator is far away</bodies>
     </ownedArchitectures>
     <ownedArchitectures xsi:type="org.polarsys.capella.core.data.ctx:SystemAnalysis"
         id="79d35fe7-f172-4405-b499-48aef545148a" name="System Analysis">
+      <ownedExtensions xsi:type="CapellaRequirements:CapellaModule" id="f66cb4f3-7593-44aa-a7b2-1e42d8b9f160">
+        <ownedRequirements xsi:type="Requirements:Requirement" id="32d66740-e428-4600-be68-8410d9d568cc"
+            requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+          <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="8359da37-21bf-4394-b7d2-22686ccebe55"
+              definition="#0bd40628-10a5-451e-86da-187c93bc3b10" value="1"/>
+        </ownedRequirements>
+      </ownedExtensions>
       <ownedFunctionPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemFunctionPkg"
           id="17cbefe8-c2ca-49aa-9aef-23259969ac91" name="System Functions">
         <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
