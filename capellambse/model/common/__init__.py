@@ -28,7 +28,7 @@ from capellambse.loader import xmltools
 # pylint: disable=invalid-name
 S = t.TypeVar("S", bound=t.Optional[str])
 T = t.TypeVar("T", bound="ModelObject")
-U = t.TypeVar("U", bound=t.Any)
+U = t.TypeVar("U")
 # pylint: enable=invalid-name
 
 XTYPE_HANDLERS: t.Dict[

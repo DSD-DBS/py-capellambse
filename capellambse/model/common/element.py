@@ -74,7 +74,6 @@ class GenericElement:
     diagrams = property(
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
     )
-    progress_status = property(lambda self: enumliteral(self, "status"))
 
     constraints: accessors.Accessor
 
@@ -237,7 +236,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         def extract_key(self, element: T) -> U:
             value = self.extractor_func(element)
             if isinstance(value, enum.Enum):
-                value = value.name
+                value = value.name  # type: ignore[assignment]
             return value
 
         def make_values_container(self, *values: U) -> t.Container[U]:
@@ -399,7 +398,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __getitem__(self, idx: slice) -> ElementList[T]:
         ...
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx):  # type: ignore[no-untyped-def]
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
         return self._elemclass.from_model(self._model, self._elements[idx])
@@ -412,7 +411,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __setitem__(self, index: slice, value: t.Iterable[T]) -> None:
         ...
 
-    def __setitem__(self, index, value):
+    def __setitem__(self, index, value):  # type: ignore[no-untyped-def]
         del self[index]
         if isinstance(index, slice):
             for i, element in enumerate(value, start=index.start):
@@ -426,7 +425,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __getattr__(
         self,
         attr: str,
-    ) -> t.Callable[..., t.Union[T, ElementList[T]]]:
+    ) -> t.Callable[..., T | ElementList[T]]:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
             extractor = operator.attrgetter(attr)
@@ -496,7 +495,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
                         yield f"by_{attr}"
                         yield f"exclude_{attr}s"
 
-        attrs = super().__dir__()
+        attrs = list(super().__dir__())
         attrs.extend(filterable_attrs())
         return attrs
 
@@ -518,17 +517,17 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         self._elements.insert(index, elm)
 
 
-class CachedElementList(ElementList):
+class CachedElementList(ElementList[T], t.Generic[T]):
     """An ElementList that caches the constructed proxies by UUID."""
 
-    class _Filter(ElementList._Filter, t.Generic[T, U]):
-        def __call__(self, *values):
-            newlist = super().__call__(*values)
+    class _Filter(ElementList._Filter[U], t.Generic[U]):
+        def __call__(self, *values: U) -> t.Union[T, ElementList[T]]:
+            newlist: t.Union[T, ElementList[T]] = super().__call__(*values)
             if self.single:
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = self.parent.cacheattr
+            newlist.cacheattr = self.parent.cacheattr  # type: ignore[assignment]
             return newlist
 
     def __init__(
@@ -537,8 +536,7 @@ class CachedElementList(ElementList):
         elements: t.List[etree._Element],
         elemclass: t.Type[T],
         *,
-        cacheattr: str = None,
-        **kw: t.Any,
+        cacheattr: str | None = None,
     ) -> None:
         """Create a CachedElementList.
 
@@ -547,10 +545,10 @@ class CachedElementList(ElementList):
         cacheattr
             The attribute on the ``model`` to use as cache
         """
-        super().__init__(model, elements, elemclass, **kw)
+        super().__init__(model, elements, elemclass)
         self.cacheattr = cacheattr
 
-    def __getitem__(self, key: int) -> T:
+    def __getitem__(self, key):  # type: ignore[no-untyped-def]
         elem = super().__getitem__(key)
         if self.cacheattr:
             try:
@@ -565,7 +563,7 @@ class CachedElementList(ElementList):
 class MixedElementList(ElementList[GenericElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
-    class _LowercaseFilter(t.Generic[T, U], ElementList._Filter[U]):
+    class _LowercaseFilter(ElementList._Filter[U], t.Generic[U]):
         def make_values_container(self, *values: U) -> t.Container[U]:
             try:
                 return set(map(operator.methodcaller("lower"), values))
@@ -577,7 +575,6 @@ class MixedElementList(ElementList[GenericElement]):
         model: capellambse.MelodyModel,
         elements: t.List[etree._Element],
         elemclass: t.Any = None,
-        **kw: t.Any,
     ) -> None:
         """Create a MixedElementList.
 
@@ -587,11 +584,11 @@ class MixedElementList(ElementList[GenericElement]):
             Ignored; provided for drop-in compatibility.
         """
         del elemclass
-        super().__init__(model, elements, GenericElement, **kw)
+        super().__init__(model, elements, GenericElement)
 
     def __getattr__(
         self, attr: str
-    ) -> t.Callable[..., t.Union[t.Any, ElementList[t.Any]]]:
+    ) -> t.Callable[..., t.Union[GenericElement, ElementList[GenericElement]]]:
         if attr == "by_type":
             return self._LowercaseFilter(
                 self, lambda e: type(e).__name__.lower()
