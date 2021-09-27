@@ -324,8 +324,9 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         helpers.fragment_link(seb.fragment, targethref)
     ]
     text = [
-        seb.melodyobj.get("ReqIF" + suffix, "")
+        string
         for suffix in ("LongName", "Name", "ChapterName")
+        if (string := seb.melodyobj.get("ReqIF" + suffix, ""))
     ]
     if "ReqIFText" in seb.melodyobj.attrib:
         text.append(helpers.repair_html(seb.melodyobj.attrib["ReqIFText"]))
