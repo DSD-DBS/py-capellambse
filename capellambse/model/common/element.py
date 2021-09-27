@@ -239,10 +239,10 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
             self.positive = positive
             self.single = single
 
-        def extract_key(self, element: T) -> U:
-            value = self.extractor_func(element)
+        def extract_key(self, element: T) -> U | str:
+            value: U | enum.Enum | str = self.extractor_func(element)
             if isinstance(value, enum.Enum):
-                value = value.name  # type: ignore[assignment]
+                value = value.name
             return value
 
         def make_values_container(self, *values: U) -> t.Container[U]:
@@ -281,7 +281,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
                 raise KeyError(values[0] if len(values) == 1 else values)
             return self.parent[indices[0]]  # Ensure proper construction
 
-        def __iter__(self) -> t.Iterator[U]:
+        def __iter__(self) -> t.Iterator[U | str]:
             """Yield values that result in a non-empty list when filtered for.
 
             The returned iterator yields all values that, when given to

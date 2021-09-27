@@ -47,7 +47,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     __name__: str
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Optional[t.Any]) -> Accessor:
+    def __get__(self, obj: None, objtype: t.Type | None) -> Accessor:
         ...
 
     @t.overload
