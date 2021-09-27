@@ -113,39 +113,39 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     )
     actor_exchanges = c.ProxyAccessor(
         fa.ComponentExchange,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         rootelem=LogicalComponentPkg,
     )
     component_exchanges = c.ProxyAccessor(
         fa.ComponentExchange,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         rootelem=[LogicalComponentPkg, LogicalComponent],
         deep=True,
     )
 
     all_function_exchanges = c.ProxyAccessor(
         fa.FunctionalExchange,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         rootelem=[LogicalFunctionPkg, LogicalFunction],
         deep=True,
     )
     all_component_exchanges = c.ProxyAccessor(
         fa.ComponentExchange,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         deep=True,
     )
     all_components = c.ProxyAccessor(  # maybe this should exclude .is_actor
-        LogicalComponent, aslist=c.DecoupledElementList, deep=True
+        LogicalComponent, aslist=c.ElementList, deep=True
     )
     all_actors = c.CustomAccessor(
         LogicalComponent,
         operator.attrgetter("all_components"),
         elmmatcher=lambda x, _: t.cast(LogicalComponent, x).is_actor,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
     all_functions = c.ProxyAccessor(
         LogicalFunction,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         rootelem=LogicalFunctionPkg,
         deep=True,
     )

@@ -23,7 +23,7 @@ class Constraint(c.GenericElement):
     constrained_elements = c.AttrProxyAccessor(
         c.GenericElement,
         "constrainedElements",
-        aslist=c.DecoupledMixedElementList,
+        aslist=c.MixedElementList,
     )
 
     specification = c.SpecificationAccessor()
@@ -32,5 +32,5 @@ class Constraint(c.GenericElement):
 c.set_accessor(
     c.GenericElement,
     "constraints",
-    c.ProxyAccessor(Constraint, aslist=c.DecoupledElementList),
+    c.ProxyAccessor(Constraint, aslist=c.ElementList),
 )

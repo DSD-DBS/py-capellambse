@@ -131,7 +131,7 @@ class Capability(c.GenericElement):
         SystemComponent,
         XT_CAP_INV,
         follow="involved",
-        aslist=c.DecoupledMixedElementList,
+        aslist=c.MixedElementList,
     )
 
     postcondition = c.AttrProxyAccessor(
@@ -176,19 +176,17 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
         SystemComponent,
         operator.attrgetter("all_components"),
         elmmatcher=lambda x, _: t.cast(SystemComponent, x).is_actor,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
     all_functions = c.ProxyAccessor(
-        SystemFunction, deep=True, aslist=c.DecoupledElementList
+        SystemFunction, deep=True, aslist=c.ElementList
     )
-    all_missions = c.ProxyAccessor(
-        Mission, deep=True, aslist=c.DecoupledElementList
-    )
+    all_missions = c.ProxyAccessor(Mission, deep=True, aslist=c.ElementList)
     all_components = c.ProxyAccessor(
-        SystemComponent, deep=True, aslist=c.DecoupledElementList
+        SystemComponent, deep=True, aslist=c.ElementList
     )
     all_capabilities = c.ProxyAccessor(
-        Capability, deep=True, aslist=c.DecoupledElementList
+        Capability, deep=True, aslist=c.ElementList
     )
 
     diagrams = diagram.DiagramAccessor(

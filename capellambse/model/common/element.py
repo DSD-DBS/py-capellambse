@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import collections.abc
 import enum
-import itertools
 import operator
 import re
 import typing as t
@@ -26,7 +25,7 @@ import capellambse
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, S, T, U, accessors, enumliteral, markuptype
+from . import XTYPE_HANDLERS, T, U, accessors, enumliteral, markuptype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -44,6 +43,11 @@ class ModelObject(t.Protocol):
     """
 
     _model: capellambse.MelodyModel
+
+    def __init__(self, **kw: t.Any) -> None:
+        if kw:
+            raise TypeError(f"Unconsumed keyword arguments: {kw}")
+        super().__init__()
 
     @classmethod
     def from_model(
@@ -74,6 +78,7 @@ class GenericElement:
 
     constraints: accessors.Accessor
 
+    _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: t.Optional[str] = None
 
     @property
@@ -126,7 +131,26 @@ class GenericElement:
         self._element = element
         return self
 
-    def __init__(self, model: capellambse.MelodyModel, **kw: t.Any) -> None:
+    def __init__(
+        self,
+        model: capellambse.MelodyModel,
+        parent: etree._Element,
+        /,
+        **kw: t.Any,
+    ) -> None:
+        all_required_attrs = set()
+        for basecls in type(self).mro():
+            all_required_attrs |= getattr(
+                basecls, "_required_attrs", frozenset()
+            )
+        missing_attrs = all_required_attrs - frozenset(kw)
+        if missing_attrs:
+            raise TypeError(
+                "Missing required keyword arguments: {}".format(
+                    ", ".join(sorted(missing_attrs))
+                )
+            )
+
         super().__init__()
         if self._xmltag is None:
             raise TypeError(
@@ -134,14 +158,24 @@ class GenericElement:
             )
         self._model = model
         self._element: etree._Element = etree.Element(self._xmltag)
-
-        for key, val in kw.items():
-            if not isinstance(
-                getattr(type(self), key),
-                (accessors.Accessor, xmltools.AttributeProperty),
-            ):
-                raise TypeError(f"Cannot set {key!r} on {type(self).__name__}")
-            setattr(self, key, val)
+        parent.append(self._element)
+        try:
+            for key, val in kw.items():
+                if key == "xtype":
+                    self._element.set(helpers.ATT_XT, val)
+                elif not isinstance(
+                    getattr(type(self), key),
+                    (accessors.Accessor, xmltools.AttributeProperty),
+                ):
+                    raise TypeError(
+                        f"Cannot set {key!r} on {type(self).__name__}"
+                    )
+                else:
+                    setattr(self, key, val)
+            self._model._loader.idcache_index(self._element)
+        except BaseException:
+            parent.remove(self._element)
+            raise
 
     def __eq__(self, other: object) -> t.Union[bool]:
         if not isinstance(other, type(self)):
@@ -157,10 +191,10 @@ class GenericElement:
         return f"<{mytype} {self.name!r} ({self.uuid})>"
 
 
-class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
+class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     """Provides access to elements without affecting the underlying model."""
 
-    __slots__ = ("_elemclass", "_elements", "_model", "_parent")
+    __slots__ = ("_elemclass", "_elements", "_model")
 
     class _Filter(t.Generic[U]):
         """Filters this list based on an extractor function."""
@@ -169,7 +203,7 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
 
         def __init__(
             self,
-            parent: DecoupledElementList[T],
+            parent: ElementList[T],
             extract_key: t.Callable[[T], U],
             *,
             positive: bool = True,
@@ -220,7 +254,7 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
 
             return self.positive == (value in valueset)
 
-        def __call__(self, *values: U) -> t.Union[T, DecoupledElementList[T]]:
+        def __call__(self, *values: U) -> t.Union[T, ElementList[T]]:
             """List all elements that match this filter."""
             valueset = self.make_values_container(*values)
             indices = []
@@ -279,11 +313,7 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
         model: capellambse.MelodyModel,
         elements: t.List[etree._Element],
         elemclass: t.Type[T],
-        *,
-        parent: t.Any = None,
     ) -> None:
-        del parent
-
         self._model = model
         self._elements = elements
         self._elemclass = elemclass
@@ -297,13 +327,13 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
 
     def __add(
         self, other: object, *, reflected: bool = False
-    ) -> DecoupledElementList[T]:
-        if not isinstance(other, DecoupledElementList):
+    ) -> ElementList[T]:
+        if not isinstance(other, ElementList):
             return NotImplemented
         if self._model is not other._model:
             raise ValueError("Cannot add ElementLists from different models")
 
-        return DecoupledElementList(
+        return ElementList(
             self._model,
             (
                 self._elements + other._elements
@@ -317,20 +347,20 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
             ),
         )
 
-    def __add__(self, other: object) -> DecoupledElementList[T]:
+    def __add__(self, other: object) -> ElementList[T]:
         return self.__add(other)
 
-    def __radd__(self, other: object) -> DecoupledElementList[T]:
+    def __radd__(self, other: object) -> ElementList[T]:
         return self.__add(other, reflected=True)
 
     def __sub(
         self, other: object, *, reflected: bool = False
-    ) -> DecoupledElementList[T]:
+    ) -> ElementList[T]:
         if not isinstance(other, t.Sequence):
             return NotImplemented
 
         if reflected:
-            if isinstance(other, DecoupledElementList):
+            if isinstance(other, ElementList):
                 objclass = other._elemclass
             else:
                 objclass = GenericElement
@@ -345,17 +375,17 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
             base = other
             excluded = set(i.uuid for i in self)
 
-        return DecoupledElementList(
+        return ElementList(
             self._model,
             [i._element for i in base if i.uuid not in excluded],
             objclass,
         )
 
-    def __sub__(self, other: object) -> DecoupledElementList[T]:
+    def __sub__(self, other: object) -> ElementList[T]:
         """Return a new list without elements found in ``other``."""
         return self.__sub(other)
 
-    def __rsub__(self, other: object) -> DecoupledElementList[T]:
+    def __rsub__(self, other: object) -> ElementList[T]:
         return self.__sub(other, reflected=True)
 
     def __len__(self) -> int:
@@ -366,7 +396,7 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
         ...
 
     @t.overload
-    def __getitem__(self, idx: slice) -> DecoupledElementList[T]:
+    def __getitem__(self, idx: slice) -> ElementList[T]:
         ...
 
     def __getitem__(self, idx):
@@ -396,7 +426,7 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __getattr__(
         self,
         attr: str,
-    ) -> t.Callable[..., t.Union[T, DecoupledElementList[T]]]:
+    ) -> t.Callable[..., t.Union[T, ElementList[T]]]:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
             extractor = operator.attrgetter(attr)
@@ -419,7 +449,7 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
         *values: t.Any,
         positive: bool = True,
         single: bool = False,
-    ) -> t.Union[T, DecoupledElementList[T]]:
+    ) -> t.Union[T, ElementList[T]]:
         """Filter elements using an arbitrary extractor function.
 
         If the extractor returns an :class:`enum.Enum` member for any
@@ -451,21 +481,24 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
         )(*values)
 
     def __dir__(self) -> t.List[str]:  # pragma: no cover
-        no_dir_attr = re.compile(r"^(_|as_|pvmt$|nodes$)")
+        no_dir_attr = re.compile(r"^(_|as_|pvmt$|nodes$|diagrams?$)")
 
         def filterable_attrs() -> t.Iterator[str]:
             for obj in self:
-                for attr in dir(obj):
+                try:
+                    obj_attrs = dir(obj)
+                except Exception:
+                    pass
+                for attr in obj_attrs:
                     if not no_dir_attr.search(attr) and isinstance(
                         getattr(obj, attr), str
                     ):
-                        yield attr
+                        yield f"by_{attr}"
+                        yield f"exclude_{attr}s"
 
-        return list(
-            itertools.chain.from_iterable(
-                (f"by_{a}", f"exclude_{a}s") for a in filterable_attrs()
-            )
-        )
+        attrs = super().__dir__()
+        attrs.extend(filterable_attrs())
+        return attrs
 
     def __str__(self) -> str:  # pragma: no cover
         return "\n".join(f"* {e!s}" for e in self)
@@ -473,202 +506,16 @@ class DecoupledElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __repr__(self) -> str:  # pragma: no cover
         return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
 
-    def _newlist(
-        self, elements: t.List[etree._Element]
-    ) -> DecoupledElementList[T]:
-        return type(self)(self._model, elements, self._elemclass)
-
-    def insert(self, index: int, value: T) -> None:
-        elm: etree._Element = value._element  # type: ignore[attr-defined]
-        self._elements.insert(index, elm)
-
-
-class ElementList(DecoupledElementList[T], t.Generic[T]):
-    """Provides access to a list of elements and allows simple filtering."""
-
-    __slots__ = ("_elemclass", "_elements", "_model", "_parent")
-
-    def __init__(
-        self,
-        model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
-        elemclass: t.Type[T],
-        *,
-        parent: t.Optional[etree._Element],
-        **kw: t.Any,
-    ) -> None:
-        super().__init__(model, elements, elemclass, **kw)
-        self._parent = parent
-
-    def __setitem__(self, index, value):
-        if self._parent is None:
-            raise ValueError("Cannot set elements in filtered lists")
-        super().__setitem__(index, value)
-
-    def __delitem__(self, index: t.Union[int, slice]) -> None:
-        if self._parent is None:
-            raise ValueError("Cannot remove elements from filtered lists")
-        if not isinstance(index, slice):
-            index = slice(index, index + 1)
-        for elm in self._elements[index]:
-            if elm not in self._parent:
-                raise RuntimeError(
-                    f"Illegal state: Element {elm!r}"
-                    f" is not a child of {self._parent!r}"
-                )
-            self._model._loader.idcache_remove(elm)
-            self._parent.remove(elm)
-        super().__delitem__(index)
-
     def _newlist(self, elements: t.List[etree._Element]) -> ElementList[T]:
-        return type(self)(self._model, elements, self._elemclass, parent=None)
+        listtype = self._newlist_type()
+        return listtype(self._model, elements, self._elemclass)
 
-    @t.overload
-    def create(self, objtype: str, **kw: t.Any) -> GenericElement:
-        ...
-
-    @t.overload
-    def create(
-        self, layer: t.Optional[str], objtype: str, **kw: t.Any
-    ) -> GenericElement:
-        ...
-
-    def create(
-        self,
-        layertype: str,
-        objtype: t.Union[str, object] = _NOT_SPECIFIED,
-        **kw: t.Any,
-    ) -> GenericElement:
-        """Make a new model object (instance of GenericElement).
-
-        Instead of specifying the full ``xsi:type`` including the
-        namespace, you can also pass in just the part after the ``:``
-        separator.  If this is unambiguous, the appropriate
-        layer-specific type will be selected automatically.
-
-        This method can be called with or without the ``layertype``
-        argument.  If a layertype is not given, all layers will be tried
-        to find an appropriate ``xsi:type`` handler.  Note that setting
-        the layertype to ``None`` explicitly is different from not
-        specifying it at all; ``None`` tries only the "Transverse
-        modelling" type elements.
-
-        Parameters
-        ----------
-        layertype
-            The ``xsi:type`` of the architectural layer on which this
-            element will eventually live (see above).
-        objtype
-            The ``xsi:type`` of the object to create.
-        """
-        # TODO Rework in a more abstract way
-        #
-        # Plugging generic logic for element creation into the generic
-        # ElementList class will likely become insufficient very soon,
-        # when more complex objects need to be handled.
-        #
-        # Instead, consider delegating the actual creation logic to the
-        # ``Accessor`` instance that created this ``ElementList``.  If
-        # ``.create()`` is called on an ``ElementList`` that was
-        # filtered, the same ValueError should be raised as it is now.
-        #
-        # Similarly, deleting elements should be delegated to the
-        # Accessor as well, for the same reasons.
-
-        # TODO Sanity checks
-        # Currently, this method allows creating arbitrary elements
-        # anywhere in the tree, even if it does not make sense
-        # semantically.  Instead, only allow creating elements that can
-        # naturally appear in this list; this should be significantly
-        # easier when delegating to the Accessor as proposed by the
-        # previous paragraph.
-        if not (objtype is _NOT_SPECIFIED or isinstance(objtype, str)):
-            raise TypeError(
-                f"Expected a str objtype, not {type(objtype).__name__}"
-            )
-        if self._parent is None:
-            raise ValueError("Cannot create elements in filtered lists")
-
-        def match_xt(xtp: S, itr: t.Iterable[S]) -> S:
-            matches: t.List[S] = []
-            for i in itr:
-                if (
-                    xtp is i is None
-                    or i is not None
-                    and xtp in (i, i.split(":")[-1])
-                ):
-                    matches.append(i)
-            if not matches:
-                raise ValueError(f"Invalid or unknown xsi:type {xtp!r}")
-            if len(matches) > 1:
-                raise ValueError(
-                    "Ambiguous xsi:type {!r}, please qualify: {!s}".format(
-                        xtp, ", ".join(repr(i) for i in matches)
-                    )
-                )
-            return matches[0]
-
-        candidate_classes: t.Dict[str, t.Type[GenericElement]]
-        if objtype is _NOT_SPECIFIED:
-            candidate_classes = dict(
-                itertools.chain.from_iterable(
-                    i.items() for i in XTYPE_HANDLERS.values()
-                )
-            )
-            xt_obj = layertype
-        else:
-            assert isinstance(objtype, str)
-            candidate_classes = XTYPE_HANDLERS[
-                match_xt(layertype, XTYPE_HANDLERS)
-            ]
-            xt_obj = objtype
-
-        xt_obj = match_xt(xt_obj, candidate_classes)
-        cls = candidate_classes[xt_obj]
-        with self._model._loader.new_uuid(self._parent) as obj_id:
-            obj = cls(self._model, **kw, uuid=obj_id)
-            obj._element.set(helpers.ATT_XT, xt_obj)
-            self.append(obj)
-        return obj
-
-    def decoupled(self) -> DecoupledElementList[T]:
-        """Create a new decoupled list with the same contents as this one."""
-        return DecoupledElementList(
-            self._model, self._elements, self._elemclass
-        )
-
-    def delete_all(self, **kw: t.Any) -> None:
-        """Delete all matching objects from the model."""
-        indices: t.List[int] = []
-        for i, obj in enumerate(self):
-            if all(getattr(obj, k) == v for k, v in kw.items()):
-                indices.append(i)
-
-        for index in reversed(indices):
-            del self[index]
+    def _newlist_type(self) -> t.Type[ElementList]:
+        return type(self)
 
     def insert(self, index: int, value: T) -> None:
-        if self._parent is None:
-            raise ValueError("Cannot insert elements into filtered lists")
-
-        try:
-            if index > 0:
-                parent_index = (
-                    self._parent.index(self._elements[index - 1]) + 1
-                )
-            elif index < -1:
-                parent_index = (
-                    self._parent.index(self._elements[index + 1]) - 1
-                )
-            else:
-                parent_index = index
-        except ValueError:
-            parent_index = len(self._parent)
-
         elm: etree._Element = value._element  # type: ignore[attr-defined]
         self._elements.insert(index, elm)
-        self._parent.insert(parent_index, elm)
-        self._model._loader.idcache_index(elm)
 
 
 class CachedElementList(ElementList):
@@ -691,7 +538,6 @@ class CachedElementList(ElementList):
         elemclass: t.Type[T],
         *,
         cacheattr: str = None,
-        parent: t.Optional[etree._Element],
         **kw: t.Any,
     ) -> None:
         """Create a CachedElementList.
@@ -701,9 +547,7 @@ class CachedElementList(ElementList):
         cacheattr
             The attribute on the ``model`` to use as cache
         """
-        del parent
-
-        super().__init__(model, elements, elemclass, parent=None, **kw)
+        super().__init__(model, elements, elemclass, **kw)
         self.cacheattr = cacheattr
 
     def __getitem__(self, key: int) -> T:
@@ -718,8 +562,8 @@ class CachedElementList(ElementList):
         return elem
 
 
-class DecoupledMixedElementList(DecoupledElementList[GenericElement]):
-    """DecoupledElementList that handles proxies using ``XTYPE_HANDLERS``."""
+class MixedElementList(ElementList[GenericElement]):
+    """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
     class _LowercaseFilter(t.Generic[T, U], ElementList._Filter[U]):
         def make_values_container(self, *values: U) -> t.Container[U]:
@@ -747,7 +591,7 @@ class DecoupledMixedElementList(DecoupledElementList[GenericElement]):
 
     def __getattr__(
         self, attr: str
-    ) -> t.Callable[..., t.Union[t.Any, DecoupledElementList[t.Any]]]:
+    ) -> t.Callable[..., t.Union[t.Any, ElementList[t.Any]]]:
         if attr == "by_type":
             return self._LowercaseFilter(
                 self, lambda e: type(e).__name__.lower()
@@ -756,7 +600,3 @@ class DecoupledMixedElementList(DecoupledElementList[GenericElement]):
 
     def __dir__(self) -> t.List[str]:  # pragma: no cover
         return super().__dir__() + ["by_type", "exclude_types"]
-
-
-class MixedElementList(DecoupledMixedElementList, ElementList):
-    """ElementList that handles proxies using ``XTYPE_HANDLERS``."""

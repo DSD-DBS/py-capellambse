@@ -57,33 +57,92 @@ XT_RELATION_TYPE = "Requirements:RelationType"
 XT_MODULE_TYPE = "Requirements:ModuleType"
 
 
-class RequirementsRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
+class RequirementsRelationAccessor(
+    c.WritableAccessor["AbstractRequirementsRelation"]
+):
     """Searches for requirement relations in the architecture layer."""
 
-    __slots__ = ()
+    # pylint: disable=abstract-method  # Only partially implemented for now
+
+    __slots__ = ("aslist",)
+
+    def __init__(self, *args, **kw) -> None:
+        super().__init__(*args, **kw, aslist=c.ElementList)
 
     def __get__(self, obj, objtype=None):
         del objtype
         if obj is None:  # pragma: no cover
             return self
 
-        # FIXME temporary hack to enable creating relations
-        # This might lead to this error when trying to delete elements:
-        #   RuntimeError: Illegal state: Element <...> is not a child of <...>
-        rel_objs = []
-        rel_objs += obj._model._loader.iterall_xt(XT_OUT_RELATION)
-        rel_objs += obj._model._loader.iterchildren_xt(
-            obj._element, XT_INC_RELATION, XT_INT_RELATION
-        )
-        return c.ElementList(
-            obj._model, rel_objs, c.GenericElement, parent=obj._element
+        rel_objs = list(
+            obj._model._loader.iterchildren_xt(obj._element, XT_INC_RELATION)
         )
 
+        for i in obj._model._loader.iterall_xt(XT_OUT_RELATION):
+            if RequirementsOutRelation.from_model(obj._model, i).source == obj:
+                rel_objs.append(i)
 
-class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
+        for i in obj._model._loader.iterall_xt(XT_INT_RELATION):
+            rel = RequirementsIntRelation.from_model(obj._model, i)
+            if obj in (rel.source, rel.target):
+                rel_objs.append(i)
+
+        assert self.aslist is not None
+        return self.aslist(obj._model, rel_objs, c.GenericElement, parent=obj)
+
+    def create(
+        self,
+        elmlist: c.ElementListCouplingMixin,
+        /,
+        *type_hints: t.Optional[str],
+        **kw: t.Any,
+    ) -> c.T:
+        if "target" not in kw:
+            raise TypeError("No `target` for new requirement relation")
+        cls: t.Type[c.T]
+        cls, xtype = self._find_relation_type(kw["target"])
+        parent = elmlist._parent._element
+        with elmlist._model._loader.new_uuid(parent) as uuid:
+            return cls(
+                elmlist._model,
+                parent,
+                **kw,
+                source=elmlist._parent,
+                uuid=uuid,
+                xtype=xtype,
+            )
+
+    def _find_relation_type(
+        self, target: c.GenericElement
+    ) -> t.Tuple[t.Type[c.T], str]:
+        if isinstance(target, Requirement):
+            return (
+                t.cast(t.Type[c.T], RequirementsIntRelation),
+                XT_INT_RELATION,
+            )
+        elif isinstance(target, ReqIFElement):
+            raise TypeError(
+                "Cannot create relations to targets of type"
+                f" {type(target).__name__}"
+            )
+        else:
+            return (
+                t.cast(t.Type[c.T], RequirementsIncRelation),
+                XT_INC_RELATION,
+            )
+
+
+class ElementRelationAccessor(
+    c.WritableAccessor["AbstractRequirementsRelation"]
+):
     """Provides access to RequirementsRelations of a GenericElement."""
 
-    __slots__ = ()
+    # pylint: disable=abstract-method  # Only partially implemented for now
+
+    __slots__ = ("aslist",)
+
+    def __init__(self) -> None:
+        super().__init__(aslist=RequirementRelationsList)
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -121,7 +180,8 @@ class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
             )
             return rel.target
 
-        return RequirementRelationsList(
+        assert self.aslist is not None
+        return self.aslist(
             obj._model,
             list(
                 itertools.chain(
@@ -130,9 +190,32 @@ class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
                 )
             ),
             None,
-            parent=None,
+            parent=obj,
             side="source",
         )
+
+    def create(
+        self,
+        elmlist: c.ElementListCouplingMixin,
+        /,
+        *type_hints: t.Optional[str],
+        **kw: t.Any,
+    ) -> c.T:
+        if "target" not in kw:
+            raise TypeError("No `target` for new requirement relation")
+        if not isinstance(kw["target"], Requirement):
+            raise TypeError("`target` must be of type 'Requirement'")
+        cls = t.cast(t.Type[c.T], RequirementsOutRelation)
+        parent = elmlist._parent
+        with parent._model._loader.new_uuid(parent._element) as uuid:
+            return cls(
+                elmlist._model,
+                parent,
+                **kw,
+                source=elmlist._parent,
+                uuid=uuid,
+                xtype=XT_OUT_RELATION,
+            )
 
 
 class RequirementTypeAccessor(c.Accessor):
@@ -192,12 +275,11 @@ class RequirementRelationsList(c.ElementList["AbstractRequirementsRelation"]):
         elements: t.List[etree._Element],
         elemclass: t.Type[t.Any] = None,
         *,
-        parent: t.Optional[etree._Element],
         side: str = None,
     ) -> None:
         del elemclass
         assert side in {"source", "target"}
-        super().__init__(model, elements, c.GenericElement, parent=parent)
+        super().__init__(model, elements, c.GenericElement)
         self._side = side
 
     def __getitem__(self, idx: int) -> c.GenericElement:
@@ -213,14 +295,12 @@ class RequirementRelationsList(c.ElementList["AbstractRequirementsRelation"]):
             assert isinstance(rel_elm, ReqIFElement)
             if rel_elm.type == reltype:
                 matches.append(elm)
-        return type(self)(
-            self._model, matches, None, side=self._side, parent=None
-        )
+        return type(self)(self._model, matches, None, side=self._side)
 
     def _newlist(self, elements):
-        return type(self)(
-            self._model, elements, None, side=self._side, parent=None
-        )
+        listtype = self._newlist_type()
+        assert issubclass(listtype, RequirementRelationsList)
+        return listtype(self._model, elements, side=self._side)
 
 
 class ReqIFElement(c.GenericElement):
@@ -385,6 +465,7 @@ class RequirementsModule(ReqIFElement):
 
 
 class AbstractRequirementsRelation(ReqIFElement):
+    _required_attrs = frozenset({"source", "target"})
     type = RequirementTypeAccessor("relationType", XT_RELATION_TYPE)
 
 
@@ -436,7 +517,7 @@ def init() -> None:
         c.ProxyAccessor(
             Requirement,
             XT_REQUIREMENT,
-            aslist=c.DecoupledElementList,
+            aslist=c.ElementList,
             rootelem=XT_MODULE,
             deep=True,
         ),

@@ -116,7 +116,7 @@ class MelodyModel:
 
     def search(
         self, *xtypes: t.Union[str, t.Type[common.GenericElement]]
-    ) -> common.DecoupledMixedElementList:
+    ) -> common.MixedElementList:
         r"""Search for all elements with any of the given ``xsi:type``\ s."""
         xtypes_: t.List[str] = []
         for i in xtypes:
@@ -124,7 +124,7 @@ class MelodyModel:
                 xtypes_.append(common.build_xtype(i))
             else:
                 xtypes_.append(i)
-        return common.DecoupledMixedElementList(
+        return common.MixedElementList(
             self, self._loader.find_by_xsi_type(*xtypes_)
         )
 

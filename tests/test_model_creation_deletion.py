@@ -32,18 +32,15 @@ def model():
 
 
 def test_created_elements_can_be_accessed_in_model(model):
-    newobj = model.la.root_component.components.create(
-        "LogicalComponent", name="TestComponent"
-    )
+    newobj = model.la.root_component.components.create(name="TestComponent")
 
     assert newobj is not None
+    assert isinstance(newobj, capellambse.model.layers.la.LogicalComponent)
     assert newobj in model.la.root_component.components
 
 
 def test_created_elements_show_up_in_xml_after_adding_them(model):
-    newobj = model.la.root_component.components.create(
-        "LogicalComponent", name="TestComponent"
-    )
+    newobj = model.la.root_component.components.create(name="TestComponent")
 
     try:
         model._loader[newobj.uuid]

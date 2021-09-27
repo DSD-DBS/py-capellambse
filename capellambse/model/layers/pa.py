@@ -117,16 +117,16 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     function_package = c.ProxyAccessor(PhysicalFunctionPkg)
 
     all_components = c.ProxyAccessor(
-        PhysicalComponent, aslist=c.DecoupledElementList, deep=True
+        PhysicalComponent, aslist=c.ElementList, deep=True
     )
     all_functions = c.ProxyAccessor(
         PhysicalFunction,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         rootelem=PhysicalFunctionPkg,
         deep=True,
     )
     all_physical_links = c.ProxyAccessor(
-        cs.PhysicalLink, aslist=c.DecoupledElementList, deep=True
+        cs.PhysicalLink, aslist=c.ElementList, deep=True
     )
     diagrams = diagram.DiagramAccessor(
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
