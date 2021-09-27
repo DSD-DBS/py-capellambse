@@ -93,7 +93,7 @@ def load_model(
     if app.confdir is None:
         raise ValueError("Cannot load model: No confdir defined for Sphinx")
 
-    env.capellambse_loaded_model = capellambse.MelodyModel(  # type: ignore[attr-defined]
+    env.capellambse_loaded_model = capellambse.MelodyModel(
         pathlib.Path(app.confdir, app.config.capellambse_model)
     )
 
@@ -106,7 +106,7 @@ def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
     processing the source files.
     """
     if hasattr(env, "capellambse_loaded_model"):
-        del env.capellambse_loaded_model  # type: ignore[attr-defined]
+        del env.capellambse_loaded_model
 
 
 class DiagramDirective(sphinx.util.docutils.SphinxDirective):
@@ -131,7 +131,7 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
                 f"Cannot show diagram {name!r}: No model configured"
             )
 
-        model = self.env.capellambse_loaded_model  # type: ignore[attr-defined]
+        model = self.env.capellambse_loaded_model
         try:
             diagram = model.diagrams.by_name(name)
         except KeyError as error:
