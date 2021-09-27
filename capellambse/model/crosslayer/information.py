@@ -39,7 +39,7 @@ def _allocated_exchange_items(
 
 def _search_all_exchanges(
     obj: c.GenericElement,
-) -> c.DecoupledElementList[ExchangeItem]:
+) -> c.ElementList[ExchangeItem]:
     from . import fa
 
     return obj._model.search(fa.ComponentExchange, fa.FunctionalExchange)
@@ -91,7 +91,7 @@ class ExchangeItem(c.GenericElement):
         c.GenericElement,
         _search_all_exchanges,
         matchtransform=_allocated_exchange_items,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
 
 

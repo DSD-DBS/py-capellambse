@@ -51,7 +51,7 @@ class OperationalProcess(c.GenericElement):
     involved = c.ProxyAccessor(
         c.GenericElement,
         fa.XT_FCI,
-        aslist=c.DecoupledMixedElementList,
+        aslist=c.MixedElementList,
         follow="involved",
     )
 
@@ -72,12 +72,12 @@ class OperationalCapability(c.GenericElement):
         c.GenericElement,
         XT_EOCI,
         follow="involved",
-        aslist=c.DecoupledMixedElementList,
+        aslist=c.MixedElementList,
     )
     involved_processes = c.ProxyAccessor(
         OperationalProcess,
         interaction.XT_CAP2PROC,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         follow="involved",
     )
     owned_processes = c.ProxyAccessor(OperationalProcess, aslist=c.ElementList)
@@ -111,7 +111,7 @@ class AbstractEntity(cs.Component):
     activities = c.ProxyAccessor(
         OperationalActivity,
         fa.XT_FCALLOC,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         follow="targetElement",
     )
     state_machines = c.ProxyAccessor(
@@ -171,28 +171,28 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
 
     all_activities = c.ProxyAccessor(
         OperationalActivity,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         deep=True,
     )
     all_actors = c.CustomAccessor(
         Entity,
         operator.attrgetter("all_entities"),
         elmmatcher=lambda x, _: t.cast(Entity, x).is_actor,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
     all_capabilities = c.ProxyAccessor(
         OperationalCapability,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         deep=True,
     )
     all_entities = c.ProxyAccessor(
         Entity,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         deep=True,
     )
     all_processes = c.ProxyAccessor(
         OperationalProcess,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
         deep=True,
     )
     diagrams = diagram.DiagramAccessor(

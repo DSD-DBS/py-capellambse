@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# pylint: disable=redefined-outer-name  # Limitation of pytest fixtures
 import pathlib
 import sys
 
 import pytest
 
-import capellambse
 from capellambse import aird, loader
 
 
@@ -81,7 +79,7 @@ class TestAIRDBasicFunctionality:
         self, diagram_under_test, caplog
     ):
         del caplog
-        expected = self.test_txt.read_text()
+        expected = self.test_repr.read_text()
         actual = repr(diagram_under_test)
         assert actual + "\n" == expected
 
@@ -96,10 +94,6 @@ class TestAIRDParserMSM:
     )
     test_diagram = "[MSM] States of Functional Human Being"
     test_json = test_model.with_suffix(f".{test_diagram}.json")
-
-    @pytest.fixture
-    def model(self):
-        return capellambse.MelodyModel(self.test_model)
 
     @pytest.mark.xfail(
         sys.platform not in {"win32", "cygwin"},

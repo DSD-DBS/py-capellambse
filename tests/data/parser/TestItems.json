@@ -18,7 +18,12 @@
             "context": [
                 "_-hSsYDt2EeqVgZfye5VSwA"
             ],
-            "label": "- Requirement 1\n- This is a requirement for logical component 1."
+            "features": [
+                "- ",
+                "- Requirement 1",
+                "- ",
+                "- This is a requirement for logical component 1."
+            ]
         },
         {
             "type": "box",
@@ -31,7 +36,12 @@
             "context": [
                 "_3tvU8Dt2EeqVgZfye5VSwA"
             ],
-            "label": "- Requirement 2\n- This is a requirement for logical component 2."
+            "features": [
+                "- ",
+                "- Requirement 2",
+                "- ",
+                "- This is a requirement for logical component 2."
+            ]
         },
         {
             "type": "box",
@@ -46,7 +56,13 @@
                 "_2Cn28Dt2EeqVgZfye5VSwA",
                 "_3tXhgDt2EeqVgZfye5VSwA"
             ],
-            "label": "LC 1"
+            "label": "LC 1",
+            "children": [
+                "_-geNADt2EeqVgZfye5VSwA"
+            ],
+            "ports": [
+                "_2Cn28Dt2EeqVgZfye5VSwA"
+            ]
         },
         {
             "type": "box",
@@ -63,7 +79,10 @@
                 "_-hSsYDt2EeqVgZfye5VSwA"
             ],
             "label": "LogicalFunction 1",
-            "parent": "_2CjlgDt2EeqVgZfye5VSwA"
+            "parent": "_2CjlgDt2EeqVgZfye5VSwA",
+            "ports": [
+                "_-gfbIDt2EeqVgZfye5VSwA"
+            ]
         },
         {
             "type": "symbol",
@@ -79,17 +98,17 @@
             ],
             "label": {
                 "x": 226,
-                "y": 280.5,
+                "y": 280.0,
                 "width": 29,
-                "height": 9,
-                "label": "FOP 1"
+                "height": 10,
+                "text": "FOP 1"
             },
             "parent": "_-geNADt2EeqVgZfye5VSwA"
         },
         {
             "type": "symbol",
             "id": "_2Cn28Dt2EeqVgZfye5VSwA",
-            "class": "CP",
+            "class": "CP_OUT",
             "x": 273,
             "y": 241,
             "width": 10,
@@ -100,10 +119,10 @@
             ],
             "label": {
                 "x": 268.0,
-                "y": 230,
+                "y": 229,
                 "width": 22,
-                "height": 9,
-                "label": "CP 1"
+                "height": 10,
+                "text": "CP 1"
             },
             "parent": "_2CjlgDt2EeqVgZfye5VSwA"
         },
@@ -121,7 +140,13 @@
                 "_3tXhgDt2EeqVgZfye5VSwA",
                 "_3tvU8Dt2EeqVgZfye5VSwA"
             ],
-            "label": "LC 2"
+            "label": "LC 2",
+            "children": [
+                "_-ggpQDt2EeqVgZfye5VSwA"
+            ],
+            "ports": [
+                "_3s_uEDt2EeqVgZfye5VSwA"
+            ]
         },
         {
             "type": "box",
@@ -137,7 +162,10 @@
                 "_-ghQUTt2EeqVgZfye5VSwA"
             ],
             "label": "LogicalFunction 2",
-            "parent": "_3s8qwDt2EeqVgZfye5VSwA"
+            "parent": "_3s8qwDt2EeqVgZfye5VSwA",
+            "ports": [
+                "_-ghQUTt2EeqVgZfye5VSwA"
+            ]
         },
         {
             "type": "symbol",
@@ -156,14 +184,14 @@
                 "y": 280.5,
                 "width": 23,
                 "height": 9,
-                "label": "FIP 1"
+                "text": "FIP 1"
             },
             "parent": "_-ggpQDt2EeqVgZfye5VSwA"
         },
         {
             "type": "symbol",
             "id": "_3s_uEDt2EeqVgZfye5VSwA",
-            "class": "CP",
+            "class": "CP_IN",
             "x": 338,
             "y": 241,
             "width": 10,
@@ -176,8 +204,8 @@
                 "x": 333.0,
                 "y": 253,
                 "width": 22,
-                "height": 9,
-                "label": "CP 1"
+                "height": 10,
+                "text": "CP 1"
             },
             "parent": "_3s8qwDt2EeqVgZfye5VSwA"
         },
@@ -197,10 +225,10 @@
             ],
             "label": {
                 "x": 302,
-                "y": 242,
+                "y": 241,
                 "width": 16,
-                "height": 9,
-                "name": "C 1"
+                "height": 10,
+                "text": "C 1"
             }
         },
         {
@@ -216,7 +244,14 @@
                     551,
                     257
                 ]
-            ]
+            ],
+            "label": {
+                "x": 590,
+                "y": 260,
+                "width": 60,
+                "height": 10,
+                "text": "allocatedTo"
+            }
         },
         {
             "type": "edge",
@@ -337,7 +372,7 @@
                 "y": 460,
                 "width": 181,
                 "height": 30,
-                "name": "Choo Choo Motherfucker!"
+                "text": "Choo Choo Motherfucker!"
             }
         },
         {
@@ -391,7 +426,14 @@
                     104,
                     257
                 ]
-            ]
+            ],
+            "label": {
+                "x": 609,
+                "y": 120,
+                "width": 60,
+                "height": 10,
+                "text": "allocatedTo"
+            }
         }
     ]
 }

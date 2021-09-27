@@ -2,9 +2,9 @@
     "name": "[MSM] States of Functional Human Being",
     "uuid": "_7FWu4KrxEeqOgqWuHJrXFA",
     "class": "Mode State Machine",
-    "x": 22,
+    "x": 20,
     "y": 29,
-    "width": 965,
+    "width": 967,
     "height": 472,
     "contents": [
         {
@@ -19,11 +19,11 @@
                 "_DEZpEKryEeqOgqWuHJrXFA"
             ],
             "label": {
-                "x": 22.0,
-                "y": 190,
+                "x": 20.0,
+                "y": 220.0,
                 "width": 26,
                 "height": 10,
-                "label": "Birth"
+                "text": "Birth"
             }
         },
         {
@@ -41,6 +41,9 @@
             "label": "Sleeping",
             "features": [
                 " do / Sleep"
+            ],
+            "children": [
+                "_-76wwKrxEeqOgqWuHJrXFA"
             ]
         },
         {
@@ -70,6 +73,9 @@
             "label": "Eating",
             "features": [
                 " do / Eat"
+            ],
+            "children": [
+                "_arnyAKryEeqOgqWuHJrXFA"
             ]
         },
         {
@@ -99,6 +105,9 @@
             "label": "Cooking",
             "features": [
                 " do / Make Food"
+            ],
+            "children": [
+                "_ZAHScKryEeqOgqWuHJrXFA"
             ]
         },
         {
@@ -114,7 +123,7 @@
             "parent": "_Y_5QAKryEeqOgqWuHJrXFA"
         },
         {
-            "type": "box",
+            "type": "box_symbol",
             "id": "_BhQhsqr6EeqOgqWuHJrXFA",
             "class": "ChoicePseudoState",
             "x": 531,
@@ -127,15 +136,15 @@
                 "_CNeugKr6EeqOgqWuHJrXFA"
             ],
             "label": {
-                "x": 582,
-                "y": 202,
+                "x": 582.0,
+                "y": 202.0,
                 "width": 203,
                 "height": 12,
-                "label": "Does the hunted animal want revenge?"
+                "text": "Does the hunted animal want revenge?"
             }
         },
         {
-            "type": "box",
+            "type": "box_symbol",
             "id": "_CNbEJKr6EeqOgqWuHJrXFA",
             "class": "ChoicePseudoState",
             "x": 531,
@@ -148,11 +157,11 @@
                 "_CNeugKr6EeqOgqWuHJrXFA"
             ],
             "label": {
-                "x": 400,
-                "y": 50,
+                "x": 400.0,
+                "y": 50.0,
                 "width": 129,
-                "height": 10,
-                "label": "Was the hunt successful?"
+                "height": 12,
+                "text": "Was the hunt successful?"
             }
         },
         {
@@ -168,7 +177,10 @@
                 "_BhVaMqr6EeqOgqWuHJrXFA",
                 "_YeUqgAIGEeuKMPMWe5uErQ"
             ],
-            "label": "Running away"
+            "label": "Running away",
+            "children": [
+                "_nHIbAqrzEeqOgqWuHJrXFA"
+            ]
         },
         {
             "type": "box",
@@ -197,6 +209,9 @@
             "label": "Hunting",
             "features": [
                 " do / Hunt wild animal"
+            ],
+            "children": [
+                "_SJy64KryEeqOgqWuHJrXFA"
             ]
         },
         {
@@ -232,6 +247,9 @@
                 " entry / Play games",
                 " do / Build house",
                 " exit / Search for animals"
+            ],
+            "children": [
+                "_wVr1QKrzEeqOgqWuHJrXFA"
             ]
         },
         {
@@ -247,7 +265,7 @@
             "parent": "_wVbWkKrzEeqOgqWuHJrXFA"
         },
         {
-            "type": "box",
+            "type": "box_symbol",
             "id": "_juTKMOtuEeq3j_7pYQdn7g",
             "class": "ForkPseudoState",
             "x": 171,
@@ -260,11 +278,11 @@
                 "_qv36GOtvEeq3j_7pYQdn7g"
             ],
             "label": {
-                "x": 105,
-                "y": 468,
+                "x": 105.0,
+                "y": 468.0,
                 "width": 128,
-                "height": 12,
-                "label": "Split out soul from body"
+                "height": 13,
+                "text": "Split out soul from body"
             }
         },
         {
@@ -279,11 +297,11 @@
                 "_KQkWJutvEeq3j_7pYQdn7g"
             ],
             "label": {
-                "x": 204.5,
-                "y": 418,
+                "x": 253.0,
+                "y": 435.0,
                 "width": 75,
                 "height": 12,
-                "label": "Physical Death"
+                "text": "Physical Death"
             }
         },
         {
@@ -298,11 +316,11 @@
                 "_qv36GOtvEeq3j_7pYQdn7g"
             ],
             "label": {
-                "x": 193.0,
-                "y": 388,
+                "x": 253.0,
+                "y": 402.0,
                 "width": 98,
                 "height": 12,
-                "label": "Spiritual Ascension"
+                "text": "Spiritual Ascension"
             }
         },
         {
@@ -331,7 +349,7 @@
                     112
                 ],
                 [
-                    886,
+                    889,
                     305
                 ]
             ],
@@ -340,7 +358,10 @@
                 "y": 123,
                 "width": 97,
                 "height": 16,
-                "name": " [Actor feels sated]"
+                "text": " [Actor feels sated]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -362,7 +383,10 @@
                 "y": 36,
                 "width": 97,
                 "height": 36,
-                "name": "Prepared food [Food is cooked]"
+                "text": "Prepared food [Food is cooked]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -384,7 +408,10 @@
                 "y": 41,
                 "width": 84,
                 "height": 34,
-                "name": "Hunted animal [Success]"
+                "text": "Hunted animal [Success]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -406,7 +433,10 @@
                 "y": 135,
                 "width": 70,
                 "height": 20,
-                "name": " [Hunt failed]"
+                "text": " [Hunt failed]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -428,7 +458,10 @@
                 "y": 191,
                 "width": 56,
                 "height": 18,
-                "name": " [Revenge]"
+                "text": " [Revenge]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -450,7 +483,10 @@
                 "y": 51,
                 "width": 74,
                 "height": 18,
-                "name": " [Hunt ended]"
+                "text": " [Hunt ended]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -467,12 +503,8 @@
                     213
                 ]
             ],
-            "label": {
-                "x": 58,
-                "y": 198,
-                "width": 6,
-                "height": 10,
-                "name": " []"
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -494,7 +526,10 @@
                 "y": 130,
                 "width": 104,
                 "height": 37,
-                "name": "Hunt wild animal [Actor feels hungry]"
+                "text": "Hunt wild animal [Actor feels hungry]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -516,7 +551,10 @@
                 "y": 186,
                 "width": 100,
                 "height": 21,
-                "name": " [Reached safety]"
+                "text": " [Reached safety]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -542,7 +580,10 @@
                 "y": 331,
                 "width": 131,
                 "height": 14,
-                "name": " [Actor feels well rested]"
+                "text": " [Actor feels well rested]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -568,7 +609,10 @@
                 "y": 238,
                 "width": 71,
                 "height": 18,
-                "name": " [No revenge]"
+                "text": " [No revenge]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -594,7 +638,10 @@
                 "y": 354,
                 "width": 109,
                 "height": 20,
-                "name": " [Actor gets too old]"
+                "text": " [Actor gets too old]"
+            },
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -611,12 +658,8 @@
                     448
                 ]
             ],
-            "label": {
-                "x": 207,
-                "y": 433,
-                "width": 6,
-                "height": 10,
-                "name": " []"
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -633,12 +676,8 @@
                     417
                 ]
             ],
-            "label": {
-                "x": 203,
-                "y": 402,
-                "width": 6,
-                "height": 10,
-                "name": " []"
+            "style": {
+                "stroke": "#000000"
             }
         },
         {
@@ -647,7 +686,7 @@
             "class": "Connector",
             "points": [
                 [
-                    427,
+                    419,
                     234
                 ],
                 [

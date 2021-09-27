@@ -51,6 +51,8 @@ Known limitations
     after changing the model, you need to force a full rebuild of all
     pages by passing ``--fresh-env`` to Sphinx' build command.
 """
+from __future__ import annotations
+
 import pathlib
 import typing as t
 

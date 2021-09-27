@@ -643,6 +643,6 @@ class TestSVGHelpers:
             "             • item 1\n             • item 2", 100, 0, 0
         )
         assert lines == ["             • item 1", "             • item 2"]
-        assert margin == 10
+        assert 10 <= margin < 13
         for line in lines:
             assert capellambse.helpers.extent_func(line)[0] <= max_text_width

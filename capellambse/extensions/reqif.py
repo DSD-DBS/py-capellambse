@@ -82,10 +82,92 @@ attr_type_map = {
 undefined_value = "undefined"
 
 
-class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
+class RequirementsRelationAccessor(
+    c.WritableAccessor["AbstractRequirementsRelation"]
+):
+    """Searches for requirement relations in the architecture layer."""
+
+    # pylint: disable=abstract-method  # Only partially implemented for now
+
+    __slots__ = ("aslist",)
+
+    def __init__(self, *args, **kw) -> None:
+        super().__init__(*args, **kw, aslist=c.ElementList)
+
+    def __get__(self, obj, objtype=None):
+        del objtype
+        if obj is None:  # pragma: no cover
+            return self
+
+        rel_objs = list(
+            obj._model._loader.iterchildren_xt(obj._element, XT_INC_RELATION)
+        )
+
+        for i in obj._model._loader.iterall_xt(XT_OUT_RELATION):
+            if RequirementsOutRelation.from_model(obj._model, i).source == obj:
+                rel_objs.append(i)
+
+        for i in obj._model._loader.iterall_xt(XT_INT_RELATION):
+            rel = RequirementsIntRelation.from_model(obj._model, i)
+            if obj in (rel.source, rel.target):
+                rel_objs.append(i)
+
+        assert self.aslist is not None
+        return self.aslist(obj._model, rel_objs, c.GenericElement, parent=obj)
+
+    def create(
+        self,
+        elmlist: c.ElementListCouplingMixin,
+        /,
+        *type_hints: t.Optional[str],
+        **kw: t.Any,
+    ) -> c.T:
+        if "target" not in kw:
+            raise TypeError("No `target` for new requirement relation")
+        cls: t.Type[c.T]
+        cls, xtype = self._find_relation_type(kw["target"])
+        parent = elmlist._parent._element
+        with elmlist._model._loader.new_uuid(parent) as uuid:
+            return cls(
+                elmlist._model,
+                parent,
+                **kw,
+                source=elmlist._parent,
+                uuid=uuid,
+                xtype=xtype,
+            )
+
+    def _find_relation_type(
+        self, target: c.GenericElement
+    ) -> t.Tuple[t.Type[c.T], str]:
+        if isinstance(target, Requirement):
+            return (
+                t.cast(t.Type[c.T], RequirementsIntRelation),
+                XT_INT_RELATION,
+            )
+        elif isinstance(target, ReqIFElement):
+            raise TypeError(
+                "Cannot create relations to targets of type"
+                f" {type(target).__name__}"
+            )
+        else:
+            return (
+                t.cast(t.Type[c.T], RequirementsIncRelation),
+                XT_INC_RELATION,
+            )
+
+
+class ElementRelationAccessor(
+    c.WritableAccessor["AbstractRequirementsRelation"]
+):
     """Provides access to RequirementsRelations of a GenericElement."""
 
-    __slots__ = ()
+    # pylint: disable=abstract-method  # Only partially implemented for now
+
+    __slots__ = ("aslist",)
+
+    def __init__(self) -> None:
+        super().__init__(aslist=RelationsList)
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -123,7 +205,8 @@ class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
             )
             return rel.target
 
-        return RelationsList(
+        assert self.aslist is not None
+        return self.aslist(
             obj._model,
             list(
                 itertools.chain(
@@ -132,9 +215,32 @@ class ElementRelationAccessor(c.Accessor["AbstractRequirementsRelation"]):
                 )
             ),
             None,
-            parent=None,
+            parent=obj,
             side="source",
         )
+
+    def create(
+        self,
+        elmlist: c.ElementListCouplingMixin,
+        /,
+        *type_hints: t.Optional[str],
+        **kw: t.Any,
+    ) -> c.T:
+        if "target" not in kw:
+            raise TypeError("No `target` for new requirement relation")
+        if not isinstance(kw["target"], Requirement):
+            raise TypeError("`target` must be of type 'Requirement'")
+        cls = t.cast(t.Type[c.T], RequirementsOutRelation)
+        parent = elmlist._parent
+        with parent._model._loader.new_uuid(parent._element) as uuid:
+            return cls(
+                elmlist._model,
+                parent,
+                **kw,
+                source=elmlist._parent,
+                uuid=uuid,
+                xtype=XT_OUT_RELATION,
+            )
 
 
 class ReqIFElement(c.GenericElement):
@@ -228,31 +334,24 @@ class AbstractRequirementsAttribute(c.GenericElement):
         return f"<{mytype} [{name}] ({self.uuid})>"
 
 
-class AttributeAccessor(c.Accessor):
-    def __get__(self, obj, objtype=None):
+class AttributeAccessor(
+    c.WritableAccessor["RequirementsAttribute | EnumerationValueAttribute"]
+):
+    def __init__(self) -> None:
+        super().__init__(aslist=c.MixedElementList)
+
+    def __get__(
+        self, obj: Requirement | None, objtype: t.Any = None
+    ) -> AttributeAccessor | c.ElementList[
+        RequirementsAttribute
+    ] | c.MixedElementList:
         del objtype
         if obj is None:  # pragma: no cover
             return self
 
         elm: etree._Element = obj._element
-        xmltag = AbstractRequirementsAttribute._xmltag
-        attrs = [attr for attr in elm.iterchildren(xmltag)]
-        enums = elm.xpath(
-            f"./{xmltag}[@xsi:type='{XT_REQ_ATTR_ENUMVALUE}']",
-            namespaces=capellambse.NAMESPACES,
-        )
-
-        if not enums:
-            return c.ElementList(
-                obj._model, attrs, RequirementsAttribute, parent=elm
-            )
-
-        return c.MixedElementList(
-            obj._model,
-            attrs,
-            (RequirementsAttribute, EnumerationValueAttribute),
-            parent=elm,
-        )
+        elements = obj._model._loader.iterchildren_xt(elm, *XT_REQ_ATTRIBUTES)
+        return self.aslist(obj._model, list(elements), parent=obj)
 
 
 class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
@@ -262,12 +361,11 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         elements: t.List[etree._Element],
         elemclass: t.Type[t.Any] = None,
         *,
-        parent: t.Optional[etree._Element],
         side: str = "source",
     ) -> None:
         del elemclass
         assert side in {"source", "target"}
-        super().__init__(model, elements, c.GenericElement, parent=parent)
+        super().__init__(model, elements, c.GenericElement)
         self._side = side
 
     def __getitem__(self, idx: int | slice) -> c.GenericElement:
@@ -292,9 +390,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
             )
             if rel_elm.type is not None and rel_elm.type.name == reltype:
                 matches.append(elm)
-        return type(self)(
-            self._model, matches, None, side=self._side, parent=None
-        )
+        return self._newlist(matches)
 
     @property
     def incoming(self) -> RelationsList:
@@ -304,10 +400,10 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
     def outgoing(self) -> RelationsList:
         return self._filter_by_relcls(RequirementsOutRelation)
 
-    def _newlist(self, elements):
-        return type(self)(
-            self._model, elements, None, side=self._side, parent=None
-        )
+    def _newlist(self, elements: t.List[etree._Element]) -> RelationsList:
+        listtype = self._newlist_type()
+        assert issubclass(listtype, RelationsList)
+        return listtype(self._model, elements, side=self._side)
 
     def _filter_by_relcls(
         self,
@@ -325,9 +421,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
                 relcls,
             )
         ]
-        return type(self)(
-            self._model, matches, None, side=self._side, parent=None
-        )
+        return self._newlist(matches)
 
 
 @c.xtype_handler(None, *(XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}))
@@ -351,7 +445,7 @@ class EnumDataTypeDefinition(ReqIFElement):
     _xmltag = "ownedDefinitionTypes"
 
     enum_values = c.ProxyAccessor(
-        None, XT_REQ_TYPE_ENUM_DEF, aslist=c.DecoupledElementList
+        None, XT_REQ_TYPE_ENUM_DEF, aslist=c.ElementList
     )
 
 
@@ -402,12 +496,12 @@ class AbstractType(ReqIFElement):
     attribute_definitions = c.ProxyAccessor(
         AttributeDefinition,
         XT_REQ_TYPE_ATTR_DEF,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
     enum_definitions = c.ProxyAccessor(
         AttributeDefinitionEnumeration,
         XT_REQ_TYPE_ENUM_DEF,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
 
 
@@ -442,11 +536,7 @@ class Requirement(ReqIFElement):
         "_element", "ReqIFText", optional=True, returntype=c.markuptype
     )
     attributes = AttributeAccessor()
-    relations = c.ProxyAccessor(
-        c.GenericElement,
-        (XT_INC_RELATION, XT_OUT_RELATION, XT_INT_RELATION),
-        aslist=c.ElementList,
-    )
+    relations = RequirementsRelationAccessor()
     type = c.AttrProxyAccessor(RequirementType, "requirementType")
 
 
@@ -479,6 +569,7 @@ class RequirementsModule(ReqIFElement):
 
 
 class AbstractRequirementsRelation(ReqIFElement):
+    _required_attrs = frozenset({"source", "target"})
     _xmltag = "ownedRelations"
 
     type = c.AttrProxyAccessor(RelationType, "relationType")
@@ -511,19 +602,19 @@ class RequirementsTypesFolder(ReqIFElement):
     data_type_definitions = c.ProxyAccessor(
         DataTypeDefinition,
         XT_REQ_TYPES_DATA_DEF,
-        aslist=c.DecoupledElementList,
+        aslist=c.ElementList,
     )
     enum_data_type_definitions = c.ProxyAccessor(
-        EnumDataTypeDefinition, XT_REQ_TYPE_ENUM, aslist=c.DecoupledElementList
+        EnumDataTypeDefinition, XT_REQ_TYPE_ENUM, aslist=c.ElementList
     )
     module_types = c.ProxyAccessor(
-        ModuleType, XT_MODULE_TYPE, aslist=c.DecoupledElementList
+        ModuleType, XT_MODULE_TYPE, aslist=c.ElementList
     )
     relation_types = c.ProxyAccessor(
-        RelationType, XT_RELATION_TYPE, aslist=c.DecoupledElementList
+        RelationType, XT_RELATION_TYPE, aslist=c.ElementList
     )
     requirement_types = c.ProxyAccessor(
-        RequirementType, XT_REQ_TYPE, aslist=c.DecoupledElementList
+        RequirementType, XT_REQ_TYPE, aslist=c.ElementList
     )
 
 
@@ -545,7 +636,7 @@ def init() -> None:
         c.ProxyAccessor(
             Requirement,
             XT_REQUIREMENT,
-            aslist=c.DecoupledElementList,
+            aslist=c.ElementList,
             rootelem=XT_MODULE,
             deep=True,
         ),
@@ -556,7 +647,7 @@ def init() -> None:
         c.ProxyAccessor(
             RequirementsTypesFolder,
             XT_REQ_TYPES_F,
-            aslist=c.DecoupledElementList,
+            aslist=c.ElementList,
         ),
     )
     c.set_accessor(
