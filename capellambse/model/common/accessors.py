@@ -23,7 +23,13 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
+from . import XTYPE_HANDLERS, build_xtype, element
+
+# pylint: disable=invalid-name
+S = t.TypeVar("S", bound=t.Optional[str])
+T = t.TypeVar("T", bound=element.ModelObject)
+U = t.TypeVar("U")
+# pylint: enable=invalid-name
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"

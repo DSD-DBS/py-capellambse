@@ -25,12 +25,6 @@ import markupsafe
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-# pylint: disable=invalid-name
-S = t.TypeVar("S", bound=t.Optional[str])
-T = t.TypeVar("T", bound="ModelObject")
-U = t.TypeVar("U")
-# pylint: enable=invalid-name
-
 XTYPE_HANDLERS: t.Dict[
     t.Optional[str], t.Dict[str, t.Type[t.Any]]
 ] = collections.defaultdict(dict)

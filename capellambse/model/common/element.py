@@ -25,7 +25,7 @@ import capellambse
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, T, U, accessors, enumliteral, markuptype
+from . import XTYPE_HANDLERS, accessors, markuptype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -55,6 +55,12 @@ class ModelObject(t.Protocol):
     ) -> ModelObject:
         """Instantiate a ModelObject from existing model elements."""
         ...
+
+
+# pylint: disable=invalid-name
+T = t.TypeVar("T", bound=ModelObject)
+U = t.TypeVar("U")
+# pylint: enable=invalid-name
 
 
 class GenericElement:
