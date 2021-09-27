@@ -17,6 +17,26 @@ The library also works with the PVMT and Requirements extensions without any add
 
 It started as a basic library that enables us talking to the model somewhere mid 2019. Since then it was re-architected a few times and now has a full read/write capability for most of the present Capella ontology. We are continuously improving the API (introducing shortcuts) and increasing the meta-model coverage.
 
+## Getting started
+
+The quickest way to get started is to clone the library's source code and play with various tutorials and test models. 
+You may get there by following the below steps (on Linux, Mac or WSL):
+
+```bash
+git clone ... & cd py-capella-mbse
+python3 -m venv venv
+source venv/bin/activate
+pip install jupyter
+python setup.py install
+pip install pandas xlsxwriter # for examples with tabular data representationss
+cd examples
+jupyter-notebook # optional, you may also start it via vscode
+```
+
+The above code snippet should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder (and most likely a browser window).
+
+You may then open the `01_sIntroduction.ipynb` or check-out a non interactive preview [right here](examples/01_Introduction.ipynb)
+
 ## Documentation and examples
 
 We designed the library API such that it is easy to use and discover, however there is also [documentation available here](TODO). Additionally, the [practical examples folder](TODO) provides a collection of Jupyter notebooks with practical examples (like getting traceability matrices, change assessments, BoMs, etc).
