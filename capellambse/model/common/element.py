@@ -291,20 +291,13 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
 
             The order in which the values are yielded is undefined.
             """
-            yielded: t.Union[t.Set[U], t.List[U]] = set()
-            assert isinstance(yielded, set)
-            add_to_yielded: t.Callable[[U], None] = yielded.add
+            yielded: t.Set[U | str] = set()
 
             for elm in self.parent:
                 key = self.extract_key(elm)
                 if key not in yielded:
                     yield key
-                    try:
-                        add_to_yielded(key)
-                    except TypeError:
-                        yielded = list(yielded)
-                        add_to_yielded = yielded.append
-                        add_to_yielded(key)
+                    yielded.add(key)
 
         def __contains__(self, value: U) -> bool:
             valueset = self.make_values_container(value)
