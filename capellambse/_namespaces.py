@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+from __future__ import annotations
+
 import dataclasses as dc
 import re
 import typing as t
@@ -30,7 +33,7 @@ class Version:
         yield self.plugin
         yield self.version
 
-    def __le__(self, other: t.Union[int, float, str]) -> t.Any:
+    def __le__(self, other: t.Union[Version, int, float, str]) -> t.Any:
         if self.version is None:
             return False
 
