@@ -25,6 +25,8 @@ import markupsafe
 from capellambse import helpers
 from capellambse.loader import xmltools
 
+T = t.TypeVar("T", bound="ModelObject")
+
 XTYPE_HANDLERS: t.Dict[
     t.Optional[str], t.Dict[str, t.Type[t.Any]]
 ] = collections.defaultdict(dict)

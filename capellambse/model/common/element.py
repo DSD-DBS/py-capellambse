@@ -13,6 +13,14 @@
 # limitations under the License.
 from __future__ import annotations
 
+__all__ = [
+    "ModelObject",
+    "GenericElement",
+    "ElementList",
+    "CachedElementList",
+    "MixedElementList",
+]
+
 import collections.abc
 import enum
 import operator
@@ -43,6 +51,7 @@ class ModelObject(t.Protocol):
     """
 
     _model: capellambse.MelodyModel
+    _element: etree._Element
 
     def __init__(self, **kw: t.Any) -> None:
         if kw:

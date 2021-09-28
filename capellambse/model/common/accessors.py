@@ -13,6 +13,19 @@
 # limitations under the License.
 from __future__ import annotations
 
+__all__ = [
+    "Accessor",
+    "ProxyAccessor",
+    "AttrProxyAccessor",
+    "AlternateAccessor",
+    "ParentAccessor",
+    "CustomAccessor",
+    "AttributeMatcherAccessor",
+    "SpecificationAccessor",
+    "ReferenceSearchingAccessor",
+    "ElementListCouplingMixin",
+]
+
 import abc
 import itertools
 import operator
@@ -47,27 +60,27 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     __name__: str
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Type | None) -> Accessor:
+    def __get__(self, obj: None, objtype: t.Type[T] | None) -> Accessor:
         ...
 
     @t.overload
     def __get__(
         self,
         obj: T,
-        objtype: t.Optional[t.Type[T]] = None,
+        objtype: t.Type[T] | None = None,
     ) -> t.Union[
-        element.ElementList[element.GenericElement],
-        element.GenericElement,
+        element.ElementList[element.ModelObject],
+        element.ModelObject,
     ]:
         ...
 
     @abc.abstractmethod
     def __get__(
-        self, obj: t.Optional[T], objtype: t.Optional[t.Type[t.Any]] = None
+        self, obj: T | None, objtype: t.Type[T] | None = None
     ) -> t.Union[
         Accessor,
-        element.ElementList[element.GenericElement],
-        element.GenericElement,
+        element.ElementList[element.ModelObject],
+        element.ModelObject,
     ]:
         pass
 
@@ -79,7 +92,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self.__name__ = name
 
 
-class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
+class WritableAccessor(Accessor[T], t.Generic[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
     __slots__ = ()
@@ -184,7 +197,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             raise TypeError(
                 f"Expected str as first type, got {type(type_1).__name__!r}"
             )
-        candidate_classes: t.Dict[str, t.Type[element.GenericElement]]
+        candidate_classes: t.Dict[str, t.Type[T]]
         if type_2 is _NOT_SPECIFIED:
             candidate_classes = dict(
                 itertools.chain.from_iterable(
@@ -194,7 +207,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             objtype = type_1
         elif not isinstance(type_2, str):
             raise TypeError(
-                f"Expected a str objtype, not {type(objtype).__name__}"
+                f"Expected a str objtype, not {type(type_2).__name__}"
             )
         else:
             candidate_classes = XTYPE_HANDLERS[
@@ -224,8 +237,8 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         class_: t.Type[T],
         xtypes: t.Union[
             str,
-            t.Type[element.GenericElement],
-            t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
+            t.Type[element.ModelObject],
+            t.Iterable[t.Union[str, t.Type[element.ModelObject]]],
         ] = None,
         *,
         aslist: t.Optional[t.Type[element.ElementList[T]]] = None,
@@ -337,19 +350,24 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 i if isinstance(i, str) else build_xtype(i) for i in rootelem
             ]
 
-    def __get__(self, obj, objtype=None):
-        del objtype
+    def __get__(
+        self, obj: T | None, objtype: t.Type[T] | None = None
+    ) -> t.Union[  # type: ignore[override]
+        Accessor,
+        element.ElementList[element.ModelObject],
+        element.ModelObject,
+    ]:
         if obj is None:  # pragma: no cover
             return self
 
         elems = [self.__follow_attr(obj, e) for e in self.__getsubelems(obj)]
         elems = [x for x in elems if x is not None]
         if self.aslist is None:
-            return no_list(self, obj._model, elems, self.class_)
+            return no_list(self, obj._model, elems, self.class_)  # type: ignore[return-value]
         return self.aslist(obj._model, elems, self.class_, parent=obj)
 
     def __getsubelems(
-        self, obj: element.GenericElement
+        self, obj: element.ModelObject
     ) -> t.Iterator[etree._Element]:
         yielded_uuids = {None}
 
@@ -367,9 +385,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             yielded_uuids.add(elemid)
             yield elem
 
-    def __findroots(
-        self, obj: element.GenericElement
-    ) -> t.List[etree._Element]:
+    def __findroots(self, obj: element.ModelObject) -> t.List[etree._Element]:
         roots = [obj._element]
         for xtype in self.rootelem:
             roots = list(
@@ -380,7 +396,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return roots
 
     def __follow_attr(
-        self, obj: element.GenericElement, elem: etree._Element
+        self, obj: element.ModelObject, elem: etree._Element
     ) -> etree._Element:
         if self.follow:
             if self.follow in elem.attrib:
@@ -390,7 +406,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return self.__follow_href(obj, elem)
 
     def __follow_href(
-        self, obj: element.GenericElement, elem: etree._Element
+        self, obj: element.ModelObject, elem: etree._Element
     ) -> etree._Element:
         href = elem.get("href")
         if href:
@@ -425,7 +441,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             obj = elmclass(
                 elmlist._model, parent, **kw, xtype=xtype, uuid=obj_id
             )
-        return obj
+        return obj  # type: ignore[return-value]
 
     def insert(
         self,
@@ -444,7 +460,8 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             else:
                 parent_index = index
         except ValueError:
-            parent_index = len(self._parent)
+            # FixMe: self._parent is part of ElementListCouplingMixin
+            parent_index = len(self._parent)  # type: ignore[attr-defined]
         elmlist._parent._element.insert(parent_index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
@@ -601,9 +618,9 @@ class CustomAccessor(PhysicalAccessor[T]):
         ],
         elmmatcher: t.Callable[
             [U, element.GenericElement], bool
-        ] = operator.contains,
+        ] = operator.contains,  # type: ignore[assignment]
         matchtransform: t.Callable[[element.GenericElement], U] = (
-            lambda e: e
+            lambda e: e  # type: ignore[assignment,return-value]
         ),
         aslist: t.Type[element.ElementList] = None,
     ) -> None:
@@ -824,7 +841,7 @@ def no_list(
     model: capellambse.MelodyModel,
     elems: t.Sequence[etree._Element],
     class_: t.Type[T],
-) -> t.Optional[T]:
+) -> element.ModelObject | None:
     """Return a single element or None instead of a list of elements.
 
     Parameters
@@ -895,7 +912,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         if not isinstance(index, slice):
             index = slice(index, index + 1)
         for obj in self[index]:
-            type(self)._accessor.delete(self, obj)
+            accessor = type(self)._accessor
+            assert isinstance(accessor, WritableAccessor)
+            accessor.delete(self, obj)
         super().__delitem__(index)
 
     def _newlist_type(self) -> t.Type[element.ElementList[T]]:
@@ -903,9 +922,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert type(self).__bases__[0] is ElementListCouplingMixin
         return type(self).__bases__[1]
 
-    def create(
-        self, *args: t.Optional[str], **kw: t.Any
-    ) -> element.GenericElement:
+    def create(self, *args: t.Optional[str], **kw: t.Any) -> T:
         """Make a new model object (instance of GenericElement).
 
         Instead of specifying the full ``xsi:type`` including the
