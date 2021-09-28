@@ -119,7 +119,9 @@ class ComponentExchange(AbstractExchange):
         self,
     ) -> c.ElementList[information.ExchangeItem]:
         items = self.allocated_exchange_items
-        for exchange in self.func_exchanges:
+        func_exchanges = self.func_exchanges
+        assert isinstance(func_exchanges, t.Iterable)
+        for exchange in func_exchanges:
             items += exchange.exchange_items
         return items
 

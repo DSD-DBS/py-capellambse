@@ -165,11 +165,11 @@ class BooleanAttributeProperty(AttributeProperty):
         )
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Type[t.Any]) -> AttributeProperty:
+    def __get__(self, obj: None, objtype: t.Type) -> AttributeProperty:
         ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: t.Type[t.Any] = None) -> t.Any:
+    def __get__(self, obj: t.Any, objtype: t.Type = None) -> bool:
         ...
 
     def __get__(self, obj, objtype=None):

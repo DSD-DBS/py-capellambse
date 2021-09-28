@@ -60,28 +60,19 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     __name__: str
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Type[T] | None) -> Accessor:
+    def __get__(self, obj: None, objtype=None) -> Accessor:
         ...
 
     @t.overload
     def __get__(
         self,
-        obj: T,
-        objtype: t.Type[T] | None = None,
-    ) -> t.Union[
-        element.ElementList[element.ModelObject],
-        element.ModelObject,
-    ]:
+        obj,
+        objtype=None,
+    ) -> t.Union[element.ElementList[T], T,]:
         ...
 
     @abc.abstractmethod
-    def __get__(
-        self, obj: T | None, objtype: t.Type[T] | None = None
-    ) -> t.Union[
-        Accessor,
-        element.ElementList[element.ModelObject],
-        element.ModelObject,
-    ]:
+    def __get__(self, obj, objtype=None):
         pass
 
     def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
@@ -92,7 +83,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self.__name__ = name
 
 
-class WritableAccessor(Accessor[T], t.Generic[T], metaclass=abc.ABCMeta):
+class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
     __slots__ = ()
@@ -219,7 +210,7 @@ class WritableAccessor(Accessor[T], t.Generic[T], metaclass=abc.ABCMeta):
         return candidate_classes[objtype], objtype
 
 
-class PhysicalAccessor(t.Generic[T], Accessor[T]):
+class PhysicalAccessor(Accessor[T]):
     """Helper super class for accessors that work with real elements."""
 
     __slots__ = (
@@ -291,8 +282,8 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         class_: t.Type[T],
         xtypes: t.Union[
             str,
-            t.Type[element.GenericElement],
-            t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
+            t.Type[T],
+            t.Iterable[t.Union[str, t.Type[T]]],
         ] = None,
         *,
         aslist: t.Type[element.ElementList] = None,
@@ -350,20 +341,14 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 i if isinstance(i, str) else build_xtype(i) for i in rootelem
             ]
 
-    def __get__(  # type: ignore[override]
-        self, obj: T | None, objtype: t.Type[T] | None = None
-    ) -> t.Union[
-        Accessor,
-        element.ElementList[element.ModelObject],
-        element.ModelObject,
-    ]:
+    def __get__(self, obj, objtype=None):
         if obj is None:  # pragma: no cover
             return self
 
         elems = [self.__follow_attr(obj, e) for e in self.__getsubelems(obj)]
         elems = [x for x in elems if x is not None]
         if self.aslist is None:
-            return no_list(self, obj._model, elems, self.class_)  # type: ignore[return-value]
+            return no_list(self, obj._model, elems, self.class_)
         return self.aslist(obj._model, elems, self.class_, parent=obj)
 
     def __getsubelems(
@@ -613,13 +598,11 @@ class CustomAccessor(PhysicalAccessor[T]):
     def __init__(
         self,
         class_: t.Type[T],
-        *elmfinders: t.Callable[
-            [element.GenericElement], t.Iterable[element.GenericElement]
-        ],
+        *elmfinders: t.Callable[[T], t.Iterable[T]],
         elmmatcher: t.Callable[
-            [U, element.GenericElement], bool
+            [U, T], bool
         ] = operator.contains,  # type: ignore[assignment]
-        matchtransform: t.Callable[[element.GenericElement], U] = (
+        matchtransform: t.Callable[[T], U] = (
             lambda e: e  # type: ignore[assignment,return-value]
         ),
         aslist: t.Type[element.ElementList] = None,
@@ -673,8 +656,8 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
         class_: t.Type[T],
         xtypes: t.Union[
             str,
-            t.Type[element.GenericElement],
-            t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
+            t.Type[T],
+            t.Iterable[t.Union[str, t.Type[T]]],
         ] = None,
         *,
         aslist: t.Optional[t.Type[element.ElementList]] = None,
@@ -708,82 +691,88 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
         return self.__aslist(obj._model, matches, self.class_)
 
 
-class SpecificationAccessor(Accessor):
+class _Specification(t.MutableMapping[str, str], element.ModelObject):
+    def __init__(
+        self, model: capellambse.MelodyModel, elm: etree._Element
+    ) -> None:
+        self._model = model
+        self._element = elm
+
+    def __delitem__(self, k: str) -> None:
+        i, lang_elem = self._index_of(k)
+        body_elem = self._body_at(k, i)
+        self._element.remove(lang_elem)
+        self._element.remove(body_elem)
+
+    def __getitem__(self, k: str) -> str:
+        i, _ = self._index_of(k)
+        return helpers.unescape_linked_text(
+            self._model._loader, self._body_at(k, i).text
+        )
+
+    def __iter__(self) -> t.Iterator[str]:
+        for i in self._element.iterchildren("languages"):
+            yield i.text or ""
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self)
+
+    def __setitem__(self, k: str, v: str) -> None:
+        try:
+            i, lang = self._index_of(k)
+        except KeyError:
+            self._element.append(body := self._element.makeelement("bodies"))
+            self._element.append(
+                lang := self._element.makeelement("languages")
+            )
+            body.text = v
+            lang.text = k
+        else:
+            body = self._body_at(k, i)
+            body.text = v
+
+    def _index_of(self, k: str) -> t.Tuple[int, etree._Element]:
+        for i, elm in enumerate(self._element.iterchildren("languages")):
+            if elm.text == k:
+                return i, elm
+
+        raise KeyError(k)
+
+    def _body_at(self, k: str, i: int) -> etree._Element:
+        try:
+            return next(
+                itertools.islice(
+                    self._element.iterchildren("bodies"), i, i + 1
+                )
+            )
+        except StopIteration:
+            raise KeyError(k) from None
+
+    def __str__(self) -> str:  # pragma: no cover
+        return "\n".join(
+            f"* language'{e!s}': {self.__getitem__(e)}" for e in self
+        )
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
+
+    @property
+    def text(self) -> str:
+        """Return ``self["capella:linkedText"]``."""
+        return self["capella:linkedText"]
+
+    @classmethod
+    def from_model(
+        cls, model: capellambse.MelodyModel, element: t.Any
+    ) -> element.ModelObject:
+        """Specifications can not be instantiated"""
+        raise RuntimeError("Can not create a specification from a model")
+
+
+class SpecificationAccessor(Accessor[_Specification]):
     """Provides access to linked specifications."""
 
     __slots__ = ()
-
-    class _Specification(t.MutableMapping[str, str]):
-        def __init__(
-            self, model: capellambse.MelodyModel, elm: etree._Element
-        ) -> None:
-            self._model = model
-            self.element = elm
-
-        def __delitem__(self, k: str) -> None:
-            i, lang_elem = self._index_of(k)
-            body_elem = self._body_at(k, i)
-            self.element.remove(lang_elem)
-            self.element.remove(body_elem)
-
-        def __getitem__(self, k: str) -> str:
-            i, _ = self._index_of(k)
-            return helpers.unescape_linked_text(
-                self._model._loader, self._body_at(k, i).text
-            )
-
-        def __iter__(self) -> t.Iterator[str]:
-            for i in self.element.iterchildren("languages"):
-                yield i.text or ""
-
-        def __len__(self) -> int:
-            return sum(1 for _ in self)
-
-        def __setitem__(self, k: str, v: str) -> None:
-            try:
-                i, lang = self._index_of(k)
-            except KeyError:
-                self.element.append(body := self.element.makeelement("bodies"))
-                self.element.append(
-                    lang := self.element.makeelement("languages")
-                )
-                body.text = v
-                lang.text = k
-            else:
-                body = self._body_at(k, i)
-                body.text = v
-
-        def _index_of(self, k: str) -> t.Tuple[int, etree._Element]:
-            for i, elm in enumerate(self.element.iterchildren("languages")):
-                if elm.text == k:
-                    return i, elm
-
-            raise KeyError(k)
-
-        def _body_at(self, k: str, i: int) -> etree._Element:
-            try:
-                return next(
-                    itertools.islice(
-                        self.element.iterchildren("bodies"), i, i + 1
-                    )
-                )
-            except StopIteration:
-                raise KeyError(k) from None
-
-        def __str__(self) -> str:  # pragma: no cover
-            return "\n".join(
-                f"* language'{e!s}': {self.__getitem__(e)}" for e in self
-            )
-
-        def __repr__(self) -> str:  # pragma: no cover
-            return (
-                f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
-            )
-
-        @property
-        def text(self) -> str:
-            """Return ``self["capella:linkedText"]``."""
-            return self["capella:linkedText"]
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -795,7 +784,7 @@ class SpecificationAccessor(Accessor):
         except StopIteration:
             raise AttributeError("No specification found") from None
 
-        return self._Specification(obj._model, spec_elm)
+        return _Specification(obj._model, spec_elm)
 
 
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):

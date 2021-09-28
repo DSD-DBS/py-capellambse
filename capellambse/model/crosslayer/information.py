@@ -21,7 +21,7 @@ from .. import modeltypes
 
 def _allocated_exchange_items(
     obj: c.GenericElement,
-) -> c.ElementList[ExchangeItem]:
+) -> c.ElementList[c.GenericElement]:
     try:
         return obj.exchange_items  # type: ignore[attr-defined]
     except AttributeError:
@@ -39,7 +39,7 @@ def _allocated_exchange_items(
 
 def _search_all_exchanges(
     obj: c.GenericElement,
-) -> c.ElementList[ExchangeItem]:
+) -> c.ElementList[c.GenericElement]:
     from . import fa
 
     return obj._model.search(fa.ComponentExchange, fa.FunctionalExchange)
