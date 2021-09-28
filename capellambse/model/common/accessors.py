@@ -15,6 +15,7 @@ from __future__ import annotations
 
 __all__ = [
     "Accessor",
+    "WritableAccessor",
     "ProxyAccessor",
     "AttrProxyAccessor",
     "AlternateAccessor",
