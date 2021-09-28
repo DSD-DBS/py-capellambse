@@ -331,7 +331,7 @@ class XMLDictProxy(collections.abc.MutableMapping):
             Reference to the original MelodyLoader.  If not None, the
             loader will be informed about element creation and deletion.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore[call-arg]
         self.__childtag = childtag
         self.__keyattr = keyattr
         self.model = model

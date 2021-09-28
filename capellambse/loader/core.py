@@ -16,11 +16,11 @@ import collections.abc
 import contextlib
 import itertools
 import logging
-import math
 import operator
 import os.path
 import pathlib
 import re
+import sys
 import typing as t
 import uuid
 
@@ -157,17 +157,19 @@ class ModelFile:
     ) -> None:
         """Write this file's XML into the file specified by ``path``."""
         LOGGER.debug("Saving tree %r to file %s", self, filename)
-        if filename.suffix not in {
+        if filename.suffix in {
             ".capella",
             ".capellafragment",
             ".melodyfragment",
             ".melodymodeller",
         }:
-            extra_args = {"line_length": math.inf}
+            line_length = exs.LINE_LENGTH
         else:
-            extra_args = {}
+            line_length = sys.maxsize
         with self.filehandler.open(filename, "wb") as file:
-            exs.write(self.tree, file, encoding=encoding, **extra_args)
+            exs.write(
+                self.tree, file, encoding=encoding, line_length=line_length
+            )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
         """ "Unfollow" a fragment link and return the placeholder element.
@@ -818,7 +820,7 @@ class MelodyLoader:
 
         try:
             comment = semantic_tree.tree.xpath("/comment()")
-            info.capella_version = CAP_VERSION.match(comment[0].text).group(1)
+            info.capella_version = CAP_VERSION.match(comment[0].text).group(1)  # type: ignore[union-attr]
         except (AttributeError, IndexError):
             LOGGER.warning(
                 "Cannot find Capella version: No version comment found"
