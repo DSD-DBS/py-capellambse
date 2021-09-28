@@ -49,7 +49,7 @@ def build_xtype(class_: t.Type[ModelObject]) -> str:
 
 
 def enumliteral(
-    generic_element: GenericElement, attr: str, default="NOT_SET"
+    generic_element: GenericElement, attr: str, default: str = "NOT_SET"
 ) -> xmltools.AttributeProperty | str:
     uuid = generic_element._element.attrib.get(attr)
     if uuid is None:

@@ -406,7 +406,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __getitem__(self, idx: slice) -> ElementList[T]:
         ...
 
-    def __getitem__(self, idx):  # type: ignore[no-untyped-def]
+    def __getitem__(self, idx):
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
         return self._elemclass.from_model(self._model, self._elements[idx])
@@ -419,7 +419,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __setitem__(self, index: slice, value: t.Iterable[T]) -> None:
         ...
 
-    def __setitem__(self, index, value):  # type: ignore[no-untyped-def]
+    def __setitem__(self, index, value):
         del self[index]
         if isinstance(index, slice):
             for i, element in enumerate(value, start=index.start):
@@ -521,7 +521,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         return type(self)
 
     def insert(self, index: int, value: T) -> None:
-        elm: etree._Element = value._element  # type: ignore[attr-defined]
+        elm: etree._Element = value._element
         self._elements.insert(index, elm)
 
 
@@ -556,7 +556,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         super().__init__(model, elements, elemclass)
         self.cacheattr = cacheattr
 
-    def __getitem__(self, key):  # type: ignore[no-untyped-def]
+    def __getitem__(self, key):
         elem = super().__getitem__(key)
         if self.cacheattr:
             try:

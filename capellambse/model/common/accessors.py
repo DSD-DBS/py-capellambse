@@ -350,9 +350,9 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 i if isinstance(i, str) else build_xtype(i) for i in rootelem
             ]
 
-    def __get__(
+    def __get__(  # type: ignore[override]
         self, obj: T | None, objtype: t.Type[T] | None = None
-    ) -> t.Union[  # type: ignore[override]
+    ) -> t.Union[
         Accessor,
         element.ElementList[element.ModelObject],
         element.ModelObject,
@@ -693,6 +693,7 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
 
         elements = super().__get__(obj, objtype)
         matches = []
+        assert isinstance(elements, t.Iterable)
         for elm in elements:
             try:
                 if all(
@@ -797,14 +798,14 @@ class SpecificationAccessor(Accessor):
         return self._Specification(obj._model, spec_elm)
 
 
-class ReferenceSearchingAccessor(PhysicalAccessor):
+class ReferenceSearchingAccessor(PhysicalAccessor[T]):
     __slots__ = ("attrs",)
 
     attrs: t.Tuple[str, ...]
 
     def __init__(
         self,
-        class_: t.Type[element.GenericElement],
+        class_: t.Type[T],
         *attrs: str,
         aslist: t.Type[element.ElementList] = None,
     ) -> None:
@@ -898,13 +899,17 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     def __setitem__(self, index: slice, value: t.Iterable[T]) -> None:
         ...
 
-    def __setitem__(self, index, value):
+    def __setitem__(
+        self, index: int | slice, value: T | t.Iterable[T]
+    ) -> None:
         assert self._parent is not None
         del self[index]
         if isinstance(index, slice):
+            assert isinstance(value, t.Iterable)
             for i, elm in enumerate(value, start=index.start):
                 self.insert(i, elm)
         else:
+            assert not isinstance(value, t.Iterable)
             self.insert(index, value)
 
     def __delitem__(self, index: t.Union[int, slice]) -> None:
