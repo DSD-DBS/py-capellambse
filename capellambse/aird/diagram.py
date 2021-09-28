@@ -48,19 +48,20 @@ class Box:
         pos: aird.Vec2ish,
         size: aird.Vec2ish,
         *,
-        label: t.Union[Box, str] = None,
-        uuid: str = None,
-        parent: Box = None,
+        label: Box | str | None = None,
+        uuid: str | None = None,
+        parent: Box | None = None,
         collapsed: bool = False,
         minsize: aird.Vec2ish = aird.Vector2D(0, 0),
         maxsize: aird.Vec2ish = aird.Vector2D(math.inf, math.inf),
         context: t.Iterable[str] = None,
         port: bool = False,
-        features: t.MutableSequence[str] = None,
-        styleclass: str = None,
-        styleoverrides: t.MutableMapping[
-            str, t.Union[aird.RGB, str, t.Sequence[t.Union[aird.RGB, str]]]
-        ] = None,
+        features: t.Sequence[str] | None = None,
+        styleclass: str | None = None,
+        styleoverrides: t.Mapping[
+            str, aird.RGB | str | t.Sequence[aird.RGB | str]
+        ]
+        | None = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ) -> None:
@@ -109,22 +110,24 @@ class Box:
         """
         self.uuid = uuid
         self.pos = pos
-        self.size = size
+        self.size = aird.Vector2D(*size)
         self.minsize = minsize
         self.maxsize = maxsize
-        self.label = label
-        self.collapsed = collapsed
-        self.features = features
+        self.label: Box | str | None = label
+        self.collapsed: bool = collapsed
+        self.features: t.Sequence[str] | None = features
 
-        self.styleclass = styleclass
-        self.styleoverrides = styleoverrides or {}
-        self.hidelabel = hidelabel
+        self.styleclass: str | None = styleclass
+        self.styleoverrides: t.Mapping[
+            str, aird.RGB | str | t.Sequence[aird.RGB | str]
+        ] | None = (styleoverrides or {})
+        self.hidelabel: bool = hidelabel
         self.hidden = hidden
 
-        self.parent = parent
+        self.parent: Box | None = parent
         self.children: t.MutableSequence[DiagramElement] = []
-        self.context = set(context) if context else set()
-        self.port = port
+        self.context: set[str] = set(context) if context else set()
+        self.port: bool = port
 
         if parent is not None:
             parent.children.append(self)
@@ -638,12 +641,12 @@ class Edge(aird.Vec2List):
             self._hidelabel = hide
 
     @property
-    def label(self) -> t.Optional[Box]:
+    def label(self) -> Box | None:
         """Return this Edge's label."""
         return self._label
 
     @label.setter
-    def label(self, label: t.Optional[Box]) -> None:
+    def label(self, label: Box | None) -> None:
         # Copy over label's hidden-flag
         if label is not None:
             label.hidden = self.hidelabel
@@ -704,7 +707,7 @@ class Circle:
     def __init__(
         self,
         center: aird.Vec2ish,
-        radius: t.Union[float, int],
+        radius: float | int,
         *,
         uuid: str = None,
         styleclass: str = None,

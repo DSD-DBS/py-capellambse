@@ -175,8 +175,8 @@ class StackingBox(aird.Box):
                     f"Invalid stacking mode: {new_mode!r}"
                 ) from None
 
-    @property
-    def features(self) -> t.Optional[t.MutableSequence[str]]:
+    @property  # type: ignore[override]
+    def features(self) -> t.Optional[t.Sequence[str]]:  # type: ignore[override]
         """Return the list of Box' features."""
         return self.__features
 
@@ -360,8 +360,8 @@ class CenterAnchoredBox(aird.Box):
         super().__init__((math.inf, math.inf), size, **kwargs)
         self.center = center
 
-    @property
-    def pos(self) -> aird.Vector2D:
+    @property  # type: ignore[override]
+    def pos(self) -> aird.Vector2D:  # type: ignore[override]
         """Return the top left corner position of this Box."""
         return self.center - self.size / 2
 

@@ -90,7 +90,9 @@ def apply_style_overrides(
 
 def apply_visualelement_styles(
     diagram_class: str, element_class: str, data_element: lxml.etree._Element
-) -> t.Dict[str, t.Union[aird.RGB, str, t.List[t.Union[aird.RGB, str]]]]:
+) -> t.Mapping[
+    str, t.Union[aird.RGB, str, t.Sequence[t.Union[aird.RGB, str]]]
+]:
     """Apply style overrides defined in the AIRD to a visual element.
 
     Parameters
