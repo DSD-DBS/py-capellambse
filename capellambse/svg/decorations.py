@@ -38,7 +38,10 @@ start_aligned = {
 only_icons = {"Requirement"}
 # TODO: Instead of dirty-patching either rename FunctionalExchange in OA-Layer as
 # ActivityExchange/OperationalExchange
-DiagramClass, FaultyClass, PatchClass = str, str, str
+DiagramClass = str
+FaultyClass = str
+PatchClass = str
+
 needs_patch: t.Dict[DiagramClass, t.Dict[FaultyClass, PatchClass]] = {
     "Operational Entity Blank": {"FunctionalExchange": "OperationalExchange"}
 }

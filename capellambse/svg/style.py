@@ -177,7 +177,9 @@ class Styling:
             operator.methodcaller("startswith", "_"), dir(self)
         )
 
-    def __getitem__(self, attrs: t.Union[str, t.Tuple[str], "Styling"]) -> str:
+    def __getitem__(
+        self, attrs: t.Union[str, t.Tuple[str], "Styling"]
+    ) -> t.Optional[str]:
         if isinstance(attrs, str):
             attrs = (attrs,) if attrs else self
         return (
@@ -354,7 +356,7 @@ class StyleBuilder:
             "Box": self._write_styles_box,
             "Edge": self._write_styles_edge,
         }
-        self.gradients = {}
+        self.gradients: t.Dict[str, str | tuple[str, ...]] = {}
         self.create()
 
     def write_styles(self) -> None:
@@ -406,7 +408,7 @@ class StyleBuilder:
             If class_ is None.
         """
         if self.class_ is None:
-            logger.error("Received no diagram class.")
+            logger.error("Received no diagram class.")  # type: ignore[unreachable]
             raise TypeError("Invalid class_ value None.")
 
         return self.class_
@@ -507,7 +509,7 @@ class StyleBuilder:
                 mystyle["stroke"] = "#f00"
 
             marker_id = Styling._generate_id(
-                value,
+                str(value),
                 [mystyle["stroke"]],
             )
             value = f"url(#{marker_id})"
