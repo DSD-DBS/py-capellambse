@@ -202,12 +202,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 class Diagram(AbstractDiagram):
     """Provides access to a single diagram."""
 
-    uuid = property(operator.attrgetter("_element.uid"))
+    uuid: str = property(operator.attrgetter("_element.uid"))  # type: ignore[assignment]
     xtype = "viewpoint:DRepresentationDescriptor"
-    name = property(operator.attrgetter("_element.name"))
-    viewpoint = property(operator.attrgetter("_element.viewpoint"))
-    target = property(lambda self: self._model.by_uuid(self.target_uuid))
-    target_uuid = property(lambda self: self._element.target.split("#")[-1])
+    name: str = property(operator.attrgetter("_element.name"))  # type: ignore[assignment]
+    viewpoint: str = property(operator.attrgetter("_element.viewpoint"))  # type: ignore[assignment]
+    target: c.GenericElement = property(lambda self: self._model.by_uuid(self.target_uuid))  # type: ignore[assignment]
+    target_uuid: str = property(lambda self: self._element.target.split("#")[-1])  # type: ignore[assignment]
     """Provides slightly better performance than ``target.uuid``."""
 
     _element: aird.DiagramDescriptor
