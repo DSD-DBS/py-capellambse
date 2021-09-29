@@ -17,6 +17,7 @@
 """
 from __future__ import annotations
 
+import datetime
 import itertools
 import logging
 import typing as t
@@ -76,7 +77,7 @@ attr_type_map = {
     XT_REQ_ATTR_STRINGVALUE: str,
     XT_REQ_ATTR_REALVALUE: float,
     XT_REQ_ATTR_INTEGERVALUE: int,
-    XT_REQ_ATTR_DATEVALUE: str,
+    XT_REQ_ATTR_DATEVALUE: datetime.datetime,
     XT_REQ_ATTR_BOOLEANVALUE: bool,
 }
 undefined_value = "undefined"
