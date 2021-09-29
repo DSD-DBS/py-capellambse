@@ -152,7 +152,7 @@ class TestRequirementAttributes:
                     "foreign_id": 11,
                     "identifier": "1",
                     "type": reqif.RequirementType,
-                    "type.name": "ReqType",
+                    "type.long_name": "ReqType",
                 },
                 id="Folder",
             ),
@@ -165,7 +165,7 @@ class TestRequirementAttributes:
                     "prefix": "T",
                     "description": "This is a test requirement module.",
                     "type": reqif.ModuleType,
-                    "type.name": "ModuleType",
+                    "type.long_name": "ModuleType",
                 },
                 id="Module",
             ),
@@ -195,7 +195,7 @@ class TestRequirementAttributes:
                     "target": capellambse.model.layers.ctx.SystemFunction,
                     "target.name": "Sysexfunc",
                     "type": reqif.RelationType,
-                    "type.name": "RelationType",
+                    "type.long_name": "RelationType",
                 },
                 id="Relation",
             ),
@@ -238,20 +238,14 @@ class TestRequirementAttributes:
         assert isinstance(
             test_attr.definition, reqif.AttributeDefinitionEnumeration
         )
-        assert (
-            test_attr.definition.name
-            == test_attr.definition.long_name
-            == "AttrDefEnum"
-        )
-        assert test_attr.values == "enum_val2"
+        assert test_attr.definition.long_name == "AttrDefEnum"
+        assert test_attr.values[0].long_name == "enum_val2"
 
     def test_well_defined_on_requirements(
         self, model: capellambse.MelodyModel
     ) -> None:
         test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         bool_attr, undefined_attr = test_req.attributes[0:2]
-        test_req2 = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
-        multi_enum = test_req2.attributes[0]
 
         assert len(test_req.attributes) == 5
         assert undefined_attr.value == reqif.undefined_value
@@ -259,7 +253,11 @@ class TestRequirementAttributes:
         for attr, typ in zip(test_req.attributes[2:], [int, float, str]):
             assert isinstance(attr.value, typ)
 
-        assert multi_enum.values == ("enum_val1", "enum_val2")
+        test_req2 = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
+        expected_values = tuple(
+            req.long_name for req in test_req2.attributes[0].values
+        )
+        assert expected_values == ("enum_val1", "enum_val2")
 
 
 class TestRequirementRelations:
@@ -273,7 +271,7 @@ class TestRequirementRelations:
         assert test_rel.source == test_source
         assert test_rel.target == test_target
         assert isinstance(test_rel.type, reqif.RelationType)
-        assert test_rel.type.name == "RelationType"
+        assert test_rel.type.long_name == "RelationType"
 
     def test_well_defined_on_requirements(
         self, model: capellambse.MelodyModel
@@ -309,7 +307,7 @@ class TestReqIFAccess:
 
         assert len(mod.folders) == 1
         assert len(mod.requirements) == 1
-        assert mod.type.name == "ModuleType"
+        assert mod.type.long_name == "ModuleType"
         for attr, expected in {
             "identifier": "1",
             "long_name": "Module",
@@ -325,7 +323,7 @@ class TestReqIFAccess:
 
         assert len(folder.folders) == 1
         assert len(folder.requirements) == 2
-        assert folder.type.name == "ReqType"
+        assert folder.type.long_name == "ReqType"
         for attr, expected in {
             "identifier": "1",
             "long_name": "Folder1",
@@ -341,7 +339,7 @@ class TestReqIFAccess:
     def test_requirement_attributes(self, model: capellambse.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
-        assert req.type.name == "ReqType"
+        assert req.type.long_name == "ReqType"
 
         for attr, expected in {
             "chapter_name": "2",
