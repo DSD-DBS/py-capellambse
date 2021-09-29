@@ -73,12 +73,29 @@ XT_REQ_TYPES = {
 }
 
 logger = logging.getLogger("reqif")
-attr_type_map = {
+_xt_to_attr_type = {
     XT_REQ_ATTR_STRINGVALUE: str,
     XT_REQ_ATTR_REALVALUE: float,
     XT_REQ_ATTR_INTEGERVALUE: int,
     XT_REQ_ATTR_DATEVALUE: datetime.datetime,
     XT_REQ_ATTR_BOOLEANVALUE: bool,
+}
+_attr_type_hints = {
+    "int": XT_REQ_ATTR_INTEGERVALUE,
+    "integer": XT_REQ_ATTR_INTEGERVALUE,
+    "integervalueattribute": XT_REQ_ATTR_INTEGERVALUE,
+    "str": XT_REQ_ATTR_STRINGVALUE,
+    "string": XT_REQ_ATTR_STRINGVALUE,
+    "stringvalueattribute": XT_REQ_ATTR_STRINGVALUE,
+    "float": XT_REQ_ATTR_REALVALUE,
+    "real": XT_REQ_ATTR_REALVALUE,
+    "realvalueattribute": XT_REQ_ATTR_REALVALUE,
+    "date": XT_REQ_ATTR_DATEVALUE,
+    "datevalueattribute": XT_REQ_ATTR_DATEVALUE,
+    "bool": XT_REQ_ATTR_BOOLEANVALUE,
+    "boolvalueattribute": XT_REQ_ATTR_BOOLEANVALUE,
+    "enum": XT_REQ_ATTR_ENUMVALUE,
+    "enumvalueattribute": XT_REQ_ATTR_ENUMVALUE,
 }
 undefined_value = "undefined"
 
@@ -294,12 +311,6 @@ class ReqIFElement(c.GenericElement):
 
         return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
 
-    @property
-    def name(self) -> str:
-        if (name := self._element.get("ReqIFName")) is None:
-            return self.long_name
-        return name
-
 
 @c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
 class DataTypeDefinition(ReqIFElement):
@@ -320,39 +331,34 @@ class AttributeDefinition(ReqIFElement):
 class AbstractRequirementsAttribute(c.GenericElement):
     _xmltag = "ownedAttributes"
 
-    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
-
     def __repr__(self) -> str:
         mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
         try:
             name = self.definition.long_name
         except AttributeError:
-            logger.warning(
-                "This requirement(%s) attribute has no definition.",
-                self._element.getparent().get("id"),
-            )
             name = undefined_value
         return f"<{mytype} [{name}] ({self.uuid})>"
 
 
 class AttributeAccessor(
-    c.WritableAccessor["RequirementsAttribute | EnumerationValueAttribute"]
+    c.ProxyAccessor["RequirementsAttribute | EnumerationValueAttribute"]
 ):
     def __init__(self) -> None:
-        super().__init__(aslist=c.MixedElementList)
+        super().__init__(
+            c.GenericElement, XT_REQ_ATTRIBUTES, aslist=c.MixedElementList
+        )
 
-    def __get__(
-        self, obj: Requirement | None, objtype: t.Any = None
-    ) -> AttributeAccessor | c.ElementList[
-        RequirementsAttribute
-    ] | c.MixedElementList:
-        del objtype
-        if obj is None:  # pragma: no cover
-            return self
+    def _match_xtype(self, type_: str) -> tuple[type, str]:
+        type_ = type_.lower()
+        try:
+            xt = _attr_type_hints[type_]
+        except KeyError:
+            raise ValueError(f"Invalid type hint given: {type_!r}") from None
 
-        elm: etree._Element = obj._element
-        elements = obj._model._loader.iterchildren_xt(elm, *XT_REQ_ATTRIBUTES)
-        return self.aslist(obj._model, list(elements), parent=obj)
+        if xt == XT_REQ_ATTR_ENUMVALUE:
+            return EnumerationValueAttribute, xt
+
+        return RequirementsAttribute, xt
 
 
 class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
@@ -425,6 +431,32 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         return self._newlist(matches)
 
 
+class ValueAccessor(c.Accessor):
+    def __get__(
+        self,
+        obj: RequirementsAttribute | EnumerationValueAttribute | None,
+        objtype: t.Optional[type[ReqIFElement]] = None,
+    ) -> ValueAccessor | int | float | str | bool | datetime.datetime:
+        del objtype
+        if obj is None:
+            return self
+
+        if not (value := obj._element.get("value", "")):
+            logger.warning("This requirement(%s) attribute has no value set.")
+            return undefined_value
+        return _xt_to_attr_type[obj.xtype](value)
+
+    def __set__(
+        self,
+        obj: RequirementsAttribute | EnumerationValueAttribute,
+        value: int | float | str | bool | datetime.datetime,
+    ) -> None:
+        if not isinstance(value, (int, float, str, bool)):
+            raise TypeError("Value needs to be of primitive type.")
+        value = str(value).lower() if isinstance(value, bool) else str(value)
+        obj._element.attrib["value"] = value
+
+
 @c.xtype_handler(None, *(XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}))
 class RequirementsAttribute(AbstractRequirementsAttribute):
     """Handles attributes on Requirements."""
@@ -447,8 +479,8 @@ class EnumDataTypeDefinition(ReqIFElement):
 
     _xmltag = "ownedDefinitionTypes"
 
-    enum_values = c.ProxyAccessor(
-        None, XT_REQ_TYPE_ENUM_DEF, aslist=c.ElementList
+    values = c.ProxyAccessor(
+        EnumValue, XT_REQ_TYPE_ATTR_ENUM, aslist=c.ElementList
     )
 
 
@@ -475,27 +507,11 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
     definition = c.AttrProxyAccessor(
         AttributeDefinitionEnumeration, "definition"
     )
-
-    @property
-    def values(self) -> str | tuple[str]:
-        def aslist(
-            model: capellambse.MelodyModel,
-            elems: t.Sequence[etree._Element],
-            class_: t.Type[c.T],
-            *,
-            parent: t.Any = None,
-        ) -> tuple[str] | str:
-            assert elems
-            if len(elems) > 1:
-                return tuple(
-                    (e.get("ReqIFLongName", undefined_value) for e in elems)
-                )
-            return elems[0].get("ReqIFLongName", undefined_value)
-
-        return c.AttrProxyAccessor(str, "values", aslist=aslist).__get__(self)
+    values = c.AttrProxyAccessor(EnumValue, "values", aslist=c.ElementList)
 
 
 class AbstractType(ReqIFElement):
+    owner = c.ParentAccessor(c.GenericElement)
     attribute_definitions = c.ProxyAccessor(
         AttributeDefinition,
         XT_REQ_TYPE_ATTR_DEF,
