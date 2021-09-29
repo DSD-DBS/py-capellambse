@@ -431,12 +431,14 @@ class RequirementsAttribute(AbstractRequirementsAttribute):
 
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
-    @property
-    def value(self) -> int | float | str | bool:
-        if not (value := self._element.get("value", "")):
-            logger.warning("This requirement(%s) attribute has no value set.")
-            return undefined_value
-        return attr_type_map[self.xtype](value)
+    value = ValueAccessor()
+
+
+@c.xtype_handler(None, XT_REQ_TYPE_ATTR_ENUM)
+class EnumValue(ReqIFElement):
+    """An enumeration value for :class:`EnumDataTypeDefinition`"""
+
+    _xmltag = "specifiedValues"
 
 
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM)
@@ -510,15 +512,21 @@ class AbstractType(ReqIFElement):
 class ModuleType(AbstractType):
     """A requirement-module type"""
 
+    _xmltag = "ownedTypes"
+
 
 @c.xtype_handler(None, XT_RELATION_TYPE)
 class RelationType(AbstractType):
     """A requirement-relation type"""
 
+    _xmltag = "ownedTypes"
+
 
 @c.xtype_handler(None, XT_REQ_TYPE)
 class RequirementType(AbstractType):
     """A requirement type"""
+
+    _xmltag = "ownedTypes"
 
 
 @c.xtype_handler(None, XT_REQUIREMENT)
@@ -571,7 +579,6 @@ class RequirementsModule(ReqIFElement):
 
 class AbstractRequirementsRelation(ReqIFElement):
     _required_attrs = frozenset({"source", "target"})
-    _xmltag = "ownedRelations"
 
     type = c.AttrProxyAccessor(RelationType, "relationType")
     source = c.AttrProxyAccessor(Requirement, "source")
@@ -592,14 +599,20 @@ class RequirementsOutRelation(AbstractRequirementsRelation):
 class RequirementsIncRelation(AbstractRequirementsRelation):
     """A Relation between a requirement and an object."""
 
+    _xmltag = "ownedRelations"
+
 
 @c.xtype_handler(None, XT_INT_RELATION)
 class RequirementsIntRelation(AbstractRequirementsRelation):
     """A Relation between two requirements."""
 
+    _xmltag = "ownedRelations"
+
 
 @c.xtype_handler(None, XT_REQ_TYPES_F)
 class RequirementsTypesFolder(ReqIFElement):
+    _xmltag = "ownedExtensions"
+
     data_type_definitions = c.ProxyAccessor(
         DataTypeDefinition,
         XT_REQ_TYPES_DATA_DEF,
