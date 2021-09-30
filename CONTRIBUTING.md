@@ -18,8 +18,8 @@ run the following commands in the root of your cloned repository:
 ```sh
 python3.8 -m venv .venv
 source .venv/bin/activate
-pip install -U pip
-pip install '.[docs,test]' pre-commit
+pip install -U pip pre-commit
+pip install -e '.[docs,test]'
 pre-commit install
 ```
 
