@@ -293,6 +293,11 @@ class SVGStylesheet:
     """CSS stylesheet for SVG."""
 
     def __init__(self, class_: str):
+        if not isinstance(class_, str):
+            raise TypeError(
+                f"Invalid type for class_ '{type(class_).__name__}'. This needs to be a str."
+            )
+
         self.drawing_class = class_
         self.builder = StyleBuilder(class_)
         self.create()
@@ -386,30 +391,15 @@ class StyleBuilder:
         self.styles = self._make_styles()
 
     def _make_styles(self) -> t.Dict[str, t.Dict[str, aird.CSSdef]]:
-        diagram_class = self._check_if_missing_diagram_class()
         styles = aird.STYLES["__GLOBAL__"].copy()
         try:
-            deep_update_dict(styles, aird.STYLES[diagram_class])
+            deep_update_dict(styles, aird.STYLES[self.class_])
         except KeyError:
             logger.error(
                 "No styling defined for diagram class %s", self.class_
             )
 
         return styles
-
-    def _check_if_missing_diagram_class(self) -> str:
-        """Check if diagram class is None.
-
-        Raises
-        ------
-        TypeError
-            If class_ is None.
-        """
-        if self.class_ is None:
-            logger.error("Received no diagram class.")
-            raise TypeError("Invalid class_ value None.")
-
-        return self.class_
 
     def _write_styles_box(
         self,
@@ -501,7 +491,7 @@ class StyleBuilder:
         self, key: str, value: aird.CSSdef, class_: str
     ) -> str:
         if key in {"marker-start", "marker-end"}:
-            diagram_class = self._check_if_missing_diagram_class()
+            diagram_class = self.class_
             mystyle = aird.get_style(diagram_class, f"Edge{class_}")
             if "stroke" not in mystyle:
                 mystyle["stroke"] = "#f00"
@@ -541,7 +531,9 @@ def _splitstyles(
     return objstyles, textstyles
 
 
-def deep_update_dict(target: t.MutableMapping, updates: t.Mapping):
+def deep_update_dict(
+    target: t.MutableMapping, updates: t.Mapping
+) -> t.MutableMapping:
     """Apply the ``updates`` to the nested ``target`` dict recursively.
 
     Parameters
