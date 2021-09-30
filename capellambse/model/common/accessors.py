@@ -601,7 +601,7 @@ class CustomAccessor(PhysicalAccessor[T]):
         class_: t.Type[T],
         *elmfinders: t.Callable[[GenericElement], t.Iterable[T]],
         elmmatcher: t.Callable[
-            [U, T], bool
+            [U, element.GenericElement], bool
         ] = operator.contains,  # type: ignore[assignment]
         matchtransform: t.Callable[[T], U] = (
             lambda e: e  # type: ignore[assignment,return-value]
