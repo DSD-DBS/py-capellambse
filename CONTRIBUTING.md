@@ -30,11 +30,20 @@ We additionally recommend that you set up your editor / IDE as follows.
 - *If you use Visual Studio Code*: Consider using a more open platform which
   supports third-party language servers, and continue with the next point.
 
-  Otherwise, set up the editor to run `black`, `pylint` and `mypy` when saving
-  (VS Code only supports one auto-formatter at a time, so you have to decide
-  between black and isort). Note that the Pylance language server is not
-  recommended, as it occasionally causes false-positive errors for perfectly
-  valid code.
+  Otherwise, set up the editor to run `black`, `pylint` and `mypy` when saving.
+  To enable automatic import sorting, add the following to your
+  `settings.json`:
+
+  ```json
+  "[python]": {
+      "editor.codeActionsOnSave": {
+          "source.organizeImports": true
+      }
+  }
+  ```
+
+  Note that the Pylance language server is not recommended, as it occasionally
+  causes false-positive errors for perfectly valid code.
 - *If you do not use VSC*: Set up your editor to use the
   [`python-lsp-server`](https://github.com/python-lsp/python-lsp-server) with
   the plugins for [`mypy`](https://github.com/Richardk2n/mypy-ls),
