@@ -42,5 +42,4 @@ The generated diagrams (elk.js based) are currently not persisted in .aird files
 
 ## Contributing
 
-We'd love to see your bug reports and improvement suggestions. Contribution rules will be available soon-ish.
-As a basic requirement your code needs to go through [black formatter]() and [isort](TODO)
+We'd love to see your bug reports and improvement suggestions! Please take a look at [guidelines for contributors](CONTRIBUTING.md).
