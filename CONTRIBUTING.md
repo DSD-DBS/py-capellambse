@@ -50,6 +50,8 @@ We base our code style on a modified version of the [Google style guide for
 Python code](https://google.github.io/styleguide/pyguide.html). The key
 differences are:
 
+- **Docstrings**: The [Numpy style
+  guide](https://numpydoc.readthedocs.io/en/latest/format.html) applies here.
 - **Linting**: Use [pylint](https://github.com/PyCQA/pylint) for static code
   analysis, and [mypy](https://github.com/python/mypy) for static type
   checking.
