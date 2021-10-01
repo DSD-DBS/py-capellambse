@@ -106,6 +106,12 @@ class SVGDiagram:
         return self.drawing.tostring()
 
 
+DiagramMetadataDict = t.TypedDict(
+    "DiagramMetadataDict",
+    {"x": float, "y": float, "width": float, "height": float, "class": str},
+)
+
+
 @dataclasses.dataclass
 class DiagramMetadata:
     """Holds metadata about a diagram.
@@ -123,25 +129,23 @@ class DiagramMetadata:
         class_: str,
     ) -> None:
         # Add padding to viewbox to account for drawn borders
-        self.pos: t.Tuple[float, float] = tuple(i - 10 for i in pos)
-        self.size: t.Tuple[float, float] = tuple(i + 20 for i in size)
+        self.pos: t.Tuple[float, float] = tuple(i - 10 for i in pos)  # type: ignore[assignment]
+        self.size: t.Tuple[float, float] = tuple(i + 20 for i in size)  # type: ignore[assignment]
         self.viewbox = " ".join(map(str, self.pos + self.size))
         self.class_ = class_
         self.name = name
 
     @classmethod
-    def from_dict(
-        cls, data: t.Mapping[str, str | int | float]
-    ) -> DiagramMetadata:
+    def from_dict(cls, data: DiagramMetadataDict) -> DiagramMetadata:
         name = data.get("name")
         if not isinstance(name, str):
             raise TypeError("No diagram name defined.")
         if not isinstance(data.get("class"), str):
             raise TypeError(f"No diagram class defined for {name}")
         for attr in ["x", "y", "width", "height"]:
-            if not isinstance(data[attr], (int, float)):
+            if not isinstance(data[attr], (int, float)):  # type: ignore[misc]
                 raise TypeError(
-                    f"{data[attr]} needs to be either integer or float."
+                    f"{data[attr]} needs to be either integer or float."  # type: ignore[misc]
                 )
         return cls(
             (data["x"], data["y"]),
