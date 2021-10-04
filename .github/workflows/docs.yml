@@ -7,6 +7,8 @@ on:
 jobs:
   sphinx:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -17,7 +19,7 @@ jobs:
           python -m pip install -U pip
       - name: Install pre-commit
         run: |
-          cd docs && python -m pip install -r requirements.txt
+          python -m pip install -r docs/requirements.txt
       - name: Create docs
         run: |
           (cd docs && make html)
@@ -27,8 +29,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Update docs from CI"
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git push origin gh-pages
