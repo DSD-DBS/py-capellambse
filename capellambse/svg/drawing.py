@@ -60,7 +60,7 @@ class Drawing(drawing.Drawing):
         super().__init__(**superparams)
         self.diagram_class = metadata.class_
         self.stylesheet = self.make_stylesheet()
-        self.obj_cache: t.Dict[str, t.Any] = {}
+        self.obj_cache: t.Dict[str | None, t.Any] = {}
         self.requires_deco_patch = decorations.needs_patch.get(
             self.diagram_class, {}
         )
@@ -302,7 +302,7 @@ class Drawing(drawing.Drawing):
             class_=label["class"],
             text_anchor=text_anchor,
             dominant_baseline="middle",
-            style=labelstyle[""],
+            style=labelstyle[""],  # type: ignore[index]  # FIXME: What does this mean?
         )
         group.add(text)
         render_icon = False
@@ -480,7 +480,7 @@ class Drawing(drawing.Drawing):
             f"{k}_": v for k, v in obj.items() if k not in {"type", "style"}
         }
         if obj["class"] in decorations.all_ports:
-            obj["type"] = "box"
+            obj["type"] = "box"  # type: ignore[index]  # FIXME: *HACK* should actually copy the object before modifying
 
         class_: str = obj["type"].capitalize() + (
             f".{obj['class']}" if "class" in obj else ""
@@ -626,7 +626,7 @@ class Drawing(drawing.Drawing):
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        label_: LabelDict | None = None,
+        label_: LabelDict,
         id_: str,
         class_: str,
         obj_style: style.Styling,
