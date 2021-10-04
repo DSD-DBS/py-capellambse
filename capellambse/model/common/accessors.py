@@ -593,7 +593,7 @@ class CustomAccessor(PhysicalAccessor[T]):
     def __init__(
         self,
         class_: t.Type[T],
-        *elmfinders: t.Callable[[GenericElement], t.Iterable[T]],
+        *elmfinders: t.Callable[[element.GenericElement], t.Iterable[T]],
         elmmatcher: t.Callable[
             [U, element.GenericElement], bool
         ] = operator.contains,  # type: ignore[assignment]
