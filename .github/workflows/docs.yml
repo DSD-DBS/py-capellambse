@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  push:
+    branches: ["master", "publish-sphinx-docs"]
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Upgrade pip
+        run: |
+          python -m pip install -U pip
+      - name: Install pre-commit
+        run: |
+          cd docs && python -m pip install -r requirements.txt
+      - name: Create docs
+        run: |
+          cd docs && make html
