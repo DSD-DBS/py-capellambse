@@ -19,6 +19,7 @@ import pathlib
 import random
 import string
 import sys
+import typing as t
 
 import cssutils
 import pytest
@@ -34,6 +35,7 @@ from capellambse.svg import (
     style,
     symbols,
 )
+from capellambse.svg.drawing import LabelDict
 
 from . import TEST_MODEL, TEST_ROOT
 
@@ -434,7 +436,7 @@ class TestSVG:
             and not ("Exchange" in symbol or "Link" in symbol)
             and symbol not in FREE_SYMBOLS
         ]
-        contents = [
+        contents: t.Sequence[generate.ContentsDict] = [
             {
                 "type": "box",
                 "id": str(i),
@@ -487,7 +489,7 @@ class TestSVG:
             for symbol in style.STATIC_DECORATIONS[diagram_type]
             if "Exchange" in symbol or "Link" in symbol
         ]
-        contents = [
+        contents: t.Sequence[generate.ContentsDict] = [
             {
                 "type": "edge",
                 "id": str(i),
@@ -540,7 +542,7 @@ class TestSVG:
         right_bound = rect.attribs["x"] + rect.attribs["width"]
         lower_bound = rect.attribs["y"] + rect.attribs["height"]
         symbol_right_bound = symbol.attribs["x"] + symbol.attribs["width"]
-        factor = 1
+        factor = 1.0
         text_anchor = txt.attribs.get("text-anchor", "start")
         if text_anchor == "middle":
             factor = 0.5

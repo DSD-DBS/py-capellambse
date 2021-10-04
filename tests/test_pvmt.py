@@ -15,6 +15,7 @@ import collections
 import pathlib
 import shutil
 import tempfile
+import typing as t
 
 import pytest
 
@@ -222,7 +223,7 @@ class TestAppliedPropertyValueGroupXML:
         assert actual == expected
 
     def test_apply(self, model, pvext, monkeypatch):
-        call_counts = collections.defaultdict(int)
+        call_counts: t.MutableMapping[str, int] = collections.defaultdict(int)
 
         def mock_generate_uuid(*__, **_):
             call_counts["generate_uuid"] += 1

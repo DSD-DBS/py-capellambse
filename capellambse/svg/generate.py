@@ -17,6 +17,24 @@ import dataclasses
 import json
 import typing as t
 
+from capellambse.svg.drawing import LabelDict
+
+ContentsDict = t.TypedDict(
+    "ContentsDict",
+    {
+        "type": str,
+        "id": str,
+        "class": str,
+        "points": t.List[t.List[int]],
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "label": t.Union[LabelDict, str],
+    },
+    total=False,
+)
+
 
 class SVGDiagram:
     """An SVG diagram that can be drawn on and serialized.
@@ -53,7 +71,7 @@ class SVGDiagram:
     def __init__(
         self,
         metadata: DiagramMetadata,
-        objects: t.Sequence[t.Mapping[str, str | int | float]],
+        objects: t.Sequence[ContentsDict],
     ) -> None:
         self.drawing = Drawing(metadata)
         for obj in objects:
@@ -96,7 +114,7 @@ class SVGDiagram:
 
         return cls.from_json(conf)
 
-    def draw_object(self, obj: t.Mapping[str, str | int | float]) -> None:
+    def draw_object(self, obj: ContentsDict) -> None:
         self.drawing.draw_object(obj)
 
     def save_drawing(self, pretty: bool = False, indent: int = 2) -> None:
@@ -110,7 +128,7 @@ DiagramMetadataDict = t.TypedDict(
     "DiagramMetadataDict",
     {
         "name": str,
-        "contents": str,
+        "contents": t.Sequence[ContentsDict],
         "x": float,
         "y": float,
         "width": float,

@@ -294,7 +294,7 @@ class Style(base.BaseElement):
 class SVGStylesheet:
     """CSS stylesheet for SVG."""
 
-    def __init__(self, class_: str):
+    def __init__(self, class_: str | None):
         self.drawing_class = class_
         self.builder = StyleBuilder(class_)
         self.create()
@@ -349,7 +349,7 @@ class StyleBuilder:
     sheet: io.StringIO
     styles: t.Dict[str, t.Dict[str, aird.CSSdef]]
 
-    def __init__(self, class_: str):
+    def __init__(self, class_: str | None):
         self.class_ = class_
         self.sheetclass = re.sub(r"\s+", "", class_ or "")
         self.stylewriters = {
@@ -408,7 +408,7 @@ class StyleBuilder:
             If class_ is None.
         """
         if self.class_ is None:
-            logger.error("Received no diagram class.")  # type: ignore[unreachable]
+            logger.error("Received no diagram class.")
             raise TypeError("Invalid class_ value None.")
 
         return self.class_
