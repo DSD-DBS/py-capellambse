@@ -24,7 +24,7 @@ jobs:
       - name: Create docs
         run: |
           (cd docs && make html)
-          git checkout gh-pages
+          git checkout --progress --force -B gh-pages refs/remotes/origin/gh-pages
           cp -r docs/build/html/* .
           git add .
           git config --local user.email "action@github.com"
