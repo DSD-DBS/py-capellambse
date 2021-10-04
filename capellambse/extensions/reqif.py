@@ -103,7 +103,7 @@ class RequirementsRelationAccessor(
         cls, xtype = self._find_relation_type(kw["target"])
         parent = elmlist._parent._element
         with elmlist._model._loader.new_uuid(parent) as uuid:
-            return cls(
+            return cls(  # type: ignore[call-arg]
                 elmlist._model,
                 parent,
                 **kw,
@@ -208,7 +208,7 @@ class ElementRelationAccessor(
         cls = t.cast(t.Type[c.T], RequirementsOutRelation)
         parent = elmlist._parent
         with parent._model._loader.new_uuid(parent._element) as uuid:
-            return cls(
+            return cls(  # type: ignore[call-arg]
                 elmlist._model,
                 parent,
                 **kw,
@@ -279,10 +279,10 @@ class RequirementRelationsList(c.ElementList["AbstractRequirementsRelation"]):
     ) -> None:
         del elemclass
         assert side in {"source", "target"}
-        super().__init__(model, elements, c.GenericElement)
+        super().__init__(model, elements, c.GenericElement)  # type: ignore[arg-type]
         self._side = side
 
-    def __getitem__(self, idx: int) -> c.GenericElement:
+    def __getitem__(self, idx: int) -> c.GenericElement:  # type: ignore[override]
         return getattr(
             c.GenericElement.from_model(self._model, self._elements[idx]),
             self._side,
@@ -319,7 +319,7 @@ class ReqIFElement(c.GenericElement):
     prefix = xmltools.AttributeProperty(
         "_element", "ReqIFPrefix", optional=True
     )
-    type = property(lambda _: None)
+    type: RequirementTypeAccessor = property(lambda _: None)  # type: ignore[assignment]
 
     def __repr__(self) -> str:  # pragma: no cover
         mytype = type(self).__name__
