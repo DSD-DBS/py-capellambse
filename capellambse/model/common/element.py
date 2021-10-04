@@ -294,13 +294,14 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
 
             The order in which the values are yielded is undefined.
             """
-            yielded: t.Set[U | str] = set()
+            # Use list, since not all elements may be hashable.
+            yielded: t.List[U | str] = []
 
             for elm in self.parent:
                 key = self.extract_key(elm)
                 if key not in yielded:
                     yield key
-                    yielded.add(key)
+                    yielded.append(key)
 
         def __contains__(self, value: U) -> bool:
             valueset = self.make_values_container(value)
