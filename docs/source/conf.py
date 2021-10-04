@@ -97,7 +97,6 @@ html_theme_options = {
     "collapse_navigation": True,
 }
 html_short_title = "Python Capella MBSE Tools"
-html_logo = "_static/PyCap_logo3.svg"
 html_show_sourcelink = False
 html_context = {
     "dependencies": install_requirements,
