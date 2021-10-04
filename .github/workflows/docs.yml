@@ -20,4 +20,15 @@ jobs:
           cd docs && python -m pip install -r requirements.txt
       - name: Create docs
         run: |
-          cd docs && make html
+          (cd docs && make html)
+          git checkout gh-pages
+          cp -r docs/build/html/* .
+          git add .
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Update docs from CI"
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
