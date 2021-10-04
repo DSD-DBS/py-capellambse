@@ -108,7 +108,15 @@ class SVGDiagram:
 
 DiagramMetadataDict = t.TypedDict(
     "DiagramMetadataDict",
-    {"x": float, "y": float, "width": float, "height": float, "class": str},
+    {
+        "name": str,
+        "contents": str,
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "class": str,
+    },
 )
 
 
@@ -127,6 +135,7 @@ class DiagramMetadata:
         size: t.Tuple[float, float],
         name: str,
         class_: str,
+        **_kw: t.Any,
     ) -> None:
         # Add padding to viewbox to account for drawn borders
         self.pos: t.Tuple[float, float] = tuple(i - 10 for i in pos)  # type: ignore[assignment]
