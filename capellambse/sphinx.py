@@ -116,10 +116,10 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
     required_arguments = 1
     final_argument_whitespace = True
     option_spec = {
-        "alt": rst.directives.unchanged,
-        "height": rst.directives.nonnegative_int,
-        "width": rst.directives.nonnegative_int,
-        "align": lambda arg: rst.directives.choice(
+        "alt": rst.directives.unchanged,  # type: ignore[attr-defined]
+        "height": rst.directives.nonnegative_int,  # type: ignore[attr-defined]
+        "width": rst.directives.nonnegative_int,  # type: ignore[attr-defined]
+        "align": lambda arg: rst.directives.choice(  # type: ignore[attr-defined]
             arg, ("left", "center", "right")
         ),
     }
