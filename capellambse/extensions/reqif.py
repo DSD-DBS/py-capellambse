@@ -71,14 +71,17 @@ XT_REQ_TYPES = {
     XT_REQ_TYPE_ATTR_DEF,
     XT_REQ_TYPE_ENUM_DEF,
 }
+DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
 _xt_to_attr_type = {
     XT_REQ_ATTR_STRINGVALUE: str,
     XT_REQ_ATTR_REALVALUE: float,
     XT_REQ_ATTR_INTEGERVALUE: int,
-    XT_REQ_ATTR_DATEVALUE: datetime.datetime,
-    XT_REQ_ATTR_BOOLEANVALUE: bool,
+    XT_REQ_ATTR_DATEVALUE: lambda val: datetime.datetime.strptime(
+        val, DATE_VALUE_FORMAT
+    ),
+    XT_REQ_ATTR_BOOLEANVALUE: lambda val: False if val == "false" else True,
 }
 _attr_type_hints = {
     "int": XT_REQ_ATTR_INTEGERVALUE,
@@ -451,9 +454,15 @@ class ValueAccessor(c.Accessor):
         obj: RequirementsAttribute | EnumerationValueAttribute,
         value: int | float | str | bool | datetime.datetime,
     ) -> None:
-        if not isinstance(value, (int, float, str, bool)):
+        if not isinstance(value, (int, float, str, bool, datetime.datetime)):
             raise TypeError("Value needs to be of primitive type.")
-        value = str(value).lower() if isinstance(value, bool) else str(value)
+        if isinstance(value, bool):
+            value = str(value).lower()
+        elif isinstance(value, datetime.datetime):
+            value = datetime.datetime.strftime(value, DATE_VALUE_FORMAT)
+        else:
+            value = str(value)
+
         obj._element.attrib["value"] = value
 
 
