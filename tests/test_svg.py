@@ -588,9 +588,12 @@ class TestSVGStylesheet:
 
     def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
         with pytest.raises(TypeError) as error:
-            style.SVGStylesheet(class_=None)
+            style.SVGStylesheet(None)  # type: ignore[arg-type]
 
-        assert error.value.args[0] == "Invalid class_ value None."
+        assert (
+            error.value.args[0]
+            == "Invalid type for class_ 'NoneType'. This needs to be a str."
+        )
 
 
 class TestDecoFactory:

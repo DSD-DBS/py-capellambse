@@ -362,11 +362,6 @@ STYLES: t.Dict[str, t.Dict[str, t.Dict[str, CSSdef]]] = {
         },
     },
     "Contextual Capability": {
-        "Edge.CapabilityExploitation": {
-            "marker-end": "FineArrowMark",
-            "stroke": COLORS["black"],
-            "stroke-width": 1,
-        },
         "Edge.AbstractCapabilityExtend": {
             "marker-end": "FineArrowMark",
             "stroke": COLORS["black"],
@@ -378,6 +373,16 @@ STYLES: t.Dict[str, t.Dict[str, t.Dict[str, CSSdef]]] = {
             "stroke-width": 1,
         },
         "Edge.AbstractCapabilityInclude": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.CapabilityExploitation": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.CapabilityInvolvement": {
             "marker-end": "FineArrowMark",
             "stroke": COLORS["black"],
             "stroke-width": 1,
