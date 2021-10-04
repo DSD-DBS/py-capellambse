@@ -24,6 +24,8 @@ jobs:
       - name: Create docs
         run: |
           (cd docs && make html)
+          git fetch --depth 1 origin gh-pages
+          git branch -a
           git checkout --progress --force -B gh-pages refs/remotes/origin/gh-pages
           cp -r docs/build/html/* .
           git add .
