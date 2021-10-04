@@ -146,6 +146,7 @@ class TestSVG:
         tmp_svg.save_drawing()
         assert pathlib.Path(tmp_svg.drawing.filename).is_file()
 
+    # FIXME: change this to a parametrized test, do not use if- or for-statements in a unit test
     def test_css_colors(self, tmp_json) -> None:
         COLORS_TO_CHECK = {
             ".LogicalArchitectureBlank g.Box.CP_IN > line": {

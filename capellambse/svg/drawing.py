@@ -30,6 +30,21 @@ LOGGER = logging.getLogger(__name__)
 DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
 
 
+LabelDict = t.TypedDict(
+    "LabelDict",
+    {
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "text": str,
+        "class": str,
+    },
+    total=False,
+)
+
+
+# FIXME: refactor this, so a Drawing contains an "svg drawing". Always prefer composition over inheritance.
 class Drawing(drawing.Drawing):
     """The main container that stores all svg elements."""
 
@@ -84,7 +99,7 @@ class Drawing(drawing.Drawing):
         size: t.Tuple[float, float],
         rectstyle: t.Mapping[str, style.Styling],
         *,
-        class_: str = None,
+        class_: str = "",
         label: t.Mapping[str, str | int | float] = None,
         features: t.Sequence[str] = (),
         id_: str = None,
@@ -146,18 +161,19 @@ class Drawing(drawing.Drawing):
         self,
         obj: base.BaseElement,
         group: t.Optional[container.Group],
-        objstyle: t.Optional[style.Styling],
+        objstyle: style.Styling | None,
     ) -> t.Union[shapes.Line, None]:
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
+        style: str | None = None
         if objstyle is not None:
-            objstyle = objstyle["stroke"] if "stroke" in objstyle else None
+            style = objstyle["stroke"] if "stroke" in objstyle else None
 
         line = self.line(
             start=(x, y + decorations.feature_space),
             end=(x + w, y + decorations.feature_space),
-            style=objstyle,
+            style=style,
         )
         if group is None:
             return line
@@ -167,10 +183,10 @@ class Drawing(drawing.Drawing):
     def _draw_feature_text(
         self,
         obj: base.BaseElement,
-        features: t.List[str],
-        class_: t.Optional[str],
+        features: t.Sequence[str],
+        class_: str,
         group: container.Group,
-        labelstyle: t.Optional[style.Styling],
+        labelstyle: style.Styling,
     ) -> None:
         """Draw features text on given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
@@ -196,11 +212,11 @@ class Drawing(drawing.Drawing):
 
     def _draw_box_label(
         self,
-        label: t.Dict[str, str | int | float],
+        label: t.Mapping[str, str | int | float],
         group: container.Group,
         *,
-        class_: t.Optional[str],
-        labelstyle: t.Optional[style.Styling],
+        class_: str,
+        labelstyle: style.Styling,
         text_anchor: str = "start",
         y_margin: t.Optional[int | float],
         icon: bool = True,
@@ -219,12 +235,13 @@ class Drawing(drawing.Drawing):
         )
 
         if DEBUG:
-            debug_y = label["y"] + y_margin
+            debug_y = int(label["y"]) + y_margin
             debug_y1 = (
-                label["y"] + (label["height"] - decorations.icon_size) / 2
+                int(label["y"])
+                + (int(label["height"]) - decorations.icon_size) / 2
             )
             x = (
-                label["x"]
+                int(label["x"])
                 + decorations.icon_size
                 + 2 * decorations.icon_padding
             )
@@ -234,7 +251,9 @@ class Drawing(drawing.Drawing):
                 debug_height = decorations.icon_size
 
             bbox = {
-                "x": x if text_anchor == "start" else x - label["width"] / 2,
+                "x": x
+                if text_anchor == "start"
+                else x - int(label["width"]) / 2,
                 "y": debug_y if debug_y <= debug_y1 else debug_y1,
                 "width": label["width"],
                 "height": debug_height,
@@ -261,7 +280,7 @@ class Drawing(drawing.Drawing):
 
     def _draw_label(
         self,
-        label: t.Dict[str, str | int | float],
+        label: LabelDict,
         group: container.Group,
         *,
         class_: str,
@@ -296,7 +315,7 @@ class Drawing(drawing.Drawing):
             label_margin,
             max_text_width,
         ) = helpers.check_for_horizontal_overflow(
-            label["text"],
+            str(label["text"]),
             label["width"],
             decorations.icon_padding if render_icon else 0,
             icon_size if render_icon else 0,
@@ -371,7 +390,7 @@ class Drawing(drawing.Drawing):
         pos: t.Tuple[float, float],
         size: t.Tuple[float, float],
         class_: str,
-        parent_id: str,
+        parent_id: str | None,
     ) -> str:
         """Return rotation transformation for port-object-styling."""
         rect = self.obj_cache[parent_id]
@@ -394,7 +413,7 @@ class Drawing(drawing.Drawing):
         pos: t.Tuple[float, float],
         size: t.Tuple[float, float],
         text_style: style.Styling,
-        parent_id: str,
+        parent_id: str | None,
         *,
         class_: str,
         label: t.Dict[str, t.Union[str, int, float]] = None,
@@ -537,8 +556,8 @@ class Drawing(drawing.Drawing):
         self,
         *,
         grp: container.Group = None,
-        label_: t.Mapping[str, t.Any] = None,
-        class_: str = None,
+        label_: LabelDict,
+        class_: str,
         text_style: t.Mapping[str, t.Any],
     ) -> None:
         label_["class"] = "Annotation"
@@ -562,9 +581,9 @@ class Drawing(drawing.Drawing):
         context_: t.Sequence[str] = (),
         children_: t.Sequence[str] = (),
         features_: t.Sequence[str] = (),
-        label_: str | t.Mapping[str, t.Any] = None,
-        id_: str = None,
-        class_: str = None,
+        label_: str | LabelDict | None = None,
+        id_: str,
+        class_: str,
         obj_style: t.Mapping[str, t.Any],
         text_style: t.Mapping[str, t.Any],
         **kw: t.Any,
@@ -606,8 +625,8 @@ class Drawing(drawing.Drawing):
         width_: int | float,
         height_: int | float,
         label_: t.Mapping[str, t.Any] = None,
-        id_: str = None,
-        class_: str = None,
+        id_: str,
+        class_: str,
         obj_style: t.Mapping[str, t.Any],
         text_style: t.Mapping[str, t.Any],
         **kw: t.Any,
@@ -642,15 +661,15 @@ class Drawing(drawing.Drawing):
         self,
         *,
         points_: t.List[t.List[int]],
-        label_: t.Optional[t.Dict[str, t.Union[str, int, float]]] = None,
-        id_: t.Optional[str] = None,
-        class_: t.Optional[str] = None,
+        label_: LabelDict = None,
+        id_: str,
+        class_: str,
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw,
     ):
         del kw  # Dismiss additional info from json
-        points = [(x + 0.5, y + 0.5) for x, y in points_]
+        points: list = [(x + 0.5, y + 0.5) for x, y in points_]
         grp = self.g(class_=f"Edge {class_}", id_=id_)
         grp.add(
             self.path(d=["M"] + points, class_="Edge", style=obj_style[""])
@@ -674,11 +693,11 @@ class Drawing(drawing.Drawing):
 
     def _draw_edge_label(
         self,
-        label: t.Dict[str, t.Union[str, int, float]],
+        label: LabelDict,
         group: container.Group,
         *,
-        class_: t.Optional[str],
-        labelstyle: t.Optional[style.Styling],
+        class_: str,
+        labelstyle: style.Styling,
         text_anchor: str = "start",
         y_margin: int | float,
     ) -> container.Group:
@@ -705,7 +724,7 @@ class Drawing(drawing.Drawing):
 
     def _draw_label_bbox(
         self,
-        label: t.Dict[str, t.Union[str, int, float]],
+        label: LabelDict,
         group: t.Optional[container.Group] = None,
         class_: t.Optional[str] = None,
         obj_style: t.Optional[style.Styling] = None,
