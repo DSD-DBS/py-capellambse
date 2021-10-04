@@ -13,6 +13,8 @@
 # limitations under the License.
 """Provides easy access to the Polarsys Capella PVMT extensions."""
 
+from __future__ import annotations
+
 from capellambse import NAMESPACES
 
 from . import exceptions
@@ -95,7 +97,7 @@ class Domain(XMLDictProxy):
 
 
 class _DomainEnums(XMLDictProxy):
-    _extract_value = EnumerationPropertyType.from_xml_element
+    _extract_value = EnumerationPropertyType.from_xml_element  # type: ignore[assignment]
 
     def __init__(self, *args, **kwargs):
         super().__init__(

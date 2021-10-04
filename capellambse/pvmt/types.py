@@ -13,7 +13,10 @@
 # limitations under the License.
 """Classes that represent different property value types."""
 
+from __future__ import annotations
+
 import abc
+import typing as t
 
 from capellambse import NAMESPACES
 
@@ -174,7 +177,7 @@ class EnumerationPropertyValue(GenericPropertyValue):
         super().__init__(*args, **kwargs)
         self.typedef = typedef
 
-    @property
+    @property  # type: ignore[override]  # FIXME: what's the type?
     def parent(self):
         """Return the parent group of this property value."""
         return self._parent
@@ -265,7 +268,7 @@ class EnumerationPropertyType(XMLDictProxy):
         element.attrib.update(value)
 
 
-PROPERTY_LOADER = {
+PROPERTY_LOADER: t.Mapping[str, t.Type[GenericPropertyValue]] = {
     "EnumerationPropertyValue": EnumerationPropertyValue,
     "StringPropertyValue": StringPropertyValue,
     "FloatPropertyValue": FloatPropertyValue,
