@@ -31,5 +31,4 @@ jobs:
           git add .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -m "Update docs from ef $GITHUB_SHA"
-          git push origin gh-pages
+          git diff-index --quiet HEAD || git commit -m "Update docs from ref $GITHUB_SHA" && git push origin gh-pages
