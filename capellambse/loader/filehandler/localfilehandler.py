@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import contextlib
 import logging
 import os
@@ -42,6 +44,7 @@ class LocalFileHandler(FileHandler):
             path = path.parent
 
         super().__init__(path, entrypoint)
+        self.__transaction: set[pathlib.PurePosixPath] | None = None
         assert isinstance(self.path, pathlib.Path)
 
     def open(
@@ -50,8 +53,18 @@ class LocalFileHandler(FileHandler):
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
         assert isinstance(self.path, pathlib.Path)
-        path = self.path / capellambse.helpers.normalize_pure_path(filename)
-        return t.cast(t.BinaryIO, path.open(mode))
+        normpath = capellambse.helpers.normalize_pure_path(filename)
+        if "w" not in mode or self.__transaction is None:
+            path = self.path / normpath
+            return t.cast(t.BinaryIO, path.open(mode))
+
+        if normpath in self.__transaction:
+            raise RuntimeError(
+                f"File already written in this transaction: {normpath}"
+            )
+        self.__transaction.add(normpath)
+        tmppath = _tmpname(normpath)
+        return t.cast(t.BinaryIO, (self.path / tmppath).open(mode))
 
     def get_model_info(self) -> ModelInfo:
         assert isinstance(self.path, pathlib.Path)
@@ -68,7 +81,7 @@ class LocalFileHandler(FileHandler):
     @contextlib.contextmanager
     def write_transaction(
         self, *, dry_run: bool = False, **kw: t.Any
-    ) -> t.Generator[t.Mapping[str, t.Any], None, None]:
+    ) -> cabc.Generator[cabc.Mapping[str, t.Any], None, None]:
         """Start a write transaction.
 
         During the transaction, file writes are redirected to temporary
@@ -81,7 +94,29 @@ class LocalFileHandler(FileHandler):
             Discard the temporary files after a successful transaction
             instead of committing them to their destinations.
         """
-        raise NotImplementedError("Write transactions not supported yet")
+        assert isinstance(self.path, pathlib.Path)
+
+        with super().write_transaction(**kw) as unused_kw:
+            if self.__transaction is not None:
+                raise RuntimeError("Another transaction is already open")
+            self.__transaction = set()
+
+            try:
+                yield unused_kw
+            except:
+                LOGGER.debug("Aborting transaction due to exception")
+                dry_run = True
+                raise
+            finally:
+                for file in self.__transaction:
+                    tmpname = _tmpname(file)
+                    if dry_run:
+                        LOGGER.debug("Removing temporary file %s", tmpname)
+                        (self.path / tmpname).unlink()
+                    else:
+                        LOGGER.debug("Committing file %s to %s", tmpname, file)
+                        (self.path / tmpname).rename(self.path / file)
+                self.__transaction = None
 
     def __git_rev_parse(self, *options: str) -> t.Optional[str]:
         assert isinstance(self.path, pathlib.Path)
@@ -130,3 +165,10 @@ class LocalFileHandler(FileHandler):
             return None
         except subprocess.CalledProcessError:
             return None
+
+
+def _tmpname(filename: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
+    prefix = "."
+    suffix = ".tmp"
+    name = filename.name[0 : 255 - (len(prefix) + len(suffix))]
+    return filename.with_name(f"{prefix}{name}{suffix}")
