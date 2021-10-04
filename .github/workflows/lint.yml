@@ -17,42 +17,10 @@ jobs:
           python -m pip install -U pip
       - name: Install black
         run: |-
-          python -m pip install black
-      - name: Run black
+          python -m pip install pre-commit
+      - name: Run Pre-Commit
         run: |-
-          black --check .
-  isort:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-      - name: Upgrade pip
-        run: |-
-          python -m pip install -U pip
-      - name: Install isort
-        run: |-
-          python -m pip install isort
-      - name: Run isort
-        run: |-
-          isort --check .
-  mypy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-      - name: Upgrade pip
-        run: |-
-          python -m pip install -U pip
-      - name: Install mypy
-        run: |-
-          python -m pip install mypy
-      - name: Run mypy
-        run: |-
-          mypy .
+          pre-commit run --all-files
   pylint:
     runs-on: ubuntu-latest
     steps:
@@ -67,5 +35,6 @@ jobs:
         run: |-
           python -m pip install pylint
       - name: Run pylint
+        continue-on-error: true
         run: |-
           pylint -dfixme -- capellambse || exit $(($? & ~24))
