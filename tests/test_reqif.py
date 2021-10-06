@@ -127,7 +127,7 @@ def test_path_nesting(model: capellambse.MelodyModel) -> None:
             id="Enumeration Attribute Definition",
         ),
         pytest.param(
-            "<BooleanValueAttribute [undefined] (9c692405-b8aa-4caa-b988-51d27db5cd1b)>",
+            "<BooleanValueAttribute [] (9c692405-b8aa-4caa-b988-51d27db5cd1b)>",
             id="Attribute with Undefined definition",
         ),
     ],
@@ -248,7 +248,7 @@ class TestRequirementAttributes:
         bool_attr, undefined_attr = test_req.attributes[0:2]
 
         assert len(test_req.attributes) == 5
-        assert undefined_attr.value == reqif.undefined_value
+        assert undefined_attr.value == None
         assert isinstance(bool_attr.value, bool)
         for attr, typ in zip(test_req.attributes[2:], [int, float, str]):
             assert isinstance(attr.value, typ)
