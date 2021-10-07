@@ -744,9 +744,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
             raise KeyError(k) from None
 
     def __str__(self) -> str:  # pragma: no cover
-        return "\n".join(
-            f"* language'{e!s}': {self.__getitem__(e)}" for e in self
-        )
+        return next(iter(self.values()))
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
