@@ -109,7 +109,7 @@ class GitFileHandler(FileHandler):
             branch=revparse("--abbrev-ref", self.revision),
             title=title,
             url=url,
-            short_rev=revparse("--short", self.revision),
+            revision=self.revision,
             rev_hash=revparse(self.revision),
         )
 

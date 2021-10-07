@@ -22,7 +22,7 @@ class ModelInfo:
     branch: t.Optional[str] = None
     title: t.Optional[str] = None
     url: t.Optional[str] = None
-    short_rev: t.Optional[str] = None
+    revision: t.Optional[str] = None
     rev_hash: t.Optional[str] = None
     capella_version: t.Optional[str] = None
 
