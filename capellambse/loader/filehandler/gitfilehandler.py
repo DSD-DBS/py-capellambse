@@ -70,7 +70,7 @@ class GitFileHandler(FileHandler):
         self.__init_cache_dir()
 
         self.__lfsfiles = frozenset(
-            self.__git("lfs", "ls-files", "-n")
+            self._git("lfs", "ls-files", "-n")
             .decode("utf-8", errors="surrogateescape")
             .splitlines()
         )
@@ -93,7 +93,7 @@ class GitFileHandler(FileHandler):
     def get_model_info(self) -> modelinfo.ModelInfo:
         def revparse(*args: str) -> str:
             return (
-                self.__git("rev-parse", *args, silent=True)
+                self._git("rev-parse", *args, silent=True)
                 .decode("utf-8", errors="surrogateescape")
                 .strip()
             )
@@ -226,19 +226,19 @@ class GitFileHandler(FileHandler):
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
             LOGGER.debug("Cloning %r to %s", self.path, self.cache_dir)
-            self.__git("clone", self.path, ".", "--bare", "--mirror")
+            self._git("clone", self.path, ".", "--bare", "--mirror")
         elif self.update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            self.__git("fetch")
+            self._git("fetch")
 
     def __open_from_index(self, filename: pathlib.PurePosixPath) -> bytes:
-        return self.__git("cat-file", "blob", f"{self.revision}:{filename}")
+        return self._git("cat-file", "blob", f"{self.revision}:{filename}")
 
     def __open_from_lfs(self, filename: pathlib.PurePosixPath) -> bytes:
         lfsinfo = self.__open_from_index(filename)
-        return self.__git("lfs", "smudge", "--", filename, input=lfsinfo)
+        return self._git("lfs", "smudge", "--", filename, input=lfsinfo)
 
-    def __git(self, *cmd: t.Any, silent: bool = False, **kw: t.Any) -> bytes:
+    def _git(self, *cmd: t.Any, silent: bool = False, **kw: t.Any) -> bytes:
         LOGGER.debug("Running command %s", cmd)
         returncode = 0
         stderr = None
