@@ -173,3 +173,7 @@ class FileHandler(metaclass=abc.ABCMeta):
                 pass
 
         return EmptyTransaction()
+
+
+class TransactionClosedError(RuntimeError):
+    """Raised when a transaction must be opened first to write files."""
