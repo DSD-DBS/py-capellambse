@@ -74,13 +74,15 @@ XT_REQ_TYPES = {
 DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
-_xt_to_attr_type: dict[str, tuple[t.Callable[[str], t.Any], type, t.Any]] = {
+_xt_to_attr_type: dict[
+    str, tuple[t.Callable[[str], t.Any], type | tuple[type, ...], t.Any]
+] = {
     XT_REQ_ATTR_STRINGVALUE: (str, str, ""),
     XT_REQ_ATTR_REALVALUE: (float, float, 0.0),
     XT_REQ_ATTR_INTEGERVALUE: (int, int, 0),
     XT_REQ_ATTR_DATEVALUE: (
         lambda val: datetime.datetime.strptime(val, DATE_VALUE_FORMAT),
-        datetime.datetime,
+        (datetime.datetime, type(None)),
         None,
     ),
     XT_REQ_ATTR_BOOLEANVALUE: (lambda val: val == "true", bool, False),
@@ -438,13 +440,10 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
 class ValueAccessor(c.Accessor):
     def __get__(
         self,
-        obj: RequirementsAttribute | EnumerationValueAttribute | None,
+        obj: RequirementsAttribute | EnumerationValueAttribute,
         objtype: t.Optional[type[ReqIFElement]] = None,
     ) -> ValueAccessor | int | float | str | bool | datetime.datetime:
         del objtype
-        if obj is None:
-            return self
-
         cast, _, default = _xt_to_attr_type[obj.xtype]
         if (value := obj._element.get("value")) is None:
             return default
@@ -457,7 +456,12 @@ class ValueAccessor(c.Accessor):
     ) -> None:
         _, type_, default = _xt_to_attr_type[obj.xtype]
         if not isinstance(value, type_):
-            raise TypeError(f"Value needs to be of type {type_.__name__}")
+            if isinstance(type_, tuple):
+                error_msg = " or ".join((t.__name__ for t in type_))
+            else:
+                error_msg = type_.__name__
+
+            raise TypeError("Value needs to be of type " + error_msg)
 
         if value == default:
             del obj._element.attrib["value"]

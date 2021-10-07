@@ -14,6 +14,7 @@
 # pylint: disable=no-self-use
 from __future__ import annotations
 
+import datetime as dt
 import textwrap
 import typing as t
 
@@ -127,7 +128,7 @@ def test_path_nesting(model: capellambse.MelodyModel) -> None:
             id="Enumeration Attribute Definition",
         ),
         pytest.param(
-            "<BooleanValueAttribute [] (9c692405-b8aa-4caa-b988-51d27db5cd1b)>",
+            "<BooleanValueAttribute [] (dcb8614e-2d1c-4cb3-aa0c-667a297e7489)>",
             id="Attribute with Undefined definition",
         ),
     ],
@@ -245,12 +246,13 @@ class TestRequirementAttributes:
         self, model: capellambse.MelodyModel
     ) -> None:
         test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
-        bool_attr, undefined_attr = test_req.attributes[0:2]
+        bool_attr = test_req.attributes[0]
+        undefined_attr = test_req.attributes[-1]
 
-        assert len(test_req.attributes) == 5
-        assert undefined_attr.value == None
+        assert len(test_req.attributes) == 6
+        assert undefined_attr.value is False
         assert isinstance(bool_attr.value, bool)
-        for attr, typ in zip(test_req.attributes[2:], [int, float, str]):
+        for attr, typ in zip(test_req.attributes[2:-1], [int, float, str]):
             assert isinstance(attr.value, typ)
 
         test_req2 = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
@@ -438,6 +440,8 @@ class TestReqIFModification:
             )
         with pytest.raises(TypeError):
             req.relations.create(relcls, type="RelationType")
+        with pytest.raises(TypeError):
+            req.relations.create(relcls, target=req.attributes[0].definition)
 
     def test_created_requirements_are_found_from_both_sides(
         self, model: capellambse.MelodyModel
@@ -452,3 +456,139 @@ class TestReqIFModification:
 
         assert new_rel in req.relations
         assert new_rel in target.relations
+
+    @pytest.mark.parametrize(
+        "type_hint,def_uuid",
+        [
+            pytest.param("Int", "", id="IntegerAttributeValue"),
+            pytest.param(
+                "Str",
+                "682bd51d-5451-4930-a97e-8bfca6c3a127",
+                id="StringAttributeValue",
+            ),
+            pytest.param(
+                "Float",
+                "682bd51d-5451-4930-a97e-8bfca6c3a127",
+                id="RealAttributeValue",
+            ),
+            pytest.param(
+                "Date",
+                "682bd51d-5451-4930-a97e-8bfca6c3a127",
+                id="DateValueAttributeValue",
+            ),
+            pytest.param(
+                "Bool",
+                "682bd51d-5451-4930-a97e-8bfca6c3a127",
+                id="BooleanAttributeValue",
+            ),
+            pytest.param(
+                "Enum",
+                "c316ab07-c5c3-4866-a896-92e34733055c",
+                id="EnumValueAttributeValue",
+            ),
+        ],
+    )
+    def test_create_requirements_attributes(
+        self,
+        model: capellambse.MelodyModel,
+        type_hint: str,
+        def_uuid: str,
+    ):
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        assert not req.attributes
+        definition = model.by_uuid(def_uuid) if def_uuid else None
+
+        if definition is not None:
+            attr = req.attributes.create(type_hint, definition=definition)
+        else:
+            attr = req.attributes.create(type_hint)
+
+        assert len(req.attributes) == 1
+        assert req.attributes[0] == attr
+        assert attr.definition == definition
+        if type_hint != "Enum":
+            assert isinstance(attr, reqif.RequirementsAttribute)
+        else:
+            assert isinstance(attr, reqif.EnumerationValueAttribute)
+
+    def test_create_requirement_attribute_with_wrong_type_hint_fails(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        with pytest.raises(ValueError):
+            req.attributes.create("Gibberish")
+
+    @pytest.mark.parametrize(
+        "value",
+        [
+            pytest.param(True, id="Boolean Attribute"),
+            pytest.param(1, id="Integer Attribute"),
+            pytest.param(
+                dt.datetime.strptime(
+                    "2021-07-23T15:00:00.000+0200", "%Y-%m-%dT%H:%M:%S.%f%z"
+                ),
+                id="DateValue Attribute",
+            ),
+            pytest.param(1.9, id="Float/Real Attribute"),
+            pytest.param("Test1", id="String Attribute"),
+        ],
+    )
+    def test_setting_attribute_values_on_requirement_works(
+        self,
+        model: capellambse.MelodyModel,
+        value: int | float | str | bool | dt.datetime,
+    ):
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
+        attributes = req.attributes.by_definition(definition)
+        attr = [
+            attr for attr in attributes if type(attr.value) == type(value)
+        ][0]
+        attr.value = value
+
+        assert attr.value == value
+
+    @pytest.mark.parametrize(
+        "default_value",
+        [
+            pytest.param(False, id="Boolean Attribute"),
+            pytest.param(0, id="Integer Attribute"),
+            pytest.param(None, id="DateValue Attribute"),
+            pytest.param(0.0, id="Float/Real Attribute"),
+            pytest.param("", id="String Attribute"),
+        ],
+    )
+    def test_setting_default_attribute_values_removes_value_on_xml_element(
+        self,
+        model: capellambse.MelodyModel,
+        default_value: int | float | str | bool | dt.datetime,
+    ):
+        """Accessed value is there but on xml element there is no written value."""
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
+        attributes = req.attributes.by_definition(definition)
+        try:
+            attr = [
+                attr
+                for attr in attributes
+                if type(attr.value) == type(default_value)
+            ][0]
+        except IndexError:
+            assert default_value is None
+            attr = attributes[1]
+
+        attr.value = default_value
+
+        assert attr.value == default_value
+        assert "value" not in attr._element.attrib
+
+    def test_setting_attribute_value_with_wrong_value_type_fails(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        attr = req.attributes[0]
+        date_attr = req.attributes.by_xtype(reqif.XT_REQ_ATTR_DATEVALUE)[0]
+        with pytest.raises(TypeError):
+            attr.value = None
+        with pytest.raises(TypeError):
+            date_attr.value = 1

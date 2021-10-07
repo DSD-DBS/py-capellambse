@@ -59,15 +59,17 @@
               ReqIFChapterName="2" ReqIFForeignID="1" ReqIFText="&lt;p>Test requirement 1 really l o n g text that is&amp;nbsp;way too long to display here as that&lt;/p>&#xA;&#xA;&lt;p>&amp;lt; &amp;gt; &amp;quot; &amp;#39;&lt;/p>&#xA;&#xA;&lt;ul>&#xA;&#x9;&lt;li>This&amp;nbsp;is a list&lt;/li>&#xA;&#x9;&lt;li>an unordered one&lt;/li>&#xA;&lt;/ul>&#xA;&#xA;&lt;ol>&#xA;&#x9;&lt;li>Ordered list&lt;/li>&#xA;&#x9;&lt;li>Ok&lt;/li>&#xA;&lt;/ol>&#xA;"
               requirementTypeProxy="7">
             <ownedAttributes xsi:type="Requirements:BooleanValueAttribute" id="9c692405-b8aa-4caa-b988-51d27db5cd1b"
-                value="true"/>
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="true"/>
             <ownedAttributes xsi:type="Requirements:DateValueAttribute" id="b97c09b5-948a-46e8-a656-69d764ddce7d"
-                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" definitionProxy=""/>
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" definitionProxy=""
+                value="2021-07-23T15:00:00.000+0200"/>
             <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="85dfd42c-7f6e-4236-a181-bdd784040431"
                 definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="10"/>
             <ownedAttributes xsi:type="Requirements:RealValueAttribute" id="d2231d14-854d-4625-b48b-6cf1c2554367"
                 definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="10.5"/>
             <ownedAttributes xsi:type="Requirements:StringValueAttribute" id="ee8a69ef-61b9-4db9-9a0f-628e5d4704e1"
                 definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="Test"/>
+            <ownedAttributes xsi:type="Requirements:BooleanValueAttribute" id="dcb8614e-2d1c-4cb3-aa0c-667a297e7489"/>
             <ownedRelations xsi:type="CapellaRequirements:CapellaIncomingRelation"
                 id="078b2c69-4352-4cf9-9ea5-6573b75e5eec" ReqIFLongName="Controlling the weather"
                 relationType="#f1aceb81-5f70-4469-a127-94830eb9be04" source="#3c2d312c-37c9-41b5-8c32-67578fa52dc3"
