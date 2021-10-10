@@ -406,6 +406,28 @@ class TestReqIFModification:
         assert model.by_uuid(new_req.uuid) == new_req
         assert new_req in mod.requirements
 
+    def test_created_requirement_on_generic_element_creates_out_relation(
+        self, model: capellambse.MelodyModel
+    ):
+        gobj = model.oa.root_activity
+        req, req1 = model.oa.all_requirements[:2]
+
+        with pytest.raises(TypeError):
+            gobj.requirements.create()
+
+        with pytest.raises(TypeError):
+            gobj.requirements.create(target=model.sa.root_component)
+
+        with pytest.raises(TypeError):
+            gobj.requirements.insert(1, model.sa.root_component)
+
+        gobj.requirements.append(req1)
+        gobj.requirements.append(req)
+        assert gobj.requirements.by_long_name(req.long_name)[0] == req
+        gobj.requirements.remove(req)
+
+        assert req not in gobj.requirements
+
     def test_deleted_requirements_vanish_from_model(
         self, model: capellambse.MelodyModel
     ):

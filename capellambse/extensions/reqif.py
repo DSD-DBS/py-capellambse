@@ -243,28 +243,50 @@ class ElementRelationAccessor(
             side="source",
         )
 
-    def create(
+    def insert(
         self,
         elmlist: c.ElementListCouplingMixin,
-        /,
-        *type_hints: t.Optional[str],
-        **kw: t.Any,
-    ) -> c.T:
-        if "target" not in kw:
-            raise TypeError("No `target` for new requirement relation")
-        if not isinstance(kw["target"], Requirement):
-            raise TypeError("`target` must be of type 'Requirement'")
+        index: int,
+        value: c.ModelObject,
+    ) -> None:
+        if not isinstance(value, Requirement):
+            raise TypeError("`value` must be of type 'Requirement'")
+
         cls = t.cast(t.Type[c.T], RequirementsOutRelation)
         parent = elmlist._parent
         with parent._model._loader.new_uuid(parent._element) as uuid:
-            return cls(
+            relation = cls(
                 elmlist._model,
-                parent,
-                **kw,
-                source=elmlist._parent,
+                parent._element,
+                source=value,
+                target=elmlist._parent,
                 uuid=uuid,
                 xtype=XT_OUT_RELATION,
             )
+            xml_index = 0
+            for elt in parent._element.iterchildren():
+                if helpers.xtype_of(elt) == XT_OUT_RELATION:
+                    if index == 0:
+                        break
+                    index -= 1
+
+                xml_index += 1
+
+            parent._element.remove(relation._element)
+            parent._element.insert(xml_index, relation._element)
+
+    def delete(
+        self, elmlist: c.ElementListCouplingMixin, obj: Requirement
+    ) -> None:
+        index = elmlist.index(obj)
+        element: etree._Element = elmlist._parent._element
+        relations = [
+            relation
+            for relation in obj._model._loader.iterchildren_xt(
+                element, XT_OUT_RELATION
+            )
+        ]
+        element.remove(relations[index])
 
 
 class ReqIFElement(c.GenericElement):
