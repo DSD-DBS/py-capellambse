@@ -555,14 +555,9 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
 class AbstractType(ReqIFElement):
     owner = c.ParentAccessor(c.GenericElement)
     attribute_definitions = c.ProxyAccessor(
-        AttributeDefinition,
-        XT_REQ_TYPE_ATTR_DEF,
-        aslist=c.ElementList,
-    )
-    enum_definitions = c.ProxyAccessor(
-        AttributeDefinitionEnumeration,
-        XT_REQ_TYPE_ENUM_DEF,
-        aslist=c.ElementList,
+        c.GenericElement,
+        (XT_REQ_TYPE_ATTR_DEF, XT_REQ_TYPE_ENUM_DEF),
+        aslist=c.MixedElementList,
     )
 
 
@@ -672,12 +667,9 @@ class RequirementsTypesFolder(ReqIFElement):
     _xmltag = "ownedExtensions"
 
     data_type_definitions = c.ProxyAccessor(
-        DataTypeDefinition,
-        XT_REQ_TYPES_DATA_DEF,
-        aslist=c.ElementList,
-    )
-    enum_data_type_definitions = c.ProxyAccessor(
-        EnumDataTypeDefinition, XT_REQ_TYPE_ENUM, aslist=c.ElementList
+        c.GenericElement,
+        (XT_REQ_TYPES_DATA_DEF, XT_REQ_TYPE_ENUM),
+        aslist=c.MixedElementList,
     )
     module_types = c.ProxyAccessor(
         ModuleType, XT_MODULE_TYPE, aslist=c.ElementList
