@@ -26,11 +26,6 @@ def test_model_info_contains_capella_version(model: MelodyModel):
     assert hasattr(model.info, "capella_version")
 
 
-def test_model_info_dict_has_capella_version(model: MelodyModel):
-    model_info = model.info.as_dict()
-    assert model_info.get("capella_version") == "5.0.0"
-
-
 def test_loading_version_5_succeeds():
     MelodyModel(TEST_ROOT / "5_0" / "MelodyModelTest.aird")
 
