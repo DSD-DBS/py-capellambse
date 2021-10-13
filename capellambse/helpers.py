@@ -405,7 +405,7 @@ def unescape_linked_text(
                 yield html.escape(elm.tail or "")
                 return
             if "#" in href:
-                ehref = html.escape(href.rsplit("#", maxsplit=1)[-1])
+                ehref = html.escape("#" + href.rsplit("#", maxsplit=1)[-1])
             else:
                 ehref = html.escape("#" + href)
 
