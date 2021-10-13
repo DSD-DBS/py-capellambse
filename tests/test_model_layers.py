@@ -205,7 +205,7 @@ def test_stm_transition_multiple_guards(model):
 
     assert transition.guard is not None
     assert transition.guard.specification.text == "Actor feels hungry"
-    assert transition.guard.specification["Python"] == "self.hunger &gt;= 0.8"
+    assert transition.guard.specification["Python"] == "self.hunger >= 0.8"
 
 
 def test_path_nesting(model):
