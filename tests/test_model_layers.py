@@ -379,6 +379,22 @@ def test_constraint_specification_has_linked_object_name_in_body(
     )
 
 
+def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
+    model: MelodyModel,
+) -> None:
+    c1 = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
+    c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
+    assert isinstance(c1, capellambse.model.crosslayer.capellacore.Constraint)
+    assert isinstance(c2, capellambse.model.crosslayer.capellacore.Constraint)
+
+    c2.specification["LinkedText"] = c1.specification["LinkedText"]
+
+    assert (
+        next(c1.specification._element.iterchildren("bodies")).text
+        == next(c2.specification._element.iterchildren("bodies")).text
+    )
+
+
 def test_constraint_without_specification_raises_AttributeError(
     model: MelodyModel,
 ) -> None:

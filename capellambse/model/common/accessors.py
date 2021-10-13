@@ -720,6 +720,8 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
 
     def __setitem__(self, k: str, v: str) -> None:
         k = self._aliases.get(k, k)
+        if k in self._linked_text:
+            v = helpers.escape_linked_text(self._model._loader, v)
         try:
             i, lang = self._index_of(k)
         except KeyError:

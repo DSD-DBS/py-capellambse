@@ -433,6 +433,49 @@ def unescape_linked_text(
     return markupsafe.Markup(escaped_text)
 
 
+def escape_linked_text(
+    loader: capellambse.loader.MelodyLoader, attr_text: str
+) -> str:
+    """Transform simple HTML with object links into ``LinkedText``.
+
+    This is the inverse operation of :func:`unescape_linked_text`.
+    """
+
+    def flatten_element(
+        elm: t.Union[lxml.html.HTMLElement, str]
+    ) -> t.Iterator[str]:
+        if isinstance(elm, str):
+            yield html.escape(elm)
+        elif elm.tag == "a":
+            href = elm.get("href")
+            if not href:
+                yield html.escape(elm.text or "")
+            else:
+                try:
+                    target = loader[href]
+                except KeyError:
+                    raise ValueError(
+                        f"Broken link in linked text: {href}"
+                    ) from None
+                if "#" in href:
+                    href = href.rsplit("#", maxsplit=1)[-1]
+                yield '<a href="'
+                yield html.escape(href)
+                yield '"/>'
+            if len(elm) > 0:
+                raise ValueError("Nesting is not allowed in LinkedText")
+        else:
+            raise ValueError(
+                f"Only 'a' tags are allowed in LinkedText, not {elm.tag!r}"
+            )
+
+    elements = lxml.html.fragments_fromstring(attr_text)
+    text = "".join(
+        itertools.chain.from_iterable(flatten_element(i) for i in elements)
+    )
+    return markupsafe.Markup(text)
+
+
 @t.overload
 def xpath_fetch_unique(
     xpath: t.Union[str, etree.XPath],

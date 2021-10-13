@@ -460,7 +460,7 @@ The predator is far away</bodies>
               id="039b1462-8dd0-4bfd-a52d-0c6f1484aa6e" name="" constrainedElements="#3b83b4ba-671a-4de8-9c07-a5c6b1d3c422">
             <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
                 id="c258a012-49dd-44f0-b5f9-2e5dd0b68a31">
-              <bodies> &lt;a href=&quot;dd2d0dab-a35f-4104-91e5-b412f35cba15&quot;/></bodies>
+              <bodies>&lt;a href=&quot;dd2d0dab-a35f-4104-91e5-b412f35cba15&quot;/></bodies>
               <languages>capella:linkedText</languages>
             </ownedSpecification>
           </ownedConstraints>
