@@ -687,6 +687,8 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
 
 
 class _Specification(t.MutableMapping[str, str], element.ModelObject):
+    _aliases = {"LinkedText": "capella:linkedText"}
+
     def __init__(
         self, model: capellambse.MelodyModel, elm: etree._Element
     ) -> None:
@@ -694,12 +696,14 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
         self._element = elm
 
     def __delitem__(self, k: str) -> None:
+        k = self._aliases.get(k, k)
         i, lang_elem = self._index_of(k)
         body_elem = self._body_at(k, i)
         self._element.remove(lang_elem)
         self._element.remove(body_elem)
 
     def __getitem__(self, k: str) -> str:
+        k = self._aliases.get(k, k)
         i, _ = self._index_of(k)
         return helpers.unescape_linked_text(
             self._model._loader, self._body_at(k, i).text
@@ -713,6 +717,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
         return sum(1 for _ in self)
 
     def __setitem__(self, k: str, v: str) -> None:
+        k = self._aliases.get(k, k)
         try:
             i, lang = self._index_of(k)
         except KeyError:
