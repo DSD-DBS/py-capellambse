@@ -756,11 +756,6 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
     def __repr__(self) -> str:  # pragma: no cover
         return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
 
-    @property
-    def text(self) -> str:
-        """Return ``self["capella:linkedText"]``."""
-        return self["capella:linkedText"]
-
     @classmethod
     def from_model(
         cls, model: capellambse.MelodyModel, element: t.Any
