@@ -350,7 +350,7 @@ def repair_html(markup: str) -> str:
         t.Union[str, lxml.html._Element]
     ] = lxml.html.fragments_fromstring(markup)
     if nodes and isinstance(nodes[0], str):
-        firstnode: str = markupsafe.escape(nodes.pop(0))
+        firstnode: str = html.escape(nodes.pop(0))
     else:
         firstnode = ""
     assert all(isinstance(i, etree._Element) for i in nodes)
