@@ -17,7 +17,7 @@
 """
 from __future__ import annotations
 
-import collections.abc
+import collections.abc as cabc
 import itertools
 import typing as t
 
@@ -94,12 +94,12 @@ class RequirementsRelationAccessor(
         self,
         elmlist: c.ElementListCouplingMixin,
         /,
-        *type_hints: t.Optional[str],
+        *type_hints: str | None,
         **kw: t.Any,
     ) -> c.T:
         if "target" not in kw:
             raise TypeError("No `target` for new requirement relation")
-        cls: t.Type[c.T]
+        cls: type[c.T]
         cls, xtype = self._find_relation_type(kw["target"])
         parent = elmlist._parent._element
         with elmlist._model._loader.new_uuid(parent) as uuid:
@@ -114,7 +114,7 @@ class RequirementsRelationAccessor(
 
     def _find_relation_type(
         self, target: c.GenericElement
-    ) -> t.Tuple[t.Type[c.T], str]:
+    ) -> tuple[type[c.T], str]:
         if isinstance(target, Requirement):
             return (
                 t.cast(t.Type[c.T], RequirementsIntRelation),
@@ -198,7 +198,7 @@ class ElementRelationAccessor(
         self,
         elmlist: c.ElementListCouplingMixin,
         /,
-        *type_hints: t.Optional[str],
+        *type_hints: str | None,
         **kw: t.Any,
     ) -> c.T:
         if "target" not in kw:
@@ -272,8 +272,8 @@ class RequirementRelationsList(c.ElementList["AbstractRequirementsRelation"]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
-        elemclass: t.Type[t.Any] = None,
+        elements: list[etree._Element],
+        elemclass: type[t.Any] = None,
         *,
         side: str = None,
     ) -> None:
@@ -353,7 +353,7 @@ class ReqIFElement(c.GenericElement):
 
 
 # TODO: Document and refactor attributes
-class RequirementsAttributes(collections.abc.Mapping):
+class RequirementsAttributes(cabc.Mapping):
     """Handles extension attributes on Requirements."""
 
     _model: capellambse.MelodyModel
@@ -377,7 +377,7 @@ class RequirementsAttributes(collections.abc.Mapping):
     def __len__(self) -> int:
         return sum(1 for i in self)
 
-    def __iter__(self) -> t.Iterator[str]:
+    def __iter__(self) -> cabc.Iterator[str]:
         for child in self._element.iterchildren():
             if child.get(helpers.ATT_XT) not in XT_REQ_ATTRIBUTES:
                 continue
@@ -392,7 +392,7 @@ class RequirementsAttributes(collections.abc.Mapping):
             if name:
                 yield name
 
-    def __getitem__(self, key: str) -> t.Optional[str]:
+    def __getitem__(self, key: str) -> str | None:
         for child in self._element.iterchildren():
             if child.get(helpers.ATT_XT) not in XT_REQ_ATTRIBUTES:
                 continue

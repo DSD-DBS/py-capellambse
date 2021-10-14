@@ -27,10 +27,10 @@ LOGGER = logging.getLogger(__name__)
 
 
 def get_filehandler(
-    path: t.Union[bytes, os.PathLike, str], **kwargs: t.Any
+    path: bytes | str | os.PathLike, **kwargs: t.Any
 ) -> FileHandler:
     pattern = r"^(\w+\+)?(\w+:)//"
-    prefix_match: t.Optional[re.Match[t.Any]]
+    prefix_match: re.Match[t.Any] | None
     if isinstance(path, bytes):
         prefix_match = re.search(pattern.encode("ascii"), path)
     else:
@@ -54,17 +54,17 @@ def get_filehandler(
     except StopIteration:
         raise ValueError(f"Unknown file handler {handler_name}") from None
 
-    handler: t.Type[FileHandler] = ep.load()
+    handler: type[FileHandler] = ep.load()
     return handler(path, **kwargs)
 
 
 class FileHandler(metaclass=abc.ABCMeta):
-    path: t.Union[bytes, os.PathLike, str]
+    path: bytes | str | os.PathLike
     entrypoint: str
 
     def __init__(
         self,
-        path: t.Union[bytes, os.PathLike, str],
+        path: bytes | str | os.PathLike,
         entrypoint: str,
         **kw: t.Any,
     ) -> None:

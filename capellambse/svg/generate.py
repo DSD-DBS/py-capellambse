@@ -13,6 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 
+import collections.abc as cabc
 import dataclasses
 import json
 import typing as t
@@ -71,7 +72,7 @@ class SVGDiagram:
     def __init__(
         self,
         metadata: DiagramMetadata,
-        objects: t.Sequence[ContentsDict],
+        objects: cabc.Sequence[ContentsDict],
     ) -> None:
         self.drawing = Drawing(metadata)
         for obj in objects:
@@ -149,15 +150,15 @@ class DiagramMetadata:
 
     def __init__(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
+        pos: tuple[float, float],
+        size: tuple[float, float],
         name: str,
         class_: str,
         **_kw: t.Any,
     ) -> None:
         # Add padding to viewbox to account for drawn borders
-        self.pos: t.Tuple[float, float] = tuple(i - 10 for i in pos)  # type: ignore[assignment]
-        self.size: t.Tuple[float, float] = tuple(i + 20 for i in size)  # type: ignore[assignment]
+        self.pos: tuple[float, float] = tuple(i - 10 for i in pos)  # type: ignore[assignment]
+        self.size: tuple[float, float] = tuple(i + 20 for i in size)  # type: ignore[assignment]
         self.viewbox = " ".join(map(str, self.pos + self.size))
         self.class_ = class_
         self.name = name

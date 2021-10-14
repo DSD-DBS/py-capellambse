@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Factory functions for Edges inside a diagram."""
+from __future__ import annotations
+
+import collections.abc as cabc
 import dataclasses
 import typing as t
 
@@ -90,7 +93,7 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
 
 def extract_bendpoints(
     seb: C.ElementBuilder,
-) -> t.Tuple[t.List[aird.Vector2D], aird.DiagramElement, aird.DiagramElement]:
+) -> tuple[list[aird.Vector2D], aird.DiagramElement, aird.DiagramElement]:
     """Extract the bendpoints from an Edge's XML.
 
     Parameters
@@ -155,7 +158,7 @@ def extract_bendpoints(
 
 def get_end_ports(
     seb: C.ElementBuilder,
-) -> t.Tuple[aird.DiagramElement, aird.DiagramElement]:
+) -> tuple[aird.DiagramElement, aird.DiagramElement]:
     """Retrieve the source and target port of an Edge in the diagram."""
 
     def get_port_object(portside: str) -> aird.DiagramElement:
@@ -182,7 +185,7 @@ def get_end_ports(
 
 
 def route_manhattan(
-    points: t.MutableSequence[aird.Vector2D],
+    points: cabc.MutableSequence[aird.Vector2D],
     source: aird.DiagramElement,
     target: aird.DiagramElement,
 ) -> None:
@@ -228,7 +231,7 @@ def route_manhattan(
 
 
 def route_tree(
-    points: t.MutableSequence[aird.Vector2D],
+    points: cabc.MutableSequence[aird.Vector2D],
     source: aird.DiagramElement,
     target: aird.DiagramElement,
 ) -> None:
@@ -285,7 +288,7 @@ def route_tree(
 
 @t.overload
 def snaptarget(
-    points: t.MutableSequence[aird.Vector2D],
+    points: cabc.MutableSequence[aird.Vector2D],
     i: int,
     next_i: int,
     target: aird.Box,
@@ -296,7 +299,7 @@ def snaptarget(
 
 @t.overload
 def snaptarget(
-    points: t.MutableSequence[aird.Vector2D],
+    points: cabc.MutableSequence[aird.Vector2D],
     i: int,
     next_i: int,
     target: aird.DiagramElement,
@@ -306,7 +309,7 @@ def snaptarget(
 
 
 def snaptarget(
-    points: t.MutableSequence[aird.Vector2D],
+    points: cabc.MutableSequence[aird.Vector2D],
     i: int,
     next_i: int,
     target: aird.DiagramElement,
@@ -410,8 +413,8 @@ def _construct_label(
 
 
 def _find_center(
-    points: t.Sequence[aird.Vector2D],
-) -> t.Tuple[aird.Vector2D, aird.Vector2D]:
+    points: cabc.Sequence[aird.Vector2D],
+) -> tuple[aird.Vector2D, aird.Vector2D]:
     """Calculate the center point of the edge described by `points`."""
     # Calculate the length of each part
     lengths = [

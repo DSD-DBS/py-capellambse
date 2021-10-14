@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import hashlib
 import io
 import logging
@@ -39,11 +41,11 @@ class GitFileHandler(FileHandler):
     known_hosts_file: str
     cache_dir: pathlib.Path
 
-    __lfsfiles: t.FrozenSet[str]
+    __lfsfiles: frozenset[str]
 
     def __init__(
         self,
-        path: t.Union[bytes, os.PathLike, str],
+        path: bytes | str | os.PathLike,
         entrypoint: str,
         revision: str = "HEAD",
         username: str = "",
@@ -113,7 +115,7 @@ class GitFileHandler(FileHandler):
             rev_hash=revparse(self.revision),
         )
 
-    def __get_git_env(self) -> t.Dict:
+    def __get_git_env(self) -> dict[str, str]:
         git_env = os.environ.copy()
         if not os.environ.get("GIT_ASKPASS"):
             path_to_askpass = (

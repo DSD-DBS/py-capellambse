@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions that handle element styling."""
+from __future__ import annotations
+
+import collections.abc as cabc
 import struct
 import typing as t
 
@@ -23,10 +26,10 @@ from ._common import LOGGER
 
 
 def apply_style_overrides(
-    diagram_class: t.Optional[str],
+    diagram_class: str | None,
     element_class: str,
     ostyle: lxml.etree._Element,
-) -> t.Dict[str, t.Union[aird.RGB, str, t.List[t.Union[aird.RGB, str]]]]:
+) -> dict[str, str | aird.RGB | list[str | aird.RGB]]:
     """Apply style overrides defined in the AIRD to a semantic element.
 
     Parameters
@@ -40,9 +43,7 @@ def apply_style_overrides(
         An ownedStyle element.
     """
 
-    def _to_rgb(
-        ostyle: lxml.etree._Element, attrib: str
-    ) -> t.Optional[aird.RGB]:
+    def _to_rgb(ostyle: lxml.etree._Element, attrib: str) -> aird.RGB | None:
         color = ostyle.get(attrib)
         if color is not None:
             color = aird.RGB.fromcsv(color)
@@ -51,7 +52,7 @@ def apply_style_overrides(
     if diagram_class is None:
         return {}
 
-    styleoverrides: t.Dict[str, aird.CSSdef] = {}
+    styleoverrides: dict[str, aird.CSSdef] = {}
 
     # Background color
     color = _to_rgb(ostyle, "color")
@@ -90,9 +91,7 @@ def apply_style_overrides(
 
 def apply_visualelement_styles(
     diagram_class: str, element_class: str, data_element: lxml.etree._Element
-) -> t.Mapping[
-    str, t.Union[aird.RGB, str, t.Sequence[t.Union[aird.RGB, str]]]
-]:
+) -> cabc.Mapping[str, str | aird.RGB | cabc.Sequence[str | aird.RGB]]:
     """Apply style overrides defined in the AIRD to a visual element.
 
     Parameters
@@ -105,7 +104,7 @@ def apply_visualelement_styles(
     data_element
         The ``<data>`` subtree's child element
     """
-    styleoverrides: t.Dict[str, t.Any] = {}
+    styleoverrides: dict[str, t.Any] = {}
 
     def unpack_rgb(color: str, default: int) -> aird.RGB:
         color_int = int(data_element.get(color, default))
@@ -128,8 +127,8 @@ def apply_visualelement_styles(
 def _filter_default_styles(
     diagram_class: str,
     element_class: str,
-    styleoverrides: t.Mapping[str, t.Any],
-) -> t.Dict[str, t.Union[aird.RGB, str, t.List[t.Union[aird.RGB, str]]]]:
+    styleoverrides: cabc.Mapping[str, t.Any],
+) -> dict[str, str | aird.RGB | list[str | aird.RGB]]:
     def style_is_default(key: str, val: t.Any) -> bool:
         for dia_lookup, elm_lookup in [
             (diagram_class, element_class),

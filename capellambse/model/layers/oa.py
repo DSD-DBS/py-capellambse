@@ -16,7 +16,6 @@
 .. diagram:: [CDB] OA ORM
 """
 import operator
-import typing as t
 
 from .. import common as c
 from .. import crosslayer, diagram

@@ -14,6 +14,7 @@
 """Custom extensions to the svgwrite ``Drawing`` object."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import os
 import re
@@ -60,14 +61,14 @@ class Drawing(drawing.Drawing):
         super().__init__(**superparams)
         self.diagram_class = metadata.class_
         self.stylesheet = self.make_stylesheet()
-        self.obj_cache: t.Dict[str | None, t.Any] = {}
+        self.obj_cache: dict[str | None, t.Any] = {}
         self.requires_deco_patch = decorations.needs_patch.get(
             self.diagram_class, {}
         )
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
 
     def add_backdrop(
-        self, pos: t.Tuple[float, float], size: t.Tuple[float, float]
+        self, pos: tuple[float, float], size: tuple[float, float]
     ) -> None:
         """Add a white background rectangle to the drawing."""
         self.__backdrop = self.rect(
@@ -95,13 +96,13 @@ class Drawing(drawing.Drawing):
 
     def add_rect(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
-        rectstyle: t.Mapping[str, style.Styling],
+        pos: tuple[float, float],
+        size: tuple[float, float],
+        rectstyle: cabc.Mapping[str, style.Styling],
         *,
         class_: str = "",
         label: LabelDict | None = None,
-        features: t.Sequence[str] = (),
+        features: cabc.Sequence[str] = (),
         id_: str = None,
         children: bool = False,
     ) -> container.Group:
@@ -160,9 +161,9 @@ class Drawing(drawing.Drawing):
     def _draw_feature_line(
         self,
         obj: base.BaseElement,
-        group: t.Optional[container.Group],
+        group: container.Group | None,
         objstyle: style.Styling | None,
-    ) -> t.Union[shapes.Line, None]:
+    ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
@@ -183,7 +184,7 @@ class Drawing(drawing.Drawing):
     def _draw_feature_text(
         self,
         obj: base.BaseElement,
-        features: t.Sequence[str],
+        features: cabc.Sequence[str],
         class_: str,
         group: container.Group,
         labelstyle: style.Styling | None,
@@ -218,7 +219,7 @@ class Drawing(drawing.Drawing):
         class_: str,
         labelstyle: style.Styling | None,
         text_anchor: str = "start",
-        y_margin: t.Optional[int | float],
+        y_margin: int | float | None,
         icon: bool = True,
         icon_size: float | int = decorations.icon_size,
     ) -> container.Group:
@@ -288,8 +289,8 @@ class Drawing(drawing.Drawing):
         text_anchor: str = "start",
         icon: bool = True,
         icon_size: float | int = decorations.icon_size,
-        y_margin: t.Optional[int | float],
-    ) -> t.Tuple[float, float, float, float | int]:
+        y_margin: int | float | None,
+    ) -> tuple[float, float, float, float | int]:
         assert isinstance(label["x"], (int, float))
         assert isinstance(label["y"], (int, float))
         assert isinstance(label["width"], (int, float))
@@ -369,8 +370,8 @@ class Drawing(drawing.Drawing):
     def add_label_image(
         self,
         group: container.Group,
-        class_: t.Optional[str],
-        pos: t.Tuple[float, float],
+        class_: str | None,
+        pos: tuple[float, float],
         icon_size: float | int = decorations.icon_size,
     ) -> None:
         """Add label svgobject to given group."""
@@ -387,8 +388,8 @@ class Drawing(drawing.Drawing):
 
     def get_port_transformation(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
+        pos: tuple[float, float],
+        size: tuple[float, float],
         class_: str,
         parent_id: str | None,
     ) -> str:
@@ -410,8 +411,8 @@ class Drawing(drawing.Drawing):
 
     def add_port(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
+        pos: tuple[float, float],
+        size: tuple[float, float],
         text_style: style.Styling,
         parent_id: str | None,
         *,
@@ -463,7 +464,7 @@ class Drawing(drawing.Drawing):
 
         return grp
 
-    def draw_object(self, obj: t.Mapping[str, t.Any]) -> None:
+    def draw_object(self, obj: cabc.Mapping[str, t.Any]) -> None:
         """Draw an object into this drawing.
 
         Parameters
@@ -515,7 +516,7 @@ class Drawing(drawing.Drawing):
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        context_: t.Sequence[str] = (),
+        context_: cabc.Sequence[str] = (),
         parent_: str = None,
         label_: LabelDict | None = None,
         id_: str = None,
@@ -578,9 +579,9 @@ class Drawing(drawing.Drawing):
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        context_: t.Sequence[str] = (),
-        children_: t.Sequence[str] = (),
-        features_: t.Sequence[str] = (),
+        context_: cabc.Sequence[str] = (),
+        children_: cabc.Sequence[str] = (),
+        features_: cabc.Sequence[str] = (),
         label_: str | LabelDict | None = None,
         id_: str,
         class_: str,
@@ -662,7 +663,7 @@ class Drawing(drawing.Drawing):
     def _draw_edge(
         self,
         *,
-        points_: t.List[t.List[int]],
+        points_: list[list[int]],
         label_: LabelDict = None,
         id_: str,
         class_: str,
@@ -727,9 +728,9 @@ class Drawing(drawing.Drawing):
     def _draw_label_bbox(
         self,
         label: LabelDict,
-        group: t.Optional[container.Group] = None,
-        class_: t.Optional[str] = None,
-        obj_style: t.Optional[style.Styling] = None,
+        group: container.Group | None = None,
+        class_: str | None = None,
+        obj_style: style.Styling | None = None,
     ) -> None:
         """Draw a bounding box for given label."""
         if DEBUG:
@@ -755,10 +756,10 @@ class Drawing(drawing.Drawing):
 
     def _draw_line(
         self,
-        data: t.Dict[str, t.Union[int, float]],
-        group: t.Optional[container.Group] = None,
-        obj_style: t.Optional[style.Styling] = None,
-    ) -> t.Union[shapes.Line, None]:
+        data: dict[str, float | int],
+        group: container.Group | None = None,
+        obj_style: style.Styling | None = None,
+    ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x1, y1 = data["x"], data["y"]
         x2 = data.get("x1") or data["x"] + data["width"]
@@ -771,8 +772,8 @@ class Drawing(drawing.Drawing):
 
     def _draw_rect_helping_lines(
         self,
-        rect_pos: t.Tuple[float, float],
-        rect_size: t.Tuple[float, float],
+        rect_pos: tuple[float, float],
+        rect_size: tuple[float, float],
     ):
         linestyle = style.Styling(
             self.diagram_class,

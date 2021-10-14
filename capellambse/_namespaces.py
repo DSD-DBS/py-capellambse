@@ -14,26 +14,27 @@
 
 from __future__ import annotations
 
-import dataclasses as dc
+import collections.abc as cabc
+import dataclasses
 import re
 import typing as t
 
 PLUGIN_PATTERN = re.compile(r"(.*?)(\d\.\d\.\d)?$")
 
 
-@dc.dataclass
+@dataclasses.dataclass
 class Version:
     """Capella xml-element/plugin version info about name and version."""
 
     plugin: str
-    version: t.Optional[str] = None
+    version: str | None = None
 
     @property
-    def values(self) -> t.Iterator[t.Optional[str]]:
+    def values(self) -> cabc.Iterator[str | None]:
         yield self.plugin
         yield self.version
 
-    def __le__(self, other: t.Union[Version, int, float, str]) -> t.Any:
+    def __le__(self, other: float | int | str | Version) -> t.Any:
         if self.version is None:
             return False
 
@@ -53,7 +54,7 @@ def _tofloat(other: str) -> float:
 
 def yield_key_and_version_from_namespaces_by_plugin(
     plugin: str,
-) -> t.Iterator[t.Tuple[str, Version]]:
+) -> cabc.Iterator[tuple[str, Version]]:
     """Yield namespace key and :class:`Version` tuple for plugin str.
 
     Parameters
@@ -98,11 +99,11 @@ class Namespace(dict):
             attr for attr in version.values if isinstance(attr, str)
         )
 
-    def items(self) -> t.ItemsView[str, str]:
+    def items(self) -> cabc.ItemsView[str, str]:
         """Get original dictionary itemsview."""
         return {k: self.__getitem__(k) for k in super().keys()}.items()
 
-    def get_items(self) -> t.ItemsView[str, Version]:
+    def get_items(self) -> cabc.ItemsView[str, Version]:
         """Get dictionary itemsview of name and version."""
         return super().items()
 

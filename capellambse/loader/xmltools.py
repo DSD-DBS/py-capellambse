@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import abc
-import collections.abc
+import collections.abc as cabc
 import enum
 import typing as t
 
@@ -45,7 +45,7 @@ class AttributeProperty:
         xmlattr: str,
         attribute: str,
         *,
-        returntype: t.Callable[[str], t.Any] = str,
+        returntype: cabc.Callable[[str], t.Any] = str,
         optional: bool = False,
         default: t.Any = None,
         writable: bool = True,
@@ -84,15 +84,15 @@ class AttributeProperty:
             self.default = self.NOT_OPTIONAL
 
         self.__name__ = "(unknown)"
-        self.__objclass__: t.Optional[t.Type[t.Any]] = None
+        self.__objclass__: type[t.Any] | None = None
         self.__doc__ = __doc__
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Type) -> AttributeProperty:
+    def __get__(self, obj: None, objtype: type) -> AttributeProperty:
         ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: t.Type = None) -> t.Any:
+    def __get__(self, obj: t.Any, objtype: type = None) -> t.Any:
         ...
 
     def __get__(self, obj, objtype=None):
@@ -139,7 +139,7 @@ class AttributeProperty:
 
         getattr(obj, self.xmlattr).set(self.attribute, None)
 
-    def __set_name__(self, owner: t.Type[t.Any], name: str) -> None:
+    def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
 
@@ -165,11 +165,11 @@ class BooleanAttributeProperty(AttributeProperty):
         )
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Type) -> AttributeProperty:
+    def __get__(self, obj: None, objtype: type) -> AttributeProperty:
         ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: t.Type = None) -> bool:
+    def __get__(self, obj: t.Any, objtype: type = None) -> bool:
         ...
 
     def __get__(self, obj, objtype=None):
@@ -216,9 +216,9 @@ class EnumAttributeProperty(AttributeProperty):
         self,
         xmlattr: str,
         attribute: str,
-        enumcls: t.Type[enum.Enum],
+        enumcls: type[enum.Enum],
         *args: t.Any,
-        default: t.Union[str, enum.Enum] = None,
+        default: str | enum.Enum | None = None,
         badstring: bool = False,
         **kw: t.Any,
     ) -> None:
@@ -257,7 +257,7 @@ class EnumAttributeProperty(AttributeProperty):
                 )
             )
 
-    def __get__(self, obj: t.Any, objtype: t.Type[t.Any] = None) -> t.Any:
+    def __get__(self, obj: t.Any, objtype: type[t.Any] = None) -> t.Any:
         if obj is None:
             return self
 
@@ -295,12 +295,12 @@ class EnumAttributeProperty(AttributeProperty):
 
         return super().__set__(obj, value.value)
 
-    def __set_name__(self, owner: t.Type[t.Any], name: str) -> None:
+    def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
 
 
-class XMLDictProxy(collections.abc.MutableMapping):
+class XMLDictProxy(cabc.MutableMapping):
     """Provides dict-like access to underlying XML structures.
 
     Subclasses of this class behave like regular Python dictionary,
@@ -337,7 +337,7 @@ class XMLDictProxy(collections.abc.MutableMapping):
         self.model = model
         self.xml_element = xml_element
 
-    def __iter__(self) -> t.Iterator[str]:
+    def __iter__(self) -> cabc.Iterator[str]:
         return (
             e.attrib[self.__keyattr]
             for e in self.xml_element.iterchildren(self.__childtag)
@@ -376,7 +376,7 @@ class XMLDictProxy(collections.abc.MutableMapping):
                 return
         raise KeyError(key)
 
-    def copy(self) -> t.Dict[str, t.Any]:
+    def copy(self) -> dict[str, t.Any]:
         """Make a copy of this proxy as standard Python :class:`dict`."""
         return dict(self.items())
 

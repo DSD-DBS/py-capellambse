@@ -62,7 +62,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
 
-    def __dir__(self) -> t.List[str]:
+    def __dir__(self) -> list[str]:
         return dir(type(self)) + [
             f"as_{i.name}"
             for i in imm.entry_points()["capellambse.diagram.formats"]
@@ -120,7 +120,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def render(self, fmt: str) -> t.Any:
         ...
 
-    def render(self, fmt: t.Optional[str]) -> t.Any:
+    def render(self, fmt: str | None) -> t.Any:
         """Render the diagram in the given format."""
         # pylint: disable=broad-except
         conv: DiagramConverter
@@ -259,9 +259,9 @@ class DiagramAccessor(c.Accessor):
 
     def __init__(
         self,
-        viewpoint: t.Optional[str] = None,
+        viewpoint: str | None = None,
         *,
-        cacheattr: t.Optional[str] = None,
+        cacheattr: str | None = None,
     ) -> None:
         super().__init__()
         self.cacheattr = cacheattr

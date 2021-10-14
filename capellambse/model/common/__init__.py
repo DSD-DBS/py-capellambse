@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import collections
+import collections.abc as cabc
 import typing as t
 
 import markupsafe
@@ -31,8 +32,8 @@ T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
 # pylint: enable=invalid-name
 
-XTYPE_HANDLERS: t.Dict[
-    t.Optional[str], t.Dict[str, t.Type[t.Any]]
+XTYPE_HANDLERS: dict[
+    str | None, dict[str, type[t.Any]]
 ] = collections.defaultdict(dict)
 r"""Defines a mapping between ``xsi:type``\ s and wrapper classes.
 
@@ -46,7 +47,7 @@ These keys map to a further dictionary.  This second layer maps from the
 """
 
 
-def build_xtype(class_: t.Type[ModelObject]) -> str:
+def build_xtype(class_: type[ModelObject]) -> str:
     module = class_.__module__.split(".")[-1]
     clsname = class_.__name__
     return f"org.polarsys.capella.core.data.{module}:{clsname}"
@@ -69,7 +70,7 @@ def markuptype(markup: str, *args: t.Any, **kw: t.Any) -> markupsafe.Markup:
 
 
 def set_accessor(
-    cls: t.Type[GenericElement],
+    cls: type[GenericElement],
     attr: str,
     accessor: Accessor,
 ) -> None:
@@ -77,14 +78,14 @@ def set_accessor(
     accessor.__set_name__(cls, attr)
 
 
-def set_self_references(*args: t.Tuple[t.Type[GenericElement], str]) -> None:
+def set_self_references(*args: tuple[type[GenericElement], str]) -> None:
     for cls, attr in args:
         set_accessor(cls, attr, ProxyAccessor(cls, aslist=ElementList))
 
 
 def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
-    arch: t.Optional[str] = None, /, *xtypes: str
-) -> t.Callable[[t.Type[T]], t.Type[T]]:
+    arch: str | None = None, /, *xtypes: str
+) -> cabc.Callable[[type[T]], type[T]]:
     """Register a class as handler for a specific ``xsi:type``.
 
     ``arch`` is the ``xsi:type`` of the desired architecture.  It must
@@ -128,7 +129,7 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
                 )
             )
 
-    def register_xtype_handler(cls: t.Type[T]) -> t.Type[T]:
+    def register_xtype_handler(cls: type[T]) -> type[T]:
         if not xtype_strs:
             xtype_strs.append(build_xtype(cls))
 

@@ -14,6 +14,7 @@
 """Common constants and helpers used by all parser submodules."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import dataclasses
 import enum
 import logging
@@ -69,7 +70,7 @@ class ElementBuilder:
 @dataclasses.dataclass
 class SemanticElementBuilder(ElementBuilder):
     diag_element: etree._Element
-    styleclass: t.Optional[str]
+    styleclass: str | None
     melodyobj: etree._Element
     melodyfrag: pathlib.PurePath
 
@@ -80,7 +81,7 @@ class StackingBox(aird.Box):
     CHILD_MARGIN = 0
 
     children: StackingBox._StackingChildren
-    __features: t.Optional[t.MutableSequence[str]]
+    __features: cabc.MutableSequence[str] | None
 
     def __init__(
         self,
@@ -176,14 +177,14 @@ class StackingBox(aird.Box):
                 ) from None
 
     @property  # type: ignore[override]
-    def features(self) -> t.Optional[t.Sequence[str]]:  # type: ignore[override]
+    def features(self) -> cabc.Sequence[str] | None:  # type: ignore[override]
         """Return the list of Box' features."""
         return self.__features
 
     @features.setter
     def features(
         self,
-        new_features: t.Optional[t.Sequence[str]],
+        new_features: cabc.Sequence[str] | None,
     ) -> None:
         if new_features is None:
             self.__features = None
@@ -205,7 +206,7 @@ class StackingBox(aird.Box):
             self.__list = list(*args, **kw)
             self.__parent = parent
 
-        def __iter__(self) -> t.Iterator[str]:
+        def __iter__(self) -> cabc.Iterator[str]:
             return iter(self.__list)
 
         @t.overload
@@ -213,12 +214,10 @@ class StackingBox(aird.Box):
             ...
 
         @t.overload
-        def __getitem__(self, index: slice) -> t.List[str]:
+        def __getitem__(self, index: slice) -> list[str]:
             ...
 
-        def __getitem__(
-            self, index: t.Union[int, slice]
-        ) -> t.Union[t.List[str], str]:
+        def __getitem__(self, index: int | slice) -> str | list[str]:
             return self.__list[index]
 
         @t.overload
@@ -226,18 +225,18 @@ class StackingBox(aird.Box):
             ...
 
         @t.overload
-        def __setitem__(self, index: slice, value: t.Iterable[str]) -> None:
+        def __setitem__(self, index: slice, value: cabc.Iterable[str]) -> None:
             ...
 
         def __setitem__(
             self,
-            index: t.Union[int, slice],
-            value: t.Union[str, t.Iterable[str]],
+            index: int | slice,
+            value: str | cabc.Iterable[str],
         ) -> None:
             self.__list[index] = value
             self.__parent.children._restack()
 
-        def __delitem__(self, index: t.Union[int, slice]) -> None:
+        def __delitem__(self, index: int | slice) -> None:
             del self.__list[index]
             self.__parent.children._restack()
 
@@ -263,11 +262,11 @@ class StackingBox(aird.Box):
             parent: StackingBox,
             stacking_mode: StackingMode = StackingMode.VERTICAL,
         ):
-            self.__list: t.List[aird.DiagramElement] = []
+            self.__list: list[aird.DiagramElement] = []
             self.__parent = parent
             self.stacking_mode = stacking_mode
 
-        def __iter__(self) -> t.Iterator[aird.DiagramElement]:
+        def __iter__(self) -> cabc.Iterator[aird.DiagramElement]:
             return iter(self.__list)
 
         @t.overload
@@ -275,12 +274,12 @@ class StackingBox(aird.Box):
             ...
 
         @t.overload
-        def __getitem__(self, index: slice) -> t.List[aird.DiagramElement]:
+        def __getitem__(self, index: slice) -> list[aird.DiagramElement]:
             ...
 
         def __getitem__(
-            self, index: t.Union[int, slice]
-        ) -> t.Union[aird.DiagramElement, t.List[aird.DiagramElement]]:
+            self, index: int | slice
+        ) -> aird.DiagramElement | list[aird.DiagramElement]:
             return self.__list[index]
 
         @t.overload
@@ -289,21 +288,19 @@ class StackingBox(aird.Box):
 
         @t.overload
         def __setitem__(
-            self, index: slice, value: t.Iterable[aird.DiagramElement]
+            self, index: slice, value: cabc.Iterable[aird.DiagramElement]
         ) -> None:
             ...
 
         def __setitem__(
             self,
-            index: t.Union[int, slice],
-            value: t.Union[
-                t.Iterable[aird.DiagramElement], aird.DiagramElement
-            ],
+            index: int | slice,
+            value: aird.DiagramElement | cabc.Iterable[aird.DiagramElement],
         ) -> None:
             self.__list[index] = value  # type: ignore[index, assignment]
             self._restack()
 
-        def __delitem__(self, index: t.Union[int, slice]) -> None:
+        def __delitem__(self, index: int | slice) -> None:
             del self.__list[index]
             self._restack()
 

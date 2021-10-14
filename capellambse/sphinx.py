@@ -67,7 +67,7 @@ if t.TYPE_CHECKING:
     import sphinx.environment
 
 
-def setup(app: sphinx.application.Sphinx) -> t.Dict[str, t.Any]:
+def setup(app: sphinx.application.Sphinx) -> dict[str, t.Any]:
     """Called by Sphinx to set up the extension."""
     app.add_config_value(
         "capellambse_model", "../model/Documentation.aird", "html"
@@ -93,7 +93,7 @@ def load_model(
     if app.confdir is None:
         raise ValueError("Cannot load model: No confdir defined for Sphinx")
 
-    env.capellambse_loaded_model = capellambse.MelodyModel(
+    env.capellambse_loaded_model = capellambse.MelodyModel(  # type: ignore[attr-defined]
         pathlib.Path(app.confdir, app.config.capellambse_model)
     )
 
@@ -106,7 +106,7 @@ def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
     processing the source files.
     """
     if hasattr(env, "capellambse_loaded_model"):
-        del env.capellambse_loaded_model
+        del env.capellambse_loaded_model  # type: ignore[attr-defined]
 
 
 class DiagramDirective(sphinx.util.docutils.SphinxDirective):
@@ -124,14 +124,14 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
         ),
     }
 
-    def run(self) -> t.List[nodes.Node]:
+    def run(self) -> list[nodes.Node]:
         name = self.arguments[0]
         if not hasattr(self.env, "capellambse_loaded_model"):
             raise self.error(
                 f"Cannot show diagram {name!r}: No model configured"
             )
 
-        model = self.env.capellambse_loaded_model
+        model = self.env.capellambse_loaded_model  # type: ignore[attr-defined]
         try:
             diagram = model.diagrams.by_name(name)
         except KeyError as error:

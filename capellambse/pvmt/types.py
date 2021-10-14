@@ -16,7 +16,7 @@
 from __future__ import annotations
 
 import abc
-import typing as t
+import collections.abc as cabc
 
 from capellambse import NAMESPACES
 
@@ -268,7 +268,7 @@ class EnumerationPropertyType(XMLDictProxy):
         element.attrib.update(value)
 
 
-PROPERTY_LOADER: t.Mapping[str, t.Type[GenericPropertyValue]] = {
+PROPERTY_LOADER: cabc.Mapping[str, type[GenericPropertyValue]] = {
     "EnumerationPropertyValue": EnumerationPropertyValue,
     "StringPropertyValue": StringPropertyValue,
     "FloatPropertyValue": FloatPropertyValue,

@@ -223,10 +223,11 @@ class TestAppliedPropertyValueGroupXML:
         assert actual == expected
 
     def test_apply(self, model, pvext, monkeypatch):
-        call_counts: t.MutableMapping[str, int] = collections.defaultdict(int)
+        call_count = 0
 
         def mock_generate_uuid(*__, **_):
-            call_counts["generate_uuid"] += 1
+            nonlocal call_count
+            call_count += 1
             return "01234567-89ab-4def-8123-456789abcdef"
 
         monkeypatch.setattr(
@@ -241,7 +242,7 @@ class TestAppliedPropertyValueGroupXML:
         )
         # By this point, the group and its child must both already
         # exist, each with their own UUID.
-        assert call_counts["generate_uuid"] == 2
+        assert call_count == 2
 
         obj_ids["Object ID"] = "CABLE-0001"
         self.compare_xml(model, "apply.melodymodeller")

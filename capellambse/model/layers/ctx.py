@@ -19,7 +19,6 @@ functions, actors etc. which is best presented in a glossary document.
 .. diagram:: [CDB] SA ORM
 """
 import operator
-import typing as t
 
 from .. import common as c
 from .. import crosslayer, diagram

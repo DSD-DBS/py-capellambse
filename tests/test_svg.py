@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
+import collections.abc as cabc
 import io
 import json
 import logging
@@ -19,7 +22,6 @@ import pathlib
 import random
 import string
 import sys
-import typing as t
 
 import cssutils
 import pytest
@@ -436,7 +438,7 @@ class TestSVG:
             and not ("Exchange" in symbol or "Link" in symbol)
             and symbol not in FREE_SYMBOLS
         ]
-        contents: t.Sequence[generate.ContentsDict] = [
+        contents: cabc.Sequence[generate.ContentsDict] = [
             {
                 "type": "box",
                 "id": str(i),
@@ -489,7 +491,7 @@ class TestSVG:
             for symbol in style.STATIC_DECORATIONS[diagram_type]
             if "Exchange" in symbol or "Link" in symbol
         ]
-        contents: t.Sequence[generate.ContentsDict] = [
+        contents: cabc.Sequence[generate.ContentsDict] = [
             {
                 "type": "edge",
                 "id": str(i),

@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """This module handles converting diagrams to the intermediary JSON format."""
-import collections.abc
+from __future__ import annotations
+
+import collections.abc as cabc
 import json
 import typing as t
 
@@ -37,7 +39,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
             return self.__encode_circle(o)
         if isinstance(o, aird.RGB):
             return str(o)
-        if isinstance(o, collections.abc.Sequence):
+        if isinstance(o, cabc.Sequence):
             return list(o)
         return super().default(o)
 
@@ -70,7 +72,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
             if isinstance(c, aird.Box) and not c.port
         ]
         ports = [p.uuid for p in o.children if p.port]
-        jsonobj: t.Dict[str, object] = {
+        jsonobj: dict[str, object] = {
             "type": o.JSON_TYPE,
             "id": o.uuid,
             "class": o.styleclass,
@@ -106,7 +108,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
 
     @staticmethod
     def __encode_edge(o: aird.Edge) -> object:
-        jsonobj: t.Dict[str, object] = {
+        jsonobj: dict[str, object] = {
             "type": o.JSON_TYPE,
             "id": o.uuid,
             "class": o.styleclass,
@@ -126,7 +128,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
 
     @staticmethod
     def __encode_circle(o: aird.Circle) -> object:
-        jsonobj: t.Dict[str, object] = {
+        jsonobj: dict[str, object] = {
             "type": o.JSON_TYPE,
             "id": o.uuid,
             "class": o.styleclass,
@@ -138,13 +140,13 @@ class DiagramJSONEncoder(json.JSONEncoder):
         return jsonobj
 
 
-def _intround(val: t.Union[int, float]) -> int:
+def _intround(val: float | int) -> int:
     return int(val + 0.5)
 
 
 def _encode_styleoverrides(
-    overrides: t.Mapping[str, _CSSStyle]
-) -> t.Dict[str, object]:
+    overrides: cabc.Mapping[str, _CSSStyle]
+) -> dict[str, object]:
     return {k: _encode_style(v) for k, v in overrides.items()}
 
 
