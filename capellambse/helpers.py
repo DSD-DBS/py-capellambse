@@ -402,10 +402,7 @@ def unescape_linked_text(
                 yield "&lt;broken link&gt;"
                 yield html.escape(elm.tail or "")
                 return
-            if "#" in href:
-                ehref = html.escape("#" + href.rsplit("#", maxsplit=1)[-1])
-            else:
-                ehref = html.escape("#" + href)
+            ehref = html.escape(href)
 
             try:
                 target = loader[href]
@@ -416,7 +413,7 @@ def unescape_linked_text(
                     name = html.escape(name)
                 else:
                     name = f"&lt;unnamed element {ehref}&gt;"
-                yield f'<a href="{ehref}">{name}</a>'
+                yield f'<a href="hlink://{ehref}">{name}</a>'
             yield html.escape(elm.tail or "")
         else:
             yield html.escape(elm.text or "")
@@ -446,19 +443,11 @@ def escape_linked_text(
             yield html.escape(elm)
         elif elm.tag == "a":
             href = elm.get("href")
-            if not href:
+            if not (href or "").startswith("hlink://"):
                 yield html.escape(elm.text or "")
             else:
-                try:
-                    target = loader[href]
-                except KeyError:
-                    raise ValueError(
-                        f"Broken link in linked text: {href}"
-                    ) from None
-                if "#" in href:
-                    href = href.rsplit("#", maxsplit=1)[-1]
                 yield '<a href="'
-                yield html.escape(href)
+                yield html.escape(href[len("hlink://") :])
                 yield '"/>'
             if len(elm) > 0:
                 raise ValueError("Nesting is not allowed in LinkedText")

@@ -375,7 +375,7 @@ def test_constraint_specification_has_linked_object_name_in_body(
     assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
     assert (
         con.specification["LinkedText"]
-        == '<a href="#dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
+        == '<a href="hlink://dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
     )
 
 
