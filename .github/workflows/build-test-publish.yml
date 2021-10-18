@@ -34,8 +34,6 @@ jobs:
         os: [ubuntu-latest]
         python_version: ["3.8", "3.9"]
         include:
-          - os: macos-latest
-            python_version: "3.8"
           - os: windows-latest
             python_version: "3.8"
     steps:
