@@ -1073,9 +1073,9 @@ The predator is far away</bodies>
             <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
                 id="00e7b925-cf4c-4cb0-929e-5409a1cd872b" name="Sysexfunc">
               <ownedExtensions xsi:type="CapellaRequirements:CapellaOutgoingRelation"
-                  id="bfdf7e90-5bb8-483a-bed6-ce365ba8c35b" ReqIFIdentifier="1" ReqIFDescription="This is a relation."
+                  id="6af6ff84-8957-481f-8684-2405ffa15804" ReqIFIdentifier="1" ReqIFDescription="This is a relation."
                   ReqIFLongName="Test Relation" relationType="#f1aceb81-5f70-4469-a127-94830eb9be04"
-                  source="#00e7b925-cf4c-4cb0-929e-5409a1cd872b" target="#3c2d312c-37c9-41b5-8c32-67578fa52dc3"/>
+                  source="#00e7b925-cf4c-4cb0-929e-5409a1cd872b" target="#85d41db2-9e17-438b-95cf-49342452ddf3"/>
               <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
                   id="5a589076-b839-4606-9e0b-c9d76677af38" name="FOP 1"/>
             </ownedSystemFunctions>

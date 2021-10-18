@@ -264,6 +264,7 @@ class ElementRelationAccessor(
                 xtype=XT_OUT_RELATION,
             )
             xml_index = 0
+            parent._element.remove(relation._element)
             for elt in parent._element.iterchildren():
                 if helpers.xtype_of(elt) == XT_OUT_RELATION:
                     if index == 0:
@@ -272,20 +273,23 @@ class ElementRelationAccessor(
 
                 xml_index += 1
 
-            parent._element.remove(relation._element)
             parent._element.insert(xml_index, relation._element)
 
     def delete(
         self, elmlist: c.ElementListCouplingMixin, obj: Requirement
     ) -> None:
-        index = elmlist.index(obj)
-        element: etree._Element = elmlist._parent._element
-        relations = [
-            relation
-            for relation in obj._model._loader.iterchildren_xt(
-                element, XT_OUT_RELATION
+        try:
+            index = elmlist.outgoing.index(obj)
+            element: etree._Element = elmlist._parent._element
+            relations = list(
+                obj._model._loader.iterchildren_xt(element, XT_OUT_RELATION)
             )
-        ]
+        except ValueError:
+            index = index = elmlist.incoming.index(obj)
+            element = obj._element
+            relations = list(
+                obj._model._loader.iterchildren_xt(element, XT_INC_RELATION)
+            )
         element.remove(relations[index])
 
 

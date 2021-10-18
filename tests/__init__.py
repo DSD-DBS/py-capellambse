@@ -20,5 +20,5 @@ __all__ = ["CapellaMBSETestCase"]
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
 TEST_MODEL = "MelodyModelTest.aird"
 RE_VALID_IDREF = re.compile(
-    r"([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})"
+    r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
 )

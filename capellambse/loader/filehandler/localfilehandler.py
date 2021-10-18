@@ -59,7 +59,6 @@ class LocalFileHandler(FileHandler):
                 branch=self.__git_rev_parse("--abbrev-ref", "HEAD"),
                 title=self.path.name,
                 url=self.__git_get_remote_url(),
-                revision=None,
                 rev_hash=self.__git_rev_parse("HEAD"),
             )
         return ModelInfo(title=self.path.name)

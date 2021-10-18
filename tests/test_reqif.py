@@ -14,7 +14,8 @@
 # pylint: disable=no-self-use
 from __future__ import annotations
 
-import datetime as dt
+import datetime as datetime
+import operator
 import textwrap
 import typing as t
 
@@ -58,10 +59,10 @@ def test_extension_was_loaded():
 
 def test_path_nesting(model: capellambse.MelodyModel) -> None:
     modules = model.oa.requirement_modules
-    assert 2 == len(modules)
-    assert 1 == len(modules[0].folders)
-    assert 1 == len(modules[0].folders[0].folders)
-    assert 1 == len(modules[0].folders[0].folders[0].requirements)
+    assert len(modules) == 2
+    assert len(modules[0].folders) == 1
+    assert len(modules[0].folders[0].folders) == 1
+    assert len(modules[0].folders[0].folders[0].requirements) == 1
 
 
 @pytest.mark.parametrize(
@@ -186,13 +187,13 @@ class TestRequirementAttributes:
             ),
             pytest.param(
                 {
-                    "uuid": "bfdf7e90-5bb8-483a-bed6-ce365ba8c35b",
+                    "uuid": "6af6ff84-8957-481f-8684-2405ffa15804",
                     "long_name": "Test Relation",
                     "xtype": "CapellaRequirements:CapellaOutgoingRelation",
                     "description": "This is a relation.",
                     "identifier": "1",
                     "source": reqif.Requirement,
-                    "source.name": "TestReq1",
+                    "source.name": "TypedReq1",
                     "target": capellambse.model.layers.ctx.SystemFunction,
                     "target.name": "Sysexfunc",
                     "type": reqif.RelationType,
@@ -207,57 +208,44 @@ class TestRequirementAttributes:
         model: capellambse.MelodyModel,
         attributes: dict[str, str | int | type],
     ) -> None:
-        def get_chain_attr(
-            test_obj: capellambse.model.common.GenericElement, attr_name: str
-        ) -> t.Any:
-            attr = test_obj
-            for sub_attr in attr_name.split("."):
-                attr = getattr(attr, sub_attr)
-
-            return attr
-
-        test_obj = model.by_uuid(attributes["uuid"])
+        obj = model.by_uuid(attributes["uuid"])
         for attr_name, value in attributes.items():
             if isinstance(value, type):
-                assert isinstance(getattr(test_obj, attr_name), value)
-                continue
-            if "." in attr_name:
-                assert get_chain_attr(test_obj, attr_name) == value
-                continue
-
-            assert getattr(test_obj, attr_name) == value
+                assert isinstance(operator.attrgetter(attr_name)(obj), value)
+            else:
+                assert operator.attrgetter(attr_name)(obj) == value
 
     def test_well_defined_on_modules(
         self, model: capellambse.MelodyModel
     ) -> None:
-        test_module = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
-        test_attr = test_module.attributes[0]
+        module = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
+        attr = module.attributes[0]
 
-        assert len(test_module.attributes) == 1
-        assert isinstance(test_attr, reqif.EnumerationValueAttribute)
-        assert test_attr.xtype.rsplit(":")[-1] == "EnumerationValueAttribute"
+        assert len(module.attributes) == 1
+        assert isinstance(attr, reqif.EnumerationValueAttribute)
+        assert attr.xtype.rsplit(":")[-1] == "EnumerationValueAttribute"
         assert isinstance(
-            test_attr.definition, reqif.AttributeDefinitionEnumeration
+            attr.definition, reqif.AttributeDefinitionEnumeration
         )
-        assert test_attr.definition.long_name == "AttrDefEnum"
-        assert test_attr.values[0].long_name == "enum_val2"
+        assert attr.definition.long_name == "AttrDefEnum"
+        assert attr.values[0].long_name == "enum_val2"
 
     def test_well_defined_on_requirements(
         self, model: capellambse.MelodyModel
     ) -> None:
-        test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
-        bool_attr = test_req.attributes[0]
-        undefined_attr = test_req.attributes[-1]
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        bool_attr = req.attributes[0]
+        undefined_attr = req.attributes[-1]
 
-        assert len(test_req.attributes) == 6
+        assert len(req.attributes) == 6
         assert undefined_attr.value is False
         assert isinstance(bool_attr.value, bool)
-        for attr, typ in zip(test_req.attributes[2:-1], [int, float, str]):
+        for attr, typ in zip(req.attributes[2:-1], [int, float, str]):
             assert isinstance(attr.value, typ)
 
-        test_req2 = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
+        req2 = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
         expected_values = tuple(
-            req.long_name for req in test_req2.attributes[0].values
+            req.long_name for req in req2.attributes[0].values
         )
         assert expected_values == ("enum_val1", "enum_val2")
 
@@ -266,39 +254,38 @@ class TestRequirementRelations:
     def test_well_defined_source_target_and_type(
         self, model: capellambse.MelodyModel
     ) -> None:
-        test_rel = model.by_uuid("078b2c69-4352-4cf9-9ea5-6573b75e5eec")
-        test_source = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
-        test_target = model.by_uuid("4bf0356c-89dd-45e9-b8a6-e0332c026d33")
+        rel = model.by_uuid("078b2c69-4352-4cf9-9ea5-6573b75e5eec")
+        source = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        target = model.by_uuid("4bf0356c-89dd-45e9-b8a6-e0332c026d33")
 
-        assert test_rel.source == test_source
-        assert test_rel.target == test_target
-        assert isinstance(test_rel.type, reqif.RelationType)
-        assert test_rel.type.long_name == "RelationType"
+        assert rel.source == source
+        assert rel.target == target
+        assert isinstance(rel.type, reqif.RelationType)
+        assert rel.type.long_name == "RelationType"
 
     def test_well_defined_on_requirements(
         self, model: capellambse.MelodyModel
     ) -> None:
-        test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
 
-        assert len(test_req.relations) == 5
+        assert len(req.relations) == 4
 
     def test_well_defined_on_generic_elements(
         self, model: capellambse.MelodyModel
     ) -> None:
-        test_ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
-        test_req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
-        test_req3 = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
-        test_req_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
+        ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        req = model.by_uuid("85d41db2-9e17-438b-95cf-49342452ddf3")
+        req2 = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        req3 = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        req_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
 
-        assert isinstance(test_ge.requirements, reqif.RelationsList)
-        assert len(test_ge.requirements) == 3
-        assert (
-            len(test_ge.requirements.by_relation_type(test_req_type.name)) == 1
-        )
-        assert len(test_ge.requirements.outgoing) == 1
-        assert test_ge.requirements.outgoing[0] == test_req
-        assert len(test_ge.requirements.incoming) == 2
-        assert test_ge.requirements.incoming[:] == [test_req, test_req3]
+        assert isinstance(ge.requirements, reqif.RelationsList)
+        assert len(ge.requirements) == 3
+        assert len(ge.requirements.by_relation_type(req_type.name)) == 1
+        assert len(ge.requirements.outgoing) == 1
+        assert ge.requirements.outgoing[0] == req
+        assert len(ge.requirements.incoming) == 2
+        assert ge.requirements.incoming[:] == [req2, req3]
 
 
 class TestReqIFAccess:
@@ -378,7 +365,7 @@ class TestReqIFAccess:
         assert isinstance(req_with_relations, reqif.Requirement)
 
         relations = req_with_relations.relations
-        assert len(relations) == 5
+        assert len(relations) == 4
 
     def test_requirement_without_relations(
         self, model: capellambse.MelodyModel
@@ -392,7 +379,7 @@ class TestReqIFAccess:
     def test_outgoing_internal_relations(self, model: capellambse.MelodyModel):
         req_with_oir = model.by_uuid("85d41db2-9e17-438b-95cf-49342452ddf3")
         assert isinstance(req_with_oir, reqif.Requirement)
-        assert len(req_with_oir.relations) == 1
+        assert len(req_with_oir.relations) == 2
 
 
 class TestReqIFModification:
@@ -400,17 +387,58 @@ class TestReqIFModification:
         self, model: capellambse.MelodyModel
     ):
         mod = model.oa.requirement_modules[0]
-
         new_req = mod.requirements.create("Requirement")
 
         assert model.by_uuid(new_req.uuid) == new_req
         assert new_req in mod.requirements
 
-    def test_created_requirement_on_generic_element_creates_out_relation(
+    def test_appending_requirements_on_generic_element_creates_out_relation(
         self, model: capellambse.MelodyModel
     ):
         gobj = model.oa.root_activity
         req, req1 = model.oa.all_requirements[:2]
+
+        gobj.requirements.append(req1)
+        gobj.requirements.append(req)
+        assert gobj.requirements.by_long_name(req.long_name)[0] == req
+
+    def test_removing_requirement_from_generic_element_removes_relation(
+        self, model: capellambse.MelodyModel
+    ):
+        gobj = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        req = gobj.requirements.outgoing[0]
+
+        gobj.requirements.remove(req)
+
+        assert req not in gobj.requirements
+        assert req in model.search(reqif.XT_REQUIREMENT)
+
+    def test_inserting_requirements_at_the_beginning_on_generic_element_creates_out_relation(
+        self, model: capellambse.MelodyModel
+    ):
+        gobj = model.oa.root_activity
+        req = model.oa.all_requirements[0]
+
+        gobj.requirements.insert(0, req)
+        assert gobj.requirements[0] == req
+        assert len(req.relations.by_target(gobj)) == 1
+        assert req.relations.by_target(gobj)[0].source == req
+
+    def test_inserting_requirements_in_the_middle_on_generic_element_creates_out_relation(
+        self, model: capellambse.MelodyModel
+    ):
+        gobj = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        req = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
+
+        gobj.requirements.incoming.insert(1, req)
+        assert gobj.requirements.outgoing[1] == req
+        assert len(req.relations.by_target(gobj)) == 1
+        assert req.relations.by_target(gobj)[0].source == req
+
+    def test_create_requirement_on_generic_element_without_proper_target_raises_type_error(
+        self, model: capellambse.MelodyModel
+    ):
+        gobj = model.oa.root_activity
 
         with pytest.raises(TypeError):
             gobj.requirements.create()
@@ -420,13 +448,6 @@ class TestReqIFModification:
 
         with pytest.raises(TypeError):
             gobj.requirements.insert(1, model.sa.root_component)
-
-        gobj.requirements.append(req1)
-        gobj.requirements.append(req)
-        assert gobj.requirements.by_long_name(req.long_name)[0] == req
-        gobj.requirements.remove(req)
-
-        assert req not in gobj.requirements
 
     def test_deleted_requirements_vanish_from_model(
         self, model: capellambse.MelodyModel
@@ -443,12 +464,12 @@ class TestReqIFModification:
     @pytest.mark.parametrize(
         "relcls",
         [
-            "CapellaIncomingRelation",
-            "CapellaOutgoingRelation",
-            "InternalRelation",
+            pytest.param("CapellaIncomingRelation", id="IncRelation"),
+            pytest.param("CapellaOutgoingRelation", id="OutRelation"),
+            pytest.param("InternalRelation", id="IntRelation"),
         ],
     )
-    def test_creating_requirements_requires_a_target_and_type(
+    def test_creating_requirements_raises_type_error(
         self, model: capellambse.MelodyModel, relcls: str
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -482,7 +503,11 @@ class TestReqIFModification:
     @pytest.mark.parametrize(
         "type_hint,def_uuid",
         [
-            pytest.param("Int", "", id="IntegerAttributeValue"),
+            pytest.param(
+                "Int",
+                "682bd51d-5451-4930-a97e-8bfca6c3a127",
+                id="IntegerAttributeValue",
+            ),
             pytest.param(
                 "Str",
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
@@ -503,11 +528,6 @@ class TestReqIFModification:
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
                 id="BooleanAttributeValue",
             ),
-            pytest.param(
-                "Enum",
-                "c316ab07-c5c3-4866-a896-92e34733055c",
-                id="EnumValueAttributeValue",
-            ),
         ],
     )
     def test_create_requirements_attributes(
@@ -518,22 +538,40 @@ class TestReqIFModification:
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         assert not req.attributes
-        definition = model.by_uuid(def_uuid) if def_uuid else None
-
-        if definition is not None:
-            attr = req.attributes.create(type_hint, definition=definition)
-        else:
-            attr = req.attributes.create(type_hint)
+        definition = model.by_uuid(def_uuid)
+        attr = req.attributes.create(type_hint, definition=definition)
 
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition == definition
-        if type_hint != "Enum":
-            assert isinstance(attr, reqif.RequirementsAttribute)
-        else:
-            assert isinstance(attr, reqif.EnumerationValueAttribute)
+        assert isinstance(attr, reqif.RequirementsAttribute)
 
-    def test_create_requirement_attribute_with_wrong_type_hint_fails(
+    def test_create_value_attribute_on_requirements_without_definition_works(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        assert not req.attributes
+        attr = req.attributes.create("Int")
+
+        assert len(req.attributes) == 1
+        assert req.attributes[0] == attr
+        assert attr.definition is None
+        assert isinstance(attr, reqif.RequirementsAttribute)
+
+    def test_create_enum_value_attribute_on_requirements_works(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        definition = model.by_uuid("c316ab07-c5c3-4866-a896-92e34733055c")
+        assert not req.attributes
+        attr = req.attributes.create("Enum", definition=definition)
+
+        assert len(req.attributes) == 1
+        assert req.attributes[0] == attr
+        assert attr.definition == definition
+        assert isinstance(attr, reqif.EnumerationValueAttribute)
+
+    def test_create_requirement_attribute_with_wrong_type_hint_raises_value_error(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
@@ -546,7 +584,7 @@ class TestReqIFModification:
             pytest.param(True, id="Boolean Attribute"),
             pytest.param(1, id="Integer Attribute"),
             pytest.param(
-                dt.datetime.strptime(
+                datetime.datetime.strptime(
                     "2021-07-23T15:00:00.000+0200", "%Y-%m-%dT%H:%M:%S.%f%z"
                 ),
                 id="DateValue Attribute",
@@ -558,14 +596,14 @@ class TestReqIFModification:
     def test_setting_attribute_values_on_requirement_works(
         self,
         model: capellambse.MelodyModel,
-        value: int | float | str | bool | dt.datetime,
+        value: t.Any,
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         attributes = req.attributes.by_definition(definition)
-        attr = [
-            attr for attr in attributes if type(attr.value) == type(value)
-        ][0]
+        attr = next(
+            attr for attr in attributes if type(attr.value) is type(value)
+        )
         attr.value = value
 
         assert attr.value == value
@@ -583,19 +621,19 @@ class TestReqIFModification:
     def test_setting_default_attribute_values_removes_value_on_xml_element(
         self,
         model: capellambse.MelodyModel,
-        default_value: int | float | str | bool | dt.datetime,
+        default_value: t.Any,
     ):
         """Accessed value is there but on xml element there is no written value."""
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         attributes = req.attributes.by_definition(definition)
         try:
-            attr = [
+            attr = next(
                 attr
                 for attr in attributes
-                if type(attr.value) == type(default_value)
-            ][0]
-        except IndexError:
+                if type(attr.value) is type(default_value)
+            )
+        except StopIteration:
             assert default_value is None
             attr = attributes[1]
 
@@ -604,13 +642,18 @@ class TestReqIFModification:
         assert attr.value == default_value
         assert "value" not in attr._element.attrib
 
+    @pytest.mark.parametrize(
+        "uuid,value",
+        [
+            pytest.param(
+                "9c692405-b8aa-4caa-b988-51d27db5cd1b", None, id="NoneType"
+            ),
+            pytest.param("b97c09b5-948a-46e8-a656-69d764ddce7d", 1, id="Int"),
+        ],
+    )
     def test_setting_attribute_value_with_wrong_value_type_fails(
-        self, model: capellambse.MelodyModel
+        self, model: capellambse.MelodyModel, uuid: str, value: t.Any
     ):
-        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
-        attr = req.attributes[0]
-        date_attr = req.attributes.by_xtype(reqif.XT_REQ_ATTR_DATEVALUE)[0]
+        attr = model.by_uuid(uuid)
         with pytest.raises(TypeError):
-            attr.value = None
-        with pytest.raises(TypeError):
-            date_attr.value = 1
+            attr.value = value
