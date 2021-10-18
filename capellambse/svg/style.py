@@ -14,7 +14,7 @@
 """Stylesheet generator for SVG diagrams."""
 from __future__ import annotations
 
-import collections.abc
+import collections.abc as cabc
 import io
 import itertools
 import logging
@@ -38,7 +38,7 @@ RE_ELMCLASS = re.compile(r"^([A-Z][a-z_]*)(\.[A-Za-z][A-Za-z0-9_]*)?(:.+)?$")
 CUSTOM_STYLE_ATTRS = {"marker-fill"}
 
 # TODO refactor to dynamically determine needed decorations
-STATIC_DECORATIONS: t.Dict[str, t.Tuple[str, ...]] = {
+STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
     "__GLOBAL__": (
         "ErrorSymbol",
         "RequirementSymbol",
@@ -164,7 +164,7 @@ class Styling:
             return False
         return True
 
-    def __iter__(self) -> t.Iterator[str]:
+    def __iter__(self) -> cabc.Iterator[str]:
         defaultstyles = aird.get_style(self._diagram_class, self._class)
         for attr in ("marker-start", "marker-end"):
             if (
@@ -177,7 +177,7 @@ class Styling:
             operator.methodcaller("startswith", "_"), dir(self)
         )
 
-    def __getitem__(self, attrs: t.Union[str, t.Tuple[str], "Styling"]) -> str:
+    def __getitem__(self, attrs: str | tuple[str] | Styling) -> str | None:
         if isinstance(attrs, str):
             attrs = (attrs,) if attrs else self
         return (
@@ -187,18 +187,16 @@ class Styling:
 
     @classmethod
     def _to_css(
-        cls, value: t.Union[str, int, float, t.Iterable]
-    ) -> t.Union[str, int, float]:
+        cls, value: float | int | str | cabc.Iterable
+    ) -> float | int | str:
         if isinstance(value, (str, int, float)):
             return value
-        if isinstance(value, collections.abc.Iterable):
+        if isinstance(value, cabc.Iterable):
             return f'url("#{cls._generate_id("CustomGradient", value)}")'
         raise ValueError(f"Invalid styling value: {value!r}")
 
     @staticmethod
-    def _generate_id(
-        name: str, value: t.Iterable[t.Union[str, aird.RGB]]
-    ) -> str:
+    def _generate_id(name: str, value: cabc.Iterable[str | aird.RGB]) -> str:
         """Return unqiue identifier for given css-value."""
         return "_".join(
             itertools.chain(
@@ -214,9 +212,7 @@ class Styling:
         defs_ids = {d.attribs.get("id") for d in drawing.defs.elements}
         for attr in self:
             val = getattr(self, attr)
-            if isinstance(val, collections.abc.Iterable) and not isinstance(
-                val, str
-            ):
+            if isinstance(val, cabc.Iterable) and not isinstance(val, str):
                 grad_id = self._generate_id("CustomGradient", val)
                 if grad_id not in defs_ids:
                     drawing.defs.add(
@@ -270,7 +266,7 @@ class Style(base.BaseElement):
 
     elementname = "style"
 
-    def __init__(self, text: str, **extra: t.Dict[str, t.Any]) -> None:
+    def __init__(self, text: str, **extra: dict[str, t.Any]) -> None:
         """Initialize Style class.
 
         Parameters
@@ -314,7 +310,7 @@ class SVGStylesheet:
             "__GLOBAL__"
         ] + STATIC_DECORATIONS.get(self.drawing_class or "", ())
 
-    def yield_gradients(self) -> t.Iterator[gradients.LinearGradient]:
+    def yield_gradients(self) -> cabc.Iterator[gradients.LinearGradient]:
         """Yield an svgwrite LinearGradient for all gradients in this sheet."""
         for gradname, stopcolors in self.builder.gradients.items():
             grad = gradients.LinearGradient(
@@ -350,16 +346,16 @@ class StyleBuilder:
     }
 
     sheet: io.StringIO
-    styles: t.Dict[str, t.Dict[str, aird.CSSdef]]
+    styles: dict[str, dict[str, aird.CSSdef]]
 
-    def __init__(self, class_: str):
+    def __init__(self, class_: str | None):
         self.class_ = class_
         self.sheetclass = re.sub(r"\s+", "", class_ or "")
         self.stylewriters = {
             "Box": self._write_styles_box,
             "Edge": self._write_styles_edge,
         }
-        self.gradients = {}
+        self.gradients: dict[str, str | tuple[str, ...]] = {}
         self.create()
 
     def write_styles(self) -> None:
@@ -390,10 +386,10 @@ class StyleBuilder:
         self.sheet.seek(0, io.SEEK_END)
         self.styles = self._make_styles()
 
-    def _make_styles(self) -> t.Dict[str, t.Dict[str, aird.CSSdef]]:
+    def _make_styles(self) -> dict[str, dict[str, aird.CSSdef]]:
         styles = aird.STYLES["__GLOBAL__"].copy()
         try:
-            deep_update_dict(styles, aird.STYLES[self.class_])
+            deep_update_dict(styles, aird.STYLES[self.class_])  # type: ignore[index]
         except KeyError:
             logger.error(
                 "No styling defined for diagram class %s", self.class_
@@ -403,8 +399,8 @@ class StyleBuilder:
 
     def _write_styles_box(
         self,
-        selector_parts: t.Tuple[str, ...],
-        styles: t.Dict[str, aird.CSSdef],
+        selector_parts: tuple[str, ...],
+        styles: dict[str, aird.CSSdef],
     ) -> None:
         _, elmclass, pseudo = selector_parts
         selectors = [
@@ -421,8 +417,8 @@ class StyleBuilder:
 
     def _write_styles_edge(
         self,
-        selector_parts: t.Tuple[str, ...],
-        styles: t.Dict[str, aird.CSSdef],
+        selector_parts: tuple[str, ...],
+        styles: dict[str, aird.CSSdef],
     ) -> None:
         _, elmclass, pseudo = selector_parts
         selector = f"g.Edge{elmclass}{pseudo} > path"
@@ -457,9 +453,9 @@ class StyleBuilder:
     def _write_styles_common(
         self,
         elmclass: str,
-        sel_obj: t.Union[str, t.List[str]],
+        sel_obj: str | list[str],
         sel_text: str,
-        allstyles: t.Dict[str, aird.CSSdef],
+        allstyles: dict[str, aird.CSSdef],
     ) -> None:
         for selector, styles in zip(
             [sel_obj, sel_text], _splitstyles(allstyles)
@@ -470,8 +466,8 @@ class StyleBuilder:
     def _write_styledict(
         self,
         elmclass: str,
-        selector: t.Union[str, t.List[str]],
-        styles: t.Dict[str, aird.CSSdef],
+        selector: str | list[str],
+        styles: dict[str, aird.CSSdef],
     ) -> None:
         if isinstance(selector, str):
             selector = f".{self.sheetclass} {selector}"
@@ -492,12 +488,12 @@ class StyleBuilder:
     ) -> str:
         if key in {"marker-start", "marker-end"}:
             diagram_class = self.class_
-            mystyle = aird.get_style(diagram_class, f"Edge{class_}")
+            mystyle = aird.get_style(diagram_class, f"Edge{class_}")  # type: ignore[arg-type]
             if "stroke" not in mystyle:
                 mystyle["stroke"] = "#f00"
 
             marker_id = Styling._generate_id(
-                value,
+                str(value),
                 [mystyle["stroke"]],
             )
             value = f"url(#{marker_id})"
@@ -505,7 +501,7 @@ class StyleBuilder:
             value = "none"
         elif isinstance(value, aird.RGB):
             value = str(value)
-        elif isinstance(value, collections.abc.Sequence) and len(value) == 2:
+        elif isinstance(value, cabc.Sequence) and len(value) == 2:
             gradname = f"{class_}{key.capitalize()}Gradient"
             gradcolors = tuple(str(v) for v in value)
             if gradname in self.gradients:
@@ -519,10 +515,10 @@ class StyleBuilder:
 
 
 def _splitstyles(
-    styles: t.Dict[str, aird.CSSdef]
-) -> t.Tuple[t.Dict[str, aird.CSSdef], t.Dict[str, aird.CSSdef]]:
-    objstyles: t.Dict[str, aird.CSSdef] = {}
-    textstyles: t.Dict[str, aird.CSSdef] = {}
+    styles: dict[str, aird.CSSdef]
+) -> tuple[dict[str, aird.CSSdef], dict[str, aird.CSSdef]]:
+    objstyles: dict[str, aird.CSSdef] = {}
+    textstyles: dict[str, aird.CSSdef] = {}
     for key, value in styles.items():
         if key.startswith("text_"):
             textstyles[key[len("text_") :]] = value
@@ -532,8 +528,8 @@ def _splitstyles(
 
 
 def deep_update_dict(
-    target: t.MutableMapping, updates: t.Mapping
-) -> t.MutableMapping:
+    target: cabc.MutableMapping, updates: cabc.Mapping
+) -> cabc.MutableMapping:
     """Apply the ``updates`` to the nested ``target`` dict recursively.
 
     Parameters
@@ -553,7 +549,7 @@ def deep_update_dict(
     for key, value in list(updates.items()):
         if value is deep_update_dict.delete:  # type: ignore
             del target[key]
-        elif isinstance(value, collections.abc.Mapping):
+        elif isinstance(value, cabc.Mapping):
             target[key] = deep_update_dict(target.get(key, {}), value)
         else:
             target[key] = value

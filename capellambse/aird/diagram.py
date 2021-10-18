@@ -14,6 +14,7 @@
 """Classes that represent different aspects of a diagram."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import math
 import os
@@ -48,19 +49,20 @@ class Box:
         pos: aird.Vec2ish,
         size: aird.Vec2ish,
         *,
-        label: t.Union[Box, str] = None,
-        uuid: str = None,
-        parent: Box = None,
+        label: Box | str | None = None,
+        uuid: str | None = None,
+        parent: Box | None = None,
         collapsed: bool = False,
         minsize: aird.Vec2ish = aird.Vector2D(0, 0),
         maxsize: aird.Vec2ish = aird.Vector2D(math.inf, math.inf),
-        context: t.Iterable[str] = None,
+        context: cabc.Iterable[str] = None,
         port: bool = False,
-        features: t.MutableSequence[str] = None,
-        styleclass: str = None,
-        styleoverrides: t.MutableMapping[
-            str, t.Union[aird.RGB, str, t.Sequence[t.Union[aird.RGB, str]]]
-        ] = None,
+        features: cabc.Sequence[str] | None = None,
+        styleclass: str | None = None,
+        styleoverrides: cabc.Mapping[
+            str, aird.RGB | str | cabc.Sequence[aird.RGB | str]
+        ]
+        | None = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ) -> None:
@@ -109,29 +111,31 @@ class Box:
         """
         self.uuid = uuid
         self.pos = pos
-        self.size = size
+        self.size = aird.Vector2D(*size)
         self.minsize = minsize
         self.maxsize = maxsize
-        self.label = label
-        self.collapsed = collapsed
-        self.features = features
+        self.label: Box | str | None = label
+        self.collapsed: bool = collapsed
+        self.features: cabc.Sequence[str] | None = features
 
-        self.styleclass = styleclass
-        self.styleoverrides = styleoverrides or {}
-        self.hidelabel = hidelabel
+        self.styleclass: str | None = styleclass
+        self.styleoverrides: cabc.Mapping[
+            str, aird.RGB | str | cabc.Sequence[aird.RGB | str]
+        ] | None = (styleoverrides or {})
+        self.hidelabel: bool = hidelabel
         self.hidden = hidden
 
-        self.parent = parent
-        self.children: t.MutableSequence[DiagramElement] = []
-        self.context = set(context) if context else set()
-        self.port = port
+        self.parent: Box | None = parent
+        self.children: cabc.MutableSequence[DiagramElement] = []
+        self.context: set[str] = set(context) if context else set()
+        self.port: bool = port
 
         if parent is not None:
             parent.children.append(self)
             self.snap_to_parent()
 
     def create_portlabel(
-        self, labeltext: str, margin: t.Union[float, int] = 2
+        self, labeltext: str, margin: float | int = 2
     ) -> None:
         """Add a label to a port box.
 
@@ -470,21 +474,21 @@ class Edge(aird.Vec2List):
     JSON_TYPE = "edge"
 
     collapsed = False
-    context: t.AbstractSet[str] = frozenset()
+    context: cabc.Set[str] = frozenset()
     port = False
 
     _hidelabel: bool
 
     def __init__(
         self,
-        points: t.Iterable[aird.Vec2ish],
+        points: cabc.Iterable[aird.Vec2ish],
         *,
         label: Box = None,
         uuid: str = None,
         source: DiagramElement = None,
         target: DiagramElement = None,
         styleclass: str = None,
-        styleoverrides: t.Dict[str, t.Any] = None,
+        styleoverrides: dict[str, t.Any] = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ):
@@ -638,12 +642,12 @@ class Edge(aird.Vec2List):
             self._hidelabel = hide
 
     @property
-    def label(self) -> t.Optional[Box]:
+    def label(self) -> Box | None:
         """Return this Edge's label."""
         return self._label
 
     @label.setter
-    def label(self, label: t.Optional[Box]) -> None:
+    def label(self, label: Box | None) -> None:
         # Copy over label's hidden-flag
         if label is not None:
             label.hidden = self.hidelabel
@@ -655,7 +659,7 @@ class Edge(aird.Vec2List):
         return self
 
     @points.setter
-    def points(self, newpoints: t.Iterable[aird.Vec2ish]) -> None:
+    def points(self, newpoints: cabc.Iterable[aird.Vec2ish]) -> None:
         self[:] = newpoints
 
     def __str__(self) -> str:
@@ -694,7 +698,7 @@ class Circle:
     JSON_TYPE = "circle"
 
     collapsed = False
-    context: t.AbstractSet[str] = frozenset()
+    context: cabc.Set[str] = frozenset()
     hidelabel = True
     label = None
     port = False
@@ -704,11 +708,11 @@ class Circle:
     def __init__(
         self,
         center: aird.Vec2ish,
-        radius: t.Union[float, int],
+        radius: float | int,
         *,
         uuid: str = None,
         styleclass: str = None,
-        styleoverrides: t.Dict[str, t.Any] = None,
+        styleoverrides: dict[str, t.Any] = None,
         hidden: bool = False,
     ):
         """Construct a Circle.
@@ -796,7 +800,7 @@ class Diagram:
         self,
         name: str = "Untitled Diagram",
         viewport: "Box" = None,
-        elements: t.Sequence[DiagramElement] = None,
+        elements: cabc.Sequence[DiagramElement] = None,
         *,
         uuid: str = None,
         styleclass: str = None,
@@ -819,7 +823,7 @@ class Diagram:
         self.styleclass = styleclass
 
         self.viewport = None
-        self.__elements: t.List[DiagramElement] = []
+        self.__elements: list[DiagramElement] = []
 
         if elements is not None:
             for element in elements:
@@ -910,7 +914,7 @@ class Diagram:
 
     def normalize_viewport(
         self,
-        offset: t.Union[aird.Vec2ish, float, int] = 0,
+        offset: float | int | aird.Vec2ish = 0,
     ) -> None:
         """Normalize the viewport.
 
@@ -981,7 +985,7 @@ class Diagram:
     def __len__(self) -> int:
         return len(self.__elements)
 
-    def __getitem__(self, key: t.Union[str, int]) -> DiagramElement:
+    def __getitem__(self, key: int | str) -> DiagramElement:
         if isinstance(key, int):  # sequence protocol
             return self.__elements[key]
 
@@ -993,10 +997,10 @@ class Diagram:
 
         raise TypeError(f"Cannot look up elements by {type(key).__name__!s}")
 
-    def __iter__(self) -> t.Iterator[DiagramElement]:
+    def __iter__(self) -> cabc.Iterator[DiagramElement]:
         return iter(self.__elements)
 
-    def __contains__(self, obj: t.Union[str, DiagramElement]) -> bool:
+    def __contains__(self, obj: str | DiagramElement) -> bool:
         if isinstance(obj, str):
             try:
                 self[obj]

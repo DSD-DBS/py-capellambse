@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import collections
+import collections.abc as cabc
 import functools
 import html
 import importlib.resources as imr
@@ -48,7 +49,7 @@ def flatten_html_string(text: str) -> str:
     if not frags:
         return ""
 
-    text_container: t.List[str] = []
+    text_container: list[str] = []
     if isinstance(frags[0], str):
         text_container.append(frags.pop(0))
 
@@ -58,7 +59,7 @@ def flatten_html_string(text: str) -> str:
     return "".join(text_container).rstrip()
 
 
-def _flatten_subtree(element: etree._Element) -> t.Iterator[str]:
+def _flatten_subtree(element: etree._Element) -> cabc.Iterator[str]:
     def remove_whitespace(text: str):
         return re.sub("[\n\t]", "", text).lstrip()
 
@@ -80,9 +81,9 @@ def _flatten_subtree(element: etree._Element) -> t.Iterator[str]:
 
 # File name and path manipulation
 def normalize_pure_path(
-    path: t.Union[pathlib.PurePosixPath, str],
+    path: str | pathlib.PurePosixPath,
     *,
-    base: t.Union[pathlib.PurePosixPath, str] = "/",
+    base: str | pathlib.PurePosixPath = "/",
 ) -> pathlib.PurePosixPath:
     """Make a PurePosixPath relative to ``/`` and collapse ``..`` components.
 
@@ -101,7 +102,7 @@ def normalize_pure_path(
     """
     path = pathlib.PurePosixPath("/", base, path)
 
-    parts: t.List[str] = []
+    parts: list[str] = []
     for i in path.parts[1:]:
         if i == "..":
             try:
@@ -132,7 +133,7 @@ def extent_func(
     text: str,
     fonttype: str = "segoeui.ttf",
     size: int = 8,
-) -> t.Tuple[float, float]:
+) -> tuple[float, float]:
     """Calculate the display size of the given text.
 
     Parameters
@@ -159,8 +160,8 @@ def extent_func(
 
 def get_text_extent(
     text: str,
-    width: t.Union[float, int] = math.inf,
-) -> t.Tuple[float, float]:
+    width: float | int = math.inf,
+) -> tuple[float, float]:
     """Calculate the bounding box size of ``text`` after line wrapping.
 
     Parameters
@@ -184,12 +185,12 @@ def get_text_extent(
 
 def ssvparse(
     string: str,
-    cast: t.Callable[[str], _T],
+    cast: cabc.Callable[[str], _T],
     *,
-    parens: t.Sequence[str] = ("", ""),
+    parens: cabc.Sequence[str] = ("", ""),
     sep: str = ",",
     num: int = 0,
-) -> t.Sequence[_T]:
+) -> cabc.Sequence[_T]:
     """Parse a string of ``sep``-separated values wrapped in ``parens``.
 
     Parameters
@@ -229,7 +230,7 @@ def ssvparse(
     return values
 
 
-def word_wrap(text: str, width: t.Union[float, int]) -> t.Sequence[str]:
+def word_wrap(text: str, width: float | int) -> cabc.Sequence[str]:
     """Perform word wrapping for proportional fonts.
 
     Whitespace at the beginning of input lines is preserved, but other
@@ -248,12 +249,10 @@ def word_wrap(text: str, width: t.Union[float, int]) -> t.Sequence[str]:
         A list of strings, one for each line, after wrapping.
     """
 
-    def rejoin(
-        words: t.Iterable[str], start: int, stop: t.Optional[int]
-    ) -> str:
+    def rejoin(words: cabc.Iterable[str], start: int, stop: int | None) -> str:
         return " ".join(itertools.islice(words, start, stop))
 
-    def splitline(line: str) -> t.List[str]:
+    def splitline(line: str) -> list[str]:
         match = re.search(r"^\s*", line)
         assert match is not None
         words = line.split()
@@ -301,7 +300,7 @@ def word_wrap(text: str, width: t.Union[float, int]) -> t.Sequence[str]:
 
 
 # XML tree modification and navigation
-def fragment_link(cur_frag: t.Union[str, os.PathLike], href: str) -> str:
+def fragment_link(cur_frag: str | os.PathLike, href: str) -> str:
     """Combine current fragment and ``href`` into an absolute link.
 
     Parameters
@@ -346,11 +345,10 @@ def repair_html(markup: str) -> str:
     markup
         The repaired markup.
     """
-    nodes: t.List[
-        t.Union[str, lxml.html._Element]
-    ] = lxml.html.fragments_fromstring(markup)
+    nodes: list[str | lxml.html._Element]
+    nodes = lxml.html.fragments_fromstring(markup)
     if nodes and isinstance(nodes[0], str):
-        firstnode: str = markupsafe.escape(nodes.pop(0))
+        firstnode: str = html.escape(nodes.pop(0))
     else:
         firstnode = ""
     assert all(isinstance(i, etree._Element) for i in nodes)
@@ -389,13 +387,13 @@ def resolve_namespace(tag: str) -> str:
 
 
 def unescape_linked_text(
-    loader: capellambse.loader.MelodyLoader, attr_text: t.Optional[str]
+    loader: capellambse.loader.MelodyLoader, attr_text: str | None
 ) -> markupsafe.Markup:
     """Transform the ``linkedText`` into regular HTML."""
 
     def flatten_element(
-        elm: t.Union[lxml.html.HTMLElement, str]
-    ) -> t.Iterator[str]:
+        elm: str | lxml.html.HTMLElement,
+    ) -> cabc.Iterator[str]:
         if isinstance(elm, str):
             yield html.escape(elm)
         elif elm.tag == "a":
@@ -404,10 +402,7 @@ def unescape_linked_text(
                 yield "&lt;broken link&gt;"
                 yield html.escape(elm.tail or "")
                 return
-            if "#" in href:
-                ehref = html.escape(href.rsplit("#", maxsplit=1)[-1])
-            else:
-                ehref = html.escape("#" + href)
+            ehref = html.escape(href)
 
             try:
                 target = loader[href]
@@ -418,7 +413,7 @@ def unescape_linked_text(
                     name = html.escape(name)
                 else:
                     name = f"&lt;unnamed element {ehref}&gt;"
-                yield f'<a href="{ehref}">{name}</a>'
+                yield f'<a href="hlink://{ehref}">{name}</a>'
             yield html.escape(elm.tail or "")
         else:
             yield html.escape(elm.text or "")
@@ -433,9 +428,44 @@ def unescape_linked_text(
     return markupsafe.Markup(escaped_text)
 
 
+def escape_linked_text(
+    loader: capellambse.loader.MelodyLoader, attr_text: str
+) -> str:
+    """Transform simple HTML with object links into ``LinkedText``.
+
+    This is the inverse operation of :func:`unescape_linked_text`.
+    """
+
+    def flatten_element(
+        elm: str | lxml.html.HTMLElement,
+    ) -> cabc.Iterator[str]:
+        if isinstance(elm, str):
+            yield html.escape(elm)
+        elif elm.tag == "a":
+            href = elm.get("href")
+            if not (href or "").startswith("hlink://"):
+                yield html.escape(elm.text or "")
+            else:
+                yield '<a href="'
+                yield html.escape(href[len("hlink://") :])
+                yield '"/>'
+            if len(elm) > 0:
+                raise ValueError("Nesting is not allowed in LinkedText")
+        else:
+            raise ValueError(
+                f"Only 'a' tags are allowed in LinkedText, not {elm.tag!r}"
+            )
+
+    elements = lxml.html.fragments_fromstring(attr_text)
+    text = "".join(
+        itertools.chain.from_iterable(flatten_element(i) for i in elements)
+    )
+    return markupsafe.Markup(text)
+
+
 @t.overload
 def xpath_fetch_unique(
-    xpath: t.Union[str, etree.XPath],
+    xpath: str | etree.XPath,
     tree: etree._Element,
     elm_name: str,
     elm_uid: str = None,
@@ -447,24 +477,24 @@ def xpath_fetch_unique(
 
 @t.overload
 def xpath_fetch_unique(
-    xpath: t.Union[str, etree.XPath],
+    xpath: str | etree.XPath,
     tree: etree._Element,
     elm_name: str,
     elm_uid: str = None,
     *,
     optional: t.Literal[True],
-) -> t.Optional[etree._Element]:
+) -> etree._Element | None:
     ...
 
 
 def xpath_fetch_unique(
-    xpath: t.Union[str, etree.XPath],
+    xpath: str | etree.XPath,
     tree: etree._Element,
     elm_name: str,
     elm_uid: str = None,
     *,
     optional: bool = False,
-) -> t.Optional[etree._Element]:
+) -> etree._Element | None:
     """Fetch an XPath result from the tree, ensuring that it's unique.
 
     Parameters
@@ -517,7 +547,7 @@ def xpath_fetch_unique(
 
 def xtype_of(
     elem: etree._Element,
-) -> t.Optional[str]:
+) -> str | None:
     """Return the ``xsi:type`` of the element.
 
     If the element has an ``xsi:type`` attribute, its value is returned.
@@ -567,10 +597,10 @@ def xtype_of(
 # More iteration tools
 def ntuples(
     num: int,
-    iterable: t.Iterable[_T],
+    iterable: cabc.Iterable[_T],
     *,
     pad: bool = False,
-) -> t.Iterator[t.Tuple[_T, ...]]:
+) -> cabc.Iterator[tuple[_T, ...]]:
     r"""Yield N items of ``iterable`` at once.
 
     Parameters
@@ -622,9 +652,9 @@ class EverythingContainer(t.Container[t.Any]):
 
 def get_transformation(
     class_: str,
-    pos: t.Tuple[float, float],
-    size: t.Tuple[float, float],
-) -> t.Dict[str, str]:
+    pos: tuple[float, float],
+    size: tuple[float, float],
+) -> dict[str, str]:
     """
     Calculate transformation for class.
 

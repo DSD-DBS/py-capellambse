@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
+import collections.abc as cabc
 import io
 import json
 import logging
@@ -34,6 +37,7 @@ from capellambse.svg import (
     style,
     symbols,
 )
+from capellambse.svg.drawing import LabelDict
 
 from . import TEST_MODEL, TEST_ROOT
 
@@ -146,6 +150,7 @@ class TestSVG:
         tmp_svg.save_drawing()
         assert pathlib.Path(tmp_svg.drawing.filename).is_file()
 
+    # FIXME: change this to a parametrized test, do not use if- or for-statements in a unit test
     def test_css_colors(self, tmp_json) -> None:
         COLORS_TO_CHECK = {
             ".LogicalArchitectureBlank g.Box.CP_IN > line": {
@@ -433,7 +438,7 @@ class TestSVG:
             and not ("Exchange" in symbol or "Link" in symbol)
             and symbol not in FREE_SYMBOLS
         ]
-        contents = [
+        contents: cabc.Sequence[generate.ContentsDict] = [
             {
                 "type": "box",
                 "id": str(i),
@@ -486,7 +491,7 @@ class TestSVG:
             for symbol in style.STATIC_DECORATIONS[diagram_type]
             if "Exchange" in symbol or "Link" in symbol
         ]
-        contents = [
+        contents: cabc.Sequence[generate.ContentsDict] = [
             {
                 "type": "edge",
                 "id": str(i),
@@ -539,7 +544,7 @@ class TestSVG:
         right_bound = rect.attribs["x"] + rect.attribs["width"]
         lower_bound = rect.attribs["y"] + rect.attribs["height"]
         symbol_right_bound = symbol.attribs["x"] + symbol.attribs["width"]
-        factor = 1
+        factor = 1.0
         text_anchor = txt.attribs.get("text-anchor", "start")
         if text_anchor == "middle":
             factor = 0.5
@@ -585,7 +590,7 @@ class TestSVGStylesheet:
 
     def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
         with pytest.raises(TypeError) as error:
-            style.SVGStylesheet(None)
+            style.SVGStylesheet(None)  # type: ignore[arg-type]
 
         assert (
             error.value.args[0]

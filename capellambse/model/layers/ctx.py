@@ -19,7 +19,6 @@ functions, actors etc. which is best presented in a glossary document.
 .. diagram:: [CDB] SA ORM
 """
 import operator
-import typing as t
 
 from .. import common as c
 from .. import crosslayer, diagram
@@ -172,10 +171,10 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     component_package = c.ProxyAccessor(SystemComponentPkg)
     capability_package = c.ProxyAccessor(CapabilityPkg)
 
-    all_actors = c.CustomAccessor(
+    all_actors = c.CustomAccessor(  # type: ignore[misc]
         SystemComponent,
         operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: t.cast(SystemComponent, x).is_actor,
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
         aslist=c.ElementList,
     )
     all_functions = c.ProxyAccessor(

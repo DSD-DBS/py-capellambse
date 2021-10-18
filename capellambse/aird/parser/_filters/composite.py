@@ -14,6 +14,7 @@
 """Composite filter implementations."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import functools
 import typing as t
 
@@ -23,7 +24,7 @@ from .. import _semantic
 from . import phase2_composite_filter
 
 
-def _lookup_styleclasses(*styleclasses: str) -> t.FrozenSet[str]:
+def _lookup_styleclasses(*styleclasses: str) -> frozenset[str]:
     returnclasses = set()
     for styleclass in styleclasses:
         new_styleclass, _ = _semantic.STYLECLASS_LOOKUP[styleclass]
@@ -39,10 +40,10 @@ PORT_CL_FUNCTION = _lookup_styleclasses(
 
 
 def hide_empty_ports(
-    ebd: t.Optional[t.Any],
+    ebd: t.Any | None,
     dgobject: aird.DiagramElement,
     *,
-    classes: t.Container[str],
+    classes: cabc.Container[str],
 ) -> None:
     """Hide child ports without context.
 

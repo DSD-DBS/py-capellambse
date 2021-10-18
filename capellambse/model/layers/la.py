@@ -18,7 +18,6 @@
 from __future__ import annotations
 
 import operator
-import typing as t
 
 from .. import common as c
 from .. import crosslayer, diagram
@@ -137,10 +136,10 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_components = c.ProxyAccessor(  # maybe this should exclude .is_actor
         LogicalComponent, aslist=c.ElementList, deep=True
     )
-    all_actors = c.CustomAccessor(
+    all_actors: c.CustomAccessor[LogicalComponent] = c.CustomAccessor(  # type: ignore[misc]
         LogicalComponent,
         operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: t.cast(LogicalComponent, x).is_actor,
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
         aslist=c.ElementList,
     )
     all_functions = c.ProxyAccessor(
