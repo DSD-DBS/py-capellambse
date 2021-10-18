@@ -19,6 +19,7 @@ import logging
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import subprocess
 import typing as t
@@ -136,9 +137,13 @@ class GitFileHandler(FileHandler):
             git_env["GIT_PASSWORD"] = self.password
 
         if self.identity_file and self.known_hosts_file:
-            git_env[
-                "GIT_SSH_COMMAND"
-            ] = f"ssh -i {pathlib.PurePosixPath(self.identity_file)} -oUserKnownHostsFile={pathlib.PurePosixPath(self.known_hosts_file)}"
+            ssh_command = [
+                "ssh",
+                "-i",
+                self.identity_file,
+                f"-oUserKnownHostsFile={self.known_hosts_file}",
+            ]
+            git_env["GIT_SSH_COMMAND"] = shlex.join(ssh_command)
 
         return git_env
 
