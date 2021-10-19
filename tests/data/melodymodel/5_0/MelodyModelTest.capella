@@ -161,6 +161,8 @@
           ReqIFLongName="Additional Types">
         <ownedTypes xsi:type="Requirements:ModuleType" id="3a284e44-3b63-48a7-85e9-caeb967c930c"
             ReqIFLongName="Other Module"/>
+        <ownedTypes xsi:type="Requirements:RequirementType" id="00195554-8fae-4687-86ca-77c93330893d"
+            ReqIFLongName="Other"/>
       </ownedExtensions>
       <ownedFunctionPkg xsi:type="org.polarsys.capella.core.data.oa:OperationalActivityPkg"
           id="fb79bf91-f946-4d5b-8a3f-a4b2d28eed5c" name="Operational Activities">
@@ -1052,6 +1054,10 @@ The predator is far away</bodies>
           <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="8359da37-21bf-4394-b7d2-22686ccebe55"
               definition="#0bd40628-10a5-451e-86da-187c93bc3b10" value="1"/>
         </ownedRequirements>
+        <ownedRequirements xsi:type="Requirements:Requirement" id="7e8d0edf-67f0-48c5-82f6-ec9cdb809eee"
+            ReqIFLongName="Undefined type"/>
+        <ownedRequirements xsi:type="Requirements:Requirement" id="db4d4c74-b913-4d9a-8905-7d93d3360560"
+            ReqIFLongName="Other type" requirementType="#00195554-8fae-4687-86ca-77c93330893d"/>
       </ownedExtensions>
       <ownedFunctionPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemFunctionPkg"
           id="17cbefe8-c2ca-49aa-9aef-23259969ac91" name="System Functions">
