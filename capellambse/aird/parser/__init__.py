@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for parsing and interacting with diagrams in a Capella model."""
+from __future__ import annotations
+
+import collections.abc as cabc
 import pathlib
 import typing as t
 import urllib.parse
@@ -34,7 +37,7 @@ __all__ = [
 class DiagramDescriptor(t.NamedTuple):
     fragment: pathlib.Path
     name: str
-    styleclass: t.Optional[str]
+    styleclass: str | None
     uid: str
     viewpoint: str
     target: etree._Element
@@ -44,7 +47,7 @@ def enumerate_diagrams(
     model: loader.MelodyLoader,
     *,
     err_abort: bool = False,
-) -> t.Iterator[DiagramDescriptor]:
+) -> cabc.Iterator[DiagramDescriptor]:
     """Enumerate the diagrams in the model.
 
     Parameters
@@ -56,7 +59,7 @@ def enumerate_diagrams(
         diagrams that are usable and ignore the others.
     """
     raw_views = model.xpath2(C.XP_VIEWS)
-    views: t.List[t.Tuple[pathlib.PurePosixPath, etree._Element, str]] = []
+    views: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
     if len(raw_views) == 0:
         raise ValueError("Invalid XML: No viewpoints found")
 
@@ -74,9 +77,7 @@ def enumerate_diagrams(
     if not views:
         raise ValueError("No viewpoints found")
 
-    descriptors: t.List[
-        t.Tuple[pathlib.PurePosixPath, etree._Element, str]
-    ] = []
+    descriptors: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
     for view in views:
         descriptors += [
             (view[0], d, view[2]) for d in C.XP_DESCRIPTORS(view[1])
@@ -104,7 +105,7 @@ def enumerate_diagrams(
             # The thing we're interested in is denoted as $$$ above.
             styleclass_match = C.RE_STYLECLASS.search(styledescription)
             if styleclass_match is None:
-                styleclass: t.Optional[str] = None
+                styleclass: str | None = None
             else:
                 styleclass = urllib.parse.unquote(styleclass_match.group(1))
 
@@ -136,7 +137,7 @@ def enumerate_diagrams(
                 raise
 
 
-def parse_diagrams(model: loader.MelodyLoader) -> t.Iterator[aird.Diagram]:
+def parse_diagrams(model: loader.MelodyLoader) -> cabc.Iterator[aird.Diagram]:
     """Parse all diagrams from the model."""
     for descriptor in enumerate_diagrams(model):
         C.LOGGER.info(

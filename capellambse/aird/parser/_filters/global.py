@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Global filter implementations."""
-import typing as t
+from __future__ import annotations
 
 import lxml.etree
 
@@ -161,7 +161,7 @@ def _get_allocated_exchangeitem_names(
     *try_ids: str,
     alloc_attr: str,
     melodyloader: capellambse.loader.MelodyLoader,
-) -> t.Tuple[t.Optional[lxml.etree._Element], t.List[str]]:
+) -> tuple[lxml.etree._Element | None, list[str]]:
     for obj_id in try_ids:
         try:
             elm = melodyloader[obj_id]

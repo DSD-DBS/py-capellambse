@@ -192,7 +192,7 @@ def test_stm_transition(model):
 
     assert hasattr(transition, "guard")
     assert transition.guard is not None
-    assert transition.guard.specification.text == "Food is cooked"
+    assert transition.guard.specification["LinkedText"] == "Food is cooked"
 
     assert hasattr(transition, "triggers")
     assert transition.triggers is not None
@@ -203,8 +203,8 @@ def test_stm_transition_multiple_guards(model):
     transition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")
 
     assert transition.guard is not None
-    assert transition.guard.specification.text == "Actor feels hungry"
-    assert transition.guard.specification["Python"] == "self.hunger &gt;= 0.8"
+    assert transition.guard.specification["LinkedText"] == "Actor feels hungry"
+    assert transition.guard.specification["Python"] == "self.hunger >= 0.8"
 
 
 def test_exchange_items_on_logical_function_exchanges(model):
@@ -266,8 +266,24 @@ def test_constraint_specification_has_linked_object_name_in_body(
     con = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
     assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
     assert (
-        con.specification.text
-        == '<a href="#dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
+        con.specification["LinkedText"]
+        == '<a href="hlink://dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
+    )
+
+
+def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
+    model: MelodyModel,
+) -> None:
+    c1 = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
+    c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
+    assert isinstance(c1, capellambse.model.crosslayer.capellacore.Constraint)
+    assert isinstance(c2, capellambse.model.crosslayer.capellacore.Constraint)
+
+    c2.specification["LinkedText"] = c1.specification["LinkedText"]
+
+    assert (
+        next(c1.specification._element.iterchildren("bodies")).text
+        == next(c2.specification._element.iterchildren("bodies")).text
     )
 
 

@@ -43,7 +43,7 @@ def _make_port_box(id_: str) -> container.Symbol:
 
 
 def _make_edge_symbol(
-    id_: str, grad_colors: t.Tuple[str, str], middle_color: str
+    id_: str, grad_colors: tuple[str, str], middle_color: str
 ) -> container.Symbol:
     """Return svg symbol for edges."""
     symb = container.Symbol(id=id_, viewBox="0 0 40 30")
@@ -304,7 +304,7 @@ def logical_human_actor_symbol(
 
 @decorations.deco_factories
 def stick_figure_symbol(
-    id_: str = "StickFigureSymbol", transform: t.Tuple[float, ...] = None, **kw
+    id_: str = "StickFigureSymbol", transform: tuple[float, ...] = None, **kw
 ) -> container.Symbol:
     """Generate StickFigure svg symbol."""
     if transform is not None:
@@ -468,7 +468,7 @@ def logical_function_symbol(id_="LogicalFunctionSymbol"):
 @decorations.deco_factories
 def system_function_symbol(
     id_: str = "SystemFunctionSymbol",
-    colors: t.Tuple[str, str] = ("#4D7598", "#F0F5F9"),
+    colors: tuple[str, str] = ("#4D7598", "#F0F5F9"),
 ) -> container.Symbol:
     symb = container.Symbol(id=id_, viewBox="0 0 79 79")
     symb.add(_make_lgradient("blue", stop_colors=colors, end=(1, 0)))
@@ -512,7 +512,7 @@ def operational_activity_symbol(id_="OperationalActivitySymbol"):
 
 def _make_function_symbol(
     id_: str = "FunctionSymbol",
-    colors: t.Tuple[str, str] = ("#f0f8ee", "#7dc56c"),
+    colors: tuple[str, str] = ("#f0f8ee", "#7dc56c"),
 ) -> container.Symbol:
     center = (42.2, 32)
     symb = container.Symbol(id=id_, viewBox="0 0 79 79")

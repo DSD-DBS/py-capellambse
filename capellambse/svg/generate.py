@@ -13,9 +13,28 @@
 # limitations under the License.
 from __future__ import annotations
 
+import collections.abc as cabc
 import dataclasses
 import json
 import typing as t
+
+from capellambse.svg.drawing import LabelDict
+
+ContentsDict = t.TypedDict(
+    "ContentsDict",
+    {
+        "type": str,
+        "id": str,
+        "class": str,
+        "points": t.List[t.List[int]],
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "label": t.Union[LabelDict, str],
+    },
+    total=False,
+)
 
 
 class SVGDiagram:
@@ -53,7 +72,7 @@ class SVGDiagram:
     def __init__(
         self,
         metadata: DiagramMetadata,
-        objects: t.Sequence[t.Mapping[str, str | int | float]],
+        objects: cabc.Sequence[ContentsDict],
     ) -> None:
         self.drawing = Drawing(metadata)
         for obj in objects:
@@ -96,7 +115,7 @@ class SVGDiagram:
 
         return cls.from_json(conf)
 
-    def draw_object(self, obj: t.Mapping[str, str | int | float]) -> None:
+    def draw_object(self, obj: ContentsDict) -> None:
         self.drawing.draw_object(obj)
 
     def save_drawing(self, pretty: bool = False, indent: int = 2) -> None:
@@ -104,6 +123,20 @@ class SVGDiagram:
 
     def to_string(self) -> str:
         return self.drawing.tostring()
+
+
+DiagramMetadataDict = t.TypedDict(
+    "DiagramMetadataDict",
+    {
+        "name": str,
+        "contents": t.Sequence[ContentsDict],
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "class": str,
+    },
+)
 
 
 @dataclasses.dataclass
@@ -117,31 +150,30 @@ class DiagramMetadata:
 
     def __init__(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
+        pos: tuple[float, float],
+        size: tuple[float, float],
         name: str,
         class_: str,
+        **_kw: t.Any,
     ) -> None:
         # Add padding to viewbox to account for drawn borders
-        self.pos: t.Tuple[float, float] = tuple(i - 10 for i in pos)
-        self.size: t.Tuple[float, float] = tuple(i + 20 for i in size)
+        self.pos: tuple[float, float] = tuple(i - 10 for i in pos)  # type: ignore[assignment]
+        self.size: tuple[float, float] = tuple(i + 20 for i in size)  # type: ignore[assignment]
         self.viewbox = " ".join(map(str, self.pos + self.size))
         self.class_ = class_
         self.name = name
 
     @classmethod
-    def from_dict(
-        cls, data: t.Mapping[str, str | int | float]
-    ) -> DiagramMetadata:
+    def from_dict(cls, data: DiagramMetadataDict) -> DiagramMetadata:
         name = data.get("name")
         if not isinstance(name, str):
             raise TypeError("No diagram name defined.")
         if not isinstance(data.get("class"), str):
             raise TypeError(f"No diagram class defined for {name}")
         for attr in ["x", "y", "width", "height"]:
-            if not isinstance(data[attr], (int, float)):
+            if not isinstance(data[attr], (int, float)):  # type: ignore[misc]
                 raise TypeError(
-                    f"{data[attr]} needs to be either integer or float."
+                    f"{data[attr]} needs to be either integer or float."  # type: ignore[misc]
                 )
         return cls(
             (data["x"], data["y"]),

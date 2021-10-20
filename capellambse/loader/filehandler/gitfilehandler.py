@@ -11,12 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import hashlib
 import io
 import logging
 import os
 import pathlib
 import re
+import shlex
 import shutil
 import subprocess
 import typing as t
@@ -39,11 +42,11 @@ class GitFileHandler(FileHandler):
     known_hosts_file: str
     cache_dir: pathlib.Path
 
-    __lfsfiles: t.FrozenSet[str]
+    __lfsfiles: frozenset[str]
 
     def __init__(
         self,
-        path: t.Union[bytes, os.PathLike, str],
+        path: bytes | str | os.PathLike,
         entrypoint: str,
         revision: str = "HEAD",
         username: str = "",
@@ -113,7 +116,7 @@ class GitFileHandler(FileHandler):
             rev_hash=revparse(self.revision),
         )
 
-    def __get_git_env(self) -> t.Dict:
+    def __get_git_env(self) -> dict[str, str]:
         git_env = os.environ.copy()
         if not os.environ.get("GIT_ASKPASS"):
             path_to_askpass = (
@@ -134,9 +137,13 @@ class GitFileHandler(FileHandler):
             git_env["GIT_PASSWORD"] = self.password
 
         if self.identity_file and self.known_hosts_file:
-            git_env[
-                "GIT_SSH_COMMAND"
-            ] = f"ssh -i {pathlib.PurePosixPath(self.identity_file)} -oUserKnownHostsFile={pathlib.PurePosixPath(self.known_hosts_file)}"
+            ssh_command = [
+                "ssh",
+                "-i",
+                self.identity_file,
+                f"-oUserKnownHostsFile={self.known_hosts_file}",
+            ]
+            git_env["GIT_SSH_COMMAND"] = shlex.join(ssh_command)
 
         return git_env
 

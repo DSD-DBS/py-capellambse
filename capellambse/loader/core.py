@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Helps loading Capella models (including fragmented variants)."""
-import collections.abc
+from __future__ import annotations
+
+import collections
+import collections.abc as cabc
 import contextlib
 import itertools
 import logging
-import math
 import operator
 import os.path
 import pathlib
 import re
+import sys
 import typing as t
 import uuid
 
@@ -28,8 +31,7 @@ from lxml import etree
 
 import capellambse
 from capellambse import helpers
-from capellambse.loader import exs
-from capellambse.loader import filehandler as fh
+from capellambse.loader import exs, filehandler
 from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
@@ -58,7 +60,7 @@ def _verify_extension(filename: pathlib.PurePosixPath) -> None:
         raise TypeError(ERR_BAD_EXT.format(file, file.suffix))
 
 
-def _find_refs(root: etree._Element) -> t.Iterable[str]:
+def _find_refs(root: etree._Element) -> cabc.Iterable[str]:
     return itertools.chain(
         (x.split("#")[0] for x in root.xpath(".//referencedAnalysis/@href")),
         root.xpath(".//semanticResources/text()"),
@@ -68,18 +70,18 @@ def _find_refs(root: etree._Element) -> t.Iterable[str]:
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
-    __xtypecache: t.Dict[t.Optional[str], t.List[etree._Element]]
-    __idcache: t.Dict[str, etree._Element]
-    __hrefsources: t.Dict[str, etree._Element]
+    __xtypecache: dict[str | None, list[etree._Element]]
+    __idcache: dict[str, etree._Element]
+    __hrefsources: dict[str, etree._Element]
 
     def __init__(
-        self, filename: pathlib.PurePosixPath, filehandler: fh.FileHandler
+        self, filename: pathlib.PurePosixPath, handler: filehandler.FileHandler
     ) -> None:
         self.filename = filename
-        self.filehandler = filehandler
+        self.filehandler = handler
         _verify_extension(filename)
 
-        with filehandler.open(filename) as f:
+        with handler.open(filename) as f:
             self.tree = etree.parse(
                 f, etree.XMLParser(remove_blank_text=True, huge_tree=True)
             )
@@ -105,7 +107,7 @@ class ModelFile:
             if href is not None:
                 self.__hrefsources[href.split("#")[-1]] = elm
 
-    def idcache_remove(self, source: t.Union[str, etree._Element]) -> None:
+    def idcache_remove(self, source: str | etree._Element) -> None:
         """Remove the ID or all IDs below the source from the ID cache."""
         if isinstance(source, str):
             try:
@@ -143,8 +145,8 @@ class ModelFile:
         self.__idcache[new_id] = None
 
     def iterall_xt(
-        self, xtypes: t.Container[str]
-    ) -> t.Iterator[etree._Element]:
+        self, xtypes: cabc.Container[str]
+    ) -> cabc.Iterator[etree._Element]:
         """Iterate over all elements in this tree by ``xsi:type``."""
         for xtype, elms in self.__xtypecache.items():
             if xtype in xtypes:
@@ -157,17 +159,19 @@ class ModelFile:
     ) -> None:
         """Write this file's XML into the file specified by ``path``."""
         LOGGER.debug("Saving tree %r to file %s", self, filename)
-        if filename.suffix not in {
+        if filename.suffix in {
             ".capella",
             ".capellafragment",
             ".melodyfragment",
             ".melodymodeller",
         }:
-            extra_args = {"line_length": math.inf}
+            line_length = exs.LINE_LENGTH
         else:
-            extra_args = {}
+            line_length = sys.maxsize
         with self.filehandler.open(filename, "wb") as file:
-            exs.write(self.tree, file, encoding=encoding, **extra_args)
+            exs.write(
+                self.tree, file, encoding=encoding, line_length=line_length
+            )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
         """ "Unfollow" a fragment link and return the placeholder element.
@@ -182,11 +186,11 @@ class MelodyLoader:
     """Facilitates extensive access to Polarsys / Capella projects."""
 
     def __init__(
-        self, path: t.Union[str, bytes, os.PathLike], **kwargs: t.Any
+        self, path: bytes | str | os.PathLike, **kwargs: t.Any
     ) -> None:
-        self.filehandler = fh.get_filehandler(path, **kwargs)
+        self.filehandler = filehandler.get_filehandler(path, **kwargs)
 
-        self.trees: t.Dict[pathlib.PurePosixPath, ModelFile] = {}
+        self.trees: dict[pathlib.PurePosixPath, ModelFile] = {}
         self.__load_referenced_files(
             helpers.normalize_pure_path(
                 pathlib.PurePosixPath(self.filehandler.entrypoint)
@@ -200,7 +204,7 @@ class MelodyLoader:
         if filename in self.trees:
             return
 
-        frag = ModelFile(filename, filehandler=self.filehandler)
+        frag = ModelFile(filename, self.filehandler)
         self.trees[filename] = frag
         for ref in _find_refs(frag.root):
             self.__load_referenced_files(
@@ -265,7 +269,9 @@ class MelodyLoader:
                 return new_id
 
     @contextlib.contextmanager
-    def new_uuid(self, parent: etree._Element) -> t.Generator[str, None, None]:
+    def new_uuid(
+        self, parent: etree._Element
+    ) -> cabc.Generator[str, None, None]:
         """Context Manager around :meth:`generate_uuid()`.
 
         This context manager yields a newly generated model-wide unique
@@ -317,11 +323,11 @@ class MelodyLoader:
 
     def xpath(
         self,
-        query: t.Union[etree.XPath, str],
+        query: str | etree.XPath,
         *,
-        namespaces: t.Mapping[str, str] = None,
-        roots: t.Union[etree._Element, t.Iterable[etree._Element]] = None,
-    ) -> t.List[etree._Element]:
+        namespaces: cabc.Mapping[str, str] = None,
+        roots: etree._Element | cabc.Iterable[etree._Element] = None,
+    ) -> list[etree._Element]:
         """Run an XPath query on all fragments.
 
         Parameters
@@ -344,11 +350,11 @@ class MelodyLoader:
 
     def xpath2(
         self,
-        query: t.Union[etree.XPath, str],
+        query: str | etree.XPath,
         *,
-        namespaces: t.Mapping[str, str] = None,
-        roots: t.Union[etree._Element, t.Iterable[etree._Element]] = None,
-    ) -> t.List[t.Tuple[pathlib.PurePosixPath, etree._Element]]:
+        namespaces: cabc.Mapping[str, str] = None,
+        roots: etree._Element | cabc.Iterable[etree._Element] = None,
+    ) -> list[tuple[pathlib.PurePosixPath, etree._Element]]:
         """Run an XPath query and return the fragments and elements.
 
         The tuples have the fragment where the match was found as first
@@ -370,7 +376,7 @@ class MelodyLoader:
 
         def follow_href(
             tree: pathlib.PurePosixPath, match: etree._Element
-        ) -> t.Tuple[pathlib.PurePosixPath, etree._Element]:
+        ) -> tuple[pathlib.PurePosixPath, etree._Element]:
             if href := match.get("href"):
                 match = self.follow_link(match, href)
                 return (self.find_fragment(match), match)
@@ -383,13 +389,11 @@ class MelodyLoader:
             roots = [(k, t.root) for k, t in self.trees.items()]
         elif isinstance(roots, etree._Element):
             roots = [(self._find_fragment(roots)[0], roots)]
-        elif isinstance(roots, collections.abc.Iterable):
+        elif isinstance(roots, cabc.Iterable):
             roots = [(self._find_fragment(r)[0], r) for r in roots]
         else:
             raise TypeError(
-                "`roots` must be an XML element or a list thereof, not {}".format(
-                    type(roots).__name__
-                )
+                f"`roots` must be an XML element or a list thereof, not {type(roots).__name__}"
             )
 
         ret = []
@@ -400,8 +404,8 @@ class MelodyLoader:
     def find_by_xsi_type(
         self,
         *xsi_types: str,
-        roots: t.Union[etree._Element, t.Iterable[etree._Element]] = None,
-    ) -> t.List[etree._Element]:
+        roots: etree._Element | cabc.Iterable[etree._Element] = None,
+    ) -> list[etree._Element]:
         r"""Find all elements matching any of the given ``xsi:type``\ s.
 
         Parameters
@@ -430,7 +434,7 @@ class MelodyLoader:
             if helpers.xtype_of(i) in xtset
         ]
 
-    def iterall(self, *tags: str) -> t.Iterator[etree._Element]:
+    def iterall(self, *tags: str) -> cabc.Iterator[etree._Element]:
         """Iterate over all elements in all trees by tags.
 
         Parameters
@@ -445,7 +449,7 @@ class MelodyLoader:
     def iterall_xt(
         self,
         *xtypes: str,
-    ) -> t.Iterator[etree._Element]:
+    ) -> cabc.Iterator[etree._Element]:
         r"""Iterate over all elements in all trees by ``xsi:type``\ s.
 
         Parameters
@@ -464,7 +468,7 @@ class MelodyLoader:
         self,
         root_elm: etree._Element,
         *tags: str,
-    ) -> t.Iterator[etree._Element]:
+    ) -> cabc.Iterator[etree._Element]:
         """Iterate over all descendants of ``root_elm``.
 
         This method will follow links into different fragment files and
@@ -502,7 +506,7 @@ class MelodyLoader:
         self,
         element: etree._Element,
         *xtypes: str,
-    ) -> t.Iterator[etree._Element]:
+    ) -> cabc.Iterator[etree._Element]:
         r"""Iterate over all descendants of ``element`` by ``xsi:type``.
 
         This method will follow links into different fragment files and
@@ -510,9 +514,9 @@ class MelodyLoader:
 
         Parameters
         ----------
-        root_elm
+        element
             The root element of the tree
-        _xtypes
+        xtypes
             Elements that have any of these ``xsi:type``\ s will be
             yielded.  If nothing is given here, all elements will be
             yielded.
@@ -528,7 +532,7 @@ class MelodyLoader:
         self,
         element: etree._Element,
         *tags: str,
-    ) -> t.Iterator[etree._Element]:
+    ) -> cabc.Iterator[etree._Element]:
         """Iterate over the ancestors of ``element``.
 
         This method will follow fragment links back to the origin point.
@@ -560,7 +564,7 @@ class MelodyLoader:
 
     def iterchildren_xt(
         self, element: etree._Element, *xtypes: str
-    ) -> t.Iterator[etree._Element]:
+    ) -> cabc.Iterator[etree._Element]:
         r"""Iterate over the children of ``element``.
 
         If ``xsi:type``\ s are given in ``xtypes``, restrict yielded
@@ -623,7 +627,7 @@ class MelodyLoader:
 
     def follow_link(
         self,
-        from_element: t.Optional[etree._Element],
+        from_element: etree._Element | None,
         link: str,
     ) -> etree._Element:
         """Follow a single link and return the target element.
@@ -666,9 +670,9 @@ class MelodyLoader:
         xtype, fragment, ref = linkmatch.groups()
 
         def find_trees(
-            from_element: t.Optional[etree._Element],
-            fragment: t.Optional[pathlib.PurePosixPath],
-        ) -> t.Iterable[ModelFile]:
+            from_element: etree._Element | None,
+            fragment: pathlib.PurePosixPath | None,
+        ) -> cabc.Iterable[ModelFile]:
             if fragment and from_element is None:
                 return (
                     v for k, v in self.trees.items() if k.name == fragment.name
@@ -721,9 +725,9 @@ class MelodyLoader:
 
     def follow_links(
         self,
-        from_element: t.Optional[etree._Element],
+        from_element: etree._Element | None,
         links: str,
-    ) -> t.List[t.Optional[etree._Element]]:
+    ) -> list[etree._Element | None]:
         """Follow multiple links and return all results as list.
 
         The format for an individual link is the same as accepted by
@@ -760,7 +764,7 @@ class MelodyLoader:
 
     def _find_fragment(
         self, element: etree._Element
-    ) -> t.Tuple[pathlib.PurePosixPath, ModelFile]:
+    ) -> tuple[pathlib.PurePosixPath, ModelFile]:
         root = collections.deque(
             itertools.chain([element], element.iterancestors()), 1
         )[0]
@@ -793,7 +797,7 @@ class MelodyLoader:
         return self.follow_link(None, key)
 
     @staticmethod
-    def _nonempty_hashset(tags: t.Tuple[str, ...]) -> t.Container[str]:
+    def _nonempty_hashset(tags: tuple[str, ...]) -> cabc.Container[str]:
         if not tags:
             return helpers.EverythingContainer()
         try:
@@ -818,7 +822,7 @@ class MelodyLoader:
 
         try:
             comment = semantic_tree.tree.xpath("/comment()")
-            info.capella_version = CAP_VERSION.match(comment[0].text).group(1)
+            info.capella_version = CAP_VERSION.match(comment[0].text).group(1)  # type: ignore[union-attr]
         except (AttributeError, IndexError):
             LOGGER.warning(
                 "Cannot find Capella version: No version comment found"

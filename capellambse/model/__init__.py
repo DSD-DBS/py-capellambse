@@ -57,7 +57,7 @@ class MelodyModel:
     )
 
     def __init__(
-        self, path: t.Union[str, bytes, os.PathLike], **kwargs: t.Any
+        self, path: str | bytes | os.PathLike, **kwargs: t.Any
     ) -> None:
         """Load a project from the filesystem.
 
@@ -115,7 +115,7 @@ class MelodyModel:
         self._loader.save()
 
     def search(
-        self, *xtypes: t.Union[str, t.Type[common.GenericElement]]
+        self, *xtypes: str | type[common.GenericElement]
     ) -> common.ElementList:
         r"""Search for all elements with any of the given ``xsi:type``\ s.
 
@@ -123,7 +123,7 @@ class MelodyModel:
         :class:`common.ElementList`, otherwise it will be
         :class:`common.MixedElementList`.
         """
-        xtypes_: t.List[str] = []
+        xtypes_: list[str] = []
         for i in xtypes:
             if isinstance(i, type) and issubclass(i, common.GenericElement):
                 xtypes_.append(common.build_xtype(i))

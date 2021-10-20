@@ -143,16 +143,16 @@ class RequirementsRelationAccessor(
         self,
         elmlist: c.ElementListCouplingMixin,
         /,
-        *type_hints: t.Optional[str],
+        *type_hints: str | None,
         **kw: t.Any,
     ) -> c.T:
         if "target" not in kw:
             raise TypeError("No `target` for new requirement relation")
-        cls: t.Type[c.T]
+        cls: type[c.T]
         cls, xtype = self._find_relation_type(kw["target"])
         parent = elmlist._parent._element
         with elmlist._model._loader.new_uuid(parent) as uuid:
-            return cls(
+            return cls(  # type: ignore[call-arg]
                 elmlist._model,
                 parent,
                 **kw,
@@ -163,7 +163,7 @@ class RequirementsRelationAccessor(
 
     def _find_relation_type(
         self, target: c.GenericElement
-    ) -> t.Tuple[t.Type[c.T], str]:
+    ) -> tuple[type[c.T], str]:
         if isinstance(target, Requirement):
             return (
                 t.cast(t.Type[c.T], RequirementsIntRelation),
@@ -309,7 +309,7 @@ class ReqIFElement(c.GenericElement):
     prefix = xmltools.AttributeProperty(
         "_element", "ReqIFPrefix", optional=True
     )
-    type = property(lambda _: None)
+    type: RequirementTypeAccessor = property(lambda _: None)  # type: ignore[assignment]
 
     def __repr__(self) -> str:  # pragma: no cover
         mytype = type(self).__name__

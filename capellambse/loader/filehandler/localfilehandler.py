@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
+
 import logging
 import os
 import pathlib
@@ -28,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 class LocalFileHandler(FileHandler):
     def __init__(
         self,
-        path: t.Union[bytes, os.PathLike, str],
+        path: bytes | str | os.PathLike,
         entrypoint: str = "",
     ) -> None:
         if isinstance(path, bytes):
@@ -63,7 +65,7 @@ class LocalFileHandler(FileHandler):
             )
         return ModelInfo(title=self.path.name)
 
-    def __git_rev_parse(self, *options: str) -> t.Optional[str]:
+    def __git_rev_parse(self, *options: str) -> str | None:
         assert isinstance(self.path, pathlib.Path)
         try:
             return (
@@ -83,7 +85,7 @@ class LocalFileHandler(FileHandler):
             )
             return None
 
-    def __git_get_remote_url(self) -> t.Optional[str]:
+    def __git_get_remote_url(self) -> str | None:
         assert isinstance(self.path, pathlib.Path)
         try:
             remotes = (
@@ -106,7 +108,5 @@ class LocalFileHandler(FileHandler):
                 .stdout.decode("utf-8")
                 .strip()
             )
-        except IndexError:
-            return None
-        except subprocess.CalledProcessError:
+        except (IndexError, subprocess.CalledProcessError):
             return None

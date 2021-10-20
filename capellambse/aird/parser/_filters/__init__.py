@@ -14,6 +14,7 @@
 """Functions implementing various filters that Capella supports."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import importlib
 import pkgutil
 import typing as t
@@ -33,7 +34,7 @@ CompositeFilter = t.Callable[
     [c.ElementBuilder, aird.DiagramElement], t.Optional[Phase2CompositeFilter]
 ]
 #: Maps composite filter names to phase-1 callables
-COMPOSITE_FILTERS: t.Dict[str, CompositeFilter] = {}
+COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
 
 GlobalFilter = t.Callable[
     [
@@ -45,14 +46,14 @@ GlobalFilter = t.Callable[
     None,
 ]
 #: Maps names of global filters to functions that implement them
-GLOBAL_FILTERS: t.Dict[str, GlobalFilter] = {}
+GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
 
 def composite_filter(
     name: str,
-) -> t.Callable[[CompositeFilter], CompositeFilter]:
+) -> cabc.Callable[[CompositeFilter], CompositeFilter]:
     """Register a composite filter.
 
     Composite filters are executed in two phases.  The first phase
@@ -80,7 +81,7 @@ def composite_filter(
 
 def phase2_composite_filter(
     name: str,
-) -> t.Callable[[Phase2CompositeFilter], Phase2CompositeFilter]:
+) -> cabc.Callable[[Phase2CompositeFilter], Phase2CompositeFilter]:
     """Register a composite filter that only needs to run in phase 2."""
 
     def add_comp_filter(func: Phase2CompositeFilter) -> Phase2CompositeFilter:
@@ -96,7 +97,7 @@ def phase2_composite_filter(
     return add_comp_filter
 
 
-def global_filter(name: str) -> t.Callable[[GlobalFilter], GlobalFilter]:
+def global_filter(name: str) -> cabc.Callable[[GlobalFilter], GlobalFilter]:
     """Register a global filter."""
 
     def add_global_filter(func: GlobalFilter) -> GlobalFilter:

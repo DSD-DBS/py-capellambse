@@ -13,8 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 
+import collections.abc as cabc
 import math
-import typing as t
 
 from capellambse import helpers
 
@@ -24,7 +24,7 @@ def check_for_horizontal_overflow(
     width: int | float,
     icon_padding: int | float,
     icon_size: int | float,
-) -> t.Tuple[t.Sequence[str], float, float]:
+) -> tuple[cabc.Sequence[str], float, float]:
     max_text_width = width - (icon_size + 2 * icon_padding)
     assert max_text_width >= 0
     lines = helpers.word_wrap(text, max_text_width)
@@ -37,13 +37,13 @@ def check_for_horizontal_overflow(
 
 
 def check_for_vertical_overflow(
-    lines: t.Sequence[str],
+    lines: cabc.Sequence[str],
     height: float | int,
     max_text_width: float | int,
-) -> t.List[str]:
+) -> list[str]:
     overflow = ""
     lines_to_render = []
-    text_height: t.Union[int, float] = 0
+    text_height = 0.0
     for i, (line, (_, line_height)) in enumerate(
         zip(lines, map(helpers.extent_func, lines))
     ):

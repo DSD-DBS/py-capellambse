@@ -13,7 +13,7 @@
 # limitations under the License.
 from __future__ import annotations
 
-import typing as t
+import collections.abc as cabc
 
 from capellambse.loader import xmltools
 
@@ -23,7 +23,7 @@ from . import information
 
 XT_COMP_EX_FNC_EX_ALLOC = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-XT_FCI: t.AbstractSet[str] = frozenset(
+XT_FCI: cabc.Set[str] = frozenset(
     {
         "org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction",
         "org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink",
@@ -119,7 +119,9 @@ class ComponentExchange(AbstractExchange):
         self,
     ) -> c.ElementList[information.ExchangeItem]:
         items = self.allocated_exchange_items
-        for exchange in self.func_exchanges:
+        func_exchanges = self.func_exchanges
+        assert isinstance(func_exchanges, cabc.Iterable)
+        for exchange in func_exchanges:
             items += exchange.exchange_items
         return items
 

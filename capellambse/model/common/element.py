@@ -13,7 +13,15 @@
 # limitations under the License.
 from __future__ import annotations
 
-import collections.abc
+__all__ = [
+    "ModelObject",
+    "GenericElement",
+    "ElementList",
+    "CachedElementList",
+    "MixedElementList",
+]
+
+import collections.abc as cabc
 import enum
 import operator
 import re
@@ -25,7 +33,7 @@ import capellambse
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, T, U, accessors, enumliteral, markuptype
+from . import XTYPE_HANDLERS, T, U, accessors, markuptype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -43,6 +51,7 @@ class ModelObject(t.Protocol):
     """
 
     _model: capellambse.MelodyModel
+    _element: etree._Element
 
     def __init__(self, **kw: t.Any) -> None:
         if kw:
@@ -74,15 +83,14 @@ class GenericElement:
     diagrams = property(
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
     )
-    progress_status = property(lambda self: enumliteral(self, "status"))
 
     constraints: accessors.Accessor
 
     _required_attrs = frozenset({"uuid", "xtype"})
-    _xmltag: t.Optional[str] = None
+    _xmltag: str | None = None
 
     @property
-    def progress_status(self) -> t.Union[xmltools.AttributeProperty, str]:
+    def progress_status(self) -> xmltools.AttributeProperty | str:
         uuid = self._element.get("status")
         if uuid is None:
             return "NOT_SET"
@@ -91,7 +99,7 @@ class GenericElement:
 
     @classmethod
     def from_model(
-        cls: t.Type[T], model: capellambse.MelodyModel, element: etree._Element
+        cls: type[T], model: capellambse.MelodyModel, element: etree._Element
     ) -> T:
         """Wrap an existing model object.
 
@@ -177,7 +185,7 @@ class GenericElement:
             parent.remove(self._element)
             raise
 
-    def __eq__(self, other: object) -> t.Union[bool]:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return NotImplemented
         return self._element is other._element
@@ -191,7 +199,7 @@ class GenericElement:
         return f"<{mytype} {self.name!r} ({self.uuid})>"
 
 
-class ElementList(collections.abc.MutableSequence, t.Generic[T]):
+class ElementList(cabc.MutableSequence, t.Generic[T]):
     """Provides access to elements without affecting the underlying model."""
 
     __slots__ = ("_elemclass", "_elements", "_model")
@@ -204,7 +212,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         def __init__(
             self,
             parent: ElementList[T],
-            extract_key: t.Callable[[T], U],
+            extract_key: cabc.Callable[[T], U],
             *,
             positive: bool = True,
             single: bool = False,
@@ -221,7 +229,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
                 Reference to the :class:`ElementList` this filter should
                 operate on
             extract_key
-                t.Callable that extracts the key from an element
+                Callable that extracts the key from an element
             positive
                 Use elements that match (True) or don't (False)
             single
@@ -234,19 +242,19 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
             self.positive = positive
             self.single = single
 
-        def extract_key(self, element: T) -> U:
-            value = self.extractor_func(element)
+        def extract_key(self, element: T) -> U | str:
+            value: U | enum.Enum | str = self.extractor_func(element)
             if isinstance(value, enum.Enum):
                 value = value.name
             return value
 
-        def make_values_container(self, *values: U) -> t.Container[U]:
+        def make_values_container(self, *values: U) -> cabc.Container[U]:
             try:
                 return set(values)
             except TypeError:
                 return values
 
-        def ismatch(self, element: T, valueset: t.Container[U]) -> bool:
+        def ismatch(self, element: T, valueset: cabc.Container[U]) -> bool:
             try:
                 value = self.extract_key(element)
             except AttributeError:
@@ -254,7 +262,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
 
             return self.positive == (value in valueset)
 
-        def __call__(self, *values: U) -> t.Union[T, ElementList[T]]:
+        def __call__(self, *values: U) -> T | ElementList[T]:
             """List all elements that match this filter."""
             valueset = self.make_values_container(*values)
             indices = []
@@ -276,7 +284,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
                 raise KeyError(values[0] if len(values) == 1 else values)
             return self.parent[indices[0]]  # Ensure proper construction
 
-        def __iter__(self) -> t.Iterator[U]:
+        def __iter__(self) -> cabc.Iterator[U | str]:
             """Yield values that result in a non-empty list when filtered for.
 
             The returned iterator yields all values that, when given to
@@ -286,20 +294,14 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
 
             The order in which the values are yielded is undefined.
             """
-            yielded: t.Union[t.Set[U], t.List[U]] = set()
-            assert isinstance(yielded, set)
-            add_to_yielded: t.Callable[[U], None] = yielded.add
+            # Use list, since not all elements may be hashable.
+            yielded: list[U | str] = []
 
             for elm in self.parent:
                 key = self.extract_key(elm)
                 if key not in yielded:
                     yield key
-                    try:
-                        add_to_yielded(key)
-                    except TypeError:
-                        yielded = list(yielded)
-                        add_to_yielded = yielded.append
-                        add_to_yielded(key)
+                    yielded.append(key)
 
         def __contains__(self, value: U) -> bool:
             valueset = self.make_values_container(value)
@@ -311,15 +313,15 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
-        elemclass: t.Type[T],
+        elements: list[etree._Element],
+        elemclass: type[T],
     ) -> None:
         self._model = model
         self._elements = elements
         self._elemclass = elemclass
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, collections.abc.Sequence):
+        if not isinstance(other, cabc.Sequence):
             return NotImplemented
         return len(self) == len(other) and all(
             ours == theirs for ours, theirs in zip(self, other)
@@ -356,7 +358,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __sub(
         self, other: object, *, reflected: bool = False
     ) -> ElementList[T]:
-        if not isinstance(other, t.Sequence):
+        if not isinstance(other, cabc.Sequence):
             return NotImplemented
 
         if reflected:
@@ -367,7 +369,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         else:
             objclass = self._elemclass
 
-        base: t.Sequence[t.Any]
+        base: cabc.Sequence[t.Any]
         if not reflected:
             base = self
             excluded = set(i.uuid for i in other)
@@ -409,7 +411,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         ...
 
     @t.overload
-    def __setitem__(self, index: slice, value: t.Iterable[T]) -> None:
+    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None:
         ...
 
     def __setitem__(self, index, value):
@@ -420,13 +422,13 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         else:
             self.insert(index, value)
 
-    def __delitem__(self, index: t.Union[int, slice]) -> None:
+    def __delitem__(self, index: int | slice) -> None:
         del self._elements[index]
 
     def __getattr__(
         self,
         attr: str,
-    ) -> t.Callable[..., t.Union[T, ElementList[T]]]:
+    ) -> cabc.Callable[..., T | ElementList[T]]:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
             extractor = operator.attrgetter(attr)
@@ -445,11 +447,11 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
 
     def _filter(
         self,
-        extract_key: t.Callable[[T], t.Any],
+        extract_key: cabc.Callable[[T], t.Any],
         *values: t.Any,
         positive: bool = True,
         single: bool = False,
-    ) -> t.Union[T, ElementList[T]]:
+    ) -> T | ElementList[T]:
         """Filter elements using an arbitrary extractor function.
 
         If the extractor returns an :class:`enum.Enum` member for any
@@ -465,7 +467,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
         Parameters
         ----------
         extract_key
-            A single-parameter t.Callable that extracts the search key
+            A single-parameter Callable that extracts the search key
             from a list element.
         values
             The values to check
@@ -480,10 +482,10 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
             self, extract_key, positive=positive, single=single
         )(*values)
 
-    def __dir__(self) -> t.List[str]:  # pragma: no cover
+    def __dir__(self) -> list[str]:  # pragma: no cover
         no_dir_attr = re.compile(r"^(_|as_|pvmt$|nodes$|diagrams?$)")
 
-        def filterable_attrs() -> t.Iterator[str]:
+        def filterable_attrs() -> cabc.Iterator[str]:
             for obj in self:
                 try:
                     obj_attrs = dir(obj)
@@ -496,7 +498,7 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
                         yield f"by_{attr}"
                         yield f"exclude_{attr}s"
 
-        attrs = super().__dir__()
+        attrs = list(super().__dir__())
         attrs.extend(filterable_attrs())
         return attrs
 
@@ -506,39 +508,38 @@ class ElementList(collections.abc.MutableSequence, t.Generic[T]):
     def __repr__(self) -> str:  # pragma: no cover
         return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
 
-    def _newlist(self, elements: t.List[etree._Element]) -> ElementList[T]:
+    def _newlist(self, elements: list[etree._Element]) -> ElementList[T]:
         listtype = self._newlist_type()
         return listtype(self._model, elements, self._elemclass)
 
-    def _newlist_type(self) -> t.Type[ElementList]:
+    def _newlist_type(self) -> type[ElementList]:
         return type(self)
 
     def insert(self, index: int, value: T) -> None:
-        elm: etree._Element = value._element  # type: ignore[attr-defined]
+        elm: etree._Element = value._element
         self._elements.insert(index, elm)
 
 
-class CachedElementList(ElementList):
+class CachedElementList(ElementList[T], t.Generic[T]):
     """An ElementList that caches the constructed proxies by UUID."""
 
-    class _Filter(ElementList._Filter, t.Generic[T, U]):
-        def __call__(self, *values):
-            newlist = super().__call__(*values)
+    class _Filter(ElementList._Filter[U], t.Generic[U]):
+        def __call__(self, *values: U) -> T | ElementList[T]:
+            newlist: T | ElementList[T] = super().__call__(*values)
             if self.single:
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = self.parent.cacheattr
+            newlist.cacheattr = self.parent.cacheattr  # type: ignore[assignment]
             return newlist
 
     def __init__(
         self,
         model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
-        elemclass: t.Type[T],
+        elements: list[etree._Element],
+        elemclass: type[T],
         *,
-        cacheattr: str = None,
-        **kw: t.Any,
+        cacheattr: str | None = None,
     ) -> None:
         """Create a CachedElementList.
 
@@ -547,10 +548,10 @@ class CachedElementList(ElementList):
         cacheattr
             The attribute on the ``model`` to use as cache
         """
-        super().__init__(model, elements, elemclass, **kw)
+        super().__init__(model, elements, elemclass)
         self.cacheattr = cacheattr
 
-    def __getitem__(self, key: int) -> T:
+    def __getitem__(self, key):
         elem = super().__getitem__(key)
         if self.cacheattr:
             try:
@@ -565,8 +566,8 @@ class CachedElementList(ElementList):
 class MixedElementList(ElementList[GenericElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
-    class _LowercaseFilter(t.Generic[T, U], ElementList._Filter[U]):
-        def make_values_container(self, *values: U) -> t.Container[U]:
+    class _LowercaseFilter(ElementList._Filter[U], t.Generic[U]):
+        def make_values_container(self, *values: U) -> cabc.Container[U]:
             try:
                 return set(map(operator.methodcaller("lower"), values))
             except TypeError:
@@ -575,9 +576,8 @@ class MixedElementList(ElementList[GenericElement]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
+        elements: list[etree._Element],
         elemclass: t.Any = None,
-        **kw: t.Any,
     ) -> None:
         """Create a MixedElementList.
 
@@ -587,16 +587,16 @@ class MixedElementList(ElementList[GenericElement]):
             Ignored; provided for drop-in compatibility.
         """
         del elemclass
-        super().__init__(model, elements, GenericElement, **kw)
+        super().__init__(model, elements, GenericElement)
 
     def __getattr__(
         self, attr: str
-    ) -> t.Callable[..., t.Union[t.Any, ElementList[t.Any]]]:
+    ) -> cabc.Callable[..., GenericElement | ElementList[GenericElement]]:
         if attr == "by_type":
             return self._LowercaseFilter(
                 self, lambda e: type(e).__name__.lower()
             )
         return super().__getattr__(attr)
 
-    def __dir__(self) -> t.List[str]:  # pragma: no cover
+    def __dir__(self) -> list[str]:  # pragma: no cover
         return super().__dir__() + ["by_type", "exclude_types"]

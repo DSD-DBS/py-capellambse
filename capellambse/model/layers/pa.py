@@ -128,7 +128,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_physical_links = c.ProxyAccessor(
         cs.PhysicalLink, aslist=c.ElementList, deep=True
     )
-    diagrams = diagram.DiagramAccessor(
+    diagrams = diagram.DiagramAccessor(  # type: ignore[assignment]
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
     )
 

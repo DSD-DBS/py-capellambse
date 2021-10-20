@@ -13,7 +13,22 @@
 # limitations under the License.
 from __future__ import annotations
 
+__all__ = [
+    "Accessor",
+    "WritableAccessor",
+    "ProxyAccessor",
+    "AttrProxyAccessor",
+    "AlternateAccessor",
+    "ParentAccessor",
+    "CustomAccessor",
+    "AttributeMatcherAccessor",
+    "SpecificationAccessor",
+    "ReferenceSearchingAccessor",
+    "ElementListCouplingMixin",
+]
+
 import abc
+import collections.abc as cabc
 import itertools
 import operator
 import typing as t
@@ -37,38 +52,25 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         "__objclass__",
     )
 
-    __objclass__: t.Type[t.Any]
+    __objclass__: type[t.Any]
     __name__: str
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Optional[t.Any]) -> Accessor:
+    def __get__(self, obj: None, objtype=None) -> Accessor:
         ...
 
     @t.overload
-    def __get__(
-        self,
-        obj: T,
-        objtype: t.Optional[t.Type[T]] = None,
-    ) -> t.Union[
-        element.ElementList[element.GenericElement],
-        element.GenericElement,
-    ]:
+    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
         ...
 
     @abc.abstractmethod
-    def __get__(
-        self, obj: t.Optional[T], objtype: t.Optional[t.Type[t.Any]] = None
-    ) -> t.Union[
-        Accessor,
-        element.ElementList[element.GenericElement],
-        element.GenericElement,
-    ]:
+    def __get__(self, obj, objtype=None):
         pass
 
     def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
         raise AttributeError("Cannot set this type of attribute")
 
-    def __set_name__(self, owner: t.Type[t.Any], name: str) -> None:
+    def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__objclass__ = owner
         self.__name__ = name
 
@@ -78,12 +80,12 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     __slots__ = ()
 
-    aslist: t.Optional[t.Type[ElementListCouplingMixin]]
+    aslist: type[ElementListCouplingMixin] | None
 
     def __init__(
         self,
         *args: t.Any,
-        aslist: t.Optional[t.Type[element.ElementList]],
+        aslist: type[element.ElementList] | None,
         **kw: t.Any,
     ) -> None:
         super().__init__(*args, **kw)  # type: ignore[call-arg]
@@ -102,7 +104,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         self,
         elmlist: ElementListCouplingMixin,
         /,
-        *type_hints: t.Optional[str],
+        *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
         """Create and return a new element of type ``elmclass``.
@@ -145,10 +147,10 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     def _match_xtype(
         self,
-        type_1: t.Union[str, object, None] = _NOT_SPECIFIED,
-        type_2: t.Union[str, object] = _NOT_SPECIFIED,
+        type_1: str | object | None = _NOT_SPECIFIED,
+        type_2: str | object = _NOT_SPECIFIED,
         /,
-    ) -> t.Tuple[t.Type[T], str]:
+    ) -> tuple[type[T], str]:
         r"""Find the right class for the given ``xsi:type``\ (s)."""
         if type_1 is _NOT_SPECIFIED and type_2 is _NOT_SPECIFIED:
             elmclass = getattr(self, "elmclass", None)
@@ -156,8 +158,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
                 return elmclass
             raise TypeError("No object type specified")
 
-        def match_xt(xtp: S, itr: t.Iterable[S]) -> S:
-            matches: t.List[S] = []
+        def match_xt(xtp: S, itr: cabc.Iterable[S]) -> S:
+            matches: list[S] = []
             for i in itr:
                 if (
                     xtp is i is None
@@ -178,7 +180,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             raise TypeError(
                 f"Expected str as first type, got {type(type_1).__name__!r}"
             )
-        candidate_classes: t.Dict[str, t.Type[element.GenericElement]]
+        candidate_classes: dict[str, type[T]]
         if type_2 is _NOT_SPECIFIED:
             candidate_classes = dict(
                 itertools.chain.from_iterable(
@@ -188,7 +190,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             objtype = type_1
         elif not isinstance(type_2, str):
             raise TypeError(
-                f"Expected a str objtype, not {type(objtype).__name__}"
+                f"Expected a str objtype, not {type(type_2).__name__}"
             )
         else:
             candidate_classes = XTYPE_HANDLERS[
@@ -200,7 +202,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         return candidate_classes[objtype], objtype
 
 
-class PhysicalAccessor(t.Generic[T], Accessor[T]):
+class PhysicalAccessor(Accessor[T]):
     """Helper super class for accessors that work with real elements."""
 
     __slots__ = (
@@ -209,20 +211,21 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         "xtypes",
     )
 
-    aslist: t.Optional[t.Type[element.ElementList]]
-    class_: t.Type[T]
-    xtypes: t.AbstractSet[str]
+    aslist: type[element.ElementList] | None
+    class_: type[T]
+    xtypes: cabc.Set[str]
 
     def __init__(
         self,
-        class_: t.Type[T],
-        xtypes: t.Union[
-            str,
-            t.Type[element.GenericElement],
-            t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
-        ] = None,
+        class_: type[T],
+        xtypes: (
+            str
+            | type[element.ModelObject]
+            | cabc.Iterable[str | type[element.ModelObject]]
+            | None
+        ) = None,
         *,
-        aslist: t.Optional[t.Type[element.ElementList[T]]] = None,
+        aslist: type[element.ElementList[T]] | None = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -244,7 +247,7 @@ class PhysicalAccessor(t.Generic[T], Accessor[T]):
         self.aslist = aslist
         self.class_ = class_
 
-    def _guess_xtype(self) -> t.Tuple[t.Type[T], str]:
+    def _guess_xtype(self) -> tuple[type[T], str]:
         """Try to guess the type of element that should be created."""
         if self.class_ is element.GenericElement or self.class_ is None:
             raise ValueError("Multiple object types that can be created")
@@ -265,26 +268,23 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         "rootelem",
     )
 
-    aslist: t.Optional[t.Type[ElementListCouplingMixin]]
+    aslist: type[ElementListCouplingMixin] | None
 
     def __init__(
         self,
-        class_: t.Type[T],
-        xtypes: t.Union[
-            str,
-            t.Type[element.GenericElement],
-            t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
-        ] = None,
+        class_: type[T],
+        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
-        aslist: t.Type[element.ElementList] = None,
+        aslist: type[element.ElementList] = None,
         deep: bool = False,
         follow: str = None,
         follow_abstract: bool = True,
-        rootelem: t.Union[
-            str,
-            t.Type[element.GenericElement],
-            t.Sequence[t.Union[str, t.Type[element.GenericElement]]],
-        ] = None,
+        rootelem: (
+            str
+            | type[element.GenericElement]
+            | cabc.Sequence[str | type[element.GenericElement]]
+            | None
+        ) = None,
     ):
         """Create a ProxyAccessor.
 
@@ -316,10 +316,10 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         """
         super().__init__(class_, xtypes, aslist=aslist)
         self.deep: bool = deep
-        self.follow: t.Optional[str] = follow
+        self.follow: str | None = follow
         self.follow_abstract: bool = follow_abstract
         if rootelem is None:
-            self.rootelem: t.Sequence[str] = []
+            self.rootelem: cabc.Sequence[str] = []
         elif isinstance(rootelem, str):
             self.rootelem = rootelem.split("/")
         elif isinstance(rootelem, type) and issubclass(
@@ -332,7 +332,6 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             ]
 
     def __get__(self, obj, objtype=None):
-        del objtype
         if obj is None:  # pragma: no cover
             return self
 
@@ -343,8 +342,8 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return self.aslist(obj._model, elems, self.class_, parent=obj)
 
     def __getsubelems(
-        self, obj: element.GenericElement
-    ) -> t.Iterator[etree._Element]:
+        self, obj: element.ModelObject
+    ) -> cabc.Iterator[etree._Element]:
         yielded_uuids = {None}
 
         if self.deep:
@@ -361,9 +360,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             yielded_uuids.add(elemid)
             yield elem
 
-    def __findroots(
-        self, obj: element.GenericElement
-    ) -> t.List[etree._Element]:
+    def __findroots(self, obj: element.ModelObject) -> list[etree._Element]:
         roots = [obj._element]
         for xtype in self.rootelem:
             roots = list(
@@ -374,7 +371,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return roots
 
     def __follow_attr(
-        self, obj: element.GenericElement, elem: etree._Element
+        self, obj: element.ModelObject, elem: etree._Element
     ) -> etree._Element:
         if self.follow:
             if self.follow in elem.attrib:
@@ -384,7 +381,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return self.__follow_href(obj, elem)
 
     def __follow_href(
-        self, obj: element.GenericElement, elem: etree._Element
+        self, obj: element.ModelObject, elem: etree._Element
     ) -> etree._Element:
         href = elem.get("href")
         if href:
@@ -399,7 +396,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self,
         elmlist: ElementListCouplingMixin,
         /,
-        *type_hints: t.Optional[str],
+        *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
         if self.deep or self.follow or self.rootelem:
@@ -419,7 +416,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             obj = elmclass(
                 elmlist._model, parent, **kw, xtype=xtype, uuid=obj_id
             )
-        return obj
+        return obj  # type: ignore[return-value]
 
     def insert(
         self,
@@ -438,7 +435,8 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             else:
                 parent_index = index
         except ValueError:
-            parent_index = len(self._parent)
+            # FIXME: self._parent is part of ElementListCouplingMixin
+            parent_index = len(self._parent)  # type: ignore[attr-defined]
         elmlist._parent._element.insert(parent_index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
@@ -459,10 +457,10 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
 
     def __init__(
         self,
-        class_: t.Type[T],
+        class_: type[T],
         attr: str,
         *,
-        aslist: t.Type[element.ElementList] = None,
+        aslist: type[element.ElementList] = None,
     ):
         """Create an AttrProxyAccessor.
 
@@ -489,7 +487,7 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
             return self
 
         elems = []
-        next_xtype: t.Optional[str] = None
+        next_xtype: str | None = None
         for elemref in obj._element.get(self.attr, "").split():
             if "#" in elemref:
                 elem = obj._model._loader[elemref]
@@ -519,9 +517,9 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
     def __set__(
         self,
         obj: element.GenericElement,
-        values: t.Union[T, t.Iterable[T]],
+        values: T | cabc.Iterable[T],
     ) -> None:
-        if not isinstance(values, t.Iterable):
+        if not isinstance(values, cabc.Iterable):
             values = (values,)
         elif self.aslist is None:
             raise TypeError(
@@ -529,8 +527,8 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
                 " requires a single item, not an iterable"
             )
 
-        assert isinstance(values, t.Iterable)
-        parts: t.List[str] = []
+        assert isinstance(values, cabc.Iterable)
+        parts: list[str] = []
         for value in values:
             if not value._model is obj._model:
                 raise ValueError("Cannot set elements from different models")
@@ -546,7 +544,7 @@ class AlternateAccessor(PhysicalAccessor[T]):
 
     def __init__(
         self,
-        class_: t.Type[T],
+        class_: type[T],
     ):
         super().__init__(class_)
 
@@ -564,7 +562,7 @@ class ParentAccessor(PhysicalAccessor[T]):
 
     def __init__(
         self,
-        class_: t.Type[T],
+        class_: type[T],
     ):
         super().__init__(class_)
 
@@ -589,17 +587,15 @@ class CustomAccessor(PhysicalAccessor[T]):
 
     def __init__(
         self,
-        class_: t.Type[T],
-        *elmfinders: t.Callable[
-            [element.GenericElement], t.Iterable[element.GenericElement]
-        ],
-        elmmatcher: t.Callable[
+        class_: type[T],
+        *elmfinders: cabc.Callable[[element.GenericElement], cabc.Iterable[T]],
+        elmmatcher: cabc.Callable[
             [U, element.GenericElement], bool
-        ] = operator.contains,
-        matchtransform: t.Callable[[element.GenericElement], U] = (
-            lambda e: e
+        ] = operator.contains,  # type: ignore[assignment]
+        matchtransform: cabc.Callable[[T], U] = (
+            lambda e: e  # type: ignore[assignment,return-value]
         ),
-        aslist: t.Type[element.ElementList] = None,
+        aslist: type[element.ElementList] = None,
     ) -> None:
         """Create a CustomAccessor.
 
@@ -647,15 +643,11 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
 
     def __init__(
         self,
-        class_: t.Type[T],
-        xtypes: t.Union[
-            str,
-            t.Type[element.GenericElement],
-            t.Iterable[t.Union[str, t.Type[element.GenericElement]]],
-        ] = None,
+        class_: type[T],
+        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
-        aslist: t.Optional[t.Type[element.ElementList]] = None,
-        attributes: t.Dict[str, t.Any],
+        aslist: type[element.ElementList] = None,
+        attributes: dict[str, t.Any],
         **kwargs,
     ) -> None:
         super().__init__(
@@ -670,6 +662,7 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
 
         elements = super().__get__(obj, objtype)
         matches = []
+        assert isinstance(elements, cabc.Iterable)
         for elm in elements:
             try:
                 if all(
@@ -684,82 +677,90 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
         return self.__aslist(obj._model, matches, self.class_)
 
 
-class SpecificationAccessor(Accessor):
+class _Specification(t.MutableMapping[str, str], element.ModelObject):
+    _aliases = {"LinkedText": "capella:linkedText"}
+    _linked_text = frozenset({"capella:linkedText"})
+
+    def __init__(
+        self, model: capellambse.MelodyModel, elm: etree._Element
+    ) -> None:
+        self._model = model
+        self._element = elm
+
+    def __delitem__(self, k: str) -> None:
+        k = self._aliases.get(k, k)
+        i, lang_elem = self._index_of(k)
+        body_elem = self._body_at(k, i)
+        self._element.remove(lang_elem)
+        self._element.remove(body_elem)
+
+    def __getitem__(self, k: str) -> str:
+        k = self._aliases.get(k, k)
+        i, _ = self._index_of(k)
+        v = self._body_at(k, i).text or ""
+        if k in self._linked_text:
+            v = helpers.unescape_linked_text(self._model._loader, v)
+        return v
+
+    def __iter__(self) -> cabc.Iterator[str]:
+        for i in self._element.iterchildren("languages"):
+            yield i.text or ""
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self)
+
+    def __setitem__(self, k: str, v: str) -> None:
+        k = self._aliases.get(k, k)
+        if k in self._linked_text:
+            v = helpers.escape_linked_text(self._model._loader, v)
+        try:
+            i, lang = self._index_of(k)
+        except KeyError:
+            self._element.append(body := self._element.makeelement("bodies"))
+            self._element.append(
+                lang := self._element.makeelement("languages")
+            )
+            body.text = v
+            lang.text = k
+        else:
+            body = self._body_at(k, i)
+            body.text = v
+
+    def _index_of(self, k: str) -> tuple[int, etree._Element]:
+        for i, elm in enumerate(self._element.iterchildren("languages")):
+            if elm.text == k:
+                return i, elm
+
+        raise KeyError(k)
+
+    def _body_at(self, k: str, i: int) -> etree._Element:
+        try:
+            return next(
+                itertools.islice(
+                    self._element.iterchildren("bodies"), i, i + 1
+                )
+            )
+        except StopIteration:
+            raise KeyError(k) from None
+
+    def __str__(self) -> str:  # pragma: no cover
+        return next(iter(self.values()))
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
+
+    @classmethod
+    def from_model(
+        cls, model: capellambse.MelodyModel, element: t.Any
+    ) -> element.ModelObject:
+        """Specifications can not be instantiated"""
+        raise RuntimeError("Can not create a specification from a model")
+
+
+class SpecificationAccessor(Accessor[_Specification]):
     """Provides access to linked specifications."""
 
     __slots__ = ()
-
-    class _Specification(t.MutableMapping[str, str]):
-        def __init__(
-            self, model: capellambse.MelodyModel, elm: etree._Element
-        ) -> None:
-            self._model = model
-            self.element = elm
-
-        def __delitem__(self, k: str) -> None:
-            i, lang_elem = self._index_of(k)
-            body_elem = self._body_at(k, i)
-            self.element.remove(lang_elem)
-            self.element.remove(body_elem)
-
-        def __getitem__(self, k: str) -> str:
-            i, _ = self._index_of(k)
-            return helpers.unescape_linked_text(
-                self._model._loader, self._body_at(k, i).text
-            )
-
-        def __iter__(self) -> t.Iterator[str]:
-            for i in self.element.iterchildren("languages"):
-                yield i.text or ""
-
-        def __len__(self) -> int:
-            return sum(1 for _ in self)
-
-        def __setitem__(self, k: str, v: str) -> None:
-            try:
-                i, lang = self._index_of(k)
-            except KeyError:
-                self.element.append(body := self.element.makeelement("bodies"))
-                self.element.append(
-                    lang := self.element.makeelement("languages")
-                )
-                body.text = v
-                lang.text = k
-            else:
-                body = self._body_at(k, i)
-                body.text = v
-
-        def _index_of(self, k: str) -> t.Tuple[int, etree._Element]:
-            for i, elm in enumerate(self.element.iterchildren("languages")):
-                if elm.text == k:
-                    return i, elm
-
-            raise KeyError(k)
-
-        def _body_at(self, k: str, i: int) -> etree._Element:
-            try:
-                return next(
-                    itertools.islice(
-                        self.element.iterchildren("bodies"), i, i + 1
-                    )
-                )
-            except StopIteration:
-                raise KeyError(k) from None
-
-        def __str__(self) -> str:  # pragma: no cover
-            return "\n".join(
-                f"* language'{e!s}': {self.__getitem__(e)}" for e in self
-            )
-
-        def __repr__(self) -> str:  # pragma: no cover
-            return (
-                f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
-            )
-
-        @property
-        def text(self) -> str:
-            """Return ``self["capella:linkedText"]``."""
-            return self["capella:linkedText"]
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -771,19 +772,19 @@ class SpecificationAccessor(Accessor):
         except StopIteration:
             raise AttributeError("No specification found") from None
 
-        return self._Specification(obj._model, spec_elm)
+        return _Specification(obj._model, spec_elm)
 
 
-class ReferenceSearchingAccessor(PhysicalAccessor):
+class ReferenceSearchingAccessor(PhysicalAccessor[T]):
     __slots__ = ("attrs",)
 
-    attrs: t.Tuple[str, ...]
+    attrs: tuple[str, ...]
 
     def __init__(
         self,
-        class_: t.Type[element.GenericElement],
+        class_: type[T],
         *attrs: str,
-        aslist: t.Type[element.ElementList] = None,
+        aslist: type[element.ElementList] = None,
     ) -> None:
         super().__init__(class_, aslist=aslist)
         self.attrs = attrs
@@ -793,7 +794,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor):
         if obj is None:  # pragma: no cover
             return self
 
-        matches: t.List[etree._Element] = []
+        matches: list[etree._Element] = []
         for candidate in obj._model.search(self.class_):
             for attr in self.attrs:
                 try:
@@ -816,9 +817,9 @@ class ReferenceSearchingAccessor(PhysicalAccessor):
 def no_list(
     desc: Accessor,
     model: capellambse.MelodyModel,
-    elems: t.Sequence[etree._Element],
-    class_: t.Type[T],
-) -> t.Optional[T]:
+    elems: cabc.Sequence[etree._Element],
+    class_: type[T],
+) -> element.ModelObject | None:
     """Return a single element or None instead of a list of elements.
 
     Parameters
@@ -828,11 +829,9 @@ def no_list(
     model
         The ``MelodyModel`` instance
     elems
-        t.List of elements that was matched
+        List of elements that was matched
     class_
         The ``GenericElement`` subclass to instantiate
-    parent
-        Ignored.
     """
     if not elems:  # pragma: no cover
         return None
@@ -872,34 +871,38 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         ...
 
     @t.overload
-    def __setitem__(self, index: slice, value: t.Iterable[T]) -> None:
+    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None:
         ...
 
-    def __setitem__(self, index, value):
+    def __setitem__(
+        self, index: int | slice, value: T | cabc.Iterable[T]
+    ) -> None:
         assert self._parent is not None
         del self[index]
         if isinstance(index, slice):
+            assert isinstance(value, cabc.Iterable)
             for i, elm in enumerate(value, start=index.start):
                 self.insert(i, elm)
         else:
+            assert not isinstance(value, cabc.Iterable)
             self.insert(index, value)
 
-    def __delitem__(self, index: t.Union[int, slice]) -> None:
+    def __delitem__(self, index: int | slice) -> None:
         assert self._parent is not None
         if not isinstance(index, slice):
             index = slice(index, index + 1)
         for obj in self[index]:
-            type(self)._accessor.delete(self, obj)
+            accessor = type(self)._accessor
+            assert isinstance(accessor, WritableAccessor)
+            accessor.delete(self, obj)
         super().__delitem__(index)
 
-    def _newlist_type(self) -> t.Type[element.ElementList[T]]:
+    def _newlist_type(self) -> type[element.ElementList[T]]:
         assert len(type(self).__bases__) == 2
         assert type(self).__bases__[0] is ElementListCouplingMixin
         return type(self).__bases__[1]
 
-    def create(
-        self, *args: t.Optional[str], **kw: t.Any
-    ) -> element.GenericElement:
+    def create(self, *args: str | None, **kw: t.Any) -> T:
         """Make a new model object (instance of GenericElement).
 
         Instead of specifying the full ``xsi:type`` including the
@@ -931,7 +934,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
     def delete_all(self, **kw: t.Any) -> None:
         """Delete all matching objects from the model."""
-        indices: t.List[int] = []
+        indices: list[int] = []
         for i, obj in enumerate(self):
             if all(getattr(obj, k) == v for k, v in kw.items()):
                 indices.append(i)

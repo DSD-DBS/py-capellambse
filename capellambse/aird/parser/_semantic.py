@@ -21,9 +21,9 @@ size and styling.
 """
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import pathlib
-import typing as t
 
 import capellambse
 from capellambse import aird, helpers
@@ -106,14 +106,14 @@ class FactorySelector:
 
     def __init__(
         self,
-        box: t.Callable[[c.SemanticElementBuilder], aird.Box],
-        edge: t.Callable[[c.SemanticElementBuilder], aird.Edge],
+        box: cabc.Callable[[c.SemanticElementBuilder], aird.Box],
+        edge: cabc.Callable[[c.SemanticElementBuilder], aird.Edge],
     ) -> None:
         self.box = box
         self.edge = edge
 
     def __call__(self, seb: c.SemanticElementBuilder) -> aird.DiagramElement:
-        factory: t.Callable[[c.SemanticElementBuilder], aird.DiagramElement]
+        factory: cabc.Callable[[c.SemanticElementBuilder], aird.DiagramElement]
         if seb.data_element.tag == "children":
             factory = self.box
         elif seb.data_element.tag == "edges":
@@ -133,11 +133,11 @@ _GENERIC_FACTORIES = FactorySelector(
 #:
 #: If a key is not found in this dictionary, its value is assumed to be
 #: a tuple of its key and the ``_GENERIC_FACTORIES``.
-STYLECLASS_LOOKUP: t.Dict[
+STYLECLASS_LOOKUP: dict[
     str,
-    t.Tuple[
-        t.Optional[str],
-        t.Callable[
+    tuple[
+        str | None,
+        cabc.Callable[
             [c.SemanticElementBuilder], capellambse.aird.DiagramElement
         ],
     ],
