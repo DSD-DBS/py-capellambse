@@ -419,14 +419,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         matches = []
         for elm in self._elements:
             rel_elm = c.GenericElement.from_model(self._model, elm)
-            assert isinstance(
-                rel_elm,
-                (
-                    RequirementsIncRelation,
-                    RequirementsOutRelation,
-                    RequirementsIntRelation,
-                ),
-            )
+            assert isinstance(rel_elm, AbstractRequirementsRelation)
             if rel_elm.type is not None and rel_elm.type.name == reltype:
                 matches.append(elm)
         return self._newlist(matches)
