@@ -166,7 +166,9 @@ class GitFileHandler(FileHandler):
         parts = urllib.parse.urlparse(uri)
         if parts.netloc and parts.netloc != "localhost":
             raise ValueError(f"Unsupported file:// URL netloc: {parts.netloc}")
-        self.cache_dir = pathlib.Path("/", parts.path).resolve()
+
+        path = urllib.parse.unquote(parts.path)
+        self.cache_dir = pathlib.Path("/", path).resolve()
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1F\x7F"*/:<>?\\|]+'
