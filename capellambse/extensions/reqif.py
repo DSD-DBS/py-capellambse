@@ -527,12 +527,10 @@ class AttributeDefinitionEnumeration(ReqIFElement):
     _xmltag = "enumeration"
 
     data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
-    multi_valued = xmltools.AttributeProperty(
+    multi_valued = xmltools.BooleanAttributeProperty(
         "_element",
         "multiValued",
-        optional=True,
-        default=False,
-        returntype=bool,
+        __doc__="Boolean flag for setting multiple enumeration values on the attribute",
     )
 
 
