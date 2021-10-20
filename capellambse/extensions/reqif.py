@@ -217,10 +217,9 @@ class ElementRelationAccessor(
         if not isinstance(value, Requirement):
             raise TypeError("`value` must be of type 'Requirement'")
 
-        cls = t.cast(t.Type[c.T], RequirementsOutRelation)
         parent = elmlist._parent
         with parent._model._loader.new_uuid(parent._element) as uuid:
-            relation = cls(
+            relation = RequirementsOutRelation(
                 elmlist._model,
                 parent._element,
                 source=value,
