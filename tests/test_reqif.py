@@ -274,18 +274,42 @@ class TestRequirementRelations:
         self, model: capellambse.MelodyModel
     ) -> None:
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
-        req = model.by_uuid("85d41db2-9e17-438b-95cf-49342452ddf3")
-        req2 = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
-        req3 = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         req_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
 
         assert isinstance(ge.requirements, reqif.RelationsList)
         assert len(ge.requirements) == 3
         assert len(ge.requirements.by_relation_type(req_type.name)) == 1
-        assert len(ge.requirements.outgoing) == 1
-        assert ge.requirements.outgoing[0] == req
-        assert len(ge.requirements.incoming) == 2
-        assert ge.requirements.incoming[:] == [req2, req3]
+
+    @pytest.mark.parametrize(
+        ("obj_uuid", "target_uuids"),
+        [
+            (
+                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+                {
+                    "078b2c69-4352-4cf9-9ea5-6573b75e5eec",
+                    "24c824ef-b187-4725-a051-a68707e82d70",
+                    "57033242-3766-4961-8091-ce3d9326ed67",
+                    "7de4c1a5-e106-4171-902a-502b816b60b0",
+                },
+            ),
+            (
+                "79291c33-5147-4543-9398-9077d582576d",
+                {"41e1b786-a6a1-46cb-9b9c-b302d9278c1c"},
+            ),
+        ],
+    )
+    def test_requirement_relations(
+        self, model: capellambse.MelodyModel, obj_uuid, target_uuids
+    ):
+        obj = model.by_uuid(obj_uuid)
+
+        relations = obj.relations
+
+        assert all(
+            isinstance(i, reqif.AbstractRequirementsRelation)
+            for i in relations
+        )
+        assert {i.uuid for i in relations} == target_uuids
 
 
 class TestReqIFAccess:
@@ -406,7 +430,7 @@ class TestReqIFModification:
         self, model: capellambse.MelodyModel
     ):
         gobj = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
-        req = gobj.requirements.outgoing[0]
+        req = gobj.requirements.by_relation_class("outgoing")[0]
 
         gobj.requirements.remove(req)
 
@@ -725,3 +749,57 @@ class TestRequirementsFiltering:
         assert len(undefined_type_reqs) == 1
         assert req.long_name == "Undefined type"
         assert req.uuid == "7e8d0edf-67f0-48c5-82f6-ec9cdb809eee"
+
+    @pytest.mark.parametrize(
+        ("obj_uuid", "relation_class", "target_uuids"),
+        [
+            (
+                "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
+                "outgoing",
+                ["85d41db2-9e17-438b-95cf-49342452ddf3"],
+            ),
+            (
+                "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
+                "incoming",
+                [
+                    "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+                    "79291c33-5147-4543-9398-9077d582576d",
+                ],
+            ),
+            ("00e7b925-cf4c-4cb0-929e-5409a1cd872b", "internal", []),
+            (
+                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+                "outgoing",
+                ["0d2edb8f-fa34-4e73-89ec-fb9a63001440"],
+            ),
+            (
+                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+                "incoming",
+                [
+                    "4bf0356c-89dd-45e9-b8a6-e0332c026d33",
+                    "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
+                ],
+            ),
+            (
+                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+                "internal",
+                ["85d41db2-9e17-438b-95cf-49342452ddf3"],
+            ),
+        ],
+    )
+    def test_filtering_by_relation_class(
+        self,
+        model: capellambse.MelodyModel,
+        obj_uuid: str,
+        relation_class: str,
+        target_uuids: t.Sequence[str],
+    ):
+        obj = model.by_uuid(obj_uuid)
+
+        if isinstance(obj, reqif.Requirement):
+            related = obj.related
+        else:
+            related = obj.requirements
+        filtered_related = related.by_relation_class(relation_class)
+
+        assert [i.uuid for i in filtered_related] == target_uuids

@@ -198,50 +198,15 @@ class ElementRelationAccessor(
         if obj is None:  # pragma: no cover
             return self
 
-        loader = obj._model._loader
-        layertypes = list(filter(None, c.XTYPE_HANDLERS.keys()))
-        assert layertypes
-        syseng = next(
-            loader.iterchildren_xt(
-                obj._model._element, capellambse.model.XT_SYSENG
-            ),
-            None,
-        )
-        layers = loader.iterchildren_xt(syseng, *layertypes)
-        modules = itertools.chain.from_iterable(
-            loader.iterchildren_xt(i, XT_MODULE) for i in layers
-        )
-        inc_int_relations = itertools.chain.from_iterable(
-            loader.iterdescendants_xt(i, XT_INC_RELATION, XT_INT_RELATION)
-            for i in modules
-        )
-        out_relations = loader.iterchildren_xt(obj._element, XT_OUT_RELATION)
-
-        def targetof(i: etree._Element) -> c.GenericElement:
-            rel = c.GenericElement.from_model(obj._model, i)
-            assert isinstance(
-                rel,
-                (
-                    RequirementsOutRelation,
-                    RequirementsIncRelation,
-                    RequirementsIntRelation,
-                ),
-            )
-            return rel.target
+        relations: list[etree._Element] = []
+        for relation in obj._model.search(
+            XT_INC_RELATION, XT_INT_RELATION, XT_OUT_RELATION
+        ):
+            if obj in (relation.source, relation.target):
+                relations.append(relation._element)
 
         assert self.aslist is not None
-        return self.aslist(
-            obj._model,
-            list(
-                itertools.chain(
-                    (i for i in inc_int_relations if targetof(i) == obj),
-                    (i for i in out_relations if targetof(i) == obj),
-                )
-            ),
-            None,
-            parent=obj,
-            side="source",
-        )
+        return self.aslist(obj._model, relations, None, parent=obj, source=obj)
 
     def insert(
         self,
@@ -279,13 +244,13 @@ class ElementRelationAccessor(
         self, elmlist: c.ElementListCouplingMixin, obj: Requirement
     ) -> None:
         try:
-            index = elmlist.outgoing.index(obj)
+            index = elmlist.by_relation_class("outgoing").index(obj)
             element: etree._Element = elmlist._parent._element
             relations = list(
                 obj._model._loader.iterchildren_xt(element, XT_OUT_RELATION)
             )
         except ValueError:
-            index = index = elmlist.incoming.index(obj)
+            index = index = elmlist.by_relation_class("incoming").index(obj)
             element = obj._element
             relations = list(
                 obj._model._loader.iterchildren_xt(element, XT_INC_RELATION)
@@ -400,20 +365,22 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         elements: t.List[etree._Element],
         elemclass: t.Type[t.Any] = None,
         *,
-        side: str = "source",
+        source: c.ModelObject,
     ) -> None:
         del elemclass
-        assert side in {"source", "target"}
         super().__init__(model, elements, c.GenericElement)
-        self._side = side
+        self._source = source
 
     def __getitem__(self, idx: int | slice) -> c.GenericElement:
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
-        return getattr(
-            c.GenericElement.from_model(self._model, self._elements[idx]),
-            self._side,
-        )
+
+        rel = c.GenericElement.from_model(self._model, self._elements[idx])
+        assert self._source in (rel.source, rel.target)
+        if self._source == rel.source:
+            return rel.target
+        else:
+            return rel.source
 
     def by_relation_type(self, reltype: str) -> RelationsList:
         matches = []
@@ -424,33 +391,25 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
                 matches.append(elm)
         return self._newlist(matches)
 
-    @property
-    def incoming(self) -> RelationsList:
-        return self._filter_by_relcls(RequirementsIncRelation)
-
-    @property
-    def outgoing(self) -> RelationsList:
-        return self._filter_by_relcls(RequirementsOutRelation)
+    def by_relation_class(
+        self, class_: t.Literal["incoming", "outgoing", "internal"]
+    ) -> RelationsList:
+        relation_types = {
+            "incoming": RequirementsIncRelation,
+            "outgoing": RequirementsOutRelation,
+            "internal": RequirementsIntRelation,
+        }
+        matches: list[etree._Element] = []
+        for elm in self._elements:
+            rel_elm = c.GenericElement.from_model(self._model, elm)
+            if isinstance(rel_elm, relation_types[class_]):
+                matches.append(rel_elm._element)
+        return self._newlist(matches)
 
     def _newlist(self, elements: t.List[etree._Element]) -> RelationsList:
         listtype = self._newlist_type()
         assert issubclass(listtype, RelationsList)
-        return listtype(self._model, elements, side=self._side)
-
-    def _filter_by_relcls(
-        self,
-        relcls: t.Type[
-            RequirementsIncRelation
-            | RequirementsOutRelation
-            | RequirementsIntRelation
-        ],
-    ):
-        matches: list[etree._Element] = []
-        for elm in self._elements:
-            rel_elm = c.GenericElement.from_model(self._model, elm)
-            if isinstance(rel_elm, relcls):
-                matches.append(rel_elm._element)
-        return self._newlist(matches)
+        return listtype(self._model, elements, source=self._source)
 
 
 class ValueAccessor(c.Accessor):
@@ -591,6 +550,7 @@ class Requirement(ReqIFElement):
     )
     attributes = AttributeAccessor()
     relations = RequirementsRelationAccessor()
+    related = ElementRelationAccessor()
     type = c.AttrProxyAccessor(RequirementType, "requirementType")
 
 
