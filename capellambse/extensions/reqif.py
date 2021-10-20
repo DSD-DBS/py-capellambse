@@ -445,14 +445,11 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
             | RequirementsIntRelation
         ],
     ):
-        matches = [
-            rel_elm._element
-            for elm in self._elements
-            if isinstance(
-                rel_elm := c.GenericElement.from_model(self._model, elm),
-                relcls,
-            )
-        ]
+        matches: list[etree._Element] = []
+        for elm in self._elements:
+            rel_elm = c.GenericElement.from_model(self._model, elm)
+            if isinstance(rel_elm, relcls):
+                matches.append(rel_elm._element)
         return self._newlist(matches)
 
 
