@@ -186,7 +186,8 @@ class _GitTransaction:
             An alternative branch name to push to on the remote, instead
             of pushing back to the same branch.  This is required if
             ``push`` is ``True`` and the ``revision`` that was passed to
-            the constructor does not refer to a branch.
+            the constructor does not refer to a branch (or looks like a
+            git object).
 
             Note: For convenience, ``refs/heads/`` will be prepended
             automatically to this name if it isn't already present. This
@@ -199,8 +200,15 @@ class _GitTransaction:
         push_options
             Additional git push options.  See ``--push-option`` in
             ``git-push(1)``. Ignored if ``push`` is ``False``.
-        """
 
+        Raises
+        ------
+        ValueError
+            - If a commit hash was used during loading, and no
+              ``remote_branch`` was given
+            - If the given ``remote_branch`` (or the final part of the
+              originally given revision) looks like a git object
+        """
         self.__updates: dict[pathlib.PurePosixPath, str] = {}
         self.__outer_context = outer_transactor(**kw)
         self.__handler = filehandler
