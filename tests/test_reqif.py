@@ -420,51 +420,7 @@ class TestReqIFModification:
         assert model.by_uuid(new_req.uuid) == new_req
         assert new_req in mod.requirements
 
-    def test_appending_requirements_on_generic_element_creates_out_relation(
-        self, model: capellambse.MelodyModel
-    ):
-        gobj = model.oa.root_activity
-        req, req1 = model.oa.all_requirements[:2]
-
-        gobj.requirements.append(req1)
-        gobj.requirements.append(req)
-        assert gobj.requirements.by_long_name(req.long_name)[0] == req
-
-    def test_removing_requirement_from_generic_element_removes_relation(
-        self, model: capellambse.MelodyModel
-    ):
-        gobj = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
-        req = gobj.requirements.by_relation_class("outgoing")[0]
-
-        gobj.requirements.remove(req)
-
-        assert req not in gobj.requirements
-        assert req in model.search(reqif.XT_REQUIREMENT)
-
-    def test_inserting_requirements_at_the_beginning_on_generic_element_creates_out_relation(
-        self, model: capellambse.MelodyModel
-    ):
-        gobj = model.oa.root_activity
-        req = model.oa.all_requirements[0]
-
-        gobj.requirements.insert(0, req)
-        assert gobj.requirements[0] == req
-        assert len(req.relations.by_target(gobj)) == 1
-        assert req.relations.by_target(gobj)[0].source == req
-
-    @pytest.mark.skip("Not working")
-    def test_inserting_requirements_in_the_middle_on_generic_element_creates_out_relation(
-        self, model: capellambse.MelodyModel
-    ):
-        gobj = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
-        req = model.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
-
-        gobj.requirements.incoming.insert(1, req)
-        assert gobj.requirements.outgoing[1] == req
-        assert len(req.relations.by_target(gobj)) == 1
-        assert req.relations.by_target(gobj)[0].source == req
-
-    def test_create_requirement_on_generic_element_without_proper_target_raises_type_error(
+    def test_create_requirement_on_generic_element_without_proper_target_raises_TypeError(
         self, model: capellambse.MelodyModel
     ):
         gobj = model.oa.root_activity
