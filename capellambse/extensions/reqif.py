@@ -510,6 +510,12 @@ class AbstractType(ReqIFElement):
         aslist=c.MixedElementList,
     )
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.long_name == other
+
+        return super().__eq__(other)
+
 
 @c.xtype_handler(None, XT_MODULE_TYPE)
 class ModuleType(AbstractType):

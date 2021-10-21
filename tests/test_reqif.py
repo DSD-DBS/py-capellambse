@@ -274,11 +274,15 @@ class TestRequirementRelations:
         self, model: capellambse.MelodyModel
     ) -> None:
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
-        req_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
 
         assert isinstance(ge.requirements, reqif.RelationsList)
         assert len(ge.requirements) == 3
-        assert len(ge.requirements.by_relation_type(req_type.name)) == 1
+
+    def test_filtering_by_relation_type(self, model: capellambse.MelodyModel):
+        ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        rel_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
+
+        assert len(ge.requirements.by_relation_type(rel_type.name)) == 1
 
     @pytest.mark.parametrize(
         ("obj_uuid", "target_uuids"),
@@ -694,18 +698,14 @@ class TestRequirementsFiltering:
         "32d66740-e428-4600-be68-8410d9d568cc",
     }
 
-    def test_filtering_by_type_names_works(
-        self, model: capellambse.MelodyModel
-    ):
+    def test_filtering_by_type_name(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
         rtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
         rtype_reqs = requirements.by_type(rtype.long_name)
 
         assert set(req.uuid for req in rtype_reqs) & self.uuids == self.uuids
 
-    def test_filtering_by_multiple_type_names_works(
-        self, model: capellambse.MelodyModel
-    ):
+    def test_filtering_by_type_names(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
         rtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
         rtype1 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
@@ -714,7 +714,7 @@ class TestRequirementsFiltering:
 
         assert set(req.uuid for req in rtype_reqs) & uuids == uuids
 
-    def test_filtering_by_requirement_type_works(
+    def test_filtering_by_requirement_type(
         self, model: capellambse.MelodyModel
     ):
         requirements = model.search(reqif.XT_REQUIREMENT)
@@ -725,9 +725,7 @@ class TestRequirementsFiltering:
             == self.uuids
         )
 
-    def test_filtering_by_multiple_types_works(
-        self, model: capellambse.MelodyModel
-    ):
+    def test_filtering_by_types(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
         rtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
         rtype1 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
@@ -738,6 +736,18 @@ class TestRequirementsFiltering:
             & uuids
             == uuids
         )
+
+    def test_filtering_by_name_and_type(self, model: capellambse.MelodyModel):
+        requirements = model.search(reqif.XT_REQUIREMENT)
+        rtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        rtype1 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
+        expected_uuids = self.uuids | {"db4d4c74-b913-4d9a-8905-7d93d3360560"}
+
+        uuids = set(
+            req.uuid for req in requirements.by_type(rtype, rtype1.long_name)
+        )
+
+        assert uuids & expected_uuids == expected_uuids
 
     def test_filtering_by_type_none_returns_requirements_with_undefined_type(
         self, model: capellambse.MelodyModel

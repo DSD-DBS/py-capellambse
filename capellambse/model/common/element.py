@@ -249,10 +249,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             return value
 
         def make_values_container(self, *values: U) -> cabc.Container[U]:
-            try:
-                return set(values)
-            except TypeError:
-                return values
+            return values
 
         def ismatch(self, element: T, valueset: cabc.Container[U]) -> bool:
             try:
@@ -568,10 +565,7 @@ class MixedElementList(ElementList[GenericElement]):
 
     class _LowercaseFilter(ElementList._Filter[U], t.Generic[U]):
         def make_values_container(self, *values: U) -> cabc.Container[U]:
-            try:
-                return set(map(operator.methodcaller("lower"), values))
-            except TypeError:
-                return tuple(map(operator.methodcaller("lower"), values))
+            return tuple(map(operator.methodcaller("lower"), values))
 
     def __init__(
         self,
