@@ -110,9 +110,23 @@ class MelodyModel:
     def _model(self) -> MelodyModel:
         return self
 
-    def save(self) -> None:
-        """Save the model back to where it was loaded from."""
-        self._loader.save()
+    def save(self, **kw: t.Any) -> None:
+        """Save the model back to where it was loaded from.
+
+        Parameters
+        ----------
+        kw
+            Additional keyword arguments accepted by the file handler in
+            use. Please see the respective documentation for more info.
+
+        See Also
+        --------
+        capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :
+            Accepted ``**kw`` when using local directories
+        capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+            Accepted ``**kw`` when using ``git://`` and similar URLs
+        """
+        self._loader.save(**kw)
 
     def search(
         self, *xtypes: str | type[common.GenericElement]

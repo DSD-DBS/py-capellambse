@@ -211,11 +211,31 @@ class MelodyLoader:
                 helpers.normalize_pure_path(ref, base=filename.parent)
             )
 
-    def save(self) -> None:
-        """Save all model files back to their original locations."""
+    def save(self, **kw: t.Any) -> None:
+        """Save all model files back to their original locations.
+
+        Parameters
+        ----------
+        kw
+            Additional keyword arguments accepted by the file handler in
+            use. Please see the respective documentation for more info.
+
+        See Also
+        --------
+        capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :
+            Accepted ``**kw`` when using local directories
+        capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+            Accepted ``**kw`` when using ``git://`` and similar URLs
+        """
         LOGGER.info("Saving model %r", self.get_model_info().title)
-        for fname, tree in self.trees.items():
-            tree.write_xml(fname)
+        with self.filehandler.write_transaction(**kw) as unsupported_kws:
+            if unsupported_kws:
+                LOGGER.warning(
+                    "Ignoring unsupported transaction parameters: %s",
+                    ", ".join(repr(k) for k in unsupported_kws),
+                )
+            for fname, tree in self.trees.items():
+                tree.write_xml(fname)
 
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``.
