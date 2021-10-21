@@ -116,16 +116,25 @@ class MelodyModel:
 
     def search(
         self, *xtypes: str | type[common.GenericElement]
-    ) -> common.MixedElementList:
-        r"""Search for all elements with any of the given ``xsi:type``\ s."""
+    ) -> common.ElementList:
+        r"""Search for all elements with any of the given ``xsi:type``\ s.
+
+        If only one xtype is given, the return type will be
+        :class:`common.ElementList`, otherwise it will be
+        :class:`common.MixedElementList`.
+        """
         xtypes_: list[str] = []
         for i in xtypes:
             if isinstance(i, type) and issubclass(i, common.GenericElement):
                 xtypes_.append(common.build_xtype(i))
             else:
                 xtypes_.append(i)
-        return common.MixedElementList(
-            self, self._loader.find_by_xsi_type(*xtypes_)
+
+        cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
+        return cls(
+            self,
+            self._loader.find_by_xsi_type(*xtypes_),
+            common.GenericElement,
         )
 
     def by_uuid(self, uuid: str) -> common.GenericElement:

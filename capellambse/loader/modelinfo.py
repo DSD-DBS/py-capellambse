@@ -21,7 +21,7 @@ class ModelInfo:
     branch: str | None = None
     title: str | None = None
     url: str | None = None
-    short_rev: str | None = None
+    revision: str | None = None
     rev_hash: str | None = None
     capella_version: str | None = None
 
