@@ -755,3 +755,10 @@ class TestRequirementsFiltering:
         filtered_related = related.by_relation_class(relation_class)
 
         assert [i.uuid for i in filtered_related] == target_uuids
+
+    def test_RelationsLists_slicing(self, model: capellambse.MelodyModel):
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        related_objs = req.related
+
+        assert len(related_objs[:]) == 4
+        assert related_objs is not related_objs[:]
