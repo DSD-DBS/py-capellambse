@@ -17,8 +17,8 @@
 """
 from __future__ import annotations
 
+import collections.abc as cabc
 import datetime
-import itertools
 import logging
 import typing as t
 
@@ -75,7 +75,7 @@ DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
 _xt_to_attr_type: dict[
-    str, tuple[t.Callable[[str], t.Any], type | tuple[type, ...], t.Any]
+    str, tuple[cabc.Callable[[str], t.Any], type | tuple[type, ...], t.Any]
 ] = {
     XT_REQ_ATTR_STRINGVALUE: (str, str, ""),
     XT_REQ_ATTR_REALVALUE: (float, float, 0.0),
@@ -166,7 +166,7 @@ class RequirementsRelationAccessor(
     ) -> tuple[type[c.T], str]:
         if isinstance(target, Requirement):
             return (
-                t.cast(t.Type[c.T], RequirementsIntRelation),
+                t.cast(type[c.T], RequirementsIntRelation),
                 XT_INT_RELATION,
             )
         elif isinstance(target, ReqIFElement):
@@ -176,7 +176,7 @@ class RequirementsRelationAccessor(
             )
         else:
             return (
-                t.cast(t.Type[c.T], RequirementsIncRelation),
+                t.cast(type[c.T], RequirementsIncRelation),
                 XT_INC_RELATION,
             )
 
@@ -279,6 +279,8 @@ class AttributeDefinition(ReqIFElement):
 class AbstractRequirementsAttribute(c.GenericElement):
     _xmltag = "ownedAttributes"
 
+    definition: t.ClassVar[c.Accessor]
+
     def __repr__(self) -> str:
         mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
         try:
@@ -293,10 +295,12 @@ class AttributeAccessor(
 ):
     def __init__(self) -> None:
         super().__init__(
-            c.GenericElement, XT_REQ_ATTRIBUTES, aslist=c.MixedElementList
+            c.GenericElement,  # type: ignore[arg-type]
+            XT_REQ_ATTRIBUTES,
+            aslist=c.MixedElementList,
         )
 
-    def _match_xtype(self, type_: str) -> tuple[type, str]:
+    def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
         type_ = type_.lower()
         try:
             xt = _attr_type_hints[type_]
@@ -313,20 +317,29 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
-        elements: t.List[etree._Element],
-        elemclass: t.Type[t.Any] = None,
+        elements: list[etree._Element],
+        elemclass: type[t.Any] = None,
         *,
         source: c.ModelObject,
     ) -> None:
         del elemclass
-        super().__init__(model, elements, c.GenericElement)
+        super().__init__(model, elements, c.GenericElement)  # type: ignore[arg-type]
         self._source = source
 
-    def __getitem__(self, idx: int | slice) -> c.GenericElement:
+    @t.overload
+    def __getitem__(self, idx: int) -> c.T:
+        ...
+
+    @t.overload
+    def __getitem__(self, idx: slice) -> c.ElementList[c.T]:
+        ...
+
+    def __getitem__(self, idx):
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
 
         rel = c.GenericElement.from_model(self._model, self._elements[idx])
+        assert isinstance(rel, AbstractRequirementsRelation)
         assert self._source in (rel.source, rel.target)
         if self._source == rel.source:
             return rel.target
@@ -357,19 +370,25 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
                 matches.append(rel_elm._element)
         return self._newlist(matches)
 
-    def _newlist(self, elements: t.List[etree._Element]) -> RelationsList:
+    def _newlist(self, elements: list[etree._Element]) -> RelationsList:
         listtype = self._newlist_type()
         assert issubclass(listtype, RelationsList)
         return listtype(self._model, elements, source=self._source)
 
 
 class ValueAccessor(c.Accessor):
-    def __get__(
+    def __get__(  # type: ignore[override]
         self,
-        obj: RequirementsAttribute | EnumerationValueAttribute,
-        objtype: t.Optional[type[ReqIFElement]] = None,
+        obj: c.GenericElement | None,
+        objtype: type[ReqIFElement] | None = None,
     ) -> ValueAccessor | int | float | str | bool | datetime.datetime:
         del objtype
+        if obj is None:
+            return self
+
+        assert isinstance(
+            obj, (RequirementsAttribute, EnumerationValueAttribute)
+        )
         cast, _, default = _xt_to_attr_type[obj.xtype]
         if (value := obj._element.get("value")) is None:
             return default
@@ -377,9 +396,12 @@ class ValueAccessor(c.Accessor):
 
     def __set__(
         self,
-        obj: RequirementsAttribute | EnumerationValueAttribute,
+        obj: c.GenericElement,
         value: int | float | str | bool | datetime.datetime,
     ) -> None:
+        assert isinstance(
+            obj, (RequirementsAttribute, EnumerationValueAttribute)
+        )
         _, type_, default = _xt_to_attr_type[obj.xtype]
         if not isinstance(value, type_):
             if isinstance(type_, tuple):
