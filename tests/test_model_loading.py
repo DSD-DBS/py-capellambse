@@ -11,24 +11,59 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import annotations
 
+import os
 import pathlib
+import sys
 
 import pytest
 
 import capellambse
 
+from . import TEST_MODEL, TEST_ROOT
 
-@pytest.fixture
-def aird_model():
-    return capellambse.MelodyModel(
-        pathlib.Path(__file__).parent
-        / "data"
-        / "melodymodel"
-        / "5_0"
-        / "MelodyModelTest.aird"
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        pytest.param(str(TEST_ROOT / "5_0" / TEST_MODEL), id="From string"),
+        pytest.param(
+            str(TEST_ROOT / "5_0" / TEST_MODEL).encode(
+                sys.getfilesystemencoding()
+            ),
+            id="From filesystemencoded string",
+        ),
+        pytest.param(TEST_ROOT / "5_0" / TEST_MODEL, id="From path"),
+    ],
+)
+def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
+    capellambse.MelodyModel(path)
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        pytest.param(
+            "git+https://github.com/DSD-DBS/py-capellambse.git",
+            id="From HTTPS",
+        ),
+        pytest.param(
+            "git+ssh://git@github.com/DSD-DBS/py-capellambse.git",
+            id="From SSH",
+        ),
+        pytest.param(
+            "git+" + pathlib.Path.cwd().as_uri(), id="From local repo"
+        ),
+    ],
+)
+def test_model_loading_via_GitFileHandler(path: str):
+    capellambse.MelodyModel(
+        path, entrypoint="tests/data/melodymodel/5_0/MelodyModelTest.aird"
     )
 
 
-def test_loading_aird_model(aird_model):
-    assert list(aird_model.la.all_functions.by_owner)
+def test_model_loading_from_badpath_raises_FileNotFoundError():
+    badpath = TEST_ROOT / "TestFile.airdfragment"
+    with pytest.raises(FileNotFoundError):
+        capellambse.MelodyModel(badpath)

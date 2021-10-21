@@ -11,34 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
 
+import sys
 import pytest
 
 import capellambse
 from capellambse.model import MelodyModel, modeltypes
 
-from . import TEST_MODEL, TEST_ROOT
-
-
-@pytest.mark.parametrize(
-    "path",
-    [
-        str(TEST_ROOT / "5_0" / TEST_MODEL),
-        str(TEST_ROOT / "5_0" / TEST_MODEL).encode(
-            sys.getfilesystemencoding()
-        ),
-        TEST_ROOT / "5_0" / TEST_MODEL,
-    ],
-)
-def test_model_loading(path):
-    capellambse.MelodyModel(path)
-
-
-def test_model_loading_badpath():
-    badpath = TEST_ROOT / "TestFile.airdfragment"
-    with pytest.raises(FileNotFoundError):
-        capellambse.MelodyModel(badpath)
+from . import TEST_ROOT
 
 
 def test_model_info_contains_capella_version(model):

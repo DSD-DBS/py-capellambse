@@ -131,7 +131,6 @@ def write(
     if isinstance(file, _HasWrite):
         ctx = contextlib.nullcontext(file)
     else:
-        # pylint: disable=consider-using-with
         ctx = open(file, "wb")
 
     payload = serialize(
