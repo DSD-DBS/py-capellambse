@@ -208,54 +208,6 @@ class ElementRelationAccessor(
         assert self.aslist is not None
         return self.aslist(obj._model, relations, None, parent=obj, source=obj)
 
-    def insert(
-        self,
-        elmlist: c.ElementListCouplingMixin,
-        index: int,
-        value: c.ModelObject,
-    ) -> None:
-        if not isinstance(value, Requirement):
-            raise TypeError("`value` must be of type 'Requirement'")
-
-        parent = elmlist._parent
-        with parent._model._loader.new_uuid(parent._element) as uuid:
-            relation = RequirementsOutRelation(
-                elmlist._model,
-                parent._element,
-                source=value,
-                target=elmlist._parent,
-                uuid=uuid,
-                xtype=XT_OUT_RELATION,
-            )
-            xml_index = 0
-            parent._element.remove(relation._element)
-            for elt in parent._element.iterchildren():
-                if helpers.xtype_of(elt) == XT_OUT_RELATION:
-                    if index == 0:
-                        break
-                    index -= 1
-
-                xml_index += 1
-
-            parent._element.insert(xml_index, relation._element)
-
-    def delete(
-        self, elmlist: c.ElementListCouplingMixin, obj: Requirement
-    ) -> None:
-        try:
-            index = elmlist.by_relation_class("outgoing").index(obj)
-            element: etree._Element = elmlist._parent._element
-            relations = list(
-                obj._model._loader.iterchildren_xt(element, XT_OUT_RELATION)
-            )
-        except ValueError:
-            index = index = elmlist.by_relation_class("incoming").index(obj)
-            element = obj._element
-            relations = list(
-                obj._model._loader.iterchildren_xt(element, XT_INC_RELATION)
-            )
-        element.remove(relations[index])
-
 
 class ReqIFElement(c.GenericElement):
     """Attributes shared by all ReqIF elements."""
@@ -273,7 +225,7 @@ class ReqIFElement(c.GenericElement):
     prefix = xmltools.AttributeProperty(
         "_element", "ReqIFPrefix", optional=True
     )
-    type: RequirementTypeAccessor = property(lambda _: None)  # type: ignore[assignment]
+    type: c.Accessor = property(lambda _: None)  # type: ignore[assignment]
 
     def __repr__(self) -> str:  # pragma: no cover
         mytype = type(self).__name__

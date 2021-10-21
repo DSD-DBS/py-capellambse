@@ -420,20 +420,6 @@ class TestReqIFModification:
         assert model.by_uuid(new_req.uuid) == new_req
         assert new_req in mod.requirements
 
-    def test_create_requirement_on_generic_element_without_proper_target_raises_TypeError(
-        self, model: capellambse.MelodyModel
-    ):
-        gobj = model.oa.root_activity
-
-        with pytest.raises(TypeError):
-            gobj.requirements.create()
-
-        with pytest.raises(TypeError):
-            gobj.requirements.create(target=model.sa.root_component)
-
-        with pytest.raises(TypeError):
-            gobj.requirements.insert(1, model.sa.root_component)
-
     def test_deleted_requirements_vanish_from_model(
         self, model: capellambse.MelodyModel
     ):
