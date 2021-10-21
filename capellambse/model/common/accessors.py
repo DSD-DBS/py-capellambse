@@ -74,6 +74,9 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self.__objclass__ = owner
         self.__name__ = name
 
+    def __repr__(self) -> str:
+        return f"<'{self.__objclass__.__name__}.{self.__name__}' {type(self).__name__}>"
+
 
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""

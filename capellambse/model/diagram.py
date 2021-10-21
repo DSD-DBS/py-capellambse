@@ -23,6 +23,8 @@ import traceback
 import typing as t
 import uuid
 
+import markupsafe
+
 import capellambse.svg
 
 from .. import aird
@@ -86,6 +88,18 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __repr__(self) -> str:
         return f"<Diagram {self.name!r}>"
+
+    def __html__(self) -> markupsafe.Markup:
+        return (
+            markupsafe.Markup("<figure>")
+            + markupsafe.Markup(self.render("svg"))
+            + markupsafe.Markup("<figcaption>")
+            + self.name
+            + markupsafe.Markup("</figcaption></figure>")
+        )
+
+    def _repr_svg_(self):
+        return self.render("svg")
 
     @property
     def nodes(self) -> c.MixedElementList:

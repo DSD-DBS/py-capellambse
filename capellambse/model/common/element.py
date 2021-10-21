@@ -23,10 +23,13 @@ __all__ = [
 
 import collections.abc as cabc
 import enum
+import html
+import inspect
 import operator
 import re
 import typing as t
 
+import markupsafe
 from lxml import etree
 
 import capellambse
@@ -197,6 +200,59 @@ class GenericElement:
         else:
             mytype = type(self).__name__
         return f"<{mytype} {self.name!r} ({self.uuid})>"
+
+    def __html__(self) -> markupsafe.Markup:
+        fragments: list[str] = []
+        # pylint: disable=unidiomatic-typecheck
+        if type(self) is GenericElement:
+            fragments.append("<h1>Model element")
+        else:
+            fragments.append("<h1>")
+            fragments.append(html.escape(type(self).__name__))
+        fragments.append(' <span style="font-size: 70%;">(')
+        fragments.append(html.escape(self.xtype))
+        fragments.append(")</span>")
+        fragments.append("</h1>")
+
+        fragments.append("<table>")
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            try:
+                value = getattr(self, attr)
+            except Exception:
+                continue
+
+            if inspect.ismethod(value):
+                continue
+
+            fragments.append('<tr><th style="text-align: right;">')
+            fragments.append(html.escape(attr))
+            fragments.append('</th><td style="text-align: left;">')
+
+            if isinstance(value, str):
+                fragments.append(markupsafe.Markup.escape(value))
+            elif isinstance(value, GenericElement):
+                fragments.append(
+                    f"<strong>{html.escape(type(value).__name__)}</strong>"
+                    f" &quot;{html.escape(value.name)}&quot;"
+                    f" ({html.escape(value.uuid)})"
+                )
+            elif isinstance(value, ElementList):
+                fragments.append(value.__html__())
+            else:
+                value = repr(value)
+                if len(value) > 250:
+                    value = value[:250] + " [...]"
+                fragments.append("<em>")
+                fragments.append(markupsafe.Markup.escape(value))
+                fragments.append("</em>")
+            fragments.append("</td></tr>")
+        fragments.append("</table>")
+        return markupsafe.Markup("".join(fragments))
+
+    def _repr_html_(self) -> str:
+        return self.__html__()
 
 
 class ElementList(cabc.MutableSequence, t.Generic[T]):
@@ -504,6 +560,25 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
+
+    def __html__(self) -> markupsafe.Markup:
+        if not self:
+            return markupsafe.Markup("<p><em>(Empty list)</em></p>")
+
+        fragments = ['<ol start="0" style="text-align: left;">']
+        for i in self:
+            fragments.append(
+                "<li>"
+                f"<strong>{html.escape(type(i).__name__)}</strong>"
+                f" &quot;{html.escape(i.name)}&quot;"
+                f" ({html.escape(i.uuid)})"
+                "</li>"
+            )
+        fragments.append("</ol>")
+        return markupsafe.Markup("".join(fragments))
+
+    def _repr_html_(self) -> str:
+        return self.__html__()
 
     def _newlist(self, elements: list[etree._Element]) -> ElementList[T]:
         listtype = self._newlist_type()
