@@ -531,7 +531,7 @@ class TestReqIFModification:
         assert attr.definition == definition
         assert isinstance(attr, reqif.RequirementsAttribute)
 
-    def test_create_value_attribute_on_requirements_without_definition_works(
+    def test_create_value_attribute_on_requirements_without_definition(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
@@ -543,7 +543,7 @@ class TestReqIFModification:
         assert attr.definition is None
         assert isinstance(attr, reqif.RequirementsAttribute)
 
-    def test_create_enum_value_attribute_on_requirements_works(
+    def test_create_enum_value_attribute_on_requirements(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
@@ -578,7 +578,7 @@ class TestReqIFModification:
             pytest.param("Test1", id="String Attribute"),
         ],
     )
-    def test_setting_attribute_values_on_requirement_works(
+    def test_setting_attribute_values_on_requirement(
         self,
         model: capellambse.MelodyModel,
         value: t.Any,
