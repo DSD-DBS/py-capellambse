@@ -162,7 +162,7 @@ class _GitTransaction:
         dry_run: bool = False,
         author_name: str | None = None,
         author_email: str | None = None,
-        commit_msg: str | None = None,
+        commit_msg: str = "Changes made with python-capellambse",
         remote_branch: str | None = None,
         push: bool = True,
         push_options: cabc.Sequence[str] | None = None,
@@ -200,8 +200,6 @@ class _GitTransaction:
             Additional git push options.  See ``--push-option`` in
             ``git-push(1)``. Ignored if ``push`` is ``False``.
         """
-        if commit_msg is None:
-            raise ValueError("No commit message specified")
 
         self.__updates: dict[pathlib.PurePosixPath, str] = {}
         self.__outer_context = outer_transactor(**kw)
