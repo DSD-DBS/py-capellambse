@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 import os
+import pathlib
 import typing as t
 
 from lxml import etree
@@ -56,8 +57,16 @@ class MelodyModel:
         None, cacheattr="_MelodyModel__diagram_cache"
     )
 
+    _diagram_cache: loader.FileHandler
+    _diagram_cache_subdir: pathlib.PurePosixPath
+
     def __init__(
-        self, path: str | bytes | os.PathLike, **kwargs: t.Any
+        self,
+        path: str | bytes | os.PathLike,
+        *,
+        diagram_cache: str | os.PathLike | None = None,
+        diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
+        **kwargs: t.Any,
     ) -> None:
         """Load a project from the filesystem.
 
@@ -97,6 +106,27 @@ class MelodyModel:
             username (not supported by all filehandlers)
         password
             password (not supported by all filehandlers)
+        diagram_cache
+            An optional place where to find pre-rendered, cached
+            diagrams. When a diagram is found in this cache, it will be
+            loaded from there instead of being rendered on access. Note
+            that diagrams will only be loaded from there, but not be put
+            back, i.e. to use it effectively, the cache has to be
+            pre-populated.
+
+            This argument accepts the same formats as ``path``.
+
+            The file names looked up in the cache built in the format
+            ``uuid.ext``, where ``uuid`` is the UUID of the diagram (as
+            reported by ``diag_obj.uuid``) and ``ext`` is the render
+            format. Example:
+
+            - Diagram ID: ``_7FWu4KrxEeqOgqWuHJrXFA``
+            - Render call: ``diag_obj.as_svg`` or ``diag_obj.render("svg")``
+            - Cache file name: ``_7FWu4KrxEeqOgqWuHJrXFA.svg``
+        diagram_cache_subdir
+            A sub-directory prefix to prepend to diagram UUIDs before
+            looking them up in the ``diagram_cache``.
 
         See Also
         --------
@@ -120,6 +150,15 @@ class MelodyModel:
             )
             LOGGER.warning("Property values are not available in this model")
             self._pvext = None
+
+        if diagram_cache:
+            if diagram_cache == path:
+                self._diagram_cache = self._loader.filehandler
+            else:
+                self._diagram_cache = loader.get_filehandler(diagram_cache)
+            self._diagram_cache_subdir = pathlib.PurePosixPath(
+                diagram_cache_subdir or "/"
+            )
 
     @property
     def _element(self) -> etree._Element:
