@@ -21,8 +21,8 @@ import typing as t
 from lxml import etree
 
 import capellambse.helpers
-import capellambse.loader.core
 import capellambse.pvmt
+from capellambse import loader
 
 from . import common, diagram  # isort:skip
 
@@ -109,7 +109,7 @@ class MelodyModel:
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler :
             The file handler implementing the ``git://`` protocol.
         """
-        self._loader = capellambse.loader.core.MelodyLoader(path, **kwargs)
+        self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
 
         try:

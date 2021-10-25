@@ -21,3 +21,5 @@ the `LXML Documentation`_.
 """
 
 from .core import MelodyLoader
+from .filehandler import FileHandler, get_filehandler
+from .modelinfo import ModelInfo
