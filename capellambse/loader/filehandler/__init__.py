@@ -62,17 +62,10 @@ def get_filehandler(
 
 class FileHandler(metaclass=abc.ABCMeta):
     path: bytes | str | os.PathLike
-    entrypoint: str
 
-    def __init__(
-        self,
-        path: bytes | str | os.PathLike,
-        entrypoint: str,
-        **kw: t.Any,
-    ) -> None:
+    def __init__(self, path: bytes | str | os.PathLike, **kw: t.Any) -> None:
         super().__init__(**kw)  # type: ignore[call-arg]
         self.path = path
-        self.entrypoint = entrypoint
 
     @abc.abstractmethod
     def get_model_info(self) -> ModelInfo:

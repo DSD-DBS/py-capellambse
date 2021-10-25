@@ -357,7 +357,7 @@ class _GitTransaction:
         """Update the local ``__target_ref``."""
         self.__handler._git(
             "update-ref",
-            f"-m[{capellambse.__name__}] Update model {self.__handler.entrypoint}",
+            f"-m[{capellambse.__name__}] Commit by capellambse",
             self.__targetref,
             commit,
         )
@@ -418,7 +418,6 @@ class GitFileHandler(FileHandler):
     def __init__(
         self,
         path: bytes | str | os.PathLike,
-        entrypoint: str,
         revision: str = "HEAD",
         username: str = "",
         password: str = "",
@@ -427,9 +426,8 @@ class GitFileHandler(FileHandler):
         disable_cache: bool = False,
         update_cache: bool = True,
     ) -> None:
-        super().__init__(path, entrypoint)
+        super().__init__(path)
         self.revision = revision
-        self.entrypoint = entrypoint
         self.disable_cache = disable_cache
         self.username = username
         self.password = password
