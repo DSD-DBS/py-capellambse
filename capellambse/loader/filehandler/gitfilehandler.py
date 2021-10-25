@@ -459,10 +459,16 @@ class GitFileHandler(FileHandler):
         return self.__open_readable(path)
 
     def __open_readable(self, path: pathlib.PurePosixPath) -> t.BinaryIO:
-        if str(path) in self.__lfsfiles:
-            content = self.__open_from_lfs(path)
-        else:
-            content = self.__open_from_index(path)
+        try:
+            if str(path) in self.__lfsfiles:
+                content = self.__open_from_lfs(path)
+            else:
+                content = self.__open_from_index(path)
+        except subprocess.CalledProcessError as err:
+            stderr = err.stderr.decode("utf-8")
+            if str(path) in stderr.splitlines()[0]:
+                raise FileNotFoundError(stderr) from err
+            raise
         return io.BytesIO(content)
 
     def __open_writable(self, path: pathlib.PurePosixPath) -> t.BinaryIO:
