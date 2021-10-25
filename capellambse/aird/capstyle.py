@@ -353,16 +353,16 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Interface_Border_Reddish"],
             "text_fill": COLORS["black"],
         },
+        "Edge.Association": {
+            "stroke": COLORS["_CAP_Association_Color"],
+            "marker-end": "FineArrowMark",
+        },
         "Edge.ExchangeItemElement": {  # DT_ExchangeItemElement
             "stroke": COLORS["black"],
             "stroke-dasharray": "5",
             "text_fill": COLORS["black"],
             "marker-start": "DiamondMark",
             "marker-end": "ArrowMark",
-        },
-        "Edge.Association": {
-            "stroke": COLORS["_CAP_Association_Color"],
-            "marker-end": "FineArrowMark",
         },
     },
     "Contextual Capability": {
