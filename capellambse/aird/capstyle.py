@@ -364,6 +364,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "marker-start": "DiamondMark",
             "marker-end": "ArrowMark",
         },
+        "Edge.Generalization": {
+            "stroke": COLORS["black"],
+            "marker-end": "GeneralizationMark",
+        },
     },
     "Contextual Capability": {
         "Edge.AbstractCapabilityExtend": {
