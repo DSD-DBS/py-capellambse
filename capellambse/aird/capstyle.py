@@ -360,6 +360,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "marker-start": "DiamondMark",
             "marker-end": "ArrowMark",
         },
+        "Edge.Association": {
+            "stroke": COLORS["_CAP_Association_Color"],
+            "marker-end": "FineArrowMark",
+        },
     },
     "Contextual Capability": {
         "Edge.AbstractCapabilityExtend": {
