@@ -113,10 +113,6 @@ class AbstractEntity(cs.Component):
         aslist=c.ElementList,
         follow="targetElement",
     )
-    state_machines = c.ProxyAccessor(
-        capellacommon.StateMachine,
-        aslist=c.ElementList,
-    )
     capabilities = c.CustomAccessor(
         OperationalCapability,
         operator.attrgetter("_model.oa.all_capabilities"),
@@ -152,6 +148,9 @@ class EntityPkg(c.GenericElement):
     _xmltag = "ownedEntityPkg"
 
     entities = c.ProxyAccessor(Entity, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 

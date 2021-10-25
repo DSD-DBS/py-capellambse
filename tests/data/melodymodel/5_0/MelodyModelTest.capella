@@ -1259,6 +1259,11 @@ The predator is far away</bodies>
             name="Gerard Butler" abstractType="#6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="3c7d40ac-4f28-4dc0-90e3-9ff856eaa058"
             name="SystemActor" abstractType="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+        <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+            id="9806df59-397c-4505-918f-3b1288638251" name="RootStateMachine">
+          <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+              id="297f4bdd-af81-4050-a066-e252f7b8e35d" name="Default Region"/>
+        </ownedStateMachines>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
             id="230c4621-7e0a-4d0a-9db2-d4ba5e97b3df" name="System">
           <ownedTraces xsi:type="org.polarsys.capella.core.data.capellacommon:TransfoLink"

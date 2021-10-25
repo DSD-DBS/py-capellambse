@@ -21,7 +21,7 @@ import operator
 
 from .. import common as c
 from .. import crosslayer, diagram
-from ..crosslayer import cs, fa
+from ..crosslayer import capellacommon, cs, fa
 from . import ctx
 
 XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
@@ -88,6 +88,9 @@ class LogicalComponentPkg(c.GenericElement):
     _xmltag = "ownedLogicalComponentPkg"
 
     components = c.ProxyAccessor(LogicalComponent, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 

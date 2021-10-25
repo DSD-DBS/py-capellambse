@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import sys
+
 import pytest
 
 import capellambse
@@ -124,6 +125,13 @@ def test_Capabilities_have_constraints(model):
     elm = model.oa.all_capabilities.by_name("Eat food")
     assert hasattr(elm, "constraints")
     assert len(elm.constraints) == 3
+
+
+def test_stm_accessible_from_component_pkg(model):
+    comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")
+    stm = comp.state_machines.by_uuid("9806df59-397c-4505-918f-3b1288638251")
+
+    assert stm.name == "RootStateMachine"
 
 
 def test_stm(model):

@@ -104,6 +104,10 @@ class SystemComponentPkg(c.GenericElement):
     _xmltag = "ownedSystemComponentPkg"
 
     components = c.ProxyAccessor(SystemComponent, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+
     packages: c.Accessor
 
 
