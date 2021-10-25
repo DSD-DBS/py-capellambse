@@ -61,14 +61,28 @@ class MelodyModel:
     ) -> None:
         """Load a project from the filesystem.
 
+        For complete information on which exact ``kwargs`` are
+        supported, consult the documentation of the used file handler.
+        Refer to the "See Also" section for a collection of links.
+
         Parameters
         ----------
         path
-            Path to the project directory or Git URL (HTTPS / SSH) with
-            git+ prefix.  We also accept the project's main ``.aird``
-            file for backwards compatibility.
+            Path or URL to the project. The following formats are
+            accepted:
+
+            * A path to a local ``.aird`` file.
+            * A path to a local directory (requires ``entrypoint``).
+            * A remote URL, with a protocol or prefix that indicates
+              which file handler to invoke (requires ``entrypoint``).
+
+              Examples:
+
+              * ``git://git.example.com/model/coffeemaker.git``
+              * ``git+https://git.example.com/model/coffeemaker.git``
+              * ``git+ssh://git@git.example.com/model/coffeemaker.git``
         entrypoint
-            Entrypoint from path to the main ```.aird`` file.
+            Entrypoint from path to the main ``.aird`` file.
         revision
             Revision of Git repository
         disable_cache
@@ -83,6 +97,17 @@ class MelodyModel:
             username (not supported by all filehandlers)
         password
             password (not supported by all filehandlers)
+
+        See Also
+        --------
+        capellambse.loader.filehandler.FileHandler :
+            Abstract super class for file handlers. Contains information
+            needed for implementing custom handlers.
+        capellambse.loader.filehandler.localfilehandler.LocalFileHandler :
+            The file handler responsible for local files and
+            directories.
+        capellambse.loader.filehandler.gitfilehandler.GitFileHandler :
+            The file handler implementing the ``git://`` protocol.
         """
         self._loader = capellambse.loader.core.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
