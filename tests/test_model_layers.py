@@ -135,6 +135,16 @@ def test_SystemCapability_has_realized_capabilities(model: MelodyModel):
     assert elm.realized_capabilities[0].xtype.endswith("OperationalCapability")
 
 
+def test_Capability_of_logical_layer_has_realized_capabilities(
+    model: MelodyModel,
+):
+    elm = model.by_uuid("b80b3141-a7fc-48c7-84b2-1467dcef5fce")
+
+    assert hasattr(elm, "realized_capabilities")
+    assert len(elm.realized_capabilities) == 1
+    assert elm.realized_capabilities[0].xtype.endswith("Capability")
+
+
 class TestStateMachines:
     def test_stm_accessible_from_component_pkg(self, model: MelodyModel):
         comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")
