@@ -764,9 +764,15 @@ The predator is far away</bodies>
               <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:InitialPseudoState"
                   id="461de288-fa3f-45bd-9975-8ebe1aec85d9" name="Birth"/>
               <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="0c7b7899-49a7-4e41-ab11-eb7d9c2becf6" name="Sleeping" doActivity="#ab016025-d456-4c2d-8359-d50cf9de3825">
+                  id="0c7b7899-49a7-4e41-ab11-eb7d9c2becf6" name="Sleeping" referencedStates="#1700037e-2ec7-4d71-a674-97f216010bfe #37303a1c-9952-4e30-bd21-c5567d4ca3c1"
+                  doActivity="#ab016025-d456-4c2d-8359-d50cf9de3825">
                 <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="36ea2df6-8f60-4eac-ace9-e60d6320ee18" name="region"/>
+                    id="36ea2df6-8f60-4eac-ace9-e60d6320ee18" name="region" involvedStates="#1700037e-2ec7-4d71-a674-97f216010bfe #37303a1c-9952-4e30-bd21-c5567d4ca3c1">
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:InitialPseudoState"
+                      id="1700037e-2ec7-4d71-a674-97f216010bfe" name="Tired"/>
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:FinalState"
+                      id="37303a1c-9952-4e30-bd21-c5567d4ca3c1" name="Rested"/>
+                </ownedRegions>
               </ownedStates>
               <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
                   id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7">

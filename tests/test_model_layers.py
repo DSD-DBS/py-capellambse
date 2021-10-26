@@ -198,6 +198,22 @@ class TestStateMachines:
         )
         assert transition.guard.specification["Python"] == "self.hunger >= 0.8"
 
+    def test_stm_region_has_access_to_diagrams(self, model: MelodyModel):
+        default_region = model.by_uuid("eeeb98a7-6063-4115-8b4b-40a51cc0df49")
+        state = default_region.states.by_uuid(
+            "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
+        )
+        sleep_region = state.regions[0]
+
+        assert default_region.diagrams
+        assert (
+            default_region.diagrams[0].name
+            == "[MSM] States of Functional Human Being"
+        )
+
+        assert sleep_region.diagrams
+        assert sleep_region.diagrams[0].name == "[MSM] Keep the sleep schedule"
+
 
 def test_exchange_items_on_logical_function_exchanges(
     model: MelodyModel,
