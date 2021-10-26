@@ -46,6 +46,8 @@
       <ownedExtensions xsi:type="CapellaRequirements:CapellaModule" id="f8e2195d-b5f5-4452-a12b-79233d943d5e"
           ReqIFIdentifier="1" ReqIFDescription="This is a test requirement module."
           ReqIFLongName="Module" ReqIFName="Test Module" ReqIFPrefix="T" moduleType="#a67e7f43-4b49-425c-a6a7-d44e1054a488">
+        <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="11a2e07a-41f7-4eee-a94e-f3e33738c487"
+            definition="#eca9c9e8-1a0a-4951-95e7-ff9d1e5b83c9" values="#3c2390a4-ce9c-472c-9982-d0b825931978"/>
         <ownedRequirements xsi:type="Requirements:Folder" id="e16f5cc1-3299-43d0-b1a0-82d31a137111"
             ReqIFIdentifier="1" ReqIFDescription="This is a requirements folder."
             ReqIFLongName="Folder1" ReqIFName="Folder" ReqIFPrefix="F" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
@@ -56,6 +58,18 @@
               ReqIFLongName="1" ReqIFName="TestReq1" ReqIFPrefix="3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
               ReqIFChapterName="2" ReqIFForeignID="1" ReqIFText="&lt;p>Test requirement 1 really l o n g text that is&amp;nbsp;way too long to display here as that&lt;/p>&#xA;&#xA;&lt;p>&amp;lt; &amp;gt; &amp;quot; &amp;#39;&lt;/p>&#xA;&#xA;&lt;ul>&#xA;&#x9;&lt;li>This&amp;nbsp;is a list&lt;/li>&#xA;&#x9;&lt;li>an unordered one&lt;/li>&#xA;&lt;/ul>&#xA;&#xA;&lt;ol>&#xA;&#x9;&lt;li>Ordered list&lt;/li>&#xA;&#x9;&lt;li>Ok&lt;/li>&#xA;&lt;/ol>&#xA;"
               requirementTypeProxy="7">
+            <ownedAttributes xsi:type="Requirements:BooleanValueAttribute" id="9c692405-b8aa-4caa-b988-51d27db5cd1b"
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="true"/>
+            <ownedAttributes xsi:type="Requirements:DateValueAttribute" id="b97c09b5-948a-46e8-a656-69d764ddce7d"
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" definitionProxy=""
+                value="2021-07-23T15:00:00.000+0200"/>
+            <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="85dfd42c-7f6e-4236-a181-bdd784040431"
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="10"/>
+            <ownedAttributes xsi:type="Requirements:RealValueAttribute" id="d2231d14-854d-4625-b48b-6cf1c2554367"
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="10.5"/>
+            <ownedAttributes xsi:type="Requirements:StringValueAttribute" id="ee8a69ef-61b9-4db9-9a0f-628e5d4704e1"
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="Test"/>
+            <ownedAttributes xsi:type="Requirements:BooleanValueAttribute" id="dcb8614e-2d1c-4cb3-aa0c-667a297e7489"/>
             <ownedRelations xsi:type="CapellaRequirements:CapellaIncomingRelation"
                 id="078b2c69-4352-4cf9-9ea5-6573b75e5eec" ReqIFLongName="Controlling the weather"
                 relationType="#f1aceb81-5f70-4469-a127-94830eb9be04" source="#3c2d312c-37c9-41b5-8c32-67578fa52dc3"
@@ -65,11 +79,15 @@
                 target="#85d41db2-9e17-438b-95cf-49342452ddf3"/>
             <ownedRelations xsi:type="CapellaRequirements:CapellaIncomingRelation"
                 id="24c824ef-b187-4725-a051-a68707e82d70" ReqIFLongName="Test req"
-                relationType="#cc9f7f73-2e21-405d-a87c-f29db71bded6" source="#3c2d312c-37c9-41b5-8c32-67578fa52dc3"
-                target="#00e7b925-cf4c-4cb0-929e-5409a1cd872b"/>
+                source="#3c2d312c-37c9-41b5-8c32-67578fa52dc3" target="#00e7b925-cf4c-4cb0-929e-5409a1cd872b"/>
           </ownedRequirements>
           <ownedRequirements xsi:type="Requirements:Requirement" id="0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc"
-              ReqIFName="TestReq2" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"/>
+              ReqIFName="TypedReq2" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+            <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="148bdf2f-6dc2-4a83-833b-596886ce5b07"
+                definition="#f31d4dd3-99f7-41d1-b1ce-f07b20d26eac" values="#efd6e108-3461-43c6-ad86-24168339ed3c #3c2390a4-ce9c-472c-9982-d0b825931978"/>
+            <ownedAttributes xsi:type="Requirements:DateValueAttribute" id="7351093e-2c1c-4b1a-bb47-43443f530e8d"
+                definition="#682bd51d-5451-4930-a97e-8bfca6c3a127"/>
+          </ownedRequirements>
           <ownedRequirements xsi:type="Requirements:Folder" id="e179d6ff-5301-42a6-bf6f-4fec79b18827"
               ReqIFName="Subfolder" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
             <ownedRequirements xsi:type="Requirements:Requirement" id="79291c33-5147-4543-9398-9077d582576d"
@@ -82,7 +100,13 @@
           </ownedRequirements>
         </ownedRequirements>
         <ownedRequirements xsi:type="Requirements:Requirement" id="85d41db2-9e17-438b-95cf-49342452ddf3"
-            ReqIFName="TestReq4" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"/>
+            ReqIFName="TypedReq1" ReqIFPrefix="" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
+            ReqIFChapterName="">
+          <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="a44b41f3-598c-4250-bca6-1329647e7a02"
+              definition="#c316ab07-c5c3-4866-a896-92e34733055c" values="#efd6e108-3461-43c6-ad86-24168339ed3c"/>
+          <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="8882f320-c887-496a-933f-29a1ca62cc44"
+              definition="#0bd40628-10a5-451e-86da-187c93bc3b10"/>
+        </ownedRequirements>
       </ownedExtensions>
       <ownedExtensions xsi:type="CapellaRequirements:CapellaTypesFolder" id="67bba9cf-953c-4f0b-9986-41991c68d241"
           ReqIFLongName="Types">
@@ -108,7 +132,8 @@
           <ownedAttributes xsi:type="Requirements:AttributeDefinition" id="81939d8d-24f0-476a-9f8f-ab069fac0a85"
               ReqIFLongName="AttrDef"/>
           <ownedAttributes xsi:type="Requirements:AttributeDefinitionEnumeration"
-              id="a68e7442-d65d-4d20-b131-22962c411384" ReqIFLongName="AttrDefEnum"/>
+              id="a68e7442-d65d-4d20-b131-22962c411384" ReqIFDescription="" ReqIFLongName="AttrDefEnum"
+              multiValued="true"/>
         </ownedTypes>
         <ownedTypes xsi:type="Requirements:RequirementType" id="db47fca9-ddb6-4397-8d4b-e397e53d277e"
             ReqIFLongName="ReqType">
@@ -117,9 +142,27 @@
           <ownedAttributes xsi:type="Requirements:AttributeDefinitionEnumeration"
               id="c316ab07-c5c3-4866-a896-92e34733055c" ReqIFLongName="AttrDefEnum"
               definitionType="#637caf95-3229-4607-99a0-7d7b990bc97f"/>
+          <ownedAttributes xsi:type="Requirements:AttributeDefinitionEnumeration"
+              id="f31d4dd3-99f7-41d1-b1ce-f07b20d26eac" ReqIFLongName="MultiEnum"
+              definitionType="#637caf95-3229-4607-99a0-7d7b990bc97f" multiValued="true"/>
+          <ownedAttributes xsi:type="Requirements:AttributeDefinition" id="0bd40628-10a5-451e-86da-187c93bc3b10"
+              ReqIFLongName="version" definitionType="#3b7ec38a-e26a-4c23-9fa3-275af3f629ee"/>
         </ownedTypes>
-        <ownedTypes xsi:type="Requirements:RelationType" id="cc9f7f73-2e21-405d-a87c-f29db71bded6"
-            ReqIFLongName="Arbitrary"/>
+      </ownedExtensions>
+      <ownedExtensions xsi:type="CapellaRequirements:CapellaModule" id="637aeba7-4125-4bf4-95e4-3ce603ac3d40"
+          ReqIFLongName="Module" ReqIFName="Next Module" moduleType="#3a284e44-3b63-48a7-85e9-caeb967c930c">
+        <ownedRequirements xsi:type="Requirements:Requirement" id="1092f69a-5f3a-4fe6-a8fd-b2dffde90650"
+            ReqIFLongName="TestReq" ReqIFName="TestReq" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+          <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="911816fb-60e8-4730-90b1-69bbf63afa90"
+              definition="#0bd40628-10a5-451e-86da-187c93bc3b10" value="1"/>
+        </ownedRequirements>
+      </ownedExtensions>
+      <ownedExtensions xsi:type="CapellaRequirements:CapellaTypesFolder" id="8748fafc-57e0-4b76-ae0c-36f005272daf"
+          ReqIFLongName="Additional Types">
+        <ownedTypes xsi:type="Requirements:ModuleType" id="3a284e44-3b63-48a7-85e9-caeb967c930c"
+            ReqIFLongName="Other Module"/>
+        <ownedTypes xsi:type="Requirements:RequirementType" id="00195554-8fae-4687-86ca-77c93330893d"
+            ReqIFLongName="Other"/>
       </ownedExtensions>
       <ownedFunctionPkg xsi:type="org.polarsys.capella.core.data.oa:OperationalActivityPkg"
           id="fb79bf91-f946-4d5b-8a3f-a4b2d28eed5c" name="Operational Activities">
@@ -460,7 +503,7 @@ The predator is far away</bodies>
               id="039b1462-8dd0-4bfd-a52d-0c6f1484aa6e" name="" constrainedElements="#3b83b4ba-671a-4de8-9c07-a5c6b1d3c422">
             <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
                 id="c258a012-49dd-44f0-b5f9-2e5dd0b68a31">
-              <bodies> &lt;a href=&quot;dd2d0dab-a35f-4104-91e5-b412f35cba15&quot;/></bodies>
+              <bodies>&lt;a href=&quot;dd2d0dab-a35f-4104-91e5-b412f35cba15&quot;/></bodies>
               <languages>capella:linkedText</languages>
             </ownedSpecification>
           </ownedConstraints>
@@ -1005,6 +1048,17 @@ The predator is far away</bodies>
     </ownedArchitectures>
     <ownedArchitectures xsi:type="org.polarsys.capella.core.data.ctx:SystemAnalysis"
         id="79d35fe7-f172-4405-b499-48aef545148a" name="System Analysis">
+      <ownedExtensions xsi:type="CapellaRequirements:CapellaModule" id="f66cb4f3-7593-44aa-a7b2-1e42d8b9f160">
+        <ownedRequirements xsi:type="Requirements:Requirement" id="32d66740-e428-4600-be68-8410d9d568cc"
+            requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+          <ownedAttributes xsi:type="Requirements:IntegerValueAttribute" id="8359da37-21bf-4394-b7d2-22686ccebe55"
+              definition="#0bd40628-10a5-451e-86da-187c93bc3b10" value="1"/>
+        </ownedRequirements>
+        <ownedRequirements xsi:type="Requirements:Requirement" id="7e8d0edf-67f0-48c5-82f6-ec9cdb809eee"
+            ReqIFLongName="Undefined type"/>
+        <ownedRequirements xsi:type="Requirements:Requirement" id="db4d4c74-b913-4d9a-8905-7d93d3360560"
+            ReqIFLongName="Other type" requirementType="#00195554-8fae-4687-86ca-77c93330893d"/>
+      </ownedExtensions>
       <ownedFunctionPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemFunctionPkg"
           id="17cbefe8-c2ca-49aa-9aef-23259969ac91" name="System Functions">
         <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
@@ -1025,8 +1079,9 @@ The predator is far away</bodies>
             <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
                 id="00e7b925-cf4c-4cb0-929e-5409a1cd872b" name="Sysexfunc">
               <ownedExtensions xsi:type="CapellaRequirements:CapellaOutgoingRelation"
-                  id="bfdf7e90-5bb8-483a-bed6-ce365ba8c35b" relationType="#f1aceb81-5f70-4469-a127-94830eb9be04"
-                  source="#00e7b925-cf4c-4cb0-929e-5409a1cd872b" target="#3c2d312c-37c9-41b5-8c32-67578fa52dc3"/>
+                  id="6af6ff84-8957-481f-8684-2405ffa15804" ReqIFIdentifier="1" ReqIFDescription="This is a relation."
+                  ReqIFLongName="Test Relation" relationType="#f1aceb81-5f70-4469-a127-94830eb9be04"
+                  source="#00e7b925-cf4c-4cb0-929e-5409a1cd872b" target="#85d41db2-9e17-438b-95cf-49342452ddf3"/>
               <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
                   id="5a589076-b839-4606-9e0b-c9d76677af38" name="FOP 1"/>
             </ownedSystemFunctions>
@@ -1204,6 +1259,11 @@ The predator is far away</bodies>
             name="Gerard Butler" abstractType="#6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="3c7d40ac-4f28-4dc0-90e3-9ff856eaa058"
             name="SystemActor" abstractType="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+        <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+            id="9806df59-397c-4505-918f-3b1288638251" name="RootStateMachine">
+          <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+              id="297f4bdd-af81-4050-a066-e252f7b8e35d" name="Default Region"/>
+        </ownedStateMachines>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
             id="230c4621-7e0a-4d0a-9db2-d4ba5e97b3df" name="System">
           <ownedTraces xsi:type="org.polarsys.capella.core.data.capellacommon:TransfoLink"

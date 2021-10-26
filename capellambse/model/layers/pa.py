@@ -21,7 +21,7 @@ import operator
 
 from .. import common as c
 from .. import crosslayer, diagram
-from ..crosslayer import cs, fa
+from ..crosslayer import capellacommon, cs, fa
 from . import la
 
 XT_ARCH = "org.polarsys.capella.core.data.pa:PhysicalArchitecture"
@@ -97,6 +97,9 @@ class PhysicalComponentPkg(c.GenericElement):
     _xmltag = "ownedPhysicalComponentPkg"
 
     components = c.ProxyAccessor(PhysicalComponent, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
@@ -128,7 +131,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_physical_links = c.ProxyAccessor(
         cs.PhysicalLink, aslist=c.ElementList, deep=True
     )
-    diagrams = diagram.DiagramAccessor(
+    diagrams = diagram.DiagramAccessor(  # type: ignore[assignment]
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
     )
 

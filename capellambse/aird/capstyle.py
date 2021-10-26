@@ -50,7 +50,7 @@ class RGB(t.NamedTuple):
         return f"{self.r:02X}{self.g:02X}{self.b:02X}{int(self.a * 255):02X}"
 
     @classmethod
-    def fromcss(cls, cssstring: t.Union[str, RGB]) -> RGB:
+    def fromcss(cls, cssstring: str | RGB) -> RGB:
         """Create an RGB from a CSS color definition.
 
         Examples of recognized color definitions and their equivalent
@@ -124,7 +124,7 @@ class RGB(t.NamedTuple):
         )
 
 
-def get_style(diagramclass: str, objectclass: str) -> t.Dict[str, t.Any]:
+def get_style(diagramclass: str, objectclass: str) -> dict[str, t.Any]:
     r"""Fetch the default style for the given drawtype and styleclass.
 
     The style is returned as a dict with key-value pairs as used by CSS
@@ -170,7 +170,7 @@ def get_style(diagramclass: str, objectclass: str) -> t.Dict[str, t.Any]:
 
 
 #: This dict maps the color names used by Capella to RGB tuples.
-COLORS: t.Dict[str, RGB] = {
+COLORS: dict[str, RGB] = {
     # System palette
     "black": RGB(0, 0, 0),
     "dark_gray": RGB(69, 69, 69),
@@ -270,8 +270,8 @@ COLORS: t.Dict[str, RGB] = {
 #: 2. __GLOBAL__, element type and class
 #: 3. Diagram class specific, only element type
 #: 4. __GLOBAL__, only element type
-CSSdef = t.Union[None, str, int, RGB, t.List[RGB]]
-STYLES: t.Dict[str, t.Dict[str, t.Dict[str, CSSdef]]] = {
+CSSdef = t.Union[int, str, RGB, t.List[RGB], None]
+STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
     "__GLOBAL__": {  # Global defaults
         "Box": {
             "fill": "transparent",
@@ -353,12 +353,20 @@ STYLES: t.Dict[str, t.Dict[str, t.Dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Interface_Border_Reddish"],
             "text_fill": COLORS["black"],
         },
+        "Edge.Association": {
+            "stroke": COLORS["_CAP_Association_Color"],
+            "marker-end": "FineArrowMark",
+        },
         "Edge.ExchangeItemElement": {  # DT_ExchangeItemElement
             "stroke": COLORS["black"],
             "stroke-dasharray": "5",
             "text_fill": COLORS["black"],
             "marker-start": "DiamondMark",
             "marker-end": "ArrowMark",
+        },
+        "Edge.Generalization": {
+            "stroke": COLORS["black"],
+            "marker-end": "GeneralizationMark",
         },
     },
     "Contextual Capability": {

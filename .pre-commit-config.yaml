@@ -4,7 +4,6 @@ repos:
     rev: v4.0.1
     hooks:
       - id: check-added-large-files
-      - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -29,3 +28,8 @@ repos:
     rev: 5.9.3
     hooks:
       - id: isort
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910
+    hooks:
+    - id: mypy
+      additional_dependencies: [types-docutils==0.17.0, sphinx]

@@ -14,7 +14,7 @@
 from capellambse.loader import xmltools
 
 from .. import common as c
-from . import information
+from . import capellacommon, information
 
 
 class Component(c.GenericElement):
@@ -33,6 +33,10 @@ class Component(c.GenericElement):
     )
 
     owner = c.ParentAccessor(c.GenericElement)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+
     parts: c.Accessor
 
 

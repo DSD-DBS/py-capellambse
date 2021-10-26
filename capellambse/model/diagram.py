@@ -23,6 +23,8 @@ import traceback
 import typing as t
 import uuid
 
+import markupsafe
+
 import capellambse.svg
 
 from .. import aird
@@ -62,7 +64,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
 
-    def __dir__(self) -> t.List[str]:
+    def __dir__(self) -> list[str]:
         return dir(type(self)) + [
             f"as_{i.name}"
             for i in imm.entry_points()["capellambse.diagram.formats"]
@@ -86,6 +88,18 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __repr__(self) -> str:
         return f"<Diagram {self.name!r}>"
+
+    def __html__(self) -> markupsafe.Markup:
+        return (
+            markupsafe.Markup("<figure>")
+            + markupsafe.Markup(self.render("svg"))
+            + markupsafe.Markup("<figcaption>")
+            + self.name
+            + markupsafe.Markup("</figcaption></figure>")
+        )
+
+    def _repr_svg_(self):
+        return self.render("svg")
 
     @property
     def nodes(self) -> c.MixedElementList:
@@ -120,7 +134,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def render(self, fmt: str) -> t.Any:
         ...
 
-    def render(self, fmt: t.Optional[str]) -> t.Any:
+    def render(self, fmt: str | None) -> t.Any:
         """Render the diagram in the given format."""
         # pylint: disable=broad-except
         conv: DiagramConverter
@@ -202,12 +216,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 class Diagram(AbstractDiagram):
     """Provides access to a single diagram."""
 
-    uuid = property(operator.attrgetter("_element.uid"))
+    uuid: str = property(operator.attrgetter("_element.uid"))  # type: ignore[assignment]
     xtype = "viewpoint:DRepresentationDescriptor"
-    name = property(operator.attrgetter("_element.name"))
-    viewpoint = property(operator.attrgetter("_element.viewpoint"))
-    target = property(lambda self: self._model.by_uuid(self.target_uuid))
-    target_uuid = property(lambda self: self._element.target.split("#")[-1])
+    name: str = property(operator.attrgetter("_element.name"))  # type: ignore[assignment]
+    viewpoint: str = property(operator.attrgetter("_element.viewpoint"))  # type: ignore[assignment]
+    target: c.GenericElement = property(lambda self: self._model.by_uuid(self.target_uuid))  # type: ignore[assignment]
+    target_uuid: str = property(lambda self: self._element.target.split("#")[-1])  # type: ignore[assignment]
     """Provides slightly better performance than ``target.uuid``."""
 
     _element: aird.DiagramDescriptor
@@ -259,9 +273,9 @@ class DiagramAccessor(c.Accessor):
 
     def __init__(
         self,
-        viewpoint: t.Optional[str] = None,
+        viewpoint: str | None = None,
         *,
-        cacheattr: t.Optional[str] = None,
+        cacheattr: str | None = None,
     ) -> None:
         super().__init__()
         self.cacheattr = cacheattr

@@ -64,7 +64,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+# exclude_patterns = []
 
 
 # -- General information about the project -----------------------------------
@@ -97,7 +97,6 @@ html_theme_options = {
     "collapse_navigation": True,
 }
 html_short_title = "Python Capella MBSE Tools"
-html_logo = "_static/PyCap_logo3.svg"
 html_show_sourcelink = False
 html_context = {
     "dependencies": install_requirements,

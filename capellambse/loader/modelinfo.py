@@ -14,17 +14,16 @@
 from __future__ import annotations
 
 import dataclasses
-import typing as t
 
 
 @dataclasses.dataclass
 class ModelInfo:
-    branch: t.Optional[str] = None
-    title: t.Optional[str] = None
-    url: t.Optional[str] = None
-    short_rev: t.Optional[str] = None
-    rev_hash: t.Optional[str] = None
-    capella_version: t.Optional[str] = None
+    branch: str | None = None
+    title: str | None = None
+    url: str | None = None
+    revision: str | None = None
+    rev_hash: str | None = None
+    capella_version: str | None = None
 
     def __post_init__(self) -> None:
         self.set_project_url()
@@ -53,5 +52,5 @@ class ModelInfo:
             if not self.url.startswith("https://"):
                 self.url = None
 
-    def as_dict(self) -> t.Dict[str, t.Optional[str]]:
+    def as_dict(self) -> dict[str, str | None]:
         return dataclasses.asdict(self)

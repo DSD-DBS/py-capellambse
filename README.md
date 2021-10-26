@@ -46,12 +46,6 @@ We designed the library API such that it is easy to use and discover, however th
 To provide same look and feel across platforms our diagraming engine uses OpenSans font. And to simplify the library installation and usage we decided to redistribute it in accordance with SIL Open Font License 1.1 that it has at the moment: The bundled OpenSans font (`capellambse/OpenSans-Regular.ttf`) is
 Copyright 2020 [The Open Sans Project Authors](https://github.com/googlefonts/opensans), the copy of License text can be seen in `LICENSE-OpenSans.txt`.
 
-We also have some optional functionality (automatic generation of diagrams and layouts) that uses [elk.js](TODO). However we dont re-distribute elk.js with this library so if you like trying the auto-gen features you'll need to:
-
-* make sure you have nodejs available in the PATH (version of node should be compatible with elk.js)
-* make sure npm is available in the PATH
-* call the generative API first time and the auto-install will trigger
-
 ## Current limitations
 
 We are continuously improving coverage of Capella onthology with our [high-level API](TODO) (the current coverage map is available [here](TODO)), however it is still incomplete. It covers most of the commonly used paths but when you need to get to an ontology element that isnt covered yet you may do so by using the [low-level API](TODO).
@@ -62,5 +56,4 @@ The generated diagrams (elk.js based) are currently not persisted in .aird files
 
 ## Contributing
 
-We'd love to see your bug reports and improvement suggestions. Contribution rules will be available soon-ish.
-As a basic requirement your code needs to go through [black formatter]() and [isort](TODO)
+We'd love to see your bug reports and improvement suggestions! Please take a look at [guidelines for contributors](CONTRIBUTING.md).

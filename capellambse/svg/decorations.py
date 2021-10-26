@@ -14,6 +14,7 @@
 """The decoration factories for svg elements."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import re
 import typing as t
@@ -38,15 +39,18 @@ start_aligned = {
 only_icons = {"Requirement"}
 # TODO: Instead of dirty-patching either rename FunctionalExchange in OA-Layer as
 # ActivityExchange/OperationalExchange
-DiagramClass, FaultyClass, PatchClass = str, str, str
-needs_patch: t.Dict[DiagramClass, t.Dict[FaultyClass, PatchClass]] = {
+DiagramClass = str
+FaultyClass = str
+PatchClass = str
+
+needs_patch: dict[DiagramClass, dict[FaultyClass, PatchClass]] = {
     "Operational Entity Blank": {"FunctionalExchange": "OperationalExchange"}
 }
-always_top_label = {"Note"}
+always_top_label = {"Note", "Class"}
 
 
-class DecoFactories(t.Dict[str, t.Callable[..., t.Any]]):
-    def __call__(self, func: t.Callable[..., t.Any]) -> t.Callable[..., t.Any]:
+class DecoFactories(t.Dict[str, cabc.Callable]):
+    def __call__(self, func: cabc.Callable) -> cabc.Callable:
         symbol_name = re.sub(
             "(?:^|_)([a-z])",
             lambda m: m.group(1).capitalize(),
@@ -55,7 +59,7 @@ class DecoFactories(t.Dict[str, t.Callable[..., t.Any]]):
         self[symbol_name] = func
         return func
 
-    def __missing__(self, class_: str) -> t.Callable:
+    def __missing__(self, class_: str) -> cabc.Callable:
         logger.error("%s wasn't found in factories.", class_)
         assert "ErrorSymbol" in self
         return self["ErrorSymbol"]

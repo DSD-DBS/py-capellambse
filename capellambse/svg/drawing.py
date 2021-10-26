@@ -14,6 +14,7 @@
 """Custom extensions to the svgwrite ``Drawing`` object."""
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import os
 import re
@@ -30,6 +31,21 @@ LOGGER = logging.getLogger(__name__)
 DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
 
 
+LabelDict = t.TypedDict(
+    "LabelDict",
+    {
+        "x": float,
+        "y": float,
+        "width": float,
+        "height": float,
+        "text": str,
+        "class": str,
+    },
+    total=False,
+)
+
+
+# FIXME: refactor this, so a Drawing contains an "svg drawing". Always prefer composition over inheritance.
 class Drawing(drawing.Drawing):
     """The main container that stores all svg elements."""
 
@@ -45,14 +61,14 @@ class Drawing(drawing.Drawing):
         super().__init__(**superparams)
         self.diagram_class = metadata.class_
         self.stylesheet = self.make_stylesheet()
-        self.obj_cache: t.Dict[str, t.Any] = {}
+        self.obj_cache: dict[str | None, t.Any] = {}
         self.requires_deco_patch = decorations.needs_patch.get(
             self.diagram_class, {}
         )
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
 
     def add_backdrop(
-        self, pos: t.Tuple[float, float], size: t.Tuple[float, float]
+        self, pos: tuple[float, float], size: tuple[float, float]
     ) -> None:
         """Add a white background rectangle to the drawing."""
         self.__backdrop = self.rect(
@@ -80,13 +96,13 @@ class Drawing(drawing.Drawing):
 
     def add_rect(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
-        rectstyle: t.Mapping[str, style.Styling],
+        pos: tuple[float, float],
+        size: tuple[float, float],
+        rectstyle: cabc.Mapping[str, style.Styling],
         *,
-        class_: str = None,
-        label: t.Mapping[str, str | int | float] = None,
-        features: t.Sequence[str] = (),
+        class_: str = "",
+        label: LabelDict | None = None,
+        features: cabc.Sequence[str] = (),
         id_: str = None,
         children: bool = False,
     ) -> container.Group:
@@ -145,19 +161,20 @@ class Drawing(drawing.Drawing):
     def _draw_feature_line(
         self,
         obj: base.BaseElement,
-        group: t.Optional[container.Group],
-        objstyle: t.Optional[style.Styling],
-    ) -> t.Union[shapes.Line, None]:
+        group: container.Group | None,
+        objstyle: style.Styling | None,
+    ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
+        style: str | None = None
         if objstyle is not None:
-            objstyle = objstyle["stroke"] if "stroke" in objstyle else None
+            style = objstyle["stroke"] if "stroke" in objstyle else None
 
         line = self.line(
             start=(x, y + decorations.feature_space),
             end=(x + w, y + decorations.feature_space),
-            style=objstyle,
+            style=style,
         )
         if group is None:
             return line
@@ -167,15 +184,15 @@ class Drawing(drawing.Drawing):
     def _draw_feature_text(
         self,
         obj: base.BaseElement,
-        features: t.List[str],
-        class_: t.Optional[str],
+        features: cabc.Sequence[str],
+        class_: str,
         group: container.Group,
-        labelstyle: t.Optional[style.Styling],
+        labelstyle: style.Styling | None,
     ) -> None:
         """Draw features text on given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w, h = obj.attribs["width"], obj.attribs["height"]
-        label = {
+        label: LabelDict = {
             "x": x,
             "y": y + decorations.feature_space,
             "width": w,
@@ -196,13 +213,13 @@ class Drawing(drawing.Drawing):
 
     def _draw_box_label(
         self,
-        label: t.Dict[str, str | int | float],
+        label: LabelDict,
         group: container.Group,
         *,
-        class_: t.Optional[str],
-        labelstyle: t.Optional[style.Styling],
+        class_: str,
+        labelstyle: style.Styling | None,
         text_anchor: str = "start",
-        y_margin: t.Optional[int | float],
+        y_margin: int | float | None,
         icon: bool = True,
         icon_size: float | int = decorations.icon_size,
     ) -> container.Group:
@@ -219,12 +236,13 @@ class Drawing(drawing.Drawing):
         )
 
         if DEBUG:
-            debug_y = label["y"] + y_margin
+            debug_y = int(label["y"]) + y_margin
             debug_y1 = (
-                label["y"] + (label["height"] - decorations.icon_size) / 2
+                int(label["y"])
+                + (int(label["height"]) - decorations.icon_size) / 2
             )
             x = (
-                label["x"]
+                int(label["x"])
                 + decorations.icon_size
                 + 2 * decorations.icon_padding
             )
@@ -233,8 +251,10 @@ class Drawing(drawing.Drawing):
             else:
                 debug_height = decorations.icon_size
 
-            bbox = {
-                "x": x if text_anchor == "start" else x - label["width"] / 2,
+            bbox: LabelDict = {
+                "x": x
+                if text_anchor == "start"
+                else x - int(label["width"]) / 2,
                 "y": debug_y if debug_y <= debug_y1 else debug_y1,
                 "width": label["width"],
                 "height": debug_height,
@@ -261,16 +281,16 @@ class Drawing(drawing.Drawing):
 
     def _draw_label(
         self,
-        label: t.Dict[str, str | int | float],
+        label: LabelDict,
         group: container.Group,
         *,
         class_: str,
-        labelstyle: style.Styling,
+        labelstyle: style.Styling | None,
         text_anchor: str = "start",
         icon: bool = True,
         icon_size: float | int = decorations.icon_size,
-        y_margin: t.Optional[int | float],
-    ) -> t.Tuple[float, float, float, float | int]:
+        y_margin: int | float | None,
+    ) -> tuple[float, float, float, float | int]:
         assert isinstance(label["x"], (int, float))
         assert isinstance(label["y"], (int, float))
         assert isinstance(label["width"], (int, float))
@@ -283,7 +303,7 @@ class Drawing(drawing.Drawing):
             class_=label["class"],
             text_anchor=text_anchor,
             dominant_baseline="middle",
-            style=labelstyle[""],
+            style=labelstyle[""],  # type: ignore[index]  # FIXME: What does this mean?
         )
         group.add(text)
         render_icon = False
@@ -296,7 +316,7 @@ class Drawing(drawing.Drawing):
             label_margin,
             max_text_width,
         ) = helpers.check_for_horizontal_overflow(
-            label["text"],
+            str(label["text"]),
             label["width"],
             decorations.icon_padding if render_icon else 0,
             icon_size if render_icon else 0,
@@ -350,8 +370,8 @@ class Drawing(drawing.Drawing):
     def add_label_image(
         self,
         group: container.Group,
-        class_: t.Optional[str],
-        pos: t.Tuple[float, float],
+        class_: str | None,
+        pos: tuple[float, float],
         icon_size: float | int = decorations.icon_size,
     ) -> None:
         """Add label svgobject to given group."""
@@ -368,10 +388,10 @@ class Drawing(drawing.Drawing):
 
     def get_port_transformation(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
+        pos: tuple[float, float],
+        size: tuple[float, float],
         class_: str,
-        parent_id: str,
+        parent_id: str | None,
     ) -> str:
         """Return rotation transformation for port-object-styling."""
         rect = self.obj_cache[parent_id]
@@ -391,13 +411,13 @@ class Drawing(drawing.Drawing):
 
     def add_port(
         self,
-        pos: t.Tuple[float, float],
-        size: t.Tuple[float, float],
+        pos: tuple[float, float],
+        size: tuple[float, float],
         text_style: style.Styling,
-        parent_id: str,
+        parent_id: str | None,
         *,
         class_: str,
-        label: t.Dict[str, t.Union[str, int, float]] = None,
+        label: LabelDict | None = None,
         id_: str = None,
     ) -> container.Group:
         grp = self.g(class_=f"Box {class_}", id_=id_)
@@ -444,7 +464,7 @@ class Drawing(drawing.Drawing):
 
         return grp
 
-    def draw_object(self, obj: t.Mapping[str, t.Any]) -> None:
+    def draw_object(self, obj: cabc.Mapping[str, t.Any]) -> None:
         """Draw an object into this drawing.
 
         Parameters
@@ -461,7 +481,7 @@ class Drawing(drawing.Drawing):
             f"{k}_": v for k, v in obj.items() if k not in {"type", "style"}
         }
         if obj["class"] in decorations.all_ports:
-            obj["type"] = "box"
+            obj["type"] = "box"  # type: ignore[index]  # FIXME: *HACK* should actually copy the object before modifying
 
         class_: str = obj["type"].capitalize() + (
             f".{obj['class']}" if "class" in obj else ""
@@ -496,13 +516,13 @@ class Drawing(drawing.Drawing):
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        context_: t.Sequence[str] = (),
+        context_: cabc.Sequence[str] = (),
         parent_: str = None,
-        label_: t.Mapping[str, t.Any] = None,
+        label_: LabelDict | None = None,
         id_: str = None,
-        class_: str = None,
-        obj_style: t.Mapping[str, t.Any],
-        text_style: t.Mapping[str, t.Any],
+        class_: str,
+        obj_style: style.Styling,
+        text_style: style.Styling,
         **kw: t.Any,
     ):
         del obj_style, context_  # FIXME Add context to SVG
@@ -537,9 +557,9 @@ class Drawing(drawing.Drawing):
         self,
         *,
         grp: container.Group = None,
-        label_: t.Mapping[str, t.Any] = None,
-        class_: str = None,
-        text_style: t.Mapping[str, t.Any],
+        label_: LabelDict,
+        class_: str,
+        text_style: style.Styling,
     ) -> None:
         label_["class"] = "Annotation"
         self._draw_label(
@@ -559,23 +579,24 @@ class Drawing(drawing.Drawing):
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        context_: t.Sequence[str] = (),
-        children_: t.Sequence[str] = (),
-        features_: t.Sequence[str] = (),
-        label_: str | t.Mapping[str, t.Any] = None,
-        id_: str = None,
-        class_: str = None,
-        obj_style: t.Mapping[str, t.Any],
-        text_style: t.Mapping[str, t.Any],
+        context_: cabc.Sequence[str] = (),
+        children_: cabc.Sequence[str] = (),
+        features_: cabc.Sequence[str] = (),
+        label_: str | LabelDict | None = None,
+        id_: str,
+        class_: str,
+        obj_style: style.Styling,
+        text_style: style.Styling,
         **kw: t.Any,
     ) -> None:
         del context_  # FIXME Add context to SVG
         del kw  # Dismiss additional info from json, for e.g.: ports_
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
-        obj_style = {"text_style": text_style, "obj_style": obj_style}
+        rect_style = {"text_style": text_style, "obj_style": obj_style}
+        label: LabelDict | None = None
         if isinstance(label_, str):
-            label_ = {
+            label = {
                 "x": x_,
                 "y": y_,
                 "width": width_,
@@ -584,15 +605,16 @@ class Drawing(drawing.Drawing):
                 "class": class_ or "Box",
             }
         elif label_ is not None:
-            label_["class"] = "Annotation"
+            label = label_
+            label["class"] = "Annotation"
 
         grp = self.add_rect(
             pos,
             size,
-            obj_style,
+            rect_style,
             class_=class_,
             id_=id_,
-            label=label_,
+            label=label,
             features=features_,
             children=bool(children_),
         )
@@ -605,11 +627,11 @@ class Drawing(drawing.Drawing):
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        label_: t.Mapping[str, t.Any] = None,
-        id_: str = None,
-        class_: str = None,
-        obj_style: t.Mapping[str, t.Any],
-        text_style: t.Mapping[str, t.Any],
+        label_: LabelDict,
+        id_: str,
+        class_: str,
+        obj_style: style.Styling,
+        text_style: style.Styling,
         **kw: t.Any,
     ) -> None:
         del kw
@@ -641,16 +663,16 @@ class Drawing(drawing.Drawing):
     def _draw_edge(
         self,
         *,
-        points_: t.List[t.List[int]],
-        label_: t.Optional[t.Dict[str, t.Union[str, int, float]]] = None,
-        id_: t.Optional[str] = None,
-        class_: t.Optional[str] = None,
+        points_: list[list[int]],
+        label_: LabelDict = None,
+        id_: str,
+        class_: str,
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw,
     ):
         del kw  # Dismiss additional info from json
-        points = [(x + 0.5, y + 0.5) for x, y in points_]
+        points: list = [(x + 0.5, y + 0.5) for x, y in points_]
         grp = self.g(class_=f"Edge {class_}", id_=id_)
         grp.add(
             self.path(d=["M"] + points, class_="Edge", style=obj_style[""])
@@ -674,11 +696,11 @@ class Drawing(drawing.Drawing):
 
     def _draw_edge_label(
         self,
-        label: t.Dict[str, t.Union[str, int, float]],
+        label: LabelDict,
         group: container.Group,
         *,
-        class_: t.Optional[str],
-        labelstyle: t.Optional[style.Styling],
+        class_: str,
+        labelstyle: style.Styling,
         text_anchor: str = "start",
         y_margin: int | float,
     ) -> container.Group:
@@ -705,10 +727,10 @@ class Drawing(drawing.Drawing):
 
     def _draw_label_bbox(
         self,
-        label: t.Dict[str, t.Union[str, int, float]],
-        group: t.Optional[container.Group] = None,
-        class_: t.Optional[str] = None,
-        obj_style: t.Optional[style.Styling] = None,
+        label: LabelDict,
+        group: container.Group | None = None,
+        class_: str | None = None,
+        obj_style: style.Styling | None = None,
     ) -> None:
         """Draw a bounding box for given label."""
         if DEBUG:
@@ -734,10 +756,10 @@ class Drawing(drawing.Drawing):
 
     def _draw_line(
         self,
-        data: t.Dict[str, t.Union[int, float]],
-        group: t.Optional[container.Group] = None,
-        obj_style: t.Optional[style.Styling] = None,
-    ) -> t.Union[shapes.Line, None]:
+        data: dict[str, float | int],
+        group: container.Group | None = None,
+        obj_style: style.Styling | None = None,
+    ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x1, y1 = data["x"], data["y"]
         x2 = data.get("x1") or data["x"] + data["width"]
@@ -750,8 +772,8 @@ class Drawing(drawing.Drawing):
 
     def _draw_rect_helping_lines(
         self,
-        rect_pos: t.Tuple[float, float],
-        rect_size: t.Tuple[float, float],
+        rect_pos: tuple[float, float],
+        rect_size: tuple[float, float],
     ):
         linestyle = style.Styling(
             self.diagram_class,

@@ -16,7 +16,6 @@
 .. diagram:: [CDB] OA ORM
 """
 import operator
-import typing as t
 
 from .. import common as c
 from .. import crosslayer, diagram
@@ -114,10 +113,6 @@ class AbstractEntity(cs.Component):
         aslist=c.ElementList,
         follow="targetElement",
     )
-    state_machines = c.ProxyAccessor(
-        capellacommon.StateMachine,
-        aslist=c.ElementList,
-    )
     capabilities = c.CustomAccessor(
         OperationalCapability,
         operator.attrgetter("_model.oa.all_capabilities"),
@@ -153,6 +148,9 @@ class EntityPkg(c.GenericElement):
     _xmltag = "ownedEntityPkg"
 
     entities = c.ProxyAccessor(Entity, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
@@ -174,10 +172,10 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
         deep=True,
     )
-    all_actors = c.CustomAccessor(
+    all_actors = c.CustomAccessor(  # type: ignore[misc]
         Entity,
         operator.attrgetter("all_entities"),
-        elmmatcher=lambda x, _: t.cast(Entity, x).is_actor,
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
         aslist=c.ElementList,
     )
     all_capabilities = c.ProxyAccessor(

@@ -18,11 +18,10 @@
 from __future__ import annotations
 
 import operator
-import typing as t
 
 from .. import common as c
 from .. import crosslayer, diagram
-from ..crosslayer import cs, fa
+from ..crosslayer import capellacommon, cs, fa
 from . import ctx
 
 XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
@@ -89,6 +88,9 @@ class LogicalComponentPkg(c.GenericElement):
     _xmltag = "ownedLogicalComponentPkg"
 
     components = c.ProxyAccessor(LogicalComponent, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
@@ -137,10 +139,10 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_components = c.ProxyAccessor(  # maybe this should exclude .is_actor
         LogicalComponent, aslist=c.ElementList, deep=True
     )
-    all_actors = c.CustomAccessor(
+    all_actors: c.CustomAccessor[LogicalComponent] = c.CustomAccessor(  # type: ignore[misc]
         LogicalComponent,
         operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: t.cast(LogicalComponent, x).is_actor,
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
         aslist=c.ElementList,
     )
     all_functions = c.ProxyAccessor(

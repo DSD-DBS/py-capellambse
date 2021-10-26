@@ -32,10 +32,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python_version: ["3.8", "3.9"]
+        python_version: ["3.8", "3.9", "3.10"]
         include:
-          - os: macos-latest
-            python_version: "3.8"
           - os: windows-latest
             python_version: "3.8"
     steps:

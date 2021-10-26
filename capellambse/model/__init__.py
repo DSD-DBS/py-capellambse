@@ -57,7 +57,7 @@ class MelodyModel:
     )
 
     def __init__(
-        self, path: t.Union[str, bytes, os.PathLike], **kwargs: t.Any
+        self, path: str | bytes | os.PathLike, **kwargs: t.Any
     ) -> None:
         """Load a project from the filesystem.
 
@@ -110,22 +110,45 @@ class MelodyModel:
     def _model(self) -> MelodyModel:
         return self
 
-    def save(self) -> None:
-        """Save the model back to where it was loaded from."""
-        self._loader.save()
+    def save(self, **kw: t.Any) -> None:
+        """Save the model back to where it was loaded from.
+
+        Parameters
+        ----------
+        kw
+            Additional keyword arguments accepted by the file handler in
+            use. Please see the respective documentation for more info.
+
+        See Also
+        --------
+        capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :
+            Accepted ``**kw`` when using local directories
+        capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+            Accepted ``**kw`` when using ``git://`` and similar URLs
+        """
+        self._loader.save(**kw)
 
     def search(
-        self, *xtypes: t.Union[str, t.Type[common.GenericElement]]
-    ) -> common.MixedElementList:
-        r"""Search for all elements with any of the given ``xsi:type``\ s."""
-        xtypes_: t.List[str] = []
+        self, *xtypes: str | type[common.GenericElement]
+    ) -> common.ElementList:
+        r"""Search for all elements with any of the given ``xsi:type``\ s.
+
+        If only one xtype is given, the return type will be
+        :class:`common.ElementList`, otherwise it will be
+        :class:`common.MixedElementList`.
+        """
+        xtypes_: list[str] = []
         for i in xtypes:
             if isinstance(i, type) and issubclass(i, common.GenericElement):
                 xtypes_.append(common.build_xtype(i))
             else:
                 xtypes_.append(i)
-        return common.MixedElementList(
-            self, self._loader.find_by_xsi_type(*xtypes_)
+
+        cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
+        return cls(
+            self,
+            self._loader.find_by_xsi_type(*xtypes_),
+            common.GenericElement,
         )
 
     def by_uuid(self, uuid: str) -> common.GenericElement:

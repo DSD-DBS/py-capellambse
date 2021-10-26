@@ -11,35 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import sys
-import textwrap
 
 import pytest
 
 import capellambse
 from capellambse.model import MelodyModel, modeltypes
 
-from . import TEST_MODEL, TEST_ROOT
-
-
-@pytest.mark.parametrize(
-    "path",
-    [
-        str(TEST_ROOT / "5_0" / TEST_MODEL),
-        str(TEST_ROOT / "5_0" / TEST_MODEL).encode(
-            sys.getfilesystemencoding()
-        ),
-        TEST_ROOT / "5_0" / TEST_MODEL,
-    ],
-)
-def test_model_loading(path):
-    capellambse.MelodyModel(path)
-
-
-def test_model_loading_badpath():
-    badpath = TEST_ROOT / "TestFile.airdfragment"
-    with pytest.raises(FileNotFoundError):
-        capellambse.MelodyModel(badpath)
+from . import TEST_ROOT
 
 
 def test_model_info_contains_capella_version(model):
@@ -147,6 +127,13 @@ def test_Capabilities_have_constraints(model):
     assert len(elm.constraints) == 3
 
 
+def test_stm_accessible_from_component_pkg(model):
+    comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")
+    stm = comp.state_machines.by_uuid("9806df59-397c-4505-918f-3b1288638251")
+
+    assert stm.name == "RootStateMachine"
+
+
 def test_stm(model):
     entity = model.oa.all_entities.by_name("Functional Human Being")
     state_machine = entity.state_machines[0]
@@ -193,7 +180,7 @@ def test_stm_transition(model):
 
     assert hasattr(transition, "guard")
     assert transition.guard is not None
-    assert transition.guard.specification.text == "Food is cooked"
+    assert transition.guard.specification["LinkedText"] == "Food is cooked"
 
     assert hasattr(transition, "triggers")
     assert transition.triggers is not None
@@ -204,115 +191,8 @@ def test_stm_transition_multiple_guards(model):
     transition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")
 
     assert transition.guard is not None
-    assert transition.guard.specification.text == "Actor feels hungry"
-    assert transition.guard.specification["Python"] == "self.hunger &gt;= 0.8"
-
-
-def test_path_nesting(model):
-    modules = model.oa.requirement_modules
-    assert 1 == len(modules)
-    assert 1 == len(modules[0].folders)
-    assert 1 == len(modules[0].folders[0].folders)
-    assert 1 == len(modules[0].folders[0].folders[0].requirements)
-
-
-def test_appearances(model):
-    module_repr = (
-        "<RequirementsModule 'Test Module'"
-        " (f8e2195d-b5f5-4452-a12b-79233d943d5e)>"
-    )
-    folder_repr = (
-        "<RequirementsFolder 'Test Module/This is a folder.'"
-        " (e16f5cc1-3299-43d0-b1a0-82d31a137111)>"
-    )
-    subfolder_repr = (
-        "<RequirementsFolder 'Test Module/This is a folder./Subfolder'"
-        " (e179d6ff-5301-42a6-bf6f-4fec79b18827)>"
-    )
-    req_repr = (
-        "<Requirement 'Test Module/This is a folder./Subfolder/TestReq3'"
-        " (79291c33-5147-4543-9398-9077d582576d)>"
-    )
-    rel_repr = "<RequirementsOutRelation from <Requirement 'Test Module/This is a folder./<p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>\\n\\n<p>&lt; &gt; &quot; &#39;</p>\\n\\n<ul>\\n\\t<li>This&nbsp;is a list</li>\\n\\t<li>an unordered one</li>\\n</ul>\\n\\n<ol>\\n\\t<li>Ordered list</li>\\n\\t<li>Ok</li>\\n</ol>\\n' (3c2d312c-37c9-41b5-8c32-67578fa52dc3)> to <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)> (57033242-3766-4961-8091-ce3d9326ed67)>"
-
-    module = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
-    assert module_repr == repr(module)
-
-    folder = model.by_uuid("e16f5cc1-3299-43d0-b1a0-82d31a137111")
-    assert folder_repr == repr(folder)
-
-    subfolder = model.by_uuid("e179d6ff-5301-42a6-bf6f-4fec79b18827")
-    assert subfolder_repr == repr(subfolder)
-
-    requirement = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
-    assert req_repr == repr(requirement)
-
-    relation = model.by_uuid("57033242-3766-4961-8091-ce3d9326ed67")
-    assert rel_repr == repr(relation)
-
-
-def test_requirement_attributes(model):
-    uuid = "3c2d312c-37c9-41b5-8c32-67578fa52dc3"
-    test_req = model.oa.all_requirements.by_uuid(uuid)
-    assert test_req.chapter_name == "2"
-    assert test_req.description == "This is a test requirement of kind 1."
-    assert test_req.foreign_id == 1
-    assert test_req.identifier == "REQTYPE-1"
-    assert test_req.long_name == "1"
-    assert test_req.name == "TestReq1"
-    assert test_req.prefix == "3"
-    assert test_req.text == textwrap.dedent(
-        """\
-        <p>Test requirement 1 really l o n g text that is\xa0way too long to display here as that</p>
-
-        <p>&lt; &gt; \" '</p>
-
-        <ul>
-        \t<li>This\xa0is a list</li>
-        \t<li>an unordered one</li>
-        </ul>
-
-        <ol>
-        \t<li>Ordered list</li>
-        \t<li>Ok</li>
-        </ol>
-        """
-    )
-    assert test_req.type == "ReqType"
-
-    assert len(test_req.relations) == 5
-    test_rel = test_req.relations.by_xtype(
-        "CapellaRequirements:CapellaOutgoingRelation"
-    )[0]
-    assert test_rel.source.name == "TestReq1"
-    assert test_rel.target.name == "Sysexfunc"
-    assert test_rel.type == "RelationType"
-
-
-def test_module_attributes(model):
-    test_mod = model.oa.requirement_modules.by_long_name("Module")[0]
-    assert test_mod.long_name == "Module"
-    assert test_mod.identifier == "1"
-    assert test_mod.name == "Test Module"
-    assert test_mod.prefix == "T"
-    assert test_mod.description == "This is a test requirement module."
-    assert test_mod.type == "ModuleType"
-    assert len(test_mod.folders) == 1
-
-
-def test_module_folders_attributes(model):
-    test_folder = model.oa.requirement_modules.by_name(
-        "Test Module"
-    ).folders.by_name("Folder")
-    assert test_folder.chapter_name == "C"
-    assert test_folder.description == "This is a requirements folder."
-    assert test_folder.foreign_id == 11
-    assert test_folder.identifier == "1"
-    assert test_folder.long_name == "Folder1"
-    assert test_folder.name == "Folder"
-    assert test_folder.prefix == "F"
-    assert test_folder.text == "This is a folder."
-    assert test_folder.type == "ReqType"
+    assert transition.guard.specification["LinkedText"] == "Actor feels hungry"
+    assert transition.guard.specification["Python"] == "self.hunger >= 0.8"
 
 
 def test_exchange_items_on_logical_function_exchanges(model):
@@ -374,8 +254,24 @@ def test_constraint_specification_has_linked_object_name_in_body(
     con = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
     assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
     assert (
-        con.specification.text
-        == '<a href="#dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
+        con.specification["LinkedText"]
+        == '<a href="hlink://dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
+    )
+
+
+def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
+    model: MelodyModel,
+) -> None:
+    c1 = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
+    c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
+    assert isinstance(c1, capellambse.model.crosslayer.capellacore.Constraint)
+    assert isinstance(c2, capellambse.model.crosslayer.capellacore.Constraint)
+
+    c2.specification["LinkedText"] = c1.specification["LinkedText"]
+
+    assert (
+        next(c1.specification._element.iterchildren("bodies")).text
+        == next(c2.specification._element.iterchildren("bodies")).text
     )
 
 

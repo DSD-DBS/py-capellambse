@@ -39,7 +39,7 @@ def generic_factory(
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
-    boxtype: t.Union[t.Type[aird.Box], functools.partial[aird.Box]],
+    boxtype: type[aird.Box] | functools.partial[aird.Box],
     minsize: aird.Vector2D = ...,
 ) -> _T:
     ...
@@ -48,7 +48,7 @@ def generic_factory(
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
-    boxtype: t.Union[t.Type[aird.Box], functools.partial[aird.Box]] = aird.Box,
+    boxtype: type[aird.Box] | functools.partial[aird.Box] = aird.Box,
     minsize: aird.Vector2D = aird.Vector2D(148, 69),
 ) -> aird.Box:
     """Construct a Box from the diagram XML."""
@@ -400,9 +400,9 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         raise C.SkipObject() from None
     assert isinstance(parent, aird.Box)
 
-    entry: t.List[str] = []
-    do: t.List[str] = []
-    exit: t.List[str] = []
+    entry: list[str] = []
+    do: list[str] = []
+    exit: list[str] = []
     for elm in seb.diag_element.iterchildren("ownedElements"):
         elm_id = elm.get("uid")
         try:

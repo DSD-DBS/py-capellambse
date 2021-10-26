@@ -15,6 +15,7 @@
 # pylint: disable=unsubscriptable-object, not-an-iterable  # false-positives
 from __future__ import annotations
 
+import collections.abc as cabc
 import math
 import operator
 import typing as t
@@ -53,9 +54,7 @@ class Vector2D(t.NamedTuple):
     def __mul__(self, other: Vec2Element) -> Vector2D:
         ...
 
-    def __mul__(
-        self, other: t.Union[Vec2Element, Vec2ish]
-    ) -> t.Union[Vector2D, Vec2Element]:
+    def __mul__(self, other: Vec2Element | Vec2ish) -> Vector2D | Vec2Element:
         result = self.__map2(operator.mul, other)
         if result is NotImplemented:
             return self.__map(operator.mul, other)
@@ -69,9 +68,7 @@ class Vector2D(t.NamedTuple):
     def __rmul__(self, other: Vec2Element) -> Vector2D:
         ...
 
-    def __rmul__(
-        self, other: t.Union[Vec2Element, Vec2ish]
-    ) -> t.Union[Vector2D, Vec2Element]:
+    def __rmul__(self, other: Vec2Element | Vec2ish) -> Vector2D | Vec2Element:
         result = self.__map2(operator.mul, other, True)
         if result is NotImplemented:
             return self.__map(operator.mul, other, True)
@@ -193,8 +190,8 @@ class Vector2D(t.NamedTuple):
 
     def __map(
         self,
-        func: t.Callable[[Vec2Element, Vec2Element], Vec2Element],
-        other: t.Union[Vec2Element, Vec2ish],
+        func: cabc.Callable[[Vec2Element, Vec2Element], Vec2Element],
+        other: Vec2Element | Vec2ish,
         reflected: bool = False,
     ) -> Vector2D:
         if not isinstance(other, (int, float)):  # pragma: no cover
@@ -205,8 +202,8 @@ class Vector2D(t.NamedTuple):
 
     def __map2(
         self,
-        func: t.Callable[[Vec2Element, Vec2Element], Vec2Element],
-        other: t.Union[Vec2Element, Vec2ish],
+        func: cabc.Callable[[Vec2Element, Vec2Element], Vec2Element],
+        other: Vec2Element | Vec2ish,
         reflected: bool = False,
     ) -> Vector2D:
         if isinstance(other, (int, float)):  # pragma: no cover
@@ -222,9 +219,9 @@ class Vec2Property:
     """A property that automatically converts 2-tuples into Vector2D."""
 
     __slots__ = ("default", "name", "__objclass__")
-    default: t.Optional[Vector2D]
-    name: t.Optional[str]
-    __objclass__: t.Type[t.Any]
+    default: Vector2D | None
+    name: str | None
+    __objclass__: type[t.Any]
 
     def __init__(self, default: Vec2ish = None):
         if default is None or isinstance(default, Vector2D):
@@ -233,18 +230,18 @@ class Vec2Property:
             self.default = Vector2D(*default)
 
     @t.overload
-    def __get__(self, obj: None, objtype: t.Type[t.Any]) -> Vec2Property:
+    def __get__(self, obj: None, objtype: type[t.Any]) -> Vec2Property:
         ...
 
     @t.overload
     def __get__(
-        self, obj: t.Any, objtype: t.Optional[t.Type[t.Any]] = ...
+        self, obj: t.Any, objtype: type[t.Any] | None = ...
     ) -> Vector2D:
         ...
 
     def __get__(
-        self, obj: t.Optional[t.Any], objtype: t.Type[t.Any] = None
-    ) -> t.Union[Vec2Property, Vector2D]:
+        self, obj: t.Any | None, objtype: type[t.Any] = None
+    ) -> Vec2Property | Vector2D:
         if obj is None:
             return self
         if self.name is None:
@@ -263,7 +260,7 @@ class Vec2Property:
             value = Vector2D(*value)
         setattr(obj, f"_{type(self).__name__}__{self.name}", value)
 
-    def __set_name__(self, owner: t.Type[t.Any], name: str) -> None:
+    def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__objclass__ = owner
         self.name = name
 
@@ -271,8 +268,8 @@ class Vec2Property:
 class Vec2List(t.MutableSequence[Vector2D]):
     """A list that automatically converts its elements into Vector2D."""
 
-    def __init__(self, values: t.Iterable[Vec2ish]):
-        self.__list: t.List[Vector2D] = []
+    def __init__(self, values: cabc.Iterable[Vec2ish]):
+        self.__list: list[Vector2D] = []
         self.extend(values)
 
     def __len__(self) -> int:
@@ -283,12 +280,12 @@ class Vec2List(t.MutableSequence[Vector2D]):
         ...
 
     @t.overload
-    def __getitem__(self, index: slice) -> t.MutableSequence[Vector2D]:
+    def __getitem__(self, index: slice) -> cabc.MutableSequence[Vector2D]:
         ...
 
     def __getitem__(
-        self, index: t.Union[int, slice]
-    ) -> t.Union[Vector2D, t.Sequence[Vector2D]]:
+        self, index: int | slice
+    ) -> Vector2D | cabc.Sequence[Vector2D]:
         return self.__list[index]
 
     @t.overload
@@ -303,24 +300,24 @@ class Vec2List(t.MutableSequence[Vector2D]):
     def __setitem__(
         self,
         index: slice,
-        value: t.Iterable[Vec2ish],
+        value: cabc.Iterable[Vec2ish],
     ) -> None:
         ...
 
     def __setitem__(
         self,
-        index: t.Union[int, slice],
-        value: t.Union[Vec2ish, t.Iterable[Vec2ish]],
+        index: int | slice,
+        value: Vec2ish | cabc.Iterable[Vec2ish],
     ) -> None:
         if isinstance(index, slice):
             assert not isinstance(value, Vector2D)
-            value = t.cast(t.Iterable[Vec2ish], value)
+            value = t.cast(cabc.Iterable[Vec2ish], value)
             self.__list[index] = (self.__cast(v) for v in value)
         else:
             assert isinstance(value, Vector2D)
             self.__list[index] = self.__cast(value)
 
-    def __delitem__(self, index: t.Union[int, slice]) -> None:
+    def __delitem__(self, index: int | slice) -> None:
         del self.__list[index]
 
     def append(self, value: Vec2ish) -> None:
@@ -330,7 +327,7 @@ class Vec2List(t.MutableSequence[Vector2D]):
         """Create a copy of this Vec2List."""
         return Vec2List(self)
 
-    def extend(self, values: t.Iterable[Vec2ish]) -> None:
+    def extend(self, values: cabc.Iterable[Vec2ish]) -> None:
         for i in values:
             self.append(i)
 

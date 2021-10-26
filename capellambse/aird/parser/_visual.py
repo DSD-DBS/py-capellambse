@@ -19,8 +19,8 @@ hyperlinks.
 """
 from __future__ import annotations
 
+import collections.abc as cabc
 import logging
-import typing as t
 
 from capellambse import aird
 
@@ -122,8 +122,8 @@ def shape_factory(ebd: c.ElementBuilder) -> aird.Box:
     )
 
 
-VISUAL_TYPES: t.Dict[
-    str, t.Callable[[c.ElementBuilder], aird.DiagramElement]
+VISUAL_TYPES: dict[
+    str, cabc.Callable[[c.ElementBuilder], aird.DiagramElement]
 ] = {
     "BasicDecorationNode": c.SkipObject.raise_,
     "Connector": connector_factory,
