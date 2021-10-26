@@ -127,6 +127,14 @@ def test_Capabilities_have_constraints(model: MelodyModel):
     assert len(elm.constraints) == 3
 
 
+def test_SystemCapability_has_realized_capabilities(model: MelodyModel):
+    elm = model.by_uuid("9390b7d5-598a-42db-bef8-23677e45ba06")
+
+    assert hasattr(elm, "realized_capabilities")
+    assert len(elm.realized_capabilities) == 2
+    assert elm.realized_capabilities[0].xtype.endswith("OperationalCapability")
+
+
 class TestStateMachines:
     def test_stm_accessible_from_component_pkg(self, model: MelodyModel):
         comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")

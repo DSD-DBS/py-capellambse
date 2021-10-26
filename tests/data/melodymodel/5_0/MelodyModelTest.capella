@@ -1122,6 +1122,12 @@ The predator is far away</bodies>
               id="8aa523aa-7e0b-4926-9871-ff7493f5219a" involved="#1eee3b81-41ef-4b56-8018-b8e421a5a2bc"/>
           <ownedAbstractFunctionAbstractCapabilityInvolvements xsi:type="org.polarsys.capella.core.data.interaction:AbstractFunctionAbstractCapabilityInvolvement"
               id="281faf5d-f699-48f4-ae87-3ad78f43d62e" involved="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
+          <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
+              id="ba57a574-4a2d-4a02-a7c2-bf3376c68ed9" targetElement="#83d1334f-6180-46c4-a80d-6839341df688"
+              sourceElement="#9390b7d5-598a-42db-bef8-23677e45ba06"/>
+          <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
+              id="46f5f9af-382a-459c-8db3-8f8bc00e8ae6" targetElement="#30bd2c21-b170-40d3-b476-7c2016b58031"
+              sourceElement="#9390b7d5-598a-42db-bef8-23677e45ba06"/>
           <ownedCapabilityInvolvements xsi:type="org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
               id="6904fba2-5d7d-49ed-b13d-32a7182d8ccc" involved="#230c4621-7e0a-4d0a-9db2-d4ba5e97b3df"/>
         </ownedCapabilities>
@@ -1756,6 +1762,9 @@ The predator is far away</bodies>
             <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
                 id="c658abe1-d87b-4a03-a6f4-1ff477739bbe" name="Whomping Willow" representedInstance="#1188fc31-789b-424f-a2d4-06791873a351"/>
           </ownedScenarios>
+          <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
+              id="3e22f774-d699-4183-8436-da1da9900d1c" targetElement="#562c5128-5acd-45cc-8b49-1d8d686f450a"
+              sourceElement="#b80b3141-a7fc-48c7-84b2-1467dcef5fce"/>
           <ownedCapabilityRealizationInvolvements xsi:type="org.polarsys.capella.core.data.capellacommon:CapabilityRealizationInvolvement"
               id="e16b9fdf-2ac7-45a2-a584-d7216b2ba8a8" involved="#3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5"/>
           <ownedCapabilityRealizationInvolvements xsi:type="org.polarsys.capella.core.data.capellacommon:CapabilityRealizationInvolvement"
@@ -2121,7 +2130,14 @@ The predator is far away</bodies>
         </ownedPhysicalFunctions>
       </ownedFunctionPkg>
       <ownedAbstractCapabilityPkg xsi:type="org.polarsys.capella.core.data.la:CapabilityRealizationPkg"
-          id="bcd6662b-5a6a-4d91-924f-5c420e2a42f1" name="Capabilities"/>
+          id="bcd6662b-5a6a-4d91-924f-5c420e2a42f1" name="Capabilities">
+        <ownedCapabilityRealizations xsi:type="org.polarsys.capella.core.data.la:CapabilityRealization"
+            id="3b27b052-6dd3-4e3d-81be-ef48cf75f383" name="CapabilityRealization">
+          <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
+              id="474aa7a5-656f-4e97-a112-6db2c45fc3c4" targetElement="#b80b3141-a7fc-48c7-84b2-1467dcef5fce"
+              sourceElement="#3b27b052-6dd3-4e3d-81be-ef48cf75f383"/>
+        </ownedCapabilityRealizations>
+      </ownedAbstractCapabilityPkg>
       <ownedInterfacePkg xsi:type="org.polarsys.capella.core.data.cs:InterfacePkg"
           id="2cb789be-39ff-401f-a5fb-e2d60f02bc13" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
