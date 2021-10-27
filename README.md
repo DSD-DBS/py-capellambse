@@ -7,23 +7,43 @@
 
 ## Intro
 
-***Copyright 2021 DB Netz AG, licensed under Apache 2.0 (see full text in `LICENSE.txt`)***
+***Copyright 2021 DB Netz AG, licensed under Apache 2.0 (see full text in [LICENSE](LICENSE))***
 
-`capellambse` allows you reading and writing Capella models from python without Java or Capella on any (reasonable) platform. We wanted to "talk" to the Capella models from Python but without any JAVA on the way. We thought this project will help individuals and organisations getting through the MBSE adoption journey with Capella faster and so we decided to make this project public and open-source.
+`capellambse` allows you reading and writing Capella models from python without Java or [Capella tool](https://www.eclipse.org/capella/) on any (reasonable) platform. We wanted to "talk" to Capella models from Python but without any Java on the way. We thought this project will help individuals and organisations getting through the MBSE adoption journey with Capella faster and so we made it public and open-source.
 
-With `capellambse` you can access all (almost all atm) Capella model elements, render diagrams (as SVG and PNG). We made it for automation of Systems Engineering work so it integrates nicely into most of CI/CD toolchains. We also found it at the core of our artifact generation pipelines (model to documents, model to SW interfaces).
+With `capellambse` you can access all (or almost all) Capella model elements, render diagrams (as SVG and PNG). We made it for automation of Systems Engineering work so it integrates nicely into most of CI/CD toolchains. We also found it at the core of our artifact generation pipelines (model to documents, model to SW interfaces).
 
-The library also works with the PVMT and Requirements extensions without any additional efforts.
+The library works with [PVMT](https://www.eclipse.org/capella/addons.html) and [Requirements](https://github.com/eclipse/capella-requirements-vp) extensions without any additional efforts.
 
-It started as a basic library that enables us talking to the model somewhere mid 2019. Since then it was re-architected a few times and now has a full read/write capability for most of the present Capella ontology. We are continuously improving the API (introducing shortcuts) and increasing the meta-model coverage.
+It started as a basic library somewhere mid 2019. Since then it was re-architected a few times and now has a full read/write capability for most of the present Capella ontology. We are continuously improving the API (introducing shortcuts), increasing the meta-model coverage and have more engineering automations and improvements in the pipeline to share.
+
+## Getting started
+
+The quickest way to get started is to clone the library's source code and play with various tutorials and test models. 
+You may get there by following the below steps (on Linux, Mac or Windows/WSL):
+
+```bash
+git clone ... & cd py-capella-mbse
+python3 -m venv .venv
+source .venv/bin/activate
+pip install jupyter
+python setup.py install
+pip install pandas xlsxwriter # for examples with tabular data representationss
+cd examples
+jupyter-notebook # optional, you may also start it via vscode
+```
+
+The above code snippet should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder (and most likely a browser window).
+
+You may then open the `01_Introduction.ipynb` or check-out a non interactive preview [right here](examples/01_Introduction.ipynb)
 
 ## Documentation and examples
 
-We designed the library API such that it is easy to use and discover, however there is also [documentation available here](TODO). Additionally, the [practical examples folder](TODO) provides a collection of Jupyter notebooks with practical examples (like getting traceability matrices, change assessments, BoMs, etc).
+We designed the library API such that it is easy to use and discover, however there is also [documentation available here](TODO). Additionally, the [practical examples folder](examples/) provides a collection of Jupyter notebooks with practical examples (like getting traceability matrices, change assessments, BoMs, etc).
 
 ## Dependencies on 3rd party components and re-distributions
 
-To provide same look and feel across platforms our diagraming engine uses OpenSans font. And to simplify the library installation and usage we decided to redistribute it in accordance with SIL Open Font License 1.1 that it has at the moment: The bundled OpenSans font (`capellambse/OpenSans-Regular.ttf`) is
+To provide same look and feel across platforms our diagraming engine uses OpenSans font. And to simplify the library installation and usage we redistribute it in accordance with SIL Open Font License 1.1 that it has at the moment: The bundled OpenSans font (`capellambse/OpenSans-Regular.ttf`) is
 Copyright 2020 [The Open Sans Project Authors](https://github.com/googlefonts/opensans), the copy of License text can be seen in `LICENSE-OpenSans.txt`.
 
 ## Current limitations
@@ -32,7 +52,7 @@ We are continuously improving coverage of Capella onthology with our [high-level
 
 Also, as we started in mid 2019 and there was no such thing as [Python4Capella](TODO) yet, we are not API compatible with that project. However, we intend to add API compatibility with Python4Capella in later releases.
 
-The generated diagrams (elk.js based) are currently not persisted in .aird files and we are not sure yet if we need this feature. If there is a genuine usecase for that we may re-consider it - feel free to create an issue or add comments to an existing one.
+The generated diagrams are currently not persisted in .aird files and we are not sure yet if we need this feature. If there is a genuine usecase for that we may re-consider it - feel free to create an issue or add comments to an existing one.
 
 ## Contributing
 
