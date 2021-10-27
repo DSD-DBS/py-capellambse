@@ -19,16 +19,12 @@ jobs:
           python -m pip install -U pip
       - name: Install dependencies
         run: |
-          python -m pip install .
-          python -m pip install -r docs/requirements.txt
+          python -m pip install '.[docs]'
       - name: Create docs
         run: |
-          (cd docs && make html)
-          git fetch --depth 1 origin gh-pages
-          git branch -a
-          git checkout --progress --force -B gh-pages refs/remotes/origin/gh-pages
-          cp -r docs/build/html/* .
-          git add .
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git diff-index --quiet HEAD || git commit -m "Update docs from ref $GITHUB_SHA" && git push origin gh-pages
+          make -C docs html
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
