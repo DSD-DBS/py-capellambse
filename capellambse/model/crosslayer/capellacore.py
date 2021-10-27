@@ -29,6 +29,13 @@ class Constraint(c.GenericElement):
     specification = c.SpecificationAccessor()
 
 
+@c.xtype_handler(None)
+class Generalization(c.GenericElement):
+    """A Generalization"""
+
+    _xmltag = "ownedGeneralizations"
+
+
 c.set_accessor(
     c.GenericElement,
     "constraints",

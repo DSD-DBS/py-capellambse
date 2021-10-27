@@ -1253,18 +1253,64 @@ The predator is far away</bodies>
           <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
               id="ff8bbadd-49f0-4662-819c-b92e1b3a4470" name="Test SubPackage">
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
-                id="0fef2887-04ce-4406-b1a1-a1b35e1ce0f3" name="Class 2" status="#9cbf65c2-a661-4802-b881-a7a859683e0a"/>
+                id="0fef2887-04ce-4406-b1a1-a1b35e1ce0f3" name="Class 2" status="#9cbf65c2-a661-4802-b881-a7a859683e0a">
+              <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+                  id="ff05f2eb-f5e5-4a57-a02e-8107c6d9fd78" super="#8164ae8b-36d5-4502-a184-5ec064db4ec3"
+                  sub="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"/>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="0ee1fd1c-db9c-4fa6-8789-197f623b96c0" name="class 1" abstractType="#959b5222-7717-4ee9-bd3a-f8a209899464"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="92f7b25d-4a71-45c8-ba51-d5d2b6725361" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="04f18821-c6cc-4bb0-97b4-20c628181e0d" value="1"/>
+              </ownedFeatures>
+              <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+                  id="41982dc1-6d12-4c70-9188-f9730880cdc4" targetElement="#8164ae8b-36d5-4502-a184-5ec064db4ec3"
+                  sourceElement="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"/>
+            </ownedClasses>
           </ownedDataPkgs>
           <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
               id="959b5222-7717-4ee9-bd3a-f8a209899464" name="Class 1" summary=""
               description="&lt;p>This is a test description for a class.&lt;/p>&#xA;"
               status="#ba5edbad-f04b-40f4-a77b-2f7fbe47e9d2">
+            <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+                id="5ff23a11-5c14-410d-b2b5-9d24fcbf041d" super="#bbc296e1-ed4c-40cf-b37d-c8eb8613228a"
+                sub="#959b5222-7717-4ee9-bd3a-f8a209899464"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                id="a193f1c3-c5df-4859-ba64-0d86830bbd5b" name="union 2" abstractType="#31c5c280-64e1-4d11-b874-412966aa547c"
+                aggregationKind="AGGREGATION">
+              <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="ad740a7f-69ff-4573-8798-407f378c5a98" value="1"/>
+              <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="505089ca-41de-43a2-b40b-efbe9ec1be18" value="1"/>
+            </ownedFeatures>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                id="94d5002b-f825-4379-9c45-3cb4ca35bf34" name="collection 1" abstractType="#0136b75b-d0a3-4444-b333-b9a82b744a04"
+                aggregationKind="COMPOSITION">
+              <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="9bd1795f-1b78-4900-a8c4-4af668322a87" value="1"/>
+              <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="6315b7d6-556b-456c-939e-f648ef785f89" value="1"/>
+            </ownedFeatures>
             <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
                 id="99a95990-ed37-4edc-8e46-99f971c300cf" name="StateMachine 1">
               <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
                   id="0492d31b-936a-4edf-85bc-9bfbf7d6dabe" name="Default Region"/>
             </ownedStateMachines>
           </ownedClasses>
+          <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Union"
+              id="31c5c280-64e1-4d11-b874-412966aa547c" name="Union 2"/>
+          <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+              id="bbc296e1-ed4c-40cf-b37d-c8eb8613228a" name="SuperClass"/>
+          <ownedCollections xsi:type="org.polarsys.capella.core.data.information:Collection"
+              id="0136b75b-d0a3-4444-b333-b9a82b744a04" name="Collection 1" minInclusive="true"
+              maxInclusive="true">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="9e1652e2-0d92-4500-9cc5-d63f092def93" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="4d60138c-86ff-4e49-8534-86444fb42235" value="*"/>
+          </ownedCollections>
         </ownedDataPkgs>
       </ownedDataPkg>
       <ownedSystemComponentPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"
