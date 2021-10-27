@@ -1258,7 +1258,13 @@ The predator is far away</bodies>
           <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
               id="959b5222-7717-4ee9-bd3a-f8a209899464" name="Class 1" summary=""
               description="&lt;p>This is a test description for a class.&lt;/p>&#xA;"
-              status="#ba5edbad-f04b-40f4-a77b-2f7fbe47e9d2"/>
+              status="#ba5edbad-f04b-40f4-a77b-2f7fbe47e9d2">
+            <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+                id="99a95990-ed37-4edc-8e46-99f971c300cf" name="StateMachine 1">
+              <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                  id="0492d31b-936a-4edf-85bc-9bfbf7d6dabe" name="Default Region"/>
+            </ownedStateMachines>
+          </ownedClasses>
         </ownedDataPkgs>
       </ownedDataPkg>
       <ownedSystemComponentPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"

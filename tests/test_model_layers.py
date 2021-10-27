@@ -233,6 +233,15 @@ class TestStateMachines:
         assert sleep_region.diagrams[0].name == "[MSM] Keep the sleep schedule"
 
 
+class TestClasses:
+    def test_classes_have_access_to_stm(self, model: MelodyModel):
+        elm = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")
+
+        assert elm.xtype.endswith("Class")
+        assert hasattr(elm, "state_machines")
+        assert len(elm.state_machines) == 1
+
+
 def test_exchange_items_on_logical_function_exchanges(
     model: MelodyModel,
 ):

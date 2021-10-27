@@ -17,6 +17,7 @@ from capellambse.loader import xmltools
 
 from .. import common as c
 from .. import modeltypes
+from . import capellacommon
 
 
 def _allocated_exchange_items(
@@ -50,6 +51,10 @@ class Class(c.GenericElement):
     """A Class."""
 
     _xmltag = "ownedClasses"
+
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)
