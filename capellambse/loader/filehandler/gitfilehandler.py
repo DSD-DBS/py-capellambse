@@ -326,9 +326,9 @@ class _GitTransaction:
             "-c",
             f"remote.{remote}.mirror=false",
             "push",
+            *self.__push_opts,
             "--",
             remote,
-            *self.__push_opts,
             self.__targetref,
         )
 

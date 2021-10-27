@@ -21,7 +21,7 @@ import operator
 
 from .. import common as c
 from .. import crosslayer, diagram
-from ..crosslayer import cs, fa
+from ..crosslayer import capellacommon, capellacore, cs, fa, interaction
 from . import ctx
 
 XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
@@ -88,6 +88,64 @@ class LogicalComponentPkg(c.GenericElement):
     _xmltag = "ownedLogicalComponentPkg"
 
     components = c.ProxyAccessor(LogicalComponent, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+
+    packages: c.Accessor
+
+
+@c.xtype_handler(XT_ARCH)
+class CapabilityRealization(c.GenericElement):
+    """A capability."""
+
+    _xmltag = "ownedCapabilityRealizations"
+
+    owned_chains = c.ProxyAccessor(fa.FunctionalChain, aslist=c.ElementList)
+    involved_functions = c.ProxyAccessor(
+        LogicalFunction,
+        interaction.XT_CAP2ACT,
+        aslist=c.ElementList,
+        follow="involved",
+    )
+    involved_chains = c.ProxyAccessor(
+        fa.FunctionalChain,
+        interaction.XT_CAP2PROC,
+        aslist=c.ElementList,
+        follow="involved",
+    )
+    involved_components = c.ProxyAccessor(
+        LogicalComponent,
+        ctx.XT_CAP_INV,
+        follow="involved",
+        aslist=c.MixedElementList,
+    )
+    realized_capabilities = c.ProxyAccessor(
+        ctx.Capability,
+        interaction.XT_CAP_REAL,
+        follow="targetElement",
+        aslist=c.ElementList,
+    )
+
+    postcondition = c.AttrProxyAccessor(
+        capellacore.Constraint, "postCondition"
+    )
+    precondition = c.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    scenarios = c.ProxyAccessor(interaction.Scenario, aslist=c.ElementList)
+    states = c.AttrProxyAccessor(
+        capellacommon.State, "availableInStates", aslist=c.ElementList
+    )
+
+    packages: c.Accessor
+
+
+@c.xtype_handler(XT_ARCH)
+class CapabilityRealizationPkg(c.GenericElement):
+    """A capability package that can hold capabilities."""
+
+    _xmltag = "ownedAbstractCapabilityPkg"
+
+    capabilities = c.ProxyAccessor(CapabilityRealization, aslist=c.ElementList)
 
     packages: c.Accessor
 
@@ -106,6 +164,7 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
 
     function_package = c.ProxyAccessor(LogicalFunctionPkg)
     component_package = c.ProxyAccessor(LogicalComponentPkg)
+    capability_package = c.ProxyAccessor(CapabilityRealizationPkg)
 
     diagrams = diagram.DiagramAccessor(
         "Logical Architecture", cacheattr="_MelodyModel__diagram_cache"
@@ -147,6 +206,9 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
         rootelem=LogicalFunctionPkg,
         deep=True,
+    )
+    all_capabilities = c.ProxyAccessor(
+        CapabilityRealization, deep=True, aslist=c.ElementList
     )
 
 

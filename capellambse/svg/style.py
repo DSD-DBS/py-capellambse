@@ -43,7 +43,7 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "ErrorSymbol",
         "RequirementSymbol",
     ),
-    "Class Diagram Blank": (),
+    "Class Diagram Blank": ("ClassSymbol",),
     "Logical Architecture Blank": (
         "ComponentPortSymbol",
         "LogicalActorSymbol",

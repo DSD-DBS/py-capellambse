@@ -104,6 +104,10 @@ class SystemComponentPkg(c.GenericElement):
     _xmltag = "ownedSystemComponentPkg"
 
     components = c.ProxyAccessor(SystemComponent, aslist=c.ElementList)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+
     packages: c.Accessor
 
 
@@ -131,6 +135,12 @@ class Capability(c.GenericElement):
         XT_CAP_INV,
         follow="involved",
         aslist=c.MixedElementList,
+    )
+    realized_capabilities = c.ProxyAccessor(
+        oa.OperationalCapability,
+        interaction.XT_CAP_REAL,
+        follow="targetElement",
+        aslist=c.ElementList,
     )
 
     postcondition = c.AttrProxyAccessor(
@@ -200,16 +210,6 @@ c.set_accessor(
         Capability,
         interaction.XT_CAP_GEN,
         follow="super",
-        aslist=c.ElementList,
-    ),
-)
-c.set_accessor(
-    Capability,
-    "realized_capabilities",
-    c.ProxyAccessor(
-        Capability,
-        interaction.XT_CAP_REAL,
-        follow="involved",
         aslist=c.ElementList,
     ),
 )

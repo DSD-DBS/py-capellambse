@@ -1009,6 +1009,28 @@ def system_human_actor_symbol(
 
 
 @decorations.deco_factories
+def class_symbol(id_: str = "ClassSymbol") -> container.Symbol:
+    symb = container.Symbol(id=id_, viewBox="0 0 25 25")
+    grad_id = id_ + "-gradient"
+    symb.add(_make_lgradient(grad_id, stop_colors=("#cfa6a5", "#f1e2e3")))
+    grp = symb.add(container.Group(style="stroke:#913734;"))
+    grp.add(
+        shapes.Rect(insert=(5, 17), size=(15, 3), style="fill:#eedcdd;"),
+    )
+    grp.add(
+        shapes.Rect(insert=(5, 14), size=(15, 3), style="fill:#eedcdd;"),
+    )
+    grp.add(
+        shapes.Rect(
+            insert=(5, 4),
+            size=(15, 10),
+            style=f"fill:url(#{grad_id});",
+        )
+    )
+    return symb
+
+
+@decorations.deco_factories
 def fine_arrow_mark(
     id_: str = "FineArrow", *, style: style.Styling, **kw
 ) -> container.Marker:
