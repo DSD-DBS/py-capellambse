@@ -14,9 +14,6 @@
 import pathlib
 import re
 
-__all__ = ["CapellaMBSETestCase"]
-
-
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
 TEST_MODEL = "MelodyModelTest.aird"
 RE_VALID_IDREF = re.compile(

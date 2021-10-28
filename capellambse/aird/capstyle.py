@@ -14,12 +14,12 @@
 """The color palette and default style definitions used by Capella."""
 from __future__ import annotations
 
+__all__ = ["COLORS", "CSSdef", "STYLES", "RGB", "get_style"]
+
 import logging
 import typing as t
 
 from capellambse import helpers
-
-__all__ = ["COLORS", "CSSdef", "STYLES", "RGB", "get_style"]
 
 LOGGER = logging.getLogger(__name__)
 

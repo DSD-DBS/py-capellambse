@@ -14,6 +14,8 @@
 """Classes that represent different aspects of a diagram."""
 from __future__ import annotations
 
+__all__ = ["Diagram", "DiagramElement", "Box", "Circle", "Edge"]
+
 import collections.abc as cabc
 import logging
 import math
@@ -21,8 +23,6 @@ import os
 import typing as t
 
 from capellambse import aird, helpers
-
-__all__ = ["Diagram", "DiagramElement", "Box", "Circle", "Edge"]
 
 LOGGER = logging.getLogger(__name__)
 

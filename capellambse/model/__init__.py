@@ -14,6 +14,8 @@
 """Implements a high-level interface to Capella projects."""
 from __future__ import annotations
 
+__all__ = ["MelodyModel"]
+
 import logging
 import os
 import pathlib
@@ -29,10 +31,6 @@ from . import common, diagram  # isort:skip
 
 # Architectural Layers
 from .layers import oa, ctx, la, pa  # isort:skip
-
-__all__ = [
-    "MelodyModel",
-]
 
 LOGGER = logging.getLogger(__name__)
 XT_PROJECT = "org.polarsys.capella.core.data.capellamodeller:Project"
