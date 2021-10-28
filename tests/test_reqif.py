@@ -279,14 +279,14 @@ class TestRequirementRelations:
     ) -> None:
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
 
-        assert isinstance(ge.requirements, reqif.RelationsList)  # type: ignore[attr-defined]
-        assert len(ge.requirements) == 3  # type: ignore[attr-defined]
+        assert isinstance(ge.requirements, reqif.RelationsList)
+        assert len(ge.requirements) == 3
 
     def test_filtering_by_relation_type(self, model: capellambse.MelodyModel):
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
         rel_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
 
-        assert len(ge.requirements.by_relation_type(rel_type.name)) == 1  # type: ignore[attr-defined]
+        assert len(ge.requirements.by_relation_type(rel_type.name)) == 1
 
     @pytest.mark.parametrize(
         ("obj_uuid", "target_uuids"),
@@ -775,7 +775,7 @@ class TestRequirementsFiltering:
         if isinstance(obj, reqif.Requirement):
             related = obj.related
         else:
-            related = obj.requirements  # type: ignore[attr-defined]
+            related = obj.requirements
         filtered_related = related.by_relation_class(relation_class)
 
         assert [i.uuid for i in filtered_related] == target_uuids
