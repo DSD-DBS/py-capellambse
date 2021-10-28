@@ -32,6 +32,7 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 from capellambse.loader import exs, filehandler
+from capellambse.loader.filehandler import localfilehandler
 from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
@@ -186,16 +187,32 @@ class MelodyLoader:
     """Facilitates extensive access to Polarsys / Capella projects."""
 
     def __init__(
-        self, path: bytes | str | os.PathLike, **kwargs: t.Any
+        self,
+        path: bytes | str | os.PathLike,
+        entrypoint: str | pathlib.PurePosixPath | None = None,
+        **kwargs: t.Any,
     ) -> None:
         self.filehandler = filehandler.get_filehandler(path, **kwargs)
+        self.entrypoint = self.__derive_entrypoint(entrypoint)
 
         self.trees: dict[pathlib.PurePosixPath, ModelFile] = {}
         self.__load_referenced_files(
-            helpers.normalize_pure_path(
-                pathlib.PurePosixPath(self.filehandler.entrypoint)
-            )
+            helpers.normalize_pure_path(pathlib.PurePosixPath(self.entrypoint))
         )
+
+    def __derive_entrypoint(
+        self, entrypoint: str | pathlib.PurePosixPath | None
+    ) -> pathlib.PurePosixPath:
+        if entrypoint:
+            return helpers.normalize_pure_path(entrypoint)
+
+        if isinstance(self.filehandler, localfilehandler.LocalFileHandler):
+            basedir = self.filehandler.path
+            assert isinstance(basedir, pathlib.Path)
+            self.filehandler.path = basedir.parent
+            return pathlib.PurePosixPath(basedir.name)
+
+        raise ValueError("This type of file handler needs an ``entrypoint``")
 
     def __load_referenced_files(
         self,

@@ -166,7 +166,7 @@ class RequirementsRelationAccessor(
     ) -> tuple[type[c.T], str]:
         if isinstance(target, Requirement):
             return (
-                t.cast(type[c.T], RequirementsIntRelation),
+                t.cast(t.Type[c.T], RequirementsIntRelation),
                 XT_INT_RELATION,
             )
         elif isinstance(target, ReqIFElement):

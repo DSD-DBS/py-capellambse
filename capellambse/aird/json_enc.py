@@ -14,13 +14,13 @@
 """This module handles converting diagrams to the intermediary JSON format."""
 from __future__ import annotations
 
+__all__ = ["DiagramJSONEncoder"]
+
 import collections.abc as cabc
 import json
 import typing as t
 
 from capellambse import aird
-
-__all__ = ["DiagramJSONEncoder"]
 
 _CSSStyle = t.Union[aird.RGB, t.Iterable[t.Union[aird.RGB, str]], str]
 

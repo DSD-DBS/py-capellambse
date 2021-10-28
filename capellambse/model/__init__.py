@@ -14,24 +14,23 @@
 """Implements a high-level interface to Capella projects."""
 from __future__ import annotations
 
+__all__ = ["MelodyModel"]
+
 import logging
 import os
+import pathlib
 import typing as t
 
 from lxml import etree
 
 import capellambse.helpers
-import capellambse.loader.core
 import capellambse.pvmt
+from capellambse import loader
 
 from . import common, diagram  # isort:skip
 
 # Architectural Layers
 from .layers import oa, ctx, la, pa  # isort:skip
-
-__all__ = [
-    "MelodyModel",
-]
 
 LOGGER = logging.getLogger(__name__)
 XT_PROJECT = "org.polarsys.capella.core.data.capellamodeller:Project"
@@ -56,19 +55,41 @@ class MelodyModel:
         None, cacheattr="_MelodyModel__diagram_cache"
     )
 
+    _diagram_cache: loader.FileHandler
+    _diagram_cache_subdir: pathlib.PurePosixPath
+
     def __init__(
-        self, path: str | bytes | os.PathLike, **kwargs: t.Any
+        self,
+        path: str | bytes | os.PathLike,
+        *,
+        diagram_cache: str | os.PathLike | None = None,
+        diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
+        **kwargs: t.Any,
     ) -> None:
         """Load a project from the filesystem.
+
+        For complete information on which exact ``kwargs`` are
+        supported, consult the documentation of the used file handler.
+        Refer to the "See Also" section for a collection of links.
 
         Parameters
         ----------
         path
-            Path to the project directory or Git URL (HTTPS / SSH) with
-            git+ prefix.  We also accept the project's main ``.aird``
-            file for backwards compatibility.
+            Path or URL to the project. The following formats are
+            accepted:
+
+            * A path to a local ``.aird`` file.
+            * A path to a local directory (requires ``entrypoint``).
+            * A remote URL, with a protocol or prefix that indicates
+              which file handler to invoke (requires ``entrypoint``).
+
+              Examples:
+
+              * ``git://git.example.com/model/coffeemaker.git``
+              * ``git+https://git.example.com/model/coffeemaker.git``
+              * ``git+ssh://git@git.example.com/model/coffeemaker.git``
         entrypoint
-            Entrypoint from path to the main ```.aird`` file.
+            Entrypoint from path to the main ``.aird`` file.
         revision
             Revision of Git repository
         disable_cache
@@ -83,8 +104,40 @@ class MelodyModel:
             username (not supported by all filehandlers)
         password
             password (not supported by all filehandlers)
+        diagram_cache
+            An optional place where to find pre-rendered, cached
+            diagrams. When a diagram is found in this cache, it will be
+            loaded from there instead of being rendered on access. Note
+            that diagrams will only be loaded from there, but not be put
+            back, i.e. to use it effectively, the cache has to be
+            pre-populated.
+
+            This argument accepts the same formats as ``path``.
+
+            The file names looked up in the cache built in the format
+            ``uuid.ext``, where ``uuid`` is the UUID of the diagram (as
+            reported by ``diag_obj.uuid``) and ``ext`` is the render
+            format. Example:
+
+            - Diagram ID: ``_7FWu4KrxEeqOgqWuHJrXFA``
+            - Render call: ``diag_obj.as_svg`` or ``diag_obj.render("svg")``
+            - Cache file name: ``_7FWu4KrxEeqOgqWuHJrXFA.svg``
+        diagram_cache_subdir
+            A sub-directory prefix to prepend to diagram UUIDs before
+            looking them up in the ``diagram_cache``.
+
+        See Also
+        --------
+        capellambse.loader.filehandler.FileHandler :
+            Abstract super class for file handlers. Contains information
+            needed for implementing custom handlers.
+        capellambse.loader.filehandler.localfilehandler.LocalFileHandler :
+            The file handler responsible for local files and
+            directories.
+        capellambse.loader.filehandler.gitfilehandler.GitFileHandler :
+            The file handler implementing the ``git://`` protocol.
         """
-        self._loader = capellambse.loader.core.MelodyLoader(path, **kwargs)
+        self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
 
         try:
@@ -95,6 +148,15 @@ class MelodyModel:
             )
             LOGGER.warning("Property values are not available in this model")
             self._pvext = None
+
+        if diagram_cache:
+            if diagram_cache == path:
+                self._diagram_cache = self._loader.filehandler
+            else:
+                self._diagram_cache = loader.get_filehandler(diagram_cache)
+            self._diagram_cache_subdir = pathlib.PurePosixPath(
+                diagram_cache_subdir or "/"
+            )
 
     @property
     def _element(self) -> etree._Element:

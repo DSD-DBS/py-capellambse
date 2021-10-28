@@ -14,6 +14,13 @@
 """Functions for parsing and interacting with diagrams in a Capella model."""
 from __future__ import annotations
 
+__all__ = [
+    "DiagramDescriptor",
+    "enumerate_diagrams",
+    "parse_diagrams",
+    "parse_diagram",
+]
+
 import collections.abc as cabc
 import pathlib
 import typing as t
@@ -25,13 +32,6 @@ from capellambse import aird, helpers, loader
 
 from . import _common as C
 from . import _filters, _semantic, _visual
-
-__all__ = [
-    "DiagramDescriptor",
-    "enumerate_diagrams",
-    "parse_diagrams",
-    "parse_diagram",
-]
 
 
 class DiagramDescriptor(t.NamedTuple):

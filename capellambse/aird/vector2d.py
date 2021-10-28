@@ -15,14 +15,14 @@
 # pylint: disable=unsubscriptable-object, not-an-iterable  # false-positives
 from __future__ import annotations
 
+__all__ = ["Vec2Element", "Vec2List", "Vec2Property", "Vec2ish", "Vector2D"]
+
 import collections.abc as cabc
 import math
 import operator
 import typing as t
 
 _T = t.TypeVar("_T")
-
-__all__ = ["Vec2Element", "Vec2List", "Vec2Property", "Vec2ish", "Vector2D"]
 
 Vec2Element = t.Union[float, int]
 Vec2ish = t.Tuple[Vec2Element, Vec2Element]

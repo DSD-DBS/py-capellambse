@@ -136,23 +136,17 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def render(self, fmt: str | None) -> t.Any:
         """Render the diagram in the given format."""
-        # pylint: disable=broad-except
-        conv: DiagramConverter
+        conv: t.Any
         if fmt is None:
             conv = lambda i: i
         else:
             conv = _find_format_converter(fmt)
 
-        if not hasattr(self, "_render"):
-            try:
-                self._render = self._create_diagram()
-            except Exception as err:
-                self._error = err
-                self._render = self.__create_error_image("parse", self._error)
-
-        if hasattr(self, "_error"):
-            raise self._error
-        return conv(self._render)
+        try:
+            return self.__load_cache(conv)
+        except KeyError:
+            pass
+        return conv(self.__render_fresh())
 
     @abc.abstractmethod
     def _create_diagram(self) -> aird.Diagram:
@@ -211,6 +205,36 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         diag.add_element(trace_box, extend_viewport=False)
         diag.calculate_viewport()
         return diag
+
+    def __load_cache(self, converter):
+        try:
+            cache_handler = self._model._diagram_cache
+            cachedir = self._model._diagram_cache_subdir
+            fromcache = converter.from_cache
+            ext = converter.filename_extension
+        except AttributeError:
+            raise KeyError(self.uuid) from None
+
+        try:
+            with cache_handler.open(cachedir / (self.uuid + ext)) as f:
+                cache = f.read()
+        except FileNotFoundError:
+            raise KeyError(self.uuid) from None
+
+        return fromcache(cache)
+
+    def __render_fresh(self):
+        # pylint: disable=broad-except
+        if not hasattr(self, "_render"):
+            try:
+                self._render = self._create_diagram()
+            except Exception as err:
+                self._error = err
+                self._render = self.__create_error_image("parse", self._error)
+
+        if hasattr(self, "_error"):
+            raise self._error
+        return self._render
 
 
 class Diagram(AbstractDiagram):
@@ -302,56 +326,121 @@ class DiagramAccessor(c.Accessor):
         )
 
 
-def convert_svg(diagram: aird.Diagram) -> str:
+class SVGFormat:
     """Convert the diagram to SVG."""
-    return convert_svgdiagram(diagram).to_string()
+
+    filename_extension = ".svg"
+
+    def __new__(cls, diagram):
+        return cls.convert(diagram)
+
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
+        return convert_svgdiagram(diagram).to_string()
+
+    @staticmethod
+    def from_cache(cache: bytes) -> str:
+        return cache.decode("utf-8")
 
 
 def convert_svgdiagram(
     diagram: aird.Diagram,
 ) -> capellambse.svg.generate.SVGDiagram:
     """Convert the diagram to a SVGDiagram."""
-    encoder = aird.DiagramJSONEncoder()
-    svg = capellambse.svg.generate.SVGDiagram.from_json(
-        encoder.encode(diagram)
-    )
+    jsondata = aird.DiagramJSONEncoder().encode(diagram)
+    svg = capellambse.svg.generate.SVGDiagram.from_json(jsondata)
     return svg
 
 
-def convert_svg_confluence(diagram: aird.Diagram) -> str:
+class ConfluenceSVGFormat:
     """Convert the diagram to Confluence-style SVG."""
-    pre = (
+
+    filename_extension = ".svg"
+    prefix = (
         f'<ac:structured-macro ac:macro-id="{uuid.uuid4()!s}" ac:name="html"'
         ' ac:schema-version="1">'
         f"<ac:plain-text-body><![CDATA["
     )
-    post = "]]></ac:plain-text-body></ac:structured-macro>"
+    postfix = "]]></ac:plain-text-body></ac:structured-macro>"
 
-    return "".join([pre, convert_svg(diagram), post])
+    def __new__(cls, diagram):
+        return cls.convert(diagram)
 
+    @classmethod
+    def convert(cls, diagram: aird.Diagram) -> str:
+        return "".join((cls.prefix, SVGFormat.convert(diagram), cls.postfix))
 
-def convert_datauri_svg(diagram: aird.Diagram) -> str:
-    """Convert the diagram to a ``data:`` URI containing SVG."""
-    payload = convert_svg(diagram)
-    return "".join(
-        (
-            "data:image/svg+xml;base64,",
-            base64.standard_b64encode(payload.encode("utf-8")).decode("ascii"),
-        )
-    )
+    @classmethod
+    def from_cache(cls, cache: bytes) -> str:
+        return "".join((cls.prefix, cache.decode("utf-8"), cls.postfix))
 
 
-def convert_html_img(diagram: aird.Diagram) -> str:
-    """Convert the diagram to an HTML ``<img>``."""
-    return c.markuptype(f'<img src="{convert_datauri_svg(diagram)}"/>')
+class SVGDataURIFormat:
+    filename_extension = ".svg"
+    preamble = "data:image/svg+xml;base64,"
+
+    def __new__(cls, diagram):
+        return cls.convert(diagram)
+
+    @classmethod
+    def convert(cls, diagram: aird.Diagram) -> str:
+        """Convert the diagram to a ``data:`` URI containing SVG."""
+        payload = SVGFormat.convert(diagram)
+        b64 = base64.standard_b64encode(payload.encode("utf-8"))
+        return "".join((cls.preamble, b64.decode("ascii")))
+
+    @classmethod
+    def from_cache(cls, cache: bytes) -> str:
+        b64 = base64.standard_b64encode(cache)
+        return "".join((cls.preamble, b64.decode("ascii")))
 
 
-def convert_json(diagram: aird.Diagram) -> str:
-    return aird.DiagramJSONEncoder().encode(diagram)
+class SVGInHTMLIMGFormat:
+    filename_extension = ".svg"
+
+    def __new__(cls, diagram):
+        return cls.convert(diagram)
+
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
+        """Convert the diagram to an HTML ``<img>``."""
+        payload = SVGDataURIFormat.convert(diagram)
+        return c.markuptype(f'<img src="{payload}"/>')
+
+    @staticmethod
+    def from_cache(cache: bytes) -> str:
+        payload = SVGDataURIFormat.from_cache(cache)
+        return c.markuptype(f'<img src="{payload}"/>')
 
 
-def convert_json_pretty(diagram: aird.Diagram) -> str:
-    return aird.DiagramJSONEncoder(indent=4).encode(diagram)
+class JSONFormat:
+    filename_extension = ".json"
+
+    def __new__(cls, diagram):
+        return cls.convert(diagram)
+
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
+        return aird.DiagramJSONEncoder().encode(diagram)
+
+    @staticmethod
+    def from_cache(cache: bytes) -> str:
+        return cache.decode("utf-8")
+
+
+class PrettyJSONFormat:
+    filename_extension = ".json"
+
+    def __new__(cls, diagram):
+        return cls.convert(diagram)
+
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
+        return aird.DiagramJSONEncoder(indent=4).encode(diagram)
+
+    @staticmethod
+    def from_cache(cache: bytes) -> str:
+        return cache.decode("utf-8")
 
 
 def _find_format_converter(fmt: str) -> DiagramConverter:
