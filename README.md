@@ -19,7 +19,7 @@ It started as a basic library somewhere mid 2019. Since then it was re-architect
 
 ## Getting started
 
-The quickest way to get started is to clone the library's source code and play with various tutorials and test models. 
+The quickest way to get started is to clone the library's source code and play with various tutorials and test models.
 You may get there by following the below steps (on Linux, Mac or Windows/WSL):
 
 ```bash
