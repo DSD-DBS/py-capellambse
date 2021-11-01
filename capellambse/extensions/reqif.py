@@ -515,6 +515,10 @@ class RequirementType(AbstractType):
         "_element", "ReqIFLongName", optional=True
     )
 
+    attribute_definitions = c.ProxyAccessor(
+        AttributeDefinition, XT_REQ_TYPE_ATTR_DEF, aslist=c.ElementList
+    )
+
 
 @c.xtype_handler(None, XT_REQUIREMENT)
 class Requirement(ReqIFElement):
