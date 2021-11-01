@@ -511,6 +511,10 @@ class RequirementType(AbstractType):
 
     _xmltag = "ownedTypes"
 
+    long_name = xmltools.AttributeProperty(
+        "_element", "ReqIFLongName", optional=True
+    )
+
 
 @c.xtype_handler(None, XT_REQUIREMENT)
 class Requirement(ReqIFElement):
