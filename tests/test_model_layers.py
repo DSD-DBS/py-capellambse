@@ -14,6 +14,7 @@
 
 import sys
 
+import markupsafe
 import pytest
 
 import capellambse
@@ -143,6 +144,17 @@ def test_Capability_of_logical_layer_has_realized_capabilities(
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 1
     assert elm.realized_capabilities[0].xtype.endswith("Capability")
+
+
+def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
+    elm = model.by_uuid("53c58b24-3938-4d6a-b84a-bb9bff355a41")
+    expected = (
+        "The actor lives in a world where predators exist\r\n"
+        "AND\r\n"
+        'A <a href="hlink://e6e4d30c-4d80-4899-8d8d-1350239c15a7">Predator</a> is near the actor'
+    )
+
+    assert markupsafe.escape(elm.precondition.specification) == expected
 
 
 class TestStateMachines:

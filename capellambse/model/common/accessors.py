@@ -13,6 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 
+import markupsafe
+
 __all__ = [
     "Accessor",
     "WritableAccessor",
@@ -745,6 +747,9 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
             )
         except StopIteration:
             raise KeyError(k) from None
+
+    def __html__(self) -> str:
+        return markupsafe.escape(self.__str__())
 
     def __str__(self) -> str:  # pragma: no cover
         return next(iter(self.values()))

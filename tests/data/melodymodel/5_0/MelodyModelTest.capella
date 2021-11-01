@@ -291,7 +291,7 @@
                 id="b4b727e8-5852-4c30-9bc0-77d39e03c280">
               <bodies>The actor lives in a world where predators exist&#xD;
 AND&#xD;
-A predator is near the actor</bodies>
+A &lt;a href=&quot;e6e4d30c-4d80-4899-8d8d-1350239c15a7&quot;/> is near the actor</bodies>
               <languages>capella:linkedText</languages>
             </ownedSpecification>
           </ownedConstraints>
