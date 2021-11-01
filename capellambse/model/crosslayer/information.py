@@ -24,12 +24,12 @@ def _allocated_exchange_items(
     obj: c.GenericElement,
 ) -> c.ElementList[c.GenericElement]:
     try:
-        return obj.exchange_items
+        return obj.exchange_items  # type: ignore[attr-defined]
     except AttributeError:
         pass
 
     try:
-        return obj.allocated_exchange_items
+        return obj.allocated_exchange_items  # type: ignore[attr-defined]
     except AttributeError:
         pass
 
