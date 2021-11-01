@@ -1667,6 +1667,9 @@ The predator is far away</bodies>
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
               id="c2ec1e87-49d5-4286-96a4-653a76c3fece" targetElement="#ceffa011-7b66-4b3c-9885-8e075e312ffa"
               sourceElement="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+          <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
+              id="4582f200-8833-4697-8234-279cb4a1d9bb" targetElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"
+              sourceElement="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
         </ownedSystemComponents>
         <ownedSystemComponentPkgs xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"
             id="145327ea-d6eb-4ad2-abe5-79876938b0a7" name="First Class">
@@ -1709,6 +1712,9 @@ The predator is far away</bodies>
               id="f708bc29-d69f-42a0-90cc-11fc01054cd0" name="Teaching">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
                 id="cd696c20-84c9-47ec-aa63-6c46bfa506a9" name="FOP 1"/>
+            <ownedFunctionRealizations xsi:type="org.polarsys.capella.core.data.fa:FunctionRealization"
+                id="d26329ab-4eef-47f3-96c6-c22ef6cdf248" targetElement="#00e7b925-cf4c-4cb0-929e-5409a1cd872b"
+                sourceElement="#f708bc29-d69f-42a0-90cc-11fc01054cd0"/>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
               id="beaf5ba4-8fa9-4342-911f-0266bb29be45" name="Advising Harry">

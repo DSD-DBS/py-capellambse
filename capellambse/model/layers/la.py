@@ -222,6 +222,16 @@ c.set_accessor(
     ),
 )
 c.set_accessor(
+    ctx.Capability,
+    "realizing_capabilities",
+    c.CustomAccessor(
+        CapabilityRealization,
+        operator.attrgetter("_model.la.all_capabilities"),
+        matchtransform=operator.attrgetter("realized_capabilities"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
     ctx.SystemComponent,
     "realizing_logical_components",
     c.CustomAccessor(

@@ -38,7 +38,7 @@ class SystemFunction(c.GenericElement):
     inputs = c.ProxyAccessor(fa.FunctionInputPort, aslist=c.ElementList)
     outputs = c.ProxyAccessor(fa.FunctionOutputPort, aslist=c.ElementList)
     is_leaf = property(lambda self: not self.functions)
-    realized_operatonal_activities = c.ProxyAccessor(
+    realized_operational_activities = c.ProxyAccessor(
         oa.OperationalActivity,
         fa.FunctionRealization,
         aslist=c.ElementList,
@@ -231,6 +231,16 @@ c.set_accessor(
     ),
 )
 c.set_accessor(
+    oa.OperationalCapability,
+    "realizing_capabilities",
+    c.CustomAccessor(
+        Capability,
+        operator.attrgetter("_model.sa.all_capabilities"),
+        matchtransform=operator.attrgetter("realized_capabilities"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
     oa.Entity,
     "realizing_system_components",
     c.CustomAccessor(
@@ -246,7 +256,7 @@ c.set_accessor(
     c.CustomAccessor(
         SystemFunction,
         operator.attrgetter("_model.sa.all_functions"),
-        matchtransform=operator.attrgetter("realized_operatonal_activities"),
+        matchtransform=operator.attrgetter("realized_operational_activities"),
         aslist=c.ElementList,
     ),
 )

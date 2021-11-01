@@ -157,6 +157,57 @@ def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
     assert markupsafe.escape(elm.precondition.specification) == expected
 
 
+@pytest.mark.parametrize(
+    "uuid,real_uuid,real_attr",
+    [
+        pytest.param(
+            "99df05af-71bf-4233-9035-bcd3d4439182",
+            "1eee3b81-41ef-4b56-8018-b8e421a5a2bc",
+            "realizing_system_functions",
+            id="Realizing SystemFunctions",
+        ),
+        pytest.param(
+            "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
+            "f708bc29-d69f-42a0-90cc-11fc01054cd0",
+            "realizing_logical_functions",
+            id="Realizing LogicalFunctions",
+        ),
+        pytest.param(
+            "b805a725-4b13-4b77-810e-b0ba002d5d98",
+            "d4a22478-5717-4ca7-bfc9-9a193e6218a8",
+            "realizing_system_components",
+            id="Realizing SystemComponents",
+        ),
+        pytest.param(
+            "230c4621-7e0a-4d0a-9db2-d4ba5e97b3df",
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "realizing_logical_components",
+            id="Realizing LogicalComponents",
+        ),
+        pytest.param(
+            "83d1334f-6180-46c4-a80d-6839341df688",
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "realizing_capabilities",
+            id="Realizing SystemCapabilities",
+        ),
+        pytest.param(
+            "562c5128-5acd-45cc-8b49-1d8d686f450a",
+            "b80b3141-a7fc-48c7-84b2-1467dcef5fce",
+            "realizing_capabilities",
+            id="Realizing LogicalCapabilities",
+        ),
+    ],
+)
+def test_realizing_links(
+    model: MelodyModel, uuid: str, real_uuid: str, real_attr: str
+):
+    elm = model.by_uuid(uuid)
+    real = model.by_uuid(real_uuid)
+
+    assert hasattr(elm, real_attr)
+    assert real in getattr(elm, real_attr)
+
+
 class TestStateMachines:
     def test_stm_accessible_from_component_pkg(self, model: MelodyModel):
         comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")
