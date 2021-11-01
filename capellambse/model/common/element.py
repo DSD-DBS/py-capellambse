@@ -187,17 +187,6 @@ class GenericElement:
             parent.remove(self._element)
             raise
 
-    def __getattr__(self, attr: str) -> t.Any:
-        raise AttributeError(f"{attr} isn't defined on {type(self).__name__}")
-
-    def __setattr__(self, attr: str, value: t.Any) -> None:
-        if attr.startswith("_"):
-            super().__setattr__(attr, value)
-        else:
-            raise AttributeError(
-                f"{attr!r} isn't defined on {type(self).__name__}"
-            )
-
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return NotImplemented
@@ -242,16 +231,10 @@ class GenericElement:
             fragments.append(escape(attr))
             fragments.append('</th><td style="text-align: left;">')
 
-            if isinstance(value, str):
+            if hasattr(value, "_short_html_"):
+                fragments.append(value._short_html_())
+            elif isinstance(value, str):
                 fragments.append(escape(value))
-            elif isinstance(value, GenericElement):
-                fragments.append(
-                    f"<strong>{escape(type(value).__name__)}</strong>"
-                    f" &quot;{escape(value.name)}&quot;"
-                    f" ({escape(value.uuid)})"
-                )
-            elif isinstance(value, ElementList):
-                fragments.append(value.__html__())
             else:
                 value = repr(value)
                 if len(value) > 250:
@@ -262,6 +245,13 @@ class GenericElement:
             fragments.append("</td></tr>")
         fragments.append("</table>")
         return markupsafe.Markup("".join(fragments))
+
+    def _short_html_(self) -> markupsafe.Markup:
+        return markupsafe.Markup(
+            f"<strong>{markupsafe.Markup.escape(type(self).__name__)}</strong>"
+            f" &quot;{markupsafe.Markup.escape(self.name)}&quot;"
+            f" ({markupsafe.Markup.escape(self.uuid)})"
+        )
 
     def _repr_html_(self) -> str:
         return self.__html__()
@@ -589,6 +579,9 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             )
         fragments.append("</ol>")
         return markupsafe.Markup("".join(fragments))
+
+    def _short_html_(self) -> markupsafe.Markup:
+        return self.__html__()
 
     def _repr_html_(self) -> str:
         return self.__html__()
