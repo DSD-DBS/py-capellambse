@@ -227,7 +227,7 @@ class MelodyLoader:
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
         """
-        LOGGER.info("Saving model %r", self.get_model_info().title)
+        LOGGER.debug("Saving model %r", self.get_model_info().title)
         with self.filehandler.write_transaction(**kw) as unsupported_kws:
             if unsupported_kws:
                 LOGGER.warning(
