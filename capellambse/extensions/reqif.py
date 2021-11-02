@@ -145,14 +145,13 @@ class RequirementsRelationAccessor(
         /,
         *type_hints: str | None,
         **kw: t.Any,
-    ) -> c.T:
+    ) -> RequirementsIntRelation | RequirementsIncRelation:
         if "target" not in kw:
             raise TypeError("No `target` for new requirement relation")
-        cls: type[c.T]
         cls, xtype = self._find_relation_type(kw["target"])
         parent = elmlist._parent._element
         with elmlist._model._loader.new_uuid(parent) as uuid:
-            return cls(  # type: ignore[call-arg]
+            return cls(
                 elmlist._model,
                 parent,
                 **kw,
@@ -163,10 +162,10 @@ class RequirementsRelationAccessor(
 
     def _find_relation_type(
         self, target: c.GenericElement
-    ) -> tuple[type[c.T], str]:
+    ) -> tuple[type[RequirementsIntRelation | RequirementsIncRelation], str]:
         if isinstance(target, Requirement):
             return (
-                t.cast(type[c.T], RequirementsIntRelation),
+                RequirementsIntRelation,
                 XT_INT_RELATION,
             )
         elif isinstance(target, ReqIFElement):
@@ -176,7 +175,7 @@ class RequirementsRelationAccessor(
             )
         else:
             return (
-                t.cast(type[c.T], RequirementsIncRelation),
+                RequirementsIncRelation,
                 XT_INC_RELATION,
             )
 
