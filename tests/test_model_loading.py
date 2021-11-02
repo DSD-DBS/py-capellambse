@@ -49,10 +49,6 @@ def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
             id="From HTTPS",
         ),
         pytest.param(
-            "git+ssh://git@github.com/DSD-DBS/py-capellambse.git",
-            id="From SSH",
-        ),
-        pytest.param(
             "git+" + pathlib.Path.cwd().as_uri(), id="From local repo"
         ),
     ],
