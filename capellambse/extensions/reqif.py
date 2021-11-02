@@ -526,6 +526,8 @@ class Requirement(ReqIFElement):
 
     _xmltag = "ownedRequirements"
 
+    owner = c.ParentAccessor(c.GenericElement)
+
     chapter_name = xmltools.AttributeProperty(
         "_element", "ReqIFChapterName", optional=True
     )
