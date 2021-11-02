@@ -198,7 +198,7 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
         Capability, deep=True, aslist=c.ElementList
     )
 
-    diagrams = diagram.DiagramAccessor(
+    diagrams = diagram.DiagramAccessor(  # type: ignore[assignment]
         "System Analysis", cacheattr="_MelodyModel__diagram_cache"
     )
 
