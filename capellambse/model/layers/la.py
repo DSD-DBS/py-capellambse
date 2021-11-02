@@ -166,7 +166,7 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     component_package = c.ProxyAccessor(LogicalComponentPkg)
     capability_package = c.ProxyAccessor(CapabilityRealizationPkg)
 
-    diagrams = diagram.DiagramAccessor(  # type: ignore[assignment]
+    diagrams = diagram.DiagramAccessor(
         "Logical Architecture", cacheattr="_MelodyModel__diagram_cache"
     )
     actor_exchanges = c.ProxyAccessor(
