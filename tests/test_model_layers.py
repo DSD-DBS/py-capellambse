@@ -19,6 +19,16 @@ import pytest
 
 import capellambse
 from capellambse.model import MelodyModel, modeltypes
+from capellambse.model.crosslayer.capellacommon import (
+    Region,
+    State,
+    StateTransition,
+)
+from capellambse.model.crosslayer.capellacore import Constraint
+from capellambse.model.crosslayer.information import Class
+from capellambse.model.layers.ctx import SystemComponentPkg
+from capellambse.model.layers.la import CapabilityRealization
+from capellambse.model.layers.oa import OperationalCapability
 
 from . import TEST_ROOT
 
@@ -129,7 +139,9 @@ def test_Capabilities_have_constraints(model: MelodyModel):
 
 
 def test_SystemCapability_has_realized_capabilities(model: MelodyModel):
-    elm = model.by_uuid("9390b7d5-598a-42db-bef8-23677e45ba06")
+    elm: CapabilityRealization = model.by_uuid(  # type: ignore[assignment]
+        "9390b7d5-598a-42db-bef8-23677e45ba06"
+    )
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 2
@@ -139,7 +151,9 @@ def test_SystemCapability_has_realized_capabilities(model: MelodyModel):
 def test_Capability_of_logical_layer_has_realized_capabilities(
     model: MelodyModel,
 ):
-    elm = model.by_uuid("b80b3141-a7fc-48c7-84b2-1467dcef5fce")
+    elm: CapabilityRealization = model.by_uuid(  # type: ignore[assignment]
+        "b80b3141-a7fc-48c7-84b2-1467dcef5fce"
+    )
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 1
@@ -147,7 +161,9 @@ def test_Capability_of_logical_layer_has_realized_capabilities(
 
 
 def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
-    elm = model.by_uuid("53c58b24-3938-4d6a-b84a-bb9bff355a41")
+    elm: OperationalCapability = model.by_uuid(  # type: ignore[assignment]
+        "53c58b24-3938-4d6a-b84a-bb9bff355a41"
+    )
     expected = (
         "The actor lives in a world where predators exist\r\n"
         "AND\r\n"
@@ -210,7 +226,9 @@ def test_realizing_links(
 
 class TestStateMachines:
     def test_stm_accessible_from_component_pkg(self, model: MelodyModel):
-        comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")
+        comp: SystemComponentPkg = model.by_uuid(  # type: ignore[assignment]
+            "ecb687c1-c540-4de6-8b1d-024d1ed0178f"
+        )
         stm = comp.state_machines.by_uuid(
             "9806df59-397c-4505-918f-3b1288638251"
         )
@@ -270,7 +288,7 @@ class TestStateMachines:
         assert len(transition.triggers) == 1
 
     def test_stm_transition_multiple_guards(self, model: MelodyModel):
-        transition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")
+        transition: StateTransition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")  # type: ignore[assignment]
 
         assert transition.guard is not None
         assert (
@@ -280,8 +298,10 @@ class TestStateMachines:
         assert transition.guard.specification["Python"] == "self.hunger >= 0.8"
 
     def test_stm_region_has_access_to_diagrams(self, model: MelodyModel):
-        default_region = model.by_uuid("eeeb98a7-6063-4115-8b4b-40a51cc0df49")
-        state = default_region.states.by_uuid(
+        default_region: Region = model.by_uuid(  # type: ignore[assignment]
+            "eeeb98a7-6063-4115-8b4b-40a51cc0df49"
+        )
+        state: State = default_region.states.by_uuid(  # type: ignore[assignment]
             "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
         )
         sleep_region = state.regions[0]
@@ -298,7 +318,7 @@ class TestStateMachines:
 
 class TestClasses:
     def test_classes_have_access_to_stm(self, model: MelodyModel):
-        elm = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")
+        elm: Class = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")  # type: ignore[assignment]
 
         assert elm.xtype.endswith("Class")
         assert hasattr(elm, "state_machines")
@@ -322,7 +342,7 @@ class TestClasses:
     def test_classes_inheritance(
         self, model: MelodyModel, uuid: str, super_uuid: str
     ):
-        elm = model.by_uuid(uuid)
+        elm: Class = model.by_uuid(uuid)  # type: ignore[assignment]
         super_class = model.by_uuid(super_uuid)
 
         assert elm.xtype.endswith("Class")
@@ -408,8 +428,8 @@ def test_constraint_specification_has_linked_object_name_in_body(
 def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
     model: MelodyModel,
 ) -> None:
-    c1 = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
-    c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
+    c1: Constraint = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")  # type: ignore[assignment]
+    c2: Constraint = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")  # type: ignore[assignment]
 
     c2.specification["LinkedText"] = c1.specification["LinkedText"]
 
