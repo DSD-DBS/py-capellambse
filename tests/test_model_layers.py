@@ -451,7 +451,7 @@ def test_constraint_without_specification_raises_AttributeError(
 
 @pytest.mark.parametrize(
     "searchkey",
-    [Class, "org.polarsys.capella.core.data.information:Class"],
+    [Class, "org.polarsys.capella.core.data.information:Class", "Class"],
 )
 def test_model_search_finds_elements(
     model: capellambse.MelodyModel, searchkey

@@ -203,8 +203,11 @@ class MelodyModel:
         for i in xtypes:
             if isinstance(i, type) and issubclass(i, common.GenericElement):
                 xtypes_.append(common.build_xtype(i))
-            else:
+            elif ":" in i:
                 xtypes_.append(i)
+            else:
+                for _, l in common.XTYPE_HANDLERS.items():
+                    xtypes_.extend(t for t in l if t.endswith(":" + i))
 
         cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
         return cls(
