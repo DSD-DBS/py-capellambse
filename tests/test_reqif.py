@@ -415,6 +415,16 @@ class TestReqIFAccess:
         assert isinstance(req_with_oir, reqif.Requirement)
         assert len(req_with_oir.relations) == 2
 
+    def test_requirement_types_attribute_definitions(
+        self, model: capellambse.MelodyModel
+    ):
+        reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        attr_def = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
+        enum_def = model.by_uuid("c316ab07-c5c3-4866-a896-92e34733055c")
+
+        assert attr_def in reqtype.attribute_definitions
+        assert enum_def in reqtype.attribute_definitions
+
 
 class TestReqIFModification:
     def test_created_requirements_can_be_found_in_the_model(
@@ -524,6 +534,23 @@ class TestReqIFModification:
         assert req.attributes[0] == attr
         assert attr.definition == definition
         assert isinstance(attr, reqif.RequirementsAttribute)
+
+    def test_create_RequirementType_AttributeDefinition_creation(
+        self, model: capellambse.MelodyModel
+    ):
+        reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        definitions = reqtype.attribute_definitions
+
+        attr_def = reqtype.attribute_definitions.create(
+            "AttributeDefinition", long_name="First"
+        )
+        enum_def = reqtype.attribute_definitions.create(
+            "AttributeDefinitionEnumeration", long_name="Second"
+        )
+
+        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
+        assert attr_def in reqtype.attribute_definitions
+        assert enum_def in reqtype.attribute_definitions
 
     def test_create_value_attribute_on_requirements_without_definition(
         self, model: capellambse.MelodyModel
