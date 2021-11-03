@@ -31,7 +31,7 @@ LOGGER = logging.getLogger(__name__)
 def get_filehandler(
     path: bytes | str | os.PathLike, **kwargs: t.Any
 ) -> FileHandler:
-    pattern = r"^(\w+\+)?(\w+:)//"
+    pattern = r"^(\w+)([+:])"
     prefix_match: re.Match[t.Any] | None
     if isinstance(path, bytes):
         prefix_match = re.search(pattern.encode("ascii"), path)
@@ -39,8 +39,9 @@ def get_filehandler(
         prefix_match = re.search(pattern, str(path))
 
     if prefix_match:
-        handler_name = (prefix_match.group(1) or prefix_match.group(2))[:-1]
-        path = os.fspath(path)[len(handler_name) + 1 :]
+        handler_name = prefix_match.group(1)
+        if prefix_match.group(2) in ("+", b"+"):
+            path = os.fspath(path)[len(prefix_match.group(0)) :]
     else:
         handler_name = "file"
 

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import pathlib
 import sys
+from importlib import metadata
 
 import pytest
 
@@ -58,3 +59,38 @@ def test_model_loading_from_badpath_raises_FileNotFoundError():
     badpath = TEST_ROOT / "TestFile.airdfragment"
     with pytest.raises(FileNotFoundError):
         capellambse.MelodyModel(badpath)
+
+
+class FakeEntrypoint:
+    @property
+    def name(self):
+        class AlwaysEqual:
+            def __eq__(self, other):
+                return True
+
+        return AlwaysEqual()
+
+    def load(self):
+        def filehandler(url):
+            assert url.startswith("testproto:")
+
+        return filehandler
+
+    @classmethod
+    def patch(cls, monkeypatch):
+        fake_entrypoints = {"capellambse.filehandler": (cls(),)}
+        monkeypatch.setattr(metadata, "entry_points", lambda: fake_entrypoints)
+
+
+def test_a_single_protocol_is_not_swallowed_by_get_filehandler(
+    monkeypatch,
+):
+    FakeEntrypoint.patch(monkeypatch)
+
+    capellambse.loader.filehandler.get_filehandler("testproto://url")
+
+
+def test_a_wrapping_protocol_separated_by_plus_is_stripped(monkeypatch):
+    FakeEntrypoint.patch(monkeypatch)
+
+    capellambse.loader.filehandler.get_filehandler("removeme+testproto://url")
