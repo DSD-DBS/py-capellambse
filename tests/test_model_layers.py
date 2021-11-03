@@ -447,3 +447,20 @@ def test_constraint_without_specification_raises_AttributeError(
 
     with pytest.raises(AttributeError, match="^No specification found$"):
         con.specification
+
+
+@pytest.mark.parametrize(
+    "searchkey",
+    [Class, "org.polarsys.capella.core.data.information:Class"],
+)
+def test_model_search_finds_elements(
+    model: capellambse.MelodyModel, searchkey
+):
+    expected = [
+        model.by_uuid("8164ae8b-36d5-4502-a184-5ec064db4ec3"),
+        model.by_uuid("0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"),
+        model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464"),
+        model.by_uuid("bbc296e1-ed4c-40cf-b37d-c8eb8613228a"),
+    ]
+
+    assert model.search(searchkey) == expected
