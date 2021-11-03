@@ -280,9 +280,9 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         class_: type[T],
         xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
-        aslist: type[element.ElementList] = None,
+        aslist: type[element.ElementList] | None = None,
         deep: bool = False,
-        follow: str = None,
+        follow: str | None = None,
         follow_abstract: bool = True,
         rootelem: (
             str
@@ -465,7 +465,7 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
         class_: type[T],
         attr: str,
         *,
-        aslist: type[element.ElementList] = None,
+        aslist: type[element.ElementList] | None = None,
     ):
         """Create an AttrProxyAccessor.
 
@@ -600,7 +600,7 @@ class CustomAccessor(PhysicalAccessor[T]):
         matchtransform: cabc.Callable[[T], U] = (
             lambda e: e  # type: ignore[assignment,return-value]
         ),
-        aslist: type[element.ElementList] = None,
+        aslist: type[element.ElementList] | None = None,
     ) -> None:
         """Create a CustomAccessor.
 
@@ -651,7 +651,7 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
         class_: type[T],
         xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
-        aslist: type[element.ElementList] = None,
+        aslist: type[element.ElementList] | None = None,
         attributes: dict[str, t.Any],
         **kwargs,
     ) -> None:
@@ -792,7 +792,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         self,
         class_: type[T],
         *attrs: str,
-        aslist: type[element.ElementList] = None,
+        aslist: type[element.ElementList] | None = None,
     ) -> None:
         super().__init__(class_, aslist=aslist)
         self.attrs = attrs

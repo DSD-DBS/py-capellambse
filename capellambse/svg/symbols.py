@@ -304,7 +304,9 @@ def logical_human_actor_symbol(
 
 @decorations.deco_factories
 def stick_figure_symbol(
-    id_: str = "StickFigureSymbol", transform: tuple[float, ...] = None, **kw
+    id_: str = "StickFigureSymbol",
+    transform: tuple[float, ...] | None = None,
+    **kw,
 ) -> container.Symbol:
     """Generate StickFigure svg symbol."""
     if transform is not None:

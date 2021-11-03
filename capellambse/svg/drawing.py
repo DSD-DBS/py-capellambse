@@ -103,7 +103,7 @@ class Drawing(drawing.Drawing):
         class_: str = "",
         label: LabelDict | None = None,
         features: cabc.Sequence[str] = (),
-        id_: str = None,
+        id_: str | None = None,
         children: bool = False,
     ) -> container.Group:
         """Add a rectangle with auto-aligned text to the group."""
@@ -418,7 +418,7 @@ class Drawing(drawing.Drawing):
         *,
         class_: str,
         label: LabelDict | None = None,
-        id_: str = None,
+        id_: str | None = None,
     ) -> container.Group:
         grp = self.g(class_=f"Box {class_}", id_=id_)
         if class_ in decorations.all_directed_ports:
@@ -517,9 +517,9 @@ class Drawing(drawing.Drawing):
         width_: int | float,
         height_: int | float,
         context_: cabc.Sequence[str] = (),
-        parent_: str = None,
+        parent_: str | None = None,
         label_: LabelDict | None = None,
-        id_: str = None,
+        id_: str | None = None,
         class_: str,
         obj_style: style.Styling,
         text_style: style.Styling,
@@ -664,7 +664,7 @@ class Drawing(drawing.Drawing):
         self,
         *,
         points_: list[list[int]],
-        label_: LabelDict = None,
+        label_: LabelDict | None = None,
         id_: str,
         class_: str,
         obj_style: style.Styling,

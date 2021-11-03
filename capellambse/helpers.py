@@ -468,7 +468,7 @@ def xpath_fetch_unique(
     xpath: str | etree.XPath,
     tree: etree._Element,
     elm_name: str,
-    elm_uid: str = None,
+    elm_uid: str | None = None,
     *,
     optional: t.Literal[False] = ...,
 ) -> etree._Element:
@@ -480,7 +480,7 @@ def xpath_fetch_unique(
     xpath: str | etree.XPath,
     tree: etree._Element,
     elm_name: str,
-    elm_uid: str = None,
+    elm_uid: str | None = None,
     *,
     optional: t.Literal[True],
 ) -> etree._Element | None:
@@ -491,7 +491,7 @@ def xpath_fetch_unique(
     xpath: str | etree.XPath,
     tree: etree._Element,
     elm_name: str,
-    elm_uid: str = None,
+    elm_uid: str | None = None,
     *,
     optional: bool = False,
 ) -> etree._Element | None:

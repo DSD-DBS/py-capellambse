@@ -55,7 +55,7 @@ class Box:
         collapsed: bool = False,
         minsize: aird.Vec2ish = aird.Vector2D(0, 0),
         maxsize: aird.Vec2ish = aird.Vector2D(math.inf, math.inf),
-        context: cabc.Iterable[str] = None,
+        context: cabc.Iterable[str] | None = None,
         port: bool = False,
         features: cabc.Sequence[str] | None = None,
         styleclass: str | None = None,
@@ -483,12 +483,12 @@ class Edge(aird.Vec2List):
         self,
         points: cabc.Iterable[aird.Vec2ish],
         *,
-        label: Box = None,
-        uuid: str = None,
-        source: DiagramElement = None,
-        target: DiagramElement = None,
-        styleclass: str = None,
-        styleoverrides: dict[str, t.Any] = None,
+        label: Box | None = None,
+        uuid: str | None = None,
+        source: DiagramElement | None = None,
+        target: DiagramElement | None = None,
+        styleclass: str | None = None,
+        styleoverrides: dict[str, t.Any] | None = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ):
@@ -710,9 +710,9 @@ class Circle:
         center: aird.Vec2ish,
         radius: float | int,
         *,
-        uuid: str = None,
-        styleclass: str = None,
-        styleoverrides: dict[str, t.Any] = None,
+        uuid: str | None = None,
+        styleclass: str | None = None,
+        styleoverrides: dict[str, t.Any] | None = None,
         hidden: bool = False,
     ):
         """Construct a Circle.
@@ -799,11 +799,11 @@ class Diagram:
     def __init__(
         self,
         name: str = "Untitled Diagram",
-        viewport: "Box" = None,
-        elements: cabc.Sequence[DiagramElement] = None,
+        viewport: Box | None = None,
+        elements: cabc.Sequence[DiagramElement] | None = None,
         *,
-        uuid: str = None,
-        styleclass: str = None,
+        uuid: str | None = None,
+        styleclass: str | None = None,
     ):
         """Construct a new diagram.
 

@@ -49,7 +49,7 @@ class AttributeProperty:
         optional: bool = False,
         default: t.Any = None,
         writable: bool = True,
-        __doc__: str = None,
+        __doc__: str | None = None,
     ) -> None:
         """Create an AttributeProperty.
 
@@ -92,7 +92,7 @@ class AttributeProperty:
         ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: type = None) -> t.Any:
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any:
         ...
 
     def __get__(self, obj, objtype=None):
@@ -153,7 +153,7 @@ class BooleanAttributeProperty(AttributeProperty):
         attribute: str,
         *,
         writable: bool = True,
-        __doc__: str = None,
+        __doc__: str | None = None,
     ) -> None:
         super().__init__(
             xmlattr,
@@ -169,7 +169,7 @@ class BooleanAttributeProperty(AttributeProperty):
         ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: type = None) -> bool:
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> bool:
         ...
 
     def __get__(self, obj, objtype=None):
@@ -257,7 +257,7 @@ class EnumAttributeProperty(AttributeProperty):
                 )
             )
 
-    def __get__(self, obj: t.Any, objtype: type[t.Any] = None) -> t.Any:
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any:
         if obj is None:
             return self
 
@@ -314,7 +314,7 @@ class XMLDictProxy(cabc.MutableMapping):
         *args: t.Any,
         childtag: str,
         keyattr: str,
-        model: capellambse.loader.MelodyLoader = None,
+        model: capellambse.loader.MelodyLoader | None = None,
         **kwargs: t.Any,
     ) -> None:
         """Initialize the XMLDictProxy.

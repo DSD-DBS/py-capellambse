@@ -317,7 +317,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         self,
         model: capellambse.MelodyModel,
         elements: list[etree._Element],
-        elemclass: type[t.Any] = None,
+        elemclass: type[t.Any] | None = None,
         *,
         source: c.ModelObject,
     ) -> None:

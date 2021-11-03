@@ -86,7 +86,7 @@ class StackingBox(aird.Box):
     def __init__(
         self,
         pos: aird.Vector2D,
-        size: aird.Vector2D = None,
+        size: aird.Vector2D | None = None,
         *,
         stacking_mode: StackingBox._StackingChildren.StackingMode,
         minsize: aird.Vec2ish = (0, 0),

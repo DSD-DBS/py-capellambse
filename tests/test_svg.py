@@ -55,7 +55,7 @@ TEST_DIAGS = [
     "[LDFB] Test flow",
     "[CC] Capability",
 ]
-TEST_DECO = set(style.STATIC_DECORATIONS.keys()) - set(["__GLOBAL__"])
+TEST_DECO = set(style.STATIC_DECORATIONS.keys()) - {"__GLOBAL__"}
 FREE_SYMBOLS = {
     "OperationalCapabilitySymbol",
     "AndControlNodeSymbol",

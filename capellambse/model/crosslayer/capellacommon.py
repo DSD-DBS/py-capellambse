@@ -16,15 +16,17 @@ from .. import common as c
 from . import capellacore
 
 XT_TRAFO = "org.polarsys.capella.core.data.capellacommon:TransfoLink"
-XT_PSEUDOSTATES = [
-    "org.polarsys.capella.core.data.capellacommon:DeepHistoryPseudoState",
-    "org.polarsys.capella.core.data.capellacommon:FinalState",
-    "org.polarsys.capella.core.data.capellacommon:ForkPseudoState",
-    "org.polarsys.capella.core.data.capellacommon:InitialPseudoState",
-    "org.polarsys.capella.core.data.capellacommon:JoinPseudoState",
-    "org.polarsys.capella.core.data.capellacommon:ShallowHistoryPseudoState",
-    "org.polarsys.capella.core.data.capellacommon:TerminatePseudoState",
-]
+XT_PSEUDOSTATES = frozenset(
+    {
+        "org.polarsys.capella.core.data.capellacommon:DeepHistoryPseudoState",
+        "org.polarsys.capella.core.data.capellacommon:FinalState",
+        "org.polarsys.capella.core.data.capellacommon:ForkPseudoState",
+        "org.polarsys.capella.core.data.capellacommon:InitialPseudoState",
+        "org.polarsys.capella.core.data.capellacommon:JoinPseudoState",
+        "org.polarsys.capella.core.data.capellacommon:ShallowHistoryPseudoState",
+        "org.polarsys.capella.core.data.capellacommon:TerminatePseudoState",
+    }
+)
 
 
 @c.xtype_handler(None)

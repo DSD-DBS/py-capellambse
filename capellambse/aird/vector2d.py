@@ -223,7 +223,7 @@ class Vec2Property:
     name: str | None
     __objclass__: type[t.Any]
 
-    def __init__(self, default: Vec2ish = None):
+    def __init__(self, default: Vec2ish | None = None):
         if default is None or isinstance(default, Vector2D):
             self.default = default
         else:
@@ -240,7 +240,7 @@ class Vec2Property:
         ...
 
     def __get__(
-        self, obj: t.Any | None, objtype: type[t.Any] = None
+        self, obj: t.Any | None, objtype: type[t.Any] | None = None
     ) -> Vec2Property | Vector2D:
         if obj is None:
             return self
