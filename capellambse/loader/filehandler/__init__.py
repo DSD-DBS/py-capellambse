@@ -28,16 +28,31 @@ from capellambse.loader.modelinfo import ModelInfo
 LOGGER = logging.getLogger(__name__)
 
 
-def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
+def _looks_like_local_path(path: str | os.PathLike) -> bool:
+    path = os.fspath(path)
+    return bool(
+        path.startswith(("/", r"\\")) or re.search(r"^[A-Za-z]:[\\/]", path)
+    )
+
+
+def _split_protocol(uri: str) -> tuple[str, str]:
     pattern = r"^(\w+)([+:])"
-    prefix_match = re.search(pattern, str(path))
+    prefix_match = re.search(pattern, str(uri))
 
     if prefix_match:
         handler_name = prefix_match.group(1)
         if prefix_match.group(2) == "+":
-            path = os.fspath(path)[len(prefix_match.group(0)) :]
+            uri = os.fspath(uri)[len(prefix_match.group(0)) :]
     else:
         handler_name = "file"
+    return (handler_name, uri)
+
+
+def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
+    if _looks_like_local_path(path):
+        handler_name = "file"
+    else:
+        handler_name, path = _split_protocol(str(path))
 
     try:
         ep = next(
