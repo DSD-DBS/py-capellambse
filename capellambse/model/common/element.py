@@ -657,7 +657,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
 
     def __getitem__(self, key):
         elem = super().__getitem__(key)
-        if self.cacheattr:
+        if self.cacheattr and not isinstance(elem, ElementList):
             try:
                 cache = getattr(self._model, self.cacheattr)
             except AttributeError:
