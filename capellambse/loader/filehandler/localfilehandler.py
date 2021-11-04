@@ -104,7 +104,7 @@ class LocalFileHandler(FileHandler):
                         (self.path / tmpname).unlink()
                     else:
                         LOGGER.debug("Committing file %s to %s", tmpname, file)
-                        (self.path / tmpname).rename(self.path / file)
+                        (self.path / tmpname).replace(self.path / file)
                 self.__transaction = None
 
     def __git_rev_parse(self, *options: str) -> str | None:
