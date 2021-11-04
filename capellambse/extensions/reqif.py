@@ -474,6 +474,15 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
     )
     values = c.AttrProxyAccessor(EnumValue, "values", aslist=c.ElementList)
 
+    @property
+    def value(self):
+        vals = self.values
+        if len(vals) > 1:
+            raise TypeError("Multi-value enumeration, use `.values` instead")
+        if len(vals) == 1:
+            return vals[0]
+        return None  # TODO return a default value?
+
 
 class AbstractType(ReqIFElement):
     owner = c.ParentAccessor(c.GenericElement)

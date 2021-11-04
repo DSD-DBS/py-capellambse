@@ -230,6 +230,7 @@ class TestRequirementAttributes:
         )
         assert attr.definition.long_name == "AttrDefEnum"
         assert attr.values[0].long_name == "enum_val2"
+        assert attr.values[0] == attr.value
 
     def test_well_defined_on_requirements(
         self, model: capellambse.MelodyModel
