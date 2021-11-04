@@ -135,9 +135,13 @@ class RequirementsRelationAccessor(
             rel = RequirementsIntRelation.from_model(obj._model, i)
             if obj in (rel.source, rel.target):
                 rel_objs.append(i)
+        return self._make_list(obj, rel_objs)
 
+    def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
-        return self.aslist(obj._model, rel_objs, c.GenericElement, parent=obj)
+        return self.aslist(
+            parent_obj._model, elements, c.GenericElement, parent=parent_obj
+        )
 
     def create(
         self,
@@ -203,9 +207,17 @@ class ElementRelationAccessor(
         ):
             if obj in (relation.source, relation.target):
                 relations.append(relation._element)
+        return self._make_list(obj, relations)
 
+    def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
-        return self.aslist(obj._model, relations, None, parent=obj, source=obj)
+        return self.aslist(
+            parent_obj._model,
+            elements,
+            None,
+            parent=parent_obj,
+            source=parent_obj,
+        )
 
 
 class ReqIFElement(c.GenericElement):
@@ -297,6 +309,10 @@ class AttributeAccessor(
             c.GenericElement,  # type: ignore[arg-type]
             XT_REQ_ATTRIBUTES,
             aslist=c.MixedElementList,
+            list_extra_args={
+                "mapkey": "definition.long_name",
+                "mapvalue": "value",
+            },
         )
 
     def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
@@ -326,7 +342,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         self._source = source
 
     @t.overload
-    def __getitem__(self, idx: int) -> c.T:
+    def __getitem__(self, idx: int | str) -> c.T:
         ...
 
     @t.overload
@@ -334,10 +350,10 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         ...
 
     def __getitem__(self, idx):
-        if isinstance(idx, slice):
-            return self._newlist(self._elements[idx])
+        rel = super().__getitem__(idx)
+        if isinstance(rel, c.ElementList):
+            return rel
 
-        rel = c.GenericElement.from_model(self._model, self._elements[idx])
         assert isinstance(rel, AbstractRequirementsRelation)
         assert self._source in (rel.source, rel.target)
         if self._source == rel.source:

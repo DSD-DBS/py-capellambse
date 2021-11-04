@@ -643,6 +643,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         elemclass: type[T],
         *,
         cacheattr: str | None = None,
+        **kw: t.Any,
     ) -> None:
         """Create a CachedElementList.
 
@@ -651,7 +652,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         cacheattr
             The attribute on the ``model`` to use as cache
         """
-        super().__init__(model, elements, elemclass)
+        super().__init__(model, elements, elemclass, **kw)
         self.cacheattr = cacheattr
 
     def __getitem__(self, key):
@@ -678,6 +679,7 @@ class MixedElementList(ElementList[GenericElement]):
         model: capellambse.MelodyModel,
         elements: list[etree._Element],
         elemclass: t.Any = None,
+        **kw: t.Any,
     ) -> None:
         """Create a MixedElementList.
 
@@ -687,7 +689,7 @@ class MixedElementList(ElementList[GenericElement]):
             Ignored; provided for drop-in compatibility.
         """
         del elemclass
-        super().__init__(model, elements, GenericElement)
+        super().__init__(model, elements, GenericElement, **kw)
 
     def __getattr__(
         self, attr: str

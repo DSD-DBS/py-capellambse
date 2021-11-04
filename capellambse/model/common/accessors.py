@@ -213,6 +213,7 @@ class PhysicalAccessor(Accessor[T]):
     __slots__ = (
         "aslist",
         "class_",
+        "list_extra_args",
         "xtypes",
     )
 
@@ -231,6 +232,7 @@ class PhysicalAccessor(Accessor[T]):
         ) = None,
         *,
         aslist: type[element.ElementList[T]] | None = None,
+        list_extra_args: dict[str, t.Any] | None = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -251,6 +253,7 @@ class PhysicalAccessor(Accessor[T]):
 
         self.aslist = aslist
         self.class_ = class_
+        self.list_extra_args = list_extra_args or {}
 
     def _guess_xtype(self) -> tuple[type[T], str]:
         """Try to guess the type of element that should be created."""
@@ -261,6 +264,16 @@ class PhysicalAccessor(Accessor[T]):
         if len(self.xtypes) > 1:
             raise ValueError("Multiple matching `xsi:type`s")
         return self.class_, next(iter(self.xtypes))
+
+    def _make_list(self, parent_obj, elements):
+        if self.aslist is None:
+            return no_list(self, parent_obj._model, elements, self.class_)
+        return self.aslist(
+            parent_obj._model,
+            elements,
+            self.class_,
+            **self.list_extra_args,
+        )
 
 
 class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
@@ -290,6 +303,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             | cabc.Sequence[str | type[element.GenericElement]]
             | None
         ) = None,
+        list_extra_args: dict[str, t.Any] | None = None,
     ):
         """Create a ProxyAccessor.
 
@@ -319,7 +333,9 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             path from the current object's element to the search root.
             If None, the current element will be used directly.
         """
-        super().__init__(class_, xtypes, aslist=aslist)
+        super().__init__(
+            class_, xtypes, aslist=aslist, list_extra_args=list_extra_args
+        )
         self.deep: bool = deep
         self.follow: str | None = follow
         self.follow_abstract: bool = follow_abstract
@@ -342,9 +358,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
         elems = [self.__follow_attr(obj, e) for e in self.__getsubelems(obj)]
         elems = [x for x in elems if x is not None]
-        if self.aslist is None:
-            return no_list(self, obj._model, elems, self.class_)
-        return self.aslist(obj._model, elems, self.class_, parent=obj)
+        return self._make_list(obj, elems)
 
     def __getsubelems(
         self, obj: element.ModelObject
@@ -396,6 +410,17 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             if abstype is not None:
                 elem = obj._model._loader[abstype]
         return elem
+
+    def _make_list(self, parent_obj, elements):
+        if self.aslist is None:
+            return no_list(self, parent_obj._model, elements, self.class_)
+        return self.aslist(
+            parent_obj._model,
+            elements,
+            self.class_,
+            parent=parent_obj,
+            **self.list_extra_args,
+        )
 
     def create(
         self,
@@ -515,9 +540,7 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
             else:
                 next_xtype = elemref
 
-        if self.aslist is None:
-            return no_list(self, obj._model, elems, self.class_)
-        return self.aslist(obj._model, elems, self.class_)
+        return self._make_list(obj, elems)
 
     def __set__(
         self,
@@ -635,9 +658,7 @@ class CustomAccessor(PhysicalAccessor[T]):
             for e in elms
             if self.elmmatcher(self.matchtransform(e), obj)
         ]
-        if self.aslist is None:
-            return no_list(self, obj._model, matches, self.class_)
-        return self.aslist(obj._model, matches, self.class_)
+        return self._make_list(obj, matches)
 
 
 class AttributeMatcherAccessor(ProxyAccessor[T]):
@@ -817,9 +838,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
                 ):
                     matches.append(candidate._element)
                     break
-        if self.aslist is None:
-            return no_list(self, obj._model, matches, self.class_)
-        return self.aslist(obj._model, matches, self.class_)
+        return self._make_list(obj, matches)
 
 
 def no_list(
