@@ -455,6 +455,14 @@ class EnumValue(ReqIFElement):
 
     _xmltag = "specifiedValues"
 
+    def __str__(self) -> str:
+        return self.long_name
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.long_name == other
+        return super().__eq__(other)
+
 
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM)
 class EnumDataTypeDefinition(ReqIFElement):
