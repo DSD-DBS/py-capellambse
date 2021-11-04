@@ -260,7 +260,7 @@ class GenericElement:
 class ElementList(cabc.MutableSequence, t.Generic[T]):
     """Provides access to elements without affecting the underlying model."""
 
-    __slots__ = ("_elemclass", "_elements", "_model")
+    __slots__ = ("_elemclass", "_elements", "_mapkey", "_mapvalue", "_model")
 
     class _Filter(t.Generic[U]):
         """Filters this list based on an extractor function."""
@@ -370,10 +370,24 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         model: capellambse.MelodyModel,
         elements: list[etree._Element],
         elemclass: type[T],
+        *,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
     ) -> None:
         self._model = model
         self._elements = elements
         self._elemclass = elemclass
+
+        if bool(mapkey) != bool(mapvalue):
+            raise TypeError(
+                "mapkey and mapvalue must both either be set or unset"
+            )
+        if not mapkey or not mapvalue:
+            self._mapkey: cabc.Callable[[T], t.Any] | None = None
+            self._mapvalue: cabc.Callable[[T], t.Any] | None = None
+        else:
+            self._mapvalue = operator.attrgetter(mapvalue)
+            self._mapkey = operator.attrgetter(mapkey)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, cabc.Sequence):
@@ -449,7 +463,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return len(self._elements)
 
     @t.overload
-    def __getitem__(self, idx: int) -> T:
+    def __getitem__(self, idx: int | str) -> T:
         ...
 
     @t.overload
@@ -459,7 +473,18 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     def __getitem__(self, idx):
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
-        return self._elemclass.from_model(self._model, self._elements[idx])
+        if isinstance(idx, int):
+            return self._elemclass.from_model(self._model, self._elements[idx])
+
+        if self._mapkey is None or self._mapvalue is None:
+            raise TypeError("This list cannot act as a mapping")
+
+        values = [self._mapvalue(i) for i in self if self._mapkey(i) == idx]
+        if len(values) > 1:
+            raise ValueError(f"Multiple matches for key {idx!r}")
+        if not values:
+            raise KeyError(idx)
+        return values[0]
 
     @t.overload
     def __setitem__(self, index: int, value: T) -> None:
