@@ -14,7 +14,6 @@
 from __future__ import annotations
 
 import pathlib
-import sys
 from importlib import metadata
 
 import pytest
@@ -28,12 +27,6 @@ from . import TEST_MODEL, TEST_ROOT
     "path",
     [
         pytest.param(str(TEST_ROOT / "5_0" / TEST_MODEL), id="From string"),
-        pytest.param(
-            str(TEST_ROOT / "5_0" / TEST_MODEL).encode(
-                sys.getfilesystemencoding()
-            ),
-            id="From filesystemencoded string",
-        ),
         pytest.param(TEST_ROOT / "5_0" / TEST_MODEL, id="From path"),
     ],
 )

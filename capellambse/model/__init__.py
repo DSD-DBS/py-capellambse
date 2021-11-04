@@ -60,7 +60,7 @@ class MelodyModel:
 
     def __init__(
         self,
-        path: str | bytes | os.PathLike,
+        path: str | os.PathLike,
         *,
         diagram_cache: str | os.PathLike | None = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,

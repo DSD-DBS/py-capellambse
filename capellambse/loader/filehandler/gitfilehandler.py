@@ -417,7 +417,7 @@ class GitFileHandler(FileHandler):
 
     def __init__(
         self,
-        path: bytes | str | os.PathLike,
+        path: str | os.PathLike,
         revision: str = "HEAD",
         username: str = "",
         password: str = "",
@@ -494,21 +494,14 @@ class GitFileHandler(FileHandler):
                 .strip()
             )
 
-        if isinstance(self.path, bytes):
-            title = self.path.decode("utf-8", errors="replace").rsplit(
-                "/", maxsplit=1
-            )[-1]
-            url = self.path.decode("utf-8", errors="surrogateescape")
-        else:
-            title = str(self.path).rsplit("/", maxsplit=1)[-1]
-            url = str(self.path)
+        title = str(self.path).rsplit("/", maxsplit=1)[-1]
         if title.endswith(".git"):
             title = title[: -len(".git")]
 
         return modelinfo.ModelInfo(
             branch=revparse("--abbrev-ref", self.revision),
             title=title,
-            url=url,
+            url=str(self.path),
             revision=self.revision,
             rev_hash=revparse(self.revision),
         )
@@ -553,22 +546,13 @@ class GitFileHandler(FileHandler):
         return git_env
 
     def __init_cache_dir(self) -> None:
-        if isinstance(self.path, bytes):
-            is_file_uri = self.path.startswith(b"file://")
-        else:
-            is_file_uri = str(self.path).startswith("file://")
-
-        if is_file_uri:
+        if str(self.path).startswith("file://"):
             self.__init_cache_dir_local()
         else:
             self.__init_cache_dir_remote()
 
     def __init_cache_dir_local(self) -> None:
-        if isinstance(self.path, bytes):
-            uri = self.path.decode("utf-8", errors="surrogateescape")
-        else:
-            uri = str(self.path)
-        parts = urllib.parse.urlparse(uri)
+        parts = urllib.parse.urlparse(str(self.path))
         if parts.netloc and parts.netloc != "localhost":
             raise ValueError(f"Unsupported file:// URL netloc: {parts.netloc}")
 
@@ -577,16 +561,10 @@ class GitFileHandler(FileHandler):
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1F\x7F"*/:<>?\\|]+'
-        if isinstance(self.path, bytes):
-            path_hash = hashlib.sha256(self.path).hexdigest()
-            path_slug = re.sub(
-                slug_pattern.encode("ascii"), b"-", self.path
-            ).decode("utf-8", errors="surrogateescape")
-        else:
-            path_hash = hashlib.sha256(
-                str(self.path).encode("utf-8", errors="surrogatepass")
-            ).hexdigest()
-            path_slug = re.sub(slug_pattern, "-", str(self.path))
+        path_hash = hashlib.sha256(
+            str(self.path).encode("utf-8", errors="surrogatepass")
+        ).hexdigest()
+        path_slug = re.sub(slug_pattern, "-", str(self.path))
         self.cache_dir = pathlib.Path(
             capellambse.dirs.user_cache_dir,
             "models",

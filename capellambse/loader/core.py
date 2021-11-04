@@ -188,7 +188,7 @@ class MelodyLoader:
 
     def __init__(
         self,
-        path: bytes | str | os.PathLike,
+        path: str | os.PathLike,
         entrypoint: str | pathlib.PurePosixPath | None = None,
         **kwargs: t.Any,
     ) -> None:

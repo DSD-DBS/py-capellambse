@@ -70,11 +70,11 @@ class HTTPFileHandler(FileHandler):
 
     def __init__(
         self,
-        path: bytes | str | os.PathLike,
+        path: str | os.PathLike,
         username: str | None = None,
         password: str | None = None,
     ) -> None:
-        if isinstance(path, (bytes, os.PathLike)):
+        if not isinstance(path, str):
             raise TypeError(
                 f"HTTPFileHandler requires a str path, not {type(path).__name__}"
             )

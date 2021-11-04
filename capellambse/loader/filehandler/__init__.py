@@ -28,25 +28,16 @@ from capellambse.loader.modelinfo import ModelInfo
 LOGGER = logging.getLogger(__name__)
 
 
-def get_filehandler(
-    path: bytes | str | os.PathLike, **kwargs: t.Any
-) -> FileHandler:
+def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
     pattern = r"^(\w+)([+:])"
-    prefix_match: re.Match[t.Any] | None
-    if isinstance(path, bytes):
-        prefix_match = re.search(pattern.encode("ascii"), path)
-    else:
-        prefix_match = re.search(pattern, str(path))
+    prefix_match = re.search(pattern, str(path))
 
     if prefix_match:
         handler_name = prefix_match.group(1)
-        if prefix_match.group(2) in ("+", b"+"):
+        if prefix_match.group(2) == "+":
             path = os.fspath(path)[len(prefix_match.group(0)) :]
     else:
         handler_name = "file"
-
-    if isinstance(handler_name, bytes):
-        handler_name = handler_name.decode("ascii")
 
     try:
         ep = next(
@@ -62,9 +53,9 @@ def get_filehandler(
 
 
 class FileHandler(metaclass=abc.ABCMeta):
-    path: bytes | str | os.PathLike
+    path: str | os.PathLike
 
-    def __init__(self, path: bytes | str | os.PathLike, **kw: t.Any) -> None:
+    def __init__(self, path: str | os.PathLike, **kw: t.Any) -> None:
         super().__init__(**kw)  # type: ignore[call-arg]
         self.path = path
 

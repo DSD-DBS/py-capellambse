@@ -30,10 +30,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 class LocalFileHandler(FileHandler):
-    def __init__(self, path: bytes | str | os.PathLike) -> None:
-        if isinstance(path, bytes):
-            path = path.decode("utf-8")
-
+    def __init__(self, path: str | os.PathLike) -> None:
         path = pathlib.Path(path)
 
         super().__init__(path)
