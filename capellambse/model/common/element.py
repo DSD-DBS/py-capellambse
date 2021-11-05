@@ -203,6 +203,9 @@ class GenericElement:
             return NotImplemented
         return self._element is other._element
 
+    def __hash__(self):
+        return hash(self._element)
+
     def __repr__(self) -> str:  # pragma: no cover
         # pylint: disable=unidiomatic-typecheck
         if type(self) is GenericElement:
