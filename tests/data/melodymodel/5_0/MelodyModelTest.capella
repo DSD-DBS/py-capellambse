@@ -723,252 +723,14 @@ The predator is far away</bodies>
           name="Operational Entities">
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="d3838d2a-7873-4ee2-ad79-d0e2963d683b"
             name="Environment" abstractType="#e37510b9-3166-4f80-a919-dfaac9b696c7"/>
-        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="9ac82bfc-1aa6-4773-9a99-91f910389668"
-            name="Functional Human Being" abstractType="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="727ad117-28fb-428a-98ab-e8baf1c45617"
-            name="Prey" abstractType="#b805a725-4b13-4b77-810e-b0ba002d5d98"/>
-        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="5f8152d2-6c01-4be5-ad08-f7f0682ecbac"
-            name="Predator" abstractType="#e6e4d30c-4d80-4899-8d8d-1350239c15a7"/>
-        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="c4a9fdd3-5420-4687-8d5e-8c52fa34b3cf"
-            name="Entity 5" abstractType="#b7700f23-ac9a-4880-b43b-4be1832a0de8"/>
         <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.oa:CommunicationMean"
             id="6638ccd2-61cc-481e-bb23-4c1b147e1dbc" name="Environmental influence"
-            source="#e37510b9-3166-4f80-a919-dfaac9b696c7" target="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-        <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="a8c42033-fdf2-458f-bae9-1cfd1207c49f"
-            name="Functional Human Being" actor="true" human="true">
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="432e5fce-24cd-4288-9096-6795f985b75d" targetElement="#ab016025-d456-4c2d-8359-d50cf9de3825"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="dbc6b4b0-82a1-4c28-bb48-073df1437e43" targetElement="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="523cf480-183f-4527-8d37-20b823a127e0" targetElement="#0e0164c3-076e-42c1-8f82-7a43ab84385c"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="2d86d2fe-577f-4dfe-8f6b-b029df3e2056" targetElement="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="3da0cc89-f82f-4b67-9386-453fd06ba7c7" targetElement="#04babdbf-6cf6-4846-a207-bf27cfc8eb32"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="7a6657e7-0973-441c-8634-0802c7bfcadd" targetElement="#f33bd79c-fa90-4c09-942b-581dc7f07d84"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="70e4d2ca-7895-484f-b4f2-a86628fa0262" targetElement="#cf9b1a63-9693-477c-9f8a-c872bab1f6bd"
-              sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
-          <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
-              id="67c297fd-4fca-4526-b907-d275bb55dab4" name="Operational Entity State Machine">
-            <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                id="eeeb98a7-6063-4115-8b4b-40a51cc0df49" name="Default Region" involvedStates="#461de288-fa3f-45bd-9975-8ebe1aec85d9 #0c7b7899-49a7-4e41-ab11-eb7d9c2becf6 #6c48b9c5-0d43-4a43-9e9d-9559cb52c83e #757c825f-f522-4d90-b3af-071a4cec3f06 #afbc6d37-3143-4edf-993d-cde759f6b177 #f4b81467-0070-474d-8faf-1d8f48f8f600 #304df824-dd6a-4bfe-b919-b60d6c4058ea #64c9a420-8034-48d5-ac0e-3b4bffde3f2e #be8132e5-9191-40b8-a94f-793ff768d301 #55fc8705-461e-4242-a417-bf82a3c8da8f #971f464e-bb9a-4616-ae7b-1e0c2c1fb5e4 #2cb7e396-4f28-435a-a130-600116da049f">
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:InitialPseudoState"
-                  id="461de288-fa3f-45bd-9975-8ebe1aec85d9" name="Birth"/>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="0c7b7899-49a7-4e41-ab11-eb7d9c2becf6" name="Sleeping" referencedStates="#1700037e-2ec7-4d71-a674-97f216010bfe #37303a1c-9952-4e30-bd21-c5567d4ca3c1"
-                  doActivity="#ab016025-d456-4c2d-8359-d50cf9de3825">
-                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="36ea2df6-8f60-4eac-ace9-e60d6320ee18" name="region" involvedStates="#1700037e-2ec7-4d71-a674-97f216010bfe #37303a1c-9952-4e30-bd21-c5567d4ca3c1">
-                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:InitialPseudoState"
-                      id="1700037e-2ec7-4d71-a674-97f216010bfe" name="Tired"/>
-                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:FinalState"
-                      id="37303a1c-9952-4e30-bd21-c5567d4ca3c1" name="Rested"/>
-                </ownedRegions>
-              </ownedStates>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7">
-                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="08a31ad3-2acf-4b0f-a415-d40d610bee4a" name="region"/>
-              </ownedStates>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="757c825f-f522-4d90-b3af-071a4cec3f06" name="Cooking" doActivity="#0e0164c3-076e-42c1-8f82-7a43ab84385c">
-                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="4d67620f-717e-47ee-b747-17a1777ae1e8" name="region"/>
-              </ownedStates>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:ChoicePseudoState"
-                  id="afbc6d37-3143-4edf-993d-cde759f6b177" name="Does the hunted animal want revenge?"/>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:ChoicePseudoState"
-                  id="f4b81467-0070-474d-8faf-1d8f48f8f600" name="Was the hunt successful?"/>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="304df824-dd6a-4bfe-b919-b60d6c4058ea" name="Running away">
-                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="d71ed7a8-5e2c-4506-9791-1730a19c305e" name="region"/>
-              </ownedStates>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="64c9a420-8034-48d5-ac0e-3b4bffde3f2e" name="Hunting" doActivity="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe">
-                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="fc83e9d7-224f-4f13-8c61-30ba0b09d10d" name="region"/>
-              </ownedStates>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                  id="be8132e5-9191-40b8-a94f-793ff768d301" name="Waiting" entry="#f33bd79c-fa90-4c09-942b-581dc7f07d84"
-                  doActivity="#cf9b1a63-9693-477c-9f8a-c872bab1f6bd" exit="#04babdbf-6cf6-4846-a207-bf27cfc8eb32">
-                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-                    id="56680731-6b76-46ee-9081-12396a9858a8" name="region"/>
-              </ownedStates>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:ForkPseudoState"
-                  id="55fc8705-461e-4242-a417-bf82a3c8da8f" name="Split out soul from body"/>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:TerminatePseudoState"
-                  id="971f464e-bb9a-4616-ae7b-1e0c2c1fb5e4" name="Physical Death"/>
-              <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:FinalState"
-                  id="2cb7e396-4f28-435a-a130-600116da049f" name="Spiritual Ascension"/>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="5704217d-c6ba-4ee2-aa3c-c5975403ca6e" triggerDescription=""
-                  source="#461de288-fa3f-45bd-9975-8ebe1aec85d9" target="#be8132e5-9191-40b8-a94f-793ff768d301"/>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="743fae9f-c485-4f72-90c0-40aa1665cb8d" triggerDescription=""
-                  guard="#1e54ce22-b4ad-4638-a1e9-1154827ec496" source="#0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
-                  target="#be8132e5-9191-40b8-a94f-793ff768d301">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="1e54ce22-b4ad-4638-a1e9-1154827ec496" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="1c630214-4740-4615-a4d7-5a9ef4f476b3">
-                    <bodies>Actor feels well rested</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="7476ca87-45e5-48ac-9b59-b547c11205e7" triggerDescription=""
-                  guard="#13a502c2-84f5-4342-b67d-ba2ee7178ae3" source="#6c48b9c5-0d43-4a43-9e9d-9559cb52c83e"
-                  target="#0c7b7899-49a7-4e41-ab11-eb7d9c2becf6">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="13a502c2-84f5-4342-b67d-ba2ee7178ae3" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="367cc09d-ee9b-4941-8ba0-5769825ee316">
-                    <bodies>Actor feels sated</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="a78cf778-0476-4e08-a3a3-c115dca55dd1" triggerDescription=""
-                  guard="#2df2bf1b-7359-41f2-a542-db4886725f4d" source="#757c825f-f522-4d90-b3af-071a4cec3f06"
-                  target="#6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" triggers="#55b90f9a-c5af-47fc-9c1c-48090414d1f1">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="2df2bf1b-7359-41f2-a542-db4886725f4d" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="bcea50ee-b6ab-4a33-9364-8344c6487679">
-                    <bodies>Food is cooked</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="e82e401e-b397-43e3-adf4-dfa23470a01a" name="" triggerDescription=""
-                  guard="#f5f63fea-1466-46bc-83db-c35812ccd553" source="#afbc6d37-3143-4edf-993d-cde759f6b177"
-                  target="#304df824-dd6a-4bfe-b919-b60d6c4058ea">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="f5f63fea-1466-46bc-83db-c35812ccd553" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="8fd737d3-c63e-4ee2-a432-7c4ca6d016eb">
-                    <bodies>Revenge</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="d5129552-32d7-45d0-af4e-73c5c4521494" name="" triggerDescription=""
-                  guard="#2254d550-2fda-4ef1-9211-a2d767c003f6" source="#afbc6d37-3143-4edf-993d-cde759f6b177"
-                  target="#be8132e5-9191-40b8-a94f-793ff768d301">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="2254d550-2fda-4ef1-9211-a2d767c003f6" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="7cd0fab6-4e31-4969-90c1-f27bf0ce7ba7">
-                    <bodies>No revenge</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="fdf03d13-1434-4a41-8ff7-03aa28b556bc" name="" triggerDescription=""
-                  guard="#319b392c-bde2-4c97-b6f0-152a73237c82" source="#f4b81467-0070-474d-8faf-1d8f48f8f600"
-                  target="#757c825f-f522-4d90-b3af-071a4cec3f06" triggers="#dd2d0dab-a35f-4104-91e5-b412f35cba15">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="319b392c-bde2-4c97-b6f0-152a73237c82" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="4bbb2971-95d2-4711-a8e2-978e8c21f36f">
-                    <bodies>Success</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="4afb2d0b-5044-4f6c-af3b-d7c03b2634a1" name="" triggerDescription=""
-                  guard="#9cc4ea9c-eabc-4f69-9ad1-1b3d2b422b65" source="#f4b81467-0070-474d-8faf-1d8f48f8f600"
-                  target="#afbc6d37-3143-4edf-993d-cde759f6b177">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="9cc4ea9c-eabc-4f69-9ad1-1b3d2b422b65" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="d55ce554-1ee0-46b6-a86d-7a24c6c27606">
-                    <bodies>Hunt failed</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="3821fd0e-ab90-4b49-bb1a-8c1098157c35" triggerDescription=""
-                  guard="#2de59a70-7c67-4e78-a3a5-b1480ee3cbb6" source="#304df824-dd6a-4bfe-b919-b60d6c4058ea"
-                  target="#be8132e5-9191-40b8-a94f-793ff768d301">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="2de59a70-7c67-4e78-a3a5-b1480ee3cbb6" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="028e60c0-dced-47aa-a6c4-c29a3822b97a">
-                    <bodies>Reached safety</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="e8b024f4-8c57-46cc-bdb6-396079265168" triggerDescription=""
-                  guard="#12f76b8f-c296-4d79-9077-2fa580757ab0" source="#64c9a420-8034-48d5-ac0e-3b4bffde3f2e"
-                  target="#f4b81467-0070-474d-8faf-1d8f48f8f600">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="12f76b8f-c296-4d79-9077-2fa580757ab0" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="0f3028d1-2416-4bba-be3f-339469a4090a">
-                    <bodies>Hunt ended</bodies>
-                    <bodies></bodies>
-                    <languages>capella:linkedText</languages>
-                    <languages>2</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="6781fb18-6dd1-4b01-95f7-2f896316e46c" triggerDescription=""
-                  guard="#15955363-fbe0-451c-ba43-f50f9a33e9ca" source="#be8132e5-9191-40b8-a94f-793ff768d301"
-                  target="#64c9a420-8034-48d5-ac0e-3b4bffde3f2e" triggers="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="15955363-fbe0-451c-ba43-f50f9a33e9ca" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="432addc9-6180-4f07-8321-1a3a6f2fcdf5">
-                    <bodies>Actor feels hungry</bodies>
-                    <bodies>self.hunger >= 0.8</bodies>
-                    <languages>capella:linkedText</languages>
-                    <languages>Python</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="2d0c5470-68ec-4175-81e0-f882f8743ab6" triggerDescription=""
-                  guard="#8b5f9a81-7e3c-4b02-83a9-66c7da844540" source="#be8132e5-9191-40b8-a94f-793ff768d301"
-                  target="#55fc8705-461e-4242-a417-bf82a3c8da8f">
-                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
-                    id="8b5f9a81-7e3c-4b02-83a9-66c7da844540" name="">
-                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
-                      id="375dca48-10c9-477c-9b23-c4fb2172c797">
-                    <bodies>Actor gets too old</bodies>
-                    <languages>capella:linkedText</languages>
-                  </ownedSpecification>
-                </ownedConstraints>
-              </ownedTransitions>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="fb67685e-8910-4590-9439-b74a235ec295" triggerDescription=""
-                  source="#55fc8705-461e-4242-a417-bf82a3c8da8f" target="#971f464e-bb9a-4616-ae7b-1e0c2c1fb5e4"/>
-              <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                  id="0b421a71-e666-412d-8a60-0b6138950af9" triggerDescription=""
-                  source="#55fc8705-461e-4242-a417-bf82a3c8da8f" target="#2cb7e396-4f28-435a-a130-600116da049f"/>
-            </ownedRegions>
-          </ownedStateMachines>
-        </ownedEntities>
+            convoyedInformations="#571d093a-a87e-4dfc-9f46-62eb7c374f44" source="#e37510b9-3166-4f80-a919-dfaac9b696c7"
+            target="#a8c42033-fdf2-458f-bae9-1cfd1207c49f">
+          <ownedComponentExchangeFunctionalExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
+              id="353ab497-a959-4c86-8572-718d83625765" targetElement="#eaf42597-4327-419f-b9f2-d04957f93f47"
+              sourceElement="#6638ccd2-61cc-481e-bb23-4c1b147e1dbc"/>
+        </ownedComponentExchanges>
         <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="e37510b9-3166-4f80-a919-dfaac9b696c7"
             name="Environment">
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
@@ -982,6 +744,14 @@ The predator is far away</bodies>
               sourceElement="#e37510b9-3166-4f80-a919-dfaac9b696c7"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="f78a8d25-acb0-4cdf-ac97-11aba727b326"
               name="Weather" abstractType="#4bf0356c-89dd-45e9-b8a6-e0332c026d33"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="727ad117-28fb-428a-98ab-e8baf1c45617"
+              name="Prey" abstractType="#b805a725-4b13-4b77-810e-b0ba002d5d98"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="c4a9fdd3-5420-4687-8d5e-8c52fa34b3cf"
+              name="Entity 5" abstractType="#b7700f23-ac9a-4880-b43b-4be1832a0de8"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="9ac82bfc-1aa6-4773-9a99-91f910389668"
+              name="Functional Human Being" abstractType="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="5f8152d2-6c01-4be5-ad08-f7f0682ecbac"
+              name="Predator" abstractType="#e6e4d30c-4d80-4899-8d8d-1350239c15a7"/>
           <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="4bf0356c-89dd-45e9-b8a6-e0332c026d33"
               name="Weather">
             <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
@@ -1032,24 +802,260 @@ The predator is far away</bodies>
               </ownedRegions>
             </ownedStateMachines>
           </ownedEntities>
+          <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="b805a725-4b13-4b77-810e-b0ba002d5d98"
+              name="Prey">
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="be7ce729-6d3c-4ff2-a0c9-ae7140569450" targetElement="#55cdd645-fb98-459a-a1c5-52d6a504c164"
+                sourceElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"/>
+          </ownedEntities>
+          <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="b7700f23-ac9a-4880-b43b-4be1832a0de8"
+              name="Entity 5"/>
+          <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="a8c42033-fdf2-458f-bae9-1cfd1207c49f"
+              name="Functional Human Being" actor="true" human="true">
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="432e5fce-24cd-4288-9096-6795f985b75d" targetElement="#ab016025-d456-4c2d-8359-d50cf9de3825"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="dbc6b4b0-82a1-4c28-bb48-073df1437e43" targetElement="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="523cf480-183f-4527-8d37-20b823a127e0" targetElement="#0e0164c3-076e-42c1-8f82-7a43ab84385c"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="2d86d2fe-577f-4dfe-8f6b-b029df3e2056" targetElement="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="3da0cc89-f82f-4b67-9386-453fd06ba7c7" targetElement="#04babdbf-6cf6-4846-a207-bf27cfc8eb32"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="7a6657e7-0973-441c-8634-0802c7bfcadd" targetElement="#f33bd79c-fa90-4c09-942b-581dc7f07d84"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="70e4d2ca-7895-484f-b4f2-a86628fa0262" targetElement="#cf9b1a63-9693-477c-9f8a-c872bab1f6bd"
+                sourceElement="#a8c42033-fdf2-458f-bae9-1cfd1207c49f"/>
+            <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+                id="67c297fd-4fca-4526-b907-d275bb55dab4" name="Operational Entity State Machine">
+              <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                  id="eeeb98a7-6063-4115-8b4b-40a51cc0df49" name="Default Region"
+                  involvedStates="#461de288-fa3f-45bd-9975-8ebe1aec85d9 #0c7b7899-49a7-4e41-ab11-eb7d9c2becf6 #6c48b9c5-0d43-4a43-9e9d-9559cb52c83e #757c825f-f522-4d90-b3af-071a4cec3f06 #afbc6d37-3143-4edf-993d-cde759f6b177 #f4b81467-0070-474d-8faf-1d8f48f8f600 #304df824-dd6a-4bfe-b919-b60d6c4058ea #64c9a420-8034-48d5-ac0e-3b4bffde3f2e #be8132e5-9191-40b8-a94f-793ff768d301 #55fc8705-461e-4242-a417-bf82a3c8da8f #971f464e-bb9a-4616-ae7b-1e0c2c1fb5e4 #2cb7e396-4f28-435a-a130-600116da049f">
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:InitialPseudoState"
+                    id="461de288-fa3f-45bd-9975-8ebe1aec85d9" name="Birth"/>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                    id="0c7b7899-49a7-4e41-ab11-eb7d9c2becf6" name="Sleeping" referencedStates="#1700037e-2ec7-4d71-a674-97f216010bfe #37303a1c-9952-4e30-bd21-c5567d4ca3c1"
+                    doActivity="#ab016025-d456-4c2d-8359-d50cf9de3825">
+                  <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                      id="36ea2df6-8f60-4eac-ace9-e60d6320ee18" name="region" involvedStates="#1700037e-2ec7-4d71-a674-97f216010bfe #37303a1c-9952-4e30-bd21-c5567d4ca3c1">
+                    <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:InitialPseudoState"
+                        id="1700037e-2ec7-4d71-a674-97f216010bfe" name="Tired"/>
+                    <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:FinalState"
+                        id="37303a1c-9952-4e30-bd21-c5567d4ca3c1" name="Rested"/>
+                  </ownedRegions>
+                </ownedStates>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                    id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7">
+                  <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                      id="08a31ad3-2acf-4b0f-a415-d40d610bee4a" name="region"/>
+                </ownedStates>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                    id="757c825f-f522-4d90-b3af-071a4cec3f06" name="Cooking" doActivity="#0e0164c3-076e-42c1-8f82-7a43ab84385c">
+                  <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                      id="4d67620f-717e-47ee-b747-17a1777ae1e8" name="region"/>
+                </ownedStates>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:ChoicePseudoState"
+                    id="afbc6d37-3143-4edf-993d-cde759f6b177" name="Does the hunted animal want revenge?"/>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:ChoicePseudoState"
+                    id="f4b81467-0070-474d-8faf-1d8f48f8f600" name="Was the hunt successful?"/>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                    id="304df824-dd6a-4bfe-b919-b60d6c4058ea" name="Running away">
+                  <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                      id="d71ed7a8-5e2c-4506-9791-1730a19c305e" name="region"/>
+                </ownedStates>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                    id="64c9a420-8034-48d5-ac0e-3b4bffde3f2e" name="Hunting" doActivity="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe">
+                  <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                      id="fc83e9d7-224f-4f13-8c61-30ba0b09d10d" name="region"/>
+                </ownedStates>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                    id="be8132e5-9191-40b8-a94f-793ff768d301" name="Waiting" entry="#f33bd79c-fa90-4c09-942b-581dc7f07d84"
+                    doActivity="#cf9b1a63-9693-477c-9f8a-c872bab1f6bd" exit="#04babdbf-6cf6-4846-a207-bf27cfc8eb32">
+                  <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                      id="56680731-6b76-46ee-9081-12396a9858a8" name="region"/>
+                </ownedStates>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:ForkPseudoState"
+                    id="55fc8705-461e-4242-a417-bf82a3c8da8f" name="Split out soul from body"/>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:TerminatePseudoState"
+                    id="971f464e-bb9a-4616-ae7b-1e0c2c1fb5e4" name="Physical Death"/>
+                <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:FinalState"
+                    id="2cb7e396-4f28-435a-a130-600116da049f" name="Spiritual Ascension"/>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="5704217d-c6ba-4ee2-aa3c-c5975403ca6e" triggerDescription=""
+                    source="#461de288-fa3f-45bd-9975-8ebe1aec85d9" target="#be8132e5-9191-40b8-a94f-793ff768d301"/>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="743fae9f-c485-4f72-90c0-40aa1665cb8d" triggerDescription=""
+                    guard="#1e54ce22-b4ad-4638-a1e9-1154827ec496" source="#0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
+                    target="#be8132e5-9191-40b8-a94f-793ff768d301">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="1e54ce22-b4ad-4638-a1e9-1154827ec496" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="1c630214-4740-4615-a4d7-5a9ef4f476b3">
+                      <bodies>Actor feels well rested</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="7476ca87-45e5-48ac-9b59-b547c11205e7" triggerDescription=""
+                    guard="#13a502c2-84f5-4342-b67d-ba2ee7178ae3" source="#6c48b9c5-0d43-4a43-9e9d-9559cb52c83e"
+                    target="#0c7b7899-49a7-4e41-ab11-eb7d9c2becf6">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="13a502c2-84f5-4342-b67d-ba2ee7178ae3" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="367cc09d-ee9b-4941-8ba0-5769825ee316">
+                      <bodies>Actor feels sated</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="a78cf778-0476-4e08-a3a3-c115dca55dd1" triggerDescription=""
+                    guard="#2df2bf1b-7359-41f2-a542-db4886725f4d" source="#757c825f-f522-4d90-b3af-071a4cec3f06"
+                    target="#6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" triggers="#55b90f9a-c5af-47fc-9c1c-48090414d1f1">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="2df2bf1b-7359-41f2-a542-db4886725f4d" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="bcea50ee-b6ab-4a33-9364-8344c6487679">
+                      <bodies>Food is cooked</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="e82e401e-b397-43e3-adf4-dfa23470a01a" name="" triggerDescription=""
+                    guard="#f5f63fea-1466-46bc-83db-c35812ccd553" source="#afbc6d37-3143-4edf-993d-cde759f6b177"
+                    target="#304df824-dd6a-4bfe-b919-b60d6c4058ea">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="f5f63fea-1466-46bc-83db-c35812ccd553" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="8fd737d3-c63e-4ee2-a432-7c4ca6d016eb">
+                      <bodies>Revenge</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="d5129552-32d7-45d0-af4e-73c5c4521494" name="" triggerDescription=""
+                    guard="#2254d550-2fda-4ef1-9211-a2d767c003f6" source="#afbc6d37-3143-4edf-993d-cde759f6b177"
+                    target="#be8132e5-9191-40b8-a94f-793ff768d301">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="2254d550-2fda-4ef1-9211-a2d767c003f6" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="7cd0fab6-4e31-4969-90c1-f27bf0ce7ba7">
+                      <bodies>No revenge</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="fdf03d13-1434-4a41-8ff7-03aa28b556bc" name="" triggerDescription=""
+                    guard="#319b392c-bde2-4c97-b6f0-152a73237c82" source="#f4b81467-0070-474d-8faf-1d8f48f8f600"
+                    target="#757c825f-f522-4d90-b3af-071a4cec3f06" triggers="#dd2d0dab-a35f-4104-91e5-b412f35cba15">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="319b392c-bde2-4c97-b6f0-152a73237c82" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="4bbb2971-95d2-4711-a8e2-978e8c21f36f">
+                      <bodies>Success</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="4afb2d0b-5044-4f6c-af3b-d7c03b2634a1" name="" triggerDescription=""
+                    guard="#9cc4ea9c-eabc-4f69-9ad1-1b3d2b422b65" source="#f4b81467-0070-474d-8faf-1d8f48f8f600"
+                    target="#afbc6d37-3143-4edf-993d-cde759f6b177">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="9cc4ea9c-eabc-4f69-9ad1-1b3d2b422b65" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="d55ce554-1ee0-46b6-a86d-7a24c6c27606">
+                      <bodies>Hunt failed</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="3821fd0e-ab90-4b49-bb1a-8c1098157c35" triggerDescription=""
+                    guard="#2de59a70-7c67-4e78-a3a5-b1480ee3cbb6" source="#304df824-dd6a-4bfe-b919-b60d6c4058ea"
+                    target="#be8132e5-9191-40b8-a94f-793ff768d301">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="2de59a70-7c67-4e78-a3a5-b1480ee3cbb6" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="028e60c0-dced-47aa-a6c4-c29a3822b97a">
+                      <bodies>Reached safety</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="e8b024f4-8c57-46cc-bdb6-396079265168" triggerDescription=""
+                    guard="#12f76b8f-c296-4d79-9077-2fa580757ab0" source="#64c9a420-8034-48d5-ac0e-3b4bffde3f2e"
+                    target="#f4b81467-0070-474d-8faf-1d8f48f8f600">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="12f76b8f-c296-4d79-9077-2fa580757ab0" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="0f3028d1-2416-4bba-be3f-339469a4090a">
+                      <bodies>Hunt ended</bodies>
+                      <bodies></bodies>
+                      <languages>capella:linkedText</languages>
+                      <languages>2</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="6781fb18-6dd1-4b01-95f7-2f896316e46c" triggerDescription=""
+                    guard="#15955363-fbe0-451c-ba43-f50f9a33e9ca" source="#be8132e5-9191-40b8-a94f-793ff768d301"
+                    target="#64c9a420-8034-48d5-ac0e-3b4bffde3f2e" triggers="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="15955363-fbe0-451c-ba43-f50f9a33e9ca" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="432addc9-6180-4f07-8321-1a3a6f2fcdf5">
+                      <bodies>Actor feels hungry</bodies>
+                      <bodies>self.hunger >= 0.8</bodies>
+                      <languages>capella:linkedText</languages>
+                      <languages>Python</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="2d0c5470-68ec-4175-81e0-f882f8743ab6" triggerDescription=""
+                    guard="#8b5f9a81-7e3c-4b02-83a9-66c7da844540" source="#be8132e5-9191-40b8-a94f-793ff768d301"
+                    target="#55fc8705-461e-4242-a417-bf82a3c8da8f">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="8b5f9a81-7e3c-4b02-83a9-66c7da844540" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="375dca48-10c9-477c-9b23-c4fb2172c797">
+                      <bodies>Actor gets too old</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="fb67685e-8910-4590-9439-b74a235ec295" triggerDescription=""
+                    source="#55fc8705-461e-4242-a417-bf82a3c8da8f" target="#971f464e-bb9a-4616-ae7b-1e0c2c1fb5e4"/>
+                <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
+                    id="0b421a71-e666-412d-8a60-0b6138950af9" triggerDescription=""
+                    source="#55fc8705-461e-4242-a417-bf82a3c8da8f" target="#2cb7e396-4f28-435a-a130-600116da049f"/>
+              </ownedRegions>
+            </ownedStateMachines>
+          </ownedEntities>
+          <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="e6e4d30c-4d80-4899-8d8d-1350239c15a7"
+              name="Predator" actor="true" human="true">
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="27f567ec-16d0-47be-94ba-c64df9aacabe" targetElement="#dfaf473d-257f-4455-90fd-fe9489dac617"
+                sourceElement="#e6e4d30c-4d80-4899-8d8d-1350239c15a7"/>
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="d25dd7f6-c38c-4158-953d-8f683753c480" targetElement="#5d637de8-410f-42b8-a467-3b1c84d40775"
+                sourceElement="#e6e4d30c-4d80-4899-8d8d-1350239c15a7"/>
+          </ownedEntities>
         </ownedEntities>
-        <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="b805a725-4b13-4b77-810e-b0ba002d5d98"
-            name="Prey">
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="be7ce729-6d3c-4ff2-a0c9-ae7140569450" targetElement="#55cdd645-fb98-459a-a1c5-52d6a504c164"
-              sourceElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"/>
-        </ownedEntities>
-        <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="e6e4d30c-4d80-4899-8d8d-1350239c15a7"
-            name="Predator" actor="true" human="true">
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="27f567ec-16d0-47be-94ba-c64df9aacabe" targetElement="#dfaf473d-257f-4455-90fd-fe9489dac617"
-              sourceElement="#e6e4d30c-4d80-4899-8d8d-1350239c15a7"/>
-          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-              id="d25dd7f6-c38c-4158-953d-8f683753c480" targetElement="#5d637de8-410f-42b8-a467-3b1c84d40775"
-              sourceElement="#e6e4d30c-4d80-4899-8d8d-1350239c15a7"/>
-        </ownedEntities>
-        <ownedEntities xsi:type="org.polarsys.capella.core.data.oa:Entity" id="b7700f23-ac9a-4880-b43b-4be1832a0de8"
-            name="Entity 5"/>
       </ownedEntityPkg>
     </ownedArchitectures>
     <ownedArchitectures xsi:type="org.polarsys.capella.core.data.ctx:SystemAnalysis"
@@ -1079,7 +1085,11 @@ The predator is far away</bodies>
               sourceElement="#1eee3b81-41ef-4b56-8018-b8e421a5a2bc"/>
           <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
               id="1a414995-f4cd-488c-8152-486e459fb9de" name="Test fex" target="#af361e95-9a87-4b67-8d0c-74585c1d695a"
-              source="#5a589076-b839-4606-9e0b-c9d76677af38"/>
+              source="#5a589076-b839-4606-9e0b-c9d76677af38" exchangedItems="#1ca7b206-be29-4315-a036-0b532b26a191 #e76aa1f5-cc12-4885-a8c2-a0022b061549">
+            <ownedFunctionalExchangeRealizations xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchangeRealization"
+                id="fe4cdb52-906d-49f2-83c6-449e5c6642af" targetElement="#b8f34893-c50b-4b7d-9326-1d01990434d8"
+                sourceElement="#1a414995-f4cd-488c-8152-486e459fb9de"/>
+          </ownedFunctionalExchanges>
           <ownedSystemFunctionPkgs xsi:type="org.polarsys.capella.core.data.ctx:SystemFunctionPkg"
               id="f1423c01-dd0f-4189-97e2-33c4332383f9" name="Subfuncs">
             <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"

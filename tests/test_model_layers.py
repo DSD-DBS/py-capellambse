@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import typing as t
+
 import markupsafe
 import pytest
 
@@ -464,3 +466,131 @@ def test_model_search_finds_elements(
     ]
 
     assert model.search(searchkey) == expected
+
+
+def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
+    comm = model.by_uuid("6638ccd2-61cc-481e-bb23-4c1b147e1dbc")
+    env = model.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
+    fhb = model.by_uuid("a8c42033-fdf2-458f-bae9-1cfd1207c49f")
+    wood = model.by_uuid("eaf42597-4327-419f-b9f2-d04957f93f47")
+    cmd = model.by_uuid("571d093a-a87e-4dfc-9f46-62eb7c374f44")
+
+    assert comm.source == env
+    assert comm.target == fhb
+    assert wood in comm.allocated_interactions
+    assert cmd in comm.allocated_exchange_items
+
+
+class TestArchitectureLayers:
+    @pytest.mark.parametrize(
+        "layer,definitions",
+        [
+            pytest.param(
+                "oa",
+                [
+                    "root_entity",
+                    "root_activity",
+                    "activity_package",
+                    "capability_package",
+                    "interface_package",
+                    "data_package",
+                    "entity_package",
+                    "all_activities",
+                    "all_processes",
+                    "all_capabilities",
+                    "all_interfaces",
+                    "all_classes",
+                    "all_actors",
+                    "all_entities",
+                    # TODO: actor_exchanges
+                    # TODO: component_exchanges
+                    "all_activity_exchanges",
+                    "all_entity_exchanges",
+                ],
+                id="OperationalArchitectureLayer",
+            ),
+            pytest.param(
+                "sa",
+                [
+                    "root_component",
+                    "root_function",
+                    "function_package",
+                    "capability_package",
+                    "interface_package",
+                    "data_package",
+                    "component_package",
+                    "mission_package",
+                    "all_functions",
+                    "all_capabilities",
+                    "all_interfaces",
+                    "all_classes",
+                    "all_actors",
+                    "all_components",
+                    "all_missions",
+                    "actor_exchanges",
+                    "component_exchanges",
+                    "all_function_exchanges",
+                    "all_component_exchanges",
+                ],
+                id="SystemArchitectureLayer",
+            ),
+            pytest.param(
+                "la",
+                [
+                    "root_component",
+                    "root_function",
+                    "function_package",
+                    "capability_package",
+                    "interface_package",
+                    "data_package",
+                    "component_package",
+                    "all_functions",
+                    "all_capabilities",
+                    "all_interfaces",
+                    "all_classes",
+                    "all_actors",
+                    "all_components",
+                    "actor_exchanges",
+                    "component_exchanges",
+                    "all_function_exchanges",
+                    "all_component_exchanges",
+                ],
+                id="LogicalArchitectureLayer",
+            ),
+            pytest.param(
+                "pa",
+                [
+                    "root_component",
+                    "root_function",
+                    "function_package",
+                    # TODO: CapabilityRealizations from la
+                    "interface_package",
+                    "data_package",
+                    "component_package",
+                    "all_functions",
+                    # TODO: all_capabilities from la
+                    "all_interfaces",
+                    "all_classes",
+                    "all_actors",
+                    "all_components",
+                    # TODO: actor_exchanges
+                    # TODO: component_exchanges
+                    "all_physical_exchanges",
+                    "all_physical_links",
+                ],
+                id="PhysicalArchitectureLayer",
+            ),
+        ],
+    )
+    def test_ArchitectureLayers_have_root_definitions(
+        self,
+        model: capellambse.MelodyModel,
+        layer: str,
+        definitions: t.Sequence[str],
+    ) -> None:
+        layer = getattr(model, layer)
+
+        for attr in definitions:
+            assert hasattr(layer, attr)
+
+        assert hasattr(layer, "diagrams")

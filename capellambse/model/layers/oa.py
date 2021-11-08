@@ -15,7 +15,12 @@
 
 .. diagram:: [CDB] OA ORM
 """
+from __future__ import annotations
+
+import collections.abc as cabc
 import operator
+
+from capellambse.model.crosslayer import information
 
 from .. import common as c
 from .. import crosslayer, diagram
@@ -142,6 +147,30 @@ class OperationalActivityPkg(c.GenericElement):
 
 
 @c.xtype_handler(XT_ARCH)
+class CommunicationMean(c.GenericElement):
+    """An operational entity exchange"""
+
+    _xmltag = "ownedComponentExchanges"
+
+    source = c.AttrProxyAccessor(c.GenericElement, "source")
+    target = c.AttrProxyAccessor(c.GenericElement, "target")
+
+    allocated_interactions = c.ProxyAccessor(
+        fa.FunctionalExchange,
+        fa.XT_COMP_EX_FNC_EX_ALLOC,
+        aslist=c.ElementList,
+        follow="targetElement",
+    )
+    allocated_exchange_items = c.AttrProxyAccessor(
+        information.ExchangeItem,
+        "convoyedInformations",
+        aslist=c.ElementList,
+    )
+
+    exchange_items = fa.ComponentExchange.exchange_items
+
+
+@c.xtype_handler(XT_ARCH)
 class EntityPkg(c.GenericElement):
     """A package that holds operational entities."""
 
@@ -172,27 +201,40 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
         deep=True,
     )
-    all_actors = c.CustomAccessor(  # type: ignore[misc]
-        Entity,
-        operator.attrgetter("all_entities"),
-        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
+    all_processes = c.ProxyAccessor(
+        OperationalProcess,
         aslist=c.ElementList,
+        deep=True,
     )
     all_capabilities = c.ProxyAccessor(
         OperationalCapability,
         aslist=c.ElementList,
         deep=True,
     )
+    all_actors = c.CustomAccessor(  # type: ignore[misc]
+        Entity,
+        operator.attrgetter("all_entities"),
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
+        aslist=c.ElementList,
+    )
     all_entities = c.ProxyAccessor(
         Entity,
         aslist=c.ElementList,
         deep=True,
     )
-    all_processes = c.ProxyAccessor(
-        OperationalProcess,
+
+    all_activity_exchanges = c.ProxyAccessor(
+        fa.FunctionalExchange,
+        aslist=c.ElementList,
+        rootelem=[OperationalActivityPkg, OperationalActivity],
+        deep=True,
+    )
+    all_entity_exchanges = c.ProxyAccessor(
+        CommunicationMean,
         aslist=c.ElementList,
         deep=True,
     )
+
     diagrams = diagram.DiagramAccessor(
         "Operational Analysis", cacheattr="_MelodyModel__diagram_cache"
     )

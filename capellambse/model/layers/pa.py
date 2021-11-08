@@ -119,13 +119,26 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     component_package = c.ProxyAccessor(PhysicalComponentPkg)
     function_package = c.ProxyAccessor(PhysicalFunctionPkg)
 
-    all_components = c.ProxyAccessor(
-        PhysicalComponent, aslist=c.ElementList, deep=True
-    )
     all_functions = c.ProxyAccessor(
         PhysicalFunction,
         aslist=c.ElementList,
         rootelem=PhysicalFunctionPkg,
+        deep=True,
+    )
+    all_actors: c.CustomAccessor[PhysicalComponent] = c.CustomAccessor(  # type: ignore[misc]
+        PhysicalComponent,
+        operator.attrgetter("all_components"),
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
+        aslist=c.ElementList,
+    )
+    all_components = c.ProxyAccessor(
+        PhysicalComponent, aslist=c.ElementList, deep=True
+    )
+
+    all_physical_exchanges = c.ProxyAccessor(
+        fa.FunctionalExchange,
+        aslist=c.ElementList,
+        rootelem=[PhysicalFunctionPkg, PhysicalFunction],
         deep=True,
     )
     all_physical_links = c.ProxyAccessor(

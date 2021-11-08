@@ -177,25 +177,48 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     root_function = c.ProxyAccessor(SystemFunction, rootelem=SystemFunctionPkg)
 
     function_package = c.ProxyAccessor(SystemFunctionPkg)
-    mission_package = c.ProxyAccessor(MissionPkg)
-    component_package = c.ProxyAccessor(SystemComponentPkg)
     capability_package = c.ProxyAccessor(CapabilityPkg)
+    component_package = c.ProxyAccessor(SystemComponentPkg)
+    mission_package = c.ProxyAccessor(MissionPkg)
 
+    all_functions = c.ProxyAccessor(
+        SystemFunction, deep=True, aslist=c.ElementList
+    )
+    all_capabilities = c.ProxyAccessor(
+        Capability, deep=True, aslist=c.ElementList
+    )
     all_actors = c.CustomAccessor(  # type: ignore[misc]
         SystemComponent,
         operator.attrgetter("all_components"),
         elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
         aslist=c.ElementList,
     )
-    all_functions = c.ProxyAccessor(
-        SystemFunction, deep=True, aslist=c.ElementList
-    )
-    all_missions = c.ProxyAccessor(Mission, deep=True, aslist=c.ElementList)
     all_components = c.ProxyAccessor(
         SystemComponent, deep=True, aslist=c.ElementList
     )
-    all_capabilities = c.ProxyAccessor(
-        Capability, deep=True, aslist=c.ElementList
+    all_missions = c.ProxyAccessor(Mission, deep=True, aslist=c.ElementList)
+
+    actor_exchanges = c.ProxyAccessor(
+        fa.ComponentExchange,
+        aslist=c.ElementList,
+        rootelem=SystemComponentPkg,
+    )
+    component_exchanges = c.ProxyAccessor(
+        fa.ComponentExchange,
+        aslist=c.ElementList,
+        rootelem=[SystemComponentPkg, SystemComponent],
+        deep=True,
+    )
+    all_function_exchanges = c.ProxyAccessor(
+        fa.FunctionalExchange,
+        aslist=c.ElementList,
+        rootelem=[SystemFunctionPkg, SystemFunction],
+        deep=True,
+    )
+    all_component_exchanges = c.ProxyAccessor(
+        fa.ComponentExchange,
+        aslist=c.ElementList,
+        deep=True,
     )
 
     diagrams = diagram.DiagramAccessor(
