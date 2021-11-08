@@ -16,11 +16,17 @@ We recommend that you develop inside of a virtual environment. To set it up,
 run the following commands in the root of your cloned repository:
 
 ```sh
-python3.8 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 pip install -U pip pre-commit
 pip install -e '.[docs,test]'
 pre-commit install
+```
+
+Simply run the unit tests to verify that everything is set up correctly:
+
+```bash
+pytest
 ```
 
 We additionally recommend that you set up your editor / IDE as follows.
