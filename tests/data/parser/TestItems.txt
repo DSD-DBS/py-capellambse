@@ -1,6 +1,6 @@
 Logical Architecture Blank '[LAB] Logical System' ('_LhNgIDCaEeqaMom-z8XNAg') [Viewport at (70, 100), size (911, 400.0)]
-	- Requirement at (680, 100), size (301, 71) with 4 features
-	- Requirement at (680, 220), size (301, 71) with 4 features
+	- Requirement at (680, 100), size (301, 71) with 2 features
+	- Requirement at (680, 220), size (301, 71) with 2 features
 	- LogicalComponent 'LC 1' at (70, 210), size (211, 104)
 	- LogicalFunction 'LogicalFunction 1' at (80, 257), size (141, 50)
 	- FOP 'FOP 1' at (213, 280), size (10, 10)

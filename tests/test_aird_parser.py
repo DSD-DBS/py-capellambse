@@ -55,9 +55,9 @@ class TestAIRDBasicFunctionality:
         self, diagram_under_test, caplog
     ):
         del caplog
-        expected = self.test_json.read_text()
+        expected = self.test_json.read_text().strip()
         actual = aird.DiagramJSONEncoder(indent=4).encode(diagram_under_test)
-        assert actual + "\n" == expected
+        assert actual == expected
 
     @pytest.mark.xfail(
         sys.platform not in {"win32", "cygwin"},
@@ -79,9 +79,9 @@ class TestAIRDBasicFunctionality:
         self, diagram_under_test, caplog
     ):
         del caplog
-        expected = self.test_repr.read_text()
+        expected = self.test_repr.read_text().strip()
         actual = repr(diagram_under_test)
-        assert actual + "\n" == expected
+        assert actual == expected
 
 
 class TestAIRDParserMSM:

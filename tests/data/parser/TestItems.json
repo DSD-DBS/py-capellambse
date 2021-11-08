@@ -19,9 +19,7 @@
                 "_-hSsYDt2EeqVgZfye5VSwA"
             ],
             "features": [
-                "- ",
                 "- Requirement 1",
-                "- ",
                 "- This is a requirement for logical component 1."
             ]
         },
@@ -37,9 +35,7 @@
                 "_3tvU8Dt2EeqVgZfye5VSwA"
             ],
             "features": [
-                "- ",
                 "- Requirement 2",
-                "- ",
                 "- This is a requirement for logical component 2."
             ]
         },
