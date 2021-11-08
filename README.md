@@ -7,7 +7,7 @@
 
 ## Intro
 
-***Copyright 2021 DB Netz AG, licensed under Apache 2.0 (see full text in [LICENSE](LICENSE))***
+***Copyright 2021 DB Netz AG, licensed under Apache 2.0 (see full text in [LICENSE](https://github.com/DSD-DBS/py-capellambse/blob/master/LICENSE))***
 
 `capellambse` allows you reading and writing Capella models from python without Java or [Capella tool](https://www.eclipse.org/capella/) on any (reasonable) platform. We wanted to "talk" to Capella models from Python but without any Java on the way. We thought this project will help individuals and organisations getting through the MBSE adoption journey with Capella faster and so we made it public and open-source.
 
@@ -35,11 +35,11 @@ jupyter-notebook # optional, you may also start it via vscode
 
 The above code snippet should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder (and most likely a browser window).
 
-You may then open the `01_Introduction.ipynb` or check-out a non interactive preview [right here](examples/01_Introduction.ipynb)
+You may then open the `01_Introduction.ipynb` or check-out a non interactive preview [right here](https://github.com/DSD-DBS/py-capellambse/blob/master/examples/01_Introduction.ipynb)
 
 ## Documentation and examples
 
-We designed the library API such that it is easy to use and discover, however there is also [documentation available here](TODO). Additionally, the [practical examples folder](examples/) provides a collection of Jupyter notebooks with practical examples (like getting traceability matrices, change assessments, BoMs, etc).
+We designed the library API such that it is easy to use and discover, however there is also [documentation available here](https://dsd-dbs.github.io/py-capellambse/). Additionally, the [practical examples folder](https://github.com/DSD-DBS/py-capellambse/blob/master/examples/) provides a collection of Jupyter notebooks with practical examples (like getting traceability matrices, change assessments, BoMs, etc).
 
 ## Dependencies on 3rd party components and re-distributions
 
@@ -48,12 +48,12 @@ Copyright 2020 [The Open Sans Project Authors](https://github.com/googlefonts/op
 
 ## Current limitations
 
-We are continuously improving coverage of Capella onthology with our [high-level API](TODO) (the current coverage map is available [here](TODO)), however it is still incomplete. It covers most of the commonly used paths but when you need to get to an ontology element that isnt covered yet you may do so by using the [low-level API](TODO).
+We are continuously improving coverage of Capella onthology with our [high-level API](#TODO) (the current coverage map is available [here](#TODO)), however it is still incomplete. It covers most of the commonly used paths but when you need to get to an ontology element that isnt covered yet you may do so by using the [low-level API](##TODO).
 
-Also, as we started in mid 2019 and there was no such thing as [Python4Capella](TODO) yet, we are not API compatible with that project. However, we intend to add API compatibility with Python4Capella in later releases.
+Also, as we started in mid 2019 and there was no such thing as [Python4Capella](https://github.com/labs4capella/python4capella) yet, we are not API compatible with that project. However, we intend to add API compatibility with Python4Capella in later releases.
 
 The generated diagrams are currently not persisted in .aird files and we are not sure yet if we need this feature. If there is a genuine usecase for that we may re-consider it - feel free to create an issue or add comments to an existing one.
 
 ## Contributing
 
-We'd love to see your bug reports and improvement suggestions! Please take a look at [guidelines for contributors](CONTRIBUTING.md).
+We'd love to see your bug reports and improvement suggestions! Please take a look at [guidelines for contributors](https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.md).
