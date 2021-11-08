@@ -28,10 +28,21 @@ import urllib.parse
 
 from lxml import etree
 
+import capellambse
 from capellambse import aird, helpers, loader
 
 from . import _common as C
 from . import _filters, _semantic, _visual
+
+DIAGRAM_ROOTS = {
+    f"{{{capellambse.NAMESPACES['sequence']}}}SequenceDDiagram",
+    f"{{{capellambse.NAMESPACES['diagram']}}}DSemanticDiagram",
+}
+"""Representations whose root element has one of these tags are diagrams.
+
+Other representations (e.g. data tables) will not be listed by
+`enumerate_diagrams`.
+"""
 
 
 class DiagramDescriptor(t.NamedTuple):
@@ -93,6 +104,10 @@ def enumerate_diagrams(
             uid = descriptor[1].attrib["repPath"]
             if not uid.startswith("#"):
                 raise ValueError("Invalid diagram reference: {uid!r}")
+
+            diag_root = model[uid]
+            if diag_root.tag not in DIAGRAM_ROOTS:
+                continue
 
             # Extract styleclass from diagram description
             styledescription = helpers.xpath_fetch_unique(

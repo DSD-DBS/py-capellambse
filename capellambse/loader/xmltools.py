@@ -108,36 +108,32 @@ class AttributeProperty:
                 return self.default and self.returntype(
                     self.default.format(self=obj, xml=xml_element)
                 )
-            raise AttributeError(
-                "Mandatory XML attribute {!r} not found on {!r}".format(
-                    self.attribute, xml_element
-                )
+            raise TypeError(
+                f"Mandatory XML attribute {self.attribute!r} not found on {xml_element!r}"
             ) from None
 
     def __set__(self, obj, value) -> None:
-        if not self.writable:
-            try:
-                curval = self.__get__(obj, type(obj))
-            except AttributeError:
-                curval = None
-            if curval is not None:
-                raise AttributeError(
-                    "Cannot set attribute {1!r} on {0!r} objects".format(
-                        type(obj).__name__, self.__name__
-                    )
-                ) from None
+        xml_element = getattr(obj, self.xmlattr)
+        if not self.writable and xml_element.get(self.attribute) is not None:
+            raise TypeError(
+                f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
+            )
 
-        getattr(obj, self.xmlattr).attrib[self.attribute] = value
+        xml_element.attrib[self.attribute] = value
 
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
-            raise AttributeError(
-                "Cannot delete attribute {1!r} on {0!r} objects".format(
-                    type(obj).__name__, self.__name__
-                )
+            raise TypeError(
+                f"Cannot delete attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 
-        getattr(obj, self.xmlattr).set(self.attribute, None)
+        xml_element = getattr(obj, self.xmlattr)
+        try:
+            del xml_element.attrib[self.attribute]
+        except KeyError:
+            raise AttributeError(
+                f"{obj!r} does not have {self.__name__} set"
+            ) from None
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
@@ -176,17 +172,14 @@ class BooleanAttributeProperty(AttributeProperty):
         if obj is None:
             return self
 
-        try:
-            return super().__get__(obj, objtype) == "true"
-        except AttributeError:
-            return False
+        xml_element = getattr(obj, self.xmlattr)
+        return xml_element.get(self.attribute, "false") == "true"
 
     def __set__(self, obj, value) -> None:
-        value = bool(value)
-        if value == self.default:
-            self.__delete__(obj)
+        if value:
+            super().__set__(obj, "true")
         else:
-            super().__set__(obj, value)
+            self.__delete__(obj)
 
 
 class EnumAttributeProperty(AttributeProperty):

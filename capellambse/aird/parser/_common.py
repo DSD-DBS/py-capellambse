@@ -151,9 +151,7 @@ class StackingBox(aird.Box):
     @size.setter
     def size(self, new_size: aird.Vec2ish) -> None:
         if any(i != 0 for i in new_size):
-            raise AttributeError(
-                "The size of this Box cannot be changed directly"
-            )
+            raise TypeError("The size of this Box cannot be changed directly")
 
     @property
     def stacking_mode(self) -> StackingBox._StackingChildren.StackingMode:
