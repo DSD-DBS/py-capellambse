@@ -184,7 +184,7 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     all_actors = c.CustomAccessor(  # type: ignore[misc]
         SystemComponent,
         operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: x.is_actor,
+        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
         aslist=c.ElementList,
     )
     all_functions = c.ProxyAccessor(
