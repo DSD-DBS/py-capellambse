@@ -1,6 +1,6 @@
 # capellambse
 
-*A Python 3 headless implementation of the Capella modeling tool (almost)*
+*A Python 3 headless implementation of the Capella modeling tool*
 
 ![CI build](https://github.com/DSD-DBS/py-capella-mbse/actions/workflows/build-test-publish.yml/badge.svg)
 ![CI lint](https://github.com/DSD-DBS/py-capella-mbse/actions/workflows/lint.yml/badge.svg)
@@ -20,17 +20,34 @@ It started as a basic library somewhere mid 2019. Since then it was re-architect
 ## Getting started
 
 The quickest way to get started is to clone the library's source code and play with various tutorials and test models.
-You may get there by following the below steps (on Linux, Mac or Windows/WSL):
+You may get there by following the below steps (on Linux, Mac or Windows/WSL).
+
+1. Clone the repository.
 
 ```bash
-git clone ... & cd py-capella-mbse
+git clone https://github.com/DSD-DBS/py-capellambse.git
+cd py-capella-mbse
+```
+
+2. Create a virtual environment.
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
+```
+
+3. Install _Capellambse_ and _Jupyter_.
+
+```bash
+pip install .
 pip install jupyter
-python setup.py install
-pip install pandas xlsxwriter # for examples with tabular data representationss
+```
+
+4. Open the example notebooks.
+
+```bash
 cd examples
-jupyter-notebook # optional, you may also start it via vscode
+jupyter-notebook
 ```
 
 The above code snippet should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder (and most likely a browser window).
