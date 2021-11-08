@@ -187,6 +187,17 @@ class GenericElement:
             parent.remove(self._element)
             raise
 
+    def __getattr__(self, attr: str) -> t.Any:
+        raise AttributeError(f"{attr} isn't defined on {type(self).__name__}")
+
+    def __setattr__(self, attr: str, value: t.Any) -> None:
+        if attr.startswith("_") or hasattr(type(self), attr):
+            super().__setattr__(attr, value)
+        else:
+            raise AttributeError(
+                f"{attr!r} isn't defined on {type(self).__name__}"
+            )
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return NotImplemented
