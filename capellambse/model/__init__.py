@@ -166,7 +166,7 @@ class MelodyModel:
                 XT_LIBRARY,
             }:
                 return tree.root
-        raise AttributeError("No viable root element found")
+        raise TypeError("No viable root element found")
 
     @property
     def _model(self) -> MelodyModel:

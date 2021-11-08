@@ -47,7 +47,7 @@ class PropertyValueProxy:
     ) -> PropertyValueProxy:
         """Create a PropertyValueProxy for an element."""
         if not hasattr(model, "_pvext") or model._pvext is None:
-            raise AttributeError("Cannot access PVMT: extension is not loaded")
+            raise RuntimeError("Cannot access PVMT: extension is not loaded")
 
         self = cls.__new__(cls)
         self._model = model

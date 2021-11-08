@@ -108,14 +108,14 @@ class AttributeProperty:
                 return self.default and self.returntype(
                     self.default.format(self=obj, xml=xml_element)
                 )
-            raise AttributeError(
+            raise TypeError(
                 f"Mandatory XML attribute {self.attribute!r} not found on {xml_element!r}"
             ) from None
 
     def __set__(self, obj, value) -> None:
         xml_element = getattr(obj, self.xmlattr)
         if not self.writable and xml_element.get(self.attribute) is not None:
-            raise AttributeError(
+            raise TypeError(
                 f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 
@@ -123,7 +123,7 @@ class AttributeProperty:
 
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
-            raise AttributeError(
+            raise TypeError(
                 f"Cannot delete attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 

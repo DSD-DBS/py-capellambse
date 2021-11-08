@@ -70,7 +70,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         pass
 
     def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
-        raise AttributeError("Cannot set this type of attribute")
+        raise TypeError("Cannot set this type of attribute")
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__objclass__ = owner
@@ -430,7 +430,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         **kw: t.Any,
     ) -> T:
         if self.deep or self.follow or self.rootelem:
-            raise AttributeError("Cannot create objects here")
+            raise TypeError("Cannot create objects here")
 
         if type_hints:
             elmclass, xtype = self._match_xtype(*type_hints)
