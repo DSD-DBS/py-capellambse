@@ -34,9 +34,9 @@ import capellambse
 
 config = read_configuration("../../setup.cfg")
 project = "Python Capella MBSE Tools"
-pypi = "pycapellambse"
+pypi = "capellambse"
 author = config["metadata"]["author"]
-copyright = "2020, %s" % author
+copyright = "2021, %s" % author
 license = config["metadata"]["license"]
 install_requirements = config["options"]["install_requires"]
 python_requirement = config["options"]["python_requires"]
