@@ -19,6 +19,21 @@ documentation.
 Usage
 -----
 
+To render a diagram in your documentation, simply define a diagram directive.
+
+..
+
+    .. diagram:: [CDB] BaseLayer ORM
+        :alt: Base layer diagram
+        :height: 480
+        :width: 640
+        :align: center -- can be left/right/center
+
+The options are optional.
+
+Configuration
+-------------
+
 To enable this extension, add it to your list of extensions in Sphinx'
 ``conf.py``.
 
@@ -30,9 +45,6 @@ To enable this extension, add it to your list of extensions in Sphinx'
         ...,
         'capellambse.sphinx',
     ]
-
-Configuration
--------------
 
 The following configuration variables are understood by this extension:
 
