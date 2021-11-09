@@ -21,7 +21,7 @@ Usage
 
 To render a diagram in your documentation, simply define a diagram directive.
 
-..
+.. code::
 
     .. diagram:: [CDB] BaseLayer ORM
         :alt: Base layer diagram
