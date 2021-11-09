@@ -42,6 +42,7 @@ jobs:
           python -m pytest --cov-report=term --cov=capellambse --rootdir=.
 
   publish:
+    name: Publish artifacts to PyPI
     runs-on: ubuntu-latest
     needs: test
     steps:
