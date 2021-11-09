@@ -33,7 +33,7 @@ jobs:
             ${{runner.os}}-
       - name: Upgrade pip
         run: |-
-          python -m pip install -U pip versioneer
+          python -m pip install -U pip
       - name: Install test dependencies
         run: |-
           python -m pip install pytest pytest-cov '.[test]'
@@ -50,10 +50,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.8"
+      - name: Install dependencies
+        run: |-
+          python -m pip install -U pip
+          python -m pip install build twine
       - name: Build packages
         run: |-
-          echo "Building '$GITHUB_REF'"
-          python -m pip install -U pip build twine
           python -m build
           python -m twine check dist/*
       - name: Publish to PyPI (release only)
