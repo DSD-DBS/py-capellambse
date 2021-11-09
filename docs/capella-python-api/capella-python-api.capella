@@ -41,6 +41,8 @@
         id="3d9bbc7d-4aba-489a-98d9-30c6ebee589a" sid="_mE8DAKDTEeqT26H54erT-A" name="Domain_1">
       <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
           id="0a871e4e-b294-4c72-baa2-c22301804f02" name="version" value="1.0.0"/>
+      <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+          id="4dc7bf44-9cbc-4df1-be8f-56f6ac52d871" name="version" value="1.0.0"/>
       <ownedEnumerationPropertyTypes xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyType"
           id="fcd6d7f7-55c7-459c-9945-f89e5b666110" sid="_6osa8KDTEeqT26H54erT-A"
           name="DevelopmentProgress">
