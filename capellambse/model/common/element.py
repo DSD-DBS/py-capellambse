@@ -650,6 +650,20 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     def _newlist_type(self) -> type[ElementList]:
         return type(self)
 
+    @t.overload
+    def get(self, key: str) -> T | None:
+        ...
+
+    @t.overload
+    def get(self, key: str, default: U) -> T | U:
+        ...
+
+    def get(self, key: str, default: t.Any = None) -> t.Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
     def insert(self, index: int, value: T) -> None:
         elm: etree._Element = value._element
         self._elements.insert(index, elm)
