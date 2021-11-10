@@ -170,6 +170,9 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
             ]
 
         if feat_type == "Property":
+            if feature.attrib.get("aggregationKind") is not None:
+                continue
+
             if abstract_type is not None:
                 feat_name += f" : {abstract_type.attrib['name']}"
         elif feat_type == "Service":
