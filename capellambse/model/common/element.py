@@ -783,7 +783,7 @@ class ElementListMapKeyView(cabc.Sequence):
         return f"{type(self).__name__}({list(self)!r})"
 
 
-class ElementListMapItemsView(cabc.Sequence[t.Tuple[t.Any, T]], t.Generic[T]):
+class ElementListMapItemsView(t.Sequence[t.Tuple[t.Any, T]], t.Generic[T]):
     def __init__(self, parent, /) -> None:
         self.__parent = parent
 
