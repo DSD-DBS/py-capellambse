@@ -46,7 +46,7 @@ class LogicalFunction(c.GenericElement):
     functions: c.Accessor
 
     @property
-    def owner(self) -> LogicalComponent:
+    def owner(self) -> LogicalComponent | None:
         try:
             return next(
                 i
