@@ -13,7 +13,6 @@
 # limitations under the License.
 from __future__ import annotations
 
-import collections.abc as cabc
 import contextlib
 import logging
 import os

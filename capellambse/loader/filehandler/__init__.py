@@ -164,6 +164,9 @@ class FileHandler(metaclass=abc.ABCMeta):
             alternative branch name to push to (which may not yet exist
             on the remote).
         """
+        # pylint: disable=no-self-use
+        # This must be a regular method (not static) in order to avoid type
+        # checking issues in subclasses.
 
         class EmptyTransaction:
             def __enter__(self):

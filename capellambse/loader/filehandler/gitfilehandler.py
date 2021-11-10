@@ -11,6 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# pylint: disable=abstract-method, useless-suppression
+# For some reason, pylint in Github CI didn't get the memo that these aren't
+# actually abstract methods. Other pylint installations seem to agree that
+# implementing these methods isn't necessary. So we just ignore the warning
+# about that here.
+# TODO Revisit this decision some time in the future
+
 from __future__ import annotations
 
 import collections.abc as cabc

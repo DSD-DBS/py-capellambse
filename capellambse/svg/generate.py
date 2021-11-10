@@ -16,6 +16,7 @@ from __future__ import annotations
 import collections.abc as cabc
 import dataclasses
 import json
+import pathlib
 import typing as t
 
 from capellambse.svg.drawing import LabelDict
@@ -110,9 +111,7 @@ class SVGDiagram:
         diagram
             SVG diagram object
         """
-        with open(path, "r") as file:
-            conf = file.read()
-
+        conf = pathlib.Path(path).read_text(encoding="utf-8")
         return cls.from_json(conf)
 
     def draw_object(self, obj: ContentsDict) -> None:

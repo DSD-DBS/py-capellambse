@@ -376,6 +376,9 @@ class Box:
 
     def __contains__(self, item: aird.Vec2ish) -> bool:
         """Check if item is in bounding box vectors"""
+        # pylint: disable=not-an-iterable, unsubscriptable-object
+        # false-positives
+
         # Fix x and vary y
         if self.is_on_side(*self.pos, *item, *self.size):
             return True

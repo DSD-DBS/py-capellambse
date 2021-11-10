@@ -17,7 +17,8 @@ import typing as t
 
 from svgwrite import container, gradients, path, shapes, text
 
-from . import decorations, style
+from . import decorations
+from . import style as style_
 
 
 @decorations.deco_factories
@@ -194,7 +195,7 @@ def _make_marker(
     *,
     id_: str,
     d: str,
-    style: style.Styling,
+    style: style_.Styling,
     **kwargs: t.Any,
 ) -> container.Marker:
     marker = container.Marker(
@@ -1034,7 +1035,7 @@ def class_symbol(id_: str = "ClassSymbol") -> container.Symbol:
 
 @decorations.deco_factories
 def fine_arrow_mark(
-    id_: str = "FineArrow", *, style: style.Styling, **kw
+    id_: str = "FineArrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
     return _make_marker(
         (14, 7),
@@ -1051,7 +1052,7 @@ def fine_arrow_mark(
 
 @decorations.deco_factories
 def arrow_mark(
-    id_: str = "Arrow", *, style: style.Styling, **kw
+    id_: str = "Arrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
     return _make_marker(
         (10, 5), (11, 11), id_=id_, d="M 0,0 10,5 0,10", style=style, **kw
@@ -1060,7 +1061,7 @@ def arrow_mark(
 
 @decorations.deco_factories
 def diamond_mark(
-    id_: str = "Diamond", *, style: style.Styling, **kw
+    id_: str = "Diamond", *, style: style_.Styling, **kw
 ) -> container.Marker:
     return _make_marker(
         (4, 10),
@@ -1074,7 +1075,7 @@ def diamond_mark(
 
 @decorations.deco_factories
 def generalization_mark(
-    id_: str = "Generalization", *, style: style.Styling, **kw
+    id_: str = "Generalization", *, style: style_.Styling, **kw
 ) -> container.Marker:
     style.fill = "#fff"
     return _make_marker(

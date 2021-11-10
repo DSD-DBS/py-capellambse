@@ -167,14 +167,14 @@ class Drawing(drawing.Drawing):
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
-        style: str | None = None
+        css: str | None = None
         if objstyle is not None:
-            style = objstyle["stroke"] if "stroke" in objstyle else None
+            css = objstyle["stroke"] if "stroke" in objstyle else None
 
         line = self.line(
             start=(x, y + decorations.feature_space),
             end=(x + w, y + decorations.feature_space),
-            style=style,
+            style=css,
         )
         if group is None:
             return line

@@ -222,8 +222,8 @@ class Styling:
 
         defaultstyles = aird.get_style(self._diagram_class, self._class)
 
-        def getstyleattr(base: object, attr: str) -> t.Any:
-            return getattr(base, attr, None) or defaultstyles.get(
+        def getstyleattr(sobj: object, attr: str) -> t.Any:
+            return getattr(sobj, attr, None) or defaultstyles.get(
                 self._style_name(attr)
             )
 

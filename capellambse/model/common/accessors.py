@@ -780,7 +780,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
 
     @classmethod
     def from_model(
-        cls, model: capellambse.MelodyModel, element: t.Any
+        cls, _1: capellambse.MelodyModel, _2: t.Any
     ) -> element.ModelObject:
         """Specifications can not be instantiated"""
         raise RuntimeError("Can not create a specification from a model")
