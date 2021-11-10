@@ -26,6 +26,7 @@ from lxml import etree
 import capellambse.helpers
 import capellambse.pvmt
 from capellambse import loader
+from capellambse.loader import xmltools
 
 from . import common, diagram  # isort:skip
 
@@ -53,6 +54,16 @@ class MelodyModel:
     pa = common.ProxyAccessor(pa.PhysicalArchitecture, rootelem=XT_SYSENG)
     diagrams = diagram.DiagramAccessor(
         None, cacheattr="_MelodyModel__diagram_cache"
+    )
+
+    uuid = xmltools.AttributeProperty(
+        "_element",
+        "id",
+        writable=False,
+        __doc__="The unique ID of the model's root element.",
+    )
+    name = xmltools.AttributeProperty(
+        "_element", "name", __doc__="The name of this model."
     )
 
     _diagram_cache: loader.FileHandler

@@ -271,7 +271,13 @@ class GenericElement:
 class ElementList(cabc.MutableSequence, t.Generic[T]):
     """Provides access to elements without affecting the underlying model."""
 
-    __slots__ = ("_elemclass", "_elements", "_mapkey", "_mapvalue", "_model")
+    __slots__ = (
+        "_elemclass",
+        "_elements",
+        "_ElementList__mapkey",
+        "_ElementList__mapvalue",
+        "_model",
+    )
 
     class _Filter(t.Generic[U]):
         """Filters this list based on an extractor function."""
@@ -385,6 +391,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         mapkey: str | None = None,
         mapvalue: str | None = None,
     ) -> None:
+        # pylint: disable=assigning-non-slot # false-positive
         self._model = model
         self._elements = elements
         self._elemclass = elemclass
@@ -394,11 +401,11 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 "mapkey and mapvalue must both either be set or unset"
             )
         if not mapkey or not mapvalue:
-            self._mapkey: cabc.Callable[[T], t.Any] | None = None
-            self._mapvalue: cabc.Callable[[T], t.Any] | None = None
+            self.__mapkey: cabc.Callable[[T], t.Any] | None = None
+            self.__mapvalue: cabc.Callable[[T], t.Any] | None = None
         else:
-            self._mapvalue = operator.attrgetter(mapvalue)
-            self._mapkey = operator.attrgetter(mapkey)
+            self.__mapvalue = operator.attrgetter(mapvalue)
+            self.__mapkey = operator.attrgetter(mapkey)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, cabc.Sequence):
@@ -487,7 +494,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         if isinstance(idx, int):
             return self._elemclass.from_model(self._model, self._elements[idx])
 
-        if self._mapkey is None or self._mapvalue is None:
+        if self.__mapkey is None or self.__mapvalue is None:
             raise TypeError("This list cannot act as a mapping")
 
         values = [self._mapvalue(i) for i in self if self._mapkey(i) == idx]
@@ -622,6 +629,20 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     def _repr_html_(self) -> str:
         return self.__html__()
 
+    def _mapkey(self, obj: T) -> t.Any:
+        assert self.__mapkey is not None
+        try:
+            return self.__mapkey(obj)
+        except AttributeError:
+            return None
+
+    def _mapvalue(self, obj: T) -> t.Any:
+        assert self.__mapvalue is not None
+        try:
+            return self.__mapvalue(obj)
+        except AttributeError:
+            return None
+
     def _newlist(self, elements: list[etree._Element]) -> ElementList[T]:
         listtype = self._newlist_type()
         return listtype(self._model, elements, self._elemclass)
@@ -629,9 +650,32 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     def _newlist_type(self) -> type[ElementList]:
         return type(self)
 
+    @t.overload
+    def get(self, key: str) -> T | None:
+        ...
+
+    @t.overload
+    def get(self, key: str, default: U) -> T | U:
+        ...
+
+    def get(self, key: str, default: t.Any = None) -> t.Any:
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
     def insert(self, index: int, value: T) -> None:
         elm: etree._Element = value._element
         self._elements.insert(index, elm)
+
+    def items(self) -> ElementListMapItemsView[T]:
+        return ElementListMapItemsView(self)
+
+    def keys(self) -> ElementListMapKeyView:
+        return ElementListMapKeyView(self)
+
+    def values(self) -> ElementList[T]:
+        return self
 
 
 class CachedElementList(ElementList[T], t.Generic[T]):
@@ -713,3 +757,52 @@ class MixedElementList(ElementList[GenericElement]):
 
     def __dir__(self) -> list[str]:  # pragma: no cover
         return super().__dir__() + ["by_type", "exclude_types"]
+
+
+class ElementListMapKeyView(cabc.Sequence):
+    def __init__(self, parent, /) -> None:
+        self.__parent = parent
+
+    @t.overload
+    def __getitem__(self, idx: int) -> t.Any:
+        ...
+
+    @t.overload
+    def __getitem__(self, idx: slice) -> list:
+        ...
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return [self.__parent._mapkey(i) for i in self.__parent[idx]]
+        return self.__parent._mapkey(self.__parent[idx])
+
+    def __len__(self) -> int:
+        return len(self.__parent)
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({list(self)!r})"
+
+
+class ElementListMapItemsView(cabc.Sequence[t.Tuple[t.Any, T]], t.Generic[T]):
+    def __init__(self, parent, /) -> None:
+        self.__parent = parent
+
+    @t.overload
+    def __getitem__(self, idx: int) -> tuple[t.Any, T]:
+        ...
+
+    @t.overload
+    def __getitem__(self, idx: slice) -> list[tuple[t.Any, T]]:
+        ...
+
+    def __getitem__(self, idx):
+        if isinstance(idx, slice):
+            return [(self.__parent._mapkey(i), i) for i in self.__parent[idx]]
+        obj = self.__parent[idx]
+        return (self.__parent._mapkey(obj), obj)
+
+    def __len__(self) -> int:
+        return len(self.__parent)
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({list(self)!r})"
