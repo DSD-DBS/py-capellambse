@@ -83,7 +83,7 @@ rst_epilog = """
 )
 
 # -- Options for auto-doc ----------------------------------------------------
-autoclass_content = "class"
+autoclass_content = "both"
 
 
 # -- Options for HTML output -------------------------------------------------
