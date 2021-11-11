@@ -95,7 +95,7 @@
             "label": {
                 "x": 226,
                 "y": 280.0,
-                "width": 32,
+                "width": 29,
                 "height": 10,
                 "text": "FOP 1"
             },
@@ -114,9 +114,9 @@
                 "_3tXhgDt2EeqVgZfye5VSwA"
             ],
             "label": {
-                "x": 266.5,
+                "x": 268.0,
                 "y": 229,
-                "width": 25,
+                "width": 22,
                 "height": 10,
                 "text": "CP 1"
             },
@@ -176,10 +176,10 @@
                 "_-g6R4Dt2EeqVgZfye5VSwA"
             ],
             "label": {
-                "x": 371,
-                "y": 280.0,
-                "width": 26,
-                "height": 10,
+                "x": 374,
+                "y": 280.5,
+                "width": 23,
+                "height": 9,
                 "text": "FIP 1"
             },
             "parent": "_-ggpQDt2EeqVgZfye5VSwA"
@@ -197,9 +197,9 @@
                 "_3tXhgDt2EeqVgZfye5VSwA"
             ],
             "label": {
-                "x": 331.5,
+                "x": 333.0,
                 "y": 253,
-                "width": 25,
+                "width": 22,
                 "height": 10,
                 "text": "CP 1"
             },
@@ -220,9 +220,9 @@
                 ]
             ],
             "label": {
-                "x": 301,
+                "x": 302,
                 "y": 241,
-                "width": 18,
+                "width": 16,
                 "height": 10,
                 "text": "C 1"
             }
@@ -242,9 +242,9 @@
                 ]
             ],
             "label": {
-                "x": 589,
+                "x": 590,
                 "y": 260,
-                "width": 62,
+                "width": 60,
                 "height": 10,
                 "text": "allocatedTo"
             }
@@ -424,9 +424,9 @@
                 ]
             ],
             "label": {
-                "x": 608,
+                "x": 609,
                 "y": 120,
-                "width": 62,
+                "width": 60,
                 "height": 10,
                 "text": "allocatedTo"
             }

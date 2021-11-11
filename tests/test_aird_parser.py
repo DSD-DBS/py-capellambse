@@ -18,14 +18,16 @@ import pytest
 
 from capellambse import aird, loader
 
+PLATFORM_EXT = ".win32" if sys.platform in {"win32", "cygwin"} else ""
+
 
 class TestAIRDBasicFunctionality:
     test_model = (
         pathlib.Path(__file__).parent / "data" / "parser" / "TestItems.aird"
     )
     test_diagram = "[LAB] Logical System"
-    test_json = test_model.with_suffix(".json")
-    test_repr = test_model.with_suffix(".repr.txt")
+    test_json = test_model.with_suffix(f"{PLATFORM_EXT}.json")
+    test_repr = test_model.with_suffix(f".repr{PLATFORM_EXT}.txt")
     test_txt = test_model.with_suffix(".txt")
 
     @pytest.fixture
@@ -47,10 +49,6 @@ class TestAIRDBasicFunctionality:
             pass
         assert i == 1
 
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
     def test_json_output_matches_expected_output(
         self, diagram_under_test, caplog
     ):
@@ -59,10 +57,6 @@ class TestAIRDBasicFunctionality:
         actual = aird.DiagramJSONEncoder(indent=4).encode(diagram_under_test)
         assert actual == expected
 
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
     def test_plain_text_representation_matches_expected_output(
         self, diagram_under_test, caplog
     ):
@@ -71,10 +65,6 @@ class TestAIRDBasicFunctionality:
         actual = str(diagram_under_test)
         assert actual + "\n" == expected
 
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
     def test_python_code_representation_matches_expected_output(
         self, diagram_under_test, caplog
     ):
@@ -93,12 +83,8 @@ class TestAIRDParserMSM:
         / "MelodyModelTest.aird"
     )
     test_diagram = "[MSM] States of Functional Human Being"
-    test_json = test_model.with_suffix(f".{test_diagram}.json")
+    test_json = test_model.with_suffix(f".{test_diagram}{PLATFORM_EXT}.json")
 
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
     def test_aird_msm(self):
         model = loader.MelodyLoader(self.test_model)
         diagram = aird.parse_diagram(
@@ -111,4 +97,5 @@ class TestAIRDParserMSM:
         )
 
         generated_json = aird.DiagramJSONEncoder(indent=4).encode(diagram)
-        assert self.test_json.read_text() == generated_json + "\n"
+
+        assert generated_json + "\n" == self.test_json.read_text()
