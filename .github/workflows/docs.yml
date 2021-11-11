@@ -20,6 +20,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install '.[docs]'
+      - name: Auto-generate APIDOC sources
+        run: |-
+          sphinx-apidoc --output-dir docs/source/code --force .
       - name: Create docs
         run: |
           make -C docs html
