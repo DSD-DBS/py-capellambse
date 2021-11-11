@@ -97,3 +97,19 @@ def test_a_wrapping_protocol_separated_by_plus_is_stripped(monkeypatch):
     capellambse.loader.filehandler.get_filehandler(
         "realproto+wrappedproto://url"
     )
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/data/model/model.aird",
+        r"S:\model\model.aird",
+        r"S:/model/model.aird",
+        r"\\?\S:\model\model.aird",
+        r"\\modelserver\model\model.aird",
+    ],
+)
+def test_plain_file_paths_are_recognized_as_file_protocol(monkeypatch, path):
+    FakeEntrypoint.patch(monkeypatch, "file", path)
+
+    capellambse.loader.filehandler.get_filehandler(path)
