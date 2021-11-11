@@ -147,6 +147,8 @@ class MelodyModel:
             directories.
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler :
             The file handler implementing the ``git://`` protocol.
+        capellambse.loader.filehandler.http.HTTPFileHandler :
+            A simple ``http(s)://`` file handler.
         """
         self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
