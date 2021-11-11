@@ -83,6 +83,15 @@ class MelodyModel:
         supported, consult the documentation of the used file handler.
         Refer to the "See Also" section for a collection of links.
 
+        Below are some common parameter names and their usual meanings.
+        Not all file handlers support all parameters.
+
+        .. note::
+            Passing in arguments that are not accepted by the selected
+            file handler will result in an exception being raised.
+            Similarly, leaving out arguments that are required by the
+            file handler will also result in an exception.
+
         Parameters
         ----------
         path
@@ -106,19 +115,26 @@ class MelodyModel:
         entrypoint
             Entrypoint from path to the main ``.aird`` file.
         revision
-            Revision of Git repository
+            The revision to use, if loading a model from a version
+            control system like git. Defaults to the current HEAD. If
+            the used VCS does not have a notion of "current HEAD", this
+            argument is mandatory.
         disable_cache
-            Disable caching (not supported by all filehandlers)
+            Disable local caching of remote content.
         update_cache
-            Update the cache (not supported by all filehandlers)
+            Update the local cache. Defaults to ``True``, but can be
+            disabled to reuse the last cached state.
         identity_file
-            SSH Identity file (not supported by all filehandlers)
+            The identity file (private key) to use when connecting via
+            SSH.
         known_hosts_file
-            SSH Known Hosts file (not supported by all filehandlers)
+            The ``known_hosts`` file to pass to SSH for verifying the
+            server's host key.
         username
-            username (not supported by all filehandlers)
+            The username to log in as remotely.
         password
-            password (not supported by all filehandlers)
+            The password to use for logging in. Will be ignored when
+            ``identity_file`` is passed as well.
         diagram_cache
             An optional place where to find pre-rendered, cached
             diagrams. When a diagram is found in this cache, it will be
@@ -137,9 +153,13 @@ class MelodyModel:
             - Diagram ID: ``_7FWu4KrxEeqOgqWuHJrXFA``
             - Render call: ``diag_obj.as_svg`` or ``diag_obj.render("svg")``
             - Cache file name: ``_7FWu4KrxEeqOgqWuHJrXFA.svg``
+
+            *This argument is **not** passed to the file handler.*
         diagram_cache_subdir
             A sub-directory prefix to prepend to diagram UUIDs before
             looking them up in the ``diagram_cache``.
+
+            *This argument is **not** passed to the file handler.*
 
         See Also
         --------
