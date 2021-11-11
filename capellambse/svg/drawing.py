@@ -123,9 +123,12 @@ class Drawing(drawing.Drawing):
         rect: shapes.Rect = self.rect(**rectparams)
         grp.add(rect)
 
-        if features:
+        if features or class_ in decorations.needs_feature_line:
             self._draw_feature_line(rect, grp, rect_style)
-            self._draw_feature_text(rect, features, class_, grp, text_style)
+            if features:
+                self._draw_feature_text(
+                    rect, features, class_, grp, text_style
+                )
 
         if label:
             text_anchor = (
