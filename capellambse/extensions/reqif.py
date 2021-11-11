@@ -427,7 +427,8 @@ class ValueAccessor(c.Accessor):
             raise TypeError("Value needs to be of type " + error_msg)
 
         if value == default:
-            del obj._element.attrib["value"]
+            if "value" in obj._element.attrib:
+                del obj._element.attrib["value"]
             return
 
         if isinstance(value, bool):
