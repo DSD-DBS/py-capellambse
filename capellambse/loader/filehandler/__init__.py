@@ -35,6 +35,10 @@ def _looks_like_local_path(path: str | os.PathLike) -> bool:
     )
 
 
+def _looks_like_scp(path: str) -> bool:
+    return bool(re.search(r"^(?:\w+@)?[\w.]+:[^/].*", path))
+
+
 def _split_protocol(uri: str) -> tuple[str, str]:
     pattern = r"^(\w+)([+:])"
     prefix_match = re.search(pattern, str(uri))
@@ -51,6 +55,8 @@ def _split_protocol(uri: str) -> tuple[str, str]:
 def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
     if _looks_like_local_path(path):
         handler_name = "file"
+    elif isinstance(path, str) and _looks_like_scp(path):
+        handler_name = "git"
     else:
         handler_name, path = _split_protocol(str(path))
 
