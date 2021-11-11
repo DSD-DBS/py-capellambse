@@ -77,7 +77,7 @@ class MelodyModel:
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         **kwargs: t.Any,
     ) -> None:
-        """Load a project from the filesystem.
+        """Load a project.
 
         For complete information on which exact ``kwargs`` are
         supported, consult the documentation of the used file handler.
