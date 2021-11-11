@@ -91,6 +91,10 @@ class MelodyModel:
 
             * A path to a local ``.aird`` file.
             * A path to a local directory (requires ``entrypoint``).
+            * An SCP-style short URL, which will be treated as referring
+              to a Git repository.
+
+              Example: ``git@github.com:DSD-DBS/py-capellambse.git``
             * A remote URL, with a protocol or prefix that indicates
               which file handler to invoke (requires ``entrypoint``).
 
