@@ -55,35 +55,45 @@ def test_model_loading_from_badpath_raises_FileNotFoundError():
 
 
 class FakeEntrypoint:
+    def __init__(self, expected_name, expected_url):
+        self._expected_name = expected_name
+        self._expected_url = expected_url
+
     @property
     def name(self):
         class AlwaysEqual:
-            def __eq__(self, other):
+            def __eq__(_, name):  # pylint: disable=E,I
+                nonlocal self
+                assert name == self._expected_name
                 return True
 
         return AlwaysEqual()
 
     def load(self):
         def filehandler(url):
-            assert url.startswith("testproto:")
+            assert url == self._expected_url
 
         return filehandler
 
     @classmethod
-    def patch(cls, monkeypatch):
-        fake_entrypoints = {"capellambse.filehandler": (cls(),)}
+    def patch(cls, monkeypatch, expected_name, expected_url):
+        fake_entrypoints = {
+            "capellambse.filehandler": (cls(expected_name, expected_url),)
+        }
         monkeypatch.setattr(metadata, "entry_points", lambda: fake_entrypoints)
 
 
 def test_a_single_protocol_is_not_swallowed_by_get_filehandler(
     monkeypatch,
 ):
-    FakeEntrypoint.patch(monkeypatch)
+    FakeEntrypoint.patch(monkeypatch, "testproto", "testproto://url")
 
     capellambse.loader.filehandler.get_filehandler("testproto://url")
 
 
 def test_a_wrapping_protocol_separated_by_plus_is_stripped(monkeypatch):
-    FakeEntrypoint.patch(monkeypatch)
+    FakeEntrypoint.patch(monkeypatch, "realproto", "wrappedproto://url")
 
-    capellambse.loader.filehandler.get_filehandler("removeme+testproto://url")
+    capellambse.loader.filehandler.get_filehandler(
+        "realproto+wrappedproto://url"
+    )
