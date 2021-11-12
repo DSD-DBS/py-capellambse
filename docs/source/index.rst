@@ -45,7 +45,7 @@ tutorial section.
    :caption: API reference
    :maxdepth: 4
 
-   api
+   code/modules
 
 .. toctree::
    :caption: Integration with other tools

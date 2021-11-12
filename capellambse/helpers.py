@@ -435,6 +435,7 @@ def escape_linked_text(
 
     This is the inverse operation of :func:`unescape_linked_text`.
     """
+    del loader
 
     def flatten_element(
         elm: str | lxml.html.HTMLElement,

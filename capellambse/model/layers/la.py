@@ -43,8 +43,18 @@ class LogicalFunction(c.GenericElement):
         follow="targetElement",
     )
 
-    owner: c.Accessor
     functions: c.Accessor
+
+    @property
+    def owner(self) -> LogicalComponent | None:
+        try:
+            return next(
+                i
+                for i in self._model.search("LogicalComponent")
+                if self in i.functions
+            )
+        except StopIteration:
+            return None
 
 
 @c.xtype_handler(XT_ARCH)
@@ -166,9 +176,22 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     component_package = c.ProxyAccessor(LogicalComponentPkg)
     capability_package = c.ProxyAccessor(CapabilityRealizationPkg)
 
-    diagrams = diagram.DiagramAccessor(
-        "Logical Architecture", cacheattr="_MelodyModel__diagram_cache"
+    all_functions = c.ProxyAccessor(
+        LogicalFunction,
+        aslist=c.ElementList,
+        rootelem=LogicalFunctionPkg,
+        deep=True,
     )
+    all_capabilities = c.ProxyAccessor(
+        CapabilityRealization, deep=True, aslist=c.ElementList
+    )
+    all_components = c.ProxyAccessor(  # maybe this should exclude .is_actor
+        LogicalComponent, aslist=c.ElementList, deep=True
+    )
+    all_actors = property(
+        lambda self: self._model.search(LogicalComponent).by_is_actor(True)
+    )
+
     actor_exchanges = c.ProxyAccessor(
         fa.ComponentExchange,
         aslist=c.ElementList,
@@ -192,35 +215,12 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
         deep=True,
     )
-    all_components = c.ProxyAccessor(  # maybe this should exclude .is_actor
-        LogicalComponent, aslist=c.ElementList, deep=True
-    )
-    all_actors: c.CustomAccessor[LogicalComponent] = c.CustomAccessor(  # type: ignore[misc]
-        LogicalComponent,
-        operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
-        aslist=c.ElementList,
-    )
-    all_functions = c.ProxyAccessor(
-        LogicalFunction,
-        aslist=c.ElementList,
-        rootelem=LogicalFunctionPkg,
-        deep=True,
-    )
-    all_capabilities = c.ProxyAccessor(
-        CapabilityRealization, deep=True, aslist=c.ElementList
+
+    diagrams = diagram.DiagramAccessor(
+        "Logical Architecture", cacheattr="_MelodyModel__diagram_cache"
     )
 
 
-c.set_accessor(
-    LogicalFunction,
-    "owner",
-    c.CustomAccessor(
-        LogicalComponent,
-        operator.attrgetter("_model.la.all_components"),
-        matchtransform=operator.attrgetter("functions"),
-    ),
-)
 c.set_accessor(
     ctx.Capability,
     "realizing_capabilities",

@@ -125,11 +125,8 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         rootelem=PhysicalFunctionPkg,
         deep=True,
     )
-    all_actors: c.CustomAccessor[PhysicalComponent] = c.CustomAccessor(  # type: ignore[misc]
-        PhysicalComponent,
-        operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
-        aslist=c.ElementList,
+    all_actors = property(
+        lambda self: self._model.search(PhysicalComponent).by_is_actor(True)
     )
     all_components = c.ProxyAccessor(
         PhysicalComponent, aslist=c.ElementList, deep=True
@@ -144,6 +141,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_physical_links = c.ProxyAccessor(
         cs.PhysicalLink, aslist=c.ElementList, deep=True
     )
+
     diagrams = diagram.DiagramAccessor(
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
     )  # type: ignore[assignment]

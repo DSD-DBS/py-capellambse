@@ -187,14 +187,11 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     all_capabilities = c.ProxyAccessor(
         Capability, deep=True, aslist=c.ElementList
     )
-    all_actors = c.CustomAccessor(  # type: ignore[misc]
-        SystemComponent,
-        operator.attrgetter("all_components"),
-        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
-        aslist=c.ElementList,
-    )
     all_components = c.ProxyAccessor(
         SystemComponent, deep=True, aslist=c.ElementList
+    )
+    all_actors = property(
+        lambda self: self._model.search(SystemComponent).by_is_actor(True)
     )
     all_missions = c.ProxyAccessor(Mission, deep=True, aslist=c.ElementList)
 
@@ -209,6 +206,7 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
         rootelem=[SystemComponentPkg, SystemComponent],
         deep=True,
     )
+
     all_function_exchanges = c.ProxyAccessor(
         fa.FunctionalExchange,
         aslist=c.ElementList,

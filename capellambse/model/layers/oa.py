@@ -17,7 +17,6 @@
 """
 from __future__ import annotations
 
-import collections.abc as cabc
 import operator
 
 from capellambse.model.crosslayer import information
@@ -211,11 +210,8 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
         deep=True,
     )
-    all_actors = c.CustomAccessor(  # type: ignore[misc]
-        Entity,
-        operator.attrgetter("all_entities"),
-        elmmatcher=lambda x, _: x.is_actor,  # type: ignore[attr-defined]
-        aslist=c.ElementList,
+    all_actors = property(
+        lambda self: self._model.search(Entity).by_is_actor(True)
     )
     all_entities = c.ProxyAccessor(
         Entity,
