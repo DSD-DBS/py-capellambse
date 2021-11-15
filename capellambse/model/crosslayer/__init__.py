@@ -13,7 +13,7 @@
 # limitations under the License.
 """Utility classes that are used across all layers.
 
-.. diagram:: [CDB] BaseLayer ORM
+.. diagram:: [CDB] BaseLayer
 """
 from .. import common as c
 from . import cs, information
