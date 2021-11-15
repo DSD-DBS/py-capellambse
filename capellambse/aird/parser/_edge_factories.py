@@ -594,3 +594,20 @@ def include_extend_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     if seb.melodyobjs[0].get("name") is None:
         seb.melodyobjs[0].attrib["name"] = seb.diag_element.get("name", "")
     return generic_factory(seb)
+
+
+def association_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+    """Factory for Associations"""
+    edge = generic_factory(seb)
+    assert len(edge.labels) == 3
+
+    links = seb.melodyobjs[0].attrib["navigableMembers"]
+    navigable = set(seb.melodyloader.follow_links(seb.data_element, links))
+    if not navigable:
+        navigable = set(seb.melodyobjs[1:])
+
+    for prop, label in zip(seb.melodyobjs, edge.labels):
+        label.label = prop.get("name", "")
+        label.hidden = prop not in navigable
+
+    return edge

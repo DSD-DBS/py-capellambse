@@ -161,6 +161,10 @@ STYLECLASS_LOOKUP = {
         "AbstractCapabilityExtend",
         _edge_factories.include_extend_factory,
     ),
+    "Association": (
+        "Association",
+        _edge_factories.association_factory,
+    ),
     "CapellaIncomingRelation": (
         "RequirementRelation",
         _edge_factories.req_relation_factory,
