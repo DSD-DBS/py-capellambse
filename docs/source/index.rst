@@ -35,7 +35,6 @@ tutorial section.
 
    start/prerequisites
    start/installation
-   start/contributors
 
 .. toctree::
    :caption: Tutorials
