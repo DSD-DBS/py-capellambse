@@ -84,10 +84,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     if sourceport is not None:
         snaptarget(edge.points, 0, 1, sourceport)
 
-    if seb.melodyobj is not None:
-        sourceport.add_context(seb.data_element.attrib["element"])
-        if targetport is not None:
-            targetport.add_context(seb.data_element.attrib["element"])
+    sourceport.add_context(seb.data_element.attrib["element"])
+    if targetport is not None:
+        targetport.add_context(seb.data_element.attrib["element"])
 
     return edge
 
@@ -376,11 +375,7 @@ def _construct_labels(
     edge: aird.Edge, seb: C.SemanticElementBuilder
 ) -> list[aird.Box]:
     """Construct the label box for an edge."""
-    # Use exchanged items as label text if possible
-    if seb.melodyobj is None:
-        labeltext = seb.diag_element.attrib.get("name", "")
-    else:
-        labeltext = seb.melodyobj.attrib.get("name", "")
+    labeltext = seb.melodyobjs[0].attrib.get("name", "")
 
     # Position the label
     labelanchor, travel_direction = _find_center(edge)
@@ -460,18 +455,17 @@ def port_allocation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     allocation types (e.g. FIPAllocation), based on the types of ports
     they connect with.
     """
-    if seb.melodyobj is not None:
-        portclasses = set()
+    portclasses = set()
 
-        for port in get_end_ports(seb):
-            if (
-                port.styleclass
-                and port.styleclass not in PORTALLOCATION_CLASS_BLACKLIST
-            ):
-                portclasses.add(port.styleclass)
+    for port in get_end_ports(seb):
+        if (
+            port.styleclass
+            and port.styleclass not in PORTALLOCATION_CLASS_BLACKLIST
+        ):
+            portclasses.add(port.styleclass)
 
-        if portclasses:
-            seb.styleclass = f"{'_'.join(sorted(portclasses))}Allocation"
+    if portclasses:
+        seb.styleclass = f"{'_'.join(sorted(portclasses))}Allocation"
     return generic_factory(seb)
 
 
@@ -485,7 +479,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     edge = generic_factory(seb)
     if edge.labels:  # pragma: no branch
         triggers = seb.melodyloader.follow_links(
-            seb.melodyobj, seb.melodyobj.get("triggers", "")
+            seb.melodyobjs[0], seb.melodyobjs[0].get("triggers", "")
         )
         label = ", ".join(
             i.get("name", "(unnamed trigger)")
@@ -497,7 +491,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
             label = f"{label} [{guard}]"
 
         effects = seb.melodyloader.follow_links(
-            seb.melodyobj, seb.melodyobj.get("effect", "")
+            seb.melodyobjs[0], seb.melodyobjs[0].get("effect", "")
         )
         if effects:
             effects_str = ", ".join(
@@ -539,10 +533,10 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
 
 def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create a FunctionalChainInvolvementLinks."""
-    seb.melodyobj = seb.melodyloader.follow_link(
-        seb.melodyobj, seb.melodyobj.get("involved")
+    seb.melodyobjs[0] = seb.melodyloader.follow_link(
+        seb.melodyobjs[0], seb.melodyobjs[0].get("involved")
     )
-    xtype = helpers.xtype_of(seb.melodyobj)
+    xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None
     seb.styleclass = xtype.split(":")[-1]
     return generic_factory(seb)
@@ -552,7 +546,7 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
     """Extract the guard condition's text from the XML."""
     try:
         guard = seb.melodyloader.follow_links(
-            seb.melodyobj, seb.melodyobj.get(attr, "")
+            seb.melodyobjs[0], seb.melodyobjs[0].get(attr, "")
         )[0]
     except IndexError:
         return ""
@@ -562,10 +556,11 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
 
 def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Factory for Capella[Incoming/Outgoing]Relation"""
-    label = seb.melodyobj.attrib.get("name", "")
+    label = seb.melodyobjs[0].attrib.get("name", "")
     if not label:
         try:
-            reltype = seb.melodyloader[seb.melodyobj.attrib["relationType"]]
+            reltype_id = seb.melodyobjs[0].attrib["relationType"]
+            reltype = seb.melodyloader[reltype_id]
             label = reltype.attrib["ReqIFLongName"]
         except KeyError:
             C.LOGGER.warning(
@@ -573,13 +568,13 @@ def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
                 seb.data_element.attrib[C.ATT_XMID],
             )
         finally:
-            seb.melodyobj.attrib["name"] = label
+            seb.melodyobjs[0].attrib["name"] = label
 
     return generic_factory(seb)
 
 
 def include_extend_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Factory for AbstractCapability[Includes/Extends]"""
-    if seb.melodyobj.attrib.get("name") is None:
-        seb.melodyobj.attrib["name"] = seb.diag_element.attrib.get("name", "")
+    if seb.melodyobjs[0].get("name") is None:
+        seb.melodyobjs[0].attrib["name"] = seb.diag_element.get("name", "")
     return generic_factory(seb)

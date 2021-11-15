@@ -71,8 +71,8 @@ class ElementBuilder:
 class SemanticElementBuilder(ElementBuilder):
     diag_element: etree._Element
     styleclass: str | None
-    melodyobj: etree._Element
-    melodyfrag: pathlib.PurePath
+    melodyobjs: cabc.MutableSequence[etree._Element]
+    melodyfrags: cabc.MutableSequence[pathlib.PurePosixPath]
 
 
 class StackingBox(aird.Box):
@@ -383,7 +383,7 @@ class SkipObject(Exception):
 def get_spec_text(seb: SemanticElementBuilder) -> str:
     """Get the ``ownedSpecification`` text for display."""
     try:
-        spec = next(seb.melodyobj.iterchildren("ownedSpecification"))
+        spec = next(seb.melodyobjs[0].iterchildren("ownedSpecification"))
         spec = next(spec.iterchildren("bodies"))
     except StopIteration:
         return ""
