@@ -353,7 +353,14 @@ class Box:
     @property
     def bounds(self) -> Box:
         """Calculate the bounding box of this Box."""
-        return self
+        minx, miny = self.pos
+        maxx, maxy = self.pos + self.size
+        if isinstance(self.label, Box) and not self.hidelabel:
+            minx = min(minx, self.label.pos.x)
+            miny = min(miny, self.label.pos.y)
+            maxx = max(maxx, self.label.pos.x + self.label.size.x)
+            maxy = max(maxy, self.label.pos.y + self.label.size.y)
+        return Box((minx, miny), (maxx - minx, maxy - miny))
 
     @property
     def padding(self) -> aird.Vector2D:
@@ -949,17 +956,6 @@ class Diagram:
         current viewport, this function does nothing.
         """
         bounds = element.bounds
-        if isinstance(element.label, Box) and not element.hidelabel:
-            lb = element.label
-            b_tl = aird.Vector2D(
-                min(bounds.pos.x, element.label.pos.x),
-                min(bounds.pos.y, element.label.pos.y),
-            )
-            b_br = aird.Vector2D(
-                max(bounds.pos.x + bounds.size.x, lb.pos.x + lb.size.x),
-                max(bounds.pos.y + bounds.size.y, lb.pos.y + lb.size.y),
-            )
-            bounds = Box(b_tl, b_br - b_tl)
 
         if self.viewport is None:
             self.viewport = Box(bounds.pos, bounds.size, styleclass="Viewport")
