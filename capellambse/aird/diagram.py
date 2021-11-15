@@ -526,12 +526,8 @@ class Edge(aird.Vec2List):
         super().__init__(points)
         if len(self) < 2:
             raise ValueError(
-                "".join(
-                    (
-                        "At least two points are required",
-                        f" for edge with uuid {uuid}" if uuid else "",
-                    )
-                )
+                "At least two points are required"
+                + (f" for edge with uuid {uuid}" if uuid else "")
             )
 
         self.source = source
@@ -993,6 +989,6 @@ class Diagram:
             ]
         )
 
-    def __iadd__(self, element: DiagramElement) -> "Diagram":
+    def __iadd__(self, element: DiagramElement) -> Diagram:
         self.add_element(element)
         return self

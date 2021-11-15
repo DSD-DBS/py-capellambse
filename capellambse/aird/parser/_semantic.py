@@ -133,15 +133,10 @@ _GENERIC_FACTORIES = FactorySelector(
 #:
 #: If a key is not found in this dictionary, its value is assumed to be
 #: a tuple of its key and the ``_GENERIC_FACTORIES``.
-STYLECLASS_LOOKUP: dict[
-    str,
-    tuple[
-        str | None,
-        cabc.Callable[
-            [c.SemanticElementBuilder], capellambse.aird.DiagramElement
-        ],
-    ],
+SemanticDeserializer = cabc.Callable[
+    [c.SemanticElementBuilder], "capellambse.aird.DiagramElement"
 ]
+STYLECLASS_LOOKUP: dict[str, tuple[str | None, SemanticDeserializer]]
 STYLECLASS_LOOKUP = {
     "AbstractCapabilityInclude": (
         "AbstractCapabilityInclude",

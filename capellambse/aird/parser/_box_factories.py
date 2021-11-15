@@ -435,9 +435,9 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
     parent.features = list(
         itertools.chain(
-            map(" entry / {}".format, entry),
-            map(" do / {}".format, do),
-            map(" exit / {}".format, exit),
+            (f" entry / {i}" for i in entry),
+            (f" do / {i}" for i in do),
+            (f" exit / {i}" for i in exit),
         )
     )
     raise C.SkipObject()

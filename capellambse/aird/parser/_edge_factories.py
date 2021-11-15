@@ -483,11 +483,12 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """
     edge = generic_factory(seb)
     if edge.labels:  # pragma: no branch
+        triggers = seb.melodyloader.follow_links(
+            seb.melodyobj, seb.melodyobj.get("triggers", "")
+        )
         label = ", ".join(
             i.get("name", "(unnamed trigger)")
-            for i in seb.melodyloader.follow_links(
-                seb.melodyobj, seb.melodyobj.get("triggers", "")
-            )
+            for i in triggers
             if i is not None
         )
 
