@@ -883,20 +883,13 @@ class Diagram:
             self.__extend_viewport(element.bounds)
         self.__elements.append(element)
 
-    def calculate_viewport(self, include_hidden: bool = False) -> None:
-        """Recalculate the viewport so that all elements are contained.
-
-        Parameters
-        ----------
-        include_hidden
-            True to also include hidden elements when calculating the
-            viewport.
-        """
+    def calculate_viewport(self) -> None:
+        """Recalculate the viewport so that all elements are contained."""
         minx = miny = math.inf
         maxx = maxy = -math.inf
 
         for elm in self:
-            if elm.hidden and not include_hidden:
+            if elm.hidden:
                 continue
 
             bounds = elm.bounds
@@ -904,14 +897,6 @@ class Diagram:
             miny = min(miny, bounds.pos.y)
             maxx = max(maxx, bounds.pos.x + bounds.size.x)
             maxy = max(maxy, bounds.pos.y + bounds.size.y)
-
-            if isinstance(elm.label, Box) and (
-                not elm.hidelabel or include_hidden
-            ):
-                minx = min(minx, elm.label.pos.x)
-                miny = min(miny, elm.label.pos.y)
-                maxx = max(maxx, elm.label.pos.x + elm.label.size.x)
-                maxy = max(maxy, elm.label.pos.y + elm.label.size.y)
 
         top_left = aird.Vector2D(minx, miny)
         bottom_right = aird.Vector2D(maxx, maxy)
