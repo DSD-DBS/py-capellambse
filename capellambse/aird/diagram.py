@@ -329,9 +329,6 @@ class Box:
                     )
                     height = min(self.maxsize.y, height)
 
-        width = max(self.minsize.x, width)
-        height = max(self.minsize.y, height)
-
         # Features divider line
         if (
             self.features
@@ -339,6 +336,9 @@ class Box:
             or self.styleclass == "Enumeration"
         ):
             height += 24
+
+        width = max(self.minsize.x, width)
+        height = max(self.minsize.y, height)
         return aird.Vector2D(width, height)
 
     @size.setter
