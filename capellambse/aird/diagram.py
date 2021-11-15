@@ -490,13 +490,12 @@ class Edge(aird.Vec2List):
         self,
         points: cabc.Iterable[aird.Vec2ish],
         *,
-        label: Box | None = None,
+        labels: cabc.MutableSequence[Box] | None = None,
         uuid: str | None = None,
         source: DiagramElement | None = None,
         target: DiagramElement | None = None,
         styleclass: str | None = None,
         styleoverrides: dict[str, t.Any] | None = None,
-        hidelabel: bool = False,
         hidden: bool = False,
     ):
         """Construct an Edge.
@@ -507,8 +506,11 @@ class Edge(aird.Vec2List):
             The source diagram element of this Edge.
         target
             The target diagram element of this Edge.
-        label
-            A Box describing this Edge's label.
+        labels
+            Labels for this Edge. Each label is a ``Box`` with ``pos``,
+            ``size`` and a simple ``str`` label. Other configurations of
+            Boxes are not supported. The ``hidden`` flag is honored
+            during rendering calculations.
         points
             A list of ``Vector2D``s with the (absolute) points this edge
             follows.
@@ -518,8 +520,6 @@ class Edge(aird.Vec2List):
             The CSS style class to use.
         styleoverrides
             A dict of CSS properties to override.
-        hidelabel
-            True to skip drawing this edge's label.
         hidden
             True to skip drawing this edge entirely.
         """
@@ -541,8 +541,7 @@ class Edge(aird.Vec2List):
         self.styleclass = styleclass
         self.styleoverrides = styleoverrides or {}
 
-        self._label = label
-        self.hidelabel = hidelabel
+        self.labels = labels or []
         self.hidden = hidden
 
     def add_context(self, uuid: str) -> None:
@@ -600,9 +599,12 @@ class Edge(aird.Vec2List):
     @property
     def bounds(self) -> Box:
         """Calculate the bounding Box of this Edge."""
-        if self.label is not None and not self.hidelabel:
-            minx, miny = self.label.pos
-            maxx, maxy = self.label.pos + self.label.size
+        labels = [i for i in self.labels if not i.hidden]
+        if labels:
+            minx = min(i.pos.x for i in labels)
+            miny = min(i.pos.y for i in labels)
+            maxx = max(i.pos.x + i.size.x for i in labels)
+            maxy = max(i.pos.y + i.size.y for i in labels)
         else:
             minx = miny = math.inf
             maxx = maxy = -math.inf
@@ -635,32 +637,6 @@ class Edge(aird.Vec2List):
         self._hidden = hide
 
     @property
-    def hidelabel(self) -> bool:
-        """Return whether to skip rendering this Edge's label."""
-        if self.label is not None:
-            return self.label.hidden
-        return self._hidelabel
-
-    @hidelabel.setter
-    def hidelabel(self, hide: bool) -> None:
-        if self.label is not None:
-            self.label.hidden = hide
-        else:
-            self._hidelabel = hide
-
-    @property
-    def label(self) -> Box | None:
-        """Return this Edge's label."""
-        return self._label
-
-    @label.setter
-    def label(self, label: Box | None) -> None:
-        # Copy over label's hidden-flag
-        if label is not None:
-            label.hidden = self.hidelabel
-        self._label = label
-
-    @property
     def points(self) -> aird.Vec2List:
         """Return an iterable over this edge's points."""
         return self
@@ -670,9 +646,11 @@ class Edge(aird.Vec2List):
         self[:] = newpoints
 
     def __str__(self) -> str:
-        # pylint: disable=consider-using-ternary
         numpoints = len(self.points)
-        label = self.label and self.label.label or ""
+        if self.labels:
+            label = self.labels[0].label or ""
+        else:
+            label = ""
         return (
             f"{self.styleclass or 'Edge'}"
             f"{f' {label!r}' if label else ''} between"
@@ -689,10 +667,9 @@ class Edge(aird.Vec2List):
         return "".join(
             [
                 f"{self.__class__.__name__}({list(self)!r}",
-                f", label={self.label!r}" if self.label else "",
+                f", labels={self.labels!r}" if self.labels else "",
                 f", uuid={self.uuid!r}" if self.uuid else "",
                 f", styleclass={self.styleclass!r}" if self.styleclass else "",
-                ", hidelabel=True" if self.hidelabel else "",
                 ", hidden=True" if self.hidden else "",
                 ")",
             ]

@@ -72,7 +72,7 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     edge.styleoverrides = _styling.apply_style_overrides(
         seb.target_diagram.styleclass, f"Edge.{seb.styleclass}", ostyle
     )
-    edge.label = _construct_label(edge, seb)
+    edge.labels.extend(_construct_labels(edge, seb))
 
     if isinstance(targetport, aird.Box):
         snaptarget(edge.points, -1, -2, targetport, movetarget=not edge.hidden)
@@ -371,9 +371,9 @@ def snaptarget(
     points[i] = target.vector_snap(points[i], direction)
 
 
-def _construct_label(
+def _construct_labels(
     edge: aird.Edge, seb: C.SemanticElementBuilder
-) -> aird.Box:
+) -> list[aird.Box]:
     """Construct the label box for an edge."""
     # Use exchanged items as label text if possible
     if seb.melodyobj is None:
@@ -409,7 +409,7 @@ def _construct_label(
         label=labeltext,
         styleclass="EdgeAnnotation",
     )
-    return label
+    return [label]
 
 
 def _find_center(
@@ -448,7 +448,7 @@ def _find_center(
 def labelless_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create an edge that should never have a label."""
     edge = generic_factory(seb)
-    edge.label = None
+    edge.labels = []
     return edge
 
 
@@ -482,7 +482,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     specific attributes.
     """
     edge = generic_factory(seb)
-    if edge.label is not None:  # pragma: no branch
+    if edge.labels:  # pragma: no branch
         label = ", ".join(
             i.get("name", "(unnamed trigger)")
             for i in seb.melodyloader.follow_links(
@@ -503,7 +503,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
             )
             label = f"{label} / {effects_str}"
 
-        edge.label.label = label
+        edge.labels[0].label = label
     return edge
 
 
@@ -515,8 +515,8 @@ def sequence_link_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """
     edge = generic_factory(seb)
     guard = _guard_condition(seb, "condition")
-    if guard and edge.label is not None:
-        edge.label.label = guard
+    if guard and edge.labels:
+        edge.labels[0].label = guard
     return edge
 
 
@@ -531,7 +531,7 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
         The accompanying box factory.
     """
     edge = generic_factory(seb)
-    edge.label = None
+    edge.labels = []
     return edge
 
 

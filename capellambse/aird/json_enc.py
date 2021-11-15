@@ -83,16 +83,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
             "context": sorted(o.context),
         }
         if o.label is not None and not o.hidelabel:
-            if isinstance(o.label, str):
-                jsonobj["label"] = o.label
-            else:
-                jsonobj["label"] = {
-                    "x": o.label.pos.x,
-                    "y": o.label.pos.y,
-                    "width": o.label.size.x,
-                    "height": o.label.size.y,
-                    "text": o.label.label,
-                }
+            jsonobj["label"] = _encode_label(o.label)
         if o.styleoverrides:
             jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
         if o.features:
@@ -113,15 +104,9 @@ class DiagramJSONEncoder(json.JSONEncoder):
             "id": o.uuid,
             "class": o.styleclass,
             "points": [[_intround(x), _intround(y)] for x, y in o.points],
+            "labels": [_encode_label(i) for i in o.labels if not i.hidden],
         }
-        if not o.hidelabel and o.label and o.label.label:
-            jsonobj["label"] = {
-                "x": _intround(o.label.pos.x),
-                "y": _intround(o.label.pos.y),
-                "width": _intround(o.label.size.x),
-                "height": _intround(o.label.size.y),
-                "text": o.label.label,
-            }
+
         if o.styleoverrides:
             jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
         return jsonobj
@@ -138,6 +123,18 @@ class DiagramJSONEncoder(json.JSONEncoder):
         if o.styleoverrides:
             jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
         return jsonobj
+
+
+def _encode_label(o: aird.Box | str) -> object:
+    if isinstance(o, str):
+        return o
+    return {
+        "x": _intround(o.pos.x),
+        "y": _intround(o.pos.y),
+        "width": _intround(o.size.x),
+        "height": _intround(o.size.y),
+        "text": o.label,
+    }
 
 
 def _intround(val: float | int) -> int:
