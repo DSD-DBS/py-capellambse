@@ -377,35 +377,37 @@ def _construct_labels(
     """Construct the label box for an edge."""
     labeltext = seb.melodyobjs[0].attrib.get("name", "")
 
-    # Position the label
-    labelanchor, travel_direction = _find_center(edge)
-    label_layout = helpers.xpath_fetch_unique(
-        './children[@type="6001"]/layoutConstraint',
-        seb.data_element,
-        "Label layoutConstraints",
-        edge.uuid,
-    )
-    label_pos = aird.Vector2D(
-        int(label_layout.get("x", "0")),
-        int(label_layout.get("y", "0")),
-    )
-    label_size = aird.Vector2D(
-        int(label_layout.attrib.get("width", "0")),
-        int(label_layout.attrib.get("height", "0")),
-    )
+    positioners = (_find_center, _find_start, _find_end)
+    layouts = seb.data_element.xpath("./children/layoutConstraint")
+    labels: list[aird.Box] = []
+    for positioner, layout, melodyobj in zip(
+        positioners, layouts, seb.melodyobjs
+    ):
+        melodyobj.attrib.get("name", "")
+        labelanchor, travel_direction = positioner(edge)
+        label_pos = aird.Vector2D(
+            int(layout.get("x", "0")),
+            int(layout.get("y", "0")),
+        )
+        label_size = aird.Vector2D(
+            int(layout.attrib.get("width", "0")),
+            int(layout.attrib.get("height", "0")),
+        )
 
-    # Rotate the position vector into place
-    label_pos = label_pos.rotatedby(
-        aird.Vector2D(1, 0).angleto(travel_direction)
-    )
+        # Rotate the position vector into place
+        label_pos = label_pos.rotatedby(
+            aird.Vector2D(1, 0).angleto(travel_direction)
+        )
 
-    label = C.CenterAnchoredBox(
-        labelanchor + label_pos,
-        label_size,
-        label=labeltext,
-        styleclass="EdgeAnnotation",
-    )
-    return [label]
+        labels.append(
+            C.CenterAnchoredBox(
+                labelanchor + label_pos,
+                label_size,
+                label=labeltext,
+                styleclass="EdgeAnnotation",
+            )
+        )
+    return labels
 
 
 def _find_center(
@@ -439,6 +441,20 @@ def _find_center(
         current_position + direction * (center_length - current_length),
         direction,
     )
+
+
+def _find_start(
+    points: cabc.Sequence[aird.Vector2D],
+) -> tuple[aird.Vector2D, aird.Vector2D]:
+    """Calculate the start point of the edge described by `points`."""
+    return points[0], (points[1] - points[0]).normalized
+
+
+def _find_end(
+    points: cabc.Sequence[aird.Vector2D],
+) -> tuple[aird.Vector2D, aird.Vector2D]:
+    """Calculate the end point of the edge described by `points`."""
+    return points[-1], (points[-1] - points[-2]).normalized
 
 
 def labelless_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
