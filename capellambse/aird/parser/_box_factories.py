@@ -154,7 +154,10 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     actual boxes, but should instead be shown as part of the Class'
     regular label text.
     """
-    box = generic_factory(seb)
+    box = generic_factory(seb, minsize=aird.Vector2D(93, 43))
+
+    if seb.melodyobjs[0].attrib.get("abstract", "false") == "true":
+        box.styleoverrides["text_font-style"] = "italic"
 
     features = collections.defaultdict(list)
     for feature in seb.melodyobjs[0].iterchildren("ownedFeatures"):
@@ -170,6 +173,9 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         if feat_type == "Property":
             if feature.attrib.get("aggregationKind") is not None:
                 continue
+
+            if feature.attrib.get("isDerived") is not None:
+                feat_name = f"/{feat_name}"
 
             if abstract_type is not None:
                 feat_name += f" : {abstract_type.attrib['name']}"
