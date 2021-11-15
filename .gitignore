@@ -122,3 +122,6 @@ dmypy.json
 
 # Misc:
 .DS_Store
+
+# generated sphynx docs
+docs/source/code/
