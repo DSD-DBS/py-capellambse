@@ -29,6 +29,9 @@ LOGGER = logging.getLogger(__name__)
 SNAPPING = "AIRD_NOSNAP" not in os.environ
 
 DiagramElement = t.Union["Box", "Edge", "Circle"]
+_StyleOverrides = t.MutableMapping[
+    str, t.Union[str, aird.RGB, t.MutableSequence[t.Union[str, aird.RGB]]]
+]
 
 
 class Box:
@@ -57,12 +60,9 @@ class Box:
         maxsize: aird.Vec2ish = aird.Vector2D(math.inf, math.inf),
         context: cabc.Iterable[str] | None = None,
         port: bool = False,
-        features: cabc.Sequence[str] | None = None,
+        features: cabc.MutableSequence[str] | None = None,
         styleclass: str | None = None,
-        styleoverrides: cabc.Mapping[
-            str, aird.RGB | str | cabc.Sequence[aird.RGB | str]
-        ]
-        | None = None,
+        styleoverrides: _StyleOverrides | None = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ) -> None:
@@ -116,12 +116,10 @@ class Box:
         self.maxsize = maxsize
         self.label: Box | str | None = label
         self.collapsed: bool = collapsed
-        self.features: cabc.Sequence[str] | None = features
+        self.features: cabc.MutableSequence[str] | None = features
 
         self.styleclass: str | None = styleclass
-        self.styleoverrides: cabc.Mapping[
-            str, aird.RGB | str | cabc.Sequence[aird.RGB | str]
-        ] | None = (styleoverrides or {})
+        self.styleoverrides: _StyleOverrides = styleoverrides or {}
         self.hidelabel: bool = hidelabel
         self.hidden = hidden
 
@@ -495,7 +493,7 @@ class Edge(aird.Vec2List):
         source: DiagramElement | None = None,
         target: DiagramElement | None = None,
         styleclass: str | None = None,
-        styleoverrides: dict[str, t.Any] | None = None,
+        styleoverrides: _StyleOverrides | None = None,
         hidden: bool = False,
     ):
         """Construct an Edge.
@@ -692,7 +690,7 @@ class Circle:
         *,
         uuid: str | None = None,
         styleclass: str | None = None,
-        styleoverrides: dict[str, t.Any] | None = None,
+        styleoverrides: _StyleOverrides | None = None,
         hidden: bool = False,
     ):
         """Construct a Circle.

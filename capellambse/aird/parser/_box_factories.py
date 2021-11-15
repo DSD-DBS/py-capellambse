@@ -127,7 +127,8 @@ def generic_factory(
         port=box_is_port,
         uuid=seb.data_element.attrib["element"],
         styleclass=seb.styleclass,
-        styleoverrides=styleoverrides,
+        # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+        styleoverrides=styleoverrides,  # type: ignore[arg-type]
         minsize=minsize,
     )
     if box_is_symbol:

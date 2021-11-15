@@ -69,7 +69,8 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     )
 
     _filters.setfilters(seb, edge)
-    edge.styleoverrides = _styling.apply_style_overrides(
+    # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+    edge.styleoverrides = _styling.apply_style_overrides(  # type: ignore[assignment]
         seb.target_diagram.styleclass, f"Edge.{seb.styleclass}", ostyle
     )
     edge.labels.extend(_construct_labels(edge, seb))
