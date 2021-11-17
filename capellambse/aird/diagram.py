@@ -29,6 +29,9 @@ LOGGER = logging.getLogger(__name__)
 SNAPPING = "AIRD_NOSNAP" not in os.environ
 
 DiagramElement = t.Union["Box", "Edge", "Circle"]
+_StyleOverrides = t.MutableMapping[
+    str, t.Union[str, aird.RGB, t.MutableSequence[t.Union[str, aird.RGB]]]
+]
 
 
 class Box:
@@ -57,12 +60,9 @@ class Box:
         maxsize: aird.Vec2ish = aird.Vector2D(math.inf, math.inf),
         context: cabc.Iterable[str] | None = None,
         port: bool = False,
-        features: cabc.Sequence[str] | None = None,
+        features: cabc.MutableSequence[str] | None = None,
         styleclass: str | None = None,
-        styleoverrides: cabc.Mapping[
-            str, aird.RGB | str | cabc.Sequence[aird.RGB | str]
-        ]
-        | None = None,
+        styleoverrides: _StyleOverrides | None = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ) -> None:
@@ -116,12 +116,10 @@ class Box:
         self.maxsize = maxsize
         self.label: Box | str | None = label
         self.collapsed: bool = collapsed
-        self.features: cabc.Sequence[str] | None = features
+        self.features: cabc.MutableSequence[str] | None = features
 
         self.styleclass: str | None = styleclass
-        self.styleoverrides: cabc.Mapping[
-            str, aird.RGB | str | cabc.Sequence[aird.RGB | str]
-        ] | None = (styleoverrides or {})
+        self.styleoverrides: _StyleOverrides = styleoverrides or {}
         self.hidelabel: bool = hidelabel
         self.hidden = hidden
 
@@ -331,9 +329,6 @@ class Box:
                     )
                     height = min(self.maxsize.y, height)
 
-        width = max(self.minsize.x, width)
-        height = max(self.minsize.y, height)
-
         # Features divider line
         if (
             self.features
@@ -341,6 +336,9 @@ class Box:
             or self.styleclass == "Enumeration"
         ):
             height += 24
+
+        width = max(self.minsize.x, width)
+        height = max(self.minsize.y, height)
         return aird.Vector2D(width, height)
 
     @size.setter
@@ -353,7 +351,14 @@ class Box:
     @property
     def bounds(self) -> Box:
         """Calculate the bounding box of this Box."""
-        return self
+        minx, miny = self.pos
+        maxx, maxy = self.pos + self.size
+        if isinstance(self.label, Box) and not self.hidelabel:
+            minx = min(minx, self.label.pos.x)
+            miny = min(miny, self.label.pos.y)
+            maxx = max(maxx, self.label.pos.x + self.label.size.x)
+            maxy = max(maxy, self.label.pos.y + self.label.size.y)
+        return Box((minx, miny), (maxx - minx, maxy - miny))
 
     @property
     def padding(self) -> aird.Vector2D:
@@ -486,13 +491,12 @@ class Edge(aird.Vec2List):
         self,
         points: cabc.Iterable[aird.Vec2ish],
         *,
-        label: Box | None = None,
+        labels: cabc.MutableSequence[Box] | None = None,
         uuid: str | None = None,
         source: DiagramElement | None = None,
         target: DiagramElement | None = None,
         styleclass: str | None = None,
-        styleoverrides: dict[str, t.Any] | None = None,
-        hidelabel: bool = False,
+        styleoverrides: _StyleOverrides | None = None,
         hidden: bool = False,
     ):
         """Construct an Edge.
@@ -503,8 +507,11 @@ class Edge(aird.Vec2List):
             The source diagram element of this Edge.
         target
             The target diagram element of this Edge.
-        label
-            A Box describing this Edge's label.
+        labels
+            Labels for this Edge. Each label is a ``Box`` with ``pos``,
+            ``size`` and a simple ``str`` label. Other configurations of
+            Boxes are not supported. The ``hidden`` flag is honored
+            during rendering calculations.
         points
             A list of ``Vector2D``s with the (absolute) points this edge
             follows.
@@ -514,20 +521,14 @@ class Edge(aird.Vec2List):
             The CSS style class to use.
         styleoverrides
             A dict of CSS properties to override.
-        hidelabel
-            True to skip drawing this edge's label.
         hidden
             True to skip drawing this edge entirely.
         """
         super().__init__(points)
         if len(self) < 2:
             raise ValueError(
-                "".join(
-                    (
-                        "At least two points are required",
-                        f" for edge with uuid {uuid}" if uuid else "",
-                    )
-                )
+                "At least two points are required"
+                + (f" for edge with uuid {uuid}" if uuid else "")
             )
 
         self.source = source
@@ -537,8 +538,7 @@ class Edge(aird.Vec2List):
         self.styleclass = styleclass
         self.styleoverrides = styleoverrides or {}
 
-        self._label = label
-        self.hidelabel = hidelabel
+        self.labels = labels or []
         self.hidden = hidden
 
     def add_context(self, uuid: str) -> None:
@@ -596,9 +596,12 @@ class Edge(aird.Vec2List):
     @property
     def bounds(self) -> Box:
         """Calculate the bounding Box of this Edge."""
-        if self.label is not None and not self.hidelabel:
-            minx, miny = self.label.pos
-            maxx, maxy = self.label.pos + self.label.size
+        labels = [i for i in self.labels if not i.hidden]
+        if labels:
+            minx = min(i.pos.x for i in labels)
+            miny = min(i.pos.y for i in labels)
+            maxx = max(i.pos.x + i.size.x for i in labels)
+            maxy = max(i.pos.y + i.size.y for i in labels)
         else:
             minx = miny = math.inf
             maxx = maxy = -math.inf
@@ -631,32 +634,6 @@ class Edge(aird.Vec2List):
         self._hidden = hide
 
     @property
-    def hidelabel(self) -> bool:
-        """Return whether to skip rendering this Edge's label."""
-        if self.label is not None:
-            return self.label.hidden
-        return self._hidelabel
-
-    @hidelabel.setter
-    def hidelabel(self, hide: bool) -> None:
-        if self.label is not None:
-            self.label.hidden = hide
-        else:
-            self._hidelabel = hide
-
-    @property
-    def label(self) -> Box | None:
-        """Return this Edge's label."""
-        return self._label
-
-    @label.setter
-    def label(self, label: Box | None) -> None:
-        # Copy over label's hidden-flag
-        if label is not None:
-            label.hidden = self.hidelabel
-        self._label = label
-
-    @property
     def points(self) -> aird.Vec2List:
         """Return an iterable over this edge's points."""
         return self
@@ -666,9 +643,11 @@ class Edge(aird.Vec2List):
         self[:] = newpoints
 
     def __str__(self) -> str:
-        # pylint: disable=consider-using-ternary
         numpoints = len(self.points)
-        label = self.label and self.label.label or ""
+        if self.labels:
+            label = self.labels[0].label or ""
+        else:
+            label = ""
         return (
             f"{self.styleclass or 'Edge'}"
             f"{f' {label!r}' if label else ''} between"
@@ -685,10 +664,9 @@ class Edge(aird.Vec2List):
         return "".join(
             [
                 f"{self.__class__.__name__}({list(self)!r}",
-                f", label={self.label!r}" if self.label else "",
+                f", labels={self.labels!r}" if self.labels else "",
                 f", uuid={self.uuid!r}" if self.uuid else "",
                 f", styleclass={self.styleclass!r}" if self.styleclass else "",
-                ", hidelabel=True" if self.hidelabel else "",
                 ", hidden=True" if self.hidden else "",
                 ")",
             ]
@@ -715,7 +693,7 @@ class Circle:
         *,
         uuid: str | None = None,
         styleclass: str | None = None,
-        styleoverrides: dict[str, t.Any] | None = None,
+        styleoverrides: _StyleOverrides | None = None,
         hidden: bool = False,
     ):
         """Construct a Circle.
@@ -879,20 +857,13 @@ class Diagram:
             self.__extend_viewport(element.bounds)
         self.__elements.append(element)
 
-    def calculate_viewport(self, include_hidden: bool = False) -> None:
-        """Recalculate the viewport so that all elements are contained.
-
-        Parameters
-        ----------
-        include_hidden
-            True to also include hidden elements when calculating the
-            viewport.
-        """
+    def calculate_viewport(self) -> None:
+        """Recalculate the viewport so that all elements are contained."""
         minx = miny = math.inf
         maxx = maxy = -math.inf
 
         for elm in self:
-            if elm.hidden and not include_hidden:
+            if elm.hidden:
                 continue
 
             bounds = elm.bounds
@@ -900,14 +871,6 @@ class Diagram:
             miny = min(miny, bounds.pos.y)
             maxx = max(maxx, bounds.pos.x + bounds.size.x)
             maxy = max(maxy, bounds.pos.y + bounds.size.y)
-
-            if isinstance(elm.label, Box) and (
-                not elm.hidelabel or include_hidden
-            ):
-                minx = min(minx, elm.label.pos.x)
-                miny = min(miny, elm.label.pos.y)
-                maxx = max(maxx, elm.label.pos.x + elm.label.size.x)
-                maxy = max(maxy, elm.label.pos.y + elm.label.size.y)
 
         top_left = aird.Vector2D(minx, miny)
         bottom_right = aird.Vector2D(maxx, maxy)
@@ -952,17 +915,6 @@ class Diagram:
         current viewport, this function does nothing.
         """
         bounds = element.bounds
-        if isinstance(element.label, Box) and not element.hidelabel:
-            lb = element.label
-            b_tl = aird.Vector2D(
-                min(bounds.pos.x, element.label.pos.x),
-                min(bounds.pos.y, element.label.pos.y),
-            )
-            b_br = aird.Vector2D(
-                max(bounds.pos.x + bounds.size.x, lb.pos.x + lb.size.x),
-                max(bounds.pos.y + bounds.size.y, lb.pos.y + lb.size.y),
-            )
-            bounds = Box(b_tl, b_br - b_tl)
 
         if self.viewport is None:
             self.viewport = Box(bounds.pos, bounds.size, styleclass="Viewport")
@@ -1038,6 +990,6 @@ class Diagram:
             ]
         )
 
-    def __iadd__(self, element: DiagramElement) -> "Diagram":
+    def __iadd__(self, element: DiagramElement) -> Diagram:
         self.add_element(element)
         return self

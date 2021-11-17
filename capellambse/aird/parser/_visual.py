@@ -56,7 +56,8 @@ def connector_factory(ebd: c.ElementBuilder) -> aird.Edge:
         bendpoints,
         uuid=ebd.data_element.attrib[c.ATT_XMID],
         styleclass=styleclass,
-        styleoverrides=styleoverrides,
+        # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+        styleoverrides=styleoverrides,  # type: ignore[arg-type]
     )
     assert edge.uuid is not None
 
@@ -118,7 +119,8 @@ def shape_factory(ebd: c.ElementBuilder) -> aird.Box:
         uuid=uid,
         parent=parent,
         styleclass=styleclass,
-        styleoverrides=styleoverrides,
+        # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+        styleoverrides=styleoverrides,  # type: ignore[arg-type]
     )
 
 

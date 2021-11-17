@@ -46,7 +46,8 @@ PatchClass = str
 needs_patch: dict[DiagramClass, dict[FaultyClass, PatchClass]] = {
     "Operational Entity Blank": {"FunctionalExchange": "OperationalExchange"}
 }
-always_top_label = {"Note", "Class"}
+always_top_label = {"Note", "Class", "Enumeration"}
+needs_feature_line = {"Class", "Enumeration"}
 
 
 class DecoFactories(t.Dict[str, cabc.Callable]):

@@ -69,10 +69,11 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     )
 
     _filters.setfilters(seb, edge)
-    edge.styleoverrides = _styling.apply_style_overrides(
+    # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+    edge.styleoverrides = _styling.apply_style_overrides(  # type: ignore[assignment]
         seb.target_diagram.styleclass, f"Edge.{seb.styleclass}", ostyle
     )
-    edge.label = _construct_label(edge, seb)
+    edge.labels.extend(_construct_labels(edge, seb))
 
     if isinstance(targetport, aird.Box):
         snaptarget(edge.points, -1, -2, targetport, movetarget=not edge.hidden)
@@ -83,10 +84,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     if sourceport is not None:
         snaptarget(edge.points, 0, 1, sourceport)
 
-    if seb.melodyobj is not None:
-        sourceport.add_context(seb.data_element.attrib["element"])
-        if targetport is not None:
-            targetport.add_context(seb.data_element.attrib["element"])
+    sourceport.add_context(seb.data_element.attrib["element"])
+    if targetport is not None:
+        targetport.add_context(seb.data_element.attrib["element"])
 
     return edge
 
@@ -371,84 +371,85 @@ def snaptarget(
     points[i] = target.vector_snap(points[i], direction)
 
 
-def _construct_label(
+def _construct_labels(
     edge: aird.Edge, seb: C.SemanticElementBuilder
-) -> aird.Box:
+) -> list[aird.Box]:
     """Construct the label box for an edge."""
-    # Use exchanged items as label text if possible
-    if seb.melodyobj is None:
-        labeltext = seb.diag_element.attrib.get("name", "")
-    else:
-        labeltext = seb.melodyobj.attrib.get("name", "")
+    refpoints = _find_refpoints(edge)
+    layouts = seb.data_element.xpath("./children/layoutConstraint")
+    labels: list[aird.Box] = []
+    for (labelanchor, travel_direction), layout, melodyobj in zip(
+        refpoints, layouts, seb.melodyobjs
+    ):
+        labeltext = melodyobj.get("name", "")
 
-    # Position the label
-    labelanchor, travel_direction = _find_center(edge)
-    label_layout = helpers.xpath_fetch_unique(
-        './children[@type="6001"]/layoutConstraint',
-        seb.data_element,
-        "Label layoutConstraints",
-        edge.uuid,
-    )
-    label_pos = aird.Vector2D(
-        int(label_layout.get("x", "0")),
-        int(label_layout.get("y", "0")),
-    )
-    label_size = aird.Vector2D(
-        int(label_layout.attrib.get("width", "0")),
-        int(label_layout.attrib.get("height", "0")),
-    )
+        label_pos = aird.Vector2D(
+            int(layout.get("x", "0")),
+            int(layout.get("y", "0")),
+        )
+        label_size = aird.Vector2D(
+            int(layout.attrib.get("width", "0")),
+            int(layout.attrib.get("height", "0")),
+        )
 
-    # Rotate the position vector into place
-    label_pos = label_pos.rotatedby(
-        aird.Vector2D(1, 0).angleto(travel_direction)
-    )
+        # Rotate the position vector into place
+        label_pos = label_pos.rotatedby(
+            aird.Vector2D(1, 0).angleto(travel_direction)
+        )
 
-    label = C.CenterAnchoredBox(
-        labelanchor + label_pos,
-        label_size,
-        label=labeltext,
-        styleclass="EdgeAnnotation",
-    )
-    return label
+        labels.append(
+            C.CenterAnchoredBox(
+                labelanchor + label_pos,
+                label_size,
+                label=labeltext,
+                styleclass="EdgeAnnotation",
+            )
+        )
+    return labels
 
 
-def _find_center(
+def _find_refpoints(
     points: cabc.Sequence[aird.Vector2D],
-) -> tuple[aird.Vector2D, aird.Vector2D]:
+) -> list[tuple[aird.Vector2D, aird.Vector2D]]:
     """Calculate the center point of the edge described by `points`."""
-    # Calculate the length of each part
+    refpoints: list[tuple[aird.Vector2D, aird.Vector2D]] = []
+
     lengths = [
         (points[i] - points[i + 1]).length for i in range(len(points) - 1)
     ]
     total_length = sum(lengths)
-    center_length = total_length / 2
+    refpoint_lengths = [
+        total_length * 0.15,
+        total_length * 0.5,
+        total_length * 0.85,
+    ]
     current_length = 0.0
     current_position = points[0]
+    new_length = lengths[0]
+    i = 0
 
-    for i in range(len(points) - 1):
-        next_length = lengths[i]
-        new_length = current_length + next_length
-        if new_length > center_length:
-            break  # Would overshoot
-        current_length = new_length
-        current_position = points[i + 1]
+    for next_refpoint in refpoint_lengths:
+        while new_length < next_refpoint:
+            i += 1
+            current_length = new_length
+            new_length += lengths[i]
+            current_position = points[i]
 
-    try:
-        # Complete the jump from the last point towards the actual edge center
-        direction = (points[i + 1] - points[i]).normalized
-    except ZeroDivisionError:
-        direction = aird.Vector2D(1, 0)
+        try:
+            dir = (points[i + 1] - points[i]).normalized
+        except ZeroDivisionError:  # pragma: no cover
+            dir = aird.Vector2D(1, 0)
+        pos = current_position + dir * (next_refpoint - current_length)
+        refpoints.append((pos, dir))
 
-    return (
-        current_position + direction * (center_length - current_length),
-        direction,
-    )
+    refpoints[0], refpoints[1] = refpoints[1], refpoints[0]
+    return refpoints
 
 
 def labelless_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create an edge that should never have a label."""
     edge = generic_factory(seb)
-    edge.label = None
+    edge.labels = []
     return edge
 
 
@@ -459,18 +460,17 @@ def port_allocation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     allocation types (e.g. FIPAllocation), based on the types of ports
     they connect with.
     """
-    if seb.melodyobj is not None:
-        portclasses = set()
+    portclasses = set()
 
-        for port in get_end_ports(seb):
-            if (
-                port.styleclass
-                and port.styleclass not in PORTALLOCATION_CLASS_BLACKLIST
-            ):
-                portclasses.add(port.styleclass)
+    for port in get_end_ports(seb):
+        if (
+            port.styleclass
+            and port.styleclass not in PORTALLOCATION_CLASS_BLACKLIST
+        ):
+            portclasses.add(port.styleclass)
 
-        if portclasses:
-            seb.styleclass = f"{'_'.join(sorted(portclasses))}Allocation"
+    if portclasses:
+        seb.styleclass = f"{'_'.join(sorted(portclasses))}Allocation"
     return generic_factory(seb)
 
 
@@ -482,12 +482,13 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     specific attributes.
     """
     edge = generic_factory(seb)
-    if edge.label is not None:  # pragma: no branch
+    if edge.labels:  # pragma: no branch
+        triggers = seb.melodyloader.follow_links(
+            seb.melodyobjs[0], seb.melodyobjs[0].get("triggers", "")
+        )
         label = ", ".join(
             i.get("name", "(unnamed trigger)")
-            for i in seb.melodyloader.follow_links(
-                seb.melodyobj, seb.melodyobj.get("triggers", "")
-            )
+            for i in triggers
             if i is not None
         )
 
@@ -495,7 +496,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
             label = f"{label} [{guard}]"
 
         effects = seb.melodyloader.follow_links(
-            seb.melodyobj, seb.melodyobj.get("effect", "")
+            seb.melodyobjs[0], seb.melodyobjs[0].get("effect", "")
         )
         if effects:
             effects_str = ", ".join(
@@ -503,7 +504,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
             )
             label = f"{label} / {effects_str}"
 
-        edge.label.label = label
+        edge.labels[0].label = label
     return edge
 
 
@@ -515,8 +516,8 @@ def sequence_link_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """
     edge = generic_factory(seb)
     guard = _guard_condition(seb, "condition")
-    if guard and edge.label is not None:
-        edge.label.label = guard
+    if guard and edge.labels:
+        edge.labels[0].label = guard
     return edge
 
 
@@ -531,16 +532,16 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
         The accompanying box factory.
     """
     edge = generic_factory(seb)
-    edge.label = None
+    edge.labels = []
     return edge
 
 
 def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create a FunctionalChainInvolvementLinks."""
-    seb.melodyobj = seb.melodyloader.follow_link(
-        seb.melodyobj, seb.melodyobj.get("involved")
+    seb.melodyobjs[0] = seb.melodyloader.follow_link(
+        seb.melodyobjs[0], seb.melodyobjs[0].get("involved")
     )
-    xtype = helpers.xtype_of(seb.melodyobj)
+    xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None
     seb.styleclass = xtype.split(":")[-1]
     return generic_factory(seb)
@@ -550,7 +551,7 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
     """Extract the guard condition's text from the XML."""
     try:
         guard = seb.melodyloader.follow_links(
-            seb.melodyobj, seb.melodyobj.get(attr, "")
+            seb.melodyobjs[0], seb.melodyobjs[0].get(attr, "")
         )[0]
     except IndexError:
         return ""
@@ -560,10 +561,11 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
 
 def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Factory for Capella[Incoming/Outgoing]Relation"""
-    label = seb.melodyobj.attrib.get("name", "")
+    label = seb.melodyobjs[0].attrib.get("name", "")
     if not label:
         try:
-            reltype = seb.melodyloader[seb.melodyobj.attrib["relationType"]]
+            reltype_id = seb.melodyobjs[0].attrib["relationType"]
+            reltype = seb.melodyloader[reltype_id]
             label = reltype.attrib["ReqIFLongName"]
         except KeyError:
             C.LOGGER.warning(
@@ -571,13 +573,30 @@ def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
                 seb.data_element.attrib[C.ATT_XMID],
             )
         finally:
-            seb.melodyobj.attrib["name"] = label
+            seb.melodyobjs[0].attrib["name"] = label
 
     return generic_factory(seb)
 
 
 def include_extend_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Factory for AbstractCapability[Includes/Extends]"""
-    if seb.melodyobj.attrib.get("name") is None:
-        seb.melodyobj.attrib["name"] = seb.diag_element.attrib.get("name", "")
+    if seb.melodyobjs[0].get("name") is None:
+        seb.melodyobjs[0].attrib["name"] = seb.diag_element.get("name", "")
     return generic_factory(seb)
+
+
+def association_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+    """Factory for Associations"""
+    edge = generic_factory(seb)
+    assert len(edge.labels) == 3
+
+    links = seb.melodyobjs[0].attrib["navigableMembers"]
+    navigable = set(seb.melodyloader.follow_links(seb.data_element, links))
+    if not navigable:
+        navigable = set(seb.melodyobjs[1:])
+
+    for prop, label in zip(seb.melodyobjs, edge.labels):
+        label.label = prop.get("name", "")
+        label.hidden = prop not in navigable
+
+    return edge

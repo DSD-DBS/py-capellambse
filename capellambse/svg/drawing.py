@@ -123,9 +123,12 @@ class Drawing(drawing.Drawing):
         rect: shapes.Rect = self.rect(**rectparams)
         grp.add(rect)
 
-        if features:
+        if features or class_ in decorations.needs_feature_line:
             self._draw_feature_line(rect, grp, rect_style)
-            self._draw_feature_text(rect, features, class_, grp, text_style)
+            if features:
+                self._draw_feature_text(
+                    rect, features, class_, grp, text_style
+                )
 
         if label:
             text_anchor = (
@@ -664,7 +667,7 @@ class Drawing(drawing.Drawing):
         self,
         *,
         points_: list[list[int]],
-        label_: LabelDict | None = None,
+        labels_: t.Sequence[LabelDict] = (),
         id_: str,
         class_: str,
         obj_style: style.Styling,
@@ -679,7 +682,7 @@ class Drawing(drawing.Drawing):
         )
 
         # Received text space doesn't allow for anything else than the text
-        if label_ is not None:
+        for label_ in labels_:
             label_["class"] = "Annotation"
 
             self._draw_label_bbox(label_, grp, "AnnotationBB")

@@ -34,22 +34,22 @@ def show_exchangeitems_fex(
     """Change FEX labels to show ExchangeItems."""
     del diagram_root, flt
     for obj in target_diagram:
-        if (
-            obj.label
-            and obj.styleclass == "FunctionalExchange"
-            and isinstance(obj, aird.Edge)
-        ):
-            assert isinstance(obj, aird.Edge)  # redundant, needed for mypy
-            assert obj.uuid is not None
-            _, items = _get_allocated_exchangeitem_names(
-                obj.uuid,
-                alloc_attr="exchangedItems",
-                melodyloader=melodyloader,
-            )
-            if items:
-                obj.label.label = f"[{', '.join(sorted(items))}]"
-            else:
-                obj.label.label = ""
+        if not isinstance(obj, aird.Edge):
+            continue
+        label = _get_primary_edge_label(obj, "FunctionalExchange")
+        if label is None:
+            continue
+
+        assert obj.uuid is not None
+        _, items = _get_allocated_exchangeitem_names(
+            obj.uuid,
+            alloc_attr="exchangedItems",
+            melodyloader=melodyloader,
+        )
+        if items:
+            label.label = f"[{', '.join(sorted(items))}]"
+        else:
+            label.label = ""
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
@@ -62,28 +62,29 @@ def show_exchangeitems_cex(
     """Change CEX labels to show ExchangeItems."""
     del diagram_root, flt
     for obj in target_diagram:
-        if (
-            obj.label
-            and obj.styleclass == "ComponentExchange"
-            and isinstance(obj, aird.Edge)
-        ):
-            assert isinstance(obj, aird.Edge)  # redundant, needed for mypy
-            assert obj.uuid is not None
-            elm, items = _get_allocated_exchangeitem_names(
-                obj.uuid,
-                alloc_attr="convoyedInformations",
+        if not isinstance(obj, aird.Edge):
+            continue
+        label = _get_primary_edge_label(obj, "ComponentExchange")
+        if label is None:
+            continue
+
+        assert obj.uuid is not None
+        elm, items = _get_allocated_exchangeitem_names(
+            obj.uuid,
+            alloc_attr="convoyedInformations",
+            melodyloader=melodyloader,
+        )
+        if elm is None:
+            continue
+        for fex in elm.iterchildren():
+            if helpers.xtype_of(fex) != XT_CEX_FEX_ALLOCATION:
+                continue
+            items += _get_allocated_exchangeitem_names(
+                fex.attrib["targetElement"],
+                alloc_attr="exchangedItems",
                 melodyloader=melodyloader,
-            )
-            if elm is not None:
-                for fex in elm.iterchildren():
-                    if helpers.xtype_of(fex) != XT_CEX_FEX_ALLOCATION:
-                        continue
-                    items += _get_allocated_exchangeitem_names(
-                        fex.attrib["targetElement"],
-                        alloc_attr="exchangedItems",
-                        melodyloader=melodyloader,
-                    )[1]
-            obj.label.label = ", ".join(items)
+            )[1]
+        label.label = ", ".join(items)
 
 
 @global_filter(
@@ -98,19 +99,19 @@ def show_exchangeitems_cex_no_fex(
     """Change CEX labels to show directly allocated ExchangeItems."""
     del diagram_root, flt
     for obj in target_diagram:
-        if (
-            obj.label
-            and obj.styleclass == "ComponentExchange"
-            and isinstance(obj, aird.Edge)
-        ):
-            assert isinstance(obj, aird.Edge)  # redundant, needed for mypy
-            assert obj.uuid is not None
-            _, items = _get_allocated_exchangeitem_names(
-                obj.uuid,
-                alloc_attr="convoyedInformations",
-                melodyloader=melodyloader,
-            )
-            obj.label.label = ", ".join(items)
+        if not isinstance(obj, aird.Edge):
+            continue
+        label = _get_primary_edge_label(obj, "ComponentExchange")
+        if label is None:
+            continue
+
+        assert obj.uuid is not None
+        _, items = _get_allocated_exchangeitem_names(
+            obj.uuid,
+            alloc_attr="convoyedInformations",
+            melodyloader=melodyloader,
+        )
+        label.label = ", ".join(items)
 
 
 @global_filter("Hide Component Ports without Exchanges")
@@ -186,3 +187,15 @@ def _get_allocated_exchangeitem_names(
             names.append(name)
         next_xtype = None
     return (elm, names)
+
+
+def _get_primary_edge_label(
+    obj: aird.Edge, edge_class: str
+) -> aird.Box | None:
+    if obj.styleclass != edge_class:
+        return None
+    if not obj.labels:
+        return None
+    label = obj.labels[0]
+    assert isinstance(label, aird.Box)
+    return label
