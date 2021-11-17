@@ -24,35 +24,35 @@ You may get there by following the below steps (on Linux, Mac or Windows/WSL).
 
 1. Clone the repository.
 
-```bash
-git clone https://github.com/DSD-DBS/py-capellambse.git
-cd py-capella-mbse
-```
+   ```bash
+   git clone https://github.com/DSD-DBS/py-capellambse.git
+   cd py-capellambse
+   ```
 
 2. Create a virtual environment.
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
 
-3. Install _Capellambse_ and _Jupyter_.
+3. Install `capellambse` and `Jupyter`.
 
-```bash
-pip install .
-pip install jupyter
-```
+   ```bash
+   pip install -e .
+   pip install jupyter
+   ```
 
 4. Open the example notebooks.
 
-```bash
-cd examples
-jupyter-notebook
-```
+   ```bash
+   cd examples
+   jupyter-notebook
+   ```
 
-The above code snippet should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder (and most likely a browser window).
+The above code should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder. If your browser did not open automatically, follow the instructions in the terminal to start it manually.
 
-You may then open the `01_Introduction.ipynb` or check-out a non interactive preview [right here](https://github.com/DSD-DBS/py-capellambse/blob/master/examples/01_Introduction.ipynb)
+Once in the browser, simply click on the [`01_Introduction.ipynb`](examples/01_Introduction.ipynb) notebook to start!
 
 ## Documentation and examples
 
