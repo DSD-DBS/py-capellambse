@@ -94,12 +94,6 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
     assert melodyobjs, "No valid semantic element references could be found"
     if melodyobjs[0] is None:
         raise c.SkipObject()
-    if __debug__:
-        target_href = helpers.fragment_link(
-            ebd.fragment, target.attrib["href"]
-        )
-        target_melodyobj = ebd.melodyloader[target_href]
-        assert melodyobjs[0] is target_melodyobj, "Expectation failed"
 
     seb = c.SemanticElementBuilder(
         target_diagram=ebd.target_diagram,
