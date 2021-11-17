@@ -19,8 +19,15 @@ It started as a basic library somewhere mid 2019. Since then it was re-architect
 
 ## Getting started
 
-The quickest way to get started is to clone the library's source code and play with various tutorials and test models.
-You may get there by following the below steps (on Linux, Mac or Windows/WSL).
+Click on this button to launch a Binder instance and start exploring our test models within seconds:
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01_Introduction.ipynb)
+
+*Warning:* [Do not enter confidential information], such as passwords for non-public models, into a notebook hosted on myBinder. If you want to try out `capellambse` with those models, please install and run it in a local, trusted environment (see below)!
+
+[Do not enter confidential information]: <https://github.com/alan-turing-institute/the-turing-way/blob/b36c3ac1c78acbbe18441beaa89514544ed12021/workshops/boost-research-reproducibility-binder/workshop-presentations/zero-to-binder-python.md#private-files>
+
+Alternatively, to start using the project on your local machine, follow these steps:
 
 1. Clone the repository.
 
