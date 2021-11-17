@@ -24,6 +24,7 @@ from __future__ import annotations
 import collections.abc as cabc
 import logging
 import pathlib
+import typing as t
 
 from lxml import etree
 
@@ -148,7 +149,7 @@ _GENERIC_FACTORIES = FactorySelector(
 #:
 #: If a key is not found in this dictionary, its value is assumed to be
 #: a tuple of its key and the ``_GENERIC_FACTORIES``.
-SemanticDeserializer = cabc.Callable[
+SemanticDeserializer = t.Callable[
     [c.SemanticElementBuilder], "capellambse.aird.DiagramElement"
 ]
 STYLECLASS_LOOKUP: dict[str, tuple[str | None, SemanticDeserializer]]

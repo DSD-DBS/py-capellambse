@@ -556,7 +556,9 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
     except IndexError:
         return ""
     else:
-        return C.get_spec_text(dataclasses.replace(seb, melodyobj=guard))
+        return C.get_spec_text(
+            dataclasses.replace(seb, melodyobjs=[guard, *seb.melodyobjs[1:]])
+        )
 
 
 def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
