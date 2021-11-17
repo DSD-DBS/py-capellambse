@@ -28,7 +28,7 @@ import typing as t
 
 from lxml import etree
 
-import capellambse
+import capellambse  # pylint: disable=unused-import  # used in typing
 from capellambse import aird, helpers
 
 from . import _box_factories
