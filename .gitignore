@@ -125,3 +125,4 @@ dmypy.json
 
 # generated sphynx docs
 docs/source/code/
+docs/source/_build

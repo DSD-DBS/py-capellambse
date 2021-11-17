@@ -6,7 +6,7 @@ Installation
 
 This guide helps you to get |project| installed. There are a few ways to get it done:
 
-Install from PyPI 
+Install from PyPI
 =================
 
 .. highlight:: bash
@@ -33,4 +33,3 @@ Install for development
 =======================
 
 In case you'd like to contribute to the development or improve documentation, sample models or examples collection please follow the `contribution guide <https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.md>`_
-
