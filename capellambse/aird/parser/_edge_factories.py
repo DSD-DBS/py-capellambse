@@ -375,16 +375,14 @@ def _construct_labels(
     edge: aird.Edge, seb: C.SemanticElementBuilder
 ) -> list[aird.Box]:
     """Construct the label box for an edge."""
-    labeltext = seb.melodyobjs[0].attrib.get("name", "")
-
-    positioners = (_find_center, _find_start, _find_end)
+    refpoints = _find_refpoints(edge)
     layouts = seb.data_element.xpath("./children/layoutConstraint")
     labels: list[aird.Box] = []
-    for positioner, layout, melodyobj in zip(
-        positioners, layouts, seb.melodyobjs
+    for (labelanchor, travel_direction), layout, melodyobj in zip(
+        refpoints, layouts, seb.melodyobjs
     ):
-        melodyobj.attrib.get("name", "")
-        labelanchor, travel_direction = positioner(edge)
+        labeltext = melodyobj.get("name", "")
+
         label_pos = aird.Vector2D(
             int(layout.get("x", "0")),
             int(layout.get("y", "0")),
@@ -410,51 +408,42 @@ def _construct_labels(
     return labels
 
 
-def _find_center(
+def _find_refpoints(
     points: cabc.Sequence[aird.Vector2D],
-) -> tuple[aird.Vector2D, aird.Vector2D]:
+) -> list[tuple[aird.Vector2D, aird.Vector2D]]:
     """Calculate the center point of the edge described by `points`."""
-    # Calculate the length of each part
+    refpoints: list[tuple[aird.Vector2D, aird.Vector2D]] = []
+
     lengths = [
         (points[i] - points[i + 1]).length for i in range(len(points) - 1)
     ]
     total_length = sum(lengths)
-    center_length = total_length / 2
+    refpoint_lengths = [
+        total_length * 0.15,
+        total_length * 0.5,
+        total_length * 0.85,
+    ]
     current_length = 0.0
     current_position = points[0]
+    new_length = lengths[0]
+    i = 0
 
-    for i in range(len(points) - 1):
-        next_length = lengths[i]
-        new_length = current_length + next_length
-        if new_length > center_length:
-            break  # Would overshoot
-        current_length = new_length
-        current_position = points[i + 1]
+    for next_refpoint in refpoint_lengths:
+        while new_length < next_refpoint:
+            i += 1
+            current_length = new_length
+            new_length += lengths[i]
+            current_position = points[i]
 
-    try:
-        # Complete the jump from the last point towards the actual edge center
-        direction = (points[i + 1] - points[i]).normalized
-    except ZeroDivisionError:
-        direction = aird.Vector2D(1, 0)
+        try:
+            dir = (points[i + 1] - points[i]).normalized
+        except ZeroDivisionError:  # pragma: no cover
+            dir = aird.Vector2D(1, 0)
+        pos = current_position + dir * (next_refpoint - current_length)
+        refpoints.append((pos, dir))
 
-    return (
-        current_position + direction * (center_length - current_length),
-        direction,
-    )
-
-
-def _find_start(
-    points: cabc.Sequence[aird.Vector2D],
-) -> tuple[aird.Vector2D, aird.Vector2D]:
-    """Calculate the start point of the edge described by `points`."""
-    return points[0], (points[1] - points[0]).normalized
-
-
-def _find_end(
-    points: cabc.Sequence[aird.Vector2D],
-) -> tuple[aird.Vector2D, aird.Vector2D]:
-    """Calculate the end point of the edge described by `points`."""
-    return points[-1], (points[-1] - points[-2]).normalized
+    refpoints[0], refpoints[1] = refpoints[1], refpoints[0]
+    return refpoints
 
 
 def labelless_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
