@@ -33,7 +33,7 @@ import capellambse
 # -- Project information -----------------------------------------------------
 
 config = read_configuration("../../setup.cfg")
-project = "Python Capella MBSE Tools"
+project = "py-capellambse"
 pypi = "capellambse"
 author = config["metadata"]["author"]
 copyright = "2021, %s" % author
@@ -96,7 +96,7 @@ html_theme_options = {
     "logo_only": False,
     "collapse_navigation": True,
 }
-html_short_title = "Python Capella MBSE Tools"
+html_short_title = "py-capellambse"
 html_show_sourcelink = False
 html_context = {
     "dependencies": install_requirements,

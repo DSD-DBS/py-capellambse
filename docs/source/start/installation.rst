@@ -2,62 +2,34 @@
 Installation
 ************
 
-.. |project| replace:: Python capella MBSE Tools
+.. |project| replace:: py-capellambse
 
-This guide helps you to install |project| onto your computer.
-There are two ways for installation. They are as follows.
+This guide helps you to get |project| installed. There are a few ways to get it done:
 
-Install from PyPI (Recommended)
-===============================
+Install from PyPI
+=================
 
 .. highlight:: bash
 
-Installing |project| is simple with `pip <http://www.pip-installer.org/>`_::
+Installing |project| from Python Package Index via `pip <http://www.pip-installer.org/>`_ is the quickest way to get started ::
 
-    $ pip install pycapellambse
+    $ pip install capellambse
 
-If PyPI is down, you can also install |project| from one of the mirrors::
+Install as a package from Github
+================================
 
-    $ pip install --use-mirrors pycapellambse
+If you want to have a comfortable playground with examples / jupyter notebooks / export to excel demo and test models you may clone the repository directly from github, create virtual environment and install all the extras: ::
 
-Install manually
-================
+    $ git clone https://github.com/DSD-DBS/py-capellambse.git
+    $ cd py-capella-mbse
+    $ python3 -m venv .venv
+    $ source .venv/bin/activate
+    $ pip install .
+    $ pip install jupyter
+    $ cd examples
+    $ jupyter-notebook
 
-From GitLab
------------
+Install for development
+=======================
 
-Alternatively, you may wish to download manually from GitLab where |project|
-is `actively developed <https://gitlab.com/our_url_here>`_.
-
-You can clone the public repository::
-
-    $ git clone git@gitlab.com:our_url_here.git
-
-Or download an appropriate zipball_.
-
-.. _zipball:
-   https://gitlab.com/our_url_here/repository/archive.zip?ref=master
-
-Once you have a copy of the source, you can embed it in your Python package,
-or install it into your site-packages::
-
-    $ python setup.py install
-
-From wheel
-----------
-
-As another alternative you can download a .whl file from GitLab and install
-|project| via pip::
-
-    $ pip install path-to-whl/capellambse.whl
-
-.. _manual:
-   https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
-.. _github:
-   https://www.github.com/our_repo_link_here
-
-.. note::
-    If you have your python distribution from anaconda open the anaconda prompt.
-    If you want to install this package in your virtual environment, make sure
-    that your prompt shows the activated environment in parantheses.
-    Here is a manual_ for this.
+In case you'd like to contribute to the development or improve documentation, sample models or examples collection please follow the `contribution guide <https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.md>`_
