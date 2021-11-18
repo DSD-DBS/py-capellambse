@@ -123,6 +123,6 @@ dmypy.json
 # Misc:
 .DS_Store
 
-# generated sphynx docs
+# generated sphinx docs
 docs/source/code/
 docs/source/_build
