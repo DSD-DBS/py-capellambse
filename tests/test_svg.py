@@ -93,9 +93,9 @@ class TestSVG:
             json.loads(tmp_json.read_text())
         )
         assert diag_meta.name == TEST_LAB
-        assert diag_meta.pos == (250, 60)
-        assert diag_meta.size == (1162, 645)
-        assert diag_meta.viewbox == "250 60 1162 645"
+        assert diag_meta.pos == (10, 10)
+        assert diag_meta.size == (1162, 611)
+        assert diag_meta.viewbox == "10 10 1162 611"
         assert diag_meta.class_ == "Logical Architecture Blank"
 
     def test_diagram_from_json_path_componentports(self, tmp_json) -> None:
