@@ -56,7 +56,7 @@ extensions = [
     "sphinx_rtd_theme",
     "jinja_in_rst",
     "capellambse.sphinx",
-    'sphinx.ext.autosectionlabel',
+    "sphinx.ext.autosectionlabel",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
