@@ -13,7 +13,13 @@
 # limitations under the License.
 """Implementation of objects and relations for Functional Analysis
 
+Functional Analysis objects inheritance tree (taxonomy):
+
 .. diagram:: [CDB] FunctionalAnalysis [Taxonomy]
+
+Functional Analysis object-relations map (ontology):
+
+.. diagram:: [CDB] FunctionalAnalysis [Ontology]
 """
 
 from __future__ import annotations

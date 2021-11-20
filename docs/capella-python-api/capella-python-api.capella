@@ -4846,6 +4846,27 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
               <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                   id="126fb9dd-131b-4183-8159-3c42490713c4" value="1"/>
             </ownedFeatures>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                id="3c6ae51c-35c9-47e2-a93e-9c0a44c549d7" name="xtype" abstractType="#7acb74fe-8aa3-487b-ba8b-ed2d5b77593d">
+              <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="7240fa38-c6e9-4405-aba4-8a531ac1bd2f" value="1"/>
+              <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="1b7af941-d8e9-4eb2-992a-fb01e7de0aab" value="1"/>
+            </ownedFeatures>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                id="f94f1b91-c9a4-4b95-a0ab-027ff5faae1a" name="summary" abstractType="#3a2ca5fe-3dc1-4a72-afa9-a380a4f02f8f">
+              <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="fe100b27-9b0d-4092-b802-a298b61f2be0" value="1"/>
+              <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="4f2d62c3-e2da-4411-a8c1-1ccaa0b3c6d2" value="1"/>
+            </ownedFeatures>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                id="8494d5a3-7862-48f8-8e0a-995df232284c" name="progress_status" abstractType="#7ba06756-379b-4f1f-89da-f4a81882a275">
+              <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="d2de533b-6b03-4c72-8f23-867b7dd4d4c9" value="1"/>
+              <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="87450c46-73b3-44fa-9597-1a92586a03c0" value="1"/>
+            </ownedFeatures>
           </ownedClasses>
         </ownedDataPkgs>
         <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
@@ -6487,6 +6508,10 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
             id="24fa63a5-1356-4618-aa9e-151c72d14fe6" name="Boolean"/>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:NumericType"
             id="b932ac98-f09a-44d1-b0e5-01ed814bfef7" name="Integer"/>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:StringType"
+            id="7acb74fe-8aa3-487b-ba8b-ed2d5b77593d" name="XType"/>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+            id="7ba06756-379b-4f1f-89da-f4a81882a275" name="ProgressStatusEnum"/>
       </ownedDataPkg>
       <ownedRolePkg xsi:type="org.polarsys.capella.core.data.oa:RolePkg" id="fd67c10f-7b4c-43c8-98ea-4b74c751e436"
           name="Roles"/>
