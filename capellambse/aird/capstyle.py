@@ -276,7 +276,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Box": {
             "fill": "transparent",
             "stroke": COLORS["black"],
-            "stroke-width": "1",
+            "stroke-width": 1,
         },
         "Box.Annotation": {
             "fill": None,
@@ -301,27 +301,25 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": "transparent",
         },
         "Edge": {
-            "stroke-width": "2",
+            "stroke-width": 1,
         },
         "Edge.Connector": {
             "stroke": RGB(176, 176, 176),
             "stroke-dasharray": "1",
-            "stroke-width": "1",
         },
         "Edge.Constraint": {
             "stroke": COLORS["black"],
             "stroke-dasharray": "1, 3",
-            "stroke-width": "1",
             "marker-end": "FineArrowMark",
             "stroke-linecap": "round",
         },
         "Edge.Note": {
             "stroke": COLORS["black"],
             "stroke-dasharray": "1, 3",
-            "stroke-width": "1",
         },
         "Edge.RequirementRelation": {  # ReqVP_IncomingRelation
             "stroke": COLORS["dark_purple"],
+            "stroke-width": 2,
             "marker-end": "FineArrowMark",
             "stroke-dasharray": "5",
             "text_fill": COLORS["dark_purple"],
@@ -430,7 +428,6 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["dark_gray"],
         },
         "Edge.StateTransition": {
-            "stroke-width": "1",
             "marker-end": "FineArrowMark",
         },
     },
@@ -489,18 +486,22 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.FunctionalExchange": {  # LAB DataFlow between Function
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
             "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
         },
         "Edge.ComponentExchange": {  # LAB DataFlow between Logical Components
             "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "stroke-width": 2,
             "text_fill": COLORS["_CAP_Component_Border_Blue"],
         },
         "Edge.FIPAllocation": {  # LAB PortAllocation
             "stroke": COLORS["dark_orange"],
+            "stroke-width": 2,
             "stroke-dasharray": "5",
         },
         "Edge.FOPAllocation": {
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
             "stroke-dasharray": "5",
         },
     },
@@ -525,6 +526,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.FunctionalExchange": {  # LDFB_Exchange
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
             "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
         },
     },
@@ -547,33 +549,24 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.AbstractCapabilityExtend": {
             "marker-end": "FineArrowMark",
-            "stroke-width": "1",
         },
         "Edge.AbstractCapabilityGeneralization": {
             "marker-end": "GeneralizationMark",
             "stroke": COLORS["black"],
-            "stroke-width": "1",
         },
         "Edge.AbstractCapabilityInclude": {
             "marker-end": "FineArrowMark",
             "stroke": COLORS["black"],
-            "stroke-width": "1",
         },
         "Edge.CommunicationMean": {
             "marker-end": "ArrowMark",
-            "stroke-width": "1",
             "stroke": COLORS["gray"],
         },
-        "Edge.Entity": {
-            "stroke-width": "1",
-        },
+        "Edge.Entity": {},
         "Edge.EntityOperationalCapabilityInvolvement": {
             "marker-end": "FineArrowMark",
-            "stroke-width": "1",
         },
-        "Edge.OperationalActor": {
-            "stroke-width": "1",
-        },
+        "Edge.OperationalActor": {},
     },
     "Operational Entity Blank": {  # "Operational Architecture Blank" in GUI
         "Box.Entity": {
@@ -604,13 +597,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.CommunicationMean": {
             "marker-end": "ArrowMark",
-            "stroke-width": "1",
             "stroke": COLORS["dark_gray"],
         },
         "Edge.FunctionalExchange": {
             "marker-end": "ArrowMark",
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
-            "stroke-width": "1",
         },
     },
     "Operational Entity Breakdown": {
@@ -621,12 +612,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.Entity": {
             "marker-end": "FineArrowMark",
-            "stroke-width": "1",
             "stroke": COLORS["gray"],
         },
         "Edge.OperationalActor": {
             "marker-end": "FineArrowMark",
-            "stroke-width": "1",
             "stroke": COLORS["gray"],
         },
     },
@@ -638,11 +627,9 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Edge.FunctionalExchange": {
             "marker-end": "ArrowMark",
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
-            "stroke-width": "1",
         },
         "Edge.SequenceLink": {
             "marker-end": "FineArrowMark",
-            "stroke-width": "1",
             "stroke-dasharray": "5",
         },
     },
@@ -661,6 +648,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.PhysicalLink": {
             "stroke": COLORS["red"],
+            "stroke-width": 2,
             "text_fill": COLORS["red"],
         },
     },
@@ -685,6 +673,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.FunctionalExchange": {  # SDFB_Exchange
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
             "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
         },
     },

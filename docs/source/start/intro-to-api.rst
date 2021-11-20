@@ -2,7 +2,7 @@
 Introduction to py-capellambse API
 **********************************
 
-| project | provides access to model elements using a meta-model similar to the one of Capella. However in this meta-model we make a few simplifications. A collection of automated tests and design reviews help us to ensure that those simplifications don't break compatibility with original Capella models (however coverage isn't complete yet).
+|project| provides access to model elements using a meta-model similar to the one of Capella. However in this meta-model we make a few simplifications. A collection of automated tests and design reviews help us to ensure that those simplifications don't break compatibility with original Capella models (however coverage isn't complete yet).
 
 As you may know the meta-model behind Capella is layered. There are many packages involved and there is a long inheritance chain behind almost every model element. We are simplifying that by "flattening" the lower layers.
 

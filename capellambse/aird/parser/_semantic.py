@@ -24,8 +24,11 @@ from __future__ import annotations
 import collections.abc as cabc
 import logging
 import pathlib
+import typing as t
 
-import capellambse
+from lxml import etree
+
+import capellambse  # pylint: disable=unused-import  # used in typing
 from capellambse import aird, helpers
 
 from . import _box_factories
@@ -74,16 +77,23 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
     except KeyError:
         drawtype = _GENERIC_FACTORIES
 
-    melodyhref = helpers.fragment_link(ebd.fragment, target.attrib["href"])
-    try:
-        melodyobj = ebd.melodyloader[melodyhref]
-    except KeyError:
-        LOGGER.error(
-            "Referenced target %r does not exist, skipping element",
-            target.attrib.get("href"),
-        )
-        raise c.SkipObject() from None
-    melodyfrag = pathlib.Path(melodyhref.split("#")[0])
+    sem_elms = list(diag_element.iterchildren("semanticElements"))
+    melodyobjs: list[etree._Element] = []
+    melodyfrags: list[pathlib.PurePosixPath] = []
+    for sem_elm in sem_elms:
+        sem_href = helpers.fragment_link(ebd.fragment, sem_elm.attrib["href"])
+        try:
+            sem_obj = ebd.melodyloader[sem_href]
+        except KeyError:
+            LOGGER.warning(
+                "Referenced semantic element %r does not exist",
+                target.attrib.get("href"),
+            )
+        melodyobjs.append(sem_obj)
+        melodyfrags.append(pathlib.PurePosixPath(sem_href.split("#")[0]))
+    assert melodyobjs, "No valid semantic element references could be found"
+    if melodyobjs[0] is None:
+        raise c.SkipObject()
 
     seb = c.SemanticElementBuilder(
         target_diagram=ebd.target_diagram,
@@ -93,8 +103,8 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
         fragment=ebd.fragment,
         styleclass=styleclass,
         diag_element=diag_element,
-        melodyobj=melodyobj,
-        melodyfrag=melodyfrag,
+        melodyobjs=melodyobjs,
+        melodyfrags=melodyfrags,
     )
     return drawtype(seb)
 
@@ -133,15 +143,10 @@ _GENERIC_FACTORIES = FactorySelector(
 #:
 #: If a key is not found in this dictionary, its value is assumed to be
 #: a tuple of its key and the ``_GENERIC_FACTORIES``.
-STYLECLASS_LOOKUP: dict[
-    str,
-    tuple[
-        str | None,
-        cabc.Callable[
-            [c.SemanticElementBuilder], capellambse.aird.DiagramElement
-        ],
-    ],
+SemanticDeserializer = t.Callable[
+    [c.SemanticElementBuilder], "capellambse.aird.DiagramElement"
 ]
+STYLECLASS_LOOKUP: dict[str, tuple[str | None, SemanticDeserializer]]
 STYLECLASS_LOOKUP = {
     "AbstractCapabilityInclude": (
         "AbstractCapabilityInclude",
@@ -150,6 +155,10 @@ STYLECLASS_LOOKUP = {
     "AbstractCapabilityExtend": (
         "AbstractCapabilityExtend",
         _edge_factories.include_extend_factory,
+    ),
+    "Association": (
+        "Association",
+        _edge_factories.association_factory,
     ),
     "CapellaIncomingRelation": (
         "RequirementRelation",

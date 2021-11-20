@@ -91,7 +91,7 @@ def apply_style_overrides(
 
 def apply_visualelement_styles(
     diagram_class: str, element_class: str, data_element: lxml.etree._Element
-) -> cabc.Mapping[str, str | aird.RGB | cabc.Sequence[str | aird.RGB]]:
+) -> dict[str, str | aird.RGB | list[str | aird.RGB]]:
     """Apply style overrides defined in the AIRD to a visual element.
 
     Parameters

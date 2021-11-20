@@ -25,6 +25,7 @@ import pathlib
 import re
 import sys
 import typing as t
+import urllib.parse
 import uuid
 
 from lxml import etree
@@ -225,7 +226,9 @@ class MelodyLoader:
         self.trees[filename] = frag
         for ref in _find_refs(frag.root):
             self.__load_referenced_files(
-                helpers.normalize_pure_path(ref, base=filename.parent)
+                helpers.normalize_pure_path(
+                    urllib.parse.unquote(ref), base=filename.parent
+                )
             )
 
     def save(self, **kw: t.Any) -> None:

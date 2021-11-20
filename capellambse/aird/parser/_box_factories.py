@@ -101,16 +101,13 @@ def generic_factory(
         seb.target_diagram.styleclass, f"Box.{seb.styleclass}", ostyle
     )
 
-    if seb.melodyobj is None:
-        label = seb.diag_element.attrib.get("name")
-    else:
-        label = seb.melodyobj.attrib.get("name")
+    label = seb.melodyobjs[0].attrib.get("name")
     pos += (
         int(seb.diag_element.attrib.get("width", "0")),
         int(seb.diag_element.attrib.get("height", "0")),
     )
 
-    if box_is_port and parent is not None and seb.melodyobj is not None:
+    if box_is_port and parent is not None:
         parent.add_context(seb.data_element.attrib["element"])
 
     if label:
@@ -127,7 +124,8 @@ def generic_factory(
         port=box_is_port,
         uuid=seb.data_element.attrib["element"],
         styleclass=seb.styleclass,
-        styleoverrides=styleoverrides,
+        # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+        styleoverrides=styleoverrides,  # type: ignore[arg-type]
         minsize=minsize,
     )
     if box_is_symbol:
@@ -156,20 +154,29 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     actual boxes, but should instead be shown as part of the Class'
     regular label text.
     """
-    box = generic_factory(seb)
+    box = generic_factory(seb, minsize=aird.Vector2D(93, 43))
+
+    if seb.melodyobjs[0].attrib.get("abstract", "false") == "true":
+        box.styleoverrides["text_font-style"] = "italic"
 
     features = collections.defaultdict(list)
-    for feature in seb.melodyobj.iterchildren("ownedFeatures"):
+    for feature in seb.melodyobjs[0].iterchildren("ownedFeatures"):
         feat_name = feature.attrib["name"]
         feat_type = feature.attrib[C.ATT_XST].split(":")[-1]
 
         abstract_type = feature.attrib.get("abstractType")
         if abstract_type is not None:
             abstract_type = seb.melodyloader[
-                helpers.fragment_link(seb.melodyfrag, abstract_type)
+                helpers.fragment_link(seb.melodyfrags[0], abstract_type)
             ]
 
         if feat_type == "Property":
+            if feature.attrib.get("aggregationKind") is not None:
+                continue
+
+            if feature.attrib.get("isDerived") is not None:
+                feat_name = f"/{feat_name}"
+
             if abstract_type is not None:
                 feat_name += f" : {abstract_type.attrib['name']}"
         elif feat_type == "Service":
@@ -190,7 +197,9 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
                 param_abstrtype = param.attrib.get("abstractType")
                 if param_abstrtype is not None:
                     param_abstrtype = seb.melodyloader[
-                        helpers.fragment_link(seb.melodyfrag, param_abstrtype)
+                        helpers.fragment_link(
+                            seb.melodyfrags[0], param_abstrtype
+                        )
                     ]
                     param_name += f":{param_abstrtype.attrib['name']}"
                 param_dir = param.attrib.get("direction", "IN")
@@ -219,7 +228,7 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 def component_port_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     box = generic_factory(seb)
     try:
-        box.styleclass = "CP_" + (seb.melodyobj.attrib["orientation"])
+        box.styleclass = "CP_" + (seb.melodyobjs[0].attrib["orientation"])
     except KeyError:
         box.styleclass = "CP_UNSET"
 
@@ -239,14 +248,14 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         The accompanying edge factory.
     """
     box = generic_factory(seb)
-    box.label = C.get_spec_text(seb) or seb.melodyobj.attrib.get("name")
+    box.label = C.get_spec_text(seb) or seb.melodyobjs[0].attrib.get("name")
     return box
 
 
 def control_node_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     r"""Differentiate ``ControlNode``\ s based on their KIND."""
     assert seb.styleclass is not None
-    kind = seb.melodyobj.get("kind", "OR")
+    kind = seb.melodyobjs[0].get("kind", "OR")
     seb.styleclass = "".join((kind.capitalize(), seb.styleclass))
     return generic_factory(seb)
 
@@ -259,7 +268,7 @@ def enumeration_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     box = generic_factory(seb)
     box.features = []
 
-    for lit_elm in seb.melodyobj.iterchildren("ownedLiterals"):
+    for lit_elm in seb.melodyobjs[0].iterchildren("ownedLiterals"):
         lit_type = lit_elm.attrib[C.ATT_XST]
         if lit_type.split(":")[-1] != "EnumerationLiteral":
             C.LOGGER.warning(
@@ -276,11 +285,11 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     dgel_type = seb.diag_element.attrib[C.ATT_XMT]
     if dgel_type in {"diagram:DNodeContainer", "diagram:DNode"}:
         # resolve abstractType reference
-        abstract_obj = seb.melodyobj
+        abstract_obj = seb.melodyobjs[0]
         abstract_type = abstract_obj.attrib.get("abstractType")
         if abstract_type is not None:
             abstract_obj = seb.melodyloader[
-                helpers.fragment_link(seb.melodyfrag, abstract_type)
+                helpers.fragment_link(seb.melodyfrags[0], abstract_type)
             ]
 
         seb.styleclass = abstract_obj.attrib[C.ATT_XST].split(":")[-1]
@@ -320,16 +329,16 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     except (StopIteration, KeyError):
         raise C.SkipObject() from None
 
-    seb.melodyobj = seb.melodyloader[
+    seb.melodyobjs[0] = seb.melodyloader[
         helpers.fragment_link(seb.fragment, targethref)
     ]
     text = [
         string
         for suffix in ("LongName", "Name", "ChapterName")
-        if (string := seb.melodyobj.get("ReqIF" + suffix, ""))
+        if (string := seb.melodyobjs[0].get("ReqIF" + suffix, ""))
     ]
-    if "ReqIFText" in seb.melodyobj.attrib:
-        text.append(helpers.repair_html(seb.melodyobj.attrib["ReqIFText"]))
+    if "ReqIFText" in seb.melodyobjs[0].attrib:
+        text.append(helpers.repair_html(seb.melodyobjs[0].attrib["ReqIFText"]))
 
     box = generic_factory(seb, minsize=aird.Vector2D(0, 0))
     box.features = [f"- {i}" for i in text if i is not None]
@@ -391,7 +400,6 @@ def statemode_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
 def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     """Attach the activities to a State or Mode as features."""
-    assert seb.melodyobj is not None
     parent_id = seb.diag_element.getparent().attrib["uid"]
     try:
         parent = seb.target_diagram[parent_id]
@@ -432,9 +440,9 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
     parent.features = list(
         itertools.chain(
-            map(" entry / {}".format, entry),
-            map(" do / {}".format, do),
-            map(" exit / {}".format, exit),
+            (f" entry / {i}" for i in entry),
+            (f" do / {i}" for i in do),
+            (f" exit / {i}" for i in exit),
         )
     )
     raise C.SkipObject()
@@ -448,10 +456,10 @@ def fcif_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     in the original target attribute, we can simply use the "involved"
     element for constructing the actual box.
     """
-    seb.melodyobj = seb.melodyloader.follow_link(
-        seb.melodyobj, seb.melodyobj.get("involved")
+    seb.melodyobjs[0] = seb.melodyloader.follow_link(
+        seb.melodyobjs[0], seb.melodyobjs[0].get("involved")
     )
-    xtype = helpers.xtype_of(seb.melodyobj)
+    xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None
     seb.styleclass = xtype.split(":")[-1]
     return generic_factory(seb)
