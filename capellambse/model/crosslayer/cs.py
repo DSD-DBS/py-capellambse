@@ -11,6 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Implementation of objects and relations for Functional Analysis
+
+Composite Structure objects inheritance tree (taxonomy):
+
+.. diagram:: [CDB] CompositeStructure [Taxonomy]
+
+Composite Structure object-relations map (ontology):
+
+.. diagram:: [CDB] CompositeStructure [Ontology]
+"""
+
 from capellambse.loader import xmltools
 
 from .. import common as c

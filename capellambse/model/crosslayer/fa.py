@@ -11,6 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Implementation of objects and relations for Functional Analysis
+
+Functional Analysis objects inheritance tree (taxonomy):
+
+.. diagram:: [CDB] FunctionalAnalysis [Taxonomy]
+
+Functional Analysis object-relations map (ontology):
+
+.. diagram:: [CDB] FunctionalAnalysis [Ontology]
+"""
+
 from __future__ import annotations
 
 import collections.abc as cabc
