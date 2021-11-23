@@ -427,6 +427,14 @@ def test_constraint_specification_has_linked_object_name_in_body(
         == '<a href="hlink://dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
     )
 
+def test_function_is_available_in_state(
+    model: MelodyModel
+) -> None:
+    function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
+    states = function.available_in_states
+    state = states.by_name("Open")
+    assert len(states) == 1
+
 
 def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
     model: MelodyModel,
