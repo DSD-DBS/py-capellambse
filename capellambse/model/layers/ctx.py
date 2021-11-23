@@ -30,7 +30,7 @@ XT_CAP_INV = "org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
 
 
 @c.xtype_handler(XT_ARCH)
-class SystemFunction(c.GenericElement):
+class SystemFunction(fa.AbstractFunction):
     """A system function."""
 
     _xmltag = "ownedFunctions"

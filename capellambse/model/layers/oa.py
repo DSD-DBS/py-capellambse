@@ -33,7 +33,7 @@ XT_EOCI = (
 
 
 @c.xtype_handler(XT_ARCH)
-class OperationalActivity(c.GenericElement):
+class OperationalActivity(fa.AbstractFunction):
     """An operational activity."""
 
     _xmltag = "ownedOperationalActivities"
