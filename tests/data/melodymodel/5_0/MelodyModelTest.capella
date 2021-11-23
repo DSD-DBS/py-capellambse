@@ -1729,7 +1729,7 @@ The predator is far away</bodies>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
               id="beaf5ba4-8fa9-4342-911f-0266bb29be45" name="advise Harry">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
-                id="db64f0c9-ea1c-4962-b043-1774547c36f7" name="FOP 1"/>
+                id="db64f0c9-ea1c-4962-b043-1774547c36f7" name="FOP 1" outgoingExchangeItems="#571d093a-a87e-4dfc-9f46-62eb7c374f44"/>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
               id="a7acb298-d14b-4707-a419-fea272434541" name="Teaching">
