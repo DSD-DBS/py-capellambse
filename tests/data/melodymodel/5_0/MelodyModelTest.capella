@@ -1746,7 +1746,7 @@ The predator is far away</bodies>
                 id="0eae1038-95fe-48b7-af6f-ad6890f2c207" name="FOP 1"/>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
-              id="957c5799-1d4a-4ac0-b5de-33a65bf1519c" name="educate Wizards">
+              id="957c5799-1d4a-4ac0-b5de-33a65bf1519c" name="educate Wizards" availableInStates="#1ade42e9-7513-4f2a-94cb-de1d589a5671">
             <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
                 id="6584a94b-80fb-4ec4-8644-4781bb9509af" name="FIP 2"/>
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
@@ -1980,6 +1980,23 @@ The predator is far away</bodies>
               <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
                   id="be0d0647-c2f2-4883-abfe-54e697f0d887" targetElement="#957c5799-1d4a-4ac0-b5de-33a65bf1519c"
                   sourceElement="#a58821df-c5b4-4958-9455-0d30755be6b1"/>
+              <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+                  id="21645bd7-227a-4547-bbe7-ab165823d841" name="school_states">
+                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                    id="fcc53c31-21fe-4135-9b49-2a53ec3eb833" name="Default Region"
+                    involvedStates="#1ade42e9-7513-4f2a-94cb-de1d589a5671 #53cab5f0-fe2f-4553-8223-fbe5ea9e4d42">
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                      id="1ade42e9-7513-4f2a-94cb-de1d589a5671" name="Open">
+                    <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                        id="7a83ade6-0d1d-480e-9a1b-01af7201aa63" name="region"/>
+                  </ownedStates>
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                      id="53cab5f0-fe2f-4553-8223-fbe5ea9e4d42" name="Closed">
+                    <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                        id="497425d8-aaf0-445e-b827-3509cb62d9cf" name="region"/>
+                  </ownedStates>
+                </ownedRegions>
+              </ownedStateMachines>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
                   id="d1687d0d-31ab-43a4-822c-a99c922471ce" name="CP 5" kind="FLOW">
                 <ownedPortAllocations xsi:type="org.polarsys.capella.core.data.information:PortAllocation"
