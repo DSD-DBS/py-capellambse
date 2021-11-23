@@ -57,25 +57,33 @@ class AbstractExchange(c.GenericElement):
 
 
 @c.xtype_handler(None)
-class FunctionInputPort(c.GenericElement):
-    """A function input port."""
-
-    _xmltag = "inputs"
+class FunctionPort(c.GenericElement):
+    """A function port"""
 
     owner = c.ParentAccessor(c.GenericElement)
-
     exchanges: c.Accessor
 
 
 @c.xtype_handler(None)
-class FunctionOutputPort(c.GenericElement):
+class FunctionInputPort(FunctionPort):
+    """A function input port."""
+
+    _xmltag = "inputs"
+
+    exchange_items = c.AttrProxyAccessor(
+        information.ExchangeItem, "incomingExchangeItems", aslist=c.ElementList
+    )
+
+
+@c.xtype_handler(None)
+class FunctionOutputPort(FunctionPort):
     """A function output port."""
 
     _xmltag = "outputs"
 
-    owner = c.ParentAccessor(c.GenericElement)
-
-    exchanges: c.Accessor
+    exchange_items = c.AttrProxyAccessor(
+        information.ExchangeItem, "outgoingExchangeItems", aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)

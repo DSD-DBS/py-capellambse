@@ -25,6 +25,7 @@ from capellambse.model.crosslayer.capellacommon import (
     StateTransition,
 )
 from capellambse.model.crosslayer.capellacore import Constraint
+from capellambse.model.crosslayer.fa import FunctionOutputPort
 from capellambse.model.crosslayer.information import Class
 from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
@@ -343,6 +344,13 @@ class TestClasses:
         assert elm.xtype.endswith("Class")
         assert hasattr(elm, "inheritance")
         assert elm.inheritance.super == super_class
+
+
+def test_exchange_items_of_a_function_port(model: MelodyModel):
+    port = model.by_uuid("db64f0c9-ea1c-4962-b043-1774547c36f7")
+    exchange_item_1 = port.exchange_items.by_name("good advise")
+    exchange_item_2 = port.exchange_items.by_name("not so good advise")
+    assert len(port.exchange_items) == 2
 
 
 def test_exchange_items_on_logical_function_exchanges(
