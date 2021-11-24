@@ -44,6 +44,7 @@ class AbstractStateMode(c.GenericElement):
     """Common code for states and modes."""
 
     regions = c.ProxyAccessor(Region, aslist=c.ElementList)
+    functions: c.Accessor
 
 
 @c.xtype_handler(None)

@@ -311,6 +311,11 @@ class TestStateMachines:
         assert sleep_region.diagrams
         assert sleep_region.diagrams[0].name == "[MSM] Keep the sleep schedule"
 
+    def test_stm_state_has_functions(self, model: MelodyModel):
+        state = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
+        assert len(state.functions) == 4  # leaf functions only
+        fnc = state.functions.by_name("teach Care of Magical Creatures")
+
 
 class TestClasses:
     def test_classes_have_access_to_stm(self, model: MelodyModel):
@@ -427,9 +432,8 @@ def test_constraint_specification_has_linked_object_name_in_body(
         == '<a href="hlink://dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
     )
 
-def test_function_is_available_in_state(
-    model: MelodyModel
-) -> None:
+
+def test_function_is_available_in_state(model: MelodyModel) -> None:
     function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
     states = function.available_in_states
     state = states.by_name("Open")

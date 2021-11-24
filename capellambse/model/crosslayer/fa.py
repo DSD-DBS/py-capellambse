@@ -170,3 +170,13 @@ for _port, _exchange in [
         ),
     )
 del _port, _exchange
+
+c.set_accessor(
+    capellacommon.State,
+    "functions",
+    c.ReferenceSearchingAccessor(
+        AbstractFunction,
+        "availableInStates",
+        aslist=c.ElementList,
+    ),
+)
