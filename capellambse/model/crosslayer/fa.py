@@ -30,7 +30,7 @@ from capellambse.loader import xmltools
 
 from .. import common as c
 from .. import modeltypes
-from . import information
+from . import capellacommon, information
 
 XT_COMP_EX_FNC_EX_ALLOC = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
@@ -54,6 +54,15 @@ class AbstractExchange(c.GenericElement):
 
     source_port = c.AttrProxyAccessor(c.GenericElement, "source")
     target_port = c.AttrProxyAccessor(c.GenericElement, "target")
+
+
+@c.xtype_handler(None)
+class AbstractFunction(c.GenericElement):
+    """An AbstractFunction"""
+
+    available_in_states = c.AttrProxyAccessor(
+        capellacommon.State, "availableInStates", aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)
@@ -161,3 +170,13 @@ for _port, _exchange in [
         ),
     )
 del _port, _exchange
+
+c.set_accessor(
+    capellacommon.State,
+    "functions",
+    c.ReferenceSearchingAccessor(
+        AbstractFunction,
+        "availableInStates",
+        aslist=c.ElementList,
+    ),
+)

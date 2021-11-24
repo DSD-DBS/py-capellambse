@@ -32,7 +32,7 @@ XT_LA_COMP_REAL = (
 
 
 @c.xtype_handler(XT_ARCH)
-class PhysicalFunction(c.GenericElement):
+class PhysicalFunction(fa.AbstractFunction):
     """A physical function on the Physical Architecture layer."""
 
     _xmltag = "ownedPhysicalFunctions"

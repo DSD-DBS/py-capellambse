@@ -28,7 +28,7 @@ XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
 
 
 @c.xtype_handler(XT_ARCH)
-class LogicalFunction(c.GenericElement):
+class LogicalFunction(fa.AbstractFunction):
     """A logical function on the Logical Architecture layer."""
 
     _xmltag = "ownedLogicalFunctions"
