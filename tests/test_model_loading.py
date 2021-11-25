@@ -14,6 +14,7 @@
 from __future__ import annotations
 
 import pathlib
+import subprocess
 from importlib import metadata
 
 import pytest
@@ -21,6 +22,13 @@ import pytest
 import capellambse
 
 from . import TEST_MODEL, TEST_ROOT
+
+
+def has_git_lfs():
+    proc = subprocess.run(
+        ["git", "lfs"],
+    )
+    return proc.returncode == 0
 
 
 @pytest.mark.parametrize(
@@ -34,15 +42,12 @@ def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
     capellambse.MelodyModel(path)
 
 
-@pytest.mark.parametrize(
-    "path",
-    [
-        pytest.param(
-            "git+" + pathlib.Path.cwd().as_uri(), id="From local repo"
-        ),
-    ],
+@pytest.mark.skipif(
+    not has_git_lfs(),
+    reason="This test requires git-lfs to be present on the system",
 )
-def test_model_loading_via_GitFileHandler(path: str):
+def test_model_loading_via_GitFileHandler():
+    path = "git+" + pathlib.Path.cwd().as_uri()
     capellambse.MelodyModel(
         path, entrypoint="tests/data/melodymodel/5_0/MelodyModelTest.aird"
     )

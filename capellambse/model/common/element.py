@@ -370,13 +370,13 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             The order in which the values are yielded is undefined.
             """
             # Use list, since not all elements may be hashable.
-            yielded: list[U | str] = []
+            yielded: set[U | str] = set()
 
             for elm in self.parent:
                 key = self.extract_key(elm)
                 if key not in yielded:
                     yield key
-                    yielded.append(key)
+                    yielded.add(key)
 
         def __contains__(self, value: U) -> bool:
             valueset = self.make_values_container(value)
