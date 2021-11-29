@@ -40,7 +40,15 @@ Alternatively, to start using the project on your local machine, follow these st
 
    ```bash
    python3 -m venv .venv
+   
+   # on Linux or Mac:
    source .venv/bin/activate
+   
+   # on Windows using cmd.exe:
+   .venv\Scripts\activate.bat
+   
+   # on Windows using PowerShell:
+   .venv/Scripts/activate.ps1
    ```
 
 3. Install `capellambse` and `Jupyter`.
