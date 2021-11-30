@@ -27,3 +27,10 @@ def model(monkeypatch) -> capellambse.MelodyModel:
     """Return test model"""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
     return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+
+
+@pytest.fixture
+def model_5_1(monkeypatch) -> capellambse.MelodyModel:
+    """Return test model"""
+    monkeypatch.setattr(sys, "stderr", io.StringIO)
+    return capellambse.MelodyModel(TEST_ROOT / "5_1" / "MelodyModel Test.aird")
