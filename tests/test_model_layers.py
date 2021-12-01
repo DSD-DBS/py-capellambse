@@ -660,3 +660,53 @@ class TestArchitectureLayers:
 
         assert hasattr(pcomp, "kind")
         assert pcomp.kind == kind
+
+    def test_PhysicalComponent_vehicle_component_chain(
+        self, model: capellambse.MelodyModel
+    ) -> None:
+        vehicle = model.by_uuid("b327d900-abd2-4138-a111-9ff0684739d8")
+        sensor_comp = model.by_uuid("3f416925-9d8a-4e9c-99f3-e912efb23d2f")
+        equip_comp = model.by_uuid("3d68852d-fcc0-452c-af12-a2fbe22f81fa")
+        cam_ass = model.by_uuid("5bfc516b-c20d-4007-9a38-5ba0e889d0a4")
+        net_switch = model.by_uuid("b51ccc6f-5f96-4e28-b90e-72463a3b50cf")
+        server = model.by_uuid("9137f463-7497-40c2-b20a-897158fdba9a")
+        cam_fw = model.by_uuid("db2d86d7-48ee-478b-a6fc-d6387ab0032e")
+        switch_fw = model.by_uuid("c78b5d7c-be0c-4ed4-9d12-d447cb39304e")
+        switch_conf = model.by_uuid("23c47b69-7352-481d-be88-498fb351adbe")
+        comp_card = model.by_uuid("63be604e-883e-41ea-9023-fc74f29906fe")
+        comp_card1 = model.by_uuid("3a982128-3281-4d37-8838-a6058b7a25d9")
+        card_os = model.by_uuid("7b188ad0-0d82-4b2c-9913-45292e537871")
+        cool_fan = model.by_uuid("65e82f3f-c5b7-44c1-bfea-8e20bb0230be")
+        card_os1 = model.by_uuid("09e19313-c824-467f-9fb5-95ed8b4e2d51")
+        cam_driver = model.by_uuid("74067f56-33bf-47f5-bb8b-f3604097f653")
+        app = model.by_uuid("b80a6fcc-8d35-4675-a2e6-60efcbd61e27")
+        app1 = model.by_uuid("f8a4d0a5-1884-4dc5-af19-a46a8cdfe5fc")
+
+        assert set(vehicle.components) | {sensor_comp, equip_comp} == set(
+            vehicle.components
+        )
+        assert (
+            cam_ass in sensor_comp.components
+            and len(sensor_comp.components) == 1
+        )
+        assert set(equip_comp.components) | {net_switch, server} == set(
+            equip_comp.components
+        )
+        assert cam_fw in cam_ass.components and len(cam_ass.components) == 1
+        assert set(net_switch.components) | {switch_fw, switch_conf} == set(
+            net_switch.components
+        )
+        assert set(server.components) | {comp_card, comp_card1} == set(
+            server.components
+        )
+        assert set(comp_card.components) | {card_os, cool_fan} == set(
+            comp_card.components
+        )
+        assert (
+            card_os1 in comp_card1.components
+            and len(comp_card1.components) == 1
+        )
+        assert set(card_os1.components) | {cam_driver, app} == set(
+            card_os1.components
+        )
+        assert app1 in card_os1.components and len(card_os1.components) == 1

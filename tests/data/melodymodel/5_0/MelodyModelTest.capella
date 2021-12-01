@@ -2400,6 +2400,12 @@ The predator is far away</bodies>
                         id="3faf316b-f393-4487-8f15-0f331210df6f" targetElement="#c0645cb3-a9bc-4330-90aa-ab211d5091c4"
                         sourceElement="#22859552-3710-4e58-9aa6-caebd044c921"/>
                   </ownedFeatures>
+                  <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part"
+                      id="d3869c08-11f6-4e98-9322-da4209bed2ef" name="Cooling Fan"
+                      abstractType="#65e82f3f-c5b7-44c1-bfea-8e20bb0230be"/>
+                  <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                      id="65e82f3f-c5b7-44c1-bfea-8e20bb0230be" name="Cooling Fan"
+                      kind="HARDWARE" nature="NODE"/>
                 </ownedPhysicalComponents>
                 <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
                     id="3a982128-3281-4d37-8838-a6058b7a25d9" name="Compute Card 2"

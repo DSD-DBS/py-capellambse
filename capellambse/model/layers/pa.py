@@ -31,6 +31,9 @@ XT_ARCH = "org.polarsys.capella.core.data.pa:PhysicalArchitecture"
 XT_LA_COMP_REAL = (
     "org.polarsys.capella.core.data.pa:LogicalComponentRealization"
 )
+XT_PA_DEPLOY_LINK = (
+    "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+)
 
 
 @c.xtype_handler(XT_ARCH)
@@ -96,7 +99,14 @@ class PhysicalComponent(cs.Component):
     )
     ports = c.ProxyAccessor(cs.PhysicalPort, aslist=c.ElementList)
 
-    components: c.Accessor
+    deployed_parts = c.ProxyAccessor(cs.Part, aslist=c.ElementList)
+
+    # components = c.CustomAccessor(
+    #     c.GenericElement,
+    #     operator.attrgetter("self.deployed_parts"),
+    #     matchtransform=_find_deployed_element
+    # )
+    owned_components: c.Accessor
 
 
 @c.xtype_handler(XT_ARCH)
@@ -177,7 +187,7 @@ c.set_accessor(
     ),
 )
 c.set_self_references(
-    (PhysicalComponent, "components"),
+    (PhysicalComponent, "owned_components"),
     (PhysicalComponentPkg, "packages"),
     (PhysicalFunction, "functions"),
     (PhysicalFunctionPkg, "packages"),
