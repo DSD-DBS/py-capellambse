@@ -19,8 +19,10 @@ from __future__ import annotations
 
 import operator
 
+from capellambse.loader import xmltools
+
 from .. import common as c
-from .. import crosslayer, diagram
+from .. import crosslayer, diagram, modeltypes
 from ..crosslayer import capellacommon, cs, fa
 from . import la
 
@@ -72,6 +74,13 @@ class PhysicalComponent(cs.Component):
     """A physical component on the Physical Architecture layer."""
 
     _xmltag = "ownedPhysicalComponents"
+
+    nature = xmltools.EnumAttributeProperty(
+        "_element", "nature", modeltypes.Nature
+    )
+    kind = xmltools.EnumAttributeProperty(
+        "_element", "kind", modeltypes.Kind, default="UNSET"
+    )
 
     functions = c.ProxyAccessor(
         PhysicalFunction,

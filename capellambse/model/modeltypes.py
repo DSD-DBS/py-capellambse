@@ -148,3 +148,29 @@ class ExchangeItemType(StringyEnum):
     FLOW = _enum.auto()
     OPERATION = _enum.auto()
     SHARED_DATA = _enum.auto()
+
+
+class Nature(StringyEnum):
+    r"""The "NATURE" of ``PhysicalComponent``\ s."""
+
+    NODE = _enum.auto()
+    BEHAVIOR = _enum.auto()
+
+
+class Kind(StringyEnum):
+    r"""The "KIND" of ``PhysicalComponent``\ s."""
+
+    UNSET = _enum.auto()
+    HARDWARE = _enum.auto()
+    PROCESSES = _enum.auto()
+    SOFTWARE_DEPLOYMENT_UNIT = _enum.auto()
+    DATA = _enum.auto()
+    HARDWARE_COMPUTER = _enum.auto()
+    SERVICES = _enum.auto()
+    SOFTWARE_EXECUTION_UNIT = _enum.auto()
+    FACILITIES = _enum.auto()
+    MATERIALS = _enum.auto()
+    SOFTWARE = _enum.auto()
+    FIRMWARE = _enum.auto()
+    PERSON = _enum.auto()
+    SOFTWARE_APPLICATION = _enum.auto()

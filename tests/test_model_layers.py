@@ -612,3 +612,51 @@ class TestArchitectureLayers:
             assert hasattr(layer, attr)
 
         assert hasattr(layer, "diagrams")
+
+    @pytest.mark.parametrize(
+        "nature,uuid",
+        [
+            ("NODE", "8a6d68c8-ac3d-4654-a07e-ada7adeed09f"),
+            ("BEHAVIOR", "7b188ad0-0d82-4b2c-9913-45292e537871"),
+        ],
+    )
+    def test_PhysicalComponent_has_nature_attribute(
+        self, model: capellambse.MelodyModel, nature: str, uuid: str
+    ) -> None:
+        pcomp = model.by_uuid(uuid)
+
+        assert hasattr(pcomp, "nature")
+        assert pcomp.nature == nature
+
+    @pytest.mark.parametrize(
+        "kind,uuid",
+        [
+            ("UNSET", "8a6d68c8-ac3d-4654-a07e-ada7adeed09f"),
+            ("HARDWARE", "a2c7f619-b38a-4b92-94a5-cbaa631badfc"),
+            ("PROCESSES", "9e7ab9da-a7e2-4d19-8629-22d2a7edf42f"),
+            (
+                "SOFTWARE_DEPLOYMENT_UNIT",
+                "b327d900-abd2-4138-a111-9ff0684739d8",
+            ),
+            ("DATA", "23c47b69-7352-481d-be88-498fb351adbe"),
+            ("HARDWARE_COMPUTER", "c78b5d7c-be0c-4ed4-9d12-d447cb39304e"),
+            ("SERVICES", "7b188ad0-0d82-4b2c-9913-45292e537871"),
+            (
+                "SOFTWARE_EXECUTION_UNIT",
+                "db2d86d7-48ee-478b-a6fc-d6387ab0032e",
+            ),
+            ("FACILITIES", "3d68852d-fcc0-452c-af12-a2fbe22f81fa"),
+            ("MATERIALS", "f5d7980d-e1e9-4515-8bb0-be7e80ac5839"),
+            ("SOFTWARE", "74067f56-33bf-47f5-bb8b-f3604097f653"),
+            ("FIRMWARE", "793e6da2-d019-4716-a5c5-af8ad550ca5e"),
+            ("PERSON", "8a6c6ec9-095d-4d8b-9728-69bc79af5f27"),
+            ("SOFTWARE_APPLICATION", "e2acdad7-ef1d-4cbd-93ae-2dcfcbced6e5"),
+        ],
+    )
+    def test_PhysicalComponent_has_kind_attribute(
+        self, model: capellambse.MelodyModel, kind: str, uuid: str
+    ) -> None:
+        pcomp = model.by_uuid(uuid)
+
+        assert hasattr(pcomp, "kind")
+        assert pcomp.kind == kind
