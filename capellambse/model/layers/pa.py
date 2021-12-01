@@ -31,9 +31,6 @@ XT_ARCH = "org.polarsys.capella.core.data.pa:PhysicalArchitecture"
 XT_LA_COMP_REAL = (
     "org.polarsys.capella.core.data.pa:LogicalComponentRealization"
 )
-XT_PA_DEPLOY_LINK = (
-    "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
-)
 
 
 @c.xtype_handler(XT_ARCH)
@@ -99,14 +96,21 @@ class PhysicalComponent(cs.Component):
     )
     ports = c.ProxyAccessor(cs.PhysicalPort, aslist=c.ElementList)
 
-    deployed_parts = c.ProxyAccessor(cs.Part, aslist=c.ElementList)
-
-    # components = c.CustomAccessor(
-    #     c.GenericElement,
-    #     operator.attrgetter("self.deployed_parts"),
-    #     matchtransform=_find_deployed_element
-    # )
     owned_components: c.Accessor
+    deploying_components: c.Accessor
+
+    @property
+    def deployed_components(
+        self,
+    ) -> c.ElementList[PhysicalComponent]:
+        items = [
+            cmp._element for part in self.parts for cmp in part.deployed_parts
+        ]
+        return c.ElementList(self._model, items, PhysicalComponent)
+
+    @property
+    def components(self) -> c.ElementList[PhysicalComponent]:
+        return self.deployed_components + self.owned_components
 
 
 @c.xtype_handler(XT_ARCH)
@@ -183,6 +187,16 @@ c.set_accessor(
         PhysicalFunction,
         operator.attrgetter("_model.pa.all_functions"),
         matchtransform=operator.attrgetter("realized_logical_functions"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    PhysicalComponent,
+    "deploying_components",
+    c.CustomAccessor(
+        PhysicalComponent,
+        operator.attrgetter("_model.pa.all_components"),
+        matchtransform=operator.attrgetter("deployed_components"),
         aslist=c.ElementList,
     ),
 )
