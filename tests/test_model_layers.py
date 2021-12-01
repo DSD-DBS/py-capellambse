@@ -677,10 +677,10 @@ class TestArchitectureLayers:
         comp_card1 = model.by_uuid("3a982128-3281-4d37-8838-a6058b7a25d9")
         card_os = model.by_uuid("7b188ad0-0d82-4b2c-9913-45292e537871")
         cool_fan = model.by_uuid("65e82f3f-c5b7-44c1-bfea-8e20bb0230be")
-        card_os1 = model.by_uuid("09e19313-c824-467f-9fb5-95ed8b4e2d51")
+        card_2_os = model.by_uuid("09e19313-c824-467f-9fb5-95ed8b4e2d51")
         cam_driver = model.by_uuid("74067f56-33bf-47f5-bb8b-f3604097f653")
         app = model.by_uuid("b80a6fcc-8d35-4675-a2e6-60efcbd61e27")
-        app1 = model.by_uuid("f8a4d0a5-1884-4dc5-af19-a46a8cdfe5fc")
+        app2 = model.by_uuid("f8a4d0a5-1884-4dc5-af19-a46a8cdfe5fc")
 
         assert set(vehicle.components) | {sensor_comp, equip_comp} == set(
             vehicle.components
@@ -703,10 +703,8 @@ class TestArchitectureLayers:
             comp_card.components
         )
         assert (
-            card_os1 in comp_card1.components
+            card_2_os in comp_card1.components
             and len(comp_card1.components) == 1
         )
-        assert set(card_os1.components) | {cam_driver, app} == set(
-            card_os1.components
-        )
-        assert app1 in card_os1.components and len(card_os1.components) == 1
+        assert set(card_2_os.components) | {app2} == set(card_2_os.components)
+        assert app2 in card_2_os.components and len(card_2_os.components) == 1

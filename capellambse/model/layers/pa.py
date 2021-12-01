@@ -99,14 +99,22 @@ class PhysicalComponent(cs.Component):
     )
     ports = c.ProxyAccessor(cs.PhysicalPort, aslist=c.ElementList)
 
-    deployed_parts = c.ProxyAccessor(cs.Part, aslist=c.ElementList)
+    @property
+    def deployed_components(
+        self,
+    ) -> c.ElementList[c.GenericElement]:
+        items = [
+            cmp._element for part in self.parts for cmp in part.deployed_parts
+        ]
+        return c.ElementList(
+            self._model, items, c.GenericElement
+        )  # .by_type("PhysicalComponent")
 
-    # components = c.CustomAccessor(
-    #     c.GenericElement,
-    #     operator.attrgetter("self.deployed_parts"),
-    #     matchtransform=_find_deployed_element
-    # )
     owned_components: c.Accessor
+
+    @property
+    def components(self) -> c.ElementList[c.GenericElement]:
+        return self.deployed_components + self.owned_components
 
 
 @c.xtype_handler(XT_ARCH)

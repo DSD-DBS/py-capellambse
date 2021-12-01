@@ -22,6 +22,8 @@ Composite Structure object-relations map (ontology):
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
 
+import operator
+
 from capellambse.loader import xmltools
 
 from .. import common as c
@@ -54,6 +56,8 @@ class Component(c.GenericElement):
 @c.xtype_handler(None)
 class Part(c.GenericElement):
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+    deployed_parts = c.Accessor
+    # deploying_parts = c.Accessor
 
 
 @c.xtype_handler(None)
@@ -107,4 +111,14 @@ c.set_accessor(
     InterfacePkg,
     "packages",
     c.ProxyAccessor(InterfacePkg, aslist=c.ElementList),
+)
+c.set_accessor(
+    Part,
+    "deployed_parts",
+    c.ProxyAccessor(
+        c.GenericElement,
+        ["org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"],
+        aslist=c.MixedElementList,
+        follow="deployedElement",
+    ),
 )

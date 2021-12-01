@@ -5983,6 +5983,30 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="8e8ba4e6-9d3c-4f99-9df3-99a0682b09f1" value="1"/>
               </ownedMembers>
             </ownedAssociations>
+            <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+                id="ca237293-cb88-492b-857b-d453f248cbef" name="cs (Composite Structure)Association4"
+                navigableMembers="#4a6d122b-b385-4d1c-bf69-6251f3dd8378">
+              <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="5a16965d-3537-40cf-a648-e03e265f150b" name="part" abstractType="#25ab3c01-15e9-46e2-8bd5-c68f56d8b3d9"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="73efbc97-c5eb-4521-b3b3-b1fab3201bb4" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="702c704b-f7b7-449e-9c95-ae74a012e46f" value="1"/>
+              </ownedMembers>
+            </ownedAssociations>
+            <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+                id="a463503f-2ac2-4555-a36b-eeb40dd5fdd0" name="cs (Composite Structure)Association5"
+                navigableMembers="#6db073a2-116e-4db2-a8ea-e69676e80751">
+              <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="67c524af-a386-4cfe-b13b-757e017424f3" name="part" abstractType="#25ab3c01-15e9-46e2-8bd5-c68f56d8b3d9"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="8410c850-8107-4bac-90f3-7f1f4d48f07e" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="3e762477-e48e-4f6a-87dd-a5a1500064d1" value="1"/>
+              </ownedMembers>
+            </ownedAssociations>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
                 id="aad34cd9-80eb-456f-8a2a-b1df9be5fbf2" name="Component">
               <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
@@ -6043,6 +6067,22 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="e736ee6f-83f1-4e67-b55e-13b5244ab596" value="1"/>
                 <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="f7e32020-9b19-44d2-893a-9bd3073a3a13" value="1"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="4a6d122b-b385-4d1c-bf69-6251f3dd8378" name="type" abstractType="#85a5c7fd-5547-4b3f-933d-917f32b40e11"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="e7ca458f-5bf4-4753-8749-5f163de9e450" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="f6df5a30-3585-4d84-8154-4648cff8ad5d" value="1"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="6db073a2-116e-4db2-a8ea-e69676e80751" name="deployed_parts"
+                  abstractType="#25ab3c01-15e9-46e2-8bd5-c68f56d8b3d9" aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="ed788053-1347-48ed-9913-be6d4d8bb2c8" name="" value="0"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="fde93e0e-811f-4240-93ac-22cffee5a7a4" name="" value="*"/>
               </ownedFeatures>
             </ownedClasses>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
