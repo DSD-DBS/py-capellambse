@@ -233,7 +233,7 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
 
     diagrams = diagram.DiagramAccessor(
         "Operational Analysis", cacheattr="_MelodyModel__diagram_cache"
-    )
+    )  # type: ignore[assignment]
 
 
 c.set_accessor(

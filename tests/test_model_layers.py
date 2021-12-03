@@ -31,7 +31,7 @@ from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
 from capellambse.model.layers.oa import OperationalCapability
 
-from . import TEST_ROOT
+from . import TEST_MODEL, TEST_ROOT
 
 
 def test_model_info_contains_capella_version(model: MelodyModel):
@@ -39,7 +39,7 @@ def test_model_info_contains_capella_version(model: MelodyModel):
 
 
 def test_loading_version_5_succeeds():
-    MelodyModel(TEST_ROOT / "5_0" / "MelodyModelTest.aird")
+    MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
 
 
 def test_loading_version_one_succeeds():
