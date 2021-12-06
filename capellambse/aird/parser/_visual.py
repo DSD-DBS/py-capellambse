@@ -76,7 +76,7 @@ def shape_factory(ebd: c.ElementBuilder) -> aird.Box:
     assert ebd.target_diagram.styleclass is not None
 
     uid = ebd.data_element.attrib[c.ATT_XMID]
-    label = ebd.data_element.attrib["description"]
+    label = ebd.data_element.get("description", "")
     parent = ebd.data_element.getparent()
     while parent.tag == "children":
         parent_uid = parent.attrib.get("element") or parent.attrib.get(
