@@ -138,7 +138,7 @@ def test_the_scp_short_form_is_recognized_as_git_protocol(monkeypatch, url):
         "xtype MelodyModelTest.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "MelodyModelTest.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "xtype MelodyModel Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
+        # "xtype MelodyModel Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "MelodyModel Test.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "xtype MelodyModel%20Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "MelodyModel%20Test.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
