@@ -59,10 +59,82 @@ class Class(c.GenericElement):
 
 
 @c.xtype_handler(None)
+class Union(c.GenericElement):
+    """A Union."""
+
+    _xmltag = "ownedClasses"
+
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+
+
+@c.xtype_handler(None)
+class Collection(c.GenericElement):
+    """A Collection."""
+
+    _xmltag = "ownedCollections"
+
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+
+
+@c.xtype_handler(
+    None, "org.polarsys.capella.core.data.information.datavalue:ComplexValue"
+)
+class ComplexValue(c.GenericElement):
+    """A Complex Value."""
+
+    _xmltag = "ownedDataValues"
+    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+
+
+@c.xtype_handler(
+    None,
+    "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
+)
+class EnumerationLiteral(c.GenericElement):
+    """An EnuemrationLiteral (proxy link)."""
+
+    _xmltag = "ownedLiterals"
+
+    owner: c.Accessor
+
+
+@c.xtype_handler(
+    None, "org.polarsys.capella.core.data.information.datatype:Enumeration"
+)
+class Enumeration(c.GenericElement):
+    """An Enumeration."""
+
+    _xmltag = "ownedDataTypes"
+    inheritance = c.ProxyAccessor(capellacore.Generalization)
+    literals = c.ProxyAccessor(
+        EnumerationLiteral,
+        "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
+        aslist=c.ElementList,
+    )
+
+
+@c.xtype_handler(None)
 class DataPkg(c.GenericElement):
     """A data package that can hold classes."""
 
     classes = c.ProxyAccessor(Class, aslist=c.ElementList)
+    unions = c.ProxyAccessor(Union, aslist=c.ElementList)
+    collections = c.ProxyAccessor(Collection, aslist=c.ElementList)
+    enumerations = c.ProxyAccessor(
+        Enumeration,
+        "org.polarsys.capella.core.data.information.datatype:Enumeration",
+        aslist=c.ElementList,
+    )
+    datavalues = c.ProxyAccessor(
+        ComplexValue,
+        "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
+        aslist=c.ElementList,
+        follow_abstract=False,
+    )
     packages: c.Accessor
 
 
@@ -103,6 +175,11 @@ class ExchangeItem(c.GenericElement):
 
 c.set_accessor(
     capellacore.Generalization, "super", c.AttrProxyAccessor(Class, "super")
+)
+c.set_accessor(
+    capellacore.Generalization,
+    "super",
+    c.AttrProxyAccessor(Enumeration, "super"),
 )
 c.set_accessor(
     DataPkg, "packages", c.ProxyAccessor(DataPkg, aslist=c.ElementList)
