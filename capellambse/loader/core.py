@@ -660,10 +660,11 @@ class MelodyLoader:
         to_fragment = pathlib.PurePosixPath(
             os.path.relpath(to_fragment, from_fragment.parent)
         )
+        link = urllib.parse.quote(str(to_fragment))
         to_type = helpers.xtype_of(to_element)
         if to_type is not None:
-            return f"{to_type} {to_fragment}#{to_uuid}"
-        return f"{to_fragment}#{to_uuid}"
+            return f"{to_type} {link}#{to_uuid}"
+        return f"{link}#{to_uuid}"
 
     def follow_link(
         self,
@@ -708,6 +709,8 @@ class MelodyLoader:
         if not linkmatch:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
+        if fragment is not None:
+            fragment = urllib.parse.unquote(fragment)
 
         def find_trees(
             from_element: etree._Element | None,

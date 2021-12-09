@@ -166,9 +166,9 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
         abstract_type = feature.attrib.get("abstractType")
         if abstract_type is not None:
-            abstract_type = seb.melodyloader[
-                helpers.fragment_link(seb.melodyfrags[0], abstract_type)
-            ]
+            abstract_type = seb.melodyloader.follow_link(
+                seb.melodyobjs[0], abstract_type
+            )
 
         if feat_type == "Property":
             if feature.attrib.get("aggregationKind") is not None:
@@ -196,11 +196,9 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
                 param_name = param.attrib["name"]
                 param_abstrtype = param.attrib.get("abstractType")
                 if param_abstrtype is not None:
-                    param_abstrtype = seb.melodyloader[
-                        helpers.fragment_link(
-                            seb.melodyfrags[0], param_abstrtype
-                        )
-                    ]
+                    param_abstrtype = seb.melodyloader.follow_link(
+                        seb.melodyobjs[0], param_abstrtype
+                    )
                     param_name += f":{param_abstrtype.attrib['name']}"
                 param_dir = param.attrib.get("direction", "IN")
                 if param_dir == "RETURN":
@@ -288,9 +286,9 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         abstract_obj = seb.melodyobjs[0]
         abstract_type = abstract_obj.attrib.get("abstractType")
         if abstract_type is not None:
-            abstract_obj = seb.melodyloader[
-                helpers.fragment_link(seb.melodyfrags[0], abstract_type)
-            ]
+            abstract_obj = seb.melodyloader.follow_link(
+                seb.melodyobjs[0], abstract_type
+            )
 
         seb.styleclass = abstract_obj.attrib[C.ATT_XST].split(":")[-1]
         assert seb.styleclass is not None
@@ -323,15 +321,12 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         raise C.SkipObject()
 
     try:
-        targethref = next(seb.diag_element.iterchildren("target")).attrib[
-            "href"
-        ]
+        targetlink = next(seb.diag_element.iterchildren("target"))
+        targethref = targetlink.attrib["href"]
     except (StopIteration, KeyError):
         raise C.SkipObject() from None
 
-    seb.melodyobjs[0] = seb.melodyloader[
-        helpers.fragment_link(seb.fragment, targethref)
-    ]
+    seb.melodyobjs[0] = seb.melodyloader.follow_link(targetlink, targethref)
     text = [
         string
         for suffix in ("LongName", "Name", "ChapterName")

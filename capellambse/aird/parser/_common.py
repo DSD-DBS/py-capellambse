@@ -72,7 +72,6 @@ class SemanticElementBuilder(ElementBuilder):
     diag_element: etree._Element
     styleclass: str | None
     melodyobjs: cabc.MutableSequence[etree._Element]
-    melodyfrags: cabc.MutableSequence[pathlib.PurePosixPath]
 
 
 class StackingBox(aird.Box):

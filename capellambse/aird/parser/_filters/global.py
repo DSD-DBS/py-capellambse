@@ -173,19 +173,14 @@ def _get_allocated_exchangeitem_names(
     else:
         return (None, [])
 
-    exchange_items = elm.get(alloc_attr, "").split()
     names = []
-    next_xtype = None
-    for item in exchange_items:
-        if "#" not in item:
-            next_xtype = item
+    for elem in melodyloader.follow_links(elm, elm.get(alloc_attr, "")):
+        if elem is None:
             continue
 
-        elem = melodyloader[f"{next_xtype} {item}" if next_xtype else item]
         name = elem.get("name")
         if name is not None:
             names.append(name)
-        next_xtype = None
     return (elm, names)
 
 

@@ -167,9 +167,7 @@ def get_end_ports(
             try:
                 return seb.target_diagram[port]
             except KeyError:
-                elem = seb.melodyloader[
-                    helpers.fragment_link(seb.fragment, port)
-                ]
+                elem = seb.melodyloader.follow_link(seb.data_element, port)
                 return seb.target_diagram[elem.attrib["element"]]
         except KeyError:
             uid = (
