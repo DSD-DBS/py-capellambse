@@ -225,11 +225,10 @@ class MelodyLoader:
         frag = ModelFile(filename, self.filehandler)
         self.trees[filename] = frag
         for ref in _find_refs(frag.root):
-            self.__load_referenced_files(
-                helpers.normalize_pure_path(
-                    urllib.parse.unquote(ref), base=filename.parent
-                )
+            ref_name = helpers.normalize_pure_path(
+                urllib.parse.unquote(ref), base=filename.parent
             )
+            self.__load_referenced_files(ref_name)
 
     def save(self, **kw: t.Any) -> None:
         """Save all model files back to their original locations.

@@ -135,7 +135,7 @@ def enumerate_diagrams(
             target = model.follow_link(descriptor[1], target_href)
 
             yield DiagramDescriptor(
-                fragment=pathlib.PurePosixPath(descriptor[0]),
+                fragment=descriptor[0],
                 name=name,
                 styleclass=styleclass,
                 uid=uid[1:],
