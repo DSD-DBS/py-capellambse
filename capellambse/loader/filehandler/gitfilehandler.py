@@ -446,11 +446,15 @@ class GitFileHandler(FileHandler):
         self.__init_cache_dir()
 
         self._transaction: _GitTransaction | None = None
-        self.__lfsfiles = frozenset(
-            self._git("lfs", "ls-files", "-n")
-            .decode("utf-8", errors="surrogateescape")
-            .splitlines()
-        )
+        try:
+            self.__lfsfiles = frozenset(
+                self._git("lfs", "ls-files", "-n", silent=True)
+                .decode("utf-8", errors="surrogateescape")
+                .splitlines()
+            )
+        except subprocess.CalledProcessError:
+            LOGGER.debug("LFS not installed, disabling related functionality")
+            self.__lfsfiles = frozenset()
 
     def open(
         self,
