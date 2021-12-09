@@ -119,7 +119,7 @@ class HTTPFileHandler(FileHandler):
 
     def open(
         self,
-        filename: pathlib.PurePosixPath,
+        filename: str | pathlib.PurePosixPath,
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
         if "w" in mode:

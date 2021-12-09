@@ -87,7 +87,7 @@ class FileHandler(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def open(
         self,
-        filename: pathlib.PurePosixPath,
+        filename: str | pathlib.PurePosixPath,
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
         """Open the model file for reading or writing.
