@@ -67,8 +67,6 @@ class Part(c.GenericElement):
     deployed_parts = c.Accessor
     # deploying_parts = c.Accessor
 
-    deployed_parts = c.Accessor
-
 
 @c.xtype_handler(None)
 class Interface(c.GenericElement):
@@ -126,9 +124,10 @@ c.set_accessor(
     Part,
     "deployed_parts",
     c.ProxyAccessor(
-        Component,
+        Part,
         XT_DEPLOY_LINK,
         aslist=c.ElementList,
         follow="deployedElement",
+        follow_abstract=False,
     ),
 )
