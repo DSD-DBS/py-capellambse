@@ -29,6 +29,10 @@ from capellambse.loader import xmltools
 from .. import common as c
 from . import capellacommon, information
 
+XT_DEPLOY_LINK = (
+    "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+)
+
 
 class Component(c.GenericElement):
     """A template class for components."""
@@ -55,9 +59,15 @@ class Component(c.GenericElement):
 
 @c.xtype_handler(None)
 class Part(c.GenericElement):
+    """A representation of a physical component"""
+
+    _xmltag = "ownedParts"
+
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     deployed_parts = c.Accessor
     # deploying_parts = c.Accessor
+
+    deployed_parts = c.Accessor
 
 
 @c.xtype_handler(None)
@@ -116,9 +126,9 @@ c.set_accessor(
     Part,
     "deployed_parts",
     c.ProxyAccessor(
-        c.GenericElement,
-        ["org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"],
-        aslist=c.MixedElementList,
+        Component,
+        XT_DEPLOY_LINK,
+        aslist=c.ElementList,
         follow="deployedElement",
     ),
 )

@@ -673,14 +673,14 @@ class TestArchitectureLayers:
         cam_fw = model.by_uuid("db2d86d7-48ee-478b-a6fc-d6387ab0032e")
         switch_fw = model.by_uuid("c78b5d7c-be0c-4ed4-9d12-d447cb39304e")
         switch_conf = model.by_uuid("23c47b69-7352-481d-be88-498fb351adbe")
-        comp_card = model.by_uuid("63be604e-883e-41ea-9023-fc74f29906fe")
-        comp_card1 = model.by_uuid("3a982128-3281-4d37-8838-a6058b7a25d9")
-        card_os = model.by_uuid("7b188ad0-0d82-4b2c-9913-45292e537871")
+        comp_card1 = model.by_uuid("63be604e-883e-41ea-9023-fc74f29906fe")
+        comp_card2 = model.by_uuid("3a982128-3281-4d37-8838-a6058b7a25d9")
+        card_1_os = model.by_uuid("7b188ad0-0d82-4b2c-9913-45292e537871")
         cool_fan = model.by_uuid("65e82f3f-c5b7-44c1-bfea-8e20bb0230be")
         card_2_os = model.by_uuid("09e19313-c824-467f-9fb5-95ed8b4e2d51")
         cam_driver = model.by_uuid("74067f56-33bf-47f5-bb8b-f3604097f653")
-        app = model.by_uuid("b80a6fcc-8d35-4675-a2e6-60efcbd61e27")
-        app2 = model.by_uuid("f8a4d0a5-1884-4dc5-af19-a46a8cdfe5fc")
+        app1 = model.by_uuid("b80a6fcc-8d35-4675-a2e6-60efcbd61e27")
+        app2 = model.by_uuid("ca5af12c-5259-4844-aaac-9ca9f84aa90b")
 
         assert set(vehicle.components) | {sensor_comp, equip_comp} == set(
             vehicle.components
@@ -696,15 +696,26 @@ class TestArchitectureLayers:
         assert set(net_switch.components) | {switch_fw, switch_conf} == set(
             net_switch.components
         )
-        assert set(server.components) | {comp_card, comp_card1} == set(
+        assert set(server.components) | {comp_card1, comp_card2} == set(
             server.components
         )
-        assert set(comp_card.components) | {card_os, cool_fan} == set(
-            comp_card.components
+        assert set(comp_card1.components) | {card_1_os, cool_fan} == set(
+            comp_card1.components
         )
         assert (
-            card_2_os in comp_card1.components
-            and len(comp_card1.components) == 1
+            card_2_os in comp_card2.components
+            and len(comp_card2.components) == 1
         )
-        assert set(card_2_os.components) | {app2} == set(card_2_os.components)
+        assert set(card_1_os.components) | {cam_driver, app1} == set(
+            card_1_os.components
+        )
         assert app2 in card_2_os.components and len(card_2_os.components) == 1
+
+    def test_PhysicalComponent_deploying_components(
+        self, model: capellambse.MelodyModel
+    ) -> None:
+        comp_card1 = model.by_uuid("63be604e-883e-41ea-9023-fc74f29906fe")
+        card1_os = model.by_uuid("7b188ad0-0d82-4b2c-9913-45292e537871")
+
+        assert card1_os in comp_card1.deployed_components
+        assert comp_card1 in card1_os.deploying_components
