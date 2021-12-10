@@ -22,8 +22,6 @@ Composite Structure object-relations map (ontology):
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
 
-import operator
-
 from capellambse.loader import xmltools
 
 from .. import common as c
