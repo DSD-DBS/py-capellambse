@@ -19,8 +19,10 @@ from __future__ import annotations
 
 import operator
 
+from capellambse.loader import xmltools
+
 from .. import common as c
-from .. import crosslayer, diagram
+from .. import crosslayer, diagram, modeltypes
 from ..crosslayer import capellacommon, cs, fa
 from . import la
 
@@ -73,6 +75,13 @@ class PhysicalComponent(cs.Component):
 
     _xmltag = "ownedPhysicalComponents"
 
+    nature = xmltools.EnumAttributeProperty(
+        "_element", "nature", modeltypes.Nature
+    )
+    kind = xmltools.EnumAttributeProperty(
+        "_element", "kind", modeltypes.Kind, default="UNSET"
+    )
+
     functions = c.ProxyAccessor(
         PhysicalFunction,
         fa.XT_FCALLOC,
@@ -87,7 +96,23 @@ class PhysicalComponent(cs.Component):
     )
     ports = c.ProxyAccessor(cs.PhysicalPort, aslist=c.ElementList)
 
-    components: c.Accessor
+    owned_components: c.Accessor
+    deploying_components: c.Accessor
+
+    @property
+    def deployed_components(
+        self,
+    ) -> c.ElementList[PhysicalComponent]:
+        items = [
+            cmp.type._element
+            for part in self.parts
+            for cmp in part.deployed_parts
+        ]
+        return c.ElementList(self._model, items, PhysicalComponent)
+
+    @property
+    def components(self) -> c.ElementList[PhysicalComponent]:
+        return self.deployed_components + self.owned_components
 
 
 @c.xtype_handler(XT_ARCH)
@@ -167,8 +192,18 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+c.set_accessor(
+    PhysicalComponent,
+    "deploying_components",
+    c.CustomAccessor(
+        PhysicalComponent,
+        operator.attrgetter("_model.pa.all_components"),
+        matchtransform=operator.attrgetter("deployed_components"),
+        aslist=c.ElementList,
+    ),
+)
 c.set_self_references(
-    (PhysicalComponent, "components"),
+    (PhysicalComponent, "owned_components"),
     (PhysicalComponentPkg, "packages"),
     (PhysicalFunction, "functions"),
     (PhysicalFunctionPkg, "packages"),
