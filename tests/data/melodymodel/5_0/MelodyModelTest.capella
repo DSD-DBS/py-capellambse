@@ -37,6 +37,40 @@
     <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
         id="43a3629e-2dfb-4d45-81ea-30395037f7a3" name="REVIEWED_OK"/>
   </ownedEnumerationPropertyTypes>
+  <ownedPropertyValuePkgs xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValuePkg"
+      id="9aaec484-c64c-492e-ae23-220cf19a48eb" name="EXTENSIONS">
+    <ownedPropertyValuePkgs xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValuePkg"
+        id="66fa243f-c746-4606-b902-a4bba127a780" sid="_rJff8FuSEeyiRNlyKPJwqw" name="PA_Ext">
+      <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+          id="69272cbf-9acb-4938-8b40-41967a9cceea" name="version" value="1.0.0"/>
+      <ownedEnumerationPropertyTypes xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyType"
+          id="320b3b3e-2979-4a44-98e6-456382bd17ec" sid="_x87ioFuSEeyiRNlyKPJwqw"
+          name="PartTypeEnum">
+        <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+            id="38faa956-ff5a-4f4b-a8a4-724f7e931a8c" sid="_zniqUFuSEeyiRNlyKPJwqw"
+            name="Compartment">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="135930af-44c0-4fde-a3ce-de0fd8533718" name="__COLOR__" value="255,255,255,0"/>
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="e9584d6e-73ba-4b59-89a0-fc53cce2bedb" name="__LITERAL__"/>
+        </ownedLiterals>
+        <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+            id="a10c55cc-7aa1-4a70-8e4f-723e2ac8b6b1" sid="_3nX88FuSEeyiRNlyKPJwqw"
+            name="Part">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="40e51cd2-de1f-4f82-bc8e-1eaef8f09883" name="__LITERAL__"/>
+        </ownedLiterals>
+      </ownedEnumerationPropertyTypes>
+      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+          id="27656e6f-ba0f-4b0b-aa1c-0255c5b66cca" sid="_AinZoFuTEeyiRNlyKPJwqw"
+          name="PartExt" description="[CLASS]http://www.polarsys.org/capella/core/pa/5.0.0/PhysicalComponent[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
+        <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+            id="b29425ff-a1be-49df-963a-21c36dcdd448" sid="_C18HIFuTEeyiRNlyKPJwqw"
+            name="Type" description="" type="#320b3b3e-2979-4a44-98e6-456382bd17ec"
+            value="#a10c55cc-7aa1-4a70-8e4f-723e2ac8b6b1"/>
+      </ownedPropertyValueGroups>
+    </ownedPropertyValuePkgs>
+  </ownedPropertyValuePkgs>
   <keyValuePairs xsi:type="org.polarsys.capella.core.data.capellacore:KeyValue" id="bf35cfae-d0c2-4438-a972-dbc0ceb180a1"
       key="projectApproach" value="SingletonComponents"/>
   <ownedModelRoots xsi:type="org.polarsys.capella.core.data.capellamodeller:SystemEngineering"
@@ -2331,8 +2365,15 @@ The predator is far away</bodies>
                   sourceElement="#6d9a6777-472f-4045-8f54-700515fb3c70"/>
             </ownedPhysicalLinks>
             <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-                id="3d68852d-fcc0-452c-af12-a2fbe22f81fa" name="Equipment compartment"
-                kind="FACILITIES" nature="NODE">
+                id="3d68852d-fcc0-452c-af12-a2fbe22f81fa" appliedPropertyValueGroups="#800625d5-883f-4e8d-9683-ce7f763d41c1"
+                name="Equipment compartment" kind="FACILITIES" nature="NODE">
+              <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                  id="800625d5-883f-4e8d-9683-ce7f763d41c1" name="PA_Ext.PartExt"
+                  appliedPropertyValueGroups="#27656e6f-ba0f-4b0b-aa1c-0255c5b66cca">
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                    id="0990135b-fe4b-475b-9c0c-e08f454c5739" name="Type" appliedPropertyValues="#b29425ff-a1be-49df-963a-21c36dcdd448"
+                    type="#320b3b3e-2979-4a44-98e6-456382bd17ec" value="#38faa956-ff5a-4f4b-a8a4-724f7e931a8c"/>
+              </ownedPropertyValueGroups>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="5a3502c0-a75e-4b43-9d71-421ad7470d27"
                   name="Server" abstractType="#9137f463-7497-40c2-b20a-897158fdba9a"/>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="ea8cd402-3d9a-469a-a2ce-2bc1252c3a01"
@@ -2442,8 +2483,15 @@ The predator is far away</bodies>
               </ownedPhysicalComponents>
             </ownedPhysicalComponents>
             <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-                id="3f416925-9d8a-4e9c-99f3-e912efb23d2f" name="Sensor compartment"
-                kind="FACILITIES" nature="NODE">
+                id="3f416925-9d8a-4e9c-99f3-e912efb23d2f" appliedPropertyValueGroups="#7b6a24c5-143e-4e39-9e04-920d4bdc3276"
+                name="Sensor compartment" kind="FACILITIES" nature="NODE">
+              <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                  id="7b6a24c5-143e-4e39-9e04-920d4bdc3276" name="PA_Ext.PartExt"
+                  appliedPropertyValueGroups="#27656e6f-ba0f-4b0b-aa1c-0255c5b66cca">
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                    id="9b34d3fb-3cd9-4974-b277-3e71cdf82105" name="Type" appliedPropertyValues="#b29425ff-a1be-49df-963a-21c36dcdd448"
+                    type="#320b3b3e-2979-4a44-98e6-456382bd17ec" value="#38faa956-ff5a-4f4b-a8a4-724f7e931a8c"/>
+              </ownedPropertyValueGroups>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="8ea2373f-a397-4a72-b498-15cbbfc37248"
                   name="Camera Assembly" abstractType="#5bfc516b-c20d-4007-9a38-5ba0e889d0a4">
                 <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
@@ -2451,8 +2499,15 @@ The predator is far away</bodies>
                     location="#8ea2373f-a397-4a72-b498-15cbbfc37248"/>
               </ownedFeatures>
               <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-                  id="5bfc516b-c20d-4007-9a38-5ba0e889d0a4" name="Camera Assembly"
-                  kind="HARDWARE" nature="NODE">
+                  id="5bfc516b-c20d-4007-9a38-5ba0e889d0a4" appliedPropertyValueGroups="#f0dbe26d-4ef4-4ad8-b977-44cbac1ce13e"
+                  name="Camera Assembly" kind="HARDWARE" nature="NODE">
+                <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                    id="f0dbe26d-4ef4-4ad8-b977-44cbac1ce13e" name="PA_Ext.PartExt"
+                    appliedPropertyValueGroups="#27656e6f-ba0f-4b0b-aa1c-0255c5b66cca">
+                  <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                      id="70b27bbf-87c6-4ab3-8cc8-a197c3f241c4" name="Type" appliedPropertyValues="#b29425ff-a1be-49df-963a-21c36dcdd448"
+                      type="#320b3b3e-2979-4a44-98e6-456382bd17ec" value="#a10c55cc-7aa1-4a70-8e4f-723e2ac8b6b1"/>
+                </ownedPropertyValueGroups>
                 <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
                     id="2d1e2ad5-3439-4820-baa8-189966407ba2" name="PP 1">
                   <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
