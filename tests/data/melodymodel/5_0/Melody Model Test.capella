@@ -20,7 +20,7 @@
     xmlns:org.polarsys.capella.core.data.pa="http://www.polarsys.org/capella/core/pa/5.0.0"
     xmlns:org.polarsys.capella.core.data.pa.deployment="http://www.polarsys.org/capella/core/pa/deployment/5.0.0"
     id="af2196ac-49d3-4063-885c-9fa29adc39a8"
-    name="MelodyModelTest">
+    name="Melody Model Test">
   <ownedExtensions xsi:type="libraries:ModelInformation" id="c54c817d-e470-432b-8b1b-3880fd6978b1"/>
   <ownedEnumerationPropertyTypes xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyType"
       id="28b7bfd7-ac5b-45ae-8df4-b37f8508d3e8" name="ProgressStatus">

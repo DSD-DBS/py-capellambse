@@ -22,7 +22,6 @@ import importlib.resources as imr
 import itertools
 import math
 import operator
-import os
 import pathlib
 import re
 import typing as t
@@ -300,38 +299,6 @@ def word_wrap(text: str, width: float | int) -> cabc.Sequence[str]:
 
 
 # XML tree modification and navigation
-def fragment_link(cur_frag: str | os.PathLike, href: str) -> str:
-    """Combine current fragment and ``href`` into an absolute link.
-
-    Parameters
-    ----------
-    cur_frag
-        The source fragment file, relative to the project's root AIRD
-        file.
-    href
-        The target element's ID, or a Capella-style link.
-
-    Returns
-    -------
-    link
-        Full reference link for given fragment.
-    """
-    if isinstance(cur_frag, os.PathLike):
-        cur_frag = cur_frag.__fspath__()
-    assert isinstance(cur_frag, str)
-
-    if href.startswith("#"):
-        return cur_frag + href
-    if "#" in href:
-        href = href.split()[-1]  # Strip the type information, if any
-        cur_frag = os.path.dirname(cur_frag)  # Strip old filename
-        while href.startswith("../"):
-            cur_frag = os.path.dirname(cur_frag)
-            href = href[3:]
-        return os.path.join(cur_frag, href)
-    return f"{cur_frag}#{href}"
-
-
 def repair_html(markup: str) -> str:
     """Try to repair broken HTML markup to prevent parse errors.
 

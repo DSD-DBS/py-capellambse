@@ -23,13 +23,12 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import logging
-import pathlib
 import typing as t
 
 from lxml import etree
 
 import capellambse  # pylint: disable=unused-import  # used in typing
-from capellambse import aird, helpers
+from capellambse import aird
 
 from . import _box_factories
 from . import _common as c
@@ -49,7 +48,7 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
     if uid is None:
         raise c.SkipObject()
 
-    diag_element = ebd.melodyloader[helpers.fragment_link(ebd.fragment, uid)]
+    diag_element = ebd.melodyloader.follow_link(ebd.data_element, uid)
     if diag_element.get(c.ATT_XMT) in NO_RENDER_XMT:
         raise c.SkipObject()
 
@@ -79,18 +78,15 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
 
     sem_elms = list(diag_element.iterchildren("semanticElements"))
     melodyobjs: list[etree._Element] = []
-    melodyfrags: list[pathlib.PurePosixPath] = []
     for sem_elm in sem_elms:
-        sem_href = helpers.fragment_link(ebd.fragment, sem_elm.attrib["href"])
+        sem_href = sem_elm.attrib["href"]
         try:
-            sem_obj = ebd.melodyloader[sem_href]
+            sem_obj = ebd.melodyloader.follow_link(sem_elm, sem_href)
         except KeyError:
             LOGGER.warning(
-                "Referenced semantic element %r does not exist",
-                target.attrib.get("href"),
+                "Referenced semantic element %r does not exist", sem_href
             )
         melodyobjs.append(sem_obj)
-        melodyfrags.append(pathlib.PurePosixPath(sem_href.split("#")[0]))
     assert melodyobjs, "No valid semantic element references could be found"
     if melodyobjs[0] is None:
         raise c.SkipObject()
@@ -104,7 +100,6 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
         styleclass=styleclass,
         diag_element=diag_element,
         melodyobjs=melodyobjs,
-        melodyfrags=melodyfrags,
     )
     return drawtype(seb)
 

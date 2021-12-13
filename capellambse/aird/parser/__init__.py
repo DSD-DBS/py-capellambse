@@ -46,7 +46,7 @@ Other representations (e.g. data tables) will not be listed by
 
 
 class DiagramDescriptor(t.NamedTuple):
-    fragment: pathlib.Path
+    fragment: pathlib.PurePosixPath
     name: str
     styleclass: str | None
     uid: str
@@ -124,18 +124,18 @@ def enumerate_diagrams(
             else:
                 styleclass = urllib.parse.unquote(styleclass_match.group(1))
 
-            target = helpers.fragment_link(
-                descriptor[0],
-                t.cast(
-                    str,
-                    helpers.xpath_fetch_unique(
-                        "./target/@href", descriptor[1], "target href"
-                    ),
-                ),
-            )
+            target_anchors = list(descriptor[1].iterchildren("target"))
+            if not target_anchors:
+                raise RuntimeError("Invalid XML: No <target> anchors found")
+            if len(target_anchors) != 1:
+                raise RuntimeError("Invalid XML: More than 1 <target> anchor")
+            target_href = target_anchors[0].get("href")
+            if not target_href:
+                raise RuntimeError("Invalid XML: <target> has no href")
+            target = model.follow_link(descriptor[1], target_href)
 
             yield DiagramDescriptor(
-                fragment=pathlib.Path(descriptor[0]),
+                fragment=descriptor[0],
                 name=name,
                 styleclass=styleclass,
                 uid=uid[1:],
@@ -176,7 +176,9 @@ def parse_diagram(
     diagram = aird.Diagram(
         descriptor.name, styleclass=descriptor.styleclass, uuid=descriptor.uid
     )
-    dgtree = model[f"{descriptor.fragment}#{descriptor.uid}"]
+    dgtree = model.follow_link(
+        model.trees[descriptor.fragment].root, descriptor.uid
+    )
     treedata = helpers.xpath_fetch_unique(
         C.XP_ANNOTATION_ENTRIES,
         dgtree,
