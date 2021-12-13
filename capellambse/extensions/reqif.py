@@ -523,6 +523,9 @@ class AbstractType(ReqIFElement):
 
         return super().__eq__(other)
 
+    def __hash__(self):
+        return super().__hash__()
+
 
 @c.xtype_handler(None, XT_MODULE_TYPE)
 class ModuleType(AbstractType):
