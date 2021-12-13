@@ -634,6 +634,13 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
     },
     "Physical Architecture Blank": {
+        **dict.fromkeys(
+            ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],
+            {
+                "fill": COLORS["white"],
+                "stroke": COLORS["black"],
+            },
+        ),
         "Box.PP": {
             "fill": COLORS["_CAP_PhysicalPort_Yellow"],
             "stroke": COLORS["_CAP_Class_Border_Brown"],
