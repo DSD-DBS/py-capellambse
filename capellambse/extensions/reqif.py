@@ -464,6 +464,9 @@ class EnumValue(ReqIFElement):
             return self.long_name == other
         return super().__eq__(other)
 
+    def __hash__(self):
+        return super().__hash__()
+
 
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM)
 class EnumDataTypeDefinition(ReqIFElement):
@@ -522,6 +525,9 @@ class AbstractType(ReqIFElement):
             return self.long_name == other
 
         return super().__eq__(other)
+
+    def __hash__(self):
+        return super().__hash__()
 
 
 @c.xtype_handler(None, XT_MODULE_TYPE)

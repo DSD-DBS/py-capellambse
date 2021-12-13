@@ -815,3 +815,26 @@ class TestRequirementsFiltering:
 
         assert len(related_objs[:]) == 4
         assert related_objs is not related_objs[:]
+
+    def test_requirement_is_hashable(self, model: capellambse.MelodyModel):
+        req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+
+        assert isinstance(req, reqif.Requirement)
+        assert isinstance(req, t.Hashable)
+        assert hash(req)
+
+    def test_requirement_type_is_hashable(
+        self, model: capellambse.MelodyModel
+    ):
+        req_type = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+
+        assert isinstance(req_type, reqif.RequirementType)
+        assert isinstance(req_type, t.Hashable)
+        assert hash(req_type)
+
+    def test_enum_value_is_hashable(self, model: capellambse.MelodyModel):
+        enum_value = model.by_uuid("efd6e108-3461-43c6-ad86-24168339ed3c")
+
+        assert isinstance(enum_value, reqif.EnumValue)
+        assert isinstance(enum_value, t.Hashable)
+        assert hash(enum_value)
