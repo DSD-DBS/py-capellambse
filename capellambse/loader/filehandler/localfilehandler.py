@@ -38,7 +38,7 @@ class LocalFileHandler(FileHandler):
 
     def open(
         self,
-        filename: pathlib.PurePosixPath,
+        filename: str | pathlib.PurePosixPath,
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
         assert isinstance(self.path, pathlib.Path)

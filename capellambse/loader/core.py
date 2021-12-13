@@ -53,6 +53,21 @@ ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
 IDTYPES_RESOLVED = frozenset(helpers.resolve_namespace(t) for t in IDTYPES)
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
+CROSS_FRAGMENT_LINK = re.compile(
+    r"""
+    ^
+    (?:
+        (?:
+            (?:(?P<xtype>[^ #]+)\ )?
+            (?P<fragment>[^ #]+)
+        )?
+        \#
+    )?
+    (?P<uuid>[^ #]+)
+    $
+    """,
+    re.VERBOSE,
+)
 
 
 def _verify_extension(filename: pathlib.PurePosixPath) -> None:
@@ -225,11 +240,10 @@ class MelodyLoader:
         frag = ModelFile(filename, self.filehandler)
         self.trees[filename] = frag
         for ref in _find_refs(frag.root):
-            self.__load_referenced_files(
-                helpers.normalize_pure_path(
-                    urllib.parse.unquote(ref), base=filename.parent
-                )
+            ref_name = helpers.normalize_pure_path(
+                urllib.parse.unquote(ref), base=filename.parent
             )
+            self.__load_referenced_files(ref_name)
 
     def save(self, **kw: t.Any) -> None:
         """Save all model files back to their original locations.
@@ -660,10 +674,11 @@ class MelodyLoader:
         to_fragment = pathlib.PurePosixPath(
             os.path.relpath(to_fragment, from_fragment.parent)
         )
+        link = urllib.parse.quote(str(to_fragment))
         to_type = helpers.xtype_of(to_element)
         if to_type is not None:
-            return f"{to_type} {to_fragment}#{to_uuid}"
-        return f"{to_fragment}#{to_uuid}"
+            return f"{to_type} {link}#{to_uuid}"
+        return f"{link}#{to_uuid}"
 
     def follow_link(
         self,
@@ -673,9 +688,12 @@ class MelodyLoader:
         """Follow a single link and return the target element.
 
         The link is considered relative to the ``from_element``, if
-        given.  The format is as follows::
+        given. The accepted formats are as follows::
 
-            [[xtype ]fragment]#UUID
+            xtype fragment#UUID
+            fragment#UUID
+            #UUID
+            UUID
 
         Where:
 
@@ -701,13 +719,12 @@ class MelodyLoader:
         KeyError
             If the target cannot be found
         """
-        linkmatch = re.fullmatch(
-            "(?:(?:(?P<xtype>[^ #]+) )?(?P<fragment>[^ #]+))?#(?P<uuid>[^ #]+)",
-            link,
-        )
+        linkmatch = CROSS_FRAGMENT_LINK.fullmatch(link)
         if not linkmatch:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
+        if fragment is not None:
+            fragment = urllib.parse.unquote(fragment)
 
         def find_trees(
             from_element: etree._Element | None,
@@ -832,8 +849,6 @@ class MelodyLoader:
 
     def __getitem__(self, key: str) -> etree._Element:
         """Search all loaded fragments for the given UUID."""
-        if "#" not in key:
-            key = f"#{key}"
         return self.follow_link(None, key)
 
     @staticmethod

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--Capella_Version_5.1.0-->
+<!--Capella_Version_5.0.0-->
 <org.polarsys.capella.core.data.capellamodeller:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:CapellaRequirements="http://www.polarsys.org/capella/requirements"
     xmlns:Requirements="http://www.polarsys.org/kitalpha/requirements" xmlns:libraries="http://www.polarsys.org/capella/common/libraries/5.0.0"
@@ -20,7 +20,7 @@
     xmlns:org.polarsys.capella.core.data.pa="http://www.polarsys.org/capella/core/pa/5.0.0"
     xmlns:org.polarsys.capella.core.data.pa.deployment="http://www.polarsys.org/capella/core/pa/deployment/5.0.0"
     id="af2196ac-49d3-4063-885c-9fa29adc39a8"
-    name="MelodyModelTest">
+    name="Melody Model Test">
   <ownedExtensions xsi:type="libraries:ModelInformation" id="c54c817d-e470-432b-8b1b-3880fd6978b1"/>
   <ownedEnumerationPropertyTypes xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyType"
       id="28b7bfd7-ac5b-45ae-8df4-b37f8508d3e8" name="ProgressStatus">
@@ -2218,18 +2218,75 @@ The predator is far away</bodies>
             id="5a73c75d-c9b7-4cac-9443-251abbfd3445" name="PL 1" linkEnds="#9286b6bb-afae-4bd3-9767-f9f410516a6f #6a27766f-0dc3-4d6c-99d2-9193f5524100"/>
         <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
             id="b9f9a83c-fb02-44f7-9123-9d86326de5f1" name="Physical System">
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="38191953-d6c6-434b-be58-30b576a62a41" name="C 1" source="#6bb295ca-e11e-468c-9205-27405d24cad9"
+              target="#ed149aca-dba1-4260-a585-c8261f56f26a" kind="FLOW"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="dfc5f13a-1b8f-465e-8dd0-ef4dda0d109f" name="C 2" source="#4cb0d590-a90f-4766-9529-8d216a20b627"
+              target="#5a5fb030-0a87-47f3-8f5d-da9d83493394" kind="FLOW"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="4b5bea95-9bc2-477c-a8b2-c4e54b5066fb" name="C 3" source="#c0645cb3-a9bc-4330-90aa-ab211d5091c4"
+              target="#debe5e5c-c234-4f20-b04f-213f826eac1e" kind="FLOW"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="2681f26a-e492-4e5d-8b33-92fb00a48622" name="C 4" source="#d96c7025-9080-4790-99f4-e1fe68543e8c"
+              target="#4c37367f-9098-4fd4-a60c-4807b03976f2" kind="FLOW"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="90e2a02f-3bd4-4d77-b16a-22a8a5a9c9eb" name="C 5" source="#43b6cfff-89ab-4777-ac72-ce9de12626a8"
+              target="#c014f9ce-eb57-42ed-96f4-42072d4e8827" kind="FLOW"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="3aa006b1-f954-4e8f-a4e9-2e9cd38555de" name="C 6" source="#c848495c-b3db-48ce-bf53-bac08440b6df"
+              target="#7e56e3c5-341d-4144-92e0-8aceb67581cc" kind="FLOW"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="dcc71dee-2eaa-429f-b7ae-1d24e742c88b" name="D 7" source="#d96c7025-9080-4790-99f4-e1fe68543e8c"
+              target="#7e56e3c5-341d-4144-92e0-8aceb67581cc" kind="DELEGATION"/>
+          <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+              id="0c19b624-594b-4049-b6e8-ec77344f3f2e" name="D 8" source="#c0645cb3-a9bc-4330-90aa-ab211d5091c4"
+              target="#c848495c-b3db-48ce-bf53-bac08440b6df" kind="DELEGATION"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="8eacdd59-47ea-4b3f-b238-e453d5d76a8f"
               name="PC 1" abstractType="#8a6d68c8-ac3d-4654-a07e-ada7adeed09f"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="f2c8cc06-a9a5-4c30-a615-a77658e84195"
               name="PC 3" abstractType="#f5d7980d-e1e9-4515-8bb0-be7e80ac5839"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="eed2d34e-bb98-415d-8e34-ea5431d52a7c"
-              name="PC 2" abstractType="#a2c7f619-b38a-4b92-94a5-cbaa631badfc">
+              name="Vehicle" abstractType="#a2c7f619-b38a-4b92-94a5-cbaa631badfc">
             <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
                 id="6be08011-e67a-4598-bf22-4b3574e66b55" deployedElement="#76e9e937-07c3-4462-b5b3-df5c220b8372"
                 location="#eed2d34e-bb98-415d-8e34-ea5431d52a7c"/>
           </ownedFeatures>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="76e9e937-07c3-4462-b5b3-df5c220b8372"
               name="Deploy Sub PC" abstractType="#8a6c6ec9-095d-4d8b-9728-69bc79af5f27"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="5a702408-80b2-40ea-a44a-14f5085141f2"
+              name="Vehicle" abstractType="#b327d900-abd2-4138-a111-9ff0684739d8"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="80f5a248-f50f-4aea-9a59-7959b8c47cf8"
+              name="Card 1 OS" abstractType="#7b188ad0-0d82-4b2c-9913-45292e537871">
+            <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                id="5ef73c14-9ae9-4540-88fa-0decc4694e36" deployedElement="#582f72ce-4473-4fd6-bd0c-0da0983fb582"
+                location="#80f5a248-f50f-4aea-9a59-7959b8c47cf8"/>
+            <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                id="1368ad67-a114-4286-b032-848f9fa970c1" deployedElement="#c1a9d4bb-9471-47b4-9724-703fc7ab060e"
+                location="#80f5a248-f50f-4aea-9a59-7959b8c47cf8"/>
+          </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="892fb065-de0e-4fb7-a7b1-4dad6ecd4ded"
+              name="Switch Firmware" abstractType="#c78b5d7c-be0c-4ed4-9d12-d447cb39304e"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="7fb03c87-29e1-4c9b-aad1-90fa4704defb"
+              name="Switch Configuration" abstractType="#23c47b69-7352-481d-be88-498fb351adbe"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="b61a8bb7-0297-4153-9b45-87f88a54efcc"
+              name="Camera Firmware" abstractType="#db2d86d7-48ee-478b-a6fc-d6387ab0032e"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="582f72ce-4473-4fd6-bd0c-0da0983fb582"
+              name="Camera Driver SWC" abstractType="#74067f56-33bf-47f5-bb8b-f3604097f653"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="c1a9d4bb-9471-47b4-9724-703fc7ab060e"
+              name="App 1 SWC" abstractType="#b80a6fcc-8d35-4675-a2e6-60efcbd61e27"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="5fdd33eb-2dbf-4b82-895c-5ae8442b63cf"
+              name="Card 2 OS" abstractType="#09e19313-c824-467f-9fb5-95ed8b4e2d51">
+            <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                id="98ac7481-0efe-4fa6-9239-da3b9109f9b9" deployedElement="#f8a4d0a5-1884-4dc5-af19-a46a8cdfe5fc"
+                location="#5fdd33eb-2dbf-4b82-895c-5ae8442b63cf"/>
+          </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="f8a4d0a5-1884-4dc5-af19-a46a8cdfe5fc"
+              name="App 2 SWC" abstractType="#ca5af12c-5259-4844-aaac-9ca9f84aa90b"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="6b9749d7-c10b-4f63-abe3-0a3c8bbf5c96"
+              name="APP SWA" abstractType="#e2acdad7-ef1d-4cbd-93ae-2dcfcbced6e5"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="a5999eca-f36c-45e0-8c07-d12064eca892"
+              name="Standard Process" abstractType="#9e7ab9da-a7e2-4d19-8629-22d2a7edf42f"/>
           <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
               id="7aaa4d4d-741f-4b58-a782-2dce998ccf0e" targetElement="#0d2edb8f-fa34-4e73-89ec-fb9a63001440"
               sourceElement="#b9f9a83c-fb02-44f7-9123-9d86326de5f1"/>
@@ -2241,21 +2298,243 @@ The predator is far away</bodies>
                 id="c5bef903-4582-4f47-8356-222d225027aa" name="PP 1"/>
           </ownedPhysicalComponents>
           <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-              id="f5d7980d-e1e9-4515-8bb0-be7e80ac5839" name="PC 3" nature="NODE">
+              id="f5d7980d-e1e9-4515-8bb0-be7e80ac5839" name="PC 3" kind="MATERIALS"
+              nature="NODE">
             <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
                 id="32ed1f71-2d83-437e-ae21-0262336bfdfb" name="PP 1"/>
             <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
                 id="6a27766f-0dc3-4d6c-99d2-9193f5524100" name="PP 2"/>
           </ownedPhysicalComponents>
           <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-              id="a2c7f619-b38a-4b92-94a5-cbaa631badfc" name="PC 2" nature="NODE">
+              id="a2c7f619-b38a-4b92-94a5-cbaa631badfc" name="Vehicle" kind="HARDWARE"
+              nature="NODE">
             <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="b3ce3115-da3d-4ef7-abb5-bafcf3193c99"
                 name="Sub PC" abstractType="#793e6da2-d019-4716-a5c5-af8ad550ca5e"/>
             <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-                id="793e6da2-d019-4716-a5c5-af8ad550ca5e" name="Sub PC" nature="NODE"/>
+                id="793e6da2-d019-4716-a5c5-af8ad550ca5e" name="Sub PC" kind="FIRMWARE"
+                nature="NODE"/>
           </ownedPhysicalComponents>
           <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-              id="8a6c6ec9-095d-4d8b-9728-69bc79af5f27" name="Deploy Sub PC" nature="NODE"/>
+              id="8a6c6ec9-095d-4d8b-9728-69bc79af5f27" name="Deploy Sub PC" kind="PERSON"
+              nature="NODE"/>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="b327d900-abd2-4138-a111-9ff0684739d8" name="Vehicle" kind="SOFTWARE_DEPLOYMENT_UNIT"
+              nature="NODE">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="e0c9253f-443a-46f6-84c6-784c15da8c4e"
+                name="Equipment compartment" abstractType="#3d68852d-fcc0-452c-af12-a2fbe22f81fa"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="6ca005db-b1f4-4447-89fd-92d5cbb0f08d"
+                name="Sensor compartment" abstractType="#3f416925-9d8a-4e9c-99f3-e912efb23d2f"/>
+            <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+                id="6d9a6777-472f-4045-8f54-700515fb3c70" name="PL 1" linkEnds="#2d1e2ad5-3439-4820-baa8-189966407ba2 #53c9fe29-18e2-4642-906e-b7507bf0ff39">
+              <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+                  id="352f150b-2d05-469d-956e-50173a1f3354" targetElement="#90e2a02f-3bd4-4d77-b16a-22a8a5a9c9eb"
+                  sourceElement="#6d9a6777-472f-4045-8f54-700515fb3c70"/>
+            </ownedPhysicalLinks>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="3d68852d-fcc0-452c-af12-a2fbe22f81fa" name="Equipment compartment"
+                kind="FACILITIES" nature="NODE">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="5a3502c0-a75e-4b43-9d71-421ad7470d27"
+                  name="Server" abstractType="#9137f463-7497-40c2-b20a-897158fdba9a"/>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="ea8cd402-3d9a-469a-a2ce-2bc1252c3a01"
+                  name="Network Switch" abstractType="#b51ccc6f-5f96-4e28-b90e-72463a3b50cf">
+                <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                    id="3bd34310-6648-42dc-a7c4-2eb84b40064d" deployedElement="#892fb065-de0e-4fb7-a7b1-4dad6ecd4ded"
+                    location="#ea8cd402-3d9a-469a-a2ce-2bc1252c3a01"/>
+                <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                    id="71c5f1e0-badb-4d9a-8172-706883fe0b97" deployedElement="#7fb03c87-29e1-4c9b-aad1-90fa4704defb"
+                    location="#ea8cd402-3d9a-469a-a2ce-2bc1252c3a01"/>
+              </ownedFeatures>
+              <ownedPhysicalPath xsi:type="org.polarsys.capella.core.data.cs:PhysicalPath"
+                  id="42c5ffb3-29b3-4580-a061-8f76833a3d37" name="card1 - card2 connection">
+                <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+                    id="aad63011-4a61-429f-ae42-04b3734117df" targetElement="#3aa006b1-f954-4e8f-a4e9-2e9cd38555de"
+                    sourceElement="#42c5ffb3-29b3-4580-a061-8f76833a3d37"/>
+                <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                    id="f12ac9fc-87eb-4261-87d8-634936c72d0a" involved="#544549d6-2aa4-44c2-b2ae-a86302f48e62"
+                    nextInvolvements="#3fced5b5-982f-412d-8710-3b771ea4e1df"/>
+                <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                    id="3fced5b5-982f-412d-8710-3b771ea4e1df" involved="#42ee9e89-d445-45a2-8280-028d4fb1038d"
+                    nextInvolvements="#39149c76-c0f2-49ce-8707-1bdf2385f03b"/>
+                <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                    id="39149c76-c0f2-49ce-8707-1bdf2385f03b" involved="#ea8cd402-3d9a-469a-a2ce-2bc1252c3a01"
+                    nextInvolvements="#9d1d00b9-bcfe-4a59-8d35-782ac53a528c"/>
+                <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                    id="9d1d00b9-bcfe-4a59-8d35-782ac53a528c" involved="#3078ec08-956a-4c61-87ed-0143d1d66715"
+                    nextInvolvements="#7d088692-681e-4bd5-a404-6f958e6a357e"/>
+                <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                    id="7d088692-681e-4bd5-a404-6f958e6a357e" involved="#baa3047c-9cb4-40a7-9b67-b9b5f76fd2ee"/>
+              </ownedPhysicalPath>
+              <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+                  id="42ee9e89-d445-45a2-8280-028d4fb1038d" name="Eth Cable 2" linkEnds="#f1c0db71-1927-4874-bf3e-0603a88f1d9b #22859552-3710-4e58-9aa6-caebd044c921">
+                <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+                    id="73556227-14bb-4189-abb3-f3e46d2ef200" targetElement="#4b5bea95-9bc2-477c-a8b2-c4e54b5066fb"
+                    sourceElement="#42ee9e89-d445-45a2-8280-028d4fb1038d"/>
+              </ownedPhysicalLinks>
+              <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+                  id="3078ec08-956a-4c61-87ed-0143d1d66715" name="Eth Cable 3" linkEnds="#5308754a-375f-4ab6-8d8f-86b30ea47288 #76d9c301-c0ad-4615-9f02-b804b018decf">
+                <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+                    id="517c5e31-039f-4bf7-bcce-34d5f4adb482" targetElement="#2681f26a-e492-4e5d-8b33-92fb00a48622"
+                    sourceElement="#3078ec08-956a-4c61-87ed-0143d1d66715"/>
+              </ownedPhysicalLinks>
+              <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                  id="9137f463-7497-40c2-b20a-897158fdba9a" name="Server" kind="HARDWARE"
+                  nature="NODE">
+                <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="544549d6-2aa4-44c2-b2ae-a86302f48e62"
+                    name="Compute Card 1" abstractType="#63be604e-883e-41ea-9023-fc74f29906fe">
+                  <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                      id="eff74885-5660-4040-b0f6-4e0cb21e9adf" deployedElement="#80f5a248-f50f-4aea-9a59-7959b8c47cf8"
+                      location="#544549d6-2aa4-44c2-b2ae-a86302f48e62"/>
+                </ownedFeatures>
+                <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="baa3047c-9cb4-40a7-9b67-b9b5f76fd2ee"
+                    name="Compute Card 2" abstractType="#3a982128-3281-4d37-8838-a6058b7a25d9">
+                  <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                      id="160ae95d-6b10-4ca3-b91a-38b6e88b39b7" deployedElement="#5fdd33eb-2dbf-4b82-895c-5ae8442b63cf"
+                      location="#baa3047c-9cb4-40a7-9b67-b9b5f76fd2ee"/>
+                </ownedFeatures>
+                <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                    id="63be604e-883e-41ea-9023-fc74f29906fe" name="Compute Card 1"
+                    kind="HARDWARE" nature="NODE">
+                  <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                      id="22859552-3710-4e58-9aa6-caebd044c921" name="X2">
+                    <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                        id="3faf316b-f393-4487-8f15-0f331210df6f" targetElement="#c0645cb3-a9bc-4330-90aa-ab211d5091c4"
+                        sourceElement="#22859552-3710-4e58-9aa6-caebd044c921"/>
+                  </ownedFeatures>
+                  <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part"
+                      id="d3869c08-11f6-4e98-9322-da4209bed2ef" name="Cooling Fan"
+                      abstractType="#65e82f3f-c5b7-44c1-bfea-8e20bb0230be"/>
+                  <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                      id="65e82f3f-c5b7-44c1-bfea-8e20bb0230be" name="Cooling Fan"
+                      kind="HARDWARE" nature="NODE"/>
+                </ownedPhysicalComponents>
+                <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                    id="3a982128-3281-4d37-8838-a6058b7a25d9" name="Compute Card 2"
+                    kind="HARDWARE" nature="NODE">
+                  <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                      id="5308754a-375f-4ab6-8d8f-86b30ea47288" name="X2">
+                    <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                        id="689ad6cf-4ecf-46e9-bdb1-33d084b41112" targetElement="#d96c7025-9080-4790-99f4-e1fe68543e8c"
+                        sourceElement="#5308754a-375f-4ab6-8d8f-86b30ea47288"/>
+                  </ownedFeatures>
+                </ownedPhysicalComponents>
+              </ownedPhysicalComponents>
+              <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                  id="b51ccc6f-5f96-4e28-b90e-72463a3b50cf" name="Network Switch"
+                  kind="HARDWARE" nature="NODE">
+                <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                    id="53c9fe29-18e2-4642-906e-b7507bf0ff39" name="P1">
+                  <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                      id="56ec9c8a-00ba-4dc2-9183-5c440b6f8198" targetElement="#c014f9ce-eb57-42ed-96f4-42072d4e8827"
+                      sourceElement="#53c9fe29-18e2-4642-906e-b7507bf0ff39"/>
+                </ownedFeatures>
+                <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                    id="f1c0db71-1927-4874-bf3e-0603a88f1d9b" name="P3">
+                  <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                      id="e6ffdec4-a443-46b5-b190-e6e006ae28b7" targetElement="#debe5e5c-c234-4f20-b04f-213f826eac1e"
+                      sourceElement="#f1c0db71-1927-4874-bf3e-0603a88f1d9b"/>
+                </ownedFeatures>
+                <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                    id="76d9c301-c0ad-4615-9f02-b804b018decf" name="P2">
+                  <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                      id="fea4735b-7774-466a-819a-169d7df71692" targetElement="#4c37367f-9098-4fd4-a60c-4807b03976f2"
+                      sourceElement="#76d9c301-c0ad-4615-9f02-b804b018decf"/>
+                </ownedFeatures>
+              </ownedPhysicalComponents>
+            </ownedPhysicalComponents>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="3f416925-9d8a-4e9c-99f3-e912efb23d2f" name="Sensor compartment"
+                kind="FACILITIES" nature="NODE">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="8ea2373f-a397-4a72-b498-15cbbfc37248"
+                  name="Camera Assembly" abstractType="#5bfc516b-c20d-4007-9a38-5ba0e889d0a4">
+                <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                    id="77517e60-af9a-4d50-8cc4-ebc0cfb9838b" deployedElement="#b61a8bb7-0297-4153-9b45-87f88a54efcc"
+                    location="#8ea2373f-a397-4a72-b498-15cbbfc37248"/>
+              </ownedFeatures>
+              <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                  id="5bfc516b-c20d-4007-9a38-5ba0e889d0a4" name="Camera Assembly"
+                  kind="HARDWARE" nature="NODE">
+                <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                    id="2d1e2ad5-3439-4820-baa8-189966407ba2" name="PP 1">
+                  <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                      id="efe9f882-148c-4c9d-8a73-a0e6e401ae73" targetElement="#43b6cfff-89ab-4777-ac72-ce9de12626a8"
+                      sourceElement="#2d1e2ad5-3439-4820-baa8-189966407ba2"/>
+                </ownedFeatures>
+              </ownedPhysicalComponents>
+            </ownedPhysicalComponents>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="7b188ad0-0d82-4b2c-9913-45292e537871" name="Card 1 OS" kind="SERVICES"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="c0645cb3-a9bc-4330-90aa-ab211d5091c4" name="CP 1" orientation="INOUT"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="c78b5d7c-be0c-4ed4-9d12-d447cb39304e" name="Switch Firmware" kind="HARDWARE_COMPUTER"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="debe5e5c-c234-4f20-b04f-213f826eac1e" name="CP 1" orientation="INOUT"
+                kind="FLOW"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="4c37367f-9098-4fd4-a60c-4807b03976f2" name="CP 2" orientation="INOUT"
+                kind="FLOW"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="c014f9ce-eb57-42ed-96f4-42072d4e8827" name="CP 3" orientation="INOUT"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="23c47b69-7352-481d-be88-498fb351adbe" name="Switch Configuration"
+              kind="DATA" nature="BEHAVIOR"/>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="db2d86d7-48ee-478b-a6fc-d6387ab0032e" name="Camera Firmware" kind="SOFTWARE_EXECUTION_UNIT"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="6bb295ca-e11e-468c-9205-27405d24cad9" name="CP 1" orientation="OUT"
+                kind="FLOW"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="43b6cfff-89ab-4777-ac72-ce9de12626a8" name="CP 2" orientation="INOUT"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="74067f56-33bf-47f5-bb8b-f3604097f653" name="Camera Driver SWC" kind="SOFTWARE"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="ed149aca-dba1-4260-a585-c8261f56f26a" name="CP 1" orientation="IN"
+                kind="FLOW"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="4cb0d590-a90f-4766-9529-8d216a20b627" name="CP 2" orientation="OUT"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="b80a6fcc-8d35-4675-a2e6-60efcbd61e27" name="App 1 SWC" kind="SOFTWARE"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="5a5fb030-0a87-47f3-8f5d-da9d83493394" name="CP 1" orientation="IN"
+                kind="FLOW"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="c848495c-b3db-48ce-bf53-bac08440b6df" name="CP 2" orientation="OUT"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="09e19313-c824-467f-9fb5-95ed8b4e2d51" name="Card 2 OS" kind="SOFTWARE"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="d96c7025-9080-4790-99f4-e1fe68543e8c" name="CP 1" orientation="INOUT"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="ca5af12c-5259-4844-aaac-9ca9f84aa90b" name="App 2 SWC" kind="SOFTWARE"
+              nature="BEHAVIOR">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="7e56e3c5-341d-4144-92e0-8aceb67581cc" name="CP 1" orientation="IN"
+                kind="FLOW"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="e2acdad7-ef1d-4cbd-93ae-2dcfcbced6e5" name="APP SWA" kind="SOFTWARE_APPLICATION"
+              nature="BEHAVIOR"/>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="9e7ab9da-a7e2-4d19-8629-22d2a7edf42f" name="Standard Process" kind="PROCESSES"
+              nature="BEHAVIOR"/>
         </ownedPhysicalComponents>
         <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
             id="a0847e9c-8b82-407d-8143-e908e2db97a1" name="PA 1" actor="true" human="true"

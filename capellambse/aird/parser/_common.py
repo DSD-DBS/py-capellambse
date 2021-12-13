@@ -64,7 +64,7 @@ class ElementBuilder:
     diagram_tree: etree._Element
     data_element: etree._Element
     melodyloader: capellambse.loader.MelodyLoader
-    fragment: pathlib.PurePath
+    fragment: pathlib.PurePosixPath
 
 
 @dataclasses.dataclass
@@ -72,7 +72,6 @@ class SemanticElementBuilder(ElementBuilder):
     diag_element: etree._Element
     styleclass: str | None
     melodyobjs: cabc.MutableSequence[etree._Element]
-    melodyfrags: cabc.MutableSequence[pathlib.PurePosixPath]
 
 
 class StackingBox(aird.Box):

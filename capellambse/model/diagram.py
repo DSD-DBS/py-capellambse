@@ -244,9 +244,8 @@ class Diagram(AbstractDiagram):
     xtype = "viewpoint:DRepresentationDescriptor"
     name: str = property(operator.attrgetter("_element.name"))  # type: ignore[assignment]
     viewpoint: str = property(operator.attrgetter("_element.viewpoint"))  # type: ignore[assignment]
-    target: c.GenericElement = property(lambda self: self._model.by_uuid(self.target_uuid))  # type: ignore[assignment]
-    target_uuid: str = property(lambda self: self._element.target.split("#")[-1])  # type: ignore[assignment]
-    """Provides slightly better performance than ``target.uuid``."""
+    target_uuid: str = property(lambda self: self.target.uuid)  # type: ignore[assignment]
+    """Obsolete."""
 
     _element: aird.DiagramDescriptor
 
@@ -277,6 +276,10 @@ class Diagram(AbstractDiagram):
         """Return the diagram description."""
         desc = self._model._loader[self.uuid].get("documentation")
         return desc and c.markuptype(desc)
+
+    @property
+    def target(self) -> c.GenericElement:  # type: ignore[override]
+        return c.GenericElement.from_model(self._model, self._element.target)
 
     @property
     def type(self) -> modeltypes.DiagramType:

@@ -23,12 +23,14 @@ import capellambse
 
 from . import TEST_MODEL, TEST_ROOT
 
+TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
+
 
 @pytest.mark.parametrize(
     "path",
     [
-        pytest.param(str(TEST_ROOT / "5_0" / TEST_MODEL), id="From string"),
-        pytest.param(TEST_ROOT / "5_0" / TEST_MODEL, id="From path"),
+        pytest.param(str(TEST_MODEL_5_0), id="From string"),
+        pytest.param(TEST_MODEL_5_0, id="From path"),
     ],
 )
 def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
@@ -38,7 +40,7 @@ def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
 def test_model_loading_via_GitFileHandler():
     path = "git+" + pathlib.Path.cwd().as_uri()
     capellambse.MelodyModel(
-        path, entrypoint="tests/data/melodymodel/5_0/MelodyModelTest.aird"
+        path, entrypoint="tests/data/melodymodel/5_0/Melody Model Test.aird"
     )
 
 
@@ -119,24 +121,17 @@ def test_the_scp_short_form_is_recognized_as_git_protocol(monkeypatch, url):
 
 
 @pytest.mark.parametrize(
-    "version,aird", [("5_0", TEST_MODEL), ("5_1", "MelodyModel Test.aird")]
-)
-@pytest.mark.parametrize(
     "link",
     [
         "xtype MelodyModelTest.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "MelodyModelTest.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        # "xtype MelodyModel Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "MelodyModel Test.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "xtype MelodyModel%20Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
         "MelodyModel%20Test.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
     ],
 )
-def test_MelodyLoader_follow_link_finds_target(
-    version: str, aird: str, link: str
-):
-    loader = capellambse.loader.MelodyLoader(TEST_ROOT / version / aird)
+def test_MelodyLoader_follow_link_finds_target(link: str):
+    loader = capellambse.loader.MelodyLoader(TEST_MODEL_5_0)
 
     with pytest.raises(KeyError):
-        assert loader.follow_link(None, link)
+        assert loader.follow_link(None, link) is not None
