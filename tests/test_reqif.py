@@ -831,3 +831,10 @@ class TestRequirementsFiltering:
         assert isinstance(req_type, reqif.RequirementType)
         assert isinstance(req_type, t.Hashable)
         assert hash(req_type)
+
+    def test_enum_value_is_hashable(self, model: capellambse.MelodyModel):
+        enum_value = model.by_uuid("efd6e108-3461-43c6-ad86-24168339ed3c")
+
+        assert isinstance(enum_value, reqif.EnumValue)
+        assert isinstance(enum_value, t.Hashable)
+        assert hash(enum_value)
