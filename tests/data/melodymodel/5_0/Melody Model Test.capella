@@ -1325,6 +1325,15 @@ The predator is far away</bodies>
             <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="4d60138c-86ff-4e49-8534-86444fb42235" value="*"/>
           </ownedCollections>
+          <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+              id="7b5733ce-d251-4c97-a1e3-c7c727462900" name="Enumeration 1">
+            <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+                id="faea0e32-1fa9-4385-b0a6-cb50096ad40d" name="EnumerationLiteral 1"
+                abstractType="#7b5733ce-d251-4c97-a1e3-c7c727462900"/>
+            <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+                id="c4e95de3-371f-4d3a-b1c8-5e056cda7150" name="EnumerationLiteral 2"
+                abstractType="#7b5733ce-d251-4c97-a1e3-c7c727462900"/>
+          </ownedDataTypes>
         </ownedDataPkgs>
       </ownedDataPkg>
       <ownedSystemComponentPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"
@@ -1846,7 +1855,84 @@ The predator is far away</bodies>
       <ownedInterfacePkg xsi:type="org.polarsys.capella.core.data.cs:InterfacePkg"
           id="cb544a1b-7d2a-441d-a104-255b4bdd0704" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
-          id="39e99d4a-a32c-4b70-b4b6-d03fec612e17" name="Data"/>
+          id="39e99d4a-a32c-4b70-b4b6-d03fec612e17" name="Data">
+        <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
+            id="880af86d-6fac-4fba-a559-2fffd036fa9a" name="Wand Objects">
+          <ownedDataValues xsi:type="org.polarsys.capella.core.data.information.datavalue:ComplexValue"
+              id="3a467d68-f53c-4d66-9d32-fe032a8cb2c5" name="Harry's Wand" abstractType="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040">
+            <ownedParts xsi:type="org.polarsys.capella.core.data.information.datavalue:ValuePart"
+                id="c996225b-5b1f-4d53-83cb-2bc72597e8ad" referencedProperty="#9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51">
+              <ownedValue xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralStringValue"
+                  id="f7b00d88-cf53-4ae0-a0e6-bb2049b4bdea" name="LiteralStringValue"
+                  abstractType="#b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81" value="Harry Potter"/>
+            </ownedParts>
+            <ownedParts xsi:type="org.polarsys.capella.core.data.information.datavalue:ValuePart"
+                id="66da894f-6261-47ac-9ad7-217db04671d2" referencedProperty="#32f70910-a1fd-4ec9-8d22-4c585ceaf7b9">
+              <ownedValue xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationReference"
+                  id="3406b669-4572-44e9-b703-1e319c350e9b" name="EnumerationReference"
+                  abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419" referencedValue="#492fd9ca-88cb-4e9d-b92e-df14a1c1543b"/>
+            </ownedParts>
+            <ownedParts xsi:type="org.polarsys.capella.core.data.information.datavalue:ValuePart"
+                id="a10de770-c6de-43fc-8d9f-868efe5cd29f" referencedProperty="#df884a71-e774-49e1-8aee-0a675179c647">
+              <ownedValue xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationReference"
+                  id="9645687f-9485-45f0-a10b-01f8b9d24914" name="EnumerationReference"
+                  abstractType="#60314ce6-bc96-4b57-8965-7187241148ae" referencedValue="#bfd550cb-7038-48db-9d7b-57cd0ca29d03"/>
+            </ownedParts>
+          </ownedDataValues>
+        </ownedDataPkgs>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="c710f1c2-ede6-444e-9e2b-0ff30d7fd040" name="Wand">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51" name="owner" abstractType="#b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="95d6a6e5-6442-408d-afb2-d8f7a24c5f56" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="43e39098-ace4-47c4-8f1c-1df1986063e2" value="1"/>
+          </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="32f70910-a1fd-4ec9-8d22-4c585ceaf7b9" name="core" abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="08aa4465-58e5-4c6a-9fe8-02bfb406bcab" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="b123b4d7-576d-45a8-b1d3-598187cccfd8" value="1"/>
+          </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="df884a71-e774-49e1-8aee-0a675179c647" name="wood" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="9c9ba595-8d91-46dd-9d45-7bb00baa380b" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="f25067de-2b40-4cae-a2c2-5f38e266d4d8" value="1"/>
+          </ownedFeatures>
+        </ownedClasses>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="1adf8097-18f9-474e-b136-6c845fc6d9e9" name="Class 2"/>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+            id="546cd75a-c7ac-4e07-9d2d-8a1f93d82419" name="Wand Core">
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="79263437-b45d-410d-a264-8aa28d7574d1" name="Unicorn Hair" abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="6bb9876c-f3a7-4d59-a6d1-819372368fa0" name="Dragon Heartstring"
+              abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="492fd9ca-88cb-4e9d-b92e-df14a1c1543b" name="Pheonix Feather" abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="1e73d13b-1c26-4537-834d-e467f993befe" name="Thestral Tail-Hair"
+              abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419"/>
+        </ownedDataTypes>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+            id="60314ce6-bc96-4b57-8965-7187241148ae" name="Wand Wood">
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="bd8d43d9-2473-4522-9b8a-06949a05c2d4" name="Apple" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="df8db2f4-ca88-479c-8bdd-bd1f91279a89" name="Cedar" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="efcdd373-de1f-4303-8259-b20b70a84a56" name="Ebony" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="3dbefd03-bdd8-405d-b048-509bf144414e" name="Elder" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="bfd550cb-7038-48db-9d7b-57cd0ca29d03" name="Holly" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae"/>
+        </ownedDataTypes>
+      </ownedDataPkg>
       <ownedLogicalComponentPkg xsi:type="org.polarsys.capella.core.data.la:LogicalComponentPkg"
           id="84c0978d-9a32-4f5b-8013-5b0b6adbfd73" name="Structure">
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="101ffa60-f8a2-4ea2-a0d8-d10910ceac06"
