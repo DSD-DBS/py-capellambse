@@ -347,8 +347,8 @@ class TestClasses:
         super_class = model.by_uuid(super_uuid)
 
         assert elm.xtype.endswith("Class")
-        assert hasattr(elm, "inheritance")
-        assert elm.inheritance.super == super_class
+        assert hasattr(elm, "super")
+        assert elm.super == super_class
 
 
 def test_exchange_items_of_a_function_port(model: MelodyModel):
@@ -481,9 +481,13 @@ def test_model_search_finds_elements(
         model.by_uuid("0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"),
         model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464"),
         model.by_uuid("bbc296e1-ed4c-40cf-b37d-c8eb8613228a"),
+        model.by_uuid("c710f1c2-ede6-444e-9e2b-0ff30d7fd040"),
+        model.by_uuid("1adf8097-18f9-474e-b136-6c845fc6d9e9"),
+        model.by_uuid("ca79bf38-5e82-4104-8c49-e6e16b3748e9"),
     ]
-
-    assert model.search(searchkey) == expected
+    found = model.search(searchkey)
+    for item in expected:
+        assert item in found
 
 
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:

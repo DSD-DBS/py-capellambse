@@ -17,7 +17,7 @@ from capellambse.loader import xmltools
 
 from .. import common as c
 from .. import modeltypes
-from . import capellacommon, capellacore
+from . import capellacommon
 
 
 def _allocated_exchange_items(
@@ -52,7 +52,8 @@ class Class(c.GenericElement):
 
     _xmltag = "ownedClasses"
 
-    inheritance = c.ProxyAccessor(capellacore.Generalization)
+    sub = c.Accessor
+    super = c.Accessor
     state_machines = c.ProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
@@ -109,12 +110,24 @@ class Enumeration(c.GenericElement):
     """An Enumeration."""
 
     _xmltag = "ownedDataTypes"
-    inheritance = c.ProxyAccessor(capellacore.Generalization)
-    literals = c.ProxyAccessor(
+
+    sub = c.Accessor
+    super: Enumeration = c.Accessor  # type: ignore
+    own_literals = c.ProxyAccessor(
         EnumerationLiteral,
         "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
         aslist=c.ElementList,
+        follow_abstract=False,
     )
+
+    @property
+    def literals(self) -> c.ElementList[EnumerationLiteral]:
+        """returns own + inherited literals"""
+        return (
+            self.own_literals + self.super.literals
+            if isinstance(self.super, Enumeration)
+            else self.own_literals
+        )
 
 
 @c.xtype_handler(None)
@@ -174,13 +187,36 @@ class ExchangeItem(c.GenericElement):
 
 
 c.set_accessor(
-    capellacore.Generalization, "super", c.AttrProxyAccessor(Class, "super")
+    Class,
+    "super",
+    c.ProxyAccessor(
+        Class,
+        "org.polarsys.capella.core.data.capellacore:Generalization",
+        follow="super",
+        follow_abstract=False,
+    ),
 )
 c.set_accessor(
-    capellacore.Generalization,
-    "super",
-    c.AttrProxyAccessor(Enumeration, "super"),
+    Class,
+    "sub",
+    c.ReferenceSearchingAccessor(Class, "super", aslist=c.ElementList),
 )
+c.set_accessor(
+    Enumeration,
+    "super",
+    c.ProxyAccessor(
+        Enumeration,
+        "org.polarsys.capella.core.data.capellacore:Generalization",
+        follow="super",
+        follow_abstract=False,
+    ),
+)
+c.set_accessor(
+    Enumeration,
+    "sub",
+    c.ReferenceSearchingAccessor(Enumeration, "super", aslist=c.ElementList),
+)
+c.set_accessor(EnumerationLiteral, "owner", c.ParentAccessor(Enumeration))
 c.set_accessor(
     DataPkg, "packages", c.ProxyAccessor(DataPkg, aslist=c.ElementList)
 )

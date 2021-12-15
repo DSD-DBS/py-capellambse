@@ -1285,8 +1285,8 @@ The predator is far away</bodies>
             </ownedClasses>
           </ownedDataPkgs>
           <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
-              id="959b5222-7717-4ee9-bd3a-f8a209899464" name="Class 1" summary=""
-              description="&lt;p>This is a test description for a class.&lt;/p>&#xA;"
+              id="959b5222-7717-4ee9-bd3a-f8a209899464" name="1st Specialization of SuperClass"
+              summary="" description="&lt;p>This is a test description for a class.&lt;/p>&#xA;"
               status="#ba5edbad-f04b-40f4-a77b-2f7fbe47e9d2">
             <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
                 id="5ff23a11-5c14-410d-b2b5-9d24fcbf041d" super="#bbc296e1-ed4c-40cf-b37d-c8eb8613228a"
@@ -1335,6 +1335,37 @@ The predator is far away</bodies>
                 abstractType="#7b5733ce-d251-4c97-a1e3-c7c727462900"/>
           </ownedDataTypes>
         </ownedDataPkgs>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="ca79bf38-5e82-4104-8c49-e6e16b3748e9" name="2nd Specialization of SuperClass">
+          <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+              id="f4c07db4-a68b-4060-b216-e1a6019d2b29" super="#bbc296e1-ed4c-40cf-b37d-c8eb8613228a"
+              sub="#ca79bf38-5e82-4104-8c49-e6e16b3748e9"/>
+        </ownedClasses>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+            id="9ff9c6b5-4075-4453-b620-fe7b6808e99e" name="CmdEnum">
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="e1ff9fcb-ea87-4272-9d4c-9faf21181a24" name="RUNNING" abstractType="#9ff9c6b5-4075-4453-b620-fe7b6808e99e"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="c0a0bd3e-ba32-4cde-a30f-ea1a4149219c" name="STANDBY" abstractType="#9ff9c6b5-4075-4453-b620-fe7b6808e99e"/>
+        </ownedDataTypes>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+            id="560f642d-775c-4955-8b07-52ff5494e562" name="StatusEnum">
+          <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+              id="2e9f8c4d-ca22-4d45-b0a7-34573b09c097" super="#9ff9c6b5-4075-4453-b620-fe7b6808e99e"
+              sub="#560f642d-775c-4955-8b07-52ff5494e562"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="85526ae4-b84c-480a-a505-d14dffbe7046" name="UNKNOWN" abstractType="#560f642d-775c-4955-8b07-52ff5494e562"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="3198bf8f-7aa4-48c6-aba6-719e8fe26f6f" name="BUSY" abstractType="#560f642d-775c-4955-8b07-52ff5494e562"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
+              id="865fb232-a02b-4721-b2e1-fb1bc1603677" name="ERROR" abstractType="#560f642d-775c-4955-8b07-52ff5494e562"/>
+        </ownedDataTypes>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
+            id="2fc1108c-dcea-4d49-b08f-69d5060c4917" name="YetAnotherExtension">
+          <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+              id="e4a2db12-7eb3-48e0-8257-ed55d5478dde" super="#9ff9c6b5-4075-4453-b620-fe7b6808e99e"
+              sub="#2fc1108c-dcea-4d49-b08f-69d5060c4917"/>
+        </ownedDataTypes>
       </ownedDataPkg>
       <ownedSystemComponentPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"
           id="ecb687c1-c540-4de6-8b1d-024d1ed0178f" name="Structure">
