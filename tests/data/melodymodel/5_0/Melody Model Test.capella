@@ -1170,6 +1170,8 @@ The predator is far away</bodies>
       </ownedInterfacePkg>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="814464a3-3278-48eb-b66c-e255ed11afa8" name="Data">
+        <ownedDataValues xsi:type="org.polarsys.capella.core.data.information.datavalue:NumericReference"
+            id="b7ce4e84-8166-42c8-ba3e-84b7bc608d1a" name="NumericReference"/>
         <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
             id="876858df-9d70-4773-98bc-c31cf6b633e6" name="Predefined Types">
           <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:BooleanType"
@@ -1367,7 +1369,7 @@ The predator is far away</bodies>
         </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="d2b4a93c-73ef-4f01-8b59-f86c074ec521" name="3rd specialization of SuperClass"
-            isPrimitive="true">
+            visibility="PACKAGE" isPrimitive="true">
           <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
               id="f3a2a34f-f7f6-4ed8-870f-da4b8035d53e" super="#bbc296e1-ed4c-40cf-b37d-c8eb8613228a"
               sub="#d2b4a93c-73ef-4f01-8b59-f86c074ec521"/>

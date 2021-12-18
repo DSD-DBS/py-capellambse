@@ -13,6 +13,7 @@
 # limitations under the License.
 """Enumeration types used by the MelodyModel."""
 import enum as _enum
+from typing import Sequence
 
 
 class StringyEnum(_enum.Enum):
@@ -174,3 +175,25 @@ class Kind(StringyEnum):
     FIRMWARE = _enum.auto()
     PERSON = _enum.auto()
     SOFTWARE_APPLICATION = _enum.auto()
+
+
+class VisibilityKind(StringyEnum):
+    """Visibility kind"""
+
+    UNSET = _enum.auto()
+    PUBLIC = _enum.auto()
+    PROTECTED = _enum.auto()
+    PRIVATE = _enum.auto()
+    PACKAGE = _enum.auto()
+
+
+class CollectionKind(StringyEnum):
+    UNSET = _enum.auto()
+    ARRAY = _enum.auto()
+    SEQUENCE = _enum.auto()
+
+
+class UnionKind(StringyEnum):
+    UNSET = _enum.auto()
+    UNION = _enum.auto()
+    VARIANT = _enum.auto()

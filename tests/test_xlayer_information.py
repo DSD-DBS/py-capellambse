@@ -95,3 +95,18 @@ class TestClasses:
     ):
         obj = model.by_uuid(uuid)
         assert len(obj.properties) == num_of_properties
+
+    @pytest.mark.parametrize(
+        "uuid,expected_visibility",
+        [
+            pytest.param("bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "PUBLIC"),
+            pytest.param("959b5222-7717-4ee9-bd3a-f8a209899464", "UNSET"),
+            pytest.param("d2b4a93c-73ef-4f01-8b59-f86c074ec521", "PACKAGE"),
+            pytest.param("ca79bf38-5e82-4104-8c49-e6e16b3748e9", "PROTECTED"),
+        ],
+    )
+    def test_class_visibility(
+        self, model: MelodyModel, uuid: str, expected_visibility
+    ):
+        obj = model.by_uuid(uuid)
+        assert obj.visibility == expected_visibility

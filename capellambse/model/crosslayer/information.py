@@ -11,6 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""Implementation of objects and relations for Information capture and data modelling
+
+Information objects inheritance tree (taxonomy):
+
+.. diagram:: [CDB] Information [Taxonomy]
+
+Information object-relations map (ontology):
+
+.. diagram:: [CDB] Information [Ontology]
+"""
+
 from __future__ import annotations
 
 from capellambse.loader import xmltools
@@ -76,6 +87,9 @@ class Class(c.GenericElement):
         "_element",
         "isPrimitive",
         __doc__="Boolean flag, indicates if class is primitive",
+    )
+    visibility = xmltools.EnumAttributeProperty(
+        "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
     state_machines = c.ProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
