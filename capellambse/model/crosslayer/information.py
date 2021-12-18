@@ -47,6 +47,14 @@ def _search_all_exchanges(
 
 
 @c.xtype_handler(None)
+class Property(c.GenericElement):
+    """A Property of a Class."""
+
+    _xmltag = "ownedFeatures"
+    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+
+
+@c.xtype_handler(None)
 class Class(c.GenericElement):
     """A Class."""
 
@@ -57,6 +65,18 @@ class Class(c.GenericElement):
     state_machines = c.ProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
+    own_properties = c.ProxyAccessor(
+        Property, aslist=c.ElementList, follow_abstract=False
+    )
+
+    @property
+    def properties(self) -> c.ElementList[Property]:
+        """Return all owned and inherited properties."""
+        return (
+            self.own_properties + self.super.properties
+            if isinstance(self.super, Class)
+            else self.own_properties
+        )
 
 
 @c.xtype_handler(None)
@@ -82,6 +102,18 @@ class Collection(c.GenericElement):
 
 
 @c.xtype_handler(
+    None, "org.polarsys.capella.core.data.information.datavalue:ValuePart"
+)
+class ValuePart(c.GenericElement):
+    """A Value Part of a Complex Value."""
+
+    _xmltag = "ownedParts"
+    referencedProperty = c.AttrProxyAccessor(
+        c.GenericElement, "referencedProperty"
+    )
+
+
+@c.xtype_handler(
     None, "org.polarsys.capella.core.data.information.datavalue:ComplexValue"
 )
 class ComplexValue(c.GenericElement):
@@ -89,6 +121,11 @@ class ComplexValue(c.GenericElement):
 
     _xmltag = "ownedDataValues"
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+    valueparts = c.ProxyAccessor(
+        ValuePart,
+        "org.polarsys.capella.core.data.information.datavalue:ValuePart",
+        aslist=c.ElementList,
+    )
 
 
 @c.xtype_handler(
@@ -122,7 +159,7 @@ class Enumeration(c.GenericElement):
 
     @property
     def literals(self) -> c.ElementList[EnumerationLiteral]:
-        """returns own + inherited literals"""
+        """Return all owned and inherited literals."""
         return (
             self.own_literals + self.super.literals
             if isinstance(self.super, Enumeration)
@@ -142,7 +179,7 @@ class DataPkg(c.GenericElement):
         "org.polarsys.capella.core.data.information.datatype:Enumeration",
         aslist=c.ElementList,
     )
-    datavalues = c.ProxyAccessor(
+    complexvalues = c.ProxyAccessor(
         ComplexValue,
         "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
         aslist=c.ElementList,

@@ -39,7 +39,7 @@ class BaseArchitectureLayer(c.GenericElement):
     all_enumerations = c.ProxyAccessor(
         information.Enumeration, deep=True, aslist=c.ElementList
     )
-    all_complexvalues = c.ProxyAccessor(
+    all_complex_values = c.ProxyAccessor(
         information.ComplexValue,
         "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
         deep=True,
