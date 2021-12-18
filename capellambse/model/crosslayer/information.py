@@ -61,7 +61,22 @@ class Class(c.GenericElement):
     _xmltag = "ownedClasses"
 
     sub = c.Accessor
-    super = c.Accessor
+    super: Class = c.Accessor  # type: ignore
+    is_abstract = xmltools.BooleanAttributeProperty(
+        "_element",
+        "abstract",
+        __doc__="Boolean flag, indicates if class is abstract",
+    )
+    is_final = xmltools.BooleanAttributeProperty(
+        "_element",
+        "final",
+        __doc__="Boolean flag, indicates if class is final",
+    )
+    is_primitive = xmltools.BooleanAttributeProperty(
+        "_element",
+        "isPrimitive",
+        __doc__="Boolean flag, indicates if class is primitive",
+    )
     state_machines = c.ProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )

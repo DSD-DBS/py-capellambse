@@ -317,40 +317,6 @@ class TestStateMachines:
         fnc = state.functions.by_name("teach Care of Magical Creatures")
 
 
-class TestClasses:
-    def test_classes_have_access_to_stm(self, model: MelodyModel):
-        elm: Class = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")  # type: ignore[assignment]
-
-        assert elm.xtype.endswith("Class")
-        assert hasattr(elm, "state_machines")
-        assert len(elm.state_machines) == 1
-
-    @pytest.mark.parametrize(
-        "uuid,super_uuid",
-        [
-            pytest.param(
-                "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
-                "8164ae8b-36d5-4502-a184-5ec064db4ec3",
-                id="Same Layer",
-            ),
-            pytest.param(
-                "959b5222-7717-4ee9-bd3a-f8a209899464",
-                "bbc296e1-ed4c-40cf-b37d-c8eb8613228a",
-                id="Cross Layer",
-            ),
-        ],
-    )
-    def test_classes_inheritance(
-        self, model: MelodyModel, uuid: str, super_uuid: str
-    ):
-        elm: Class = model.by_uuid(uuid)  # type: ignore[assignment]
-        super_class = model.by_uuid(super_uuid)
-
-        assert elm.xtype.endswith("Class")
-        assert hasattr(elm, "super")
-        assert elm.super == super_class
-
-
 def test_exchange_items_of_a_function_port(model: MelodyModel):
     port = model.by_uuid("db64f0c9-ea1c-4962-b043-1774547c36f7")
     exchange_item_1 = port.exchange_items.by_name("good advise")

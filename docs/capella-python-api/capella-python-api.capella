@@ -590,6 +590,17 @@
                 id="d95c74f7-647e-424d-a1be-2f656ee87fa2" value="1"/>
           </ownedMembers>
         </ownedAssociations>
+        <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+            id="81849073-942a-40e6-afc4-729b07125585" name="DataAssociation15" navigableMembers="#196b377d-fca5-4ef2-99ea-8928f5af8ef4">
+          <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="935abe65-7b69-4ce7-8d81-2236c718a736" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
+              aggregationKind="ASSOCIATION">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="e054bc6b-3f09-4698-8356-f0a837cfe8a8" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="da47c50f-cbe1-4ac4-9099-404a87ca9a76" value="1"/>
+          </ownedMembers>
+        </ownedAssociations>
         <ownedDataValues xsi:type="org.polarsys.capella.core.data.information.datavalue:ComplexValue"
             id="65634558-17c7-43b9-b2a6-ac305aeabda5" name="ComplexValue 1"/>
         <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
@@ -5989,6 +6000,8 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
               id="7807ed6b-c7bd-4a3b-bebf-42751adfdb59" name="capellacore">
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
                 id="dbc4a269-8259-447d-87a6-fe25b3bd4c2f" name="Constraint"/>
+            <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+                id="7a2d97e2-8954-4b40-a44b-afb900c3cb8b" name="Type"/>
             <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
                 id="95b82689-68d5-418b-9a2d-e1d8dddb136d" name="VisibilityKind">
               <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
@@ -6361,6 +6374,18 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
             <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
                 id="3ced6265-b110-4855-90ce-5fa547d547b3" name="informationAssociation1"
                 navigableMembers="#f2abe689-e94a-4d7c-b9c4-b8a7d90579ff #1f6d82e1-2d9d-4376-a29f-91aff47ad8e4"/>
+            <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+                id="818c9822-3dfd-47c1-91cb-b92fa20ca852" name="informationAssociation2"
+                navigableMembers="#0e532c83-36af-4e6f-a5a8-7cf6d9f1b1a5">
+              <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="5aebacb3-1cb1-4f87-9516-bf27b33b865f" name="collection " abstractType="#1b388503-1ce5-4b56-a9d8-c9a8fc6aa64f"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="40aeae85-014a-4f0b-b330-4208f72fad74" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="ca4c87ad-c5a3-448f-901e-3bead9260e6e" value="1"/>
+              </ownedMembers>
+            </ownedAssociations>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
                 id="a4b966e7-3b5c-4913-a04b-d1180f5d939f" name="ExchangeItem"/>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
@@ -6442,6 +6467,14 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="11ab6d13-966b-456b-90f5-f35f990b0e68" name="" value="0"/>
                 <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="ed3dd527-3620-461b-9f4f-fb509457dc14" name="" value="*"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="0e532c83-36af-4e6f-a5a8-7cf6d9f1b1a5" name="type" abstractType="#7a2d97e2-8954-4b40-a44b-afb900c3cb8b"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="3bfb736f-45c4-4c48-89f8-2253f723da93" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="b897b3d9-4f5c-4121-908a-59f42bdf40ad" value="1"/>
               </ownedFeatures>
             </ownedClasses>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
@@ -6949,7 +6982,16 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
           </ownedFeatures>
         </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
-            id="0f56a573-1554-4489-9624-62b402c3d5a9" name="Property"/>
+            id="0f56a573-1554-4489-9624-62b402c3d5a9" name="Property">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="196b377d-fca5-4ef2-99ea-8928f5af8ef4" name="type" abstractType="#7a2d97e2-8954-4b40-a44b-afb900c3cb8b"
+              aggregationKind="ASSOCIATION">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="8ec572b6-adb4-4f48-a219-8c8d3a3a0042" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="c8749900-a2d1-4c62-b226-ef982e9e8727" value="1"/>
+          </ownedFeatures>
+        </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="b83a3dab-0068-440d-9701-86d20b1af1a2" name="ComplexValue"/>
         <ownedCollections xsi:type="org.polarsys.capella.core.data.information:Collection"
@@ -6961,6 +7003,14 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
               id="8fea7dd7-f1c5-4ae7-a46e-d75dca049b29" value="*"/>
           <ownedDataValues xsi:type="org.polarsys.capella.core.data.information:CollectionValue"
               id="98cec330-ba2f-4eb9-98d4-5b215d5c49c8" name="CollectionValue 1"/>
+        </ownedCollections>
+        <ownedCollections xsi:type="org.polarsys.capella.core.data.information:Collection"
+            id="ea8baa51-9230-4c2f-bb0e-40c2ee8621e8" name="Collection 2" minInclusive="true"
+            maxInclusive="true" type="#3e330b5a-d60c-4037-88ff-ecd8d73f1252">
+          <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+              id="e76eac39-68a4-4b0c-8976-35e2640dc4c1" value="1"/>
+          <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+              id="f9fe072d-b51a-4bd0-a239-cd8f0b079fdf" value="*"/>
         </ownedCollections>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:StringType"
             id="3a2ca5fe-3dc1-4a72-afa9-a380a4f02f8f" name="String"/>
@@ -6978,6 +7028,8 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
             id="7acb74fe-8aa3-487b-ba8b-ed2d5b77593d" name="XType"/>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
             id="7ba06756-379b-4f1f-89da-f4a81882a275" name="ProgressStatusEnum"/>
+        <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:StringType"
+            id="43970f6e-9a1e-4ce5-87d7-44808b393d4c" name="StringType 9"/>
       </ownedDataPkg>
       <ownedRolePkg xsi:type="org.polarsys.capella.core.data.oa:RolePkg" id="fd67c10f-7b4c-43c8-98ea-4b74c751e436"
           name="Roles"/>
