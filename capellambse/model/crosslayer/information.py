@@ -122,7 +122,7 @@ class Enumeration(c.GenericElement):
 
     @property
     def literals(self) -> c.ElementList[EnumerationLiteral]:
-        """returns own + inherited literals"""
+        """Return all owned and inherited literals."""
         return (
             self.own_literals + self.super.literals
             if isinstance(self.super, Enumeration)
