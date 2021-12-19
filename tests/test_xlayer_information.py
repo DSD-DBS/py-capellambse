@@ -46,11 +46,11 @@ def test_generalizations(
     obj = objects_of_type.by_name(name)  # type: ignore[assignment]
     super_obj = objects_of_type.by_name(super_name)
 
-    obj_type = obj.xtype
-    assert obj_type.endswith(expected_type)  # type: ignore
+    obj_type: str = obj.xtype  # type: ignore[assignment]
+    assert obj_type.endswith(expected_type)
     assert obj.super == super_obj
-    super_xtype = super_obj.xtype
-    assert super_xtype.endswith(expected_type)  # type: ignore
+    super_xtype: str = super_obj.xtype  # type: ignore[assignment]
+    assert super_xtype.endswith(expected_type)
     sub_objects: c.ElementList = super_obj.sub  # type: ignore[assignment]
     assert obj in sub_objects
 

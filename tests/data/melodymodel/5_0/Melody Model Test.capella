@@ -1366,6 +1366,25 @@ The predator is far away</bodies>
             <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="6087a01d-d05d-49a3-851b-2288b3a39321" value="1"/>
           </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="2e729284-56e2-4afa-b29e-7fe00d057f80" name="temperature" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a">
+            <ownedDefaultValue xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="b6feec5b-3bba-4da9-b9fc-fbd3b72b287d" name="" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a"
+                unit="#695386d5-6364-4e85-a1c3-a2c489bf0eb2" value="20.0"/>
+            <ownedMinValue xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="e615cba9-acc4-4a23-ab0c-777c8cabb8f3" name="" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a"
+                unit="#695386d5-6364-4e85-a1c3-a2c489bf0eb2" value="-40.5"/>
+            <ownedMaxValue xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="d543018f-5f44-4c03-8e2e-875457c8967e" name="" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a"
+                unit="#695386d5-6364-4e85-a1c3-a2c489bf0eb2" value="125.5"/>
+            <ownedNullValue xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="9fbdec5d-12c5-4194-b58f-35bff3ee2c9a" name="" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a"
+                unit="#695386d5-6364-4e85-a1c3-a2c489bf0eb2" value="0.0"/>
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="5546324b-81e8-46db-acee-2f8c1c50afc0" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="4b691ca6-62f9-417c-884a-c744a7eb10ee" value="1"/>
+          </ownedFeatures>
         </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="d2b4a93c-73ef-4f01-8b59-f86c074ec521" name="3rd specialization of SuperClass"
@@ -1431,6 +1450,8 @@ The predator is far away</bodies>
           <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
               id="fffde5a8-488d-481e-93cf-7d7e4b75c939" value="*"/>
         </ownedCollections>
+        <ownedUnits xsi:type="org.polarsys.capella.core.data.information:Unit" id="695386d5-6364-4e85-a1c3-a2c489bf0eb2"
+            name="°C"/>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
             id="9ff9c6b5-4075-4453-b620-fe7b6808e99e" name="CmdEnum">
           <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
