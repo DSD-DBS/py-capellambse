@@ -824,7 +824,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
             return self
 
         matches: list[etree._Element] = []
-        for candidate in obj._model.search(self.class_):
+        for candidate in obj._model.search(self.class_.__name__):
             for attr in self.attrs:
                 try:
                     value = getattr(candidate, attr)

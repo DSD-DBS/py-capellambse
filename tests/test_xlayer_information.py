@@ -2,41 +2,57 @@ import typing as t
 
 import pytest
 
+import capellambse.model.common as c
 from capellambse import MelodyModel
 from capellambse.model.crosslayer.information import Class
 
 from . import TEST_MODEL, TEST_ROOT
 
 
-# TODO: test generalization of unions
-# TODO: test generalization of collections
 @pytest.mark.parametrize(
-    "uuid,super_uuid,expected_type",
+    "name,super_name,expected_type",
     [
         pytest.param(
-            "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
-            "8164ae8b-36d5-4502-a184-5ec064db4ec3",
+            "SpecialTwist",
+            "Twist",
             "Class",
-            id="Class - Same Layer",
         ),
         pytest.param(
-            "959b5222-7717-4ee9-bd3a-f8a209899464",
-            "bbc296e1-ed4c-40cf-b37d-c8eb8613228a",
+            "1st Specialization of SuperClass",
+            "SuperClass",
             "Class",
-            id="Class - Cross Layer",
+        ),
+        pytest.param(
+            "SpecialUnion1",
+            "SuperUnion",
+            "Union",
+        ),
+        pytest.param(
+            "StatusEnum",
+            "CmdEnum",
+            "Enumeration",
+        ),
+        pytest.param(
+            "SpecialCollection1",
+            "SuperCollection",
+            "Collection",
         ),
     ],
 )
 def test_generalizations(
-    model: MelodyModel, uuid: str, super_uuid: str, expected_type: str
+    model: MelodyModel, name: str, super_name: str, expected_type: str
 ):
-    elm = model.by_uuid(uuid)  # type: ignore[assignment]
-    super_class = model.by_uuid(super_uuid)
+    objects_of_type = model.search(expected_type)
+    obj = objects_of_type.by_name(name)  # type: ignore[assignment]
+    super_obj = objects_of_type.by_name(super_name)
 
-    assert elm.xtype.endswith(expected_type)
-    assert hasattr(elm, "super")
-    assert elm.super == super_class
-    assert elm.super.xtype.endswith(expected_type)
+    obj_type = obj.xtype
+    assert obj_type.endswith(expected_type)  # type: ignore
+    assert obj.super == super_obj
+    super_xtype = super_obj.xtype
+    assert super_xtype.endswith(expected_type)  # type: ignore
+    sub_objects: c.ElementList = super_obj.sub  # type: ignore[assignment]
+    assert obj in sub_objects
 
 
 class TestClasses:

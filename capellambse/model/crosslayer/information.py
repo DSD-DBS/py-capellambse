@@ -24,6 +24,8 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
+from enum import Enum
+
 from capellambse.loader import xmltools
 
 from .. import common as c
@@ -109,14 +111,10 @@ class Class(c.GenericElement):
 
 
 @c.xtype_handler(None)
-class Union(c.GenericElement):
+class Union(Class):
     """A Union."""
 
     _xmltag = "ownedClasses"
-
-    state_machines = c.ProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
 
 
 @c.xtype_handler(None)
@@ -125,9 +123,8 @@ class Collection(c.GenericElement):
 
     _xmltag = "ownedCollections"
 
-    state_machines = c.ProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
+    sub = c.Accessor
+    super: Collection = c.Accessor  # type: ignore
 
 
 @c.xtype_handler(
@@ -252,36 +249,23 @@ class ExchangeItem(c.GenericElement):
     )
 
 
-c.set_accessor(
-    Class,
-    "super",
-    c.ProxyAccessor(
-        Class,
-        "org.polarsys.capella.core.data.capellacore:Generalization",
-        follow="super",
-        follow_abstract=False,
-    ),
-)
-c.set_accessor(
-    Class,
-    "sub",
-    c.ReferenceSearchingAccessor(Class, "super", aslist=c.ElementList),
-)
-c.set_accessor(
-    Enumeration,
-    "super",
-    c.ProxyAccessor(
-        Enumeration,
-        "org.polarsys.capella.core.data.capellacore:Generalization",
-        follow="super",
-        follow_abstract=False,
-    ),
-)
-c.set_accessor(
-    Enumeration,
-    "sub",
-    c.ReferenceSearchingAccessor(Enumeration, "super", aslist=c.ElementList),
-)
+for cls in [Class, Union, Enumeration, Collection]:
+    c.set_accessor(
+        cls,
+        "super",
+        c.ProxyAccessor(
+            cls,
+            "org.polarsys.capella.core.data.capellacore:Generalization",
+            follow="super",
+            follow_abstract=False,
+        ),
+    )
+    c.set_accessor(
+        cls,
+        "sub",
+        c.ReferenceSearchingAccessor(cls, "super", aslist=c.MixedElementList),
+    )
+
 c.set_accessor(EnumerationLiteral, "owner", c.ParentAccessor(Enumeration))
 c.set_accessor(
     DataPkg, "packages", c.ProxyAccessor(DataPkg, aslist=c.ElementList)
