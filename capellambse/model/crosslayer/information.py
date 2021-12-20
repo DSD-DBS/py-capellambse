@@ -64,6 +64,42 @@ class Property(c.GenericElement):
     """A Property of a Class."""
 
     _xmltag = "ownedFeatures"
+
+    is_ordered = xmltools.BooleanAttributeProperty(
+        "_element",
+        "ordered",
+        __doc__="Boolean flag, indicates if property is ordered",
+    )
+    is_unique = xmltools.BooleanAttributeProperty(
+        "_element",
+        "unique",
+        __doc__="Boolean flag, indicates if property is unique",
+    )
+    is_abstract = xmltools.BooleanAttributeProperty(
+        "_element",
+        "isAbstract",
+        __doc__="Boolean flag, indicates if property is abstract",
+    )
+    is_static = xmltools.BooleanAttributeProperty(
+        "_element",
+        "isStatic",
+        __doc__="Boolean flag, indicates if property is static",
+    )
+    is_part_of_key = xmltools.BooleanAttributeProperty(
+        "_element",
+        "isPartOfKey",
+        __doc__="Boolean flag, indicates if property is part of key",
+    )
+    is_derived = xmltools.BooleanAttributeProperty(
+        "_element",
+        "isDerived",
+        __doc__="Boolean flag, indicates if property is abstract",
+    )
+    is_read_only = xmltools.BooleanAttributeProperty(
+        "_element",
+        "isReadOnly",
+        __doc__="Boolean flag, indicates if property is read-only",
+    )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
 
 
