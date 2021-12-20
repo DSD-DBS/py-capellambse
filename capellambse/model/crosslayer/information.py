@@ -100,6 +100,9 @@ class Property(c.GenericElement):
         "isReadOnly",
         __doc__="Boolean flag, indicates if property is read-only",
     )
+    visibility = xmltools.EnumAttributeProperty(
+        "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
+    )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
 
 

@@ -112,7 +112,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']"/>
         <target xmi:type="org.polarsys.capella.core.data.information:DataPkg" href="capella-python-api.capella#2ca24f4b-6625-46d6-a8de-c68de551e1c3"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_6rokwF0qEey8erljvkS-pQ" name="[CDB] Information [Ontology]" repPath="#_6rhQAF0qEey8erljvkS-pQ" changeId="da936756-3050-4554-b152-d62672765d0e">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_6rokwF0qEey8erljvkS-pQ" name="[CDB] Information [Ontology]" repPath="#_6rhQAF0qEey8erljvkS-pQ" changeId="497cba94-e8ba-4007-b1f2-d02ed2821744">
         <eAnnotations xmi:type="description:DAnnotation" uid="_KbvnAGDaEey8erljvkS-pQ" source="http://thalesgroup.com/mde/melody/ordering">
           <references xmi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue" href="capella-python-api.capella#1c0da246-62a0-46c1-af8c-0322539a64f0"/>
         </eAnnotations>
@@ -18208,54 +18208,72 @@
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
-      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_hsDYEWEXEey8erljvkS-pQ" labelColor="255,9,9" description="_hsCJ9GEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" backgroundStyle="Liquid" foregroundColor="255,255,255"/>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_nrimJWGXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="123,105,79" backgroundStyle="Liquid" foregroundColor="232,224,210">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@style"/>
+      </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']"/>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_XKtVsGEWEey8erljvkS-pQ" name=" is_ordered : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#b3035093-a390-403e-8ea8-06dfee7e9b8b"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#b3035093-a390-403e-8ea8-06dfee7e9b8b"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsEmMmEXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrkbUmGXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_Z6U9oGEWEey8erljvkS-pQ" name=" is_unique : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#a2a500a1-1bf2-4f3a-bf2a-64f4fc7b54d5"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#a2a500a1-1bf2-4f3a-bf2a-64f4fc7b54d5"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsFNQWEXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrkbVGGXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_cl9dcGEWEey8erljvkS-pQ" name=" is_abstract : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#659326f3-bd4a-4c3b-9fa3-76f74945e537"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#659326f3-bd4a-4c3b-9fa3-76f74945e537"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsFNQ2EXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrlCYWGXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_e4HtUGEWEey8erljvkS-pQ" name=" is_static : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#c54b8c1c-6cb1-43c8-9bbd-7639f2dbb485"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#c54b8c1c-6cb1-43c8-9bbd-7639f2dbb485"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsFNRWEXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrlCY2GXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_hYLPQGEWEey8erljvkS-pQ" name=" is_part_of_key : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#269dffb5-0340-43b4-8961-084fc08fd5fb"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#269dffb5-0340-43b4-8961-084fc08fd5fb"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsF0UWEXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrlpcWGXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_j3vpAGEWEey8erljvkS-pQ" name=" is_derived : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#56951949-4481-42ed-8469-716866be2ab2"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#56951949-4481-42ed-8469-716866be2ab2"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsF0U2EXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrlpc2GXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_mUIy8GEWEey8erljvkS-pQ" name=" is_read_only : Boolean">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#45435807-c94c-4a98-94af-619e747687a6"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#45435807-c94c-4a98-94af-619e747687a6"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsF0VWEXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrlpdWGXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
       <ownedElements xmi:type="diagram:DNodeListElement" uid="_bQ8V0GEXEey8erljvkS-pQ" name=" visibility : VisibilityKind">
         <target xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#48439352-0681-47d6-b481-74a903c2d332"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.information:Property" href="capella-python-api.capella#48439352-0681-47d6-b481-74a903c2d332"/>
-        <ownedStyle xmi:type="diagram:Square" uid="_hsGbYWEXEey8erljvkS-pQ" labelColor="255,9,9" labelAlignment="LEFT" description="_hsD_IGEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" color="255,255,255"/>
+        <ownedStyle xmi:type="diagram:Square" uid="_nrmQgWGXEey8erljvkS-pQ" labelAlignment="LEFT" borderSize="1" borderSizeComputationExpression="1" borderColor="136,136,136">
+          <description xmi:type="style:SquareDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@subNodeMappings[name='DT_Property']"/>
       </ownedElements>
     </ownedDiagramElements>

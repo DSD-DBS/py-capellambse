@@ -1361,7 +1361,7 @@ The predator is far away</bodies>
               sub="#ca79bf38-5e82-4104-8c49-e6e16b3748e9"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
               id="3b4915eb-22fc-421d-bf89-07a14d0a2772" name="num_of_things" isAbstract="true"
-              isStatic="true" abstractType="#be4e2bfa-2026-4e0b-9a6d-88b5f9c8a3d4"
+              isStatic="true" visibility="PRIVATE" abstractType="#be4e2bfa-2026-4e0b-9a6d-88b5f9c8a3d4"
               ordered="true" unique="true" minInclusive="true" maxInclusive="true"
               isDerived="true" isReadOnly="true" isPartOfKey="true">
             <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
@@ -1370,7 +1370,8 @@ The predator is far away</bodies>
                 id="34794f67-1ad2-45b6-b6fa-2ac5aaa0f581" name="" value="*"/>
           </ownedFeatures>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
-              id="2e729284-56e2-4afa-b29e-7fe00d057f80" name="temperature" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a">
+              id="2e729284-56e2-4afa-b29e-7fe00d057f80" name="temperature" visibility="PUBLIC"
+              abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a">
             <ownedDefaultValue xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="b6feec5b-3bba-4da9-b9fc-fbd3b72b287d" name="" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a"
                 unit="#695386d5-6364-4e85-a1c3-a2c489bf0eb2" value="20.0"/>
