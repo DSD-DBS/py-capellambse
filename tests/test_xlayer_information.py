@@ -101,7 +101,7 @@ class TestClasses:
         "uuid,num_of_properties",
         [
             pytest.param("bbc296e1-ed4c-40cf-b37d-c8eb8613228a", 2),
-            pytest.param("ca79bf38-5e82-4104-8c49-e6e16b3748e9", 3),
+            pytest.param("ca79bf38-5e82-4104-8c49-e6e16b3748e9", 4),
             pytest.param("d2b4a93c-73ef-4f01-8b59-f86c074ec521", 2),
             pytest.param("8164ae8b-36d5-4502-a184-5ec064db4ec3", 0),
         ],
@@ -126,3 +126,29 @@ class TestClasses:
     ):
         obj = model.by_uuid(uuid)
         assert obj.visibility == expected_visibility
+
+
+class TestClassProperty:
+    @pytest.mark.parametrize(
+        "attr_name",
+        [
+            pytest.param("is_ordered"),
+            pytest.param("is_unique"),
+            pytest.param("is_abstract"),
+            pytest.param("is_static"),
+            pytest.param("is_part_of_key"),
+            pytest.param("is_derived"),
+            pytest.param("is_read_only"),
+        ],
+    )
+    def test_property_has_bool_attributes(self, model: MelodyModel, attr_name):
+        prop_all_false = model.by_uuid(
+            "2e729284-56e2-4afa-b29e-7fe00d057f80"
+        )  # temperature prop
+        prop_all_true = model.by_uuid(
+            "3b4915eb-22fc-421d-bf89-07a14d0a2772"
+        )  # num_of_things prop
+        assert hasattr(prop_all_false, attr_name)
+        assert getattr(prop_all_false, attr_name) == False
+        assert hasattr(prop_all_true, attr_name)
+        assert getattr(prop_all_true, attr_name) == True
