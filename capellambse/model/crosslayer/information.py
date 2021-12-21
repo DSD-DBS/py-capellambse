@@ -24,6 +24,7 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
+import typing as t
 from enum import Enum
 
 from capellambse.loader import xmltools
@@ -31,6 +32,13 @@ from capellambse.loader import xmltools
 from .. import common as c
 from .. import modeltypes
 from . import capellacommon
+
+XT_LITERAL_NUM_VAL = (
+    "org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+)
+XT_LITERAL_STR_VAL = (
+    "org.polarsys.capella.core.data.information.datavalue:LiteralStringValue"
+)
 
 
 def _allocated_exchange_items(
@@ -57,6 +65,46 @@ def _search_all_exchanges(
     from . import fa
 
     return obj._model.search(fa.ComponentExchange, fa.FunctionalExchange)
+
+
+class LiteralValue(c.GenericElement):
+    is_abstract = xmltools.BooleanAttributeProperty(
+        "_element",
+        "abstract",
+        __doc__="Boolean flag, indicates if property is abstract",
+    )
+    value = xmltools.AttributeProperty(
+        "_element", "value", optional=True, returntype=str
+    )
+    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+
+
+@c.xtype_handler(None, XT_LITERAL_NUM_VAL)
+class LiteralNumericValue(LiteralValue):
+    pass
+
+
+@c.xtype_handler(None, XT_LITERAL_STR_VAL)
+class LiteralStringValue(LiteralValue):
+    pass
+
+
+def create_role_tag_getter(role_tag: str) -> t.Callable:
+    """Create a getter function that is made to get an object under a given role tag"""
+
+    def get_object_under_tag(obj: c.GenericElement) -> c.GenericElement | None:
+        elts = obj._element.xpath(f"./{role_tag}")
+        if len(elts) > 1:
+            raise ValueError(
+                "More than one matching elements, expected one or none. Potentially inappropriate accessor selection."
+            )
+        return (
+            c.GenericElement.from_model(obj._model, elts[0])
+            if len(elts) == 1
+            else None
+        )
+
+    return get_object_under_tag
 
 
 @c.xtype_handler(None)
@@ -104,6 +152,12 @@ class Property(c.GenericElement):
         "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+    default_value = property(create_role_tag_getter("ownedDefaultValue"))
+    min = property(create_role_tag_getter("ownedMinValue"))
+    max = property(create_role_tag_getter("ownedMaxValue"))
+    null_value = property(create_role_tag_getter("ownedNullValue"))
+    min_card = property(create_role_tag_getter("ownedMinCard"))
+    max_card = property(create_role_tag_getter("ownedMaxCard"))
 
 
 @c.xtype_handler(None)

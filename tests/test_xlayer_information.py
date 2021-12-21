@@ -9,6 +9,8 @@ from capellambse.model.crosslayer.information import Class
 from . import TEST_MODEL, TEST_ROOT
 
 TEMP_PROPERTY_UUID = "2e729284-56e2-4afa-b29e-7fe00d057f80"
+CLASS_TYPED_PROP_UUID = "752afd4c-dfa1-4040-baf4-9c5a4ef5b399"
+FLOAT_TYPE_UUID = "d65e426c-7df0-43df-aaa4-417ae193176a"
 
 
 @pytest.mark.parametrize(
@@ -76,9 +78,40 @@ def test_generalizations(
         ),  # property
     ],
 )
-def test_class_visibility(model: MelodyModel, uuid: str, expected_visibility):
+def test_object_visibility(model: MelodyModel, uuid: str, expected_visibility):
     obj = model.by_uuid(uuid)
     assert obj.visibility == expected_visibility
+
+
+@pytest.mark.parametrize(
+    "typed_object_uuid,expected_type_uuid",
+    [
+        pytest.param(
+            "3b4915eb-22fc-421d-bf89-07a14d0a2772",
+            "be4e2bfa-2026-4e0b-9a6d-88b5f9c8a3d4",
+            id="prop has int type",
+        ),
+        pytest.param(
+            TEMP_PROPERTY_UUID, FLOAT_TYPE_UUID, id="prop has float type"
+        ),
+        pytest.param(
+            CLASS_TYPED_PROP_UUID,
+            "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
+            id="prop has class type",
+        ),
+        pytest.param(
+            "b6feec5b-3bba-4da9-b9fc-fbd3b72b287d",
+            FLOAT_TYPE_UUID,
+            id="literal-value has float type",
+        ),
+    ],
+)
+def test_object_has_type(
+    model: MelodyModel, typed_object_uuid: str, expected_type_uuid: str
+):
+    obj = model.by_uuid(typed_object_uuid)
+    expected_type = model.by_uuid(expected_type_uuid)
+    assert obj.type == expected_type
 
 
 class TestClasses:
@@ -127,7 +160,7 @@ class TestClasses:
         "uuid,num_of_properties",
         [
             pytest.param("bbc296e1-ed4c-40cf-b37d-c8eb8613228a", 2),
-            pytest.param("ca79bf38-5e82-4104-8c49-e6e16b3748e9", 4),
+            pytest.param("ca79bf38-5e82-4104-8c49-e6e16b3748e9", 5),
             pytest.param("d2b4a93c-73ef-4f01-8b59-f86c074ec521", 2),
             pytest.param("8164ae8b-36d5-4502-a184-5ec064db4ec3", 0),
         ],
@@ -161,3 +194,45 @@ class TestClassProperty:
         assert getattr(prop_all_false, attr_name) == False
         assert hasattr(prop_all_true, attr_name)
         assert getattr(prop_all_true, attr_name) == True
+
+    @pytest.mark.parametrize(
+        "value_attr,expected_val_uuid",
+        [
+            pytest.param(
+                "default_value", "b6feec5b-3bba-4da9-b9fc-fbd3b72b287d"
+            ),
+            pytest.param("min", "e615cba9-acc4-4a23-ab0c-777c8cabb8f3"),
+            pytest.param("max", "d543018f-5f44-4c03-8e2e-875457c8967e"),
+            pytest.param("null_value", "9fbdec5d-12c5-4194-b58f-35bff3ee2c9a"),
+            pytest.param("min_card", "5546324b-81e8-46db-acee-2f8c1c50afc0"),
+            pytest.param("max_card", "581587dd-8301-4bc1-bab4-4f54224d3f6d"),
+        ],
+    )
+    def test_property_has_role_tag_value(
+        self, model: MelodyModel, value_attr: str, expected_val_uuid: str
+    ):
+        obj = model.by_uuid(TEMP_PROPERTY_UUID)
+        expected_val = model.by_uuid(expected_val_uuid)
+        assert hasattr(obj, value_attr)
+        assert getattr(obj, value_attr) == expected_val
+
+
+@pytest.mark.parametrize(
+    "uuid,expected_value,expected_cls",
+    [
+        pytest.param(
+            "1d24c16d-61ad-40b9-9ce0-80e72320e74f", "3", "LiteralNumericValue"
+        ),
+        pytest.param(
+            "3c6d9df2-1229-4642-aede-a7ac129035c9",
+            "Unknown object",
+            "LiteralStringValue",
+        ),
+    ],
+)
+def test_literal_value_has_value(
+    model: MelodyModel, uuid: str, expected_value: str, expected_cls
+):
+    obj = model.by_uuid(uuid)
+    assert obj.value == expected_value
+    assert str(obj.xtype).endswith(expected_cls)

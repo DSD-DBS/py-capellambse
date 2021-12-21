@@ -3447,7 +3447,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                   appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
                 <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
                     id="b12103cb-66a7-4d16-bf7d-d0224094b4d1" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
-                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
               </ownedPropertyValueGroups>
               <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
                   id="9afac4cb-a494-4e50-918f-dd62b19d34a6" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
@@ -3466,7 +3466,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                   appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
                 <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
                     id="302ceea8-2d12-4ee3-86df-3e8ce793d26b" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
-                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
               </ownedPropertyValueGroups>
               <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
                   id="731d75f8-cd11-4d12-94a8-c38d21a4f1c1" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
@@ -3485,7 +3485,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                   appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
                 <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
                     id="39355cab-4248-43fc-8ebc-140ca972fe0a" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
-                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
               </ownedPropertyValueGroups>
               <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
                   id="1f7f721d-2e30-4a00-99a1-778a74020e24" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
@@ -3504,7 +3504,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                   appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
                 <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
                     id="c5665dc2-cb68-44b4-a7ae-bef9ee57de67" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
-                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
               </ownedPropertyValueGroups>
               <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
                   id="eafd2499-2229-4420-872f-8bf821be7b2c" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
@@ -3513,6 +3513,44 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="b53a097d-0f2c-4b4b-9317-717914c9c02f" value="1"/>
                 <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="18e1f64e-e6b8-46a5-81e5-c2d1d1b4cc80" value="1"/>
+              </ownedMembers>
+            </ownedAssociations>
+            <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+                id="0e4a50d2-e320-4c7c-adb6-392fbd496504" appliedPropertyValueGroups="#242b4c6c-cef0-4070-a7c0-989a4db9b5dc"
+                name="informationAssociation7" navigableMembers="#342a8dd5-9048-4ed7-bd72-c993353ff4df">
+              <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                  id="242b4c6c-cef0-4070-a7c0-989a4db9b5dc" name="Coverage.DevStatus"
+                  appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                    id="dbaab7da-0152-40c9-81d2-ffe794cdc0fd" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
+                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
+              </ownedPropertyValueGroups>
+              <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="bd5fc613-d850-465a-ae59-d74a76db7569" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="81a58596-f132-497e-8a7d-65eda8daf4dc" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="90418e33-f738-4cbc-941c-47a06bcceb51" value="1"/>
+              </ownedMembers>
+            </ownedAssociations>
+            <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+                id="f412c4b8-ec5f-4b8d-b2fb-6b04810b6f3c" appliedPropertyValueGroups="#099b1cff-1e8b-4ddd-b5d5-b1239f4c6daf"
+                name="informationAssociation8" navigableMembers="#47cb1fa4-9dd5-47a0-a683-695b01acaf46">
+              <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                  id="099b1cff-1e8b-4ddd-b5d5-b1239f4c6daf" name="Coverage.DevStatus"
+                  appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                    id="a819e2b4-653e-4aed-aac0-b074dd6ce4fe" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
+                    type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
+              </ownedPropertyValueGroups>
+              <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="ce848d3c-2bed-4089-96cb-353efac3cced" name="property" abstractType="#0f56a573-1554-4489-9624-62b402c3d5a9"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="53029d62-e87d-4e1e-8444-96ddc04fd662" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="3c300be7-66e9-4df4-9a4c-c4964d04946e" value="1"/>
               </ownedMembers>
             </ownedAssociations>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
@@ -3816,7 +3854,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="fada6386-b912-4c2b-9a24-8820d4bccc97" value="1"/>
               </ownedFeatures>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
-                  id="8b5fb62f-42a2-4f83-809b-2c0d13f93d82" name="min_value" abstractType="#c81f2d50-d9a2-4dea-b432-32c4a72112a3"
+                  id="8b5fb62f-42a2-4f83-809b-2c0d13f93d82" name="min" abstractType="#c81f2d50-d9a2-4dea-b432-32c4a72112a3"
                   aggregationKind="ASSOCIATION">
                 <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="97688dd1-ace3-4e8f-a186-c6003ee18b04" value="1"/>
@@ -3824,7 +3862,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="e13f59d7-3e86-462f-a4d3-8530ae7676ff" value="1"/>
               </ownedFeatures>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
-                  id="1c57fe06-6eb1-466b-81e5-e6ea6e5b7b33" name="max_value" abstractType="#c81f2d50-d9a2-4dea-b432-32c4a72112a3"
+                  id="1c57fe06-6eb1-466b-81e5-e6ea6e5b7b33" name="max" abstractType="#c81f2d50-d9a2-4dea-b432-32c4a72112a3"
                   aggregationKind="ASSOCIATION">
                 <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="a9f69eb1-c5f4-49eb-8e63-dd19a1e14feb" value="1"/>
@@ -3838,6 +3876,22 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="0ac51bbd-618c-4ded-bae0-88fff824c28e" value="1"/>
                 <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="4dc2c7a2-16e3-473b-89b1-db0e5a9b2d6f" value="1"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="342a8dd5-9048-4ed7-bd72-c993353ff4df" name="min_card" abstractType="#c81f2d50-d9a2-4dea-b432-32c4a72112a3"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="07d7db5f-3453-49e4-b88b-4a5e2bf9f503" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="65895122-0a89-4cd9-8eb1-bdec0a2be1a8" value="1"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="47cb1fa4-9dd5-47a0-a683-695b01acaf46" name="max_card" abstractType="#c81f2d50-d9a2-4dea-b432-32c4a72112a3"
+                  aggregationKind="ASSOCIATION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="56701b84-6d76-43e2-9082-5740f1cf6425" value="1"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="fb3fd705-31a6-410f-9c10-950a9eaff2fe" value="1"/>
               </ownedFeatures>
             </ownedClasses>
             <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
@@ -4123,7 +4177,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
               appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
             <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
                 id="d960bd80-75b8-44df-bbac-7c43272229d6" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
-                type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+                type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
           </ownedPropertyValueGroups>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
               id="65fe1cde-3b3a-49ef-8536-7ef825f9b071" name="type" abstractType="#7a2d97e2-8954-4b40-a44b-afb900c3cb8b"
@@ -4141,7 +4195,7 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                 appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
               <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
                   id="f130c8da-af76-4a41-b30f-5b6cd2df5309" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
-                  type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+                  type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#42ab6588-8063-4fbc-940c-22ad17fb0cd1"/>
             </ownedPropertyValueGroups>
             <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="a87002c7-bc0e-4f8e-a79e-f2cf7597c1bc" value="1"/>
