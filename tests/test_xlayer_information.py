@@ -216,6 +216,10 @@ class TestClassProperty:
         assert hasattr(obj, value_attr)
         assert getattr(obj, value_attr) == expected_val
 
+    def test_property_has_no_value(self, model: MelodyModel):
+        obj = model.by_uuid(CLASS_TYPED_PROP_UUID)
+        assert getattr(obj, "min") == None
+
 
 @pytest.mark.parametrize(
     "uuid,expected_value,expected_cls",
@@ -236,3 +240,9 @@ def test_literal_value_has_value(
     obj = model.by_uuid(uuid)
     assert obj.value == expected_value
     assert str(obj.xtype).endswith(expected_cls)
+
+
+def test_literal_value_has_unit(model: MelodyModel):
+    obj = model.by_uuid("d543018f-5f44-4c03-8e2e-875457c8967e")
+    expected_unit = model.by_uuid("695386d5-6364-4e85-a1c3-a2c489bf0eb2")
+    assert obj.unit == expected_unit

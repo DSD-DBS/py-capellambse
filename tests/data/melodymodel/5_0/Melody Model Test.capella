@@ -1369,7 +1369,8 @@ The predator is far away</bodies>
             <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="798f9cd8-f4d9-42ba-8204-9374c198be41" value="1"/>
             <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
-                id="34794f67-1ad2-45b6-b6fa-2ac5aaa0f581" name="" value="*"/>
+                id="34794f67-1ad2-45b6-b6fa-2ac5aaa0f581" name="" unit="#8fe5a798-101e-4d61-8058-322f8f90c58c"
+                value="*"/>
           </ownedFeatures>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
               id="2e729284-56e2-4afa-b29e-7fe00d057f80" name="temperature" visibility="PUBLIC"

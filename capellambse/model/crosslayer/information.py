@@ -25,7 +25,6 @@ Information object-relations map (ontology):
 from __future__ import annotations
 
 import typing as t
-from enum import Enum
 
 from capellambse.loader import xmltools
 
@@ -67,6 +66,13 @@ def _search_all_exchanges(
     return obj._model.search(fa.ComponentExchange, fa.FunctionalExchange)
 
 
+@c.xtype_handler(None)
+class Unit(c.GenericElement):
+    """Unit"""
+
+    _xmltag = "ownedUnits"
+
+
 class LiteralValue(c.GenericElement):
     is_abstract = xmltools.BooleanAttributeProperty(
         "_element",
@@ -81,7 +87,7 @@ class LiteralValue(c.GenericElement):
 
 @c.xtype_handler(None, XT_LITERAL_NUM_VAL)
 class LiteralNumericValue(LiteralValue):
-    pass
+    unit = c.AttrProxyAccessor(c.GenericElement, "unit")
 
 
 @c.xtype_handler(None, XT_LITERAL_STR_VAL)

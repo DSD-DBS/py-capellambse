@@ -112,7 +112,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']"/>
         <target xmi:type="org.polarsys.capella.core.data.information:DataPkg" href="capella-python-api.capella#2ca24f4b-6625-46d6-a8de-c68de551e1c3"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_6rokwF0qEey8erljvkS-pQ" name="[CDB] Information [Ontology]" repPath="#_6rhQAF0qEey8erljvkS-pQ" changeId="78a0432b-4c5c-4138-ab2a-b3cf2375f0c9">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_6rokwF0qEey8erljvkS-pQ" name="[CDB] Information [Ontology]" repPath="#_6rhQAF0qEey8erljvkS-pQ" changeId="bebbcb09-0189-4cca-88c2-7f5f83b0a8c9">
         <eAnnotations xmi:type="description:DAnnotation" uid="_KbvnAGDaEey8erljvkS-pQ" source="http://thalesgroup.com/mde/melody/ordering">
           <references xmi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue" href="capella-python-api.capella#1c0da246-62a0-46c1-af8c-0322539a64f0"/>
         </eAnnotations>
@@ -18431,7 +18431,10 @@
         <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
         <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
         <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
-        <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_hsIQkWEXEey8erljvkS-pQ" labelColor="255,9,9" description="_hsCJ9GEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" backgroundStyle="Liquid" foregroundColor="255,255,255"/>
+        <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_Dnt3FGKeEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="123,105,79" backgroundStyle="Liquid" foregroundColor="232,224,210">
+          <labelFormat>italic</labelFormat>
+          <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@conditionnalStyles.0/@style"/>
+        </ownedStyle>
         <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']"/>
       </ownedDiagramElements>
     </ownedDiagramElements>
@@ -18499,7 +18502,9 @@
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
       <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
       <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
-      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_KCmBNGEcEey8erljvkS-pQ" labelColor="255,9,9" description="_hsCJ9GEXEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="255,9,9" backgroundStyle="Liquid" foregroundColor="255,255,255"/>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_AWxDuWKeEey8erljvkS-pQ" borderSize="1" borderSizeComputationExpression="1" borderColor="123,105,79" backgroundStyle="Liquid" foregroundColor="232,224,210">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']/@style"/>
+      </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@defaultLayer/@containerMappings[name='DT_Class']"/>
     </ownedDiagramElements>
     <ownedDiagramElements xmi:type="diagram:DEdge" uid="_U8L2YGEbEey8erljvkS-pQ" name=" " sourceNode="_z2xxMGEZEey8erljvkS-pQ" targetNode="_TIymIGEbEey8erljvkS-pQ" endLabel="unit">
