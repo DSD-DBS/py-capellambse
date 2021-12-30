@@ -616,6 +616,7 @@ class TestArchitectureLayers:
     @pytest.mark.parametrize(
         "nature,uuid",
         [
+            ("UNSET", "b9f9a83c-fb02-44f7-9123-9d86326de5f1"),
             ("NODE", "8a6d68c8-ac3d-4654-a07e-ada7adeed09f"),
             ("BEHAVIOR", "7b188ad0-0d82-4b2c-9913-45292e537871"),
         ],
