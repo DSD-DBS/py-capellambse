@@ -82,7 +82,7 @@ class PhysicalComponent(cs.Component):
         default=modeltypes.Nature.UNSET,
     )
     kind = xmltools.EnumAttributeProperty(
-        "_element", "kind", modeltypes.Kind, default="UNSET"
+        "_element", "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
     )
 
     functions = c.ProxyAccessor(
