@@ -1170,6 +1170,17 @@ The predator is far away</bodies>
       </ownedInterfacePkg>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="814464a3-3278-48eb-b66c-e255ed11afa8" name="Data">
+        <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" name="DataAssociation1" navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
+          <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="c0e5b34c-297e-4b3c-8957-58bbe4d36199" name="trajectory" abstractType="#c3c96805-d6f6-4092-b9f4-df7970651cdc"
+              aggregationKind="ASSOCIATION">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="4fda41df-535d-447e-9021-bb5375c896e3" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="57e2b8c5-2d22-4f10-8569-4effcdfae86a" value="1"/>
+          </ownedMembers>
+        </ownedAssociations>
         <ownedDataValues xsi:type="org.polarsys.capella.core.data.information.datavalue:NumericReference"
             id="b7ce4e84-8166-42c8-ba3e-84b7bc608d1a" name="NumericReference"/>
         <ownedDataValues xsi:type="org.polarsys.capella.core.data.information.datavalue:NumericReference"
@@ -1498,6 +1509,41 @@ The predator is far away</bodies>
                 id="7c8a09e3-c064-409e-960b-1127c96d0063" name="" value="*"/>
             <ownedMaxLength xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="c24d2ed5-0182-425c-9a8f-f557e13b113e" name="" value="255"/>
+          </ownedFeatures>
+        </ownedClasses>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="c89849fd-0643-4708-a4da-74c9ea9ca7b1" name="Waypoint">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="51ed43ec-929d-4b10-b7df-83d3afd19b06" name="lat" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="a765d797-9ae1-46b4-83b1-aa56aa248267" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="98248899-0da9-4897-af71-5561043faf53" value="1"/>
+          </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="f2f4295b-3cde-40e0-8aff-71b20398d800" name="lon" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="33d318fb-f6ac-4eda-b480-d8fa64d31c43" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="b8711fd4-5c28-4403-8684-f51a61839db8" value="1"/>
+          </ownedFeatures>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="e849a8a1-e6eb-4b6e-ab79-81c3e59469e0" name="alt" abstractType="#d65e426c-7df0-43df-aaa4-417ae193176a">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="ea95afc8-23eb-4a42-b3ff-9dd35cd45aa6" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="d3f95a35-5703-457f-a890-52f466b84f91" value="1"/>
+          </ownedFeatures>
+        </ownedClasses>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="c3c96805-d6f6-4092-b9f4-df7970651cdc" name="Trajectory">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="424efd65-eaa9-4220-b61b-fb3340dbc19a" name="waypoints" abstractType="#c89849fd-0643-4708-a4da-74c9ea9ca7b1"
+              aggregationKind="COMPOSITION">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="1df38231-5a0a-4c47-8c99-96119b8b8af8" name="" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="57d146cf-6e40-42f4-9413-1cd0240d1431" name="" value="*"/>
           </ownedFeatures>
         </ownedClasses>
         <ownedCollections xsi:type="org.polarsys.capella.core.data.information:Collection"
