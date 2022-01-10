@@ -60,7 +60,7 @@ class DiagramType(StringyEnum):
     IS = "Component Interfaces Scenario"
     ES = "Component Exchanges Scenario"
     FS = "Functional Scenario"
-    LFCD = "Functional Chain Description"
+    SFCD = LFCD = PFCD = "Functional Chain Description"
     # State And Mode - Matrix?
     # Contextual State And Mode - Matrix?
     # Modes and States Reference Matrix?

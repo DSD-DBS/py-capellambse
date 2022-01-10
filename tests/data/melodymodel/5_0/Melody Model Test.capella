@@ -187,6 +187,12 @@
                 source="#e1a8f65e-1630-4dac-a276-285b7aa19ee8" target="#35c19428-5cc8-47a3-870a-3ed279cef44f"/>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
                 id="e1a8f65e-1630-4dac-a276-285b7aa19ee8" involved="#04babdbf-6cf6-4846-a207-bf27cfc8eb32"/>
+            <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                id="b4df5cd8-b2c9-4abb-ba72-c93fb92c9e5c" kind="AND"/>
+            <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                id="3fde4705-3ecf-4b7a-ab0e-b983174c5880"/>
+            <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                id="e097eaf9-ca3d-4c3e-a4b3-bd1a5430bd8b" kind="ITERATE"/>
             <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
                 id="3aba567b-6147-4c3d-b8db-e3dc3c5c6e79" source="#8e732f5a-a760-468c-b862-ba1a276206d1"
                 target="#3ecb9f00-67ce-49b1-9294-d48c6d95d066"/>
@@ -1081,6 +1087,52 @@ The predator is far away</bodies>
             id="1eee3b81-41ef-4b56-8018-b8e421a5a2bc" name="Root System Function">
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
               id="ceffa011-7b66-4b3c-9885-8e075e312ffa" name="Important Function">
+            <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
+                id="dfc4341d-253a-4ae9-8a30-63a9d9faca39" name="Test Chain">
+              <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
+                  id="edbb1a8f-c826-421d-9fc1-2b65df64c3cb" involved="#00e7b925-cf4c-4cb0-929e-5409a1cd872b"/>
+              <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
+                  id="28208081-40b1-4030-b341-f75374095717" involved="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
+              <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink"
+                  id="7311e58e-9500-4c72-9620-aac32e4a1458" involved="#1a414995-f4cd-488c-8152-486e459fb9de"
+                  source="#edbb1a8f-c826-421d-9fc1-2b65df64c3cb" target="#28208081-40b1-4030-b341-f75374095717"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="764c65e0-f522-4be7-80fa-52f43ccb92bd" kind="AND"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="75490975-8468-41a0-889b-e37e02296fbd"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="b26d943c-e201-4636-90d3-937ddb6b3fbe"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="9075d109-ccaf-436f-bc75-f55030808f0b" kind="ITERATE"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="8078ec3c-44e4-47da-a4e8-213324a617f5" kind="ITERATE"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="1a67b667-a1f7-4a2b-9b10-0a82842fe1d6" kind="AND"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="4efb0021-4588-4e9a-8720-75e884a0f3ac" kind="AND"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="31f0ac22-ade5-4e77-802e-d920e143ddd8"/>
+              <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                  id="ef27c81a-6f51-4c73-9768-ef99d0f2f806" kind="ITERATE"/>
+              <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
+                  id="2906a845-6fc3-4ab7-aa06-173c46baf59b" source="#75490975-8468-41a0-889b-e37e02296fbd"
+                  target="#b26d943c-e201-4636-90d3-937ddb6b3fbe"/>
+              <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
+                  id="69052488-dd14-481e-9a29-bb7042d03dee" source="#75490975-8468-41a0-889b-e37e02296fbd"
+                  target="#b26d943c-e201-4636-90d3-937ddb6b3fbe"/>
+              <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
+                  id="67b17930-3421-4600-809f-f90e6de1f9eb" source="#9075d109-ccaf-436f-bc75-f55030808f0b"
+                  target="#8078ec3c-44e4-47da-a4e8-213324a617f5"/>
+              <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
+                  id="7fe074ca-9782-4987-9ea0-7116dca6c982" source="#8078ec3c-44e4-47da-a4e8-213324a617f5"
+                  target="#9075d109-ccaf-436f-bc75-f55030808f0b"/>
+              <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
+                  id="5f6fa89d-f8ba-4915-90f7-29fab012ca4c" source="#1a67b667-a1f7-4a2b-9b10-0a82842fe1d6"
+                  target="#4efb0021-4588-4e9a-8720-75e884a0f3ac"/>
+              <ownedSequenceLinks xsi:type="org.polarsys.capella.core.data.fa:SequenceLink"
+                  id="b672672d-b0ac-4120-bf5c-f76e4d8c42ef" source="#1a67b667-a1f7-4a2b-9b10-0a82842fe1d6"
+                  target="#4efb0021-4588-4e9a-8720-75e884a0f3ac"/>
+            </ownedFunctionalChains>
             <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
                 id="af361e95-9a87-4b67-8d0c-74585c1d695a" name="FIP 1"/>
           </ownedFunctions>
@@ -1722,6 +1774,17 @@ The predator is far away</bodies>
           id="21bc1668-0632-4287-b126-ea9a01635c8d" name="Logical Functions">
         <ownedLogicalFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
             id="f28ec0f8-f3b3-43a0-8af7-79f194b29a2d" name="Root Logical Function">
+          <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
+              id="22b9c1d6-a754-4614-9fcb-fa4f53837d9a" name="Test Chain">
+            <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
+                id="08746683-a62f-43a9-a01a-b7527cdd6e23" involved="#beaf5ba4-8fa9-4342-911f-0266bb29be45"/>
+            <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                id="fba3c7af-4e20-4ddc-82bb-c0f856ca1af8" kind="AND"/>
+            <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                id="68d0e0a9-2451-44bd-b6f3-fbebd825420b"/>
+            <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
+                id="0e564b44-4d0f-41b3-bb3c-833fb57323d5" kind="ITERATE"/>
+          </ownedFunctionalChains>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
               id="f708bc29-d69f-42a0-90cc-11fc01054cd0" name="manage the school">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
@@ -2162,6 +2225,8 @@ The predator is far away</bodies>
           id="35647c9a-34c7-4c21-94eb-951e0d4e5ec0" name="Physical Functions">
         <ownedPhysicalFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
             id="2bc60085-aac0-49f2-8e8d-88e04caaa91e" name="Root Physical Function">
+          <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
+              id="81bca302-8063-4ecd-bd3c-86654cb75c53" name="FunctionalChain"/>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
               id="2858aac2-c4cd-41e3-a9d0-a6b4ea95ad14" name="Father Function">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
