@@ -172,8 +172,8 @@ class Class(c.GenericElement):
 
     _xmltag = "ownedClasses"
 
-    sub = c.Accessor
-    super: Class = c.Accessor  # type: ignore
+    sub: c.Accessor
+    super: c.Accessor[Class]
     is_abstract = xmltools.BooleanAttributeProperty(
         "_element",
         "abstract",
@@ -195,7 +195,7 @@ class Class(c.GenericElement):
     state_machines = c.ProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
-    own_properties = c.ProxyAccessor(
+    owned_properties = c.ProxyAccessor(
         Property, aslist=c.ElementList, follow_abstract=False
     )
 
@@ -203,9 +203,9 @@ class Class(c.GenericElement):
     def properties(self) -> c.ElementList[Property]:
         """Return all owned and inherited properties."""
         return (
-            self.own_properties + self.super.properties
-            if isinstance(self.super, Class)
-            else self.own_properties
+            self.owned_properties + self.super.properties
+            if self.super is not None
+            else self.owned_properties
         )
 
 
@@ -222,8 +222,8 @@ class Collection(c.GenericElement):
 
     _xmltag = "ownedCollections"
 
-    sub = c.Accessor
-    super: Collection = c.Accessor  # type: ignore
+    sub: c.Accessor
+    super: c.Accessor[Collection]
 
 
 @c.xtype_handler(
@@ -233,7 +233,7 @@ class ValuePart(c.GenericElement):
     """A Value Part of a Complex Value."""
 
     _xmltag = "ownedParts"
-    referencedProperty = c.AttrProxyAccessor(
+    referenced_property = c.AttrProxyAccessor(
         c.GenericElement, "referencedProperty"
     )
 
@@ -246,7 +246,7 @@ class ComplexValue(c.GenericElement):
 
     _xmltag = "ownedDataValues"
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    valueparts = c.ProxyAccessor(
+    value_parts = c.ProxyAccessor(
         ValuePart,
         "org.polarsys.capella.core.data.information.datavalue:ValuePart",
         aslist=c.ElementList,
@@ -273,9 +273,9 @@ class Enumeration(c.GenericElement):
 
     _xmltag = "ownedDataTypes"
 
-    sub = c.Accessor
-    super: Enumeration = c.Accessor  # type: ignore
-    own_literals = c.ProxyAccessor(
+    sub: c.Accessor
+    super: c.Accessor[Enumeration]
+    owned_literals = c.ProxyAccessor(
         EnumerationLiteral,
         "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
         aslist=c.ElementList,
@@ -286,9 +286,9 @@ class Enumeration(c.GenericElement):
     def literals(self) -> c.ElementList[EnumerationLiteral]:
         """Return all owned and inherited literals."""
         return (
-            self.own_literals + self.super.literals
+            self.owned_literals + self.super.literals
             if isinstance(self.super, Enumeration)
-            else self.own_literals
+            else self.owned_literals
         )
 
 
@@ -304,7 +304,7 @@ class DataPkg(c.GenericElement):
         "org.polarsys.capella.core.data.information.datatype:Enumeration",
         aslist=c.ElementList,
     )
-    complexvalues = c.ProxyAccessor(
+    complex_values = c.ProxyAccessor(
         ComplexValue,
         "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
         aslist=c.ElementList,

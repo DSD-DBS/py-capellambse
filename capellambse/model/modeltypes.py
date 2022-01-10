@@ -13,7 +13,6 @@
 # limitations under the License.
 """Enumeration types used by the MelodyModel."""
 import enum as _enum
-from typing import Sequence
 
 
 class StringyEnum(_enum.Enum):
