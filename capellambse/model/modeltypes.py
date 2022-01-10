@@ -187,12 +187,10 @@ class VisibilityKind(StringyEnum):
 
 
 class CollectionKind(StringyEnum):
-    UNSET = _enum.auto()
     ARRAY = _enum.auto()
     SEQUENCE = _enum.auto()
 
 
 class UnionKind(StringyEnum):
-    UNSET = _enum.auto()
     UNION = _enum.auto()
     VARIANT = _enum.auto()

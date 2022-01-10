@@ -215,12 +215,20 @@ class Union(Class):
 
     _xmltag = "ownedClasses"
 
+    kind = xmltools.EnumAttributeProperty(
+        "_element", "kind", modeltypes.UnionKind, default="UNION"
+    )
+
 
 @c.xtype_handler(None)
 class Collection(c.GenericElement):
     """A Collection."""
 
     _xmltag = "ownedCollections"
+
+    kind = xmltools.EnumAttributeProperty(
+        "_element", "kind", modeltypes.CollectionKind, default="ARRAY"
+    )
 
     sub: c.Accessor
     super: c.Accessor[Collection]
