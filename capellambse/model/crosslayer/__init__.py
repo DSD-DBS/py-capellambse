@@ -30,6 +30,22 @@ class BaseArchitectureLayer(c.GenericElement):
     all_classes = c.ProxyAccessor(
         information.Class, deep=True, aslist=c.ElementList
     )
+    all_collections = c.ProxyAccessor(
+        information.Collection, deep=True, aslist=c.ElementList
+    )
+    all_unions = c.ProxyAccessor(
+        information.Union, deep=True, aslist=c.ElementList
+    )
+    all_enumerations = c.ProxyAccessor(
+        information.Enumeration, deep=True, aslist=c.ElementList
+    )
+    all_complex_values = c.ProxyAccessor(
+        information.ComplexValue,
+        "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
+        deep=True,
+        aslist=c.ElementList,
+        follow_abstract=False,
+    )
     all_interfaces = c.ProxyAccessor(
         cs.Interface, deep=True, aslist=c.ElementList
     )
