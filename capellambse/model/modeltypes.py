@@ -175,3 +175,23 @@ class Kind(StringyEnum):
     FIRMWARE = _enum.auto()
     PERSON = _enum.auto()
     SOFTWARE_APPLICATION = _enum.auto()
+
+
+class VisibilityKind(StringyEnum):
+    """Visibility kind"""
+
+    UNSET = _enum.auto()
+    PUBLIC = _enum.auto()
+    PROTECTED = _enum.auto()
+    PRIVATE = _enum.auto()
+    PACKAGE = _enum.auto()
+
+
+class CollectionKind(StringyEnum):
+    ARRAY = _enum.auto()
+    SEQUENCE = _enum.auto()
+
+
+class UnionKind(StringyEnum):
+    UNION = _enum.auto()
+    VARIANT = _enum.auto()

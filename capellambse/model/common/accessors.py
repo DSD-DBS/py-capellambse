@@ -27,6 +27,7 @@ __all__ = [
     "SpecificationAccessor",
     "ReferenceSearchingAccessor",
     "ElementListCouplingMixin",
+    "RoleTagAccessor",
 ]
 
 import abc
@@ -824,7 +825,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
             return self
 
         matches: list[etree._Element] = []
-        for candidate in obj._model.search(self.class_):
+        for candidate in obj._model.search(self.class_.__name__):
             for attr in self.attrs:
                 try:
                     value = getattr(candidate, attr)
@@ -839,6 +840,33 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
                     matches.append(candidate._element)
                     break
         return self._make_list(obj, matches)
+
+
+class RoleTagAccessor(PhysicalAccessor):
+    __slots__ = ("role_tag",)
+
+    def __init__(
+        self,
+        role_tag: str,
+        *,
+        aslist: type[element.ElementList[T]] | None = None,
+        list_extra_args: dict[str, t.Any] | None = None,
+    ) -> None:
+        super().__init__(
+            element.GenericElement,
+            (),
+            aslist=aslist,
+            list_extra_args=list_extra_args,
+        )
+        self.role_tag = role_tag
+
+    def __get__(self, obj, objtype=None):
+        del objtype
+        if obj is None:  # pragma: no cover
+            return self
+
+        elts = list(obj._element.iterchildren(self.role_tag))
+        return self._make_list(obj, elts)
 
 
 def no_list(
