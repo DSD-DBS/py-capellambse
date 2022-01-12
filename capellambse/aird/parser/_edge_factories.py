@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import dataclasses
+import re
 import typing as t
 
 from capellambse import aird, helpers
@@ -542,7 +543,13 @@ def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None
     seb.styleclass = xtype.split(":")[-1]
-    return generic_factory(seb)
+    edge = generic_factory(seb)
+    edge.labels = edge.labels[:1]
+    layer = re.sub(r"([A-Z])", r" \1", edge.styleclass or "").split()[0]
+    assert edge.styleclass is not None
+    if layer not in edge.styleclass:
+        edge.styleclass = layer + edge.styleclass
+    return edge
 
 
 def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:

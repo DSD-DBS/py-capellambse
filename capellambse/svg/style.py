@@ -44,6 +44,15 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "RequirementSymbol",
     ),
     "Class Diagram Blank": ("ClassSymbol",),
+    "Functional Chain Description": (
+        "AndControlNodeSymbol",
+        "IterateControlNodeSymbol",
+        "LogicalFunctionalExchangeSymbol",
+        "PhysicalFunctionalExchangeSymbol",
+        "OrControlNodeSymbol",
+        "OperationalFunctionalExchangeSymbol",
+        "SystemFunctionalExchangeSymbol",
+    ),
     "Logical Architecture Blank": (
         "ComponentPortSymbol",
         "LogicalActorSymbol",
@@ -82,9 +91,10 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
     "Operational Entity Breakdown": ("OperationalActorSymbol", "EntitySymbol"),
     "Operational Process Description": (
         "AndControlNodeSymbol",
-        "ItControlNodeSymbol",
+        "IterateControlNodeSymbol",
         "OperationalActivitySymbol",
         "OrControlNodeSymbol",
+        "FunctionalExchangeSymbol",
     ),
     "Physical Architecture Blank": (
         "PhysicalLinkSymbol",

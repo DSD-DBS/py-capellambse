@@ -619,7 +619,8 @@ def _control_node_symbol(id_="ControlNode"):
 def and_control_node_symbol(id_="AndControlNodeSymbol"):
     symb = _control_node_symbol(id_=id_)
     letters = container.Group(
-        transform="matrix(1.5022395,0,0,2.1293615,-5.360383,-20.771755)"
+        transform="matrix(1.5022395,0,0,2.1293615,-5.360383,-20.771755)",
+        style="fill:black;",
     )
     letters.add(
         path.Path(
@@ -665,7 +666,8 @@ def and_control_node_symbol(id_="AndControlNodeSymbol"):
 def or_control_node_symbol(id_="OrControlNodeSymbol"):
     symb = _control_node_symbol(id_=id_)
     letters = container.Group(
-        transform="matrix(2.1611566,0,0,2.4212253,-19.677936,-29.516726)"
+        transform="matrix(2.1611566,0,0,2.4212253,-19.677936,-29.516726)",
+        style="fill:black;",
     )
     letters.add(
         path.Path(
@@ -709,9 +711,11 @@ def or_control_node_symbol(id_="OrControlNodeSymbol"):
 
 
 @decorations.deco_factories
-def it_control_node_symbol(id_="ItControlNodeSymbol"):
+def iterate_control_node_symbol(id_="IterateControlNodeSymbol"):
     symb = _control_node_symbol(id_=id_)
-    letters = container.Group(transform="scale(1.0393759,0.9621158)")
+    letters = container.Group(
+        transform="scale(1.0393759,0.9621158)", style="fill:black;"
+    )
     letters.add(
         path.Path(
             d=("M 15.458523,38.056835 H 12.340129 V 11.439119 h 3.118394 z")
