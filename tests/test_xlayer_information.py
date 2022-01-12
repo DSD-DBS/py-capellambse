@@ -1,3 +1,4 @@
+# pylint: disable=no-self-use
 import typing as t
 
 import pytest
@@ -5,8 +6,6 @@ import pytest
 import capellambse.model.common as c
 from capellambse import MelodyModel
 from capellambse.model.crosslayer.information import Class
-
-from . import TEST_MODEL, TEST_ROOT
 
 TEMP_PROPERTY_UUID = "2e729284-56e2-4afa-b29e-7fe00d057f80"
 CLASS_TYPED_PROP_UUID = "752afd4c-dfa1-4040-baf4-9c5a4ef5b399"
@@ -129,19 +128,19 @@ class TestClasses:
                 "bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "is_abstract", True
             ),
             pytest.param(
-                "bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "is_primitive", False
-            ),
-            pytest.param(
-                "d2b4a93c-73ef-4f01-8b59-f86c074ec521", "is_primitive", True
-            ),
-            pytest.param(
                 "959b5222-7717-4ee9-bd3a-f8a209899464", "is_abstract", False
+            ),
+            pytest.param(
+                "ca79bf38-5e82-4104-8c49-e6e16b3748e9", "is_final", True
             ),
             pytest.param(
                 "959b5222-7717-4ee9-bd3a-f8a209899464", "is_final", False
             ),
             pytest.param(
-                "ca79bf38-5e82-4104-8c49-e6e16b3748e9", "is_final", True
+                "d2b4a93c-73ef-4f01-8b59-f86c074ec521", "is_primitive", True
+            ),
+            pytest.param(
+                "bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "is_primitive", False
             ),
         ],
     )
@@ -155,6 +154,23 @@ class TestClasses:
         obj = model.by_uuid(uuid)
         value = getattr(obj, attr_name)
         assert value == expected_value
+
+    @pytest.mark.parametrize(
+        "uuid,expected",
+        [
+            ("bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "PUBLIC"),
+            ("ca79bf38-5e82-4104-8c49-e6e16b3748e9", "PROTECTED"),
+            ("3b4915eb-22fc-421d-bf89-07a14d0a2772", "PRIVATE"),
+            ("d2b4a93c-73ef-4f01-8b59-f86c074ec521", "PACKAGE"),
+            ("c371cebb-8021-4a38-8706-4525734de76d", "UNSET"),
+        ],
+    )
+    def test_class_has_visibility(
+        self, model: MelodyModel, uuid: str, expected: str
+    ) -> None:
+        obj = model.by_uuid(uuid)
+        assert obj.visibility == expected
+        assert not isinstance(obj.visibility, str)
 
     @pytest.mark.parametrize(
         "uuid,num_of_properties",
@@ -191,9 +207,9 @@ class TestClassProperty:
             "3b4915eb-22fc-421d-bf89-07a14d0a2772"
         )  # num_of_things prop
         assert hasattr(prop_all_false, attr_name)
-        assert getattr(prop_all_false, attr_name) == False
+        assert getattr(prop_all_false, attr_name) is False
         assert hasattr(prop_all_true, attr_name)
-        assert getattr(prop_all_true, attr_name) == True
+        assert getattr(prop_all_true, attr_name) is True
 
     @pytest.mark.parametrize(
         "value_attr,expected_val_uuid",
@@ -218,7 +234,19 @@ class TestClassProperty:
 
     def test_property_has_no_value(self, model: MelodyModel):
         obj = model.by_uuid(CLASS_TYPED_PROP_UUID)
-        assert getattr(obj, "min") == None
+        assert getattr(obj, "min") is None
+
+
+def test_complex_value(model: MelodyModel):
+    cv = model.by_uuid("3a467d68-f53c-4d66-9d32-fe032a8cb2c5")
+    value_parts = {
+        i.referenced_property.name: i.value.value for i in cv.value_parts
+    }
+    assert value_parts == {
+        "owner": "Harry Potter",
+        "core": "Pheonix Feather",
+        "wood": "Holly",
+    }
 
 
 @pytest.mark.parametrize(
@@ -235,7 +263,7 @@ class TestClassProperty:
     ],
 )
 def test_literal_value_has_value(
-    model: MelodyModel, uuid: str, expected_value: str, expected_cls
+    model: MelodyModel, uuid: str, expected_value: t.Any, expected_cls
 ):
     obj = model.by_uuid(uuid)
     assert obj.value == expected_value
