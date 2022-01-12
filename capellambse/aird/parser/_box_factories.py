@@ -456,7 +456,10 @@ def fcif_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     )
     xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None
-    seb.styleclass = xtype.split(":")[-1]
+    if xtype.endswith("Function"):
+        seb.styleclass = "Function"
+    else:
+        seb.styleclass = xtype.split(":")[-1]
     return generic_factory(seb)
 
 

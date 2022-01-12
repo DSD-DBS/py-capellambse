@@ -394,41 +394,20 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke-width": 1,
         },
     },
-    "Mode State Machine": {  # (from common.odesign)
-        "Box.ChoicePseudoState": {
-            "fill": COLORS["_CAP_ChoicePseudoState_Color"],
-            "stroke": COLORS["_CAP_ChoicePseudoState_Border_Gray"],
+    "Error": {},
+    "Functional Chain Description": {
+        "Box.Function": {
+            "fill": COLORS["_CAP_xAB_Function_Green"],
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
         },
-        "Box.ForkPseudoState": {
-            "fill": COLORS["black"],
-        },
-        "Box.JoinPseudoState": {
-            "fill": COLORS["black"],
-        },
-        "Box.Mode": {
-            "fill": COLORS["_CAP_MSM_Mode_Gray_min"],
-            "stroke": COLORS["dark_gray"],
-        },
-        "Box.ModeRegion": {
-            "fill": [
-                COLORS["_CAP_MSM_Mode_Gray_min"],
-                COLORS["_CAP_MSM_Mode_Gray"],
-            ],
-            "stroke": COLORS["dark_gray"],
-        },
-        "Box.State": {
-            "fill": COLORS["_CAP_MSM_State_Gray_min"],
-            "stroke": COLORS["dark_gray"],
-        },
-        "Box.StateRegion": {
-            "fill": [
-                COLORS["_CAP_MSM_State_Gray_min"],
-                COLORS["_CAP_MSM_State_Gray"],
-            ],
-            "stroke": COLORS["dark_gray"],
-        },
-        "Edge.StateTransition": {
+        "Edge.FunctionalExchange": {
             "marker-end": "FineArrowMark",
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+        "Edge.SequenceLink": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-dasharray": "5",
         },
     },
     "Logical Architecture Blank": {  # (from logical.odesign)
@@ -530,6 +509,43 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
         },
     },
+    "Mode State Machine": {  # (from common.odesign)
+        "Box.ChoicePseudoState": {
+            "fill": COLORS["_CAP_ChoicePseudoState_Color"],
+            "stroke": COLORS["_CAP_ChoicePseudoState_Border_Gray"],
+        },
+        "Box.ForkPseudoState": {
+            "fill": COLORS["black"],
+        },
+        "Box.JoinPseudoState": {
+            "fill": COLORS["black"],
+        },
+        "Box.Mode": {
+            "fill": COLORS["_CAP_MSM_Mode_Gray_min"],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Box.ModeRegion": {
+            "fill": [
+                COLORS["_CAP_MSM_Mode_Gray_min"],
+                COLORS["_CAP_MSM_Mode_Gray"],
+            ],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Box.State": {
+            "fill": COLORS["_CAP_MSM_State_Gray_min"],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Box.StateRegion": {
+            "fill": [
+                COLORS["_CAP_MSM_State_Gray_min"],
+                COLORS["_CAP_MSM_State_Gray"],
+            ],
+            "stroke": COLORS["dark_gray"],
+        },
+        "Edge.StateTransition": {
+            "marker-end": "FineArrowMark",
+        },
+    },
     "Operational Capabilities Blank": {
         "Box.Entity": {
             "fill": [
@@ -624,12 +640,13 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_Activity_Orange"],
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
         },
-        "Edge.FunctionalExchange": {
-            "marker-end": "ArrowMark",
+        "Edge.OperationalExchange": {
+            "marker-end": "FineArrowMark",
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
         },
         "Edge.SequenceLink": {
             "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
             "stroke-dasharray": "5",
         },
     },

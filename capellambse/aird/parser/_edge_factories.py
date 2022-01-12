@@ -545,10 +545,9 @@ def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     seb.styleclass = xtype.split(":")[-1]
     edge = generic_factory(seb)
     edge.labels = edge.labels[:1]
-    layer = re.sub(r"([A-Z])", r" \1", edge.styleclass or "").split()[0]
-    assert edge.styleclass is not None
-    if layer not in edge.styleclass:
-        edge.styleclass = layer + edge.styleclass
+    assert edge.styleclass is not None and edge.target is not None
+    if edge.target.styleclass == "OperationalActivity":
+        edge.styleclass = "OperationalExchange"
     return edge
 
 

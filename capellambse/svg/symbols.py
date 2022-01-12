@@ -20,6 +20,8 @@ from svgwrite import container, gradients, path, shapes, text
 from . import decorations
 from . import style as style_
 
+Gradient = t.Union[gradients.LinearGradient, gradients.RadialGradient]
+
 
 @decorations.deco_factories
 def port_symbol(id_: str = "PortSymbol") -> container.Symbol:
@@ -137,7 +139,7 @@ def _make_lgradient(
     stop_opacity=(1, 1),
     offsets=None,
     **kw,
-):
+) -> Gradient:
     if len(start) != 2 or len(end) != 2:
         raise ValueError(
             "Exactly two values each for start and end are needed"
@@ -171,7 +173,7 @@ def _make_rgradient(
     stop_colors=("white", "black"),
     offsets=("0", "1"),
     **kw,
-):
+) -> Gradient:
     if transform is not None:
         kw["gradientTransform"] = "matrix({})".format(
             " ".join(map(str, transform))
@@ -513,28 +515,48 @@ def operational_activity_symbol(id_="OperationalActivitySymbol"):
     return symb
 
 
+@decorations.deco_factories
+def function_symbol(id_: str = "FunctionSymbol") -> container.Symbol:
+    grad = _make_lgradient(
+        "green", stop_colors=("#6CB35B", "#ffffff"), end=(1, 0)
+    )
+    symb = _make_function_symbol(id_, gradient=grad)
+    symb.add(
+        text.Text(
+            text="F",
+            insert=(42.2, 38),
+            text_anchor="middle",
+            style=(
+                'font-family: "Segoe UI"; font-size: 12pt; font-weight: '
+                "bold; fill: black; stroke: none;"
+            ),
+        )
+    )
+    return symb
+
+
 def _make_function_symbol(
     id_: str = "FunctionSymbol",
     colors: tuple[str, str] = ("#f0f8ee", "#7dc56c"),
+    gradient: Gradient = None,
 ) -> container.Symbol:
     center = (42.2, 32)
     symb = container.Symbol(id=id_, viewBox="0 0 79 79")
-    symb.add(
-        _make_rgradient(
-            "b",
-            center=center,
-            r=22.6,
-            focal=center,
-            inherit="#a",
-            stop_colors=colors,
-            transform=[1, 0, 0, 0.7, 0, 11.3],
-        )
+    gradient = gradient or _make_rgradient(
+        "b",
+        center=center,
+        r=22.6,
+        focal=center,
+        inherit="#a",
+        stop_colors=colors,
+        transform=[1, 0, 0, 0.7, 0, 11.3],
     )
+    symb.add(gradient)
     symb.add(
         shapes.Ellipse(
             center=center,
             r=(22.5, 15.5),
-            style="fill: url(#b); stroke: #000; stroke-width: 2;",
+            style=f"fill: url(#{gradient.get_id()}); stroke: #000; stroke-width: 2;",
         )
     )
     return symb
