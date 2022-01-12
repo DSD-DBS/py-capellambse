@@ -24,8 +24,6 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
-import typing as t
-
 from capellambse.loader import xmltools
 
 from .. import common as c
@@ -95,24 +93,6 @@ class LiteralStringValue(LiteralValue):
     pass
 
 
-def create_role_tag_getter(role_tag: str) -> t.Callable:
-    """Create a getter function that is made to get an object under a given role tag"""
-
-    def get_object_under_tag(obj: c.GenericElement) -> c.GenericElement | None:
-        elts = obj._element.xpath(f"./{role_tag}")
-        if len(elts) > 1:
-            raise ValueError(
-                "More than one matching elements, expected one or none. Potentially inappropriate accessor selection."
-            )
-        return (
-            c.GenericElement.from_model(obj._model, elts[0])
-            if len(elts) == 1
-            else None
-        )
-
-    return get_object_under_tag
-
-
 @c.xtype_handler(None)
 class Property(c.GenericElement):
     """A Property of a Class."""
@@ -158,12 +138,12 @@ class Property(c.GenericElement):
         "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    default_value = property(create_role_tag_getter("ownedDefaultValue"))
-    min = property(create_role_tag_getter("ownedMinValue"))
-    max = property(create_role_tag_getter("ownedMaxValue"))
-    null_value = property(create_role_tag_getter("ownedNullValue"))
-    min_card = property(create_role_tag_getter("ownedMinCard"))
-    max_card = property(create_role_tag_getter("ownedMaxCard"))
+    default_value = c.RoleTagAccessor("ownedDefaultValue")
+    min = c.RoleTagAccessor("ownedMinValue")
+    max = c.RoleTagAccessor("ownedMaxValue")
+    null_value = c.RoleTagAccessor("ownedNullValue")
+    min_card = c.RoleTagAccessor("ownedMinCard")
+    max_card = c.RoleTagAccessor("ownedMaxCard")
 
 
 @c.xtype_handler(None)
