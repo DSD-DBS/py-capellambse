@@ -37,7 +37,6 @@ from capellambse.svg import (
     style,
     symbols,
 )
-from capellambse.svg.drawing import LabelDict
 
 from . import TEST_MODEL, TEST_ROOT
 
