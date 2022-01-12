@@ -264,7 +264,7 @@ class GenericElement:
         return markupsafe.Markup(
             f"<strong>{markupsafe.Markup.escape(type(self).__name__)}</strong>"
             f" &quot;{markupsafe.Markup.escape(self.name)}&quot;"
-            f"{(': ' + self.value) if hasattr(self, 'value') else ''}"
+            f"{(': ' + str(self.value)) if hasattr(self, 'value') else ''}"
             f" ({markupsafe.Markup.escape(self.uuid)})"
         )
 
