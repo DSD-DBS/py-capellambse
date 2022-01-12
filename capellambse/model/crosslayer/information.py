@@ -36,6 +36,9 @@ XT_LITERAL_NUM_VAL = (
 XT_LITERAL_STR_VAL = (
     "org.polarsys.capella.core.data.information.datavalue:LiteralStringValue"
 )
+XT_ENUM_REF = (
+    "org.polarsys.capella.core.data.information.datavalue:EnumerationReference"
+)
 
 
 def _allocated_exchange_items(
@@ -227,6 +230,7 @@ class ValuePart(c.GenericElement):
     referenced_property = c.AttrProxyAccessor(
         c.GenericElement, "referencedProperty"
     )
+    value = c.RoleTagAccessor("ownedValue")
 
 
 @c.xtype_handler(
@@ -249,11 +253,24 @@ class ComplexValue(c.GenericElement):
     "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
 )
 class EnumerationLiteral(c.GenericElement):
-    """An EnuemrationLiteral (proxy link)."""
+    """An EnumerationLiteral (proxy link)."""
 
     _xmltag = "ownedLiterals"
 
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.name == other
+        return super().__eq__(other)
+
+    name = xmltools.AttributeProperty("_element", "name", returntype=str)
     owner: c.Accessor
+
+
+@c.xtype_handler(None, XT_ENUM_REF)
+class EnumerationReference(c.GenericElement):
+    name = xmltools.AttributeProperty("_element", "name", returntype=str)
+    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+    value = c.AttrProxyAccessor(c.GenericElement, "referencedValue")
 
 
 @c.xtype_handler(
