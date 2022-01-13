@@ -196,14 +196,13 @@ class EnumAttributeProperty(AttributeProperty):
     be placed in the underlying XML attribute.
 
     If the XML attribute contains a value that does not correspond to
-    any of the Enum's members, a KeyError will be raised by default.  By
-    setting the constructor kwarg ``badstring`` to True, you can instead
-    retrieve the raw string value that was placed in the XML.  Note that
-    even with ``badstring=True``, the Property will still disallow
-    setting such values.
+    any of the Enum's members, a KeyError will be raised. If the
+    attribute is completely missing from the XML and there was no
+    ``default=`` value set during construction, this property will
+    return ``None``.
     """
 
-    __slots__ = ("enumcls", "badstring", "default", "__name__", "__objclass__")
+    __slots__ = ("enumcls",)
 
     def __init__(
         self,
@@ -212,7 +211,6 @@ class EnumAttributeProperty(AttributeProperty):
         enumcls: type[enum.Enum],
         *args: t.Any,
         default: str | enum.Enum | None = None,
-        badstring: bool = False,
         **kw: t.Any,
     ) -> None:
         """Create an EnumAttributeProperty.
@@ -227,9 +225,6 @@ class EnumAttributeProperty(AttributeProperty):
             The default value to return if the attribute is not present
             in the XML.  If None, an AttributeError will be raised
             instead.
-        badstring
-            True to return bad XML values as raw string instead of
-            raising a KeyError.
         """
         if not (isinstance(enumcls, type) and issubclass(enumcls, enum.Enum)):
             raise TypeError(
@@ -237,7 +232,6 @@ class EnumAttributeProperty(AttributeProperty):
             )
 
         super().__init__(xmlattr, attribute, *args, **kw)
-        self.badstring = badstring
         self.enumcls = enumcls
         if default is None or isinstance(default, enumcls):
             self.default = default
@@ -261,12 +255,9 @@ class EnumAttributeProperty(AttributeProperty):
                 return self.default
             raise
 
-        try:
-            return self.enumcls[rawvalue]
-        except KeyError:
-            if self.badstring:
-                return rawvalue
-            raise
+        if rawvalue is None:
+            return None
+        return self.enumcls[rawvalue]
 
     def __set__(self, obj: t.Any, value: t.Any) -> None:
         assert self.__objclass__ is not None
