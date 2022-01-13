@@ -2053,6 +2053,14 @@ The predator is far away</bodies>
             id="f28ec0f8-f3b3-43a0-8af7-79f194b29a2d" name="Root Logical Function">
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
               id="22b9c1d6-a754-4614-9fcb-fa4f53837d9a" name="Test Chain">
+            <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                id="faca7a9b-b6a6-4105-a556-861804828c0f" name="" constrainedElements="#9abb92e7-24d3-4156-ba41-9151bb2fe4b1">
+              <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                  id="b00ce988-9033-46bd-bcba-725e4f69630c">
+                <bodies>&lt;a href=&quot;a0159943-264f-4a97-a245-565fb6bf9db4&quot;/></bodies>
+                <languages>capella:linkedText</languages>
+              </ownedSpecification>
+            </ownedConstraints>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
                 id="08746683-a62f-43a9-a01a-b7527cdd6e23" involved="#beaf5ba4-8fa9-4342-911f-0266bb29be45"/>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"

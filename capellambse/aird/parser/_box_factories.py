@@ -20,6 +20,8 @@ import itertools
 import re
 import typing as t
 
+import markupsafe
+
 from capellambse import aird, helpers
 
 from . import _common as C
@@ -246,7 +248,11 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         The accompanying edge factory.
     """
     box = generic_factory(seb)
-    box.label = C.get_spec_text(seb) or seb.melodyobjs[0].attrib.get("name")
+    label = C.get_spec_text(seb) or seb.melodyobjs[0].attrib.get("name")
+    if isinstance(label, markupsafe.Markup):
+        box.label = label.striptags()
+    else:
+        box.label = label
     return box
 
 
