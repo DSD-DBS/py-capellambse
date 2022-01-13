@@ -76,10 +76,7 @@ class PhysicalComponent(cs.Component):
     _xmltag = "ownedPhysicalComponents"
 
     nature = xmltools.EnumAttributeProperty(
-        "_element",
-        "nature",
-        modeltypes.Nature,
-        default=modeltypes.Nature.UNSET,
+        "_element", "nature", modeltypes.Nature
     )
     kind = xmltools.EnumAttributeProperty(
         "_element", "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET

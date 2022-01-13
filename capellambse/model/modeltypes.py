@@ -153,7 +153,6 @@ class ExchangeItemType(StringyEnum):
 class Nature(StringyEnum):
     r"""The "NATURE" of ``PhysicalComponent``\ s."""
 
-    UNSET = _enum.auto()
     NODE = _enum.auto()
     BEHAVIOR = _enum.auto()
 
