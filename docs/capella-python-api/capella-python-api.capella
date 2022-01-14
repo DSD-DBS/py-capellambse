@@ -3074,6 +3074,25 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                   id="c3f3e559-77a5-43b6-bfff-5acef1142ac6" value="1"/>
             </ownedMembers>
           </ownedAssociations>
+          <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
+              id="5f90621f-0bad-42ad-80e0-555e309463d6" appliedPropertyValueGroups="#e6ae35cb-3c96-4c27-a43b-9ab27c55aa99"
+              name="crosslayerAssociation6" navigableMembers="#fc6aa783-dc20-4410-b57b-485172da7ad6">
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="e6ae35cb-3c96-4c27-a43b-9ab27c55aa99" name="Coverage.DevStatus"
+                appliedPropertyValueGroups="#ec3dc6ff-f963-440d-9ac9-75813fa64fa2">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                  id="885f902e-ccc7-4772-99a8-43b8f7ef7b08" name="progress" appliedPropertyValues="#1c0da246-62a0-46c1-af8c-0322539a64f0"
+                  type="#932aac62-c7b3-4e9a-aa53-5cc3a60dcfbf" value="#1198cf81-c551-431d-9976-f86a5686aa9f"/>
+            </ownedPropertyValueGroups>
+            <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
+                id="161a2954-dd2e-4aaa-a396-d5b4f9ad7787" name="functionPort" abstractType="#d05e06e9-6eb2-4b6f-93c8-ad65119442cd"
+                aggregationKind="ASSOCIATION">
+              <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="109f1739-7fbd-4f73-8324-7764ef42b920" value="1"/>
+              <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                  id="bc858026-bfb3-491c-a395-7a46ee027ec9" value="1"/>
+            </ownedMembers>
+          </ownedAssociations>
           <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
               id="1d047985-0968-41bd-b672-3e676832d12c" name="capellacommon">
             <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
@@ -3473,6 +3492,14 @@ SystemFunctionPackage only contains SystemFunction, not LogicalFunction nor Syst
                     id="5394b2d2-46b8-450b-8ca7-c0e3407377f8" name="" value="0"/>
                 <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                     id="a514e34f-c741-4324-9f39-152e3ae033aa" name="" value="*"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+                  id="fc6aa783-dc20-4410-b57b-485172da7ad6" name="state_machines"
+                  abstractType="#aed43986-ffdd-46ae-b41f-ccf6ab174e9b" aggregationKind="COMPOSITION">
+                <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="01529de2-d397-442b-9538-01461236a7a8" name="" value="0"/>
+                <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                    id="c63aef39-0b6e-4b13-8266-fe8f73798d5d" name="" value="*"/>
               </ownedFeatures>
             </ownedClasses>
           </ownedDataPkgs>

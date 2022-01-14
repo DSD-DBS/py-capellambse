@@ -2146,7 +2146,30 @@ The predator is far away</bodies>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
               id="7f2936ab-0b54-4e92-9f0c-85a9f0981959" name="defend the surrounding area against Intruders">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
-                id="226878bc-3e4b-4236-ba72-996fc1d988c0" name="FOP 2"/>
+                id="226878bc-3e4b-4236-ba72-996fc1d988c0" name="FOP 2">
+              <ownedProtocols xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+                  id="06cefb2b-534e-4453-9aba-fe53329197ad" name="FaultStates">
+                <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                    id="18404ddc-8943-4164-8fdd-4a0b3d235295" name="Default Region"
+                    involvedStates="#e494e247-efce-4258-9cc6-fd799dbb0adf #81f3de46-4596-41b0-8569-c3c21161a2f6 #5b6a03d8-0ef9-4b2b-9a50-a745f490d663">
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                      id="e494e247-efce-4258-9cc6-fd799dbb0adf" name="normal defence">
+                    <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                        id="3e68a25f-eb44-4ce2-82a2-1d42b00917cb" name="region"/>
+                  </ownedStates>
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                      id="81f3de46-4596-41b0-8569-c3c21161a2f6" name="erroneous defence">
+                    <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                        id="edc0a818-2140-4d62-9be8-04c44bfa2545" name="region"/>
+                  </ownedStates>
+                  <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
+                      id="5b6a03d8-0ef9-4b2b-9a50-a745f490d663" name="no defence">
+                    <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                        id="b8a69a87-a245-412e-a61e-8e1dd12a68d5" name="region"/>
+                  </ownedStates>
+                </ownedRegions>
+              </ownedProtocols>
+            </outputs>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
               id="0e71a0d3-0a18-4671-bba0-71b5f88f95dd" name="produce Great Wizards">
