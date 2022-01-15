@@ -22,7 +22,10 @@ Composite Structure object-relations map (ontology):
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
 
+import operator
+
 from capellambse.loader import xmltools
+from capellambse.model.crosslayer.fa import ComponentExchange
 
 from .. import common as c
 from . import capellacommon, information
@@ -62,7 +65,7 @@ class Part(c.GenericElement):
     _xmltag = "ownedParts"
 
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    deployed_parts = c.Accessor
+    deployed_parts: c.Accessor
     # deploying_parts = c.Accessor
 
 
@@ -100,6 +103,39 @@ class PhysicalLink(PhysicalPort):
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
 
+    physical_paths: c.Accessor
+    exchanges = c.ProxyAccessor(
+        ComponentExchange,
+        xtypes="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
+        aslist=c.ElementList,
+        follow="targetElement",
+    )
+
+
+@c.xtype_handler("org.polarsys.capella.core.data.cs:PhysicalPath")
+class PhysicalPath(c.GenericElement):
+    """A physical path."""
+
+    _xmltag = "ownedPhysicalPath"
+
+    involved_items = c.ProxyAccessor(
+        c.GenericElement,
+        xtypes="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement",
+        aslist=c.MixedElementList,
+        follow="involved",
+    )
+
+    @property
+    def involved_links(self):
+        return self.involved_items.by_type("PhysicalLink")
+
+    exchanges = c.ProxyAccessor(
+        ComponentExchange,
+        xtypes="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
+        aslist=c.ElementList,
+        follow="targetElement",
+    )
+
 
 @c.xtype_handler(None)
 class ComponentRealization(c.GenericElement):
@@ -127,5 +163,15 @@ c.set_accessor(
         aslist=c.ElementList,
         follow="deployedElement",
         follow_abstract=False,
+    ),
+)
+c.set_accessor(
+    PhysicalLink,
+    "physical_paths",
+    c.CustomAccessor(
+        PhysicalPath,
+        operator.attrgetter("_model.pa.all_physical_paths"),
+        matchtransform=operator.attrgetter("involved_items"),
+        aslist=c.ElementList,
     ),
 )

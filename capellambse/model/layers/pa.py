@@ -13,7 +13,7 @@
 # limitations under the License.
 """Tools for the Physical Architecture layer.
 
-.. diagram:: [CDB] PA ORM
+.. diagram:: [CDB] Physical Architecture [Ontology]
 """
 from __future__ import annotations
 
@@ -148,6 +148,18 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         PhysicalFunction,
         aslist=c.ElementList,
         rootelem=PhysicalFunctionPkg,
+        deep=True,
+    )
+    all_physical_paths = c.ProxyAccessor(
+        cs.PhysicalPath,
+        aslist=c.ElementList,
+        rootelem=PhysicalComponentPkg,
+        deep=True,
+    )
+    all_component_exchanges = c.ProxyAccessor(
+        cs.ComponentExchange,
+        aslist=c.ElementList,
+        rootelem=PhysicalComponentPkg,
         deep=True,
     )
     all_actors = property(
