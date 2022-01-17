@@ -157,7 +157,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         deep=True,
     )
     all_component_exchanges = c.ProxyAccessor(
-        cs.ComponentExchange,
+        fa.ComponentExchange,
         aslist=c.ElementList,
         rootelem=PhysicalComponentPkg,
         deep=True,

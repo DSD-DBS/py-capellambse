@@ -33,6 +33,9 @@ from .. import modeltypes
 from . import capellacommon, information
 
 XT_COMP_EX_FNC_EX_ALLOC = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
+XT_COMP_EX_ALLOC = (
+    "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+)
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
 XT_FCI: cabc.Set[str] = frozenset(
     {

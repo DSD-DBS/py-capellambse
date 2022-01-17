@@ -25,14 +25,15 @@ Composite Structure object-relations map (ontology):
 import operator
 
 from capellambse.loader import xmltools
-from capellambse.model.crosslayer.fa import ComponentExchange
 
 from .. import common as c
-from . import capellacommon, information
+from . import capellacommon, fa, information
 
 XT_DEPLOY_LINK = (
     "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
 )
+XT_PHYS_PATH = "org.polarsys.capella.core.data.cs:PhysicalPath"
+XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 
 
 class Component(c.GenericElement):
@@ -65,8 +66,8 @@ class Part(c.GenericElement):
     _xmltag = "ownedParts"
 
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
+
     deployed_parts: c.Accessor
-    # deploying_parts = c.Accessor
 
 
 @c.xtype_handler(None)
@@ -83,6 +84,7 @@ class InterfacePkg(c.GenericElement):
         aslist=c.ElementList,
     )
     interfaces = c.ProxyAccessor(Interface, aslist=c.ElementList)
+
     packages: c.Accessor
 
 
@@ -102,17 +104,17 @@ class PhysicalLink(PhysicalPort):
     linkEnds = c.AttrProxyAccessor(
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
-
-    physical_paths: c.Accessor
     exchanges = c.ProxyAccessor(
-        ComponentExchange,
-        xtypes="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
+        fa.ComponentExchange,
+        xtypes=fa.XT_COMP_EX_ALLOC,
         aslist=c.ElementList,
         follow="targetElement",
     )
 
+    physical_paths: c.Accessor
 
-@c.xtype_handler("org.polarsys.capella.core.data.cs:PhysicalPath")
+
+@c.xtype_handler(XT_PHYS_PATH)
 class PhysicalPath(c.GenericElement):
     """A physical path."""
 
@@ -120,21 +122,20 @@ class PhysicalPath(c.GenericElement):
 
     involved_items = c.ProxyAccessor(
         c.GenericElement,
-        xtypes="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement",
+        xtypes=XT_PHYS_PATH_INV,
         aslist=c.MixedElementList,
         follow="involved",
+    )
+    exchanges = c.ProxyAccessor(
+        fa.ComponentExchange,
+        xtypes=fa.XT_COMP_EX_ALLOC,
+        aslist=c.ElementList,
+        follow="targetElement",
     )
 
     @property
     def involved_links(self):
         return self.involved_items.by_type("PhysicalLink")
-
-    exchanges = c.ProxyAccessor(
-        ComponentExchange,
-        xtypes="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
-        aslist=c.ElementList,
-        follow="targetElement",
-    )
 
 
 @c.xtype_handler(None)
