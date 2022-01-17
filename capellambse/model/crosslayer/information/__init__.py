@@ -26,19 +26,10 @@ from __future__ import annotations
 
 from capellambse.loader import xmltools
 
-from .. import common as c
-from .. import modeltypes
-from . import capellacommon
-
-XT_LITERAL_NUM_VAL = (
-    "org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
-)
-XT_LITERAL_STR_VAL = (
-    "org.polarsys.capella.core.data.information.datavalue:LiteralStringValue"
-)
-XT_ENUM_REF = (
-    "org.polarsys.capella.core.data.information.datavalue:EnumerationReference"
-)
+from ... import common as c
+from ... import modeltypes
+from .. import capellacommon, capellacore
+from . import datatype, datavalue
 
 
 def _allocated_exchange_items(
@@ -62,7 +53,7 @@ def _allocated_exchange_items(
 def _search_all_exchanges(
     obj: c.GenericElement,
 ) -> c.ElementList[c.GenericElement]:
-    from . import fa
+    from .. import fa
 
     return obj._model.search(fa.ComponentExchange, fa.FunctionalExchange)
 
@@ -72,31 +63,6 @@ class Unit(c.GenericElement):
     """Unit"""
 
     _xmltag = "ownedUnits"
-
-
-class LiteralValue(c.GenericElement):
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "abstract",
-        __doc__="Boolean flag, indicates if property is abstract",
-    )
-    value = xmltools.AttributeProperty(
-        "_element", "value", optional=True, returntype=str
-    )
-    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-
-
-@c.xtype_handler(None, XT_LITERAL_NUM_VAL)
-class LiteralNumericValue(LiteralValue):
-    value = xmltools.AttributeProperty(
-        "_element", "value", optional=True, returntype=float
-    )
-    unit = c.AttrProxyAccessor(c.GenericElement, "unit")
-
-
-@c.xtype_handler(None, XT_LITERAL_STR_VAL)
-class LiteralStringValue(LiteralValue):
-    pass
 
 
 @c.xtype_handler(None)
@@ -220,82 +186,6 @@ class Collection(c.GenericElement):
     super: c.Accessor[Collection]
 
 
-@c.xtype_handler(
-    None, "org.polarsys.capella.core.data.information.datavalue:ValuePart"
-)
-class ValuePart(c.GenericElement):
-    """A Value Part of a Complex Value."""
-
-    _xmltag = "ownedParts"
-    referenced_property = c.AttrProxyAccessor(
-        c.GenericElement, "referencedProperty"
-    )
-    value = c.RoleTagAccessor("ownedValue")
-
-
-@c.xtype_handler(
-    None, "org.polarsys.capella.core.data.information.datavalue:ComplexValue"
-)
-class ComplexValue(c.GenericElement):
-    """A Complex Value."""
-
-    _xmltag = "ownedDataValues"
-    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    value_parts = c.ProxyAccessor(
-        ValuePart,
-        "org.polarsys.capella.core.data.information.datavalue:ValuePart",
-        aslist=c.ElementList,
-    )
-
-
-@c.xtype_handler(
-    None,
-    "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
-)
-@c.attr_equal("name")
-class EnumerationLiteral(c.GenericElement):
-    """An EnumerationLiteral (proxy link)."""
-
-    _xmltag = "ownedLiterals"
-
-    name = xmltools.AttributeProperty("_element", "name", returntype=str)
-    owner: c.Accessor
-
-
-@c.xtype_handler(None, XT_ENUM_REF)
-class EnumerationReference(c.GenericElement):
-    name = xmltools.AttributeProperty("_element", "name", returntype=str)
-    type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    value = c.AttrProxyAccessor(c.GenericElement, "referencedValue")
-
-
-@c.xtype_handler(
-    None, "org.polarsys.capella.core.data.information.datatype:Enumeration"
-)
-class Enumeration(c.GenericElement):
-    """An Enumeration."""
-
-    _xmltag = "ownedDataTypes"
-
-    sub: c.Accessor
-    super: c.Accessor[Enumeration]
-    owned_literals = c.ProxyAccessor(
-        EnumerationLiteral,
-        "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
-        aslist=c.ElementList,
-        follow_abstract=False,
-    )
-
-    @property
-    def literals(self) -> c.ElementList[EnumerationLiteral]:
-        """Return all owned and inherited literals."""
-        return (
-            self.owned_literals + self.super.literals
-            if isinstance(self.super, Enumeration)
-            else self.owned_literals
-        )
-
-
 @c.xtype_handler(None)
 class DataPkg(c.GenericElement):
     """A data package that can hold classes."""
@@ -303,16 +193,9 @@ class DataPkg(c.GenericElement):
     classes = c.ProxyAccessor(Class, aslist=c.ElementList)
     unions = c.ProxyAccessor(Union, aslist=c.ElementList)
     collections = c.ProxyAccessor(Collection, aslist=c.ElementList)
-    enumerations = c.ProxyAccessor(
-        Enumeration,
-        "org.polarsys.capella.core.data.information.datatype:Enumeration",
-        aslist=c.ElementList,
-    )
+    enumerations = c.ProxyAccessor(datatype.Enumeration, aslist=c.ElementList)
     complex_values = c.ProxyAccessor(
-        ComplexValue,
-        "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
-        aslist=c.ElementList,
-        follow_abstract=False,
+        datavalue.ComplexValue, aslist=c.ElementList, follow_abstract=False
     )
     packages: c.Accessor
 
@@ -352,13 +235,13 @@ class ExchangeItem(c.GenericElement):
     )
 
 
-for cls in [Class, Union, Enumeration, Collection]:
+for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
         "super",
         c.ProxyAccessor(
             cls,
-            "org.polarsys.capella.core.data.capellacore:Generalization",
+            capellacore.Generalization,
             follow="super",
             follow_abstract=False,
         ),
@@ -369,7 +252,11 @@ for cls in [Class, Union, Enumeration, Collection]:
         c.ReferenceSearchingAccessor(cls, "super", aslist=c.MixedElementList),
     )
 
-c.set_accessor(EnumerationLiteral, "owner", c.ParentAccessor(Enumeration))
+c.set_accessor(
+    datavalue.EnumerationLiteral,
+    "owner",
+    c.ParentAccessor(datatype.Enumeration),
+)
 c.set_accessor(
     DataPkg, "packages", c.ProxyAccessor(DataPkg, aslist=c.ElementList)
 )

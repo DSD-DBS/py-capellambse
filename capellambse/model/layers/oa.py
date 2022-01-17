@@ -19,11 +19,16 @@ from __future__ import annotations
 
 import operator
 
-from capellambse.model.crosslayer import information
-
 from .. import common as c
 from .. import crosslayer, diagram
-from ..crosslayer import capellacommon, capellacore, cs, fa, interaction
+from ..crosslayer import (
+    capellacommon,
+    capellacore,
+    cs,
+    fa,
+    information,
+    interaction,
+)
 
 XT_ARCH = "org.polarsys.capella.core.data.oa:OperationalAnalysis"
 
