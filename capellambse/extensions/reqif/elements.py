@@ -11,11 +11,60 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tools for handling ReqIF Requirements.
-
-.. diagram:: [CDB] Requirements ORM
-"""
 from __future__ import annotations
+
+__all__ = [
+    "AbstractRequirementsAttribute",
+    "AbstractRequirementsRelation",
+    "AbstractType",
+    "AttributeDefinition",
+    "AttributeDefinitionEnumeration",
+    "BooleanValueAttribute",
+    "DataTypeDefinition",
+    "DateValueAttribute",
+    "EnumDataTypeDefinition",
+    "EnumValue",
+    "EnumerationValueAttribute",
+    "IntegerValueAttribute",
+    "ModuleType",
+    "RealValueAttribute",
+    "RelationType",
+    "RelationsList",
+    "ReqIFElement",
+    "Requirement",
+    "RequirementType",
+    "RequirementsFolder",
+    "RequirementsIncRelation",
+    "RequirementsIntRelation",
+    "RequirementsModule",
+    "RequirementsOutRelation",
+    "RequirementsTypesFolder",
+    "StringValueAttribute",
+    "XT_FOLDER",
+    "XT_INC_RELATION",
+    "XT_INT_RELATION",
+    "XT_MODULE",
+    "XT_MODULE_TYPE",
+    "XT_OUT_RELATION",
+    "XT_RELATION_TYPE",
+    "XT_REQUIREMENT",
+    "XT_REQ_ATTRIBUTES",
+    "XT_REQ_ATTR_BOOLEANVALUE",
+    "XT_REQ_ATTR_DATEVALUE",
+    "XT_REQ_ATTR_ENUMVALUE",
+    "XT_REQ_ATTR_INTEGERVALUE",
+    "XT_REQ_ATTR_REALVALUE",
+    "XT_REQ_ATTR_STRINGVALUE",
+    "XT_REQ_TYPE",
+    "XT_REQ_TYPES",
+    "XT_REQ_TYPES_DATA_DEF",
+    "XT_REQ_TYPES_F",
+    "XT_REQ_TYPE_ATTR_DEF",
+    "XT_REQ_TYPE_ATTR_ENUM",
+    "XT_REQ_TYPE_ENUM",
+    "XT_REQ_TYPE_ENUM_DEF",
+    "init",
+]
 
 import collections.abc as cabc
 import logging
