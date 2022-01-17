@@ -71,6 +71,9 @@ class FunctionPort(c.GenericElement):
 
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)
