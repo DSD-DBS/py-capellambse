@@ -22,14 +22,17 @@ Composite Structure object-relations map (ontology):
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
 
+import operator
+
 from capellambse.loader import xmltools
 
 from .. import common as c
-from . import capellacommon, information
+from . import capellacommon, fa, information
 
 XT_DEPLOY_LINK = (
     "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
 )
+XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 
 
 class Component(c.GenericElement):
@@ -62,8 +65,8 @@ class Part(c.GenericElement):
     _xmltag = "ownedParts"
 
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    deployed_parts = c.Accessor
-    # deploying_parts = c.Accessor
+
+    deployed_parts: c.Accessor
 
 
 @c.xtype_handler(None)
@@ -80,6 +83,7 @@ class InterfacePkg(c.GenericElement):
         aslist=c.ElementList,
     )
     interfaces = c.ProxyAccessor(Interface, aslist=c.ElementList)
+
     packages: c.Accessor
 
 
@@ -99,6 +103,38 @@ class PhysicalLink(PhysicalPort):
     linkEnds = c.AttrProxyAccessor(
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
+    exchanges = c.ProxyAccessor(
+        fa.ComponentExchange,
+        xtypes=fa.XT_COMP_EX_ALLOC,
+        aslist=c.ElementList,
+        follow="targetElement",
+    )
+
+    physical_paths: c.Accessor
+
+
+@c.xtype_handler(None)
+class PhysicalPath(c.GenericElement):
+    """A physical path."""
+
+    _xmltag = "ownedPhysicalPath"
+
+    involved_items = c.ProxyAccessor(
+        c.GenericElement,
+        xtypes=XT_PHYS_PATH_INV,
+        aslist=c.MixedElementList,
+        follow="involved",
+    )
+    exchanges = c.ProxyAccessor(
+        fa.ComponentExchange,
+        xtypes=fa.XT_COMP_EX_ALLOC,
+        aslist=c.ElementList,
+        follow="targetElement",
+    )
+
+    @property
+    def involved_links(self):
+        return self.involved_items.by_type("PhysicalLink")
 
 
 @c.xtype_handler(None)
@@ -127,5 +163,15 @@ c.set_accessor(
         aslist=c.ElementList,
         follow="deployedElement",
         follow_abstract=False,
+    ),
+)
+c.set_accessor(
+    PhysicalLink,
+    "physical_paths",
+    c.CustomAccessor(
+        PhysicalPath,
+        operator.attrgetter("_model.pa.all_physical_paths"),
+        matchtransform=operator.attrgetter("involved_items"),
+        aslist=c.ElementList,
     ),
 )
