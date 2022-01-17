@@ -32,7 +32,6 @@ from . import capellacommon, fa, information
 XT_DEPLOY_LINK = (
     "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
 )
-XT_PHYS_PATH = "org.polarsys.capella.core.data.cs:PhysicalPath"
 XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 
 
@@ -114,7 +113,7 @@ class PhysicalLink(PhysicalPort):
     physical_paths: c.Accessor
 
 
-@c.xtype_handler(XT_PHYS_PATH)
+@c.xtype_handler(None)
 class PhysicalPath(c.GenericElement):
     """A physical path."""
 
