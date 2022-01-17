@@ -574,16 +574,17 @@ class AttrProxyAccessor(PhysicalAccessor):
         obj._element.set(self.attr, " ".join(parts))
 
 
-class AlternateAccessor(PhysicalAccessor[T]):
+class AlternateAccessor(Accessor[T]):
     """Provides access to an "alternate" form of the object."""
 
-    __slots__ = ()
+    __slots__ = ("class_",)
 
     def __init__(
         self,
         class_: type[T],
     ):
-        super().__init__(class_)
+        super().__init__()
+        self.class_ = class_
 
     def __get__(self, obj, objtype=None):
         del objtype

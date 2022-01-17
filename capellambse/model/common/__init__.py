@@ -32,6 +32,7 @@ T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
 # pylint: enable=invalid-name
 
+XTYPE_ANCHORS = ["capellambse.model.crosslayer", "capellambse.model.layers"]
 XTYPE_HANDLERS: dict[
     str | None, dict[str, type[t.Any]]
 ] = collections.defaultdict(dict)
@@ -48,9 +49,14 @@ These keys map to a further dictionary.  This second layer maps from the
 
 
 def build_xtype(class_: type[ModelObject]) -> str:
-    module = class_.__module__.split(".")[-1]
+    for anchor in XTYPE_ANCHORS:
+        if class_.__module__.startswith(anchor):
+            module = class_.__module__[len(anchor) :]
+            break
+    else:
+        raise TypeError(f"Module is not an xtype anchor: {class_.__module__}")
     clsname = class_.__name__
-    return f"org.polarsys.capella.core.data.{module}:{clsname}"
+    return f"org.polarsys.capella.core.data{module}:{clsname}"
 
 
 def enumliteral(
