@@ -13,6 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 
+import warnings
+
 import markupsafe
 
 __all__ = [
@@ -481,14 +483,14 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         elmlist._parent._element.remove(obj._element)
 
 
-class AttrProxyAccessor(PhysicalAccessor[T]):
+class AttrProxyAccessor(PhysicalAccessor):
     """Provides access to elements that are linked in an attribute."""
 
     __slots__ = ("attr",)
 
     def __init__(
         self,
-        class_: type[T],
+        class_: type | None,
         attr: str,
         *,
         aslist: type[element.ElementList] | None = None,
@@ -509,8 +511,14 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
             list of all matched objects.  Incompatible with ``xtypes =
             None``.
         """
-        super().__init__(class_, aslist=aslist)
+        super().__init__(element.GenericElement, aslist=aslist)
         self.attr = attr
+
+        if class_ not in (None, element.GenericElement):
+            warnings.warn(
+                "Class argument to AttrProxyAccessor is deprecated.",
+                DeprecationWarning,
+            )
 
     def __get__(self, obj, objtype=None):
         del objtype
