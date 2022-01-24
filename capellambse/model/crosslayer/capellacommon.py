@@ -18,14 +18,18 @@ from . import capellacore
 XT_TRAFO = "org.polarsys.capella.core.data.capellacommon:TransfoLink"
 XT_PSEUDOSTATES = frozenset(
     {
-        "org.polarsys.capella.core.data.capellacommon:DeepHistoryPseudoState",
-        "org.polarsys.capella.core.data.capellacommon:FinalState",
-        "org.polarsys.capella.core.data.capellacommon:ForkPseudoState",
-        "org.polarsys.capella.core.data.capellacommon:InitialPseudoState",
-        "org.polarsys.capella.core.data.capellacommon:JoinPseudoState",
-        "org.polarsys.capella.core.data.capellacommon:ShallowHistoryPseudoState",
-        "org.polarsys.capella.core.data.capellacommon:TerminatePseudoState",
+        "State",
+        "DeepHistoryPseudoState",
+        "FinalState",
+        "ForkPseudoState",
+        "InitialPseudoState",
+        "JoinPseudoState",
+        "ShallowHistoryPseudoState",
+        "TerminatePseudoState",
     }
+)
+XT_ABSTRACT_STATE_REAL = (
+    "org.polarsys.capella.core.data.capellacommon:AbstractStateRealization"
 )
 
 
@@ -43,7 +47,10 @@ class Region(c.GenericElement):
 class AbstractStateMode(c.GenericElement):
     """Common code for states and modes."""
 
+    _xmltag = "ownedStates"
+
     regions = c.ProxyAccessor(Region, aslist=c.ElementList)
+
     functions: c.Accessor
 
 
@@ -51,19 +58,45 @@ class AbstractStateMode(c.GenericElement):
 class State(AbstractStateMode):
     """A state."""
 
-    _xmltag = "ownedStates"
-
 
 @c.xtype_handler(None)
 class Mode(AbstractStateMode):
     """A mode."""
 
-    _xmltag = "ownedStates"
+
+@c.xtype_handler(None)
+class DeepHistoryPseudoState(AbstractStateMode):
+    """A deep history pseudo state."""
 
 
-@c.xtype_handler(None, *XT_PSEUDOSTATES)
-class OASTMROther(AbstractStateMode):
-    """Placeholder for unhandled states and modes."""
+@c.xtype_handler(None)
+class FinalState(AbstractStateMode):
+    """A final state."""
+
+
+@c.xtype_handler(None)
+class ForkPseudoState(AbstractStateMode):
+    """A fork pseudo state."""
+
+
+@c.xtype_handler(None)
+class InitialPseudoState(AbstractStateMode):
+    """An initial pseudo state."""
+
+
+@c.xtype_handler(None)
+class JoinPseudoState(AbstractStateMode):
+    """A join pseudo state."""
+
+
+@c.xtype_handler(None)
+class ShallowHistoryPseudoState(AbstractStateMode):
+    """A shallow history pseudo state."""
+
+
+@c.xtype_handler(None)
+class TerminatePseudoState(AbstractStateMode):
+    """A terminate pseudo state."""
 
 
 @c.xtype_handler(None)
@@ -89,7 +122,40 @@ class StateTransition(c.GenericElement):
     guard = c.AttrProxyAccessor(capellacore.Constraint, "guard")
 
 
-c.set_accessor(Region, "states", c.ProxyAccessor(State, aslist=c.ElementList))
+c.set_accessor(
+    AbstractStateMode,
+    "realized_states",
+    c.ProxyAccessor(
+        c.GenericElement,
+        XT_ABSTRACT_STATE_REAL,
+        follow="targetElement",
+        aslist=c.ElementList,
+    ),
+)
+for cls in [
+    State,
+    Mode,
+    DeepHistoryPseudoState,
+    FinalState,
+    ForkPseudoState,
+    InitialPseudoState,
+    JoinPseudoState,
+    ShallowHistoryPseudoState,
+    TerminatePseudoState,
+]:
+    c.set_accessor(
+        cls,
+        "realizing_states",
+        c.ReferenceSearchingAccessor(
+            cls, "realized_states", aslist=c.ElementList
+        ),
+    )
+
+c.set_accessor(
+    Region,
+    "states",
+    c.RoleTagAccessor(AbstractStateMode._xmltag, aslist=c.ElementList),
+)
 c.set_accessor(Region, "modes", c.ProxyAccessor(Mode, aslist=c.ElementList))
 c.set_accessor(
     Region,

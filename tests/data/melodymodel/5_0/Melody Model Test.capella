@@ -1666,6 +1666,8 @@ The predator is far away</bodies>
             name="Gerard Butler" abstractType="#6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="3c7d40ac-4f28-4dc0-90e3-9ff856eaa058"
             name="SystemActor" abstractType="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="84114037-2bb4-41d9-8ed1-db961b5d3c00"
+            name="SA 4" abstractType="#da12377b-fb70-4441-8faa-3a5c153c5de2"/>
         <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
             id="9806df59-397c-4505-918f-3b1288638251" name="RootStateMachine">
           <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
@@ -1770,6 +1772,9 @@ The predator is far away</bodies>
                   id="43932114-8ad4-4074-b2a9-b0d55b8d027b" name="Birth">
                 <ownedAbstractStateRealizations xsi:type="org.polarsys.capella.core.data.capellacommon:AbstractStateRealization"
                     id="bb59810b-d395-4464-b6f2-fdfd69d6fd83" targetElement="#461de288-fa3f-45bd-9975-8ebe1aec85d9"
+                    sourceElement="#43932114-8ad4-4074-b2a9-b0d55b8d027b"/>
+                <ownedAbstractStateRealizations xsi:type="org.polarsys.capella.core.data.capellacommon:AbstractStateRealization"
+                    id="e2384aef-79e3-44e6-b9fe-9fec958b0d92" targetElement="#757c825f-f522-4d90-b3af-071a4cec3f06"
                     sourceElement="#43932114-8ad4-4074-b2a9-b0d55b8d027b"/>
               </ownedStates>
               <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
@@ -2013,6 +2018,12 @@ The predator is far away</bodies>
           <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
               id="4582f200-8833-4697-8234-279cb4a1d9bb" targetElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"
               sourceElement="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+        </ownedSystemComponents>
+        <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
+            id="da12377b-fb70-4441-8faa-3a5c153c5de2" name="SA 4" actor="true">
+          <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
+              id="c91d5664-b9af-48f8-b654-ee09bd46ab6a" targetElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"
+              sourceElement="#da12377b-fb70-4441-8faa-3a5c153c5de2"/>
         </ownedSystemComponents>
         <ownedSystemComponentPkgs xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"
             id="145327ea-d6eb-4ad2-abe5-79876938b0a7" name="First Class">
