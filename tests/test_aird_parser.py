@@ -17,7 +17,8 @@ import sys
 
 import pytest
 
-from capellambse import MelodyModel, aird, loader
+import capellambse
+from capellambse import aird, loader
 
 
 class TestAIRDBasicFunctionality:
@@ -88,7 +89,9 @@ class TestAIRDBasicFunctionality:
         assert actual == expected
 
 
-def test_airdparser_msm_produces_valid_json_without_error(model: MelodyModel):
+def test_airdparser_msm_produces_valid_json_without_error(
+    model: capellambse.MelodyModel,
+):
     diag_name = "[MSM] States of Functional Human Being"
     all_diagrams = aird.enumerate_diagrams(model._loader)
     descriptor = next(i for i in all_diagrams if i.name == diag_name)
