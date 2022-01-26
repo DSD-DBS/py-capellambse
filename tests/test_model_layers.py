@@ -38,12 +38,16 @@ def test_model_info_contains_capella_version(model: MelodyModel):
     assert hasattr(model.info, "capella_version")
 
 
-def test_loading_version_5_succeeds():
-    MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
-
-
-def test_loading_version_one_succeeds():
-    MelodyModel(TEST_ROOT / "1_3" / "MelodyModelTest.aird")
+@pytest.mark.parametrize(
+    "folder,aird",
+    [
+        ("5_2", TEST_MODEL),
+        ("5_0", TEST_MODEL),
+        ("1_3", TEST_MODEL.replace(" ", "")),
+    ],
+)
+def test_model_compatibility(folder: str, aird: str) -> None:
+    MelodyModel(TEST_ROOT / folder / aird)
 
 
 def test_ElementList_filter_by_name(model: MelodyModel):
@@ -562,9 +566,10 @@ class TestArchitectureLayers:
                     "all_actors",
                     "all_components",
                     # TODO: actor_exchanges
-                    # TODO: component_exchanges
+                    "all_component_exchanges",
                     "all_physical_exchanges",
                     "all_physical_links",
+                    "all_physical_paths",
                 ],
                 id="PhysicalArchitectureLayer",
             ),
@@ -690,3 +695,13 @@ class TestArchitectureLayers:
 
         assert card1_os in comp_card1.deployed_components
         assert comp_card1 in card1_os.deploying_components
+
+    def test_physical_path_is_found(self, model: MelodyModel) -> None:
+        expected_path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
+        assert expected_path in model.pa.all_physical_paths
+
+    def test_pa_component_exchange_is_found(self, model: MelodyModel) -> None:
+        expected_exchange = model.by_uuid(
+            "3aa006b1-f954-4e8f-a4e9-2e9cd38555de"
+        )
+        assert expected_exchange in model.pa.all_component_exchanges

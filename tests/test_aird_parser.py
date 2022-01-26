@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 import pathlib
 import sys
 
 import pytest
 
-from capellambse import aird, loader
+from capellambse import MelodyModel, aird, loader
 
 
 class TestAIRDBasicFunctionality:
@@ -87,32 +88,15 @@ class TestAIRDBasicFunctionality:
         assert actual == expected
 
 
-class TestAIRDParserMSM:
-    test_model = (
-        pathlib.Path(__file__).parent
-        / "data"
-        / "melodymodel"
-        / "1_3"
-        / "MelodyModelTest.aird"
+def test_airdparser_msm_produces_valid_json_without_error(model: MelodyModel):
+    diagram = aird.parse_diagram(
+        model._loader,
+        next(
+            i
+            for i in aird.enumerate_diagrams(model._loader)
+            if i.name == "[MSM] States of Functional Human Being"
+        ),
     )
-    test_diagram = "[MSM] States of Functional Human Being"
-    test_json = test_model.with_suffix(f".{test_diagram}.json")
 
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
-    @pytest.mark.skip(reason="Currently broken")
-    def test_aird_msm(self):
-        model = loader.MelodyLoader(self.test_model)
-        diagram = aird.parse_diagram(
-            model,
-            next(
-                i
-                for i in aird.enumerate_diagrams(model)
-                if i.name == self.test_diagram
-            ),
-        )
-
-        generated_json = aird.DiagramJSONEncoder(indent=4).encode(diagram)
-        assert self.test_json.read_text() == generated_json + "\n"
+    generated_json = aird.DiagramJSONEncoder(indent=4).encode(diagram)
+    assert "error" not in json.loads(generated_json)["name"]
