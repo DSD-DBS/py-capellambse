@@ -89,14 +89,10 @@ class TestAIRDBasicFunctionality:
 
 
 def test_airdparser_msm_produces_valid_json_without_error(model: MelodyModel):
-    diagram = aird.parse_diagram(
-        model._loader,
-        next(
-            i
-            for i in aird.enumerate_diagrams(model._loader)
-            if i.name == "[MSM] States of Functional Human Being"
-        ),
-    )
+    diag_name = "[MSM] States of Functional Human Being"
+    all_diagrams = aird.enumerate_diagrams(model._loader)
+    descriptor = next(i for i in all_diagrams if i.name == diag_name)
+    diagram = aird.parse_diagram(model._loader, descriptor)
 
     generated_json = aird.DiagramJSONEncoder(indent=4).encode(diagram)
     assert "error" not in json.loads(generated_json)["name"]
