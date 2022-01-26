@@ -242,7 +242,7 @@ class TestStateMachines:
         entity = model.oa.all_entities.by_name("Functional Human Being")
         region = entity.state_machines[0].regions[0]
 
-        assert len(region.states) == 6
+        assert len(region.states) == 12
         assert len(region.modes) == 0
         assert len(region.transitions) == 14
 
