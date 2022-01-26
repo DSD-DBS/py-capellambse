@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import dataclasses
-import re
 import typing as t
 
 from capellambse import aird, helpers

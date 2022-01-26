@@ -88,6 +88,7 @@ disable = [
   "assignment-from-no-return",  # handled by mypy
   "bad-indentation",  # auto-formatting
   "broad-except",
+  "consider-using-f-string",
   "global-statement",
   "import-error",  # handled by mypy
   "import-outside-toplevel",
