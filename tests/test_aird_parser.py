@@ -95,4 +95,4 @@ def test_airdparser_msm_produces_valid_json_without_error(model: MelodyModel):
     diagram = aird.parse_diagram(model._loader, descriptor)
 
     generated_json = aird.DiagramJSONEncoder(indent=4).encode(diagram)
-    assert "error" not in json.loads(generated_json)["name"]
+    json.loads(generated_json)
