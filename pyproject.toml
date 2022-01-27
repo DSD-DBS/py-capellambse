@@ -89,6 +89,7 @@ disable = [
   "bad-indentation",  # auto-formatting
   "broad-except",
   "consider-using-f-string",
+  "cyclic-import",
   "global-statement",
   "import-error",  # handled by mypy
   "import-outside-toplevel",
