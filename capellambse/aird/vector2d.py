@@ -170,23 +170,35 @@ class Vector2D(t.NamedTuple):
         corner2
             A Vector2D describing the second corner of the target box.
         dirvec
-            A Vector2D pointing in the direction to snap towards.
+            Ignored.
         """
         minx = min(corner1[0], corner2[0])
         miny = min(corner1[1], corner2[1])
         maxx = max(corner1[0], corner2[0])
         maxy = max(corner1[1], corner2[1])
 
-        if abs(dirvec[0]) >= abs(dirvec[1]):
-            # Snap horizontally
-            return Vector2D(
-                (minx, maxx)[dirvec[0] > 0],
-                min(maxy - 1, max(miny + 1, self[1])),
-            )
-        # Snap vertically
-        return Vector2D(
-            min(maxx - 1, max(minx + 1, self[0])), (miny, maxy)[dirvec[1] > 0]
-        )
+        x, y = self.x, self.y
+        if x < minx:
+            x = minx
+        elif x > maxx:
+            x = maxx
+        if y < miny:
+            y = miny
+        elif y > maxy:
+            y = maxy
+
+        point = Vector2D(x, y)
+        if x != self.x or y != self.y:
+            return point
+
+        distances = [
+            Vector2D(self.x - minx, 0),
+            Vector2D(self.x - maxx, 0),
+            Vector2D(0, self.y - miny),
+            Vector2D(0, self.y - maxy),
+        ]
+        offset = min(distances, key=lambda i: i.sqlength)
+        return point + offset
 
     def __map(
         self,

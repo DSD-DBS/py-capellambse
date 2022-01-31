@@ -190,36 +190,14 @@ class Box:
 
         if self.port:
             padding = (self.parent.PORT_OVERHANG, self.parent.PORT_OVERHANG)
-            # Distances of all corner combinations
-            # (our/parent's top-left/bottom-right)
-            d_tl_tl = self.pos - self.parent.pos
-            d_br_tl = self.pos + self.size - self.parent.pos
-            d_tl_br = self.pos - self.parent.pos - self.parent.size
-            d_br_br = self.pos + self.size - self.parent.pos - self.parent.size
-
-            # Find closest parent border (left vs. right and top vs. bottom)
-            d_tl = aird.Vector2D(
-                min(d_tl_tl.x, d_br_tl.x), min(d_tl_tl.y, d_br_tl.y)
+            midbox_tl = self.parent.pos + self.size / 2 - padding
+            midbox_br = (
+                self.parent.pos + self.parent.size - self.size / 2 + padding
             )
-            d_br = aird.Vector2D(
-                min(d_tl_br.x, d_br_br.x), min(d_tl_br.y, d_br_br.y)
-            )
-            border = aird.Vector2D(
-                -1 if abs(d_tl.x) <= abs(d_br.x) else 1,
-                -1 if abs(d_tl.y) <= abs(d_br.y) else 1,
-            )
-
-            # Find out if horizontal or vertical border is closer
-            horiz = abs(d_tl.x if border.x < 0 else d_br.x) <= abs(
-                d_tl.y if border.y < 0 else d_br.y
-            )
-            border = border @ (horiz, not horiz)
-
-            self.pos = self.pos.boxsnap(
-                self.parent.pos - padding,
-                self.parent.pos + self.parent.size + padding - self.size,
-                border,
-            )
+            midbox = aird.Box(midbox_tl, midbox_br - midbox_tl)
+            mid = self.pos + self.size / 2
+            newmid = midbox.vector_snap(mid)
+            self.pos += newmid - mid
         else:
             padding = (self.parent.CHILD_MARGIN, self.parent.CHILD_MARGIN)
             minpos = self.parent.pos + padding
@@ -253,7 +231,7 @@ class Box:
             self.parent.add_context(uuid)
 
     def vector_snap(
-        self, vector: aird.Vec2ish, direction: aird.Vec2ish
+        self, vector: aird.Vec2ish, direction: aird.Vec2ish = (0, 0)
     ) -> aird.Vector2D:
         """Snap the ``vector`` into this Box, preferably into ``direction``."""
         if not isinstance(vector, aird.Vector2D):
