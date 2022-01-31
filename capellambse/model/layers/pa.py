@@ -88,7 +88,6 @@ class PhysicalComponent(cs.Component):
         aslist=c.ElementList,
         follow="targetElement",
     )
-    ports = c.ProxyAccessor(cs.PhysicalPort, aslist=c.ElementList)
 
     owned_components: c.Accessor
     deploying_components: c.Accessor

@@ -536,7 +536,13 @@ class Drawing(drawing.Drawing):
 
         if class_ in decorations.all_ports:
             grp = self.add_port(
-                pos, size, text_style, parent_, class_=class_, label=label_
+                pos,
+                size,
+                text_style,
+                parent_,
+                class_=class_,
+                label=label_,
+                id_=id_,
             )
         else:
             grp = self.g(class_=f"Box {class_}", id_=id_)

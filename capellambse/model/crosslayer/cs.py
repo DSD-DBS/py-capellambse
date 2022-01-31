@@ -35,30 +35,6 @@ XT_DEPLOY_LINK = (
 XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 
 
-class Component(c.GenericElement):
-    """A template class for components."""
-
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "abstract",
-        __doc__="Boolean flag for an abstract Component",
-    )
-    is_human = xmltools.BooleanAttributeProperty(
-        "_element", "human", __doc__="Boolean flag for a human Component"
-    )
-    is_actor = xmltools.BooleanAttributeProperty(
-        "_element", "actor", __doc__="Boolean flag for an actor Component"
-    )
-
-    owner = c.ParentAccessor(c.GenericElement)
-    state_machines = c.ProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
-    ports = c.ProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
-
-    parts: c.Accessor
-
-
 @c.xtype_handler(None)
 class Part(c.GenericElement):
     """A representation of a physical component"""
@@ -114,6 +90,30 @@ class PhysicalLink(PhysicalPort):
     physical_paths: c.Accessor
 
 
+class Component(c.GenericElement):
+    """A template class for components."""
+
+    is_abstract = xmltools.BooleanAttributeProperty(
+        "_element",
+        "abstract",
+        __doc__="Boolean flag for an abstract Component",
+    )
+    is_human = xmltools.BooleanAttributeProperty(
+        "_element", "human", __doc__="Boolean flag for a human Component"
+    )
+    is_actor = xmltools.BooleanAttributeProperty(
+        "_element", "actor", __doc__="Boolean flag for an actor Component"
+    )
+
+    owner = c.ParentAccessor(c.GenericElement)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+    ports = c.ProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
+    physical_ports = c.ProxyAccessor(PhysicalPort, aslist=c.ElementList)
+    parts = c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList)
+
+
 @c.xtype_handler(None)
 class PhysicalPath(c.GenericElement):
     """A physical path."""
@@ -145,11 +145,6 @@ class ComponentRealization(c.GenericElement):
     _xmltag = "ownedComponentRealizations"
 
 
-c.set_accessor(
-    Component,
-    "parts",
-    c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList),
-)
 c.set_accessor(
     InterfacePkg,
     "packages",
