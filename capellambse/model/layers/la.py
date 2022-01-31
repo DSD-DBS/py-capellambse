@@ -81,7 +81,6 @@ class LogicalComponent(cs.Component):
         aslist=c.ElementList,
         follow="targetElement",
     )
-    ports = c.ProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
 
     components: c.Accessor
 

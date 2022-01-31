@@ -54,6 +54,7 @@ class Component(c.GenericElement):
     state_machines = c.ProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
+    ports = c.ProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
 
     parts: c.Accessor
 
