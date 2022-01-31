@@ -34,13 +34,11 @@ XT_LA_COMP_REAL = (
 
 
 @c.xtype_handler(XT_ARCH)
-class PhysicalFunction(fa.AbstractFunction):
+class PhysicalFunction(fa.Function):
     """A physical function on the Physical Architecture layer."""
 
     _xmltag = "ownedPhysicalFunctions"
 
-    inputs = c.ProxyAccessor(fa.FunctionInputPort, aslist=c.ElementList)
-    outputs = c.ProxyAccessor(fa.FunctionOutputPort, aslist=c.ElementList)
     owner = c.CustomAccessor(
         c.GenericElement,
         operator.attrgetter("_model.pa.all_components"),
@@ -52,10 +50,6 @@ class PhysicalFunction(fa.AbstractFunction):
         aslist=c.ElementList,
         follow="targetElement",
     )
-
-    is_leaf = property(lambda self: not self.functions)
-
-    functions: c.Accessor
 
 
 @c.xtype_handler(XT_ARCH)
@@ -211,6 +205,14 @@ c.set_accessor(
         PhysicalComponent,
         operator.attrgetter("_model.pa.all_components"),
         matchtransform=operator.attrgetter("deployed_components"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    PhysicalFunction,
+    "packages",
+    c.ProxyAccessor(
+        PhysicalFunctionPkg,
         aslist=c.ElementList,
     ),
 )

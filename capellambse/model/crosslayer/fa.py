@@ -101,6 +101,18 @@ class FunctionOutputPort(FunctionPort):
     )
 
 
+class Function(AbstractFunction):
+    """Common Code for Function's."""
+
+    is_leaf = property(lambda self: not self.functions)
+
+    inputs = c.ProxyAccessor(FunctionInputPort, aslist=c.ElementList)
+    outputs = c.ProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
+
+    functions: c.Accessor
+    packages: c.Accessor
+
+
 @c.xtype_handler(None)
 class FunctionalExchange(AbstractExchange):
     """A functional exchange."""

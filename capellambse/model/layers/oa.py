@@ -246,6 +246,14 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+c.set_accessor(
+    OperationalActivity,
+    "packages",
+    c.ProxyAccessor(
+        OperationalActivityPkg,
+        aslist=c.ElementList,
+    ),
+)
 c.set_self_references(
     (OperationalActivityPkg, "packages"),
     (OperationalCapabilityPkg, "packages"),

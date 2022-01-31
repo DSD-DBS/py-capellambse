@@ -28,22 +28,17 @@ XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
 
 
 @c.xtype_handler(XT_ARCH)
-class LogicalFunction(fa.AbstractFunction):
+class LogicalFunction(fa.Function):
     """A logical function on the Logical Architecture layer."""
 
     _xmltag = "ownedLogicalFunctions"
 
-    inputs = c.ProxyAccessor(fa.FunctionInputPort, aslist=c.ElementList)
-    outputs = c.ProxyAccessor(fa.FunctionOutputPort, aslist=c.ElementList)
-    is_leaf = property(lambda self: not self.functions)
     realized_system_functions = c.ProxyAccessor(
         ctx.SystemFunction,
         fa.FunctionRealization,
         aslist=c.ElementList,
         follow="targetElement",
     )
-
-    functions: c.Accessor
 
     @property
     def owner(self) -> LogicalComponent | None:
@@ -248,6 +243,14 @@ c.set_accessor(
         LogicalFunction,
         operator.attrgetter("_model.la.all_functions"),
         matchtransform=operator.attrgetter("realized_system_functions"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    LogicalFunction,
+    "packages",
+    c.ProxyAccessor(
+        LogicalFunctionPkg,
         aslist=c.ElementList,
     ),
 )
