@@ -1665,9 +1665,18 @@ The predator is far away</bodies>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="84b76828-185c-4667-b8fe-bd9c2e12ae40"
             name="Gerard Butler" abstractType="#6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="3c7d40ac-4f28-4dc0-90e3-9ff856eaa058"
-            name="SystemActor" abstractType="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+            name="HollyWood" abstractType="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="84114037-2bb4-41d9-8ed1-db961b5d3c00"
-            name="SA 4" abstractType="#da12377b-fb70-4441-8faa-3a5c153c5de2"/>
+            name="Affleck" abstractType="#da12377b-fb70-4441-8faa-3a5c153c5de2"/>
+        <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+            id="9ded0504-94e5-456a-b446-af72924448e1" name="befriend" source="#1817adb2-a3f2-498e-bb29-3031231426a3"
+            target="#74505eac-7abc-476d-8dec-ad68abb4b2a5" kind="FLOW"/>
+        <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+            id="4ad47697-2560-4e32-8c6a-8908efe8e5ee" name="go to" source="#1bf2b3e5-fcdd-45b6-9b9f-fa211dbd50aa"
+            target="#5e53616c-d3b6-4b2c-be23-6fb4229ddd20" kind="FLOW"/>
+        <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+            id="86a1afc2-b7fd-4023-bbd5-ab44f5dc2c28" name="afflecks" source="#b2d2a4f1-0c21-45f4-918c-3d3c5e8af104"
+            target="#6b07c5a0-8731-4266-b465-25590d1af82c" kind="FLOW"/>
         <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
             id="9806df59-397c-4505-918f-3b1288638251" name="RootStateMachine">
           <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
@@ -2009,18 +2018,34 @@ The predator is far away</bodies>
         </ownedSystemComponents>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
             id="344a405e-c7e5-4367-8a9a-41d3d9a27f81" name="Kevin Spacey" actor="true"
-            human="true"/>
+            human="true">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+              id="1817adb2-a3f2-498e-bb29-3031231426a3" name="CP 1" orientation="OUT"
+              kind="FLOW"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+              id="1bf2b3e5-fcdd-45b6-9b9f-fa211dbd50aa" name="CP 2" orientation="OUT"
+              kind="FLOW"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+              id="6b07c5a0-8731-4266-b465-25590d1af82c" name="CP 3" orientation="IN"
+              kind="FLOW"/>
+        </ownedSystemComponents>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
-            id="d4a22478-5717-4ca7-bfc9-9a193e6218a8" name="SystemActor" actor="true">
+            id="d4a22478-5717-4ca7-bfc9-9a193e6218a8" name="HollyWood" actor="true">
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
               id="c2ec1e87-49d5-4286-96a4-653a76c3fece" targetElement="#ceffa011-7b66-4b3c-9885-8e075e312ffa"
               sourceElement="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+              id="5e53616c-d3b6-4b2c-be23-6fb4229ddd20" name="CP 1" orientation="IN"
+              kind="FLOW"/>
           <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
               id="4582f200-8833-4697-8234-279cb4a1d9bb" targetElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"
               sourceElement="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
         </ownedSystemComponents>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
-            id="da12377b-fb70-4441-8faa-3a5c153c5de2" name="SA 4" actor="true">
+            id="da12377b-fb70-4441-8faa-3a5c153c5de2" name="Affleck" actor="true">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+              id="b2d2a4f1-0c21-45f4-918c-3d3c5e8af104" name="CP 1" orientation="OUT"
+              kind="FLOW"/>
           <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
               id="c91d5664-b9af-48f8-b654-ee09bd46ab6a" targetElement="#b805a725-4b13-4b77-810e-b0ba002d5d98"
               sourceElement="#da12377b-fb70-4441-8faa-3a5c153c5de2"/>
@@ -2029,7 +2054,11 @@ The predator is far away</bodies>
             id="145327ea-d6eb-4ad2-abe5-79876938b0a7" name="First Class">
           <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
               id="6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6" name="Gerard Butler" actor="true"
-              human="true"/>
+              human="true">
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                id="74505eac-7abc-476d-8dec-ad68abb4b2a5" name="CP 1" orientation="IN"
+                kind="FLOW"/>
+          </ownedSystemComponents>
         </ownedSystemComponentPkgs>
       </ownedSystemComponentPkg>
       <ownedMissionPkg xsi:type="org.polarsys.capella.core.data.ctx:MissionPkg" id="290a5318-2702-4f9c-8616-cbd5c1f4e05a"
