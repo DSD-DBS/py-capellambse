@@ -650,6 +650,23 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke-dasharray": "5",
         },
     },
+    "Operational Activity Interaction Blank": {
+        "Box.OperationalActivity": {
+            "fill": COLORS["_CAP_Activity_Orange"],
+            "rx": "10px",
+            "ry": "10px",
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
+            "text_fill": COLORS["_CAP_xAB_Activity_Label_Orange"],
+        },
+        "Box.OperationalProcess": {
+            "stroke": COLORS["black"],
+            "text_fill": COLORS["black"],
+        },
+        "Edge.FunctionalExchange": {
+            "marker-end": "ArrowMark",
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
+        },
+    },
     "Physical Architecture Blank": {
         **dict.fromkeys(
             ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],

@@ -95,6 +95,10 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "OrControlNodeSymbol",
         "OperationalExchangeSymbol",
     ),
+    "Operational Activity Interaction Blank": (
+        "OperationalActivitySymbol",
+        "OperationalExchangeSymbol",
+    ),
     "Physical Architecture Blank": (
         "PhysicalLinkSymbol",
         "ComponentExchangeSymbol",
