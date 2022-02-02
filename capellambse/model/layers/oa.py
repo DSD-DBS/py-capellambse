@@ -44,6 +44,18 @@ class OperationalActivity(fa.AbstractFunction):
         matchtransform=operator.attrgetter("activities"),
     )
 
+    @property
+    def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_activity_exchanges.by_target_port(self)
+
+    @property
+    def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_activity_exchanges.by_source_port(self)
+
+    @property
+    def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self.inputs + self.outputs
+
 
 @c.xtype_handler(XT_ARCH)
 class OperationalProcess(c.GenericElement):
@@ -132,6 +144,18 @@ class Entity(AbstractEntity):
     _xmltag = "ownedEntities"
 
     entities: c.Accessor
+
+    @property
+    def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_entity_exchanges.by_target(self)
+
+    @property
+    def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_entity_exchanges.by_source(self)
+
+    @property
+    def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self.inputs + self.outputs
 
 
 @c.xtype_handler(XT_ARCH)
