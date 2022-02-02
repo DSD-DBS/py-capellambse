@@ -451,6 +451,7 @@ class RequirementsAttribute(AbstractRequirementsAttribute):
 
 
 @c.xtype_handler(None, XT_REQ_TYPE_ATTR_ENUM)
+@c.attr_equal("long_name")
 class EnumValue(ReqIFElement):
     """An enumeration value for :class:`EnumDataTypeDefinition`"""
 
@@ -458,14 +459,6 @@ class EnumValue(ReqIFElement):
 
     def __str__(self) -> str:
         return self.long_name
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, str):
-            return self.long_name == other
-        return super().__eq__(other)
-
-    def __hash__(self):
-        return super().__hash__()
 
 
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM)
@@ -512,6 +505,7 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
         return None  # TODO return a default value?
 
 
+@c.attr_equal("long_name")
 class AbstractType(ReqIFElement):
     owner = c.ParentAccessor(c.GenericElement)
     attribute_definitions = c.ProxyAccessor(
@@ -519,15 +513,6 @@ class AbstractType(ReqIFElement):
         (XT_REQ_TYPE_ATTR_DEF, XT_REQ_TYPE_ENUM_DEF),
         aslist=c.MixedElementList,
     )
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, str):
-            return self.long_name == other
-
-        return super().__eq__(other)
-
-    def __hash__(self):
-        return super().__hash__()
 
 
 @c.xtype_handler(None, XT_MODULE_TYPE)
