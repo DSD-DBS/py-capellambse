@@ -1135,6 +1135,27 @@ The predator is far away</bodies>
             </ownedFunctionalChains>
             <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
                 id="af361e95-9a87-4b67-8d0c-74585c1d695a" name="FIP 1"/>
+            <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
+                id="28ced9df-b6f2-48a0-8bf3-81a7a5cd1b6b" name="FIP 2"/>
+          </ownedFunctions>
+          <ownedFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
+              id="1c304898-b1b7-49c4-8877-5ea3c9959b6e" name="Not real Batman">
+            <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
+                id="31e32de6-0f67-4922-9185-66706925cff8" name="FOP 1"/>
+          </ownedFunctions>
+          <ownedFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
+              id="a5642060-c9cc-4d49-af09-defaa3024bae" name="Lost">
+            <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
+                id="b9ef0be8-e4b1-4588-aed7-f6e24130c5bf" name="FIP 1"/>
+            <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
+                id="cadf9c0d-c0b1-4c0c-b364-68f703a605cb" name="FIP 2"/>
+            <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
+                id="1249ce59-c099-40bb-afe3-27ff51e9ee8c" name="FOP 1"/>
+          </ownedFunctions>
+          <ownedFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
+              id="8dc62b22-c2c8-4a0a-8e69-1dc5d8e1d44d" name="Gladiator">
+            <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
+                id="554f4296-773b-4acb-a347-265fb16b401b" name="FOP 1"/>
           </ownedFunctions>
           <ownedFunctionRealizations xsi:type="org.polarsys.capella.core.data.fa:FunctionRealization"
               id="81908b7e-3deb-4cfe-adb6-f97dc2f80826" targetElement="#99df05af-71bf-4233-9035-bcd3d4439182"
@@ -1146,6 +1167,15 @@ The predator is far away</bodies>
                 id="fe4cdb52-906d-49f2-83c6-449e5c6642af" targetElement="#b8f34893-c50b-4b7d-9326-1d01990434d8"
                 sourceElement="#1a414995-f4cd-488c-8152-486e459fb9de"/>
           </ownedFunctionalExchanges>
+          <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
+              id="d95c20ad-aefe-44f9-bc42-a36f66b10ba9" name="into" target="#b9ef0be8-e4b1-4588-aed7-f6e24130c5bf"
+              source="#31e32de6-0f67-4922-9185-66706925cff8"/>
+          <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
+              id="50806c7c-0632-4055-abef-a0b77f2b9b7a" name="what" target="#28ced9df-b6f2-48a0-8bf3-81a7a5cd1b6b"
+              source="#1249ce59-c099-40bb-afe3-27ff51e9ee8c"/>
+          <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
+              id="d3b87db9-5cae-4f24-bba5-8ac19d4f2c1e" name="slay" target="#cadf9c0d-c0b1-4c0c-b364-68f703a605cb"
+              source="#554f4296-773b-4acb-a347-265fb16b401b"/>
           <ownedSystemFunctionPkgs xsi:type="org.polarsys.capella.core.data.ctx:SystemFunctionPkg"
               id="f1423c01-dd0f-4189-97e2-33c4332383f9" name="Subfuncs">
             <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
@@ -2019,6 +2049,9 @@ The predator is far away</bodies>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
             id="344a405e-c7e5-4367-8a9a-41d3d9a27f81" name="Kevin Spacey" actor="true"
             human="true">
+          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+              id="e0ced1b7-687a-49fa-89c8-fae041b19be6" targetElement="#a5642060-c9cc-4d49-af09-defaa3024bae"
+              sourceElement="#344a405e-c7e5-4367-8a9a-41d3d9a27f81"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
               id="1817adb2-a3f2-498e-bb29-3031231426a3" name="CP 1" orientation="OUT"
               kind="FLOW"/>
@@ -2043,6 +2076,9 @@ The predator is far away</bodies>
         </ownedSystemComponents>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
             id="da12377b-fb70-4441-8faa-3a5c153c5de2" name="Affleck" actor="true">
+          <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+              id="6a4992e6-6241-4348-ab7c-8c730869421b" targetElement="#1c304898-b1b7-49c4-8877-5ea3c9959b6e"
+              sourceElement="#da12377b-fb70-4441-8faa-3a5c153c5de2"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
               id="b2d2a4f1-0c21-45f4-918c-3d3c5e8af104" name="CP 1" orientation="OUT"
               kind="FLOW"/>
@@ -2055,6 +2091,9 @@ The predator is far away</bodies>
           <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
               id="6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6" name="Gerard Butler" actor="true"
               human="true">
+            <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
+                id="c4e1dd5f-f400-4f90-bc28-7457e20b8ea8" targetElement="#8dc62b22-c2c8-4a0a-8e69-1dc5d8e1d44d"
+                sourceElement="#6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6"/>
             <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
                 id="74505eac-7abc-476d-8dec-ad68abb4b2a5" name="CP 1" orientation="IN"
                 kind="FLOW"/>

@@ -676,6 +676,29 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "text_fill": COLORS["red"],
         },
     },
+    "System Architecture Blank": {
+        **dict.fromkeys(
+            ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],
+            {
+                "fill": COLORS["white"],
+                "stroke": COLORS["black"],
+            },
+        ),
+        "Box.SystemComponent": {
+            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+        },
+        "Box.SystemFunction": {
+            "fill": COLORS["_CAP_xAB_Function_Green"],
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+        "Edge.ComponentExchange": {
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "stroke-width": 2,
+            "text_fill": COLORS["_CAP_Component_Border_Blue"],
+        },
+    },
     "System Data Flow Blank": {
         "Box.FIP": {
             "fill": COLORS["dark_orange"],
