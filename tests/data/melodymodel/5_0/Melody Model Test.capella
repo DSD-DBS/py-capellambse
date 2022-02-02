@@ -2743,18 +2743,18 @@ The predator is far away</bodies>
               <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
                   id="3481f92b-3bb1-4a35-842d-e07954d7e1ae" name="FIP 1"/>
             </ownedFunctions>
+            <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
+                id="0a43116d-c954-4fc3-ade1-7355ab218530" name="PhysicalFunction 5">
+              <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
+                  id="b3d1ae47-513b-4198-9df6-d4711117ecd4" name="FIP 1"/>
+            </ownedFunctions>
+            <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
+                id="11906f7b-3ae9-4343-b998-95b170be2e2b" name="PhysicalFunction 3"/>
           </ownedFunctions>
-          <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
-              id="11906f7b-3ae9-4343-b998-95b170be2e2b" name="PhysicalFunction 3"/>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
               id="ab588f89-c3da-488b-a685-1309a3be9d9e" name="PhysicalFunction 4">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
                 id="a1d1911d-5770-43cf-8196-75d32b2dca9f" name="FOP 1"/>
-          </ownedFunctions>
-          <ownedFunctions xsi:type="org.polarsys.capella.core.data.pa:PhysicalFunction"
-              id="0a43116d-c954-4fc3-ade1-7355ab218530" name="PhysicalFunction 5">
-            <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
-                id="b3d1ae47-513b-4198-9df6-d4711117ecd4" name="FIP 1"/>
           </ownedFunctions>
           <ownedFunctionRealizations xsi:type="org.polarsys.capella.core.data.fa:FunctionRealization"
               id="be241014-1993-41a3-9ca0-976ed6713988" targetElement="#f28ec0f8-f3b3-43a0-8af7-79f194b29a2d"

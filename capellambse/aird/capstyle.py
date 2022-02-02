@@ -664,6 +664,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.FunctionalExchange": {
             "marker-end": "ArrowMark",
+            "stroke-width": 2,
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
         },
     },
@@ -675,6 +676,14 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 "stroke": COLORS["black"],
             },
         ),
+        "Box.FIP": {
+            "fill": COLORS["dark_orange"],
+            "stroke-width": 0,
+        },
+        "Box.FOP": {
+            "fill": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 0,
+        },
         "Box.PP": {
             "fill": COLORS["_CAP_PhysicalPort_Yellow"],
             "stroke": COLORS["_CAP_Class_Border_Brown"],
@@ -687,10 +696,43 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Node_Yellow_Border"],
             "text_fill": COLORS["_CAP_Node_Yellow_Label"],
         },
+        "Box.PhysicalFunction": {
+            "fill": COLORS["_CAP_xAB_Function_Green"],
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+        "Edge.ComponentExchange": {
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "stroke-width": 2,
+            "text_fill": COLORS["_CAP_Component_Border_Blue"],
+        },
+        "Edge.FunctionalExchange": {
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
+            "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
         "Edge.PhysicalLink": {
             "stroke": COLORS["red"],
             "stroke-width": 2,
             "text_fill": COLORS["red"],
+        },
+    },
+    "Physical Data Flow Blank": {
+        "Box.FIP": {
+            "fill": COLORS["dark_orange"],
+            "stroke-width": 0,
+        },
+        "Box.FOP": {
+            "fill": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 0,
+        },
+        "Box.PhysicalFunction": {
+            "fill": COLORS["_CAP_xAB_Function_Green"],
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+        "Edge.FunctionalExchange": {
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
+            "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
         },
     },
     "System Architecture Blank": {
