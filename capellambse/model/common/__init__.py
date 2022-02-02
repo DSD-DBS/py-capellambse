@@ -32,7 +32,17 @@ T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
 # pylint: enable=invalid-name
 
-XTYPE_ANCHORS = ["capellambse.model.crosslayer", "capellambse.model.layers"]
+XTYPE_ANCHORS = {
+    "capellambse.model.crosslayer": "org.polarsys.capella.core.data",
+    "capellambse.model.layers": "org.polarsys.capella.core.data",
+}
+"""A mapping from anchor modules to Capella packages.
+
+This dictionary maps Python modules and packages to the Capella packages
+they represent. ``build_xtype`` and related functions/classes can then
+use this information to automatically derive an ``xsi:type`` from any
+class that is defined in such an anchor module (or a submodule of one).
+"""
 XTYPE_HANDLERS: dict[
     str | None, dict[str, type[t.Any]]
 ] = collections.defaultdict(dict)
@@ -49,14 +59,15 @@ These keys map to a further dictionary.  This second layer maps from the
 
 
 def build_xtype(class_: type[ModelObject]) -> str:
-    for anchor in XTYPE_ANCHORS:
+    for anchor, package in XTYPE_ANCHORS.items():
         if class_.__module__.startswith(anchor):
             module = class_.__module__[len(anchor) :]
             break
     else:
+        package = ""  # https://github.com/PyCQA/pylint/issues/1175
         raise TypeError(f"Module is not an xtype anchor: {class_.__module__}")
     clsname = class_.__name__
-    return f"org.polarsys.capella.core.data{module}:{clsname}"
+    return f"{package}{module}:{clsname}"
 
 
 def enumliteral(
