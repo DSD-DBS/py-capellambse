@@ -575,20 +575,43 @@ class TestSVG:
         assert symbol.attribs["y"] + symbol.attribs["height"] <= lower_bound
 
 
-class TestSVGStylesheet:
-    def test_svg_stylesheet_as_str(self, tmp_json) -> None:
-        svg = SVGDiagram.from_json_path(tmp_json)
-        for line in str(svg.drawing.stylesheet).splitlines():
-            assert line.startswith(".LogicalArchitectureBlank")
+class TestSVGStyling:
+    LAB = "Logical Architecture Blank"
+    FCD = "Functional Chain Description"
+    OEB = "Operational Entity Blank"
+    FEX = "FunctionalExchange"
+    OEX = "OperationalExchange"
+    BOX = "LogicalComponentSymbol"
 
-    def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
-        with pytest.raises(TypeError) as error:
-            style.SVGStylesheet(None)  # type: ignore[arg-type]
+    class TestSVGStylesheet:
+        def test_svg_stylesheet_as_str(self, tmp_json) -> None:
+            svg = SVGDiagram.from_json_path(tmp_json)
+            for line in str(svg.drawing.stylesheet).splitlines():
+                assert line.startswith(".LogicalArchitectureBlank")
 
-        assert (
-            error.value.args[0]
-            == "Invalid type for class_ 'NoneType'. This needs to be a str."
-        )
+        def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
+            with pytest.raises(TypeError) as error:
+                style.SVGStylesheet(None)  # type: ignore[arg-type]
+
+            assert (
+                error.value.args[0]
+                == "Invalid type for class_ 'NoneType'. This needs to be a str."
+            )
+
+    @pytest.mark.parametrize(
+        "style_,diagstyle,expected",
+        [
+            pytest.param(None, "None", None, id="No modify"),
+            pytest.param(FEX, "None", None, id="Unregistered diagramstyle"),
+            pytest.param(BOX, LAB, None, id="Found in deco"),
+            pytest.param(FEX, FCD, None, id="Layer is prefix"),
+            pytest.param(FEX, OEB, OEX, id="Fixed FExchange styleclass"),
+        ],
+    )
+    def test_get_symbol_styleclass(
+        self, style_: str | None, diagstyle: str, expected: str | None
+    ) -> None:
+        assert style.get_symbol_styleclass(style_, diagstyle) == expected
 
 
 class TestDecoFactory:

@@ -123,6 +123,28 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "SystemHumanActorSymbol",
     ),
 }
+MODIFY_STYLECLASS = {"FunctionalExchange"}
+
+
+def get_symbol_styleclass(style: str | None, dstyle: str) -> str | None:
+    if (
+        style not in MODIFY_STYLECLASS
+        or dstyle not in STATIC_DECORATIONS
+        or style in STATIC_DECORATIONS[dstyle]
+    ):
+        return None
+
+    capitals = dstyle.split(" ")
+    assert capitals
+    layer = capitals[0]
+    if style.startswith(layer):
+        return None
+
+    scapitals = re.findall(r"[A-Z][^A-Z]*", style)
+    symbol = f'{layer}{"".join(scapitals[1:])}'
+    if f"{symbol}Symbol" in STATIC_DECORATIONS[dstyle]:
+        return symbol
+    return None
 
 
 class Styling:

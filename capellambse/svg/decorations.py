@@ -37,8 +37,6 @@ start_aligned = {
     "LogicalHumanComponent",
 }
 only_icons = {"Requirement"}
-# TODO: Instead of dirty-patching either rename FunctionalExchange in OA-Layer as
-# ActivityExchange/OperationalExchange
 DiagramClass = str
 FaultyClass = str
 PatchClass = str
