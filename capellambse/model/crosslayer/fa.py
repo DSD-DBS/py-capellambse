@@ -55,8 +55,26 @@ class FunctionRealization(c.GenericElement):
 class AbstractExchange(c.GenericElement):
     """Common code for Exchanges."""
 
-    source_port = c.AttrProxyAccessor(c.GenericElement, "source")
-    target_port = c.AttrProxyAccessor(c.GenericElement, "target")
+    source = c.AttrProxyAccessor(c.GenericElement, "source")
+    target = c.AttrProxyAccessor(c.GenericElement, "target")
+
+    @property
+    def source_port(self) -> c.GenericElement:
+        import warnings
+
+        warnings.warn(
+            "source_port is deprecated, use source instead", FutureWarning
+        )
+        return self.source
+
+    @property
+    def target_port(self) -> c.GenericElement:
+        import warnings
+
+        warnings.warn(
+            "target_port is deprecated, use target instead", FutureWarning
+        )
+        return self.target
 
 
 @c.xtype_handler(None)
@@ -148,7 +166,7 @@ class ComponentExchange(AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    func_exchanges = c.ProxyAccessor(
+    allocated_functional_exchanges = c.ProxyAccessor(
         FunctionalExchange,
         XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
@@ -161,11 +179,21 @@ class ComponentExchange(AbstractExchange):
     )
 
     @property
+    def func_exchanges(self) -> c.ElementList[FunctionalExchange]:
+        import warnings
+
+        warnings.warn(
+            "func_exchanges is deprecated, use allocated_functional_exchanges instead",
+            FutureWarning,
+        )
+        return self.allocated_functional_exchanges
+
+    @property
     def exchange_items(
         self,
     ) -> c.ElementList[information.ExchangeItem]:
         items = self.allocated_exchange_items
-        func_exchanges = self.func_exchanges
+        func_exchanges = self.allocated_functional_exchanges
         assert isinstance(func_exchanges, cabc.Iterable)
         for exchange in func_exchanges:
             items += exchange.exchange_items

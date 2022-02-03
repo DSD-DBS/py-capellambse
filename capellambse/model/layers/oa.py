@@ -46,11 +46,11 @@ class OperationalActivity(fa.AbstractFunction):
 
     @property
     def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
-        return self._model.oa.all_activity_exchanges.by_target_port(self)
+        return self._model.oa.all_activity_exchanges.by_target(self)
 
     @property
     def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
-        return self._model.oa.all_activity_exchanges.by_source_port(self)
+        return self._model.oa.all_activity_exchanges.by_source(self)
 
     @property
     def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
@@ -170,13 +170,10 @@ class OperationalActivityPkg(c.GenericElement):
 
 
 @c.xtype_handler(XT_ARCH)
-class CommunicationMean(c.GenericElement):
+class CommunicationMean(fa.AbstractExchange):
     """An operational entity exchange"""
 
     _xmltag = "ownedComponentExchanges"
-
-    source = c.AttrProxyAccessor(c.GenericElement, "source")
-    target = c.AttrProxyAccessor(c.GenericElement, "target")
 
     allocated_interactions = c.ProxyAccessor(
         fa.FunctionalExchange,
@@ -189,8 +186,6 @@ class CommunicationMean(c.GenericElement):
         "convoyedInformations",
         aslist=c.ElementList,
     )
-
-    exchange_items = fa.ComponentExchange.exchange_items
 
 
 @c.xtype_handler(XT_ARCH)
