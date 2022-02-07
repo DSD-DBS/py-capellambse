@@ -161,3 +161,5 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
 
 from .accessors import *
 from .element import *
+
+set_accessor(GenericElement, "parent", ParentAccessor(GenericElement))
