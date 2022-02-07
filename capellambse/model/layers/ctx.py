@@ -30,14 +30,11 @@ XT_CAP_INV = "org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
 
 
 @c.xtype_handler(XT_ARCH)
-class SystemFunction(fa.AbstractFunction):
+class SystemFunction(fa.Function):
     """A system function."""
 
     _xmltag = "ownedFunctions"
 
-    inputs = c.ProxyAccessor(fa.FunctionInputPort, aslist=c.ElementList)
-    outputs = c.ProxyAccessor(fa.FunctionOutputPort, aslist=c.ElementList)
-    is_leaf = property(lambda self: not self.functions)
     realized_operational_activities = c.ProxyAccessor(
         oa.OperationalActivity,
         fa.FunctionRealization,
@@ -46,8 +43,6 @@ class SystemFunction(fa.AbstractFunction):
     )
 
     owner: c.Accessor
-    functions: c.Accessor
-    packages: c.Accessor
 
 
 @c.xtype_handler(XT_ARCH)

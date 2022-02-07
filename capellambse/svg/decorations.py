@@ -37,16 +37,16 @@ start_aligned = {
     "LogicalHumanComponent",
 }
 only_icons = {"Requirement"}
-# TODO: Instead of dirty-patching either rename FunctionalExchange in OA-Layer as
-# ActivityExchange/OperationalExchange
 DiagramClass = str
 FaultyClass = str
 PatchClass = str
-
-needs_patch: dict[DiagramClass, dict[FaultyClass, PatchClass]] = {
-    "Operational Entity Blank": {"FunctionalExchange": "OperationalExchange"}
+always_top_label = {
+    "Class",
+    "Enumeration",
+    "Note",
+    "OperationalActivity",
+    "PhysicalComponent",
 }
-always_top_label = {"Note", "Class", "Enumeration"}
 needs_feature_line = {"Class", "Enumeration"}
 
 

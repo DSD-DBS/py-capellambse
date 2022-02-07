@@ -25,7 +25,8 @@ from capellambse.model.crosslayer.capellacommon import (
     StateTransition,
 )
 from capellambse.model.crosslayer.capellacore import Constraint
-from capellambse.model.crosslayer.fa import FunctionOutputPort
+from capellambse.model.crosslayer.cs import PhysicalPort
+from capellambse.model.crosslayer.fa import ComponentPort
 from capellambse.model.crosslayer.information import Class
 from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
@@ -705,3 +706,37 @@ class TestArchitectureLayers:
             "3aa006b1-f954-4e8f-a4e9-2e9cd38555de"
         )
         assert expected_exchange in model.pa.all_component_exchanges
+
+    @pytest.mark.parametrize(
+        "uuid,port_attr,ports,class_",
+        [
+            pytest.param(
+                "b51ccc6f-5f96-4e28-b90e-72463a3b50cf",
+                "physical_ports",
+                3,
+                PhysicalPort,
+                id="PP",
+            ),
+            pytest.param(
+                "c78b5d7c-be0c-4ed4-9d12-d447cb39304e",
+                "ports",
+                3,
+                ComponentPort,
+                id="CP",
+            ),
+        ],
+    )
+    def test_pa_component_finds_ports(
+        self,
+        model: MelodyModel,
+        uuid: str,
+        port_attr: str,
+        ports: int,
+        class_: type,
+    ) -> None:
+        comp = model.by_uuid(uuid)
+        port_list = getattr(comp, port_attr)
+
+        assert ports == len(port_list)
+        for p in port_list:
+            assert isinstance(p, class_)

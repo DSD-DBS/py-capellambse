@@ -44,6 +44,18 @@ class OperationalActivity(fa.AbstractFunction):
         matchtransform=operator.attrgetter("activities"),
     )
 
+    @property
+    def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_activity_exchanges.by_target(self)
+
+    @property
+    def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_activity_exchanges.by_source(self)
+
+    @property
+    def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self.inputs + self.outputs
+
 
 @c.xtype_handler(XT_ARCH)
 class OperationalProcess(c.GenericElement):
@@ -133,6 +145,18 @@ class Entity(AbstractEntity):
 
     entities: c.Accessor
 
+    @property
+    def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_entity_exchanges.by_target(self)
+
+    @property
+    def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self._model.oa.all_entity_exchanges.by_source(self)
+
+    @property
+    def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
+        return self.inputs + self.outputs
+
 
 @c.xtype_handler(XT_ARCH)
 class OperationalActivityPkg(c.GenericElement):
@@ -146,13 +170,10 @@ class OperationalActivityPkg(c.GenericElement):
 
 
 @c.xtype_handler(XT_ARCH)
-class CommunicationMean(c.GenericElement):
+class CommunicationMean(fa.AbstractExchange):
     """An operational entity exchange"""
 
     _xmltag = "ownedComponentExchanges"
-
-    source = c.AttrProxyAccessor(c.GenericElement, "source")
-    target = c.AttrProxyAccessor(c.GenericElement, "target")
 
     allocated_interactions = c.ProxyAccessor(
         fa.FunctionalExchange,
@@ -243,6 +264,14 @@ c.set_accessor(
         OperationalCapability,
         interaction.XT_CAP_GEN,
         follow="super",
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    OperationalActivity,
+    "packages",
+    c.ProxyAccessor(
+        OperationalActivityPkg,
         aslist=c.ElementList,
     ),
 )

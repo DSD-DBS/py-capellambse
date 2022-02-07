@@ -16,6 +16,7 @@ from __future__ import annotations
 import collections.abc as cabc
 import dataclasses
 import json
+import os
 import pathlib
 import typing as t
 
@@ -98,7 +99,7 @@ class SVGDiagram:
         return cls(metadata, jsondict["contents"])
 
     @classmethod
-    def from_json_path(cls, path: str) -> SVGDiagram:
+    def from_json_path(cls, path: str | os.PathLike) -> SVGDiagram:
         """Create an SVGDiagram from the given JSON file.
 
         Parameters

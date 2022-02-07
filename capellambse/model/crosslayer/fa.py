@@ -55,8 +55,30 @@ class FunctionRealization(c.GenericElement):
 class AbstractExchange(c.GenericElement):
     """Common code for Exchanges."""
 
-    source_port = c.AttrProxyAccessor(c.GenericElement, "source")
-    target_port = c.AttrProxyAccessor(c.GenericElement, "target")
+    source = c.AttrProxyAccessor(c.GenericElement, "source")
+    target = c.AttrProxyAccessor(c.GenericElement, "target")
+
+    @property
+    def source_port(self) -> c.GenericElement:
+        import warnings
+
+        warnings.warn(
+            "source_port is deprecated, use source instead",
+            FutureWarning,
+            stacklevel=2,
+        )
+        return self.source
+
+    @property
+    def target_port(self) -> c.GenericElement:
+        import warnings
+
+        warnings.warn(
+            "target_port is deprecated, use target instead",
+            FutureWarning,
+            stacklevel=2,
+        )
+        return self.target
 
 
 @c.xtype_handler(None)
@@ -101,6 +123,18 @@ class FunctionOutputPort(FunctionPort):
     )
 
 
+class Function(AbstractFunction):
+    """Common Code for Function's."""
+
+    is_leaf = property(lambda self: not self.functions)
+
+    inputs = c.ProxyAccessor(FunctionInputPort, aslist=c.ElementList)
+    outputs = c.ProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
+
+    functions: c.Accessor
+    packages: c.Accessor
+
+
 @c.xtype_handler(None)
 class FunctionalExchange(AbstractExchange):
     """A functional exchange."""
@@ -136,7 +170,7 @@ class ComponentExchange(AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    func_exchanges = c.ProxyAccessor(
+    allocated_functional_exchanges = c.ProxyAccessor(
         FunctionalExchange,
         XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
@@ -149,11 +183,22 @@ class ComponentExchange(AbstractExchange):
     )
 
     @property
+    def func_exchanges(self) -> c.ElementList[FunctionalExchange]:
+        import warnings
+
+        warnings.warn(
+            "func_exchanges is deprecated, use allocated_functional_exchanges instead",
+            FutureWarning,
+            stacklevel=2,
+        )
+        return self.allocated_functional_exchanges
+
+    @property
     def exchange_items(
         self,
     ) -> c.ElementList[information.ExchangeItem]:
         items = self.allocated_exchange_items
-        func_exchanges = self.func_exchanges
+        func_exchanges = self.allocated_functional_exchanges
         assert isinstance(func_exchanges, cabc.Iterable)
         for exchange in func_exchanges:
             items += exchange.exchange_items
@@ -169,10 +214,7 @@ for _port, _exchange in [
         _port,
         "exchanges",
         c.ReferenceSearchingAccessor(
-            _exchange,
-            "source_port",
-            "target_port",
-            aslist=c.ElementList,
+            _exchange, "source", "target", aslist=c.ElementList
         ),
     )
 del _port, _exchange
