@@ -608,10 +608,11 @@ class ParentAccessor(PhysicalAccessor[T]):
         del objtype
         if obj is None:  # pragma: no cover
             return self
-        return self.class_.from_model(
-            obj._model,
-            obj._element.getparent(),
-        )
+
+        parent = next(obj._model._loader.iterancestors(), None)
+        if parent is None:
+            return None
+        return self.class_.from_model(obj._model, parent)
 
 
 class CustomAccessor(PhysicalAccessor[T]):
