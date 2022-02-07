@@ -609,7 +609,7 @@ class ParentAccessor(PhysicalAccessor[T]):
         if obj is None:  # pragma: no cover
             return self
 
-        parent = next(obj._model._loader.iterancestors(), None)
+        parent = next(obj._model._loader.iterancestors(obj._element), None)
         if parent is None:
             return None
         return self.class_.from_model(obj._model, parent)
