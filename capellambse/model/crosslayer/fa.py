@@ -63,7 +63,9 @@ class AbstractExchange(c.GenericElement):
         import warnings
 
         warnings.warn(
-            "source_port is deprecated, use source instead", FutureWarning
+            "source_port is deprecated, use source instead",
+            FutureWarning,
+            stacklevel=2,
         )
         return self.source
 
@@ -72,7 +74,9 @@ class AbstractExchange(c.GenericElement):
         import warnings
 
         warnings.warn(
-            "target_port is deprecated, use target instead", FutureWarning
+            "target_port is deprecated, use target instead",
+            FutureWarning,
+            stacklevel=2,
         )
         return self.target
 
@@ -185,6 +189,7 @@ class ComponentExchange(AbstractExchange):
         warnings.warn(
             "func_exchanges is deprecated, use allocated_functional_exchanges instead",
             FutureWarning,
+            stacklevel=2,
         )
         return self.allocated_functional_exchanges
 
@@ -209,10 +214,7 @@ for _port, _exchange in [
         _port,
         "exchanges",
         c.ReferenceSearchingAccessor(
-            _exchange,
-            "source_port",
-            "target_port",
-            aslist=c.ElementList,
+            _exchange, "source", "target", aslist=c.ElementList
         ),
     )
 del _port, _exchange
