@@ -187,6 +187,8 @@ class CommunicationMean(fa.AbstractExchange):
         aslist=c.ElementList,
     )
 
+    exchange_items = fa.ComponentExchange.exchange_items
+
 
 @c.xtype_handler(XT_ARCH)
 class EntityPkg(c.GenericElement):
