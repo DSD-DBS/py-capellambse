@@ -172,6 +172,8 @@ class Vector2D(t.NamedTuple):
         dirvec
             Ignored.
         """
+        del dirvec
+
         minx = min(corner1[0], corner2[0])
         miny = min(corner1[1], corner2[1])
         maxx = max(corner1[0], corner2[0])
