@@ -151,6 +151,10 @@ class FunctionalExchange(AbstractExchange):
         information.ExchangeItem, "exchangedItems", aslist=c.ElementList
     )
 
+    @property
+    def owner(self) -> ComponentExchange:
+        return self.allocating_component_exchange
+
 
 @c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):
@@ -229,6 +233,14 @@ for _port, _exchange in [
         ),
     )
 del _port, _exchange
+
+c.set_accessor(
+    FunctionalExchange,
+    "allocating_component_exchange",
+    c.ReferenceSearchingAccessor(
+        ComponentExchange, "allocated_functional_exchanges"
+    ),
+)
 
 c.set_accessor(
     capellacommon.State,
