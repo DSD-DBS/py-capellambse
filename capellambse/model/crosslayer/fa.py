@@ -25,12 +25,16 @@ Functional Analysis object-relations map (ontology):
 from __future__ import annotations
 
 import collections.abc as cabc
+import typing as t
 
 from capellambse.loader import xmltools
 
 from .. import common as c
 from .. import modeltypes
 from . import capellacommon, information
+
+if t.TYPE_CHECKING:
+    from . import cs
 
 XT_COMP_EX_FNC_EX_ALLOC = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 XT_COMP_EX_ALLOC = (
@@ -203,6 +207,32 @@ class ComponentExchange(AbstractExchange):
         "convoyedInformations",
         aslist=c.ElementList,
     )
+
+    @property
+    def owner(self) -> cs.PhysicalLink | cs.PhysicalPath | None:
+        return self.allocating_physical_link or self.allocating_physical_path
+
+    @owner.setter
+    def owner(
+        self: ComponentExchange,
+        exchange: cs.PhysicalLink | cs.PhysicalPath | None,
+    ) -> None:
+        if isinstance(exchange, cs.PhysicalLink):
+            self.allocating_physical_link = exchange
+        elif isinstance(exchange, cs.PhysicalPath):
+            self.allocating_physical_path = exchange
+        elif exchange is None:
+            del self.owner
+
+        raise ValueError(
+            "Owner needs to be either of type 'PhysicalLink', 'PhysicalPath'"
+            " or 'NoneType'"
+        )
+
+    @owner.deleter
+    def owner(self) -> None:
+        del self.allocating_physical_path
+        del self.allocating_physical_link
 
     @property
     def func_exchanges(self) -> c.ElementList[FunctionalExchange]:
