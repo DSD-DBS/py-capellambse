@@ -152,8 +152,20 @@ class FunctionalExchange(AbstractExchange):
     )
 
     @property
-    def owner(self) -> ComponentExchange:
+    def owner(self) -> ComponentExchange | None:
         return self.allocating_component_exchange
+
+    @owner.setter
+    def owner(self, exchange: ComponentExchange | None) -> None:
+        if not isinstance(exchange, (ComponentExchange, type(None))):
+            raise ValueError(
+                "Owner needs to be of type 'ComponentExchange' or 'NoneType'"
+            )
+        self.allocating_component_exchange = exchange
+
+    @owner.deleter
+    def owner(self) -> None:
+        self.allocating_component_exchange = None
 
 
 @c.xtype_handler(None)
