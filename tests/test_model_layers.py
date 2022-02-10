@@ -556,18 +556,19 @@ class TestArchitectureLayers:
                     "root_component",
                     "root_function",
                     "function_package",
-                    # TODO: CapabilityRealizations from la
+                    "capability_package",
                     "interface_package",
                     "data_package",
                     "component_package",
                     "all_functions",
-                    # TODO: all_capabilities from la
+                    "all_capabilities",
                     "all_interfaces",
                     "all_classes",
                     "all_actors",
                     "all_components",
                     # TODO: actor_exchanges
                     "all_component_exchanges",
+                    "all_function_exchanges",
                     "all_physical_exchanges",
                     "all_physical_links",
                     "all_physical_paths",
