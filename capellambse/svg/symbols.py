@@ -454,76 +454,44 @@ def initial_pseudo_state_symbol(id_="InitialPseudoStateSymbol"):
 
 
 @decorations.deco_factories
-def logical_function_symbol(id_="LogicalFunctionSymbol"):
-    symb = _make_function_symbol(id_, ("#f0f8ee", "#7dc56c"))
-    symb.add(
-        text.Text(
-            text="LF",
-            insert=(42.2, 38),
-            text_anchor="middle",
-            style=(
-                'font-family: "Segoe UI"; font-size: 12pt; font-weight: '
-                "bold; fill: black; stroke: none;"
-            ),
-        )
-    )
-    return symb
+def logical_function_symbol(
+    id_: str = "LogicalFunctionSymbol",
+) -> container.Symbol:
+    return function_symbol(id_, label="LF")
 
 
 @decorations.deco_factories
 def system_function_symbol(
     id_: str = "SystemFunctionSymbol",
-    colors: tuple[str, str] = ("#4D7598", "#F0F5F9"),
 ) -> container.Symbol:
-    symb = container.Symbol(id=id_, viewBox="0 0 79 79")
-    symb.add(_make_lgradient("blue", stop_colors=colors, end=(1, 0)))
-    symb.add(
-        shapes.Ellipse(
-            center=(42.2, 32),
-            r=(22.5, 15.5),
-            style="fill: url(#blue); stroke: #000; stroke-width: 2;",
-        )
-    )
-    symb.add(
-        text.Text(
-            text="SF",
-            insert=(42.2, 38),
-            text_anchor="middle",
-            style=(
-                'font-family: "Segoe UI"; font-size: 12pt; font-weight: '
-                "bold; fill: #000; stroke: none;"
-            ),
-        )
-    )
-    return symb
+    return function_symbol(id_, label="SF")
 
 
 @decorations.deco_factories
-def operational_activity_symbol(id_="OperationalActivitySymbol"):
-    symb = _make_function_symbol(id_, ("white", "#f4901d"))
-    symb.add(
-        text.Text(
-            text="OA",
-            insert=(42.2, 38),
-            text_anchor="middle",
-            style=(
-                'font-family: "Segoe UI"; font-size: 12pt; font-weight: '
-                "bold; fill: black; stroke: none;"
-            ),
-        )
-    )
-    return symb
+def physical_function_symbol(
+    id_: str = "PhysicalFunctionSymbol",
+) -> container.Symbol:
+    return function_symbol(id_, label="PF")
 
 
 @decorations.deco_factories
-def function_symbol(id_: str = "FunctionSymbol") -> container.Symbol:
-    grad = _make_lgradient(
-        "green", stop_colors=("#6CB35B", "#ffffff"), end=(1, 0)
-    )
+def operational_activity_symbol(
+    id_: str = "OperationalActivitySymbol",
+) -> container.Symbol:
+    return function_symbol(id_, ("#f4901d", "white"), "OA")
+
+
+@decorations.deco_factories
+def function_symbol(
+    id_: str = "FunctionSymbol",
+    colors: tuple[str, str] = ("#6CB35B", "#ffffff"),
+    label: str = "F",
+) -> container.Symbol:
+    grad = _make_lgradient("green", stop_colors=colors, end=(1, 0))
     symb = _make_function_symbol(id_, gradient=grad)
     symb.add(
         text.Text(
-            text="F",
+            text=label,
             insert=(42.2, 38),
             text_anchor="middle",
             style=(

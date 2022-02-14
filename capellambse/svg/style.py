@@ -105,6 +105,11 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "ComponentPortSymbol",
         "PortSymbol",
     ),
+    "Physical Data Flow Blank": (
+        "FunctionalExchangeSymbol",
+        "PhysicalFunctionSymbol",
+        "PortSymbol",
+    ),
     "System Architecture Blank": (
         "PhysicalLinkSymbol",
         "FunctionalExchangeSymbol",
