@@ -727,7 +727,7 @@ class TestArchitectureLayers:
             ),
         ],
     )
-    def test_pa_component_finds_ports(
+    def test_PhysicalComponent_finds_ports(
         self,
         model: MelodyModel,
         uuid: str,
