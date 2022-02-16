@@ -818,7 +818,7 @@ class SpecificationAccessor(Accessor[_Specification]):
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
     __slots__ = ("attrs",)
 
-    attrs: tuple[str, ...]
+    attrs: tuple[operator.attrgetter, ...]
 
     def __init__(
         self,
@@ -827,7 +827,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         aslist: type[element.ElementList] | None = None,
     ) -> None:
         super().__init__(class_, aslist=aslist)
-        self.attrs = attrs
+        self.attrs = tuple(operator.attrgetter(i) for i in attrs)
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -838,7 +838,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         for candidate in obj._model.search(self.class_.__name__):
             for attr in self.attrs:
                 try:
-                    value = getattr(candidate, attr)
+                    value = attr(candidate)
                 except AttributeError:
                     continue
                 if (
