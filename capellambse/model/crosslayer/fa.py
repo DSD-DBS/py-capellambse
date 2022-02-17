@@ -293,3 +293,14 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+
+c.set_accessor(
+    Function,
+    "exchanges",
+    c.ReferenceSearchingAccessor(
+        FunctionalExchange,
+        "source.owner",
+        "target.owner",
+        aslist=c.ElementList,
+    ),
+)

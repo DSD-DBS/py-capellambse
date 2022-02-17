@@ -110,7 +110,7 @@ class PhysicalPath(c.GenericElement):
     )
 
     @property
-    def involved_links(self):
+    def involved_links(self) -> c.ElementList[PhysicalLink]:
         return self.involved_items.by_type("PhysicalLink")
 
 
@@ -138,6 +138,12 @@ class Component(c.GenericElement):
     parts = c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList)
     physical_paths = c.ProxyAccessor(PhysicalPath, aslist=c.ElementList)
     physical_links = c.ProxyAccessor(PhysicalLink, aslist=c.ElementList)
+    exchanges = c.ReferenceSearchingAccessor(
+        fa.ComponentExchange,
+        "source.owner",
+        "target.owner",
+        aslist=c.ElementList,
+    )
 
 
 @c.xtype_handler(None)
