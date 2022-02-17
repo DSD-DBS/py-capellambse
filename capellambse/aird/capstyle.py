@@ -743,6 +743,14 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 "stroke": COLORS["black"],
             },
         ),
+        "Box.FIP": {
+            "fill": COLORS["dark_orange"],
+            "stroke-width": 0,
+        },
+        "Box.FOP": {
+            "fill": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 0,
+        },
         "Box.SystemComponent": {
             "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
             "stroke": COLORS["_CAP_Actor_Border_Blue"],
@@ -756,6 +764,21 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Component_Border_Blue"],
             "stroke-width": 2,
             "text_fill": COLORS["_CAP_Component_Border_Blue"],
+        },
+        "Edge.FunctionalExchange": {
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
+            "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
+        },
+        "Edge.FIPAllocation": {
+            "stroke": COLORS["dark_orange"],
+            "stroke-width": 2,
+            "stroke-dasharray": "5",
+        },
+        "Edge.FOPAllocation": {
+            "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
+            "stroke-width": 2,
+            "stroke-dasharray": "5",
         },
     },
     "System Data Flow Blank": {
