@@ -159,18 +159,6 @@ class FunctionalExchange(AbstractExchange):
     def owner(self) -> ComponentExchange | None:
         return self.allocating_component_exchange
 
-    @owner.setter
-    def owner(self, exchange: ComponentExchange | None) -> None:
-        if not isinstance(exchange, (ComponentExchange, type(None))):
-            raise ValueError(
-                "Owner needs to be of type 'ComponentExchange' or 'NoneType'"
-            )
-        self.allocating_component_exchange = exchange
-
-    @owner.deleter
-    def owner(self) -> None:
-        self.allocating_component_exchange = None
-
 
 @c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):
@@ -211,28 +199,6 @@ class ComponentExchange(AbstractExchange):
     @property
     def owner(self) -> cs.PhysicalLink | cs.PhysicalPath | None:
         return self.allocating_physical_link or self.allocating_physical_path
-
-    @owner.setter
-    def owner(
-        self: ComponentExchange,
-        exchange: cs.PhysicalLink | cs.PhysicalPath | None,
-    ) -> None:
-        if isinstance(exchange, cs.PhysicalLink):
-            self.allocating_physical_link = exchange
-        elif isinstance(exchange, cs.PhysicalPath):
-            self.allocating_physical_path = exchange
-        elif exchange is None:
-            del self.owner
-
-        raise ValueError(
-            "Owner needs to be either of type 'PhysicalLink', 'PhysicalPath'"
-            " or 'NoneType'"
-        )
-
-    @owner.deleter
-    def owner(self) -> None:
-        del self.allocating_physical_path
-        del self.allocating_physical_link
 
     @property
     def func_exchanges(self) -> c.ElementList[FunctionalExchange]:

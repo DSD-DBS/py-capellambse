@@ -727,7 +727,7 @@ class TestArchitectureLayers:
             ),
         ],
     )
-    def test_pa_component_finds_ports(
+    def test_PhysicalComponent_finds_ports(
         self,
         model: MelodyModel,
         uuid: str,
@@ -741,3 +741,27 @@ class TestArchitectureLayers:
         assert ports == len(port_list)
         for p in port_list:
             assert isinstance(p, class_)
+
+    def test_ComponentExchange_has_allocating_FunctionalExchange(
+        self, model: MelodyModel
+    ) -> None:
+        fex = model.by_uuid("df56e23a-d5bd-470c-ac08-aab8d4dad211")
+        cex = model.by_uuid("a8c0bb4c-6802-42a9-9ef7-abbd4371f5f8")
+
+        assert fex.allocating_component_exchange == fex.owner == cex
+
+    def test_ComponentExchange_has_allocating_PhysicalLink(
+        self, model: MelodyModel
+    ) -> None:
+        cex = model.by_uuid("a647a577-0dc1-454f-917f-ce1c89089a2f")
+        link = model.by_uuid("90517d41-da3e-430c-b0a9-e3badf416509")
+
+        assert cex.allocating_physical_link == cex.owner == link
+
+    def test_ComponentExchange_has_allocating_PhysicalPath(
+        self, model: MelodyModel
+    ) -> None:
+        path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
+        cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
+
+        assert cex.allocating_physical_path == cex.owner == path
