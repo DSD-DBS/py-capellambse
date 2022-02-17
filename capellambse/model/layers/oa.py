@@ -146,16 +146,12 @@ class Entity(AbstractEntity):
     entities: c.Accessor
 
     @property
-    def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
+    def inputs(self) -> c.ElementList[CommunicationMean]:
         return self._model.oa.all_entity_exchanges.by_target(self)
 
     @property
-    def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
+    def outputs(self) -> c.ElementList[CommunicationMean]:
         return self._model.oa.all_entity_exchanges.by_source(self)
-
-    @property
-    def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
-        return self.inputs + self.outputs
 
 
 @c.xtype_handler(XT_ARCH)
@@ -273,6 +269,13 @@ c.set_accessor(
     c.ProxyAccessor(
         OperationalActivityPkg,
         aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    Entity,
+    "exchanges",
+    c.ReferenceSearchingAccessor(
+        CommunicationMean, "source", "target", aslist=c.ElementList
     ),
 )
 c.set_self_references(
