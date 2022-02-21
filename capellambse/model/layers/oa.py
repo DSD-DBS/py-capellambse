@@ -54,7 +54,13 @@ class OperationalActivity(fa.AbstractFunction):
 
     @property
     def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
-        return self.inputs + self.outputs
+        seen: set[str] = set()
+        exchanges = []
+        for fex in self.inputs + self.outputs:
+            if fex.uuid not in seen:
+                exchanges.append(fex._element)
+                seen.add(fex.uuid)
+        return self.inputs._newlist(exchanges)
 
 
 @c.xtype_handler(XT_ARCH)
