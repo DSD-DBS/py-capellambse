@@ -189,18 +189,17 @@ class Vector2D(t.NamedTuple):
         elif y > maxy:
             y = maxy
 
-        point = Vector2D(x, y)
-        if x != self.x or y != self.y:
-            return point
+        if self != (x, y):
+            return Vector2D(x, y)
 
         distances = [
-            Vector2D(self.x - minx, 0),
-            Vector2D(self.x - maxx, 0),
-            Vector2D(0, self.y - miny),
-            Vector2D(0, self.y - maxy),
+            Vector2D(minx - self.x, 0),
+            Vector2D(maxx - self.x, 0),
+            Vector2D(0, miny - self.y),
+            Vector2D(0, maxy - self.y),
         ]
         offset = min(distances, key=lambda i: i.sqlength)
-        return point + offset
+        return self + offset
 
     def __map(
         self,
