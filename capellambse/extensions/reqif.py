@@ -273,7 +273,7 @@ class ReqIFElement(c.GenericElement):
 
     def _short_html_(self) -> markupsafe.Markup:
         return markupsafe.Markup(
-            self._wrap_short_html_(
+            self._wrap_short_html(
                 f" &quot;{markupsafe.Markup.escape(self.name or self.long_name)}&quot;"
             )
         )
@@ -313,9 +313,7 @@ class AbstractRequirementsAttribute(c.GenericElement):
             name = markupsafe.Markup.escape(self.definition.long_name)
         else:
             name = markupsafe.Markup.escape("None")
-        return markupsafe.Markup(
-            self._wrap_short_html_(f" &quot;{name}&quot;")
-        )
+        return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
 class AttributeAccessor(

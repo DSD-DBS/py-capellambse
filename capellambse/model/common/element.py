@@ -262,13 +262,13 @@ class GenericElement:
 
     def _short_html_(self) -> markupsafe.Markup:
         return markupsafe.Markup(
-            self._wrap_short_html_(
+            self._wrap_short_html(
                 f" &quot;{markupsafe.Markup.escape(self.name)}&quot;"
                 f"{(': ' + str(self.value)) if hasattr(self, 'value') else ''}"
             )
         )
 
-    def _wrap_short_html_(self, content: str) -> str:
+    def _wrap_short_html(self, content: str) -> str:
         return (
             f"<strong>{markupsafe.Markup.escape(type(self).__name__)}</strong>"
             f"{content} ({markupsafe.Markup.escape(self.uuid)})"
