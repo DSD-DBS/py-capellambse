@@ -132,3 +132,55 @@ def test_normalized(vector, expected):
     actual = vector.normalized
     assert math.isclose(actual[0], expected[0])
     assert math.isclose(actual[1], expected[1])
+
+
+@pytest.mark.parametrize(
+    ["vector", "expected"],
+    [
+        # Exactly on the box - noop
+        (aird.Vector2D(1, 1), aird.Vector2D(1, 1)),
+        (aird.Vector2D(1, 3), aird.Vector2D(1, 3)),
+        (aird.Vector2D(5, 1), aird.Vector2D(5, 1)),
+        (aird.Vector2D(5, 3), aird.Vector2D(5, 3)),
+        (aird.Vector2D(1, 2), aird.Vector2D(1, 2)),
+        (aird.Vector2D(5, 2), aird.Vector2D(5, 2)),
+        (aird.Vector2D(3, 1), aird.Vector2D(3, 1)),
+        (aird.Vector2D(3, 3), aird.Vector2D(3, 3)),
+        # Inside the box
+        (aird.Vector2D(3, 1.5), aird.Vector2D(3, 1)),
+        (aird.Vector2D(1.5, 2), aird.Vector2D(1, 2)),
+        (aird.Vector2D(3, 2.5), aird.Vector2D(3, 3)),
+        (aird.Vector2D(4.5, 2), aird.Vector2D(5, 2)),
+        # Outside left
+        (aird.Vector2D(0, 2), aird.Vector2D(1, 2)),
+        # Outside right
+        (aird.Vector2D(6, 2), aird.Vector2D(5, 2)),
+        # Outside top
+        (aird.Vector2D(3, 0), aird.Vector2D(3, 1)),
+        # Outside bottom
+        (aird.Vector2D(3, 4), aird.Vector2D(3, 3)),
+        # Outside top-left
+        (aird.Vector2D(0, 0), aird.Vector2D(1, 1)),
+        (aird.Vector2D(-1, 0), aird.Vector2D(1, 1)),
+        (aird.Vector2D(0, -1), aird.Vector2D(1, 1)),
+        # Outside top-right
+        (aird.Vector2D(6, 0), aird.Vector2D(5, 1)),
+        (aird.Vector2D(7, 0), aird.Vector2D(5, 1)),
+        (aird.Vector2D(6, -1), aird.Vector2D(5, 1)),
+        # Outside bottom-left
+        (aird.Vector2D(0, 4), aird.Vector2D(1, 3)),
+        (aird.Vector2D(-1, 4), aird.Vector2D(1, 3)),
+        (aird.Vector2D(0, 5), aird.Vector2D(1, 3)),
+        # Outside bottom-right
+        (aird.Vector2D(6, 4), aird.Vector2D(5, 3)),
+        (aird.Vector2D(7, 4), aird.Vector2D(5, 3)),
+        (aird.Vector2D(6, 5), aird.Vector2D(5, 3)),
+    ],
+)
+def test_boxsnap(vector: aird.Vector2D, expected: aird.Vector2D):
+    topleft = aird.Vector2D(1, 1)
+    botright = aird.Vector2D(5, 3)
+
+    actual = vector.boxsnap(topleft, botright)
+
+    assert actual == expected

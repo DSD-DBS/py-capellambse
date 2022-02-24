@@ -95,17 +95,30 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "OrControlNodeSymbol",
         "OperationalExchangeSymbol",
     ),
+    "Operational Activity Interaction Blank": (
+        "OperationalActivitySymbol",
+        "OperationalExchangeSymbol",
+    ),
     "Physical Architecture Blank": (
         "PhysicalLinkSymbol",
         "ComponentExchangeSymbol",
         "ComponentPortSymbol",
         "PortSymbol",
     ),
-    "System Architecture Blank": (
-        "PhysicalLinkSymbol",
+    "Physical Data Flow Blank": (
         "FunctionalExchangeSymbol",
+        "PhysicalFunctionSymbol",
+        "PortSymbol",
+    ),
+    "System Architecture Blank": (
         "ComponentExchangeSymbol",
         "ComponentPortSymbol",
+        "FunctionalExchangeSymbol",
+        "PhysicalLinkSymbol",
+        "SystemActorSymbol",
+        "SystemFunctionSymbol",
+        "SystemHumanActorSymbol",
+        "PortSymbol",
     ),
     "System Data Flow Blank": (
         "FunctionalExchangeSymbol",
@@ -119,6 +132,28 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "SystemHumanActorSymbol",
     ),
 }
+MODIFY_STYLECLASS = {"FunctionalExchange"}
+
+
+def get_symbol_styleclass(style: str | None, dstyle: str) -> str | None:
+    if (
+        style not in MODIFY_STYLECLASS
+        or dstyle not in STATIC_DECORATIONS
+        or style in STATIC_DECORATIONS[dstyle]
+    ):
+        return None
+
+    capitals = dstyle.split(" ")
+    assert capitals
+    layer = capitals[0]
+    if style.startswith(layer):
+        return None
+
+    scapitals = re.findall(r"[A-Z][^A-Z]*", style)
+    symbol = f'{layer}{"".join(scapitals[1:])}'
+    if f"{symbol}Symbol" in STATIC_DECORATIONS[dstyle]:
+        return symbol
+    return None
 
 
 class Styling:

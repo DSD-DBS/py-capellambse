@@ -252,15 +252,11 @@ class ComplexValue(c.GenericElement):
     None,
     "org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral",
 )
+@c.attr_equal("name")
 class EnumerationLiteral(c.GenericElement):
     """An EnumerationLiteral (proxy link)."""
 
     _xmltag = "ownedLiterals"
-
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, str):
-            return self.name == other
-        return super().__eq__(other)
 
     name = xmltools.AttributeProperty("_element", "name", returntype=str)
     owner: c.Accessor

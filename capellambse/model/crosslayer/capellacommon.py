@@ -16,18 +16,6 @@ from .. import common as c
 from . import capellacore
 
 XT_TRAFO = "org.polarsys.capella.core.data.capellacommon:TransfoLink"
-XT_PSEUDOSTATES = frozenset(
-    {
-        "State",
-        "DeepHistoryPseudoState",
-        "FinalState",
-        "ForkPseudoState",
-        "InitialPseudoState",
-        "JoinPseudoState",
-        "ShallowHistoryPseudoState",
-        "TerminatePseudoState",
-    }
-)
 XT_ABSTRACT_STATE_REAL = (
     "org.polarsys.capella.core.data.capellacommon:AbstractStateRealization"
 )

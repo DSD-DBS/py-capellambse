@@ -19,10 +19,12 @@ __all__ = [
     "ElementList",
     "CachedElementList",
     "MixedElementList",
+    "attr_equal",
 ]
 
 import collections.abc as cabc
 import enum
+import functools
 import inspect
 import operator
 import re
@@ -39,6 +41,47 @@ from . import XTYPE_HANDLERS, T, U, accessors, markuptype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
+
+
+def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
+    def add_wrapped_eq(cls: type[T]) -> type[T]:
+        orig_eq = cls.__eq__
+        orig_hash = cls.__hash__
+
+        @functools.wraps(orig_eq)
+        def new_eq(self, other: object) -> bool:
+            try:
+                cmpkey = getattr(self, attr)
+            except AttributeError:
+                pass
+            else:
+                if isinstance(other, type(cmpkey)):
+                    result = cmpkey.__eq__(other)
+                else:
+                    result = other.__eq__(cmpkey)
+                if result is not NotImplemented:
+                    return result
+            return orig_eq(self, other)
+
+        @functools.wraps(orig_hash)
+        def new_hash(self) -> int:
+            import warnings
+
+            # <https://github.com/DSD-DBS/py-capellambse/issues/52>
+            warnings.warn(
+                "Hashing of this type is broken and will likely be removed in the future."
+                f" Consider using the `.uuid` or `.{attr}` directly instead.",
+                category=FutureWarning,
+            )
+
+            return orig_hash(self)
+
+        cls.__eq__ = new_eq  # type: ignore[assignment]
+        cls.__hash__ = new_hash  # type: ignore[assignment]
+
+        return cls
+
+    return add_wrapped_eq
 
 
 class ModelObject(t.Protocol):
@@ -87,6 +130,7 @@ class GenericElement:
     )
 
     constraints: accessors.Accessor
+    parent: accessors.Accessor
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None

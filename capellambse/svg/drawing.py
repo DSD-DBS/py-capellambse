@@ -62,9 +62,6 @@ class Drawing(drawing.Drawing):
         self.diagram_class = metadata.class_
         self.stylesheet = self.make_stylesheet()
         self.obj_cache: dict[str | None, t.Any] = {}
-        self.requires_deco_patch = decorations.needs_patch.get(
-            self.diagram_class, {}
-        )
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
 
     def add_backdrop(
@@ -536,7 +533,13 @@ class Drawing(drawing.Drawing):
 
         if class_ in decorations.all_ports:
             grp = self.add_port(
-                pos, size, text_style, parent_, class_=class_, label=label_
+                pos,
+                size,
+                text_style,
+                parent_,
+                class_=class_,
+                label=label_,
+                id_=id_,
             )
         else:
             grp = self.g(class_=f"Box {class_}", id_=id_)
@@ -684,7 +687,6 @@ class Drawing(drawing.Drawing):
         # Received text space doesn't allow for anything else than the text
         for label_ in labels_:
             label_["class"] = "Annotation"
-
             self._draw_label_bbox(label_, grp, "AnnotationBB")
             self._draw_edge_label(
                 label_,
@@ -707,9 +709,9 @@ class Drawing(drawing.Drawing):
         text_anchor: str = "start",
         y_margin: int | float,
     ) -> container.Group:
-        if class_ in self.requires_deco_patch:
-            class_ = self.requires_deco_patch[class_]
-
+        class_ = (
+            style.get_symbol_styleclass(class_, self.diagram_class) or class_
+        )
         if f"{class_}Symbol" in decorations.deco_factories:
             additional_space = (
                 decorations.icon_size + 2 * decorations.icon_padding

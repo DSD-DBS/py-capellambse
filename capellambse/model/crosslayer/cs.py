@@ -35,29 +35,6 @@ XT_DEPLOY_LINK = (
 XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 
 
-class Component(c.GenericElement):
-    """A template class for components."""
-
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "abstract",
-        __doc__="Boolean flag for an abstract Component",
-    )
-    is_human = xmltools.BooleanAttributeProperty(
-        "_element", "human", __doc__="Boolean flag for a human Component"
-    )
-    is_actor = xmltools.BooleanAttributeProperty(
-        "_element", "actor", __doc__="Boolean flag for an actor Component"
-    )
-
-    owner = c.ParentAccessor(c.GenericElement)
-    state_machines = c.ProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
-
-    parts: c.Accessor
-
-
 @c.xtype_handler(None)
 class Part(c.GenericElement):
     """A representation of a physical component"""
@@ -133,8 +110,40 @@ class PhysicalPath(c.GenericElement):
     )
 
     @property
-    def involved_links(self):
+    def involved_links(self) -> c.ElementList[PhysicalLink]:
         return self.involved_items.by_type("PhysicalLink")
+
+
+class Component(c.GenericElement):
+    """A template class for components."""
+
+    is_abstract = xmltools.BooleanAttributeProperty(
+        "_element",
+        "abstract",
+        __doc__="Boolean flag for an abstract Component",
+    )
+    is_human = xmltools.BooleanAttributeProperty(
+        "_element", "human", __doc__="Boolean flag for a human Component"
+    )
+    is_actor = xmltools.BooleanAttributeProperty(
+        "_element", "actor", __doc__="Boolean flag for an actor Component"
+    )
+
+    owner = c.ParentAccessor(c.GenericElement)
+    state_machines = c.ProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
+    ports = c.ProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
+    physical_ports = c.ProxyAccessor(PhysicalPort, aslist=c.ElementList)
+    parts = c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList)
+    physical_paths = c.ProxyAccessor(PhysicalPath, aslist=c.ElementList)
+    physical_links = c.ProxyAccessor(PhysicalLink, aslist=c.ElementList)
+    exchanges = c.ReferenceSearchingAccessor(
+        fa.ComponentExchange,
+        "source.owner",
+        "target.owner",
+        aslist=c.ElementList,
+    )
 
 
 @c.xtype_handler(None)
@@ -144,11 +153,6 @@ class ComponentRealization(c.GenericElement):
     _xmltag = "ownedComponentRealizations"
 
 
-c.set_accessor(
-    Component,
-    "parts",
-    c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList),
-)
 c.set_accessor(
     InterfacePkg,
     "packages",
@@ -174,4 +178,14 @@ c.set_accessor(
         matchtransform=operator.attrgetter("involved_items"),
         aslist=c.ElementList,
     ),
+)
+c.set_accessor(
+    fa.ComponentExchange,
+    "allocating_physical_link",
+    c.ReferenceSearchingAccessor(PhysicalLink, "exchanges"),
+)
+c.set_accessor(
+    fa.ComponentExchange,
+    "allocating_physical_path",
+    c.ReferenceSearchingAccessor(PhysicalPath, "exchanges"),
 )

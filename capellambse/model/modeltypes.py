@@ -28,6 +28,9 @@ class StringyEnum(_enum.Enum):
     def __str__(self) -> str:
         return str(self.name)
 
+    def __hash__(self):
+        return hash(self._name_)
+
 
 class DiagramType(StringyEnum):
     """The types of diagrams that Capella knows about.

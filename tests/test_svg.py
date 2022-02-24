@@ -14,14 +14,12 @@
 from __future__ import annotations
 
 import collections.abc as cabc
-import io
 import json
 import logging
 import math
 import pathlib
 import random
 import string
-import sys
 
 import cssutils
 import pytest
@@ -37,8 +35,6 @@ from capellambse.svg import (
     style,
     symbols,
 )
-
-from . import TEST_MODEL, TEST_ROOT
 
 cssutils.log.setLevel(logging.CRITICAL)
 
@@ -67,15 +63,8 @@ FREE_SYMBOLS = {
 }
 
 
-@pytest.fixture
-def model(monkeypatch) -> capellambse.MelodyModel:
-    """Return test model"""
-    monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
-
-
-@pytest.fixture
-def tmp_json(
+@pytest.fixture(name="tmp_json")
+def tmp_json_fixture(
     model: capellambse.MelodyModel, tmp_path: pathlib.Path
 ) -> pathlib.Path:
     """Return tmp path of diagram json file"""
@@ -85,9 +74,10 @@ def tmp_json(
     return dest
 
 
-@pytest.mark.usefixtures("tmp_json")
 class TestSVG:
-    def test_diagram_meta_data_attributes(self, tmp_json) -> None:
+    def test_diagram_meta_data_attributes(
+        self, tmp_json: pathlib.Path
+    ) -> None:
         diag_meta = generate.DiagramMetadata.from_dict(
             json.loads(tmp_json.read_text())
         )
@@ -97,7 +87,9 @@ class TestSVG:
         assert diag_meta.viewbox == "10 10 1162 611"
         assert diag_meta.class_ == "Logical Architecture Blank"
 
-    def test_diagram_from_json_path_componentports(self, tmp_json) -> None:
+    def test_diagram_from_json_path_componentports(
+        self, tmp_json: pathlib.Path
+    ) -> None:
         tree = etree.fromstring(
             SVGDiagram.from_json_path(tmp_json).to_string()
         )
@@ -136,7 +128,7 @@ class TestSVG:
         assert cp_reference_exists
 
     @pytest.fixture
-    def tmp_svg(self, tmp_path) -> SVGDiagram:
+    def tmp_svg(self, tmp_path: pathlib.Path) -> SVGDiagram:
         name = "Test svg"
         meta = generate.DiagramMetadata(
             pos=(0, 0), size=(1, 1), name=name, class_="TEST"
@@ -150,7 +142,7 @@ class TestSVG:
         assert pathlib.Path(tmp_svg.drawing.filename).is_file()
 
     # FIXME: change this to a parametrized test, do not use if- or for-statements in a unit test
-    def test_css_colors(self, tmp_json) -> None:
+    def test_css_colors(self, tmp_json: pathlib.Path) -> None:
         COLORS_TO_CHECK = {
             ".LogicalArchitectureBlank g.Box.CP_IN > line": {
                 "stroke": "#000000"
@@ -370,12 +362,12 @@ class TestSVG:
         tree = etree.fromstring(
             SVGDiagram.from_json_path(tmp_json).to_string()
         )
-        style = tree.xpath(
+        style_ = tree.xpath(
             "/x:svg/x:defs/x:style",
             namespaces={"x": "http://www.w3.org/2000/svg"},
         )[0]
 
-        stylesheet = cssutils.parseString(style.text)
+        stylesheet = cssutils.parseString(style_.text)
         for rule in stylesheet:
             for (element, prop) in COLORS_TO_CHECK.items():
                 if (
@@ -407,7 +399,7 @@ class TestSVG:
     ):
         """Test diagrams get rendered successfully"""
         diag = model.diagrams.by_name(diagram_name)
-        svg_string = diag.render("svg")
+        diag.render("svg")
 
     @pytest.mark.parametrize("diagram_type", TEST_DECO)
     @pytest.mark.parametrize(
@@ -583,20 +575,43 @@ class TestSVG:
         assert symbol.attribs["y"] + symbol.attribs["height"] <= lower_bound
 
 
-class TestSVGStylesheet:
-    def test_svg_stylesheet_as_str(self, tmp_json) -> None:
-        svg = SVGDiagram.from_json_path(tmp_json)
-        for line in str(svg.drawing.stylesheet).splitlines():
-            assert line.startswith(".LogicalArchitectureBlank")
+class TestSVGStyling:
+    LAB = "Logical Architecture Blank"
+    FCD = "Functional Chain Description"
+    OEB = "Operational Entity Blank"
+    FEX = "FunctionalExchange"
+    OEX = "OperationalExchange"
+    BOX = "LogicalComponentSymbol"
 
-    def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
-        with pytest.raises(TypeError) as error:
-            style.SVGStylesheet(None)  # type: ignore[arg-type]
+    class TestSVGStylesheet:
+        def test_svg_stylesheet_as_str(self, tmp_json) -> None:
+            svg = SVGDiagram.from_json_path(tmp_json)
+            for line in str(svg.drawing.stylesheet).splitlines():
+                assert line.startswith(".LogicalArchitectureBlank")
 
-        assert (
-            error.value.args[0]
-            == "Invalid type for class_ 'NoneType'. This needs to be a str."
-        )
+        def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
+            with pytest.raises(TypeError) as error:
+                style.SVGStylesheet(None)  # type: ignore[arg-type]
+
+            assert (
+                error.value.args[0]
+                == "Invalid type for class_ 'NoneType'. This needs to be a str."
+            )
+
+    @pytest.mark.parametrize(
+        "style_,diagstyle,expected",
+        [
+            pytest.param(None, "None", None, id="No modify"),
+            pytest.param(FEX, "None", None, id="Unregistered diagramstyle"),
+            pytest.param(BOX, LAB, None, id="Found in deco"),
+            pytest.param(FEX, FCD, None, id="Layer is prefix"),
+            pytest.param(FEX, OEB, OEX, id="Fixed FExchange styleclass"),
+        ],
+    )
+    def test_get_symbol_styleclass(
+        self, style_: str | None, diagstyle: str, expected: str | None
+    ) -> None:
+        assert style.get_symbol_styleclass(style_, diagstyle) == expected
 
 
 class TestDecoFactory:

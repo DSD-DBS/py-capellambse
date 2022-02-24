@@ -25,7 +25,8 @@ from capellambse.model.crosslayer.capellacommon import (
     StateTransition,
 )
 from capellambse.model.crosslayer.capellacore import Constraint
-from capellambse.model.crosslayer.fa import FunctionOutputPort
+from capellambse.model.crosslayer.cs import PhysicalPort
+from capellambse.model.crosslayer.fa import ComponentPort
 from capellambse.model.crosslayer.information import Class
 from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
@@ -38,12 +39,16 @@ def test_model_info_contains_capella_version(model: MelodyModel):
     assert hasattr(model.info, "capella_version")
 
 
-def test_loading_version_5_succeeds():
-    MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
-
-
-def test_loading_version_one_succeeds():
-    MelodyModel(TEST_ROOT / "1_3" / "MelodyModelTest.aird")
+@pytest.mark.parametrize(
+    "folder,aird",
+    [
+        ("5_2", TEST_MODEL),
+        ("5_0", TEST_MODEL),
+        ("1_3", TEST_MODEL.replace(" ", "")),
+    ],
+)
+def test_model_compatibility(folder: str, aird: str) -> None:
+    MelodyModel(TEST_ROOT / folder / aird)
 
 
 def test_ElementList_filter_by_name(model: MelodyModel):
@@ -551,20 +556,22 @@ class TestArchitectureLayers:
                     "root_component",
                     "root_function",
                     "function_package",
-                    # TODO: CapabilityRealizations from la
+                    "capability_package",
                     "interface_package",
                     "data_package",
                     "component_package",
                     "all_functions",
-                    # TODO: all_capabilities from la
+                    "all_capabilities",
                     "all_interfaces",
                     "all_classes",
                     "all_actors",
                     "all_components",
                     # TODO: actor_exchanges
-                    # TODO: component_exchanges
+                    "all_component_exchanges",
+                    "all_function_exchanges",
                     "all_physical_exchanges",
                     "all_physical_links",
+                    "all_physical_paths",
                 ],
                 id="PhysicalArchitectureLayer",
             ),
@@ -690,3 +697,71 @@ class TestArchitectureLayers:
 
         assert card1_os in comp_card1.deployed_components
         assert comp_card1 in card1_os.deploying_components
+
+    def test_physical_path_is_found(self, model: MelodyModel) -> None:
+        expected_path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
+        assert expected_path in model.pa.all_physical_paths
+
+    def test_pa_component_exchange_is_found(self, model: MelodyModel) -> None:
+        expected_exchange = model.by_uuid(
+            "3aa006b1-f954-4e8f-a4e9-2e9cd38555de"
+        )
+        assert expected_exchange in model.pa.all_component_exchanges
+
+    @pytest.mark.parametrize(
+        "uuid,port_attr,ports,class_",
+        [
+            pytest.param(
+                "b51ccc6f-5f96-4e28-b90e-72463a3b50cf",
+                "physical_ports",
+                3,
+                PhysicalPort,
+                id="PP",
+            ),
+            pytest.param(
+                "c78b5d7c-be0c-4ed4-9d12-d447cb39304e",
+                "ports",
+                3,
+                ComponentPort,
+                id="CP",
+            ),
+        ],
+    )
+    def test_PhysicalComponent_finds_ports(
+        self,
+        model: MelodyModel,
+        uuid: str,
+        port_attr: str,
+        ports: int,
+        class_: type,
+    ) -> None:
+        comp = model.by_uuid(uuid)
+        port_list = getattr(comp, port_attr)
+
+        assert ports == len(port_list)
+        for p in port_list:
+            assert isinstance(p, class_)
+
+    def test_ComponentExchange_has_allocating_FunctionalExchange(
+        self, model: MelodyModel
+    ) -> None:
+        fex = model.by_uuid("df56e23a-d5bd-470c-ac08-aab8d4dad211")
+        cex = model.by_uuid("a8c0bb4c-6802-42a9-9ef7-abbd4371f5f8")
+
+        assert fex.allocating_component_exchange == fex.owner == cex
+
+    def test_ComponentExchange_has_allocating_PhysicalLink(
+        self, model: MelodyModel
+    ) -> None:
+        cex = model.by_uuid("a647a577-0dc1-454f-917f-ce1c89089a2f")
+        link = model.by_uuid("90517d41-da3e-430c-b0a9-e3badf416509")
+
+        assert cex.allocating_physical_link == cex.owner == link
+
+    def test_ComponentExchange_has_allocating_PhysicalPath(
+        self, model: MelodyModel
+    ) -> None:
+        path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
+        cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
+
+        assert cex.allocating_physical_path == cex.owner == path

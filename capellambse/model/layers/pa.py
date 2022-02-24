@@ -34,13 +34,11 @@ XT_LA_COMP_REAL = (
 
 
 @c.xtype_handler(XT_ARCH)
-class PhysicalFunction(fa.AbstractFunction):
+class PhysicalFunction(fa.Function):
     """A physical function on the Physical Architecture layer."""
 
     _xmltag = "ownedPhysicalFunctions"
 
-    inputs = c.ProxyAccessor(fa.FunctionInputPort, aslist=c.ElementList)
-    outputs = c.ProxyAccessor(fa.FunctionOutputPort, aslist=c.ElementList)
     owner = c.CustomAccessor(
         c.GenericElement,
         operator.attrgetter("_model.pa.all_components"),
@@ -52,10 +50,6 @@ class PhysicalFunction(fa.AbstractFunction):
         aslist=c.ElementList,
         follow="targetElement",
     )
-
-    is_leaf = property(lambda self: not self.functions)
-
-    functions: c.Accessor
 
 
 @c.xtype_handler(XT_ARCH)
@@ -94,7 +88,6 @@ class PhysicalComponent(cs.Component):
         aslist=c.ElementList,
         follow="targetElement",
     )
-    ports = c.ProxyAccessor(cs.PhysicalPort, aslist=c.ElementList)
 
     owned_components: c.Accessor
     deploying_components: c.Accessor
@@ -141,13 +134,30 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         PhysicalComponent, rootelem=PhysicalFunctionPkg
     )
 
-    component_package = c.ProxyAccessor(PhysicalComponentPkg)
     function_package = c.ProxyAccessor(PhysicalFunctionPkg)
+    component_package = c.ProxyAccessor(PhysicalComponentPkg)
+    capability_package = c.ProxyAccessor(la.CapabilityRealizationPkg)
 
     all_functions = c.ProxyAccessor(
         PhysicalFunction,
         aslist=c.ElementList,
         rootelem=PhysicalFunctionPkg,
+        deep=True,
+    )
+    all_capabilities = c.ProxyAccessor(
+        la.CapabilityRealization, deep=True, aslist=c.ElementList
+    )
+    all_components = c.ProxyAccessor(
+        PhysicalComponent, aslist=c.ElementList, deep=True
+    )
+    all_actors = property(
+        lambda self: self._model.search(PhysicalComponent).by_is_actor(True)
+    )
+
+    all_function_exchanges = c.ProxyAccessor(
+        fa.FunctionalExchange,
+        aslist=c.ElementList,
+        rootelem=[PhysicalFunctionPkg, PhysicalFunction],
         deep=True,
     )
     all_physical_paths = c.ProxyAccessor(
@@ -161,12 +171,6 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
         rootelem=PhysicalComponentPkg,
         deep=True,
-    )
-    all_actors = property(
-        lambda self: self._model.search(PhysicalComponent).by_is_actor(True)
-    )
-    all_components = c.ProxyAccessor(
-        PhysicalComponent, aslist=c.ElementList, deep=True
     )
 
     all_physical_exchanges = c.ProxyAccessor(
@@ -211,6 +215,14 @@ c.set_accessor(
         PhysicalComponent,
         operator.attrgetter("_model.pa.all_components"),
         matchtransform=operator.attrgetter("deployed_components"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    PhysicalFunction,
+    "packages",
+    c.ProxyAccessor(
+        PhysicalFunctionPkg,
         aslist=c.ElementList,
     ),
 )

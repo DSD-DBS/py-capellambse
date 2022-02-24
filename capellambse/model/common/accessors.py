@@ -13,6 +13,8 @@
 # limitations under the License.
 from __future__ import annotations
 
+import warnings
+
 import markupsafe
 
 __all__ = [
@@ -481,14 +483,14 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         elmlist._parent._element.remove(obj._element)
 
 
-class AttrProxyAccessor(PhysicalAccessor[T]):
+class AttrProxyAccessor(PhysicalAccessor):
     """Provides access to elements that are linked in an attribute."""
 
     __slots__ = ("attr",)
 
     def __init__(
         self,
-        class_: type[T],
+        class_: type | None,
         attr: str,
         *,
         aslist: type[element.ElementList] | None = None,
@@ -509,8 +511,14 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
             list of all matched objects.  Incompatible with ``xtypes =
             None``.
         """
-        super().__init__(class_, aslist=aslist)
+        super().__init__(element.GenericElement, aslist=aslist)
         self.attr = attr
+
+        if class_ not in (None, element.GenericElement):
+            warnings.warn(
+                "Class argument to AttrProxyAccessor is deprecated.",
+                DeprecationWarning,
+            )
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -566,16 +574,17 @@ class AttrProxyAccessor(PhysicalAccessor[T]):
         obj._element.set(self.attr, " ".join(parts))
 
 
-class AlternateAccessor(PhysicalAccessor[T]):
+class AlternateAccessor(Accessor[T]):
     """Provides access to an "alternate" form of the object."""
 
-    __slots__ = ()
+    __slots__ = ("class_",)
 
     def __init__(
         self,
         class_: type[T],
     ):
-        super().__init__(class_)
+        super().__init__()
+        self.class_ = class_
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -599,10 +608,11 @@ class ParentAccessor(PhysicalAccessor[T]):
         del objtype
         if obj is None:  # pragma: no cover
             return self
-        return self.class_.from_model(
-            obj._model,
-            obj._element.getparent(),
-        )
+
+        parent = next(obj._model._loader.iterancestors(obj._element), None)
+        if parent is None:
+            return None
+        return self.class_.from_model(obj._model, parent)
 
 
 class CustomAccessor(PhysicalAccessor[T]):
@@ -808,7 +818,7 @@ class SpecificationAccessor(Accessor[_Specification]):
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
     __slots__ = ("attrs",)
 
-    attrs: tuple[str, ...]
+    attrs: tuple[operator.attrgetter, ...]
 
     def __init__(
         self,
@@ -817,7 +827,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         aslist: type[element.ElementList] | None = None,
     ) -> None:
         super().__init__(class_, aslist=aslist)
-        self.attrs = attrs
+        self.attrs = tuple(operator.attrgetter(i) for i in attrs)
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -828,7 +838,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         for candidate in obj._model.search(self.class_.__name__):
             for attr in self.attrs:
                 try:
-                    value = getattr(candidate, attr)
+                    value = attr(candidate)
                 except AttributeError:
                     continue
                 if (
