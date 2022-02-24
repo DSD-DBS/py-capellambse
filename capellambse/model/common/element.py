@@ -306,10 +306,16 @@ class GenericElement:
 
     def _short_html_(self) -> markupsafe.Markup:
         return markupsafe.Markup(
+            self._wrap_short_html(
+                f" &quot;{markupsafe.Markup.escape(self.name)}&quot;"
+                f"{(': ' + str(self.value)) if hasattr(self, 'value') else ''}"
+            )
+        )
+
+    def _wrap_short_html(self, content: str) -> str:
+        return (
             f"<strong>{markupsafe.Markup.escape(type(self).__name__)}</strong>"
-            f" &quot;{markupsafe.Markup.escape(self.name)}&quot;"
-            f"{(': ' + str(self.value)) if hasattr(self, 'value') else ''}"
-            f" ({markupsafe.Markup.escape(self.uuid)})"
+            f"{content} ({markupsafe.Markup.escape(self.uuid)})"
         )
 
     def _repr_html_(self) -> str:
@@ -658,16 +664,9 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         if not self:
             return markupsafe.Markup("<p><em>(Empty list)</em></p>")
 
-        escape = markupsafe.Markup.escape
         fragments = ['<ol start="0" style="text-align: left;">']
         for i in self:
-            fragments.append(
-                "<li>"
-                f"<strong>{escape(type(i).__name__)}</strong>"
-                f" &quot;{escape(i.name)}&quot;"
-                f" ({escape(i.uuid)})"
-                "</li>"
-            )
+            fragments.append(f"<li>{i._short_html_()}</li>")
         fragments.append("</ol>")
         return markupsafe.Markup("".join(fragments))
 

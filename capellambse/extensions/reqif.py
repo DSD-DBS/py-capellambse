@@ -22,6 +22,7 @@ import datetime
 import logging
 import typing as t
 
+import markupsafe
 from lxml import etree
 
 import capellambse.model
@@ -270,6 +271,13 @@ class ReqIFElement(c.GenericElement):
 
         return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
 
+    def _short_html_(self) -> markupsafe.Markup:
+        return markupsafe.Markup(
+            self._wrap_short_html(
+                f" &quot;{markupsafe.Markup.escape(self.name or self.long_name)}&quot;"
+            )
+        )
+
 
 @c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
 class DataTypeDefinition(ReqIFElement):
@@ -299,6 +307,13 @@ class AbstractRequirementsAttribute(c.GenericElement):
         except AttributeError:
             name = ""
         return f"<{mytype} [{name}] ({self.uuid})>"
+
+    def _short_html_(self) -> markupsafe.Markup:
+        if self.definition is not None:
+            name = markupsafe.Markup.escape(self.definition.long_name)
+        else:
+            name = markupsafe.Markup.escape("None")
+        return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
 class AttributeAccessor(
