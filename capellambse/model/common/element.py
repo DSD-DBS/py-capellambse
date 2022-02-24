@@ -620,18 +620,9 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         if not self:
             return markupsafe.Markup("<p><em>(Empty list)</em></p>")
 
-        escape = markupsafe.Markup.escape
         fragments = ['<ol start="0" style="text-align: left;">']
         for i in self:
-            if hasattr(i, "_short_html_"):
-                content = i._short_html_()
-            else:
-                content = (
-                    f"<strong>{escape(type(i).__name__)}</strong>"
-                    f" &quot;{escape(i.name)}&quot;"
-                    f" ({escape(i.uuid)})"
-                )
-            fragments.append(f"<li>{content}</li>")
+            fragments.append(f"<li>{i._short_html_()}</li>")
         fragments.append("</ol>")
         return markupsafe.Markup("".join(fragments))
 
