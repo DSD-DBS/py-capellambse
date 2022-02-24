@@ -184,3 +184,89 @@ def test_boxsnap(vector: aird.Vector2D, expected: aird.Vector2D):
     actual = vector.boxsnap(topleft, botright)
 
     assert actual == expected
+
+
+class TestVectorSnapping:
+    PORTBOX = aird.diagram.Box(
+        (1, 1), aird.parser._common.PORT_SIZE, port=True
+    )
+
+    @pytest.mark.parametrize(
+        ["points", "expected"],
+        [
+            pytest.param(
+                [aird.Vector2D(-1, 6), aird.Vector2D(0, 6)],
+                aird.Vector2D(1, 6),
+                id="From West - Perfect align",
+            ),
+            pytest.param(
+                [aird.Vector2D(-1, 1), aird.Vector2D(0, 1)],
+                aird.Vector2D(1, 1),
+                id="From West - (-Y)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(-1, 11), aird.Vector2D(0, 11)],
+                aird.Vector2D(1, 11),
+                id="From West - (+Y)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(0, -1), aird.Vector2D(0, 0)],
+                aird.Vector2D(1, 1),
+                id="Upperleft - Offbounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(6, -1), aird.Vector2D(6, 0)],
+                aird.Vector2D(6, 1),
+                id="From North - Perfect align",
+            ),
+            pytest.param(
+                [aird.Vector2D(1, -1), aird.Vector2D(1, 0)],
+                aird.Vector2D(1, 1),
+                id="From North - (-X)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(11, -1), aird.Vector2D(11, 0)],
+                aird.Vector2D(11, 1),
+                id="From North - (+X)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(13, 0), aird.Vector2D(12, 0)],
+                aird.Vector2D(11, 1),
+                id="Upperright - Offbounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(13, 1), aird.Vector2D(12, 1)],
+                aird.Vector2D(11, 1),
+                id="From East - (-Y)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(13, 11), aird.Vector2D(12, 11)],
+                aird.Vector2D(11, 11),
+                id="From East - (+Y)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(6, 13), aird.Vector2D(6, 12)],
+                aird.Vector2D(6, 11),
+                id="From South - Perfect align",
+            ),
+            pytest.param(
+                [aird.Vector2D(1, 13), aird.Vector2D(1, 12)],
+                aird.Vector2D(1, 11),
+                id="From South - (-X)-Offset, still in bounds",
+            ),
+            pytest.param(
+                [aird.Vector2D(11, 13), aird.Vector2D(11, 12)],
+                aird.Vector2D(11, 11),
+                id="From South - (+X)-Offset, still in bounds",
+            ),
+        ],
+    )
+    def test_edge_snaptarget_to_middle_of_port(
+        self, points: list[aird.Vector2D], expected: aird.Vector2D
+    ):
+        """Test snapping of edges from all sides to the closest point on
+        border of port. Port movement not allowed.
+        """
+        aird.parser._edge_factories.snaptarget(points, 1, 0, self.PORTBOX)
+
+        assert points[-1] == expected

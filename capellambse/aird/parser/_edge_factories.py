@@ -360,12 +360,6 @@ def snaptarget(
             )
             target.snap_to_parent()
 
-    # Snap the Edge into the target
-    if target.port:
-        # Use the port's center instead of the calculated position
-        assert isinstance(target, aird.Box)
-        points[i] = target.pos + target.size / 2
-
     points[i] = target.vector_snap(points[i], direction)
 
 
