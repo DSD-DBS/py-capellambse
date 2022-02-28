@@ -662,9 +662,6 @@ class TestReqIFModification:
     @pytest.mark.parametrize(
         "uuid,value",
         [
-            pytest.param(
-                "9c692405-b8aa-4caa-b988-51d27db5cd1b", None, id="NoneType"
-            ),
             pytest.param("b97c09b5-948a-46e8-a656-69d764ddce7d", 1, id="Int"),
         ],
     )

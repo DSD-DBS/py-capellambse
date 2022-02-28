@@ -78,7 +78,7 @@ class AttributeProperty:
         self.writable = writable
         self.xmlattr = xmlattr
         self.returntype = returntype
-        if optional:
+        if optional or default is not None:
             self.default = default
         else:
             self.default = self.NOT_OPTIONAL
@@ -119,7 +119,21 @@ class AttributeProperty:
                 f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 
-        xml_element.attrib[self.attribute] = value
+        if value == self.default:
+            self.__delete__(obj)
+            return
+
+        stringified = str(value)
+
+        try:
+            roundtripped = self.returntype(stringified)
+        except (TypeError, ValueError) as err:
+            raise TypeError(f"Value is not round-trip safe: {value}") from err
+
+        if roundtripped != value:
+            raise TypeError(f"Value is not round-trip safe: {value}")
+
+        xml_element.attrib[self.attribute] = stringified
 
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
@@ -231,18 +245,18 @@ class EnumAttributeProperty(AttributeProperty):
                 "enumcls must be an Enum subclass, not {!r}".format(enumcls)
             )
 
-        super().__init__(xmlattr, attribute, *args, **kw)
-        self.enumcls = enumcls
         if default is None or isinstance(default, enumcls):
-            self.default = default
+            pass
         elif isinstance(default, str):
-            self.default = enumcls[default]
+            default = enumcls[default]
         else:
             raise TypeError(
-                "default must be a member (or its name) of {!r}, not {!r}".format(
-                    enumcls, default
-                )
+                f"default must be a member (or its name) of {enumcls!r}, not {default!r}"
             )
+        super().__init__(
+            xmlattr, attribute, *args, optional=True, default=default, **kw
+        )
+        self.enumcls = enumcls
 
     def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any:
         if obj is None:
