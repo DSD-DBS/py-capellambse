@@ -534,7 +534,7 @@ class TestReqIFModification:
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition == definition
-        assert isinstance(attr, reqif.RequirementsAttribute)
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     def test_create_RequirementType_AttributeDefinition_creation(
         self, model: capellambse.MelodyModel
@@ -565,7 +565,7 @@ class TestReqIFModification:
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition is None
-        assert isinstance(attr, reqif.RequirementsAttribute)
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     def test_create_enum_value_attribute_on_requirements(
         self, model: capellambse.MelodyModel
@@ -669,7 +669,7 @@ class TestReqIFModification:
         self, model: capellambse.MelodyModel, uuid: str, value: t.Any
     ):
         attr = model.by_uuid(uuid)
-        assert isinstance(attr, reqif.RequirementsAttribute)
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
         with pytest.raises(TypeError):
             attr.value = value  # type: ignore[arg-type]

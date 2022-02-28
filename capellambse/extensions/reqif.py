@@ -18,7 +18,6 @@
 from __future__ import annotations
 
 import collections.abc as cabc
-import datetime
 import logging
 import typing as t
 
@@ -75,36 +74,6 @@ XT_REQ_TYPES = {
 DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
-_xt_to_attr_type: dict[
-    str, tuple[cabc.Callable[[str], t.Any], type | tuple[type, ...], t.Any]
-] = {
-    XT_REQ_ATTR_STRINGVALUE: (str, str, ""),
-    XT_REQ_ATTR_REALVALUE: (float, float, 0.0),
-    XT_REQ_ATTR_INTEGERVALUE: (int, int, 0),
-    XT_REQ_ATTR_DATEVALUE: (
-        lambda val: datetime.datetime.strptime(val, DATE_VALUE_FORMAT),
-        (datetime.datetime, type(None)),
-        None,
-    ),
-    XT_REQ_ATTR_BOOLEANVALUE: (lambda val: val == "true", bool, False),
-}
-_attr_type_hints = {
-    "int": XT_REQ_ATTR_INTEGERVALUE,
-    "integer": XT_REQ_ATTR_INTEGERVALUE,
-    "integervalueattribute": XT_REQ_ATTR_INTEGERVALUE,
-    "str": XT_REQ_ATTR_STRINGVALUE,
-    "string": XT_REQ_ATTR_STRINGVALUE,
-    "stringvalueattribute": XT_REQ_ATTR_STRINGVALUE,
-    "float": XT_REQ_ATTR_REALVALUE,
-    "real": XT_REQ_ATTR_REALVALUE,
-    "realvalueattribute": XT_REQ_ATTR_REALVALUE,
-    "date": XT_REQ_ATTR_DATEVALUE,
-    "datevalueattribute": XT_REQ_ATTR_DATEVALUE,
-    "bool": XT_REQ_ATTR_BOOLEANVALUE,
-    "boolvalueattribute": XT_REQ_ATTR_BOOLEANVALUE,
-    "enum": XT_REQ_ATTR_ENUMVALUE,
-    "enumvalueattribute": XT_REQ_ATTR_ENUMVALUE,
-}
 
 
 class RequirementsRelationAccessor(
@@ -298,7 +267,7 @@ class AttributeDefinition(ReqIFElement):
 class AbstractRequirementsAttribute(c.GenericElement):
     _xmltag = "ownedAttributes"
 
-    definition: t.ClassVar[c.Accessor]
+    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
     def __repr__(self) -> str:
         mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
@@ -316,9 +285,7 @@ class AbstractRequirementsAttribute(c.GenericElement):
         return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
-class AttributeAccessor(
-    c.ProxyAccessor["RequirementsAttribute | EnumerationValueAttribute"]
-):
+class AttributeAccessor(c.ProxyAccessor[AbstractRequirementsAttribute]):
     def __init__(self) -> None:
         super().__init__(
             c.GenericElement,  # type: ignore[arg-type]
@@ -333,14 +300,9 @@ class AttributeAccessor(
     def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
         type_ = type_.lower()
         try:
-            xt = _attr_type_hints[type_]
+            return _attr_type_hints[type_]
         except KeyError:
             raise ValueError(f"Invalid type hint given: {type_!r}") from None
-
-        if xt == XT_REQ_ATTR_ENUMVALUE:
-            return EnumerationValueAttribute, xt
-
-        return RequirementsAttribute, xt
 
 
 class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
@@ -406,63 +368,45 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         return listtype(self._model, elements, source=self._source)
 
 
-class ValueAccessor(c.Accessor):
-    def __get__(  # type: ignore[override]
-        self,
-        obj: c.GenericElement | None,
-        objtype: type[ReqIFElement] | None = None,
-    ) -> ValueAccessor | int | float | str | bool | datetime.datetime:
-        del objtype
-        if obj is None:
-            return self
+@c.xtype_handler(None, XT_REQ_ATTR_BOOLEANVALUE)
+class BooleanValueAttribute(AbstractRequirementsAttribute):
+    """A string value attribute."""
 
-        assert isinstance(
-            obj, (RequirementsAttribute, EnumerationValueAttribute)
-        )
-        cast, _, default = _xt_to_attr_type[obj.xtype]
-        if (value := obj._element.get("value")) is None:
-            return default
-        return cast(value)
-
-    def __set__(
-        self,
-        obj: c.GenericElement,
-        value: int | float | str | bool | datetime.datetime,
-    ) -> None:
-        assert isinstance(
-            obj, (RequirementsAttribute, EnumerationValueAttribute)
-        )
-        _, type_, default = _xt_to_attr_type[obj.xtype]
-        if not isinstance(value, type_):
-            if isinstance(type_, tuple):
-                error_msg = " or ".join((t.__name__ for t in type_))
-            else:
-                error_msg = type_.__name__
-
-            raise TypeError("Value needs to be of type " + error_msg)
-
-        if value == default:
-            if "value" in obj._element.attrib:
-                del obj._element.attrib["value"]
-            return
-
-        if isinstance(value, bool):
-            value = str(value).lower()
-        elif isinstance(value, datetime.datetime):
-            value = datetime.datetime.strftime(value, DATE_VALUE_FORMAT)
-        else:
-            value = str(value)
-
-        obj._element.attrib["value"] = value
+    value = xmltools.BooleanAttributeProperty("_element", "value")
 
 
-@c.xtype_handler(None, *(XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}))
-class RequirementsAttribute(AbstractRequirementsAttribute):
-    """Handles attributes on Requirements."""
+@c.xtype_handler(None, XT_REQ_ATTR_DATEVALUE)
+class DateValueAttribute(AbstractRequirementsAttribute):
+    """A value attribute that stores a date and time."""
 
-    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
+    value = xmltools.DatetimeAttributeProperty(
+        "_element", "value", format=DATE_VALUE_FORMAT, optional=True
+    )
 
-    value = ValueAccessor()
+
+@c.xtype_handler(None, XT_REQ_ATTR_INTEGERVALUE)
+class IntegerValueAttribute(AbstractRequirementsAttribute):
+    """An integer value attribute."""
+
+    value = xmltools.AttributeProperty(
+        "_element", "value", returntype=int, default=0
+    )
+
+
+@c.xtype_handler(None, XT_REQ_ATTR_REALVALUE)
+class RealValueAttribute(AbstractRequirementsAttribute):
+    """A floating-point number value attribute."""
+
+    value = xmltools.AttributeProperty(
+        "_element", "value", returntype=float, default=0.0
+    )
+
+
+@c.xtype_handler(None, XT_REQ_ATTR_STRINGVALUE)
+class StringValueAttribute(AbstractRequirementsAttribute):
+    """A string value attribute."""
+
+    value = xmltools.AttributeProperty("_element", "value", default="")
 
 
 @c.xtype_handler(None, XT_REQ_TYPE_ATTR_ENUM)
@@ -723,3 +667,22 @@ def init() -> None:
             deep=True,
         ),
     )
+
+
+_attr_type_hints = {
+    "int": (IntegerValueAttribute, XT_REQ_ATTR_INTEGERVALUE),
+    "integer": (IntegerValueAttribute, XT_REQ_ATTR_INTEGERVALUE),
+    "integervalueattribute": (IntegerValueAttribute, XT_REQ_ATTR_INTEGERVALUE),
+    "str": (StringValueAttribute, XT_REQ_ATTR_STRINGVALUE),
+    "string": (StringValueAttribute, XT_REQ_ATTR_STRINGVALUE),
+    "stringvalueattribute": (StringValueAttribute, XT_REQ_ATTR_STRINGVALUE),
+    "float": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
+    "real": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
+    "realvalueattribute": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
+    "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "boolvalueattribute": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "enum": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+    "enumvalueattribute": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+}
