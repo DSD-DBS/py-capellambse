@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import abc
 import collections.abc as cabc
+import datetime
 import enum
 import typing as t
 
@@ -194,6 +195,64 @@ class BooleanAttributeProperty(AttributeProperty):
             super().__set__(obj, "true")
         else:
             self.__delete__(obj)
+
+
+class DatetimeAttributeProperty(AttributeProperty):
+    """An AttributeProperty that stores a datetime.
+
+    The value stored in the XML will be formatted according to the
+    ``format`` given to the constructor. When loading a value, it must
+    strictly be parsable with the same format, otherwise an exception
+    will be raised.
+    """
+
+    __slots__ = ("format",)
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        format: str,
+        optional: bool = True,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            optional=optional,
+            writable=writable,
+            __doc__=__doc__,
+        )
+        self.format = format
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type) -> DatetimeAttributeProperty:
+        ...
+
+    @t.overload
+    def __get__(
+        self, obj: t.Any, objtype: type | None = None
+    ) -> datetime.datetime:
+        ...
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+
+        formatted = super().__get__(obj, objtype)
+        if formatted is None:
+            return None
+        return datetime.datetime.strptime(formatted, self.format)
+
+    def __set__(self, obj, value) -> None:
+        if value is None:
+            self.__delete__(obj)
+        elif isinstance(value, datetime.datetime):
+            super().__set__(obj, value.strftime(self.format))
+        else:
+            raise TypeError(f"Expected datetime, not {type(value).__name__}")
 
 
 class EnumAttributeProperty(AttributeProperty):
