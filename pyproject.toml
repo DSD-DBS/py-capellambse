@@ -55,6 +55,34 @@ skip_glob = [
 ]
 use_parentheses = true
 
+[tool.mypy]
+check_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_unreachable = true
+python_version = "3.8"
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+allow_incomplete_defs = true
+allow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+# Versioneer and the generated _version module
+module = ["versioneer", "capellambse/_version"]
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+# Untyped third party libraries
+module = [
+  "cssutils.*",
+  "lxml.*",
+  "PIL.*",
+  "svgwrite.*",
+]
+ignore_missing_imports = true
+
 [tool.pydocstyle]
 convention = "numpy"
 add-select = [
