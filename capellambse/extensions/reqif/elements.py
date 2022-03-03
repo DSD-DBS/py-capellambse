@@ -68,6 +68,7 @@ __all__ = [
 
 import collections.abc as cabc
 import logging
+import os
 import typing as t
 
 import markupsafe
@@ -78,6 +79,8 @@ import capellambse.model.common as c
 from capellambse import helpers
 from capellambse.loader import xmltools
 from capellambse.model import crosslayer
+
+from . import exporter
 
 XT_REQUIREMENT = "Requirements:Requirement"
 XT_REQ_ATTR_STRINGVALUE = "Requirements:StringValueAttribute"
@@ -269,10 +272,7 @@ class ReqIFElement(c.GenericElement):
                 RequirementsIntRelation,
             ),
         ):
-            return (
-                f"<{mytype} from {self.source!r} to {self.target!r} "
-                f"({self.uuid})>"
-            )
+            return f"<{mytype} from {self.source!r} to {self.target!r} ({self.uuid})>"
         elif self.xtype in XT_REQ_TYPES:
             return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
         while parent is not None:
@@ -543,10 +543,6 @@ class RequirementType(AbstractType):
 
     _xmltag = "ownedTypes"
 
-    long_name = xmltools.AttributeProperty(
-        "_element", "ReqIFLongName", optional=True
-    )
-
 
 @c.xtype_handler(None, XT_REQUIREMENT)
 class Requirement(ReqIFElement):
@@ -597,6 +593,45 @@ class RequirementsModule(ReqIFElement):
     )
     type = c.AttrProxyAccessor(ModuleType, "moduleType")
     attributes = AttributeAccessor()
+
+    def to_reqif(
+        self,
+        to: str | os.PathLike | t.IO[bytes],
+        *,
+        metadata: cabc.Mapping[str, t.Any] | None = None,
+        pretty: bool = False,
+        compress: bool | None = None,
+    ) -> None:
+        """Export this module as ReqIF XML.
+
+        You can override some auto-generated metadata placed in the header
+        section by passing a dictionary as ``metadata``. The following keys
+        are supported. Unsupported keys are silently ignored.
+
+        -   ``creation_time``: A ``datetime.datetime`` object that specifies
+            this document's creation time. Default to the current time.
+        -   ``comment``: Override the ReqIF file's comment. Defaults to a
+            text derived from the model and module names.
+        -   ``title``: Specify the document title. Defaults to the module's
+            ``long_name``.
+
+        Parameters
+        ----------
+        target
+            Where to export to. Can be the name of a file, or a file-like
+            object opened in binary mode.
+        metadata
+            A dictionary with additional metadata (see above).
+        pretty
+            Format the XML human-readable.
+        compress
+            Write compressed data (``*.reqifz``). Defaults to ``True``
+            if ``target`` is a string or path-like and its name ends in
+            ``.reqifz``, otherwise defaults to ``False``.
+        """
+        exporter.export_module(
+            self, to, metadata=metadata, pretty=pretty, compress=compress
+        )
 
 
 class AbstractRequirementsRelation(ReqIFElement):
