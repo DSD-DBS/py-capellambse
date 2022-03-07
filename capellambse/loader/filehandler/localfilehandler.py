@@ -20,7 +20,7 @@ import pathlib
 import subprocess
 import typing as t
 
-import capellambse.helpers
+from capellambse import helpers
 from capellambse.loader.modelinfo import ModelInfo
 
 from . import FileHandler
@@ -29,8 +29,13 @@ LOGGER = logging.getLogger(__name__)
 
 
 class LocalFileHandler(FileHandler):
-    def __init__(self, path: str | os.PathLike) -> None:
-        path = pathlib.Path(path)
+    def __init__(
+        self,
+        path: str | os.PathLike,
+        *,
+        subdir: str | pathlib.PurePosixPath = "/",
+    ) -> None:
+        path = pathlib.Path(path, helpers.normalize_pure_path(subdir))
 
         super().__init__(path)
         self.__transaction: set[pathlib.PurePosixPath] | None = None
@@ -42,7 +47,7 @@ class LocalFileHandler(FileHandler):
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
         assert isinstance(self.path, pathlib.Path)
-        normpath = capellambse.helpers.normalize_pure_path(filename)
+        normpath = helpers.normalize_pure_path(filename)
         if "w" not in mode or self.__transaction is None:
             path = self.path / normpath
             return t.cast(t.BinaryIO, path.open(mode))

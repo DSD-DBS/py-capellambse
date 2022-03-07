@@ -94,6 +94,8 @@ class HTTPFileHandler(FileHandler):
         path: str | os.PathLike,
         username: str | None = None,
         password: str | None = None,
+        *,
+        subdir: str | pathlib.PurePosixPath = "/",
     ) -> None:
         if not isinstance(path, str):
             raise TypeError(
@@ -103,6 +105,8 @@ class HTTPFileHandler(FileHandler):
             raise ValueError(
                 "Either both username and password must be given, or neither"
             )
+        if subdir != "/":
+            raise ValueError("`subdir=` is not supported in HTTP(S)")
         super().__init__(path)
 
         self.session = requests.Session()

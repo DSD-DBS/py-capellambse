@@ -76,9 +76,16 @@ def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
 class FileHandler(metaclass=abc.ABCMeta):
     path: str | os.PathLike
 
-    def __init__(self, path: str | os.PathLike, **kw: t.Any) -> None:
+    def __init__(
+        self,
+        path: str | os.PathLike,
+        *,
+        subdir: str | pathlib.PurePosixPath = "/",
+        **kw: t.Any,
+    ) -> None:
         super().__init__(**kw)  # type: ignore[call-arg]
         self.path = path
+        self.subdir = subdir
 
     @abc.abstractmethod
     def get_model_info(self) -> ModelInfo:
