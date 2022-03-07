@@ -92,6 +92,15 @@ def _unquote_ref(ref: str) -> str:
     return ref
 
 
+class MissingResourceLocationError(KeyError):
+    """Raised when a model needs an additional resource location."""
+
+
+class ResourceLocationManager(dict):
+    def __missing__(self, key: str) -> t.NoReturn:
+        raise MissingResourceLocationError(key)
+
+
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
@@ -239,7 +248,7 @@ class MelodyLoader:
             handler = path
         else:
             handler = filehandler.get_filehandler(path, **kwargs)
-        self.resources = {"\0": handler}
+        self.resources = ResourceLocationManager({"\0": handler})
         for resource_name, resource_handler in (resources or {}).items():
             if not resource_name:
                 raise ValueError("Empty resource name")
