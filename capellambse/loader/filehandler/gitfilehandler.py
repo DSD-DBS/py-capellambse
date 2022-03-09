@@ -433,8 +433,10 @@ class GitFileHandler(FileHandler):
         known_hosts_file: str = "",
         disable_cache: bool = False,
         update_cache: bool = True,
+        *,
+        subdir: str | pathlib.PurePosixPath = "/",
     ) -> None:
-        super().__init__(path)
+        super().__init__(path, subdir=subdir)
         self.revision = revision
         self.disable_cache = disable_cache
         self.username = username
@@ -461,7 +463,9 @@ class GitFileHandler(FileHandler):
         filename: str | pathlib.PurePosixPath,
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
-        path = capellambse.helpers.normalize_pure_path(filename)
+        path = capellambse.helpers.normalize_pure_path(
+            filename, base=self.subdir
+        )
         if "w" in mode:
             if self._transaction is None:
                 raise TransactionClosedError(
