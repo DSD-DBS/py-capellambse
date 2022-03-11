@@ -97,6 +97,9 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             + self.name
             + markupsafe.Markup("</figcaption></figure>")
         )
+    
+    def _short_html_(self) -> markupsafe.Markup:
+        return markupsafe.Markup(f"<b>{self.name}</b> (uuid: {self.uuid if self.uuid else 'not applicable'})")
 
     def _repr_svg_(self):
         return self.render("svg")
