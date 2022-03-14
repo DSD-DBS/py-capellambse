@@ -790,7 +790,7 @@ class MelodyLoader:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
         if fragment is not None:
-            fragment = urllib.parse.unquote(fragment)
+            fragment = urllib.parse.unquote(_unquote_ref(fragment))
 
         def find_trees(
             from_element: etree._Element | None,
