@@ -105,8 +105,8 @@ def generic_factory(
 
     label = seb.melodyobjs[0].attrib.get("name")
     pos += (
-        int(seb.diag_element.attrib.get("width", "0")),
-        int(seb.diag_element.attrib.get("height", "0")),
+        int(seb.diag_element.attrib.get("width", (5, -1)[box_is_port])),
+        int(seb.diag_element.attrib.get("height", (5, -1)[box_is_port])),
     )
 
     if box_is_port and parent is not None:
