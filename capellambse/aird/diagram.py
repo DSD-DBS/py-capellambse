@@ -123,14 +123,12 @@ class Box:
         self.hidelabel: bool = hidelabel
         self.hidden = hidden
 
-        self.parent: Box | None = parent
         self.children: cabc.MutableSequence[DiagramElement] = []
         self.context: set[str] = set(context) if context else set()
         self.port: bool = port
 
-        if parent is not None:
-            parent.children.append(self)
-            self.snap_to_parent()
+        self._parent: Box | None = None
+        self.parent = parent
 
     def create_portlabel(
         self, labeltext: str, margin: float | int = 2
@@ -371,6 +369,21 @@ class Box:
             return True
 
         return False
+
+    @property
+    def parent(self) -> Box | None:
+        """The parent element of this Box."""
+        return self._parent
+
+    @parent.setter
+    def parent(self, parent: Box | None) -> None:
+        self._parent, prev_parent = parent, self._parent
+        if prev_parent is not None and self in prev_parent.children:
+            prev_parent.children.remove(self)
+        if self._parent is not None:
+            self._parent.children.append(self)
+
+        self.snap_to_parent()
 
     @staticmethod
     def is_on_side(
