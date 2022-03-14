@@ -386,4 +386,5 @@ def get_spec_text(seb: SemanticElementBuilder) -> str:
         spec = next(spec.iterchildren("bodies"))
     except StopIteration:
         return ""
-    return helpers.unescape_linked_text(seb.melodyloader, spec.text)
+    text = helpers.unescape_linked_text(seb.melodyloader, spec.text)
+    return text.striptags()
