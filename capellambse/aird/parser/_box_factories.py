@@ -121,7 +121,6 @@ def generic_factory(
         pos,
         size,
         label=label,
-        parent=parent,
         collapsed=_is_collapsed(seb),
         port=box_is_port,
         uuid=seb.data_element.attrib["element"],
@@ -133,7 +132,9 @@ def generic_factory(
     if box_is_symbol:
         box.JSON_TYPE = "symbol"
         box.minsize = (30, 30)
-    return _filters.setfilters(seb, box)
+    _filters.setfilters(seb, box)
+    box.parent = parent
+    return box
 
 
 def generic_stacked_factory(seb: C.SemanticElementBuilder) -> C.StackingBox:
