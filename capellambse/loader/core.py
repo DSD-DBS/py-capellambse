@@ -224,7 +224,11 @@ class MelodyLoader:
         path: str | os.PathLike | filehandler.FileHandler,
         entrypoint: str | pathlib.PurePosixPath | None = None,
         *,
-        resources: cabc.Mapping[str, filehandler.FileHandler] | None = None,
+        resources: cabc.Mapping[
+            str,
+            filehandler.FileHandler | str | os.PathLike | dict[str, t.Any],
+        ]
+        | None = None,
         **kwargs: t.Any,
     ) -> None:
         """Construct a MelodyLoader.
@@ -249,12 +253,18 @@ class MelodyLoader:
         else:
             handler = filehandler.get_filehandler(path, **kwargs)
         self.resources = ResourceLocationManager({"\0": handler})
-        for resource_name, resource_handler in (resources or {}).items():
-            if not resource_name:
+        for resname, reshdl in (resources or {}).items():
+            if not resname:
                 raise ValueError("Empty resource name")
-            if "/" in resource_name or "\0" in resource_name:
-                raise ValueError(f"Invalid resource name: {resource_name!r}")
-            self.resources[resource_name] = resource_handler
+            if "/" in resname or "\0" in resname:
+                raise ValueError(f"Invalid resource name: {resname!r}")
+
+            if isinstance(reshdl, (str, os.PathLike)):
+                self.resources[resname] = filehandler.get_filehandler(reshdl)
+            elif isinstance(reshdl, cabc.Mapping):
+                self.resources[resname] = filehandler.get_filehandler(**reshdl)
+            else:
+                self.resources[resname] = reshdl
         self.entrypoint = self.__derive_entrypoint(entrypoint)
 
         self.trees: dict[pathlib.PurePosixPath, ModelFile] = {}
@@ -780,7 +790,7 @@ class MelodyLoader:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
         if fragment is not None:
-            fragment = urllib.parse.unquote(fragment)
+            fragment = urllib.parse.unquote(_unquote_ref(fragment))
 
         def find_trees(
             from_element: etree._Element | None,

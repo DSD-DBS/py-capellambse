@@ -154,6 +154,7 @@ class CapabilityRealizationPkg(c.GenericElement):
     packages: c.Accessor
 
 
+@c.xtype_handler(None)
 class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     """Provides access to the LogicalArchitecture layer of the model."""
 
