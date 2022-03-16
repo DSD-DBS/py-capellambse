@@ -98,6 +98,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             + markupsafe.Markup("</figcaption></figure>")
         )
 
+    def _short_html_(self) -> markupsafe.Markup:
+        return markupsafe.Markup(
+            f"<b>{markupsafe.Markup.escape(self.name)}</b> "
+            f"(uuid: {markupsafe.Markup.escape(self.uuid)})"
+        )
+
     def _repr_svg_(self):
         return self.render("svg")
 
