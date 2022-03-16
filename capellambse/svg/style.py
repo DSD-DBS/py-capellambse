@@ -135,7 +135,7 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
 MODIFY_STYLECLASS = {"FunctionalExchange"}
 
 
-def get_symbol_styleclass(style: str | None, dstyle: str) -> str | None:
+def get_symbol_styleclass(style: str | None, dstyle: str | None) -> str | None:
     if (
         style not in MODIFY_STYLECLASS
         or dstyle not in STATIC_DECORATIONS
@@ -143,7 +143,7 @@ def get_symbol_styleclass(style: str | None, dstyle: str) -> str | None:
     ):
         return None
 
-    capitals = dstyle.split(" ")
+    capitals = (dstyle or "").split(" ", maxsplit=1)
     assert capitals
     layer = capitals[0]
     if style.startswith(layer):
@@ -165,7 +165,7 @@ class Styling:
     """
 
     def __init__(
-        self, diagram_class: str, class_: str, prefix: str = "", **attr
+        self, diagram_class: str | None, class_: str, prefix: str = "", **attr
     ):
         self._diagram_class = diagram_class
         self._class = class_
@@ -181,10 +181,7 @@ class Styling:
 
     def __getattribute__(self, attr: str) -> str:
         if attr in {"marker-start", "marker-end"}:
-            defaultstyles = aird.get_style(
-                self._diagram_class,
-                self._class,
-            )
+            defaultstyles = aird.get_style(self._diagram_class, self._class)
             try:
                 value = super().__getattribute__(attr)
             except AttributeError as err:

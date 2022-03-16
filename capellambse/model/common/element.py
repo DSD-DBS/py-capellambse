@@ -192,7 +192,7 @@ class GenericElement:
         /,
         **kw: t.Any,
     ) -> None:
-        all_required_attrs = set()
+        all_required_attrs: set[str] = set()
         for basecls in type(self).mro():
             all_required_attrs |= getattr(
                 basecls, "_required_attrs", frozenset()

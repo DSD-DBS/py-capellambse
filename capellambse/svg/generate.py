@@ -134,7 +134,7 @@ DiagramMetadataDict = t.TypedDict(
         "y": float,
         "width": float,
         "height": float,
-        "class": str,
+        "class": t.Union[str, None],
     },
 )
 
@@ -153,7 +153,7 @@ class DiagramMetadata:
         pos: tuple[float, float],
         size: tuple[float, float],
         name: str,
-        class_: str,
+        class_: str | None,
         **_kw: t.Any,
     ) -> None:
         # Add padding to viewbox to account for drawn borders
@@ -166,17 +166,8 @@ class DiagramMetadata:
     @classmethod
     def from_dict(cls, data: DiagramMetadataDict) -> DiagramMetadata:
         name = data.get("name")
-        if not isinstance(name, str):
-            raise TypeError("No diagram name defined.")
-        if not isinstance(data.get("class"), str):
-            # raise TypeError(f"No diagram class defined for {name}")
-            # the above was breaking docs build
-            data["class"] = "Error"
-        for attr in ["x", "y", "width", "height"]:
-            if not isinstance(data[attr], (int, float)):  # type: ignore[misc]
-                raise TypeError(
-                    f"{data[attr]} needs to be either integer or float."  # type: ignore[misc]
-                )
+        if not name:
+            raise TypeError("No diagram name defined")
         return cls(
             (data["x"], data["y"]),
             (data["width"], data["height"]),

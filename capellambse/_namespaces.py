@@ -99,7 +99,7 @@ class Namespace(dict):
             attr for attr in version.values if isinstance(attr, str)
         )
 
-    def items(self) -> cabc.ItemsView[str, str]:
+    def items(self) -> cabc.ItemsView[str, str]:  # type: ignore[override]
         """Get original dictionary itemsview."""
         return {k: self.__getitem__(k) for k in super().keys()}.items()
 

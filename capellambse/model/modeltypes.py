@@ -13,10 +13,14 @@
 # limitations under the License.
 """Enumeration types used by the MelodyModel."""
 import enum as _enum
+import typing as t
 
 
-class StringyEnum(_enum.Enum):
-    """An enum whose members compare equal to their key name string."""
+class _StringyEnumMixin:
+    """Mixin for enums that makes members compare equal to their key name."""
+
+    name: t.Any
+    _name_: t.Any
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, type(self)):
@@ -32,7 +36,7 @@ class StringyEnum(_enum.Enum):
         return hash(self._name_)
 
 
-class DiagramType(StringyEnum):
+class DiagramType(_StringyEnumMixin, _enum.Enum):
     """The types of diagrams that Capella knows about.
 
     Extracted from::
@@ -134,7 +138,7 @@ class DiagramType(StringyEnum):
 
 
 @_enum.unique
-class FPortDir(StringyEnum, _enum.Flag):
+class FPortDir(_StringyEnumMixin, _enum.Flag):
     """Direction of component and function ports."""
 
     IN = _enum.auto()
@@ -143,7 +147,7 @@ class FPortDir(StringyEnum, _enum.Flag):
 
 
 @_enum.unique
-class ExchangeItemType(StringyEnum):
+class ExchangeItemType(_StringyEnumMixin, _enum.Enum):
     r"""The "TYPE" of ``ExchangeItem``\ s."""
 
     UNSET = _enum.auto()
@@ -153,14 +157,14 @@ class ExchangeItemType(StringyEnum):
     SHARED_DATA = _enum.auto()
 
 
-class Nature(StringyEnum):
+class Nature(_StringyEnumMixin, _enum.Enum):
     r"""The "NATURE" of ``PhysicalComponent``\ s."""
 
     NODE = _enum.auto()
     BEHAVIOR = _enum.auto()
 
 
-class Kind(StringyEnum):
+class Kind(_StringyEnumMixin, _enum.Enum):
     r"""The "KIND" of ``PhysicalComponent``\ s."""
 
     UNSET = _enum.auto()
@@ -179,7 +183,7 @@ class Kind(StringyEnum):
     SOFTWARE_APPLICATION = _enum.auto()
 
 
-class VisibilityKind(StringyEnum):
+class VisibilityKind(_StringyEnumMixin, _enum.Enum):
     """Visibility kind"""
 
     UNSET = _enum.auto()
@@ -189,11 +193,11 @@ class VisibilityKind(StringyEnum):
     PACKAGE = _enum.auto()
 
 
-class CollectionKind(StringyEnum):
+class CollectionKind(_StringyEnumMixin, _enum.Enum):
     ARRAY = _enum.auto()
     SEQUENCE = _enum.auto()
 
 
-class UnionKind(StringyEnum):
+class UnionKind(_StringyEnumMixin, _enum.Enum):
     UNION = _enum.auto()
     VARIANT = _enum.auto()

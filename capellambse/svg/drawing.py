@@ -78,7 +78,7 @@ class Drawing(drawing.Drawing):
 
     def make_stylesheet(self) -> style.SVGStylesheet:
         """Return created stylesheet and add sheet and decorations to defs."""
-        stylesheet = style.SVGStylesheet(class_=self.diagram_class)
+        stylesheet = style.SVGStylesheet(class_=self.diagram_class or "")
         self.defs.add(stylesheet.sheet)
         for name in stylesheet.static_deco:
             self.defs.add(decorations.deco_factories[name]())
@@ -105,10 +105,10 @@ class Drawing(drawing.Drawing):
     ) -> container.Group:
         """Add a rectangle with auto-aligned text to the group."""
         grp: container.Group = self.g(class_=f"Box {class_}", id_=id_)
-        text_style = rectstyle.get("text_style")
-        rect_style = rectstyle.get("obj_style")
+        text_style = rectstyle["text_style"]
+        rect_style = rectstyle["obj_style"]
         transform = chelpers.get_transformation(class_, pos, size)
-        rectparams = {
+        rectparams: dict[str, t.Any] = {
             "insert": pos,
             "size": size,
             "class_": class_,
@@ -187,7 +187,7 @@ class Drawing(drawing.Drawing):
         features: cabc.Sequence[str],
         class_: str,
         group: container.Group,
-        labelstyle: style.Styling | None,
+        labelstyle: style.Styling,
     ) -> None:
         """Draw features text on given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
@@ -217,7 +217,7 @@ class Drawing(drawing.Drawing):
         group: container.Group,
         *,
         class_: str,
-        labelstyle: style.Styling | None,
+        labelstyle: style.Styling,
         text_anchor: str = "start",
         y_margin: int | float | None,
         icon: bool = True,
@@ -285,7 +285,7 @@ class Drawing(drawing.Drawing):
         group: container.Group,
         *,
         class_: str,
-        labelstyle: style.Styling | None,
+        labelstyle: style.Styling,
         text_anchor: str = "start",
         icon: bool = True,
         icon_size: float | int = decorations.icon_size,
@@ -303,7 +303,7 @@ class Drawing(drawing.Drawing):
             class_=label["class"],
             text_anchor=text_anchor,
             dominant_baseline="middle",
-            style=labelstyle[""],  # type: ignore[index]  # FIXME: What does this mean?
+            style=labelstyle[""],
         )
         group.add(text)
         render_icon = False

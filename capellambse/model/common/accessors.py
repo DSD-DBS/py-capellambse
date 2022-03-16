@@ -99,14 +99,14 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         super().__init__(*args, **kw)  # type: ignore[call-arg]
 
         if aslist is not None:
-            self.aslist = type(
+            self.aslist = type(  # type: ignore[misc]
                 "Coupled" + aslist.__name__,
                 (ElementListCouplingMixin, aslist),
                 {"_accessor": self},
             )
             self.aslist.__module__ = __name__
         else:
-            self.aslist = None
+            self.aslist = None  # type: ignore[misc]
 
     def create(
         self,
@@ -162,8 +162,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         r"""Find the right class for the given ``xsi:type``\ (s)."""
         if type_1 is _NOT_SPECIFIED and type_2 is _NOT_SPECIFIED:
             elmclass = getattr(self, "elmclass", None)
-            if elmclass not in (None, element.GenericElement):
-                return elmclass
+            if elmclass is not None and elmclass is not element.GenericElement:
+                return elmclass, build_xtype(elmclass)
             raise TypeError("No object type specified")
 
         def match_xt(xtp: S, itr: cabc.Iterable[S]) -> S:
@@ -172,7 +172,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
                 if (
                     xtp is i is None
                     or i is not None
-                    and xtp in (i, i.split(":")[-1])
+                    and xtp in (i, i.split(":")[-1])  # type: ignore[union-attr]
                 ):
                     matches.append(i)
             if not matches:
@@ -690,7 +690,7 @@ class AttributeMatcherAccessor(ProxyAccessor[T]):
         super().__init__(
             class_, xtypes, aslist=element.MixedElementList, **kwargs
         )
-        self.__aslist = aslist
+        self.__aslist = aslist  # type: ignore[misc]
         self.attributes = attributes
 
     def __get__(self, obj, objtype=None):
@@ -920,7 +920,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     modifications to the Accessor.
     """
 
-    _accessor: t.ClassVar[WritableAccessor[T]]
+    _accessor: WritableAccessor[T]
 
     def __init__(
         self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
