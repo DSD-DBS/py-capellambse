@@ -34,10 +34,10 @@ class Vector2D(t.NamedTuple):
     x: Vec2Element = 0
     y: Vec2Element = 0
 
-    def __add__(self, other: Vec2ish) -> Vector2D:  # type: ignore
+    def __add__(self, other: Vec2ish) -> Vector2D:  # type: ignore[override]
         return self.__map2(operator.add, other)
 
-    def __radd__(self, other: Vec2ish) -> Vector2D:
+    def __radd__(self, other: Vec2ish) -> Vector2D:  # type: ignore[misc]
         return self.__map2(operator.add, other, True)
 
     def __sub__(self, other: Vec2ish) -> Vector2D:
@@ -60,7 +60,7 @@ class Vector2D(t.NamedTuple):
             return self.__map(operator.mul, other)
         return sum(result)
 
-    @t.overload
+    @t.overload  # type: ignore[override]
     def __rmul__(self, other: Vec2ish) -> Vec2Element:
         ...
 

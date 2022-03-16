@@ -200,7 +200,7 @@ class StackingBox(aird.Box):
     class _SBFeatures(t.MutableSequence[str]):
         def __init__(self, parent: StackingBox, *args: t.Any, **kw: t.Any):
             super().__init__()
-            self.__list = list(*args, **kw)
+            self.__list: list[str] = list(*args, **kw)
             self.__parent = parent
 
         def __iter__(self) -> cabc.Iterator[str]:
@@ -230,7 +230,7 @@ class StackingBox(aird.Box):
             index: int | slice,
             value: str | cabc.Iterable[str],
         ) -> None:
-            self.__list[index] = value
+            self.__list[index] = value  # type: ignore
             self.__parent.children._restack()
 
         def __delitem__(self, index: int | slice) -> None:

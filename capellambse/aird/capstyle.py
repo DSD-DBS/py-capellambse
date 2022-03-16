@@ -124,7 +124,7 @@ class RGB(t.NamedTuple):
         )
 
 
-def get_style(diagramclass: str, objectclass: str) -> dict[str, t.Any]:
+def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
     r"""Fetch the default style for the given drawtype and styleclass.
 
     The style is returned as a dict with key-value pairs as used by CSS
@@ -155,9 +155,11 @@ def get_style(diagramclass: str, objectclass: str) -> dict[str, t.Any]:
     if "symbol" in objectclass.lower():
         return {}
 
-    if objectclass not in STYLES[
-        "__GLOBAL__"
-    ] and objectclass not in STYLES.get(diagramclass, {}):
+    if (
+        objectclass not in STYLES["__GLOBAL__"]
+        and diagramclass
+        and objectclass not in STYLES.get(diagramclass, {})
+    ):
         LOGGER.warning(
             "No default style for %r in %r", objectclass, diagramclass
         )
@@ -165,7 +167,9 @@ def get_style(diagramclass: str, objectclass: str) -> dict[str, t.Any]:
         retval = STYLES["__GLOBAL__"][objectclass].copy()
     except KeyError:
         retval = {}
-    retval.update(STYLES.get(diagramclass, {}).get(objectclass, {}))
+
+    if diagramclass:
+        retval.update(STYLES.get(diagramclass, {}).get(objectclass, {}))
     return retval
 
 

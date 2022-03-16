@@ -39,7 +39,7 @@ class DownloadStream(t.BinaryIO):
     __stream: cabc.Iterator[bytes]
     __buffer: memoryview
 
-    def __init__(self, url: str, chunk_size: int = 1024 ** 2) -> None:
+    def __init__(self, url: str, chunk_size: int = 1024**2) -> None:
         self.url = url
         self.chunk_size = chunk_size
 

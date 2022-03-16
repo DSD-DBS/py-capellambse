@@ -563,12 +563,26 @@ def xtype_of(
 
 
 # More iteration tools
+@t.overload
+def ntuples(
+    num: int, iterable: cabc.Iterable[_T], *, pad: t.Literal[False] = ...
+) -> cabc.Iterator[tuple[_T, ...]]:
+    ...
+
+
+@t.overload
+def ntuples(
+    num: int, iterable: cabc.Iterable[_T], *, pad: t.Literal[True]
+) -> cabc.Iterator[tuple[_T | None, ...]]:
+    ...
+
+
 def ntuples(
     num: int,
     iterable: cabc.Iterable[_T],
     *,
     pad: bool = False,
-) -> cabc.Iterator[tuple[_T, ...]]:
+) -> cabc.Iterator[tuple[_T | None, ...]]:
     r"""Yield N items of ``iterable`` at once.
 
     Parameters
