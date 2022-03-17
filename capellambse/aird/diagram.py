@@ -355,21 +355,6 @@ class Box:
     def hidden(self, hide: bool) -> None:
         self._hidden = hide
 
-    def __contains__(self, item: aird.Vec2ish) -> bool:
-        """Check if item is in bounding box vectors"""
-        # pylint: disable=not-an-iterable, unsubscriptable-object
-        # false-positives
-
-        # Fix x and vary y
-        if self.is_on_side(*self.pos, *item, *self.size):
-            return True
-
-        # Fix y and vary x
-        if self.is_on_side(*self.pos[::-1], *item[::-1], *self.size[::-1]):
-            return True
-
-        return False
-
     @property
     def parent(self) -> Box | None:
         """The parent element of this Box."""
@@ -384,42 +369,6 @@ class Box:
             self._parent.children.append(self)
 
         self.snap_to_parent()
-
-    @staticmethod
-    def is_on_side(
-        x: aird.vector2d.Vec2Element,
-        y: aird.vector2d.Vec2Element,
-        tx: aird.vector2d.Vec2Element,
-        ty: aird.vector2d.Vec2Element,
-        w: aird.vector2d.Vec2Element,
-        h: aird.vector2d.Vec2Element,
-    ) -> bool:
-        """Check if given (tx, ty) is part of left or right side of bounding
-        box that is constructed by x, y and w, h.
-
-        Parameters
-        ----------
-        x
-            x position of bounding box
-        y
-            y position of bounding box
-        tx
-            x position of arbitrary point
-        ty
-            y position of arbitrary point
-        w
-            width of bounding box
-        h
-            height of bounding box
-
-        Returns
-        -------
-        is_on_side
-            True if arbitrary point is part of left or right side of bounding box
-        """
-        if (tx == x or tx == x + w) and y <= ty <= y + h:
-            return True
-        return False
 
     def __str__(self) -> str:
         if self.label is None:
