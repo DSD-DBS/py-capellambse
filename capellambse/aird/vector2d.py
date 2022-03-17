@@ -15,7 +15,14 @@
 # pylint: disable=unsubscriptable-object, not-an-iterable  # false-positives
 from __future__ import annotations
 
-__all__ = ["Vec2Element", "Vec2List", "Vec2Property", "Vec2ish", "Vector2D"]
+__all__ = [
+    "Vec2Element",
+    "Vec2List",
+    "Vec2Property",
+    "Vec2ish",
+    "Vector2D",
+    "line_intersect",
+]
 
 import collections.abc as cabc
 import math
@@ -163,9 +170,7 @@ class Vector2D(t.NamedTuple):
             self[0] * sin_t + self[1] * cos_t,
         )
 
-    def boxsnap(
-        self, corner1: Vec2ish, corner2: Vec2ish, dirvec: Vec2ish = (0, 0)
-    ) -> Vector2D:
+    def boxsnap(self, corner1: Vec2ish, corner2: Vec2ish) -> Vector2D:
         """Snap this vector to the side of a box and return the result.
 
         Parameters
@@ -177,31 +182,35 @@ class Vector2D(t.NamedTuple):
         dirvec
             Ignored.
         """
-        del dirvec
-
         minx = min(corner1[0], corner2[0])
         miny = min(corner1[1], corner2[1])
         maxx = max(corner1[0], corner2[0])
         maxy = max(corner1[1], corner2[1])
+        topleft = Vector2D(minx, miny)
+        bottomright = Vector2D(maxx, maxy)
+        return self.__dirless_boxsnap(topleft, bottomright)
 
+    def __dirless_boxsnap(
+        self, topleft: Vector2D, bottomright: Vector2D
+    ) -> Vector2D:
         x, y = self.x, self.y
-        if x < minx:
-            x = minx
-        elif x > maxx:
-            x = maxx
-        if y < miny:
-            y = miny
-        elif y > maxy:
-            y = maxy
+        if x < topleft.x:
+            x = topleft.x
+        elif x > bottomright.x:
+            x = bottomright.x
+        if y < topleft.y:
+            y = topleft.y
+        elif y > bottomright.y:
+            y = bottomright.y
 
         if self != (x, y):
             return Vector2D(x, y)
 
         distances = [
-            Vector2D(minx - self.x, 0),
-            Vector2D(maxx - self.x, 0),
-            Vector2D(0, miny - self.y),
-            Vector2D(0, maxy - self.y),
+            Vector2D(topleft.x - self.x, 0),
+            Vector2D(bottomright.x - self.x, 0),
+            Vector2D(0, topleft.y - self.y),
+            Vector2D(0, bottomright.y - self.y),
         ]
         offset = min(distances, key=lambda i: i.sqlength)
         return self + offset
@@ -357,3 +366,29 @@ class Vec2List(t.MutableSequence[Vector2D]):
         if not isinstance(element, Vector2D):
             element = Vector2D(*element)
         return element
+
+
+def line_intersect(
+    line1: tuple[Vec2ish, Vec2ish], line2: tuple[Vec2ish, Vec2ish]
+) -> Vector2D:
+    """Calculate the point where ``line1`` and ``line2`` intersect.
+
+    Both lines are straight lines with infinite length that are defined
+    by the given points.
+
+    Notes
+    -----
+    The implementation is based on
+    `https://mathworld.wolfram.com/Line-LineIntersection.html`.
+    """
+    (x1, y1), (x2, y2) = line1
+    (x3, y3), (x4, y4) = line2
+    denum = (x1 - x2) * (y3 - y4) - (x3 - x4) * (y1 - y2)
+    if denum == 0:
+        raise ValueError("Lines are parallel")
+
+    d1 = x1 * y2 - x2 * y1
+    d2 = x3 * y4 - x4 * y3
+    x = d1 * (x3 - x4) - d2 * (x1 - x2)
+    y = d1 * (y3 - y4) - d2 * (y1 - y2)
+    return Vector2D(x / denum, y / denum)

@@ -14,9 +14,17 @@
 """Classes that represent different aspects of a diagram."""
 from __future__ import annotations
 
-__all__ = ["Diagram", "DiagramElement", "Box", "Circle", "Edge"]
+__all__ = [
+    "Diagram",
+    "DiagramElement",
+    "Box",
+    "Circle",
+    "Edge",
+    "RoutingStyle",
+]
 
 import collections.abc as cabc
+import enum
 import logging
 import math
 import os
@@ -32,6 +40,12 @@ DiagramElement = t.Union["Box", "Edge", "Circle"]
 _StyleOverrides = t.MutableMapping[
     str, t.Union[str, aird.RGB, t.MutableSequence[t.Union[str, aird.RGB]]]
 ]
+
+
+class RoutingStyle(enum.Enum):
+    OBLIQUE = enum.auto()
+    MANHATTAN = enum.auto()
+    TREE = enum.auto()
 
 
 class Box:
@@ -229,15 +243,115 @@ class Box:
             self.parent.add_context(uuid)
 
     def vector_snap(
-        self, vector: aird.Vec2ish, direction: aird.Vec2ish = (0, 0)
+        self,
+        point: aird.Vec2ish,
+        *,
+        source: aird.Vec2ish | None = None,
+        style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
-        """Snap the ``vector`` into this Box, preferably into ``direction``."""
-        if not isinstance(vector, aird.Vector2D):
-            vector = aird.Vector2D(*vector)
+        """Snap the ``point`` into this Box, preferably into ``direction``."""
+        if not isinstance(point, aird.Vector2D):
+            point = aird.Vector2D(*point)
 
         if not SNAPPING:
-            return vector
-        return vector.boxsnap(self.pos, self.pos + self.size, direction)
+            return point
+
+        if source is None:
+            source = point
+        elif not isinstance(source, aird.Vector2D):
+            source = aird.Vector2D(*source)
+
+        if style is RoutingStyle.OBLIQUE:
+            return self.__vector_snap_oblique(source)
+        if style is RoutingStyle.MANHATTAN:
+            return self.__vector_snap_manhattan(point, point - source)
+        if style is RoutingStyle.TREE:
+            return self.__vector_snap_tree(point, point - source)
+        raise ValueError(f"Unsupported routing style: {style}")
+
+    def __vector_snap_oblique(self, source: aird.Vector2D) -> aird.Vector2D:
+        angle = self.size.angleto(source - self.center)
+        alpha = 2 * self.size.angleto((1, 0))
+        assert alpha > 0
+        alpha_prime = math.pi - alpha
+
+        if 0 < angle < alpha:
+            return aird.line_intersect(
+                (self.center, source),
+                (self.pos + self.size @ (1, 0), self.pos + self.size),
+            )
+        elif -alpha_prime < angle <= 0:
+            return aird.line_intersect(
+                (self.center, source),
+                (self.pos + self.size @ (0, 1), self.pos + self.size),
+            )
+        elif alpha < angle < math.pi:
+            return aird.line_intersect(
+                (self.center, source),
+                (self.pos, self.pos + self.size @ (1, 0)),
+            )
+        else:
+            return aird.line_intersect(
+                (self.center, source),
+                (self.pos, self.pos + self.size @ (0, 1)),
+            )
+
+    def __vector_snap_manhattan(
+        self, point: aird.Vector2D, direction: aird.Vector2D
+    ) -> aird.Vector2D:
+        direction = direction.closestaxis()
+        if direction.x:
+            if point.y < self.pos.y:
+                return self.pos + self.size @ (0.5, 0)
+            elif point.y > self.pos.y + self.size.y:
+                return self.pos + self.size @ (0.5, 1)
+            elif self.port:
+                return self.pos + self.size @ (direction.x < 0, 0.5)
+            else:
+                return aird.Vector2D(
+                    self.pos.x + self.size.x * (direction.x < 0),
+                    point.y,
+                )
+        else:
+            if point.x < self.pos.x:
+                return self.pos + self.size @ (0, 0.5)
+            elif point.x > self.pos.x + self.size.x:
+                return self.pos + self.size @ (1, 0.5)
+            elif self.port:
+                return self.pos + self.size @ (0.5, direction.y < 0)
+            else:
+                return aird.Vector2D(
+                    point.x,
+                    self.pos.y + self.size.y * (direction.y < 0),
+                )
+
+    def __vector_snap_tree(
+        self, point: aird.Vector2D, direction: aird.Vector2D
+    ) -> aird.Vector2D:
+        if direction == aird.Vector2D(0.0, 0.0):
+            if self.center.x < point.x:
+                return aird.Vector2D(point.x - 1, point.y)
+            else:
+                return aird.Vector2D(point.x + 1, point.y)
+
+        if self.port:
+            if (
+                direction.y < 0.0
+                or math.isclose(direction.y, 0.0)
+                and point.y != self.pos.y
+            ):
+                return self.pos + self.size @ (0.5, 1.0)
+            else:
+                return self.pos + self.size @ (0.5, 0.0)
+        else:
+            if (
+                direction.y < 0.0
+                or math.isclose(direction.y, 0.0)
+                and point.y != self.pos.y
+            ):
+                return aird.Vector2D(point.x, self.pos.y + self.size.y)
+            else:
+                return aird.Vector2D(point.x, self.pos.y)
 
     def move(self, offset: aird.Vector2D, *, children: bool = True) -> None:
         """Move the box by the specified offset.
@@ -354,6 +468,11 @@ class Box:
     @hidden.setter
     def hidden(self, hide: bool) -> None:
         self._hidden = hide
+
+    @property
+    def center(self) -> aird.Vector2D:
+        """The center point of this Box."""
+        return self.pos + self.size / 2
 
     @property
     def parent(self) -> Box | None:
@@ -486,16 +605,14 @@ class Edge(aird.Vec2List):
         # Edges don't save context
 
     def vector_snap(
-        self, vector: aird.Vec2ish, direction: aird.Vec2ish
+        self,
+        vector: aird.Vec2ish,
+        *,
+        source: aird.Vec2ish,
+        style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
-        """Snap the ``vector`` onto this Edge.
-
-        Parameters
-        ----------
-        direction
-            Ignored.
-        """
-        del direction
+        """Snap the ``vector`` onto this Edge."""
+        del source
 
         if not isinstance(vector, aird.Vector2D):
             vector = aird.Vector2D(*vector)
@@ -581,6 +698,26 @@ class Edge(aird.Vec2List):
     @points.setter
     def points(self, newpoints: cabc.Iterable[aird.Vec2ish]) -> None:
         self[:] = newpoints
+
+    @property
+    def length(self) -> float:
+        """Return length of this edge."""
+        return sum((self[i - 1] - self[i]).length for i in range(1, len(self)))
+
+    @property
+    def center(self) -> aird.Vector2D:
+        """Calculate the point in the middle of this edge."""
+        half_length = self.length / 2
+        distance = 0.0
+        point = self[0]
+        for i in range(1, len(self)):
+            segment = self[i] - self[i - 1]
+            if distance + segment.length > half_length:
+                point += segment.normalized * (half_length - distance)
+                break
+            distance += segment.length
+            point = self[i]
+        return point
 
     def __str__(self) -> str:
         numpoints = len(self.points)
@@ -680,14 +817,21 @@ class Circle:
         self.center += offset
 
     def vector_snap(
-        self, vector: aird.Vec2ish, direction: aird.Vec2ish
+        self,
+        vector: aird.Vec2ish,
+        *,
+        source: aird.Vec2ish,
+        style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
         """Snap the ``vector`` onto this Circle, preferably in `direction`."""
+        if not isinstance(vector, aird.Vector2D):
+            vector = aird.Vector2D(*vector)
+        if not isinstance(source, aird.Vector2D):
+            source = aird.Vector2D(*source)
+        direction = source - vector
         if vector == self.center:
             vector = direction
         assert vector != (0, 0)
-        if not isinstance(vector, aird.Vector2D):
-            vector = aird.Vector2D(*vector)
 
         return self.center + vector.normalized * self.radius
 

@@ -334,7 +334,7 @@ class StackingBox(aird.Box):
 class CenterAnchoredBox(aird.Box):
     """A special Box subclass that uses its center as reference point."""
 
-    center: aird.Vec2Property = aird.Vec2Property()
+    center: aird.Vec2Property = aird.Vec2Property()  # type: ignore[assignment]
 
     def __init__(
         self, center: aird.Vec2ish, size: aird.Vec2ish, **kwargs: t.Any
