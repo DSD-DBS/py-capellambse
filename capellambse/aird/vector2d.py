@@ -135,13 +135,18 @@ class Vector2D(t.NamedTuple):
         )
 
     def angleto(self, other: Vec2ish) -> float:
-        """Calculate the angle to ``other``.
+        r"""Calculate the angle to ``other``.
 
-        This method calculates the angle this vector needs to be rotated
-        by in order to have the same direction as ``other``, in radians.
+        This method calculates the angle that ``other`` was rotated by
+        in order to have the same direction as ``self``, in radians.
+
+        Notes
+        -----
+        The returned angle will always constitute the shortest rotation
+        possible, i.e. it can have values between :math:`-\pi` and
+        :math:`+\pi`.
         """
-        angle = math.atan2(other[1], other[0]) - math.atan2(self[1], self[0])
-        # Make sure we get the shortest rotation possible
+        angle = math.atan2(self[1], self[0]) - math.atan2(other[1], other[0])
         if angle > math.pi:  # pragma: no cover
             angle -= 2 * math.pi
         elif angle < -math.pi:  # pragma: no cover

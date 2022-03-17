@@ -385,9 +385,7 @@ def _construct_labels(
         )
 
         # Rotate the position vector into place
-        label_pos = label_pos.rotatedby(
-            aird.Vector2D(1, 0).angleto(travel_direction)
-        )
+        label_pos = label_pos.rotatedby(travel_direction.angleto((1, 0)))
 
         labels.append(
             C.CenterAnchoredBox(
