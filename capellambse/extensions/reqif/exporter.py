@@ -315,7 +315,7 @@ def _build_spec_object(
     obj.append(type := etree.Element("TYPE"))
     type.append(ref := etree.Element("SPEC-OBJECT-TYPE-REF"))
     if req.type:
-        ref.text = "_" + req.type.uuid.upper()
+        ref.text = req.type.uuid.upper()
     else:
         ref.text = "_NULL-SPEC-TYPE"
 
