@@ -81,29 +81,20 @@ def export_module(
     if not isinstance(target, (str, os.PathLike)):
         ctx: t.ContextManager[t.IO[bytes]] = contextlib.nullcontext(target)
     else:
-        ctx = open(target, "wb")
+        ctx = open(target, "wb")  # pylint: disable=consider-using-with
 
-    with ctx as file:
+    with contextlib.ExitStack() as stack:
+        container = stack.enter_context(ctx)
         if compress:
-            _write_compressed(file, data, pretty=pretty)
+            archive = stack.enter_context(
+                zipfile.ZipFile(container, "w", zipfile.ZIP_DEFLATED)
+            )
+            file = archive.open("export.reqif", "w")
         else:
-            _write_xml(file, data, pretty=pretty)
-
-
-def _write_compressed(
-    file: t.IO[bytes], data: etree._Element, *, pretty: bool
-) -> None:
-    with zipfile.ZipFile(file, "w", zipfile.ZIP_DEFLATED) as archive:
-        with archive.open("export.reqif", "w") as inner:
-            _write_xml(inner, data, pretty=pretty)
-
-
-def _write_xml(
-    file: t.IO[bytes], data: etree._Element, *, pretty: bool
-) -> None:
-    etree.ElementTree(data).write(
-        file, encoding="utf-8", pretty_print=pretty, xml_declaration=True
-    )
+            file = container
+        etree.ElementTree(data).write(
+            file, encoding="utf-8", pretty_print=pretty, xml_declaration=True
+        )
 
 
 def _build_header(
