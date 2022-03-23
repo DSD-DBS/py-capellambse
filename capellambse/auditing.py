@@ -71,8 +71,8 @@ class AttributeAuditor:
     def __audit(self, event: str, args: tuple[t.Any, ...]) -> None:
         if event == "capellambse.read_attribute":
             obj, attr_name, _ = args
-            if obj._model is not self.model:
+            if not hasattr(obj, "_model") or obj._model is not self.model:
                 return
 
-            if attr_name in self.attrs:
+            if attr_name in self.attrs and hasattr(obj, "uuid"):
                 self.recorded_ids.add(obj.uuid)
