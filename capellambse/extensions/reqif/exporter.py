@@ -18,6 +18,7 @@ import collections.abc as cabc
 import contextlib
 import datetime
 import itertools
+import math
 import os
 import re
 import typing as t
@@ -201,7 +202,7 @@ def _build_datatypes(
 
         type_attrs = {
             "STRING": {"MAX-LENGTH": "2147483647"},
-            "REAL": {"ACCURACY": "100", "MAX": "INF", "MIN": "-INF"},
+            "REAL": {"ACCURACY": "100", "MAX": "Infinity", "MIN": "-Infinity"},
             "INTEGER": {"MAX": "2147483647", "MIN": "-2147483648"},
         }
         elem.attrib.update(type_attrs.get(attrtype, {}))
@@ -334,6 +335,7 @@ def _build_attribute_value_simple(
 ) -> etree._Element:
     attrtype = _attrtype2reqif(attr)
     obj = etree.Element(f"ATTRIBUTE-VALUE-{attrtype}")
+    value: t.Any
     if attrtype == "BOOLEAN":
         obj.set("THE-VALUE", "true" if attr.value else "false")
     elif attrtype == "DATE":
@@ -348,7 +350,14 @@ def _build_attribute_value_simple(
     elif attrtype == "INTEGER":
         obj.set("THE-VALUE", str(int(attr.value)))
     elif attrtype == "REAL":
-        obj.set("THE-VALUE", str(float(attr.value)))
+        value = attr.value
+        if value == math.inf:
+            value = "Infinity"
+        elif value == -math.inf:
+            value = "-Infinity"
+        else:
+            value = str(value)
+        obj.set("THE-VALUE", value)
     elif attrtype == "STRING":
         obj.set("THE-VALUE", attr.value or "")
     else:
