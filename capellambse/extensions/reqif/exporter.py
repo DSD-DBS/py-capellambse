@@ -215,9 +215,9 @@ def _build_datatypes(
         }
         elem.attrib.update(type_attrs.get(attrtype, {}))
 
-        if isinstance(attrdef, elements.EnumerationValueAttribute):
+        if isinstance(attrdef, elements.AttributeDefinitionEnumeration):
             values = etree.Element("SPECIFIED-VALUES")
-            for i in attrdef.values:
+            for i in attrdef.data_type.values:
                 v = etree.Element("ENUM-VALUE")
                 v.set("IDENTIFIER", "_" + i.uuid.upper())
                 v.set("LAST-CHANGE", timestamp)
@@ -247,7 +247,7 @@ def _build_spec_object_types(
             reqtype = "NULL-SPEC-TYPE"
 
         elem = etree.Element("SPEC-OBJECT-TYPE")
-        elem.set("IDENTIFIER", reqtype)
+        elem.set("IDENTIFIER", "_" + reqtype)
         elem.set("LAST-CHANGE", timestamp)
         if not modelobj:
             elem.set("LONG-NAME", "Null spec type")
@@ -315,7 +315,7 @@ def _build_spec_object(
     obj.append(type := etree.Element("TYPE"))
     type.append(ref := etree.Element("SPEC-OBJECT-TYPE-REF"))
     if req.type:
-        ref.text = req.type.uuid.upper()
+        ref.text = "_" + req.type.uuid.upper()
     else:
         ref.text = "_NULL-SPEC-TYPE"
 
