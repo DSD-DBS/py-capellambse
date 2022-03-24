@@ -609,7 +609,7 @@ class Edge(aird.Vec2List):
         vector: aird.Vec2ish,
         *,
         source: aird.Vec2ish,
-        style: RoutingStyle = RoutingStyle.OBLIQUE,
+        style: RoutingStyle = RoutingStyle.OBLIQUE,  # pylint: disable=unused-argument
     ) -> aird.Vector2D:
         """Snap the ``vector`` onto this Edge."""
         del source
@@ -821,7 +821,7 @@ class Circle:
         vector: aird.Vec2ish,
         *,
         source: aird.Vec2ish,
-        style: RoutingStyle = RoutingStyle.OBLIQUE,
+        style: RoutingStyle = RoutingStyle.OBLIQUE,  # pylint: disable=unused-argument
     ) -> aird.Vector2D:
         """Snap the ``vector`` onto this Circle, preferably in `direction`."""
         if not isinstance(vector, aird.Vector2D):
