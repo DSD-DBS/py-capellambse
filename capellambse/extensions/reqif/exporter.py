@@ -24,7 +24,7 @@ import re
 import typing as t
 import zipfile
 
-from lxml import etree
+from lxml import builder, etree
 
 import capellambse
 
@@ -41,6 +41,8 @@ STANDARD_ATTRIBUTES = {
     "Name": "XHTML",
     "Text": "XHTML",
 }
+
+E = builder.ElementMaker(namespace=NS)
 
 
 class _AttributeDefinition(t.NamedTuple):
@@ -157,6 +159,7 @@ def _build_content(
     spec_types.extend(children)
 
     spec_objects.extend(_build_spec_objects(module, timestamp))
+    specifications.extend(_build_specifications(module, timestamp))
 
     content.append(datatypes)
     content.append(spec_types)
@@ -378,6 +381,39 @@ def _build_attribute_value_enum(
         values.append(ref := etree.Element("ENUM-VALUE-REF"))
         ref.text = "_" + i.uuid.upper()
     return obj
+
+
+def _build_specifications(
+    module: elements.RequirementsModule, timestamp: str
+) -> cabc.Iterable[etree._Element]:
+    def create_hierarchy_object(req: elements.Requirement) -> etree._Element:
+        id = "_" + req.uuid.upper()
+        id_hier = id + "--HIER"
+        return E(
+            "SPEC-HIERARCHY",
+            {"IDENTIFIER": id_hier, "LAST-CHANGE": timestamp},
+            E("OBJECT", E("SPEC-OBJECT-REF", id)),
+        )
+
+    def create_hierarchy_folder(
+        folder: elements.RequirementsModule | elements.RequirementsFolder,
+    ) -> cabc.Iterable[etree._Element]:
+        for req in folder.requirements:
+            yield create_hierarchy_object(req)
+        for sub in folder.folders:
+            yield from create_hierarchy_folder(sub)
+
+    spec = E.SPECIFICATION(
+        {"IDENTIFIER": "_" + module.uuid.upper(), "LAST-CHANGE": timestamp},
+        wrapper := E.CHILDREN(),
+    )
+    if module.long_name:
+        spec.set("LONG-NAME", module.long_name)
+    if module.description:
+        spec.set("DESC", module.description)
+
+    wrapper.extend(create_hierarchy_folder(module))
+    return (spec,)
 
 
 def _ref_attribute_definition(
