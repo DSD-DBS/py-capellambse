@@ -32,8 +32,9 @@ from . import elements
 
 NS = "http://www.omg.org/spec/ReqIF/20110401/reqif.xsd"
 SCHEMA = "https://www.omg.org/spec/ReqIF/20110401/reqif.xsd"
+XHMTL_NS = "http://www.w3.org/1999/xhtml"
 XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
-NSMAP = {None: NS, "xsi": XSI_NS}
+NSMAP = {None: NS, "xhtml": XHMTL_NS, "xsi": XSI_NS}
 REQIF_UTC_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
 STANDARD_ATTRIBUTES = {
     "ForeignID": "STRING",
