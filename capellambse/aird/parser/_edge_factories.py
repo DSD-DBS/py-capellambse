@@ -550,6 +550,13 @@ def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return edge
 
 
+def eie_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+    """Create an exchange item element link."""
+    edge = generic_factory(seb)
+    edge.labels = edge.labels[:1]
+    return edge
+
+
 def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
     """Extract the guard condition's text from the XML."""
     try:

@@ -177,6 +177,10 @@ STYLECLASS_LOOKUP = {
         ),
     ),
     "ControlNode": ("ControlNode", _box_factories.control_node_factory),
+    "ExchangeItemElement": (
+        "ExchangeItemElement",
+        _edge_factories.eie_factory,
+    ),
     "Enumeration": ("Enumeration", _box_factories.enumeration_factory),
     "EnumerationLiteral": (
         None,
