@@ -122,7 +122,7 @@ def _build_header(
         .strftime(REQIF_UTC_DATEFORMAT)
     )
     header = etree.Element("REQ-IF-HEADER")
-    header.set("IDENTIFIER", "_" + module.uuid.upper())
+    header.set("IDENTIFIER", "_" + module._model.uuid.upper())
     for key, value in (
         ("COMMENT", comment),
         ("CREATION-TIME", creation_time),
