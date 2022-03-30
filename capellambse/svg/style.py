@@ -164,6 +164,8 @@ class Styling:
         or subscripting syntax, due to Python identifier naming rules.
     """
 
+    _marker: bool = False
+
     def __init__(
         self, diagram_class: str | None, class_: str, prefix: str = "", **attr
     ):
@@ -211,7 +213,8 @@ class Styling:
         defaultstyles = aird.get_style(self._diagram_class, self._class)
         for attr in ("marker-start", "marker-end"):
             if (
-                not getattr(super(), attr, None)
+                not self._marker
+                and not getattr(super(), attr, None)
                 and self._style_name(attr) in defaultstyles
             ):
                 yield attr

@@ -198,7 +198,9 @@ class StackingBox(aird.Box):
         pass  # FIXME
 
     class _SBFeatures(t.MutableSequence[str]):
-        def __init__(self, parent: StackingBox, *args: t.Any, **kw: t.Any):
+        def __init__(
+            self, parent: StackingBox, *args: t.Any, **kw: t.Any
+        ) -> None:
             super().__init__()
             self.__list: list[str] = list(*args, **kw)
             self.__parent = parent
@@ -230,7 +232,7 @@ class StackingBox(aird.Box):
             index: int | slice,
             value: str | cabc.Iterable[str],
         ) -> None:
-            self.__list[index] = value  # type: ignore
+            self.__list[index] = value  # type: ignore[index,assignment]
             self.__parent.children._restack()
 
         def __delitem__(self, index: int | slice) -> None:
@@ -334,7 +336,7 @@ class StackingBox(aird.Box):
 class CenterAnchoredBox(aird.Box):
     """A special Box subclass that uses its center as reference point."""
 
-    center: aird.Vec2Property = aird.Vec2Property()
+    center: aird.Vec2Property = aird.Vec2Property()  # type: ignore[assignment]
 
     def __init__(
         self, center: aird.Vec2ish, size: aird.Vec2ish, **kwargs: t.Any

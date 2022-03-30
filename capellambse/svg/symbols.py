@@ -192,8 +192,8 @@ def _make_rgradient(
 
 
 def _make_marker(
-    ref_pts: tuple[int, float],
-    size: tuple[int, float],
+    ref_pts: tuple[float, float],
+    size: tuple[float, float],
     *,
     id_: str,
     d: str,
@@ -1048,8 +1048,9 @@ def fine_arrow_mark(
 def arrow_mark(
     id_: str = "Arrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
+    style._marker = True
     return _make_marker(
-        (10, 5), (11, 11), id_=id_, d="M 0,0 10,5 0,10", style=style, **kw
+        (5, 2.5), (5.5, 5.5), id_=id_, d="M 0,0 5,2.5 0,5", style=style, **kw
     )
 
 
@@ -1057,11 +1058,12 @@ def arrow_mark(
 def diamond_mark(
     id_: str = "Diamond", *, style: style_.Styling, **kw
 ) -> container.Marker:
+    style._marker = True
     return _make_marker(
-        (4, 10),
-        (21, 21),
+        (0, 3),
+        (11, 6),
         id_=id_,
-        d="M 0,10 10,5 20,10 10,15 Z",
+        d="M 0,3 5,0.5 10,3 5,5.5 Z",
         style=style,
         **kw,
     )

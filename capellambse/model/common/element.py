@@ -108,7 +108,6 @@ class ModelObject(t.Protocol):
         cls, model: capellambse.MelodyModel, element: t.Any
     ) -> ModelObject:
         """Instantiate a ModelObject from existing model elements."""
-        ...
 
 
 class GenericElement:
