@@ -401,9 +401,9 @@ def _build_spec_object(
         obj.set("LONG-NAME", req.long_name)
 
     values_elem = E("VALUES")
-    _build_standard_attribute_values(values_elem, req)
+    values_elem.extend(_build_standard_attribute_values(req))
     if req.attributes:
-        _build_attribute_values(values_elem, req)
+        values_elem.extend(_build_attribute_values(req))
     obj.append(values_elem)
 
     obj.append(type := etree.Element("TYPE"))
@@ -417,8 +417,8 @@ def _build_spec_object(
 
 
 def _build_standard_attribute_values(
-    values_elem: etree._Element, req: elements.Requirement
-):
+    req: elements.Requirement,
+) -> t.Iterable[etree._Element]:
     if req.type:
         reqtype_ref = req.type.uuid.upper()
     else:
@@ -455,12 +455,12 @@ def _build_standard_attribute_values(
                 E("THE-VALUE", xml_elem),
             )
         if value_elem is not None:
-            values_elem.append(value_elem)
+            yield value_elem
 
 
 def _build_attribute_values(
-    values_elem: etree._Element, req: elements.Requirement
-):
+    req: elements.Requirement,
+) -> t.Iterable[etree._Element]:
     factories = {
         elements.XT_REQ_ATTR_BOOLEANVALUE: _build_attribute_value_simple,
         elements.XT_REQ_ATTR_DATEVALUE: _build_attribute_value_simple,
@@ -471,7 +471,7 @@ def _build_attribute_values(
     }
     for attr in req.attributes:
         factory = factories[attr.xtype]
-        values_elem.append(factory(attr))
+        yield factory(attr)
 
 
 def _build_attribute_value_simple(
