@@ -394,26 +394,26 @@ def _build_spec_objects(
 def _build_spec_object(
     req: elements.Requirement, timestamp: str
 ) -> etree._Element:
-    spec_obj = etree.Element("SPEC-OBJECT")
-    spec_obj.set("IDENTIFIER", "_" + req.uuid.upper())
-    spec_obj.set("LAST-CHANGE", timestamp)
+    obj = etree.Element("SPEC-OBJECT")
+    obj.set("IDENTIFIER", "_" + req.uuid.upper())
+    obj.set("LAST-CHANGE", timestamp)
     if req.long_name:
-        spec_obj.set("LONG-NAME", req.long_name)
+        obj.set("LONG-NAME", req.long_name)
 
     values_elem = E("VALUES")
     _build_standard_attribute_values(values_elem, req)
     if req.attributes:
         _build_attribute_values(values_elem, req)
-    spec_obj.append(values_elem)
+    obj.append(values_elem)
 
-    spec_obj.append(type := etree.Element("TYPE"))
+    obj.append(type := etree.Element("TYPE"))
     type.append(ref := etree.Element("SPEC-OBJECT-TYPE-REF"))
     if req.type:
         ref.text = "_" + req.type.uuid.upper()
     else:
         ref.text = "_NULL-SPEC-OBJECT-TYPE"
 
-    return spec_obj
+    return obj
 
 
 def _build_standard_attribute_values(
