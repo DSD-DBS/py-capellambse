@@ -24,7 +24,7 @@ import re
 import typing as t
 import zipfile
 
-from lxml import builder, etree
+from lxml import builder, etree, html
 
 import capellambse
 
@@ -36,11 +36,15 @@ XHMTL_NS = "http://www.w3.org/1999/xhtml"
 XSI_NS = "http://www.w3.org/2001/XMLSchema-instance"
 NSMAP = {None: NS, "xhtml": XHMTL_NS, "xsi": XSI_NS}
 REQIF_UTC_DATEFORMAT = "%Y-%m-%dT%H:%M:%SZ"
-STANDARD_ATTRIBUTES = {
-    "ForeignID": "STRING",
-    "ChapterName": "XHTML",
-    "Name": "XHTML",
-    "Text": "XHTML",
+
+STD_SPEC_OBJECT_ATTRIBUTES = {
+    "ForeignID": {"type": "STRING", "attr": "identifier"},
+    "ChapterName": {"type": "XHTML", "attr": "chapter_name"},
+    "Name": {"type": "XHTML", "attr": "name"},
+    "Text": {"type": "XHTML", "attr": "text"},
+}
+STD_SPECIFICATION_ATTRIBUTES = {
+    "Description": {"type": "XHTML", "attr": "long_name"},
 }
 
 E = builder.ElementMaker(namespace=NS)
@@ -159,6 +163,8 @@ def _build_content(
     children = sorted(children, key=lambda i: i.get("IDENTIFIER"))
     spec_types.extend(children)
 
+    spec_types.append(_build_specification_type(module, timestamp))
+
     spec_objects.extend(_build_spec_objects(module, timestamp))
     specifications.extend(_build_specifications(module, timestamp))
 
@@ -177,9 +183,27 @@ def _build_content(
 def _synthesize_standard_datatypes(
     timestamp: str,
 ) -> t.Iterable[etree._Element]:
-    for id, type in STANDARD_ATTRIBUTES.items():
-        elem = etree.Element("DATATYPE-DEFINITION-STRING")
-    return ()
+    collected_names: list[str] = []
+    for std_attributes in (
+        STD_SPEC_OBJECT_ATTRIBUTES,
+        STD_SPECIFICATION_ATTRIBUTES,
+    ):
+        for name, std_attr in std_attributes.items():
+            if name in collected_names:
+                continue
+            collected_names.append(name)
+            attributes = {
+                "IDENTIFIER": f"_STD-DATATYPE-ReqIF.{name}",
+                "LAST-CHANGE": timestamp,
+                "LONG-NAME": f"ReqIF.{name}",
+            }
+            if std_attr["type"] == "STRING":
+                attributes["MAX-LENGTH"] = "32000"
+            elem = E(
+                f"DATATYPE-DEFINITION-{std_attr['type']}",
+                attributes,
+            )
+            yield elem
 
 
 def _build_datatypes(
@@ -227,6 +251,61 @@ def _build_datatypes(
         yield elem
 
 
+def _build_specification_type(
+    module: elements.RequirementsModule, timestamp: str
+) -> etree._Element:
+    module_type = module.type
+    identifier = (
+        "NULL-SPECIFICATION-TYPE"
+        if module_type is None
+        else module_type.uuid.upper()
+    )
+    spec_attributes = E("SPEC-ATTRIBUTES")
+    for name, std_attr in STD_SPECIFICATION_ATTRIBUTES.items():
+        spec_attributes.append(
+            E(
+                f"ATTRIBUTE-DEFINITION-{std_attr['type']}",
+                {
+                    "IDENTIFIER": (
+                        "_STD-SPECIFICATION-ATTRIBUTE-"
+                        f"{identifier}"
+                        f"-ReqIF.{name}"
+                    ),
+                    "LAST-CHANGE": timestamp,
+                    "LONG-NAME": f"ReqIF.{name}",
+                },
+                E(
+                    "TYPE",
+                    E(
+                        f"DATATYPE-DEFINITION-{std_attr['type']}-REF",
+                        f"_STD-DATATYPE-ReqIF.{name}",
+                    ),
+                ),
+            )
+        )
+    if module_type is None:
+        return E(
+            "SPECIFICATION-TYPE",
+            {
+                "IDENTIFIER": f"_{identifier}",
+                "LAST-CHANGE": timestamp,
+                "LONG-NAME": "Null specification type",
+                "DESC": "No module type was selected in Capella.",
+            },
+            spec_attributes,
+        )
+    else:
+        return E(
+            "SPECIFICATION-TYPE",
+            {
+                "IDENTIFIER": f"_{identifier}",
+                "LAST-CHANGE": timestamp,
+                "LONG-NAME": module_type.long_name,
+            },
+            spec_attributes,
+        )
+
+
 def _build_spec_object_types(
     model: capellambse.MelodyModel,
     reqtypes: cabc.Iterable[tuple[str | None, set[_AttributeDefinition]]],
@@ -240,19 +319,36 @@ def _build_spec_object_types(
             reqtype = reqtype.upper()
         else:
             modelobj = None
-            reqtype = "NULL-SPEC-TYPE"
+            reqtype = "NULL-SPEC-OBJECT-TYPE"
 
         elem = etree.Element("SPEC-OBJECT-TYPE")
         elem.set("IDENTIFIER", "_" + reqtype)
         elem.set("LAST-CHANGE", timestamp)
         if not modelobj:
-            elem.set("LONG-NAME", "Null spec type")
+            elem.set("LONG-NAME", "Null spec object type")
             elem.set("DESC", "No requirement type was selected in Capella.")
         else:
             _add_common_attributes(modelobj, elem)
 
         attributes_wrap = etree.Element("SPEC-ATTRIBUTES")
-        # TODO add synthetic attribute definitions for standard attributes
+        for name, std_attr in STD_SPEC_OBJECT_ATTRIBUTES.items():
+            attributes = {
+                "IDENTIFIER": f"_STD-ATTRIBUTE-{reqtype}-ReqIF.{name}",
+                "LAST-CHANGE": timestamp,
+                "LONG-NAME": f"ReqIF.{name}",
+            }
+            elem_attrdef = E(
+                f"ATTRIBUTE-DEFINITION-{std_attr['type']}",
+                attributes,
+                E(
+                    "TYPE",
+                    E(
+                        f"DATATYPE-DEFINITION-{std_attr['type']}-REF",
+                        f"_STD-DATATYPE-ReqIF.{name}",
+                    ),
+                ),
+            )
+            attributes_wrap.append(elem_attrdef)
         for attr_def in attr_defs:
             attr_elem = etree.Element(f"ATTRIBUTE-DEFINITION-{attr_def.type}")
             if attr_def.modelobj:
@@ -298,27 +394,73 @@ def _build_spec_objects(
 def _build_spec_object(
     req: elements.Requirement, timestamp: str
 ) -> etree._Element:
-    obj = etree.Element("SPEC-OBJECT")
-    obj.set("IDENTIFIER", "_" + req.uuid.upper())
-    obj.set("LAST-CHANGE", timestamp)
+    spec_obj = etree.Element("SPEC-OBJECT")
+    spec_obj.set("IDENTIFIER", "_" + req.uuid.upper())
+    spec_obj.set("LAST-CHANGE", timestamp)
     if req.long_name:
-        obj.set("LONG-NAME", req.long_name)
-    # TODO Add standard attributes (`ReqIF.Text` etc.)
+        spec_obj.set("LONG-NAME", req.long_name)
 
+    values_elem = E("VALUES")
+    _build_standard_attribute_values(values_elem, req)
     if req.attributes:
-        obj.append(_build_attribute_values(req))
+        _build_attribute_values(values_elem, req)
+    spec_obj.append(values_elem)
 
-    obj.append(type := etree.Element("TYPE"))
+    spec_obj.append(type := etree.Element("TYPE"))
     type.append(ref := etree.Element("SPEC-OBJECT-TYPE-REF"))
     if req.type:
         ref.text = "_" + req.type.uuid.upper()
     else:
-        ref.text = "_NULL-SPEC-TYPE"
+        ref.text = "_NULL-SPEC-OBJECT-TYPE"
 
-    return obj
+    return spec_obj
 
 
-def _build_attribute_values(req: elements.Requirement) -> etree._Element:
+def _build_standard_attribute_values(
+    values_elem: etree._Element, req: elements.Requirement
+):
+    if req.type:
+        reqtype_ref = req.type.uuid.upper()
+    else:
+        reqtype_ref = "NULL-SPEC-OBJECT-TYPE"
+    for name, std_attr in STD_SPEC_OBJECT_ATTRIBUTES.items():
+        type_ = std_attr["type"]
+        attrdef_ref = f"_STD-ATTRIBUTE-{reqtype_ref}-ReqIF.{name}"
+        value_elem = None
+        capella_val = getattr(req, std_attr["attr"])
+        if capella_val is None:
+            capella_val = ""
+        if type_ == "STRING":
+            value_elem = E(
+                "ATTRIBUTE-VALUE-STRING",
+                {"THE-VALUE": capella_val},
+                E(
+                    "DEFINITION",
+                    E("ATTRIBUTE-DEFINITION-STRING-REF", attrdef_ref),
+                ),
+            )
+        elif type_ == "XHTML":
+            if capella_val:
+                html_val = capella_val
+            else:
+                html_val = "<div></div>"
+            xml_elem = html.fromstring(html_val)
+            html.html_to_xhtml(xml_elem)
+            value_elem = E(
+                "ATTRIBUTE-VALUE-XHTML",
+                E(
+                    "DEFINITION",
+                    E("ATTRIBUTE-DEFINITION-XHTML-REF", attrdef_ref),
+                ),
+                E("THE-VALUE", xml_elem),
+            )
+        if value_elem is not None:
+            values_elem.append(value_elem)
+
+
+def _build_attribute_values(
+    values_elem: etree._Element, req: elements.Requirement
+):
     factories = {
         elements.XT_REQ_ATTR_BOOLEANVALUE: _build_attribute_value_simple,
         elements.XT_REQ_ATTR_DATEVALUE: _build_attribute_value_simple,
@@ -327,11 +469,9 @@ def _build_attribute_values(req: elements.Requirement) -> etree._Element:
         elements.XT_REQ_ATTR_STRINGVALUE: _build_attribute_value_simple,
         elements.XT_REQ_ATTR_ENUMVALUE: _build_attribute_value_enum,
     }
-    wrapper = etree.Element("VALUES")
     for attr in req.attributes:
         factory = factories[attr.xtype]
-        wrapper.append(factory(attr))
-    return wrapper
+        values_elem.append(factory(attr))
 
 
 def _build_attribute_value_simple(
@@ -404,16 +544,60 @@ def _build_specifications(
         for sub in folder.folders:
             yield from create_hierarchy_folder(sub)
 
+    module_type_ref = (
+        "NULL-SPECIFICATION-TYPE"
+        if (module_type := module.type) is None
+        else module_type.uuid.upper()
+    )
+
+    spec_values = E("VALUES")
+
+    for name, std_attr in STD_SPECIFICATION_ATTRIBUTES.items():
+        attr_def_ref = (
+            "_STD-SPECIFICATION-ATTRIBUTE-"
+            f"{module_type_ref}"
+            f"-ReqIF.{name}"
+        )
+        if (type_ := std_attr["type"]) == "XHTML":
+            xml_elem = html.fromstring(
+                f"<div>{getattr(module, std_attr['attr'])}</div>"
+            )
+            html.html_to_xhtml(xml_elem)
+            spec_values.append(
+                E(
+                    "ATTRIBUTE-VALUE-XHTML",
+                    E.DEFINITION(
+                        E("ATTRIBUTE-DEFINITION-XHTML-REF", attr_def_ref)
+                    ),
+                    E("THE-VALUE", xml_elem),
+                )
+            )
+        else:
+            spec_values.append(
+                E(
+                    f"ATTRIBUTE-VALUE-{type_}",
+                    {"THE-VALUE": str(getattr(module, std_attr["attr"]))},
+                    E.DEFINITION(
+                        E(f"ATTRIBUTE-DEFINITION-{type_}-REF", attr_def_ref)
+                    ),
+                )
+            )
+
     spec = E.SPECIFICATION(
-        {"IDENTIFIER": "_" + module.uuid.upper(), "LAST-CHANGE": timestamp},
-        wrapper := E.CHILDREN(),
+        {
+            "IDENTIFIER": "_" + module.uuid.upper(),
+            "LAST-CHANGE": timestamp,
+        },
+        E.TYPE(E("SPECIFICATION-TYPE-REF", f"_{module_type_ref}")),
+        spec_values,
+        children := E.CHILDREN(),
     )
     if module.long_name:
         spec.set("LONG-NAME", module.long_name)
     if module.description:
         spec.set("DESC", module.description)
 
-    wrapper.extend(create_hierarchy_folder(module))
+    children.extend(create_hierarchy_folder(module))
     return (spec,)
 
 
