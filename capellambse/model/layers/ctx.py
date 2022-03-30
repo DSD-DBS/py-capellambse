@@ -161,6 +161,7 @@ class CapabilityPkg(c.GenericElement):
     packages: c.Accessor
 
 
+@c.xtype_handler(None)
 class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     """Provides access to the SystemAnalysis layer of the model."""
 

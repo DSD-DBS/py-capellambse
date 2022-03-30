@@ -206,6 +206,7 @@ class EntityPkg(c.GenericElement):
     packages: c.Accessor
 
 
+@c.xtype_handler(None)
 class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
     """Provides access to the OperationalAnalysis layer of the model."""
 

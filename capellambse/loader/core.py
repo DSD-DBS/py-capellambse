@@ -84,6 +84,23 @@ def _find_refs(root: etree._Element) -> cabc.Iterable[str]:
     )
 
 
+def _unquote_ref(ref: str) -> str:
+    ref = urllib.parse.unquote(ref)
+    prefix = "platform:/resource/"
+    if ref.startswith(prefix):
+        ref = ref.replace(prefix, "../")
+    return ref
+
+
+class MissingResourceLocationError(KeyError):
+    """Raised when a model needs an additional resource location."""
+
+
+class ResourceLocationManager(dict):
+    def __missing__(self, key: str) -> t.NoReturn:
+        raise MissingResourceLocationError(key)
+
+
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
@@ -204,17 +221,60 @@ class MelodyLoader:
 
     def __init__(
         self,
-        path: str | os.PathLike,
+        path: str | os.PathLike | filehandler.FileHandler,
         entrypoint: str | pathlib.PurePosixPath | None = None,
+        *,
+        resources: cabc.Mapping[
+            str,
+            filehandler.FileHandler | str | os.PathLike | dict[str, t.Any],
+        ]
+        | None = None,
         **kwargs: t.Any,
     ) -> None:
-        self.filehandler = filehandler.get_filehandler(path, **kwargs)
+        """Construct a MelodyLoader.
+
+        Parameters
+        ----------
+        path
+            The ``path`` argument to the primary file handler, or the
+            primary file handler itself.
+        entrypoint
+            The entry point into the model, i.e. the top-level ``.aird``
+            file. This must be located within the primary file handler.
+        resources
+            Additional file handler instances that provide library
+            resources that are referenced from the model.
+        kwargs
+            Additional arguments to the primary file handler, if
+            necessary.
+        """
+        if isinstance(path, filehandler.FileHandler):
+            handler = path
+        else:
+            handler = filehandler.get_filehandler(path, **kwargs)
+        self.resources = ResourceLocationManager({"\0": handler})
+        for resname, reshdl in (resources or {}).items():
+            if not resname:
+                raise ValueError("Empty resource name")
+            if "/" in resname or "\0" in resname:
+                raise ValueError(f"Invalid resource name: {resname!r}")
+
+            if isinstance(reshdl, (str, os.PathLike)):
+                self.resources[resname] = filehandler.get_filehandler(reshdl)
+            elif isinstance(reshdl, cabc.Mapping):
+                self.resources[resname] = filehandler.get_filehandler(**reshdl)
+            else:
+                self.resources[resname] = reshdl
         self.entrypoint = self.__derive_entrypoint(entrypoint)
 
         self.trees: dict[pathlib.PurePosixPath, ModelFile] = {}
         self.__load_referenced_files(
-            helpers.normalize_pure_path(pathlib.PurePosixPath(self.entrypoint))
+            pathlib.PurePosixPath("\0", self.entrypoint)
         )
+
+    @property
+    def filehandler(self) -> filehandler.FileHandler:
+        return self.resources["\0"]
 
     def __derive_entrypoint(
         self, entrypoint: str | pathlib.PurePosixPath | None
@@ -226,22 +286,23 @@ class MelodyLoader:
             basedir = self.filehandler.path
             assert isinstance(basedir, pathlib.Path)
             self.filehandler.path = basedir.parent
-            return pathlib.PurePosixPath(basedir.name)
+            return helpers.normalize_pure_path(basedir.name)
 
         raise ValueError("This type of file handler needs an ``entrypoint``")
 
     def __load_referenced_files(
-        self,
-        filename: pathlib.PurePosixPath,
+        self, resource_path: pathlib.PurePosixPath
     ) -> None:
-        if filename in self.trees:
+        if resource_path in self.trees:
             return
 
-        frag = ModelFile(filename, self.filehandler)
-        self.trees[filename] = frag
+        handler = self.resources[resource_path.parts[0]]
+        filename = pathlib.PurePosixPath(*resource_path.parts[1:])
+        frag = ModelFile(filename, handler)
+        self.trees[resource_path] = frag
         for ref in _find_refs(frag.root):
             ref_name = helpers.normalize_pure_path(
-                urllib.parse.unquote(ref), base=filename.parent
+                _unquote_ref(ref), base=resource_path.parent
             )
             self.__load_referenced_files(ref_name)
 
@@ -269,6 +330,11 @@ class MelodyLoader:
                     ", ".join(repr(k) for k in unsupported_kws),
                 )
             for fname, tree in self.trees.items():
+                resname = fname.parts[0]
+                fname = pathlib.PurePosixPath(*fname.parts[1:])
+                if resname != "\0":
+                    continue
+
                 tree.write_xml(fname)
 
     def idcache_index(self, subtree: etree._Element) -> None:
@@ -724,7 +790,7 @@ class MelodyLoader:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
         if fragment is not None:
-            fragment = urllib.parse.unquote(fragment)
+            fragment = urllib.parse.unquote(_unquote_ref(fragment))
 
         def find_trees(
             from_element: etree._Element | None,

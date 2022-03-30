@@ -21,7 +21,7 @@ It started as a basic library somewhere mid 2019. Since then it was re-architect
 
 Click on this button to launch a Binder instance and start exploring our test models within seconds:
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01_Introduction.ipynb)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01%20Introduction.ipynb)
 
 *Warning:* [Do not enter confidential information], such as passwords for non-public models, into a notebook hosted on myBinder. If you want to try out `capellambse` with those models, please install and run it in a local, trusted environment (see below)!
 

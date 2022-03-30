@@ -542,9 +542,8 @@ class Edge(aird.Vec2List):
 
     collapsed = False
     context: cabc.Set[str] = frozenset()
+    hidelabel = False
     port = False
-
-    _hidelabel: bool
 
     def __init__(
         self,

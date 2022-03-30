@@ -122,6 +122,7 @@ class PhysicalComponentPkg(c.GenericElement):
     packages: c.Accessor
 
 
+@c.xtype_handler(None)
 class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     """Provides access to the Physical Architecture layer of the model."""
 

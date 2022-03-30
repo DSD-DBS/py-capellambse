@@ -25,13 +25,27 @@ import uuid
 
 import markupsafe
 
-import capellambse.svg
+import capellambse
 
-from .. import aird
+from .. import aird, svg
 from . import common as c
 from . import modeltypes
 
 DiagramConverter = t.Callable[[aird.Diagram], t.Any]
+
+
+class DiagramFormat(t.Protocol):
+    filename_extension: str
+
+    @classmethod
+    def convert(cls, diagram: aird.Diagram) -> str:
+        ...
+
+    @classmethod
+    def from_cache(cls, cache: bytes) -> str:
+        ...
+
+
 LOGGER = logging.getLogger(__name__)
 
 
@@ -96,6 +110,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             + markupsafe.Markup("<figcaption>")
             + self.name
             + markupsafe.Markup("</figcaption></figure>")
+        )
+
+    def _short_html_(self) -> markupsafe.Markup:
+        return markupsafe.Markup(
+            f"<b>{markupsafe.Markup.escape(self.name)}</b> "
+            f"(uuid: {markupsafe.Markup.escape(self.uuid)})"
         )
 
     def _repr_svg_(self):
@@ -206,7 +226,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         diag.calculate_viewport()
         return diag
 
-    def __load_cache(self, converter):
+    def __load_cache(self, converter: DiagramFormat):
         try:
             cache_handler = self._model._diagram_cache
             cachedir = self._model._diagram_cache_subdir
@@ -348,11 +368,10 @@ class SVGFormat:
 
 def convert_svgdiagram(
     diagram: aird.Diagram,
-) -> capellambse.svg.generate.SVGDiagram:
+) -> svg.generate.SVGDiagram:
     """Convert the diagram to a SVGDiagram."""
     jsondata = aird.DiagramJSONEncoder().encode(diagram)
-    svg = capellambse.svg.generate.SVGDiagram.from_json(jsondata)
-    return svg
+    return svg.generate.SVGDiagram.from_json(jsondata)
 
 
 class ConfluenceSVGFormat:

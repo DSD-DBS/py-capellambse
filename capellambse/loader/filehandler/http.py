@@ -39,7 +39,7 @@ class DownloadStream(t.BinaryIO):
     __stream: cabc.Iterator[bytes]
     __buffer: memoryview
 
-    def __init__(self, url: str, chunk_size: int = 1024 ** 2) -> None:
+    def __init__(self, url: str, chunk_size: int = 1024**2) -> None:
         self.url = url
         self.chunk_size = chunk_size
 
@@ -94,6 +94,8 @@ class HTTPFileHandler(FileHandler):
         path: str | os.PathLike,
         username: str | None = None,
         password: str | None = None,
+        *,
+        subdir: str | pathlib.PurePosixPath = "/",
     ) -> None:
         if not isinstance(path, str):
             raise TypeError(
@@ -103,6 +105,8 @@ class HTTPFileHandler(FileHandler):
             raise ValueError(
                 "Either both username and password must be given, or neither"
             )
+        if subdir != "/":
+            raise ValueError("`subdir=` is not supported in HTTP(S)")
         super().__init__(path)
 
         self.session = requests.Session()
