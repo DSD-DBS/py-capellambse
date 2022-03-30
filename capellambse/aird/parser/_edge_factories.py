@@ -40,12 +40,6 @@ XT_EXITEM = "org.polarsys.capella.core.data.information:ExchangeItem"
 def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create an Edge from the diagram XML."""
     bendpoints, sourceport, targetport = extract_bendpoints(seb)
-    if sourceport is ... or targetport is ...:
-        C.LOGGER.warning(
-            "Source or target of edge %r were deleted, skipping",
-            seb.data_element.attrib[C.ATT_XMID],
-        )
-        raise C.SkipObject()
 
     try:
         ostyle = next(seb.diag_element.iterchildren("ownedStyle"))
