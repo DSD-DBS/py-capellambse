@@ -249,7 +249,7 @@ class Box:
         source: aird.Vec2ish | None = None,
         style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
-        """Snap the ``point`` into this Box, preferably into ``direction``."""
+        """Snap the ``point`` into this Box, coming from ``source``."""
         if not isinstance(point, aird.Vector2D):
             point = aird.Vector2D(*point)
 
@@ -609,10 +609,10 @@ class Edge(aird.Vec2List):
         vector: aird.Vec2ish,
         *,
         source: aird.Vec2ish,
-        style: RoutingStyle = RoutingStyle.OBLIQUE,  # pylint: disable=unused-argument
+        style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
         """Snap the ``vector`` onto this Edge."""
-        del source
+        del source, style
 
         if not isinstance(vector, aird.Vector2D):
             vector = aird.Vector2D(*vector)
@@ -821,9 +821,12 @@ class Circle:
         vector: aird.Vec2ish,
         *,
         source: aird.Vec2ish,
-        style: RoutingStyle = RoutingStyle.OBLIQUE,  # pylint: disable=unused-argument
+        style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
         """Snap the ``vector`` onto this Circle, preferably in `direction`."""
+        del style
+        # TODO implement different routing styles than OBLIQUE
+
         if not isinstance(vector, aird.Vector2D):
             vector = aird.Vector2D(*vector)
         if not isinstance(source, aird.Vector2D):

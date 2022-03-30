@@ -81,13 +81,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     edge.labels.extend(_construct_labels(edge, seb))
 
     if isinstance(targetport, aird.Box):
-        snaptarget(
-            edge.points, -1, -2, targetport, not edge.hidden, routingstyle
-        )
+        snaptarget(edge, -1, -2, targetport, not edge.hidden, routingstyle)
     if isinstance(sourceport, aird.Box):
-        snaptarget(
-            edge.points, 0, 1, sourceport, not edge.hidden, routingstyle
-        )
+        snaptarget(edge, 0, 1, sourceport, not edge.hidden, routingstyle)
 
     sourceport.add_context(seb.data_element.attrib["element"])
     if targetport is not None:
