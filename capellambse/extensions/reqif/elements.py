@@ -11,15 +11,64 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Tools for handling ReqIF Requirements.
-
-.. diagram:: [CDB] Requirements ORM
-"""
 from __future__ import annotations
 
+__all__ = [
+    "AbstractRequirementsAttribute",
+    "AbstractRequirementsRelation",
+    "AbstractType",
+    "AttributeDefinition",
+    "AttributeDefinitionEnumeration",
+    "BooleanValueAttribute",
+    "DataTypeDefinition",
+    "DateValueAttribute",
+    "EnumDataTypeDefinition",
+    "EnumValue",
+    "EnumerationValueAttribute",
+    "IntegerValueAttribute",
+    "ModuleType",
+    "RealValueAttribute",
+    "RelationType",
+    "RelationsList",
+    "ReqIFElement",
+    "Requirement",
+    "RequirementType",
+    "RequirementsFolder",
+    "RequirementsIncRelation",
+    "RequirementsIntRelation",
+    "RequirementsModule",
+    "RequirementsOutRelation",
+    "RequirementsTypesFolder",
+    "StringValueAttribute",
+    "XT_FOLDER",
+    "XT_INC_RELATION",
+    "XT_INT_RELATION",
+    "XT_MODULE",
+    "XT_MODULE_TYPE",
+    "XT_OUT_RELATION",
+    "XT_RELATION_TYPE",
+    "XT_REQUIREMENT",
+    "XT_REQ_ATTRIBUTES",
+    "XT_REQ_ATTR_BOOLEANVALUE",
+    "XT_REQ_ATTR_DATEVALUE",
+    "XT_REQ_ATTR_ENUMVALUE",
+    "XT_REQ_ATTR_INTEGERVALUE",
+    "XT_REQ_ATTR_REALVALUE",
+    "XT_REQ_ATTR_STRINGVALUE",
+    "XT_REQ_TYPE",
+    "XT_REQ_TYPES",
+    "XT_REQ_TYPES_DATA_DEF",
+    "XT_REQ_TYPES_F",
+    "XT_REQ_TYPE_ATTR_DEF",
+    "XT_REQ_TYPE_ATTR_ENUM",
+    "XT_REQ_TYPE_ENUM",
+    "XT_REQ_TYPE_ENUM_DEF",
+    "init",
+]
+
 import collections.abc as cabc
-import datetime
 import logging
+import os
 import typing as t
 
 import markupsafe
@@ -30,6 +79,8 @@ import capellambse.model.common as c
 from capellambse import helpers
 from capellambse.loader import xmltools
 from capellambse.model import crosslayer
+
+from . import exporter
 
 XT_REQUIREMENT = "Requirements:Requirement"
 XT_REQ_ATTR_STRINGVALUE = "Requirements:StringValueAttribute"
@@ -75,36 +126,6 @@ XT_REQ_TYPES = {
 DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
-_xt_to_attr_type: dict[
-    str, tuple[cabc.Callable[[str], t.Any], type | tuple[type, ...], t.Any]
-] = {
-    XT_REQ_ATTR_STRINGVALUE: (str, str, ""),
-    XT_REQ_ATTR_REALVALUE: (float, float, 0.0),
-    XT_REQ_ATTR_INTEGERVALUE: (int, int, 0),
-    XT_REQ_ATTR_DATEVALUE: (
-        lambda val: datetime.datetime.strptime(val, DATE_VALUE_FORMAT),
-        (datetime.datetime, type(None)),
-        None,
-    ),
-    XT_REQ_ATTR_BOOLEANVALUE: (lambda val: val == "true", bool, False),
-}
-_attr_type_hints = {
-    "int": XT_REQ_ATTR_INTEGERVALUE,
-    "integer": XT_REQ_ATTR_INTEGERVALUE,
-    "integervalueattribute": XT_REQ_ATTR_INTEGERVALUE,
-    "str": XT_REQ_ATTR_STRINGVALUE,
-    "string": XT_REQ_ATTR_STRINGVALUE,
-    "stringvalueattribute": XT_REQ_ATTR_STRINGVALUE,
-    "float": XT_REQ_ATTR_REALVALUE,
-    "real": XT_REQ_ATTR_REALVALUE,
-    "realvalueattribute": XT_REQ_ATTR_REALVALUE,
-    "date": XT_REQ_ATTR_DATEVALUE,
-    "datevalueattribute": XT_REQ_ATTR_DATEVALUE,
-    "bool": XT_REQ_ATTR_BOOLEANVALUE,
-    "boolvalueattribute": XT_REQ_ATTR_BOOLEANVALUE,
-    "enum": XT_REQ_ATTR_ENUMVALUE,
-    "enumvalueattribute": XT_REQ_ATTR_ENUMVALUE,
-}
 
 
 class RequirementsRelationAccessor(
@@ -251,10 +272,7 @@ class ReqIFElement(c.GenericElement):
                 RequirementsIntRelation,
             ),
         ):
-            return (
-                f"<{mytype} from {self.source!r} to {self.target!r} "
-                f"({self.uuid})>"
-            )
+            return f"<{mytype} from {self.source!r} to {self.target!r} ({self.uuid})>"
         elif self.xtype in XT_REQ_TYPES:
             return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
         while parent is not None:
@@ -298,7 +316,7 @@ class AttributeDefinition(ReqIFElement):
 class AbstractRequirementsAttribute(c.GenericElement):
     _xmltag = "ownedAttributes"
 
-    definition: t.ClassVar[c.Accessor]
+    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
     def __repr__(self) -> str:
         mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
@@ -316,9 +334,7 @@ class AbstractRequirementsAttribute(c.GenericElement):
         return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
-class AttributeAccessor(
-    c.ProxyAccessor["RequirementsAttribute | EnumerationValueAttribute"]
-):
+class AttributeAccessor(c.ProxyAccessor[AbstractRequirementsAttribute]):
     def __init__(self) -> None:
         super().__init__(
             c.GenericElement,  # type: ignore[arg-type]
@@ -333,14 +349,9 @@ class AttributeAccessor(
     def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
         type_ = type_.lower()
         try:
-            xt = _attr_type_hints[type_]
+            return _attr_type_hints[type_]
         except KeyError:
             raise ValueError(f"Invalid type hint given: {type_!r}") from None
-
-        if xt == XT_REQ_ATTR_ENUMVALUE:
-            return EnumerationValueAttribute, xt
-
-        return RequirementsAttribute, xt
 
 
 class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
@@ -406,63 +417,45 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         return listtype(self._model, elements, source=self._source)
 
 
-class ValueAccessor(c.Accessor):
-    def __get__(  # type: ignore[override]
-        self,
-        obj: c.GenericElement | None,
-        objtype: type[ReqIFElement] | None = None,
-    ) -> ValueAccessor | int | float | str | bool | datetime.datetime:
-        del objtype
-        if obj is None:
-            return self
+@c.xtype_handler(None, XT_REQ_ATTR_BOOLEANVALUE)
+class BooleanValueAttribute(AbstractRequirementsAttribute):
+    """A string value attribute."""
 
-        assert isinstance(
-            obj, (RequirementsAttribute, EnumerationValueAttribute)
-        )
-        cast, _, default = _xt_to_attr_type[obj.xtype]
-        if (value := obj._element.get("value")) is None:
-            return default
-        return cast(value)
-
-    def __set__(
-        self,
-        obj: c.GenericElement,
-        value: int | float | str | bool | datetime.datetime,
-    ) -> None:
-        assert isinstance(
-            obj, (RequirementsAttribute, EnumerationValueAttribute)
-        )
-        _, type_, default = _xt_to_attr_type[obj.xtype]
-        if not isinstance(value, type_):
-            if isinstance(type_, tuple):
-                error_msg = " or ".join((t.__name__ for t in type_))
-            else:
-                error_msg = type_.__name__
-
-            raise TypeError("Value needs to be of type " + error_msg)
-
-        if value == default:
-            if "value" in obj._element.attrib:
-                del obj._element.attrib["value"]
-            return
-
-        if isinstance(value, bool):
-            value = str(value).lower()
-        elif isinstance(value, datetime.datetime):
-            value = datetime.datetime.strftime(value, DATE_VALUE_FORMAT)
-        else:
-            value = str(value)
-
-        obj._element.attrib["value"] = value
+    value = xmltools.BooleanAttributeProperty("_element", "value")
 
 
-@c.xtype_handler(None, *(XT_REQ_ATTRIBUTES - {XT_REQ_ATTR_ENUMVALUE}))
-class RequirementsAttribute(AbstractRequirementsAttribute):
-    """Handles attributes on Requirements."""
+@c.xtype_handler(None, XT_REQ_ATTR_DATEVALUE)
+class DateValueAttribute(AbstractRequirementsAttribute):
+    """A value attribute that stores a date and time."""
 
-    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
+    value = xmltools.DatetimeAttributeProperty(
+        "_element", "value", format=DATE_VALUE_FORMAT, optional=True
+    )
 
-    value = ValueAccessor()
+
+@c.xtype_handler(None, XT_REQ_ATTR_INTEGERVALUE)
+class IntegerValueAttribute(AbstractRequirementsAttribute):
+    """An integer value attribute."""
+
+    value = xmltools.AttributeProperty(
+        "_element", "value", returntype=int, default=0
+    )
+
+
+@c.xtype_handler(None, XT_REQ_ATTR_REALVALUE)
+class RealValueAttribute(AbstractRequirementsAttribute):
+    """A floating-point number value attribute."""
+
+    value = xmltools.AttributeProperty(
+        "_element", "value", returntype=float, default=0.0
+    )
+
+
+@c.xtype_handler(None, XT_REQ_ATTR_STRINGVALUE)
+class StringValueAttribute(AbstractRequirementsAttribute):
+    """A string value attribute."""
+
+    value = xmltools.AttributeProperty("_element", "value", default="")
 
 
 @c.xtype_handler(None, XT_REQ_TYPE_ATTR_ENUM)
@@ -550,10 +543,6 @@ class RequirementType(AbstractType):
 
     _xmltag = "ownedTypes"
 
-    long_name = xmltools.AttributeProperty(
-        "_element", "ReqIFLongName", optional=True
-    )
-
 
 @c.xtype_handler(None, XT_REQUIREMENT)
 class Requirement(ReqIFElement):
@@ -604,6 +593,45 @@ class RequirementsModule(ReqIFElement):
     )
     type = c.AttrProxyAccessor(ModuleType, "moduleType")
     attributes = AttributeAccessor()
+
+    def to_reqif(
+        self,
+        to: str | os.PathLike | t.IO[bytes],
+        *,
+        metadata: cabc.Mapping[str, t.Any] | None = None,
+        pretty: bool = False,
+        compress: bool | None = None,
+    ) -> None:
+        """Export this module as ReqIF XML.
+
+        You can override some auto-generated metadata placed in the header
+        section by passing a dictionary as ``metadata``. The following keys
+        are supported. Unsupported keys are silently ignored.
+
+        -   ``creation_time``: A ``datetime.datetime`` object that specifies
+            this document's creation time. Default to the current time.
+        -   ``comment``: Override the ReqIF file's comment. Defaults to a
+            text derived from the model and module names.
+        -   ``title``: Specify the document title. Defaults to the module's
+            ``long_name``.
+
+        Parameters
+        ----------
+        target
+            Where to export to. Can be the name of a file, or a file-like
+            object opened in binary mode.
+        metadata
+            A dictionary with additional metadata (see above).
+        pretty
+            Format the XML human-readable.
+        compress
+            Write compressed data (``*.reqifz``). Defaults to ``True``
+            if ``target`` is a string or path-like and its name ends in
+            ``.reqifz``, otherwise defaults to ``False``.
+        """
+        exporter.export_module(
+            self, to, metadata=metadata, pretty=pretty, compress=compress
+        )
 
 
 class AbstractRequirementsRelation(ReqIFElement):
@@ -723,3 +751,22 @@ def init() -> None:
             deep=True,
         ),
     )
+
+
+_attr_type_hints = {
+    "int": (IntegerValueAttribute, XT_REQ_ATTR_INTEGERVALUE),
+    "integer": (IntegerValueAttribute, XT_REQ_ATTR_INTEGERVALUE),
+    "integervalueattribute": (IntegerValueAttribute, XT_REQ_ATTR_INTEGERVALUE),
+    "str": (StringValueAttribute, XT_REQ_ATTR_STRINGVALUE),
+    "string": (StringValueAttribute, XT_REQ_ATTR_STRINGVALUE),
+    "stringvalueattribute": (StringValueAttribute, XT_REQ_ATTR_STRINGVALUE),
+    "float": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
+    "real": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
+    "realvalueattribute": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
+    "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "boolvalueattribute": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "enum": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+    "enumvalueattribute": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+}
