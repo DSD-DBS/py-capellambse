@@ -93,6 +93,11 @@ class AttributeProperty:
 
         xml_element = getattr(obj, self.xmlattr)
         try:
+            if (
+                self.returntype != str
+                and xml_element.attrib[self.attribute] == "*"
+            ):
+                return float("inf")
             return self.returntype(xml_element.attrib[self.attribute])
         except KeyError:
             if self.default is not self.NOT_OPTIONAL:
