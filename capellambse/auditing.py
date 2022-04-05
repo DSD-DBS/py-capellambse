@@ -26,12 +26,11 @@ class AttributeAuditor:
     """Audits access to attributes of ModelElements.
 
     .. warning::
-        This will permanently add an audithook to the global hook table.
-        The auditor will keep the model alive, which may consume
-        excessive memory. To avoid this once you are done with the
-        model, set the ``model`` property of the auditor object to
-        ``None``. This is automatically done if you use it as a
-        context manager.
+         This will permanently add an audit hook to the global hook
+        table. The auditor will keep the model alive, which may consume
+        excessive memory. To avoid this, call the auditor object's
+        ``detach()`` method once you are done with it. This is
+        automatically done if you use it as a context manager.
 
     Examples
     --------
@@ -59,6 +58,7 @@ class AttributeAuditor:
         self.model: capellambse.MelodyModel | None = model
         self.attrs = attrs or helpers.EverythingContainer()
         self.recorded_ids: set[str] = set()
+        self.last_audit = (None, "")
 
         sys.addaudithook(self.__audit)
 
@@ -66,11 +66,19 @@ class AttributeAuditor:
         return self
 
     def __exit__(self, *_: t.Any) -> None:
+        return self.detach()
+
+    def detach(self) -> None:
         self.model = None
 
     def __audit(self, event: str, args: tuple[t.Any, ...]) -> None:
         if event == "capellambse.read_attribute":
             obj, attr_name, _ = args
+            last_obj, last_attr = self.last_audit
+            if obj is last_obj and attr_name == last_attr:
+                return
+
+            self.last_audit = (obj, attr_name)
             if not hasattr(obj, "_model") or obj._model is not self.model:
                 return
 
