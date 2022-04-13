@@ -52,8 +52,8 @@ E = builder.ElementMaker(namespace=NS)
 
 class _AttributeDefinition(t.NamedTuple):
     modelobj: (
-        elements.AbstractRequirementsAttribute
-        | elements.EnumerationValueAttribute
+        elements.AttributeDefinition
+        | elements.AttributeDefinitionEnumeration
         | None
     )
     type: str
