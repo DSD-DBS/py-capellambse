@@ -122,7 +122,7 @@ class ResourceLocationManager(dict):
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
-    __xtypecache: dict[str | None, list[etree._Element]]
+    __xtypecache: dict[str, list[etree._Element]]
     __idcache: dict[str, etree._Element]
     __hrefsources: dict[str, etree._Element]
 
@@ -156,7 +156,9 @@ class ModelFile:
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``."""
         for elm in subtree.iter():
-            self.__xtypecache[helpers.xtype_of(elm)].append(elm)
+            xtype = helpers.xtype_of(elm)
+            if xtype is not None:
+                self.__xtypecache[xtype].append(elm)
 
             for idtype in IDTYPES_RESOLVED:
                 elm_id = elm.get(idtype, None)
@@ -178,7 +180,9 @@ class ModelFile:
 
         else:
             for elm in source.iter():
-                self.__xtypecache[helpers.xtype_of(elm)].remove(elm)
+                xtype = helpers.xtype_of(elm)
+                if xtype:
+                    self.__xtypecache[xtype].remove(elm)
                 for idtype in IDTYPES_RESOLVED:
                     elm_id = elm.get(idtype, None)
                     if elm_id is None:
