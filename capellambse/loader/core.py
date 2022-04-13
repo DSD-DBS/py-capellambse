@@ -537,9 +537,6 @@ class MelodyLoader:
             A list of XML elements to use as roots for the query.
             Defaults to all tree roots.
         """
-        if not xsi_types:
-            return []
-
         if roots is None:
             return list(self.iterall_xt(*xsi_types))
         elif isinstance(roots, etree._Element):
@@ -551,7 +548,7 @@ class MelodyLoader:
         return [
             i
             for i in itertools.chain.from_iterable(roots)
-            if helpers.xtype_of(i) in xtset
+            if (xt := helpers.xtype_of(i)) is not None and xt in xtset
         ]
 
     def iterall(self, *tags: str) -> cabc.Iterator[etree._Element]:

@@ -235,6 +235,10 @@ class MelodyModel:
         If only one xtype is given, the return type will be
         :class:`common.ElementList`, otherwise it will be
         :class:`common.MixedElementList`.
+
+        If no ``xtypes`` are given at all, this method will return an
+        exhaustive list of all model objects that have an ``xsi:type``
+        set.
         """
         xtypes_: list[str] = []
         for i in xtypes:
