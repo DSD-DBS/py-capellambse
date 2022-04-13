@@ -104,6 +104,7 @@ expected-line-ending-format = "LF"
 
 [tool.pylint.master]
 extension-pkg-allow-list = [
+  "lxml.builder",
   "lxml.etree",
 ]
 ignore = [
