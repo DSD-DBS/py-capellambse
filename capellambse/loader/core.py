@@ -62,6 +62,9 @@ ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
 IDTYPES_RESOLVED = frozenset(helpers.resolve_namespace(t) for t in IDTYPES)
+RE_VALID_ID = re.compile(
+    r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+)
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
 CROSS_FRAGMENT_LINK = re.compile(
     r"""
@@ -403,25 +406,42 @@ class MelodyLoader:
         for tree in self.trees.values():
             tree.idcache_rebuild()
 
-    def generate_uuid(self, parent: etree._Element) -> str:
+    def generate_uuid(
+        self, parent: etree._Element, *, want: str | None = None
+    ) -> str:
         """Generate a unique UUID for a new child of ``parent``.
 
         The generated ID is guaranteed to be unique across all currently
         loaded fragments.
+
+        Parameters
+        ----------
+        want
+            Try this UUID first, and use it if it satisfies all other
+            constraints. If it does not satisfy all constraints (e.g. it
+            would be non-unique), a random UUID will be generated as
+            normal.
         """
+
+        def idstream() -> t.Iterator[str]:
+            if want and RE_VALID_ID.fullmatch(want):
+                yield want
+            while True:
+                yield str(uuid.uuid4())
+
         _, tree = self._find_fragment(parent)
 
-        while True:
-            new_id = str(uuid.uuid4())
+        for new_id in idstream():
             try:
                 self[new_id]
             except KeyError:
                 tree.idcache_reserve(new_id)
                 return new_id
+        assert False
 
     @contextlib.contextmanager
     def new_uuid(
-        self, parent: etree._Element
+        self, parent: etree._Element, *, want: str | None = None
     ) -> cabc.Generator[str, None, None]:
         """Context Manager around :meth:`generate_uuid()`.
 
@@ -453,7 +473,7 @@ class MelodyLoader:
             The parent element below which the new UUID will be used.
         """
         _, tree = self._find_fragment(parent)
-        new_uuid = self.generate_uuid(parent)
+        new_uuid = self.generate_uuid(parent, want=want)
 
         def cleanup_after_failure() -> None:
             tree.idcache_remove(new_uuid)
