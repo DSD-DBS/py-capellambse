@@ -14,9 +14,15 @@
 """Helps loading Capella models (including fragmented variants)."""
 from __future__ import annotations
 
+__all__ = [
+    "FragmentType",
+    "MelodyLoader",
+]
+
 import collections
 import collections.abc as cabc
 import contextlib
+import enum
 import itertools
 import logging
 import operator
@@ -37,17 +43,21 @@ from capellambse.loader.filehandler import localfilehandler
 from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
-VALID_EXTS = frozenset(
+VISUAL_EXTS = frozenset(
     {
-        ".afm",
         ".aird",
         ".airdfragment",
+    }
+)
+SEMANTIC_EXTS = frozenset(
+    {
         ".capella",
         ".capellafragment",
         ".melodyfragment",
         ".melodymodeller",
     }
 )
+VALID_EXTS = VISUAL_EXTS | SEMANTIC_EXTS | {".afm"}
 ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
@@ -92,6 +102,14 @@ def _unquote_ref(ref: str) -> str:
     return ref
 
 
+class FragmentType(enum.Enum):
+    """The type of an XML fragment."""
+
+    SEMANTIC = enum.auto()
+    VISUAL = enum.auto()
+    OTHER = enum.auto()
+
+
 class MissingResourceLocationError(KeyError):
     """Raised when a model needs an additional resource location."""
 
@@ -107,6 +125,15 @@ class ModelFile:
     __xtypecache: dict[str | None, list[etree._Element]]
     __idcache: dict[str, etree._Element]
     __hrefsources: dict[str, etree._Element]
+
+    @property
+    def fragment_type(self) -> FragmentType:
+        if self.filename.suffix in SEMANTIC_EXTS:
+            return FragmentType.SEMANTIC
+        elif self.filename.suffix in VISUAL_EXTS:
+            return FragmentType.VISUAL
+        else:
+            return FragmentType.OTHER
 
     def __init__(
         self, filename: pathlib.PurePosixPath, handler: filehandler.FileHandler
