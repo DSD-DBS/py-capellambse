@@ -593,6 +593,7 @@ class MelodyLoader:
     def iterall_xt(
         self,
         *xtypes: str,
+        trees: cabc.Container[pathlib.PurePosixPath] | None = None,
     ) -> cabc.Iterator[etree._Element]:
         r"""Iterate over all elements in all trees by ``xsi:type``\ s.
 
@@ -600,12 +601,17 @@ class MelodyLoader:
         ----------
         xtypes
             Optionally restrict the iterator to these ``xsi:type``\ s
+        trees
+            Optionally restrict the iterator to elements that reside in
+            any of the named trees.
         """
         xtset = self._nonempty_hashset(xtypes)
+        if trees is None:
+            files: cabc.Iterable[ModelFile] = self.trees.values()
+        else:
+            files = (v for k, v in self.trees.items() if k in trees)
         return itertools.chain.from_iterable(
-            map(
-                operator.methodcaller("iterall_xt", xtset), self.trees.values()
-            )
+            map(operator.methodcaller("iterall_xt", xtset), files)
         )
 
     def iterdescendants(
