@@ -362,6 +362,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 When listing all matches, return a single element
                 instead.  If multiple elements match, it is an error; if
                 none match, a ``KeyError`` is raised.
+                Can be overridden at call time.
             """
             self.extractor_func = extract_key
             self.parent = parent
@@ -385,8 +386,21 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
             return self.positive == (value in valueset)
 
-        def __call__(self, *values: U) -> T | ElementList[T]:
-            """List all elements that match this filter."""
+        def __call__(
+            self, *values: U, single: bool | None = None
+        ) -> T | ElementList[T]:
+            """List all elements that match this filter.
+
+            Parameters
+            ----------
+            values
+                The values to match against.
+            single
+                If not ``None``, overrides the ``single`` argument to
+                the constructor for this filter call.
+            """
+            if single is None:
+                single = self.single
             valueset = self.make_values_container(*values)
             indices = []
             elements = []
@@ -726,9 +740,13 @@ class CachedElementList(ElementList[T], t.Generic[T]):
     """An ElementList that caches the constructed proxies by UUID."""
 
     class _Filter(ElementList._Filter[U], t.Generic[U]):
-        def __call__(self, *values: U) -> T | ElementList[T]:
-            newlist: T | ElementList[T] = super().__call__(*values)
-            if self.single:
+        def __call__(
+            self, *values: U, single: bool | None = None
+        ) -> T | ElementList[T]:
+            newlist: T | ElementList[T] = super().__call__(
+                *values, single=single
+            )
+            if single or self.single:
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
