@@ -62,6 +62,7 @@ from ._namespaces import (
 )
 from .loader.filehandler import get_filehandler
 from .model import MelodyModel
+from .model.common import ModelObject
 
 
 def load_model_extensions() -> None:
