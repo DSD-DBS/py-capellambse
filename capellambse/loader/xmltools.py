@@ -18,6 +18,7 @@ import abc
 import collections.abc as cabc
 import datetime
 import enum
+import math
 import typing as t
 
 from lxml import etree
@@ -103,11 +104,6 @@ class AttributeProperty:
 
         xml_element = getattr(obj, self.xmlattr)
         try:
-            if (
-                self.returntype != str
-                and xml_element.attrib[self.attribute] == "*"
-            ):
-                return float("inf")
             return self.returntype(xml_element.attrib[self.attribute])
         except KeyError:
             if self.default is not self.NOT_OPTIONAL:
@@ -158,6 +154,43 @@ class AttributeProperty:
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
+
+
+class SpecialAttributeProperty(AttributeProperty):
+    """An attribute property that handles special characters."""
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        optional: bool = False,
+        default: t.Any = None,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            returntype=float,
+            optional=optional,
+            default=default,
+            writable=writable,
+            __doc__=__doc__,
+        )
+
+    def __get__(self, obj, objtype=None):
+        value = getattr(obj, self.xmlattr).attrib[self.attribute]
+        if value == "*":
+            return math.inf
+        return super().__get__(obj, objtype)
+
+    def __set__(self, obj, value) -> None:
+        if value == "*":
+            xml_element = getattr(obj, self.xmlattr)
+            xml_element.attrib[self.attribute] = math.inf
+        else:
+            super().__set__(obj, value)
 
 
 class BooleanAttributeProperty(AttributeProperty):
