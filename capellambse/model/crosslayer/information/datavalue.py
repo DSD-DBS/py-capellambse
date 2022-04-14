@@ -64,6 +64,7 @@ class ComplexValue(c.GenericElement):
     value_parts = c.ProxyAccessor(ValuePart, aslist=c.ElementList)
 
 
+@c.attr_equal("name")
 @c.xtype_handler(None)
 class EnumerationLiteral(c.GenericElement):
     """An EnumerationLiteral (proxy link)."""
