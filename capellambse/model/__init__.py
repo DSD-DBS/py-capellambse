@@ -235,6 +235,10 @@ class MelodyModel:
         If only one xtype is given, the return type will be
         :class:`common.ElementList`, otherwise it will be
         :class:`common.MixedElementList`.
+
+        If no ``xtypes`` are given at all, this method will return an
+        exhaustive list of all (semantic) model objects that have an
+        ``xsi:type`` set.
         """
         xtypes_: list[str] = []
         for i in xtypes:
@@ -247,9 +251,14 @@ class MelodyModel:
                     xtypes_.extend(t for t in l if t.endswith(":" + i))
 
         cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
+        trees = {
+            k
+            for k, v in self._loader.trees.items()
+            if v.fragment_type is loader.FragmentType.SEMANTIC
+        }
         return cls(
             self,
-            self._loader.find_by_xsi_type(*xtypes_),
+            list(self._loader.iterall_xt(*xtypes_, trees=trees)),
             common.GenericElement,
         )
 

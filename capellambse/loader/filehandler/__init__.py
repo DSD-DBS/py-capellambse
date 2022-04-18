@@ -39,7 +39,12 @@ def _looks_like_scp(path: str) -> bool:
     return bool(re.search(r"^(?:\w+@)?[\w.]+:[^/].*", path))
 
 
-def _split_protocol(uri: str) -> tuple[str, str]:
+def split_protocol(uri: str | os.PathLike) -> tuple[str, str | os.PathLike]:
+    if _looks_like_local_path(uri):
+        return "file", uri
+    if isinstance(uri, str) and _looks_like_scp(uri):
+        return "git", uri
+
     pattern = r"^(\w+)([+:])"
     prefix_match = re.search(pattern, str(uri))
 
@@ -52,14 +57,7 @@ def _split_protocol(uri: str) -> tuple[str, str]:
     return (handler_name, uri)
 
 
-def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
-    if _looks_like_local_path(path):
-        handler_name = "file"
-    elif isinstance(path, str) and _looks_like_scp(path):
-        handler_name = "git"
-    else:
-        handler_name, path = _split_protocol(str(path))
-
+def load_entrypoint(handler_name: str) -> type[FileHandler]:
     try:
         ep = next(
             i
@@ -68,8 +66,12 @@ def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
         )
     except StopIteration:
         raise ValueError(f"Unknown file handler {handler_name}") from None
+    return ep.load()
 
-    handler: type[FileHandler] = ep.load()
+
+def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
+    handler_name, path = split_protocol(path)
+    handler = load_entrypoint(handler_name)
     return handler(path, **kwargs)
 
 

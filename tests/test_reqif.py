@@ -23,8 +23,7 @@ import pytest
 
 import capellambse
 from capellambse.extensions import reqif
-
-from . import RE_VALID_IDREF
+from capellambse.loader.core import RE_VALID_ID
 
 long_req_text = textwrap.dedent(
     """\
@@ -135,7 +134,7 @@ def test_path_nesting(model: capellambse.MelodyModel) -> None:
     ],
 )
 def test_appearances(model: capellambse.MelodyModel, _repr: str) -> None:
-    uuid = RE_VALID_IDREF.findall(_repr)[-1]
+    uuid = RE_VALID_ID.findall(_repr)[-1]
     assert _repr == repr(model.by_uuid(uuid))
 
 

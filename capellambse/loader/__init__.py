@@ -20,6 +20,6 @@ the `LXML Documentation`_.
 .. _LXML Documentation: https://lxml.de/
 """
 
-from .core import MelodyLoader
+from .core import *
 from .filehandler import FileHandler, get_filehandler
 from .modelinfo import ModelInfo
