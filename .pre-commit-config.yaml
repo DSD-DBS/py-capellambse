@@ -33,3 +33,13 @@ repos:
     hooks:
     - id: mypy
       additional_dependencies: [types-docutils==0.17.0, types-requests==2.25.11, sphinx]
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.13
+    hooks:
+      - id: insert-license
+        files: '.+/.+\.py$'
+        args:
+          - --license-filepath
+          - license_header.txt
+          - --comment-style
+          - '#'
