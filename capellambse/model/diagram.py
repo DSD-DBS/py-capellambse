@@ -104,10 +104,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             f"(uuid: {markupsafe.Markup.escape(self.uuid)})"
         )
 
-    def _repr_svg_(self):
+    def _repr_svg_(self) -> t.Any | None:
+        if self._model.jupyter_untrusted:
+            return None
         return self.render("svg")
 
-    def _repr_png_(self):
+    def _repr_png_(self) -> t.Any | None:
         return self.render("png")
 
     @property

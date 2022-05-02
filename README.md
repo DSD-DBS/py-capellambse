@@ -86,6 +86,15 @@ Also, as we started in mid 2019 and there was no such thing as [Python4Capella](
 
 The generated diagrams are currently not persisted in .aird files and we are not sure yet if we need this feature. If there is a genuine usecase for that we may re-consider it - feel free to create an issue or add comments to an existing one.
 
+### Render diagrams in untrusted jupyter notebooks
+
+The SVG format relies on a stylesheet, however in untrusted notebooks any stylesheets
+are stripped. As a workaround we support the PNG format. For this the [cairosvg](https://pypi.org/project/CairoSVG/)
+library is needed which requires the following additional setup steps on windows:
+
+- Download and execute the [latest GTK installer](https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases/tag/2022-01-04).
+- Reboot to add the path to the installed compiled libraries into your system environment PATH
+
 ## Contributing
 
 We'd love to see your bug reports and improvement suggestions! Please take a look at [guidelines for contributors](https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.md).
