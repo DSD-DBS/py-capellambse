@@ -165,14 +165,13 @@ class NumericAttributeProperty(AttributeProperty):
         attribute: str,
         *,
         optional: bool = False,
-        default: t.Any = None,
+        default: int | float | None = None,
         writable: bool = True,
         __doc__: str | None = None,
     ) -> None:
         super().__init__(
             xmlattr,
             attribute,
-            returntype=float,
             optional=optional,
             default=default,
             writable=writable,
@@ -180,17 +179,27 @@ class NumericAttributeProperty(AttributeProperty):
         )
 
     def __get__(self, obj, objtype=None):
-        value = getattr(obj, self.xmlattr).attrib[self.attribute]
+        value = super().__get__(obj, objtype)
+        if not isinstance(value, str):
+            return value
+
         if value == "*":
             return math.inf
-        return super().__get__(obj, objtype)
+        return float(value)
 
     def __set__(self, obj, value) -> None:
-        if value == "*":
-            xml_element = getattr(obj, self.xmlattr)
-            xml_element.attrib[self.attribute] = math.inf
+        if not isinstance(value, (int, float)):
+            raise TypeError("This property only accepts numeric types")
+
+        if value == math.inf:
+            strvalue = "*"
+        elif value == -math.inf:
+            raise ValueError("Cannot set value to negative infinity")
+        elif math.isnan(value):
+            raise ValueError("Cannot set value to NaN")
         else:
-            super().__set__(obj, value)
+            strvalue = str(value)
+        super().__set__(obj, strvalue)
 
 
 class BooleanAttributeProperty(AttributeProperty):
