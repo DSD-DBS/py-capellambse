@@ -156,6 +156,7 @@ class NumericAttributeProperty(AttributeProperty):
         *,
         optional: bool = False,
         default: int | float | None = None,
+        allow_float: bool = True,
         writable: bool = True,
         __doc__: str | None = None,
     ) -> None:
@@ -167,6 +168,7 @@ class NumericAttributeProperty(AttributeProperty):
             writable=writable,
             __doc__=__doc__,
         )
+        self.number_type = float if allow_float else int
 
     def __get__(self, obj, objtype=None):
         value = super().__get__(obj, objtype)
@@ -175,11 +177,15 @@ class NumericAttributeProperty(AttributeProperty):
 
         if value == "*":
             return math.inf
-        return float(value)
+        return self.number_type(value)
 
     def __set__(self, obj, value) -> None:
-        if not isinstance(value, (int, float)):
-            raise TypeError("This property only accepts numeric types")
+        try:
+            value = self.number_type(value)
+        except TypeError as err:
+            raise TypeError(
+                "This property only accepts numeric types"
+            ) from err
 
         if value == math.inf:
             strvalue = "*"
