@@ -76,6 +76,7 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 # Untyped third party libraries
 module = [
+  "cairosvg.*",
   "cssutils.*",
   "lxml.*",
   "PIL.*",

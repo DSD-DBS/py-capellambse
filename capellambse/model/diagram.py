@@ -28,10 +28,6 @@ class DiagramFormat(t.Protocol):
     filename_extension: str
 
     @classmethod
-    def convert(cls, diagram: aird.Diagram) -> str:
-        ...
-
-    @classmethod
     def from_cache(cls, cache: bytes) -> str:
         ...
 
@@ -110,6 +106,9 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def _repr_svg_(self):
         return self.render("svg")
+
+    def _repr_png_(self):
+        return self.render("png")
 
     @property
     def nodes(self) -> c.MixedElementList:
@@ -344,16 +343,33 @@ class SVGFormat:
 
     filename_extension = ".svg"
 
-    def __new__(cls, diagram):
-        return cls.convert(diagram)
-
-    @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
+    def __new__(cls, diagram) -> str:  # type: ignore[misc]
         return convert_svgdiagram(diagram).to_string()
 
     @staticmethod
     def from_cache(cache: bytes) -> str:
         return cache.decode("utf-8")
+
+
+class PNGFormat:
+    """Convert the diagram to PNG."""
+
+    filename_extension = ".png"
+
+    def __new__(cls, diagram) -> bytes:  # type: ignore[misc]
+        try:
+            import cairosvg
+        except OSError as error:
+            raise RuntimeError(
+                "Cannot import cairosvg. You are likely missing .dll's."
+                "Please see the README for instructions."
+            ) from error
+
+        return cairosvg.svg2png(SVGFormat(diagram))
+
+    @staticmethod
+    def from_cache(cache: bytes) -> bytes:
+        return cache
 
 
 def convert_svgdiagram(
@@ -376,11 +392,7 @@ class ConfluenceSVGFormat:
     postfix = "]]></ac:plain-text-body></ac:structured-macro>"
 
     def __new__(cls, diagram):
-        return cls.convert(diagram)
-
-    @classmethod
-    def convert(cls, diagram: aird.Diagram) -> str:
-        return "".join((cls.prefix, SVGFormat.convert(diagram), cls.postfix))
+        return "".join((cls.prefix, SVGFormat(diagram), cls.postfix))  # type: ignore[arg-type]
 
     @classmethod
     def from_cache(cls, cache: bytes) -> str:
@@ -392,13 +404,8 @@ class SVGDataURIFormat:
     preamble = "data:image/svg+xml;base64,"
 
     def __new__(cls, diagram):
-        return cls.convert(diagram)
-
-    @classmethod
-    def convert(cls, diagram: aird.Diagram) -> str:
-        """Convert the diagram to a ``data:`` URI containing SVG."""
-        payload = SVGFormat.convert(diagram)
-        b64 = base64.standard_b64encode(payload.encode("utf-8"))
+        payload = SVGFormat(diagram)
+        b64 = base64.standard_b64encode(payload.encode("utf-8"))  # type: ignore[attr-defined]
         return "".join((cls.preamble, b64.decode("ascii")))
 
     @classmethod
@@ -411,12 +418,7 @@ class SVGInHTMLIMGFormat:
     filename_extension = ".svg"
 
     def __new__(cls, diagram):
-        return cls.convert(diagram)
-
-    @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
-        """Convert the diagram to an HTML ``<img>``."""
-        payload = SVGDataURIFormat.convert(diagram)
+        payload = SVGDataURIFormat(diagram)
         return c.markuptype(f'<img src="{payload}"/>')
 
     @staticmethod
@@ -429,10 +431,6 @@ class JSONFormat:
     filename_extension = ".json"
 
     def __new__(cls, diagram):
-        return cls.convert(diagram)
-
-    @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
         return aird.DiagramJSONEncoder().encode(diagram)
 
     @staticmethod
@@ -444,10 +442,6 @@ class PrettyJSONFormat:
     filename_extension = ".json"
 
     def __new__(cls, diagram):
-        return cls.convert(diagram)
-
-    @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
         return aird.DiagramJSONEncoder(indent=4).encode(diagram)
 
     @staticmethod
