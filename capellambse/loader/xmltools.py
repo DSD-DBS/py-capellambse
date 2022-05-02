@@ -157,7 +157,17 @@ class AttributeProperty:
 
 
 class NumericAttributeProperty(AttributeProperty):
-    """Attribute property that handles (possibly infinite) numeric values."""
+    """Attribute property that handles (possibly infinite) numeric values.
+
+    Positive infinity is stored in Capella XML as `*`. This class takes
+    care of converting to and from that value when setting or retrieving
+    the value.
+
+    Note that there is currently no representation of negative infinity,
+    which is why ``-inf`` is rejected with a :class:`ValueError`.
+
+    ``NaN`` values are rejected with a ValueError as well.
+    """
 
     def __init__(
         self,
