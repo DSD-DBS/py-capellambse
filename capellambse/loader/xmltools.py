@@ -8,6 +8,7 @@ import abc
 import collections.abc as cabc
 import datetime
 import enum
+import math
 import typing as t
 
 from lxml import etree
@@ -143,6 +144,68 @@ class AttributeProperty:
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
+
+
+class NumericAttributeProperty(AttributeProperty):
+    """Attribute property that handles (possibly infinite) numeric values.
+
+    Positive infinity is stored in Capella XML as `*`. This class takes
+    care of converting to and from that value when setting or retrieving
+    the value.
+
+    Note that there is currently no representation of negative infinity,
+    which is why ``-inf`` is rejected with a :class:`ValueError`.
+
+    ``NaN`` values are rejected with a ValueError as well.
+    """
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        optional: bool = False,
+        default: int | float | None = None,
+        allow_float: bool = True,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            optional=optional,
+            default=default,
+            writable=writable,
+            __doc__=__doc__,
+        )
+        self.number_type = float if allow_float else int
+
+    def __get__(self, obj, objtype=None):
+        value = super().__get__(obj, objtype)
+        if not isinstance(value, str):
+            return value
+
+        if value == "*":
+            return math.inf
+        return self.number_type(value)
+
+    def __set__(self, obj, value) -> None:
+        try:
+            value = self.number_type(value)
+        except TypeError as err:
+            raise TypeError(
+                "This property only accepts numeric types"
+            ) from err
+
+        if value == math.inf:
+            strvalue = "*"
+        elif value == -math.inf:
+            raise ValueError("Cannot set value to negative infinity")
+        elif math.isnan(value):
+            raise ValueError("Cannot set value to NaN")
+        else:
+            strvalue = str(value)
+        super().__set__(obj, strvalue)
 
 
 class BooleanAttributeProperty(AttributeProperty):
