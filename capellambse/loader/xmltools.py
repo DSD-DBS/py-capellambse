@@ -146,8 +146,8 @@ class AttributeProperty:
         self.__objclass__ = owner
 
 
-class SpecialAttributeProperty(AttributeProperty):
-    """An attribute property that handles special characters."""
+class NumericAttributeProperty(AttributeProperty):
+    """Attribute property that handles (possibly infinite) numeric values."""
 
     def __init__(
         self,

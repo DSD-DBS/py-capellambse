@@ -20,7 +20,7 @@ class LiteralValue(c.GenericElement):
 
 @c.xtype_handler(None)
 class LiteralNumericValue(LiteralValue):
-    value = xmltools.SpecialAttributeProperty(
+    value = xmltools.NumericAttributeProperty(
         "_element", "value", optional=True
     )
     unit = c.AttrProxyAccessor(c.GenericElement, "unit")
