@@ -210,7 +210,7 @@ class Styling:
             operator.methodcaller("startswith", "_"), dir(self)
         )
 
-    def __getitem__(self, attrs: str | tuple[str] | Styling) -> str | None:
+    def __getitem__(self, attrs: str | cabc.Iterable[str]) -> str | None:
         if isinstance(attrs, str):
             attrs = (attrs,) if attrs else self
         return (
@@ -220,11 +220,15 @@ class Styling:
 
     @classmethod
     def _to_css(
-        cls, value: float | int | str | cabc.Iterable
+        cls, value: float | int | str | aird.RGB | cabc.Iterable | None
     ) -> float | int | str:
         if isinstance(value, (str, int, float)):
             return value
-        if isinstance(value, cabc.Iterable):
+        elif value is None:
+            return "none"
+        elif isinstance(value, aird.RGB):
+            return f"#{value.tohex()}"
+        elif isinstance(value, cabc.Iterable):
             return f'url("#{cls._generate_id("CustomGradient", value)}")'
         raise ValueError(f"Invalid styling value: {value!r}")
 
