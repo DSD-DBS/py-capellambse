@@ -65,6 +65,7 @@ class MelodyModel:
         *,
         diagram_cache: str | os.PathLike | None = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
+        jupyter_untrusted: bool = False,
         **kwargs: t.Any,
     ) -> None:
         """Load a project.
@@ -150,6 +151,12 @@ class MelodyModel:
             looking them up in the ``diagram_cache``.
 
             *This argument is **not** passed to the file handler.*
+        jupyter_untrusted
+            An optional parameter for controling rich representation
+            format for automatic diagram rendering and display via
+            ``_repr_svg_`` or ``_repr_png_`` in a jupyter kernel
+            environment. Defaults to False. If True some features such
+            as ``_repr_svg_`` are disabled.
 
         See Also
         --------
@@ -166,6 +173,7 @@ class MelodyModel:
         """
         self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
+        self.jupyter_untrusted = jupyter_untrusted
 
         try:
             self._pvext = capellambse.pvmt.load_pvmt_from_model(self._loader)

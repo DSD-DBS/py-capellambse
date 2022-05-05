@@ -16,11 +16,10 @@ import markupsafe
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-# pylint: disable=invalid-name
 S = t.TypeVar("S", bound=t.Optional[str])
 T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
-# pylint: enable=invalid-name
+
 
 XTYPE_ANCHORS = {
     "capellambse.model.crosslayer": "org.polarsys.capella.core.data",

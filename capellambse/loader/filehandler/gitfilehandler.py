@@ -598,6 +598,18 @@ class GitFileHandler(FileHandler):
         lfsinfo = self.__open_from_index(filename)
         return self._git("lfs", "smudge", "--", filename, input=lfsinfo)
 
+    @t.overload
+    def _git(  # type: ignore[misc]
+        self,
+        *cmd: t.Any,
+        encoding: str,
+        env: cabc.Mapping[str, str] | None = None,
+        silent: bool = False,
+        **kw: t.Any,
+    ) -> str:
+        ...
+
+    @t.overload
     def _git(
         self,
         *cmd: t.Any,
@@ -605,6 +617,15 @@ class GitFileHandler(FileHandler):
         silent: bool = False,
         **kw: t.Any,
     ) -> bytes:
+        ...
+
+    def _git(
+        self,
+        *cmd: t.Any,
+        env: cabc.Mapping[str, str] | None = None,
+        silent: bool = False,
+        **kw: t.Any,
+    ) -> bytes | str:
         LOGGER.debug("Running command %s", cmd)
         returncode = 0
         stderr = None
