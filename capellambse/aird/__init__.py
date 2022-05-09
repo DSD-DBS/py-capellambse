@@ -7,6 +7,14 @@ This module is used to enumerate, access and export the diagrams from
 Capella projects.  The JSON output it produces can be fed for example
 into the :mod:`capellambse.svg` module for conversion to SVG.
 """
+from __future__ import annotations
+
+RENDER_PARAMS: dict[str, int | float | str | bool] = {
+    "sorted_exchangedItems": False,
+    "keep_primary_name": True,
+}
+"""Rendering options for aird.Diagrams. Control ExchangeItem Filter."""
+
 from .vector2d import *  # isort: skip
 from .capstyle import *
 from .diagram import *

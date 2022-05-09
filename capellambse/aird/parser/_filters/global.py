@@ -11,10 +11,6 @@ from capellambse import aird, helpers
 
 from . import composite, global_filter
 
-RENDER_PARAMS: dict[str, int | float | str | bool] = {
-    "sorted_exchangedItems": False,
-    "keep_primary_name": True,
-}
 XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 
 
@@ -42,14 +38,14 @@ def show_exchangeitems_fex(
         )
         assert isinstance(label.label, str)
         if items:
-            if RENDER_PARAMS["sorted_exchangedItems"]:
+            if aird.RENDER_PARAMS["sorted_exchangedItems"]:
                 items = sorted(items)
 
             itemss = f" [{', '.join(items)}]"
-            if RENDER_PARAMS["keep_primary_name"]:
+            if aird.RENDER_PARAMS["keep_primary_name"]:
                 label.label += itemss
             else:
-                label.label = itemss
+                label.label = itemss.lstrip()
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
