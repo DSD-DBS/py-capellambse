@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import importlib
-import pkgutil
 import typing as t
 import urllib.parse
 
