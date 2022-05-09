@@ -11,10 +11,14 @@ from capellambse import aird, helpers
 
 from . import composite, global_filter
 
+RENDER_PARAMS: dict[str, int | float | str | bool] = {
+    "sorted_exchangedItems": False,
+    "keep_primary_name": True,
+}
 XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 
 
-@global_filter("Show ExchangeItems")
+@global_filter("show.functional.exchanges.exchange.items.filter")
 def show_exchangeitems_fex(
     target_diagram: aird.Diagram,
     diagram_root: lxml.etree._Element,
@@ -36,10 +40,16 @@ def show_exchangeitems_fex(
             alloc_attr="exchangedItems",
             melodyloader=melodyloader,
         )
+        assert isinstance(label.label, str)
         if items:
-            label.label = f"[{', '.join(sorted(items))}]"
-        else:
-            label.label = ""
+            if RENDER_PARAMS["sorted_exchangedItems"]:
+                items = sorted(items)
+
+            itemss = f" [{', '.join(items)}]"
+            if RENDER_PARAMS["keep_primary_name"]:
+                label.label += itemss
+            else:
+                label.label = itemss
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
@@ -162,6 +172,11 @@ def _get_allocated_exchangeitem_names(
             break
     else:
         return (None, [])
+
+    # XXX: candidate_name = elm.get("name") This is already what we need!
+    if elm.tag == "ownedDiagramElements":
+        targetlink = next(elm.iterchildren("target"))
+        elm = melodyloader[targetlink.get("href")]
 
     names = []
     for elem in melodyloader.follow_links(elm, elm.get(alloc_attr, "")):
