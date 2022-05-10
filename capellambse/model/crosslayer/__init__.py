@@ -6,7 +6,7 @@
 .. diagram:: [CDB] BaseLayer
 """
 from .. import common as c
-from . import cs, information
+from . import capellacommon, capellacore, cs, fa, information, interaction
 
 
 class BaseArchitectureLayer(c.GenericElement):
