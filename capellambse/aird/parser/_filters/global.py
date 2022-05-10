@@ -7,7 +7,7 @@ from __future__ import annotations
 import lxml.etree
 
 import capellambse.loader
-from capellambse import aird, helpers
+from capellambse import aird, helpers, model
 
 from . import composite, global_filter
 
@@ -30,22 +30,8 @@ def show_exchangeitems_fex(
         if label is None:
             continue
 
-        assert obj.uuid is not None
-        _, items = _get_allocated_exchangeitem_names(
-            obj.uuid,
-            alloc_attr="exchangedItems",
-            melodyloader=melodyloader,
-        )
         assert isinstance(label.label, str)
-        if items:
-            if aird.RENDER_PARAMS["sorted_exchangedItems"]:
-                items = sorted(items)
-
-            itemss = f" [{', '.join(items)}]"
-            if aird.RENDER_PARAMS["keep_primary_name"]:
-                label.label += itemss
-            else:
-                label.label = itemss.lstrip()
+        label.label = _adjust_label(obj, label.label, melodyloader)
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
@@ -152,6 +138,29 @@ def hide_alloc_func_exch(
                 target_diagram[fex].hidden = True
             except KeyError:
                 pass  # not in this diagram
+
+
+def _adjust_label(
+    obj: aird.DiagramElement | model.common.GenericElement,
+    label: str,
+    melodyloader: capellambse.loader.MelodyLoader,
+) -> str:
+    assert obj.uuid is not None
+    _, items = _get_allocated_exchangeitem_names(
+        obj.uuid,
+        alloc_attr="exchangedItems",
+        melodyloader=melodyloader,
+    )
+    if items:
+        if aird.RENDER_PARAMS["sorted_exchangedItems"]:
+            items = sorted(items)
+
+        itemss = f" [{', '.join(items)}]"
+        if aird.RENDER_PARAMS["keep_primary_name"]:
+            label += itemss
+        else:
+            label = itemss.lstrip()
+    return label
 
 
 def _get_allocated_exchangeitem_names(

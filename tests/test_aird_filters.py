@@ -4,7 +4,7 @@
 """Tests for aird-filters applied after rendering a diagram"""
 import pytest
 
-from capellambse import MelodyModel, aird, helpers
+from capellambse import MelodyModel, aird
 
 COMP_PORT_FILTER_DIAG = "[LAB] Test Component Port Filter"
 EX_ITEMS_FILTER_DIAG = "[SDFB] Test ExchangeItem Filter"
