@@ -31,6 +31,11 @@ class Version:
             other = _tofloat(other)
         return other <= _tofloat(self.version)
 
+    def __str__(self) -> str:
+        if self.version is not None:
+            return self.plugin + self.version
+        return self.plugin
+
 
 def _tofloat(other: str) -> float:
     """Change 1.x.y...str into 1.x float."""
