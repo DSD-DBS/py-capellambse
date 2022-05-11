@@ -152,11 +152,11 @@ class MelodyModel:
 
             *This argument is **not** passed to the file handler.*
         jupyter_untrusted
-            An optional parameter for controling rich representation
-            format for automatic diagram rendering and display via
-            ``_repr_svg_`` or ``_repr_png_`` in a jupyter kernel
-            environment. Defaults to False. If True some features such
-            as ``_repr_svg_`` are disabled.
+            If set to True, restricts or disables some features that are
+            unavailable in an untrusted Jupyter environment. Currently
+            this only disables the SVG format as rich display option for
+            Ipython, which is needed to avoid rendering issues with
+            Github's Jupyter notebook viewer.
 
         See Also
         --------
