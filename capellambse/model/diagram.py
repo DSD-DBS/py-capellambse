@@ -302,6 +302,36 @@ class Diagram(AbstractDiagram):
             LOGGER.warning("Unknown diagram type %r", sc)
             return modeltypes.DiagramType.UNKNOWN
 
+    @property
+    def activated_filters(self) -> list[str]:
+        """Return a sequence of activated filters"""
+        return aird.parser._filters.get_filters_from_diagram(
+            self._model._loader, self._element.uid
+        )
+
+    def add_activated_filter(self, fltr_name: str) -> None:
+        """Add an activated filter to the diagram.
+
+        Writes a new <activatedFilters> XML element to the
+        <diagram:DSemanticDiagram> XML element. If the `fltr_name` is
+        not apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key
+        it can not be applied when rendering. It should still be visible
+        in the GUI.
+        """
+        aird.parser._filters.add_filter_to_diagram(
+            self._model._loader, self._element, fltr_name
+        )
+        self._create_diagram()
+
+    def remove_activated_filter(self, flt_name: str) -> None:
+        """Remove an activated filter of the diagram.
+
+        The inverse method to :py:meth:`self.add_activated_filter`.
+        """
+        aird.parser._filters.remove_filter_from_diagram(
+            self._model._loader, self._element.uid, flt_name
+        )
+
     def _create_diagram(self) -> aird.Diagram:
         return aird.parse_diagram(self._model._loader, self._element)
 
