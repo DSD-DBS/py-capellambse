@@ -6,15 +6,19 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import importlib
+import logging
 import typing as t
 import urllib.parse
 
-from lxml import etree
+from lxml import builder, etree
 
 import capellambse.loader
-from capellambse import aird
+from capellambse import NAMESPACES, aird
 
 from .. import _common as c
+
+if t.TYPE_CHECKING:
+    from .. import DiagramDescriptor
 
 Phase2CompositeFilter = t.Callable[
     [c.ElementBuilder, aird.DiagramElement], None
@@ -36,6 +40,7 @@ GlobalFilter = t.Callable[
 ]
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
+LOGGER = logging.getLogger(__name__)
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
@@ -262,6 +267,62 @@ def _extract_filter_type(flt_elm: etree._Element) -> str:
         raise ValueError("Filter href does not match known pattern") from None
 
     return urllib.parse.unquote(flttype.group(1))
+
+
+def get_filters_from_diagram(
+    melodyloader: capellambse.loader.MelodyLoader, uuid: str
+) -> list[str]:
+    diag_elt = melodyloader[uuid]
+    return [
+        m.group(1)
+        for flt in diag_elt.iterchildren("activatedFilters")
+        if (m := c.RE_COMPOSITE_FILTER.search(flt.get("href"))) is not None
+    ]
+
+
+def add_filter_to_diagram(
+    melodyloader: capellambse.loader.MelodyLoader,
+    diag_descriptor: DiagramDescriptor,
+    filter_name: str,
+) -> None:
+    try:
+        GLOBAL_FILTERS[filter_name]
+    except KeyError:
+        LOGGER.warning("This filter is not yet supported")
+
+    Element = builder.ElementMaker(nsmap={"xmi": str(NAMESPACES["xmi"])})
+    diag_elt = melodyloader[diag_descriptor.uid]
+    history_elt = next(diag_elt.iterfind("filterVariableHistory"))
+    plugin = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
+    viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
+    assert diag_descriptor.styleclass is not None
+    diagclass = urllib.parse.quote(diag_descriptor.styleclass)
+    href = "/".join(
+        (
+            f"platform:{plugin}",
+            f"@ownedViewpoints[name='{viewpoint}']",
+            f"@ownedRepresentations[name='{diagclass}']",
+            f"@filters[name='{filter_name}']",
+        )
+    )
+    elt = Element("activatedFilters", href=href)
+    elt.attrib[c.ATT_XMT] = "filter:CompositeFilterDescription"
+    history_elt.addprevious(elt)
+
+
+def remove_filter_from_diagram(
+    melodyloader: capellambse.loader.MelodyLoader, uuid: str, filter_name: str
+) -> None:
+    """Remove <activatedFilters> XML element"""
+    diag_elt = melodyloader[uuid]
+    for flter in diag_elt.iterchildren("activatedFilters"):
+        search = c.RE_COMPOSITE_FILTER.search(flter.get("href"))
+        if search is not None and filter_name == search.group(1):
+            break
+    else:
+        raise ValueError(f"No activated filter with name: '{filter_name}'")
+
+    diag_elt.remove(flter)  # pylint: disable=undefined-loop-variable
 
 
 # Load filter modules

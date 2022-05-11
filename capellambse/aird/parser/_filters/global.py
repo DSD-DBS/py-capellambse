@@ -15,23 +15,47 @@ XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunc
 
 
 @global_filter("show.functional.exchanges.exchange.items.filter")
-def show_exchangeitems_fex(
+def show_name_and_exchangeitems_fex(
     target_diagram: aird.Diagram,
     diagram_root: lxml.etree._Element,
     flt: lxml.etree._Element,
     melodyloader: capellambse.loader.MelodyLoader,
 ) -> None:
-    """Change FEX labels to show ExchangeItems."""
+    """Change FEX labels to show Name and ExchangeItems."""
     del diagram_root, flt
     for obj in target_diagram:
         if not isinstance(obj, aird.Edge):
             continue
+
         label = _get_primary_edge_label(obj, "FunctionalExchange")
         if label is None:
             continue
 
         assert isinstance(label.label, str)
-        label.label = _adjust_label(obj, label.label, melodyloader)
+        label.label += " " + _stringify_exchange_items(obj, melodyloader)
+
+
+@global_filter("show.exchange.items.filter")
+def show_exchange_items_fex(
+    target_diagram: aird.Diagram,
+    diagram_root: lxml.etree._Element,
+    flt: lxml.etree._Element,
+    melodyloader: capellambse.loader.MelodyLoader,
+) -> None:
+    """Change FEX labels to only show ExchangeItems."""
+    del diagram_root, flt
+    for obj in target_diagram:
+        if not isinstance(obj, aird.Edge):
+            continue
+
+        label = _get_primary_edge_label(obj, "FunctionalExchange")
+        if label is None:
+            continue
+
+        assert isinstance(label.label, str)
+        label.label = (
+            _stringify_exchange_items(obj, melodyloader) or label.label
+        )
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
@@ -140,9 +164,8 @@ def hide_alloc_func_exch(
                 pass  # not in this diagram
 
 
-def _adjust_label(
+def _stringify_exchange_items(
     obj: aird.DiagramElement | model.common.GenericElement,
-    label: str,
     melodyloader: capellambse.loader.MelodyLoader,
 ) -> str:
     assert obj.uuid is not None
@@ -155,12 +178,8 @@ def _adjust_label(
         if aird.RENDER_PARAMS["sorted_exchangedItems"]:
             items = sorted(items)
 
-        itemss = f" [{', '.join(items)}]"
-        if aird.RENDER_PARAMS["keep_primary_name"]:
-            label += itemss
-        else:
-            label = itemss.lstrip()
-    return label
+        return f"[{', '.join(items)}]"
+    return ""
 
 
 def _get_allocated_exchangeitem_names(
