@@ -10,8 +10,7 @@ into the :mod:`capellambse.svg` module for conversion to SVG.
 from __future__ import annotations
 
 RENDER_PARAMS: dict[str, int | float | str | bool] = {
-    "sorted_exchangedItems": False,
-    "keep_primary_name": True,
+    "sorted_exchangedItems": False
 }
 """Rendering options for aird.Diagrams. Control ExchangeItem Filter."""
 
