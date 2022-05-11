@@ -382,7 +382,7 @@ class PNGFormat:
         except OSError as error:
             raise RuntimeError(
                 "Cannot import cairosvg. You are likely missing .dll's."
-                "Please see the README for instructions."
+                " Please see the README for instructions."
             ) from error
 
         return cairosvg.svg2png(SVGFormat.convert(diagram))
