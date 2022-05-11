@@ -56,6 +56,18 @@ def test_component_ports_filter_is_applied(model: MelodyModel) -> None:
     )
 
 
+def test_fex_exchangeitems_filter_is_applied(model_5_2: MelodyModel) -> None:
+    diag = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    aird.RENDER_PARAMS["sorted_exchangedItems"] = False
+
+    diag.add_activated_filter(EX_ITEMS_FLTER)
+    diag = diag.render(None)
+    fex_edge = diag["_yovTvM-ZEeytxdoVf3xHjA"]
+
+    assert len(fex_edge.labels) == 1
+    assert fex_edge.labels[0].label == "[ExchangeItem 1, Example]"
+
+
 @pytest.mark.parametrize(
     "sort,expected_label",
     [
@@ -83,14 +95,3 @@ def test_fex_exchangeitems_filter_with_name_is_applied(
 
     assert len(fex_edge.labels) == 1
     assert fex_edge.labels[0].label == expected_label
-
-
-def test_fex_exchangeitems_filter_is_applied(model_5_2: MelodyModel) -> None:
-    diag = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
-
-    diag.add_activated_filter(EX_ITEMS_FLTER)
-    diag = diag.render(None)
-    fex_edge = diag["_yovTvM-ZEeytxdoVf3xHjA"]
-
-    assert len(fex_edge.labels) == 1
-    assert fex_edge.labels[0].label == "[ExchangeItem 1, Example]"
