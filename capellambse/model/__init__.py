@@ -13,6 +13,7 @@ import typing as t
 
 from lxml import etree
 
+import capellambse
 import capellambse.helpers
 import capellambse.pvmt
 from capellambse import loader
@@ -171,6 +172,8 @@ class MelodyModel:
         capellambse.loader.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
+        capellambse.load_model_extensions()
+
         self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
         self.jupyter_untrusted = jupyter_untrusted
