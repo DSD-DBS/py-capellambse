@@ -22,8 +22,10 @@ import re
 import shlex
 import shutil
 import subprocess
+import textwrap
 import typing as t
 import urllib.parse
+import weakref
 
 import capellambse.helpers
 
@@ -86,6 +88,11 @@ class _ProcessWriter(t.BinaryIO):
             raise RuntimeError(
                 f"Subprocess returned error {self.process.returncode}"
             )
+
+    @property
+    def closed(self) -> bool:
+        assert self.process.stdin is not None
+        return self.process.stdin.closed
 
     def __enter__(self) -> _ProcessWriter:
         return self
@@ -150,6 +157,24 @@ class _WritableLFSFile(_ProcessWriter):
 
 class _GitTransaction:
     __old_sha: str
+    __unclosed_error = textwrap.dedent(
+        """\
+        %d file(s) is/are still opened.
+
+        =======================================================================
+
+        You still have open files when committing a transaction.
+
+        Files that are still open CANNOT be committed and are LOST FOREVER!
+
+        Fix your code to ``close()`` all opened files BEFORE control flows out
+        of the ``with:`` block opened by ``write_transaction()``.
+
+        Again: YOU HAVE JUST LOST DATA.
+
+        =======================================================================
+        """
+    )
 
     def __init__(
         self,
@@ -234,6 +259,9 @@ class _GitTransaction:
             targetref = "refs/heads/" + targetref
 
         self.__targetref = targetref
+        self.__open_files: cabc.MutableMapping[
+            tuple[int, pathlib.PurePosixPath], _ProcessWriter
+        ] = weakref.WeakValueDictionary()
 
     def __enter__(self) -> cabc.Mapping[str, t.Any]:
         self.__updates = {}
@@ -298,6 +326,11 @@ class _GitTransaction:
                 "Path changed twice in the same transaction: %s", path
             )
         self.__updates[path] = new_sha
+
+    def record_pending_update(
+        self, filename: pathlib.PurePosixPath, file: _ProcessWriter
+    ) -> None:
+        self.__open_files[id(file), filename] = file
 
     def __commit(self, tree: str) -> str:
         """Commit ``tree`` as child commit of ``__target_ref``."""
@@ -365,6 +398,13 @@ class _GitTransaction:
         updates: cabc.Mapping[pathlib.PurePosixPath, str],
     ) -> str:
         """Apply ``updates`` to ``old_tree`` and create a new tree object."""
+        unclosed_files = 0
+        for (_, filename), file in self.__open_files.items():
+            if not file.closed:
+                unclosed_files += 1
+                LOGGER.warning("File is still open: %s", filename)
+        if unclosed_files:
+            LOGGER.critical(self.__unclosed_error, unclosed_files)
         tree = dict(old_tree)
 
         def groupkey(i: tuple[pathlib.PurePosixPath, str]) -> str:
@@ -484,12 +524,14 @@ class GitFileHandler(FileHandler):
             cls = _WritableLFSFile
         else:
             cls = _WritableIndexFile
-        return cls(
+        file = cls(
             cb=functools.partial(self._transaction.record_update, path),
             cwd=self.cache_dir,
             env=self.__get_git_env(),
             filename=path,
         )
+        self._transaction.record_pending_update(path, file)
+        return file
 
     def get_model_info(self) -> modelinfo.ModelInfo:
         def revparse(*args: str) -> str:
