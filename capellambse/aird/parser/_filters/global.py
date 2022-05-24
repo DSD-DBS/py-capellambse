@@ -41,7 +41,7 @@ def show_name_and_exchangeitems_fex(
 
 
 @global_filter("show.exchange.items.filter")
-def show_exchange_items_fex(
+def show_exchangeitems_fex(
     target_diagram: aird.Diagram,
     diagram_root: lxml.etree._Element,
     flt: lxml.etree._Element,
