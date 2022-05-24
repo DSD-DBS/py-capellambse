@@ -311,7 +311,7 @@ class Diagram(AbstractDiagram):
 
     @property
     def filters(self) -> aird.parser._filters.ActiveFilters:
-        """Return a set of filters activated on this diagram"""
+        """Return a set of currently activated filters on this diagram."""
         return self._filters
 
     @filters.deleter
@@ -329,10 +329,13 @@ class Diagram(AbstractDiagram):
     @property
     def render_params(self) -> dict[str, bool]:
         """
+        Return additional rendering parameters.
+
         Rendering options for :class:`aird.Diagram`s in conjunction with
         :attr:`Diagram.filters`. For e.g. enable ExchangeItem sorting when
         rendering diagrams with active ExchangeItems filter
-        (`show.exchange.items.filter`).
+        (`show.exchange.items.filter`). Changing them will force a fresh
+        rendering of the diagram, neglecting the cache.
         """
         return self._render_params
 
