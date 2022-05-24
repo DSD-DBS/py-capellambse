@@ -654,32 +654,3 @@ def get_transformation(
     return dict(
         transform=tranformation[class_].format(tx=tx, ty=ty, s=s, rx=rx, ry=ry)
     )
-
-
-def get_model_element_from_diag_element(
-    model: capellambse.MelodyModel, uuid: str
-) -> tuple[etree._Element, capellambse.model.common.GenericElement]:
-    """
-    Get the ModelElement from a uuid of a <ownedDiagramElements>.
-
-    Parameters
-    ----------
-    model
-        An instance of the :class:`capellambse.MelodyModel` to search
-        in.
-    uuid
-        A UUID string from the .aird diagram viewpoint file. These UUIDS
-        start with an underscore ('_').
-
-    Returns
-    -------
-    diag_element_generic_element_pair
-        Tuple consisting of a diagram element from .aird file and the
-        corresponding :class:`capellambse.model.common.GenericElement`.
-    """
-    if not uuid.startswith("_"):
-        raise ValueError("Wrong UUID-type. Expected .aird UUID.")
-
-    diag_elm = model._loader[uuid]
-    targetlink = next(diag_elm.iterchildren("target"))
-    return diag_elm, model.by_uuid(targetlink.get("href"))

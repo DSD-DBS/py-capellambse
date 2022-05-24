@@ -93,15 +93,3 @@ def test_flatten_html_formats_unordered_lists(
     input: str, expected: str
 ) -> None:
     assert helpers.flatten_html_string(input) == expected
-
-
-def test_get_model_element_from_diag_element_works(
-    model_5_2: MelodyModel,
-) -> None:
-    aird_uuid = "_yovTvM-ZEeytxdoVf3xHjA"
-    expected_fex = model_5_2.by_uuid("1a414995-f4cd-488c-8152-486e459fb9de")
-
-    de, fex = helpers.get_model_element_from_diag_element(model_5_2, aird_uuid)
-
-    assert aird_uuid == de.get("uid") == aird_uuid
-    assert fex == expected_fex
