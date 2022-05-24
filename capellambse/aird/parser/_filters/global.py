@@ -32,7 +32,12 @@ def show_name_and_exchangeitems_fex(
             continue
 
         assert isinstance(label.label, str)
-        label.label += " " + _stringify_exchange_items(obj, melodyloader)
+        sort_items = target_diagram.render_params.get(
+            "sorted_exchangedItems", False
+        )
+        label.label += " " + _stringify_exchange_items(
+            obj, melodyloader, sort_items
+        )
 
 
 @global_filter("show.exchange.items.filter")
@@ -53,9 +58,13 @@ def show_exchange_items_fex(
             continue
 
         assert isinstance(label.label, str)
-        label.label = (
-            _stringify_exchange_items(obj, melodyloader) or label.label
+        sort_items = target_diagram.render_params.get(
+            "sorted_exchangedItems", False
         )
+        exchange_items_label = _stringify_exchange_items(
+            obj, melodyloader, sort_items
+        )
+        label.label = exchange_items_label or label.label
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
@@ -167,6 +176,7 @@ def hide_alloc_func_exch(
 def _stringify_exchange_items(
     obj: aird.DiagramElement | model.common.GenericElement,
     melodyloader: capellambse.loader.MelodyLoader,
+    sort_items: bool = False,
 ) -> str:
     assert obj.uuid is not None
     _, items = _get_allocated_exchangeitem_names(
@@ -175,7 +185,7 @@ def _stringify_exchange_items(
         melodyloader=melodyloader,
     )
     if items:
-        if aird.RENDER_PARAMS["sorted_exchangedItems"]:
+        if sort_items:
             items = sorted(items)
 
         return f"[{', '.join(items)}]"

@@ -14,7 +14,7 @@ import pathlib
 import re
 import typing as t
 
-from lxml import etree
+from lxml import builder, etree
 
 import capellambse.loader
 from capellambse import NAMESPACES, aird, helpers
@@ -46,6 +46,7 @@ XP_VIEWS = etree.XPath(
     "/xmi:XMI/viewpoint:DAnalysis/ownedViews[viewpoint]",
     namespaces=NAMESPACES,
 )
+ELEMENT = builder.ElementMaker(nsmap={"xmi": str(NAMESPACES["xmi"])})
 
 
 @dataclasses.dataclass
@@ -69,7 +70,7 @@ class StackingBox(aird.Box):
 
     CHILD_MARGIN = 0
 
-    children: StackingBox._StackingChildren
+    children: StackingBox._StackingChildren  # type: ignore[name-defined]
     __features: cabc.MutableSequence[str] | None
 
     def __init__(

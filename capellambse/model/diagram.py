@@ -153,10 +153,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         else:
             conv = _find_format_converter(fmt)
 
-        try:
-            return self.__load_cache(conv)
-        except KeyError:
-            pass
+        if not self._force_fresh_rendering:
+            try:
+                return self.__load_cache(conv)
+            except KeyError:
+                pass
         return conv(self.__render_fresh())
 
     @abc.abstractmethod
@@ -259,6 +260,9 @@ class Diagram(AbstractDiagram):
     """Obsolete."""
 
     _element: aird.DiagramDescriptor
+    _filters: aird.ActiveFilters
+    _render_params: dict[str, bool]
+    _force_fresh_rendering: bool
 
     @classmethod
     def from_model(
@@ -270,6 +274,9 @@ class Diagram(AbstractDiagram):
         self = cls.__new__(cls)
         self._model = model
         self._element = descriptor
+        self._filters = aird.ActiveFilters(self._model, self)
+        self._render_params = {"sorted_exchangedItems": False}
+        self._force_fresh_rendering = False
         return self
 
     def __init__(self, **kw: t.Any) -> None:
@@ -303,37 +310,39 @@ class Diagram(AbstractDiagram):
             return modeltypes.DiagramType.UNKNOWN
 
     @property
-    def activated_filters(self) -> list[str]:
-        """Return a sequence of activated filters"""
-        return aird.parser._filters.get_filters_from_diagram(
-            self._model._loader, self._element.uid
-        )
+    def filters(self) -> aird.parser._filters.ActiveFilters:
+        """Return a set of filters activated on this diagram"""
+        return self._filters
 
-    def add_activated_filter(self, fltr_name: str) -> None:
-        """Add an activated filter to the diagram.
+    @filters.deleter
+    def filters(self) -> None:
+        active_filters = aird.parser._filters.ActiveFilters(self._model, self)
+        active_filters.clear()
+        self._force_fresh_rendering = True
 
-        Writes a new <activatedFilters> XML element to the
-        <diagram:DSemanticDiagram> XML element. If the `fltr_name` is
-        not apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key
-        it can not be applied when rendering. It should still be visible
-        in the GUI.
+    @filters.setter
+    def filters(self, filters: t.MutableSet[str]) -> None:
+        for filter in filters:
+            self._filters.add(filter)
+        self._force_fresh_rendering = True
+
+    @property
+    def render_params(self) -> dict[str, bool]:
         """
-        aird.parser._filters.add_filter_to_diagram(
-            self._model._loader, self._element, fltr_name
-        )
-        self._create_diagram()
-
-    def remove_activated_filter(self, flt_name: str) -> None:
-        """Remove an activated filter of the diagram.
-
-        The inverse method to :py:meth:`self.add_activated_filter`.
+        Rendering options for :class:`aird.Diagram`s in conjunction with
+        :attr:`Diagram.filters`. For e.g. enable ExchangeItem sorting when
+        rendering diagrams with active ExchangeItems filter
+        (`show.exchange.items.filter`).
         """
-        aird.parser._filters.remove_filter_from_diagram(
-            self._model._loader, self._element.uid, flt_name
-        )
+        return self._render_params
 
     def _create_diagram(self) -> aird.Diagram:
-        return aird.parse_diagram(self._model._loader, self._element)
+        if self._element.render_params != self._render_params:
+            self._element.render_params = self._render_params
+
+        diagram = aird.parse_diagram(self._model._loader, self._element)
+        self._force_fresh_rendering = False
+        return diagram
 
 
 class DiagramAccessor(c.Accessor):

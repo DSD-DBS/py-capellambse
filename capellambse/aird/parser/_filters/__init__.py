@@ -10,15 +10,14 @@ import logging
 import typing as t
 import urllib.parse
 
-from lxml import builder, etree
+import markupsafe
+from lxml import etree
 
 import capellambse.loader
-from capellambse import NAMESPACES, aird
+from capellambse import aird
+from capellambse import model as _m
 
 from .. import _common as c
-
-if t.TYPE_CHECKING:
-    from .. import DiagramDescriptor
 
 Phase2CompositeFilter = t.Callable[
     [c.ElementBuilder, aird.DiagramElement], None
@@ -41,6 +40,8 @@ GlobalFilter = t.Callable[
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 LOGGER = logging.getLogger(__name__)
+
+XP_PLUGIN = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
@@ -269,60 +270,151 @@ def _extract_filter_type(flt_elm: etree._Element) -> str:
     return urllib.parse.unquote(flttype.group(1))
 
 
-def get_filters_from_diagram(
-    melodyloader: capellambse.loader.MelodyLoader, uuid: str
-) -> list[str]:
-    diag_elt = melodyloader[uuid]
-    return [
-        m.group(1)
-        for flt in diag_elt.iterchildren("activatedFilters")
-        if (m := c.RE_COMPOSITE_FILTER.search(flt.get("href"))) is not None
-    ]
+class ActiveFilters(cabc.MutableSet[str]):
+    """A set of active filters on a :class:`diag.Diagram`.
 
+    Enable access to set, add and remove active filters on a
+    :class:`diag.Diagram`.
+    """
 
-def add_filter_to_diagram(
-    melodyloader: capellambse.loader.MelodyLoader,
-    diag_descriptor: DiagramDescriptor,
-    filter_name: str,
-) -> None:
-    try:
-        GLOBAL_FILTERS[filter_name]
-    except KeyError:
-        LOGGER.warning("This filter is not yet supported")
+    __slots__ = ("_model", "_target", "_diagram")
+    _xml_tag = "activatedFilters"
 
-    Element = builder.ElementMaker(nsmap={"xmi": str(NAMESPACES["xmi"])})
-    diag_elt = melodyloader[diag_descriptor.uid]
-    history_elt = next(diag_elt.iterfind("filterVariableHistory"))
-    plugin = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
-    viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
-    assert diag_descriptor.styleclass is not None
-    diagclass = urllib.parse.quote(diag_descriptor.styleclass)
-    href = "/".join(
-        (
-            f"platform:{plugin}",
-            f"@ownedViewpoints[name='{viewpoint}']",
-            f"@ownedRepresentations[name='{diagclass}']",
-            f"@filters[name='{filter_name}']",
+    def __init__(
+        self, model: _m.MelodyModel, diagram: _m.diagram.Diagram
+    ) -> None:
+        self._model = model
+        self._diagram = diagram
+        self._target = self._model._loader[diagram._element.uid]
+
+    @property
+    def _elements(self) -> list[etree._Element]:
+        return list(self._target.iterchildren(self._xml_tag))
+
+    @staticmethod
+    def _get_filter_name(filter: etree._Element) -> str | None:
+        filter_name = c.RE_COMPOSITE_FILTER.search(filter.get("href", ""))
+        if filter_name is not None:
+            return filter_name.group(1)
+        return None
+
+    def __contains__(self, filter: str | etree._Element) -> bool:
+        if isinstance(filter, str):
+            return filter in iter(self)
+
+        filter_name = self._get_filter_name(filter)
+        if filter.tag != self._xml_tag or filter_name is None:
+            return False
+
+        for flt_name in iter(self):
+            if filter_name in flt_name:
+                return True
+        return False
+
+    def __iter__(self) -> cabc.Iterator[str]:
+        for filter in self._elements:
+            if (filter_name := self._get_filter_name(filter)) is not None:
+                yield filter_name
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, cabc.Iterable):
+            return False
+
+        for elt in other:
+            if elt not in self:
+                return False
+
+        return True
+
+    def __len__(self) -> int:
+        return len(list(self))
+
+    def add(  # pylint: disable=arguments-renamed
+        self, filter_name: str
+    ) -> None:
+        """Add an activated filter to the diagram.
+
+        Writes a new <activatedFilters> XML element to the
+        <diagram:DSemanticDiagram> XML element. If the `filter_name` is
+        not apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it
+        can not be applied when rendering. It should still be visible in
+        the GUI.
+        """
+        if filter_name in iter(self):
+            raise ValueError("This filter is already active on this diagram.")
+
+        diag_descriptor = self._diagram._element
+        history_elt = next(self._target.iterfind("filterVariableHistory"))
+        viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
+        assert diag_descriptor.styleclass is not None
+        diagclass = urllib.parse.quote(diag_descriptor.styleclass)
+        href = "/".join(
+            (
+                f"platform:{XP_PLUGIN}",
+                f"@ownedViewpoints[name='{viewpoint}']",
+                f"@ownedRepresentations[name='{diagclass}']",
+                f"@filters[name='{filter_name}']",
+            )
         )
-    )
-    elt = Element("activatedFilters", href=href)
-    elt.attrib[c.ATT_XMT] = "filter:CompositeFilterDescription"
-    history_elt.addprevious(elt)
+        elt = c.ELEMENT.activatedFilters(
+            {"href": href, c.ATT_XMT: "filter:CompositeFilterDescription"}
+        )
+        history_elt.addprevious(elt)
+        self._diagram._force_fresh_rendering = True
 
+    def discard(self, name: str) -> None:  # pylint: disable=arguments-renamed
+        """Discard the filter with the given `name` from the diagram.
 
-def remove_filter_from_diagram(
-    melodyloader: capellambse.loader.MelodyLoader, uuid: str, filter_name: str
-) -> None:
-    """Remove <activatedFilters> XML element"""
-    diag_elt = melodyloader[uuid]
-    for flter in diag_elt.iterchildren("activatedFilters"):
-        search = c.RE_COMPOSITE_FILTER.search(flter.get("href"))
-        if search is not None and filter_name == search.group(1):
-            break
-    else:
-        raise ValueError(f"No activated filter with name: '{filter_name}'")
+        See also
+        --------
+        :py:method:`self.remove`
+        """
+        try:
+            self.remove(name)
+        except KeyError:
+            pass
 
-    diag_elt.remove(flter)  # pylint: disable=undefined-loop-variable
+    def remove(self, name: str) -> None:  # pylint: disable=arguments-renamed
+        """Remove the filter with the given `name` from the diagram.
+
+        Deletes <activatedFilters> XML element from the diagram element
+        tree.
+        """
+        for filter in self._elements:
+            search = self._get_filter_name(filter)
+            if search is not None and name == search:
+                break
+        else:
+            raise KeyError(f"No activated filter with name: '{name}'")
+
+        self._target.remove(filter)  # pylint: disable=undefined-loop-variable
+        self._diagram._force_fresh_rendering = True
+
+    def clear(self) -> None:
+        for elt in self._elements:
+            self._target.remove(elt)
+        self._diagram._force_fresh_rendering = True
+
+    def __str__(self) -> str:  # pragma: no cover
+        return "\n".join(f"* {e!s}" for e in self)
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"<{type(self).__name__} at 0x{id(self):016X} {set(self)!r}>"
+
+    def __html__(self) -> markupsafe.Markup:
+        if not self:
+            return markupsafe.Markup("<p><em>(Empty set)</em></p>")
+
+        fragments = ['<ol start="0" style="text-align: left;">']
+        fragments.extend((f"<li>{i}</li>" for i in self))
+        fragments.append("</ol>")
+        return markupsafe.Markup("".join(fragments))
+
+    def _short_html_(self) -> markupsafe.Markup:
+        return self.__html__()
+
+    def _repr_html_(self) -> str:
+        return self.__html__()
 
 
 # Load filter modules

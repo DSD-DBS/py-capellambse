@@ -6,14 +6,15 @@ from __future__ import annotations
 
 __all__ = [
     "DiagramDescriptor",
+    "ActiveFilters",
     "enumerate_diagrams",
     "parse_diagrams",
     "parse_diagram",
 ]
 
 import collections.abc as cabc
+import dataclasses
 import pathlib
-import typing as t
 import urllib.parse
 
 from lxml import etree
@@ -23,6 +24,7 @@ from capellambse import aird, helpers, loader
 
 from . import _common as C
 from . import _filters, _semantic, _visual
+from ._filters import ActiveFilters
 
 DIAGRAM_ROOTS = {
     f"{{{capellambse.NAMESPACES['sequence']}}}SequenceDDiagram",
@@ -35,13 +37,15 @@ Other representations (e.g. data tables) will not be listed by
 """
 
 
-class DiagramDescriptor(t.NamedTuple):
+@dataclasses.dataclass
+class DiagramDescriptor:
     fragment: pathlib.PurePosixPath
     name: str
     styleclass: str | None
     uid: str
     viewpoint: str
     target: etree._Element
+    render_params: dict[str, bool] | None = None
 
 
 def enumerate_diagrams(
@@ -164,7 +168,10 @@ def parse_diagram(
         A DiagramDescriptor as obtained from :func:`enumerate_diagrams`.
     """
     diagram = aird.Diagram(
-        descriptor.name, styleclass=descriptor.styleclass, uuid=descriptor.uid
+        descriptor.name,
+        styleclass=descriptor.styleclass,
+        uuid=descriptor.uid,
+        render_params=descriptor.render_params,
     )
     dgtree = model.follow_link(
         model.trees[descriptor.fragment].root, descriptor.uid

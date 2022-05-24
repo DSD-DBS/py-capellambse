@@ -861,6 +861,7 @@ class Diagram:
         *,
         uuid: str | None = None,
         styleclass: str | None = None,
+        render_params: dict[str, bool] | None = None,
     ):
         """Construct a new diagram.
 
@@ -868,16 +869,22 @@ class Diagram:
         ----------
         name
             The diagram's name.
-        uuid
-            The unique ID of this diagram.
         viewport
             A Box describing this diagram's viewport.
         elements
             A :class:`list` containing the diagram's initial elements.
+        uuid
+            The unique ID of this diagram.
+        styleclass
+            The diagram class.
+        render_params
+            Additional parameters for rendering. For e.g. define
+            ExchangeItem sorting in label filtering.
         """
         self.name = name
         self.uuid = uuid
         self.styleclass = styleclass
+        self.render_params = render_params or {}
 
         self.viewport = None
         self.__elements: list[DiagramElement] = []
