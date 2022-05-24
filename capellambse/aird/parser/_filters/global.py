@@ -207,7 +207,6 @@ def _get_allocated_exchangeitem_names(
     else:
         return (None, [])
 
-    # XXX: candidate_name = elm.get("name") This is already what we need!
     if elm.tag == "ownedDiagramElements":
         targetlink = next(elm.iterchildren("target"))
         elm = melodyloader[targetlink.get("href")]
