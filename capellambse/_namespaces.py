@@ -32,9 +32,7 @@ class Version:
         return other <= _tofloat(self.version)
 
     def __str__(self) -> str:
-        if self.version is not None:
-            return self.plugin + self.version
-        return self.plugin
+        return self.plugin + (self.version or "")
 
 
 def _tofloat(other: str) -> float:
