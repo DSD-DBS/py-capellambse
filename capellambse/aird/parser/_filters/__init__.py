@@ -301,18 +301,16 @@ class ActiveFilters(t.MutableSet[str]):
     def __len__(self) -> int:
         return sum(1 for _ in self)
 
-    def add(  # pylint: disable=arguments-renamed
-        self, filter_name: str
-    ) -> None:
+    def add(self, value: str) -> None:
         """Add an activated filter to the diagram.
 
         Writes a new <activatedFilters> XML element to the
-        <diagram:DSemanticDiagram> XML element. If the `filter_name` is
-        not apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it
-        can not be applied when rendering. It should still be visible in
-        the GUI.
+        <diagram:DSemanticDiagram> XML element. If the ``value`` is not
+        apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it can
+        not be applied when rendering. It should still be visible in the
+        GUI.
         """
-        if filter_name in iter(self):
+        if value in iter(self):
             raise ValueError("This filter is already active on this diagram.")
 
         diag_descriptor = self._diagram._element
@@ -324,7 +322,7 @@ class ActiveFilters(t.MutableSet[str]):
                 f"platform:{XP_PLUGIN}",
                 f"@ownedViewpoints[name='{viewpoint}']",
                 f"@ownedRepresentations[name='{diagclass}']",
-                f"@filters[name='{filter_name}']",
+                f"@filters[name='{value}']",
             )
         )
         elt = c.ELEMENT.activatedFilters(
@@ -333,15 +331,15 @@ class ActiveFilters(t.MutableSet[str]):
         self._target.append(elt)
         self._diagram.invalidate_cache()
 
-    def discard(self, name: str) -> None:  # pylint: disable=arguments-renamed
-        """Remove the filter with the given ``name`` from the diagram.
+    def discard(self, value: str) -> None:
+        """Remove the filter with the given ``value`` from the diagram.
 
         Deletes ``<activatedFilters>`` XML element from the diagram
         element tree.
         """
         for filter in self._elements:
-            search = self._get_filter_name(filter)
-            if search is not None and name == search:
+            filter_name = self._get_filter_name(filter)
+            if filter_name is not None and value == filter_name:
                 break
 
         self._target.remove(filter)  # pylint: disable=undefined-loop-variable
