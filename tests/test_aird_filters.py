@@ -17,7 +17,7 @@ DEFAULT_ACTIVATED_FILTERS = frozenset(
         "hide.overlappedfunctional.chains.icon.filter",
     ]
 )
-EX_ITEMS_FLTER = "show.exchange.items.filter"
+EX_ITEMS_FILTER = "show.exchange.items.filter"
 NAME_AND_EX_ITEMS_FILTER = "show.functional.exchanges.exchange.items.filter"
 
 
@@ -34,9 +34,9 @@ def test_add_activated_filter_to_diagram(
 ) -> None:
     diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
-    diag.filters.add(EX_ITEMS_FLTER)
+    diag.filters.add(EX_ITEMS_FILTER)
 
-    assert EX_ITEMS_FLTER in diag.filters
+    assert EX_ITEMS_FILTER in diag.filters
 
 
 @pytest.mark.parametrize("filter_name", DEFAULT_ACTIVATED_FILTERS)
@@ -56,7 +56,7 @@ def test_remove_activated_filter_fails_if_not_active(
     diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     with pytest.raises(KeyError):
-        diag.filters.remove(EX_ITEMS_FLTER)
+        diag.filters.remove(EX_ITEMS_FILTER)
 
 
 def test_component_ports_filter_is_applied(
@@ -79,7 +79,7 @@ def test_fex_exchangeitems_filter_is_applied(
     diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     diag.render_params["sorted_exchangedItems"] = False
-    diag.filters.add(EX_ITEMS_FLTER)
+    diag.filters.add(EX_ITEMS_FILTER)
     diagram: aird.Diagram = diag.render(None)
     fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
 
