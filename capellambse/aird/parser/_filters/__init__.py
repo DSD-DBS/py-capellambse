@@ -270,7 +270,7 @@ def _extract_filter_type(flt_elm: etree._Element) -> str:
     return urllib.parse.unquote(flttype.group(1))
 
 
-class ActiveFilters(cabc.MutableSet[str]):
+class ActiveFilters(t.MutableSet[str]):
     """A set of active filters on a :class:`diag.Diagram`.
 
     Enable access to set, add and remove active filters on a
