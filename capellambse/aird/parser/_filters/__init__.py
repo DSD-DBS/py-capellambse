@@ -10,12 +10,10 @@ import logging
 import typing as t
 import urllib.parse
 
-import markupsafe
 from lxml import etree
 
 import capellambse.loader
-from capellambse import aird
-from capellambse import model as _m
+from capellambse import aird, model
 
 from .. import _common as c
 
@@ -281,7 +279,9 @@ class ActiveFilters(t.MutableSet[str]):
     _xml_tag = "activatedFilters"
 
     def __init__(
-        self, model: _m.MelodyModel, diagram: _m.diagram.Diagram
+        self,
+        model: model.MelodyModel,  # pylint: disable=redefined-outer-name
+        diagram: model.diagram.Diagram,
     ) -> None:
         self._model = model
         self._diagram = diagram
@@ -298,18 +298,10 @@ class ActiveFilters(t.MutableSet[str]):
             return filter_name.group(1)
         return None
 
-    def __contains__(self, filter: str | etree._Element) -> bool:
-        if isinstance(filter, str):
-            return filter in iter(self)
-
-        filter_name = self._get_filter_name(filter)
-        if filter.tag != self._xml_tag or filter_name is None:
+    def __contains__(self, filter: object) -> bool:
+        if not isinstance(filter, str):
             return False
-
-        for flt_name in iter(self):
-            if filter_name in flt_name:
-                return True
-        return False
+        return filter in iter(self)
 
     def __iter__(self) -> cabc.Iterator[str]:
         for filter in self._elements:
