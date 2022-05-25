@@ -7,11 +7,8 @@ This module is used to enumerate, access and export the diagrams from
 Capella projects.  The JSON output it produces can be fed for example
 into the :mod:`capellambse.svg` module for conversion to SVG.
 """
-from __future__ import annotations
-
+from .vector2d import *  # isort: skip
 from .capstyle import *
 from .diagram import *
 from .json_enc import *
 from .parser import *
-
-from .vector2d import *  # isort: skip
