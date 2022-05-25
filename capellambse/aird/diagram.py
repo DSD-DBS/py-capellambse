@@ -878,7 +878,7 @@ class Diagram:
         styleclass
             The diagram class.
         render_params
-            Additional parameters for rendering. For e.g. define
+            Additional parameters for rendering. E.g. define
             ExchangeItem sorting in label filtering.
         """
         self.name = name
