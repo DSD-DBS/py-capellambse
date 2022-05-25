@@ -326,7 +326,6 @@ class ActiveFilters(t.MutableSet[str]):
             raise ValueError("This filter is already active on this diagram.")
 
         diag_descriptor = self._diagram._element
-        history_elt = next(self._target.iterfind("filterVariableHistory"))
         viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
         assert diag_descriptor.styleclass is not None
         diagclass = urllib.parse.quote(diag_descriptor.styleclass)
@@ -341,7 +340,7 @@ class ActiveFilters(t.MutableSet[str]):
         elt = c.ELEMENT.activatedFilters(
             {"href": href, c.ATT_XMT: "filter:CompositeFilterDescription"}
         )
-        history_elt.addprevious(elt)
+        self._target.append(elt)
         self._diagram.invalidate_cache()
 
     def discard(self, name: str) -> None:  # pylint: disable=arguments-renamed
