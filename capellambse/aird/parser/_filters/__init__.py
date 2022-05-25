@@ -288,8 +288,8 @@ class ActiveFilters(t.MutableSet[str]):
         self._target = self._model._loader[diagram._element.uid]
 
     @property
-    def _elements(self) -> list[etree._Element]:
-        return list(self._target.iterchildren(self._xml_tag))
+    def _elements(self) -> t.Iterator[etree._Element]:
+        return self._target.iterchildren(self._xml_tag)
 
     @staticmethod
     def _get_filter_name(filter: etree._Element) -> str | None:
@@ -316,18 +316,8 @@ class ActiveFilters(t.MutableSet[str]):
             if (filter_name := self._get_filter_name(filter)) is not None:
                 yield filter_name
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, cabc.Iterable):
-            return False
-
-        for elt in other:
-            if elt not in self:
-                return False
-
-        return True
-
     def __len__(self) -> int:
-        return len(list(self))
+        return sum(1 for _ in self)
 
     def add(  # pylint: disable=arguments-renamed
         self, filter_name: str
@@ -360,21 +350,9 @@ class ActiveFilters(t.MutableSet[str]):
             {"href": href, c.ATT_XMT: "filter:CompositeFilterDescription"}
         )
         history_elt.addprevious(elt)
-        self._diagram._force_fresh_rendering = True
+        self._diagram.invalidate_cache()
 
     def discard(self, name: str) -> None:  # pylint: disable=arguments-renamed
-        """Discard the filter with the given `name` from the diagram.
-
-        See also
-        --------
-        :py:method:`self.remove`
-        """
-        try:
-            self.remove(name)
-        except KeyError:
-            pass
-
-    def remove(self, name: str) -> None:  # pylint: disable=arguments-renamed
         """Remove the filter with the given `name` from the diagram.
 
         Deletes <activatedFilters> XML element from the diagram element
@@ -384,37 +362,12 @@ class ActiveFilters(t.MutableSet[str]):
             search = self._get_filter_name(filter)
             if search is not None and name == search:
                 break
-        else:
-            raise KeyError(f"No activated filter with name: '{name}'")
 
         self._target.remove(filter)  # pylint: disable=undefined-loop-variable
-        self._diagram._force_fresh_rendering = True
-
-    def clear(self) -> None:
-        for elt in self._elements:
-            self._target.remove(elt)
-        self._diagram._force_fresh_rendering = True
-
-    def __str__(self) -> str:  # pragma: no cover
-        return "\n".join(f"* {e!s}" for e in self)
+        self._diagram.invalidate_cache()
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<{type(self).__name__} at 0x{id(self):016X} {set(self)!r}>"
-
-    def __html__(self) -> markupsafe.Markup:
-        if not self:
-            return markupsafe.Markup("<p><em>(Empty set)</em></p>")
-
-        fragments = ['<ol start="0" style="text-align: left;">']
-        fragments.extend((f"<li>{i}</li>" for i in self))
-        fragments.append("</ol>")
-        return markupsafe.Markup("".join(fragments))
-
-    def _short_html_(self) -> markupsafe.Markup:
-        return self.__html__()
-
-    def _repr_html_(self) -> str:
-        return self.__html__()
+        return f"{set(self)!r}"
 
 
 # Load filter modules

@@ -26,7 +26,6 @@ def test_diagram_has_activated_filters(
 ) -> None:
     diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
-    assert isinstance(diag.filters, aird.ActiveFilters)
     assert diag.filters == DEFAULT_ACTIVATED_FILTERS
 
 

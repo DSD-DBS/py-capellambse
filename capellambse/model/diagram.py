@@ -153,11 +153,10 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         else:
             conv = _find_format_converter(fmt)
 
-        if not self._force_fresh_rendering:
-            try:
-                return self.__load_cache(conv)
-            except KeyError:
-                pass
+        try:
+            return self.__load_cache(conv)
+        except KeyError:
+            pass
         return conv(self.__render_fresh())
 
     @abc.abstractmethod
@@ -246,6 +245,18 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             raise self._error
         return self._render
 
+    def invalidate_cache(self) -> None:
+        """Reset internal diagram cache."""
+        try:
+            del self._render
+        except AttributeError:
+            pass
+
+        try:
+            del self._error
+        except AttributeError:
+            pass
+
 
 class Diagram(AbstractDiagram):
     """Provides access to a single diagram."""
@@ -274,7 +285,6 @@ class Diagram(AbstractDiagram):
         self._element = descriptor
         self._filters = aird.ActiveFilters(self._model, self)
         self._render_params = {"sorted_exchangedItems": False}
-        self._force_fresh_rendering = False
         return self
 
     def __init__(self, **kw: t.Any) -> None:
