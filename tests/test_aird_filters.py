@@ -11,11 +11,11 @@ from capellambse import model as model_
 COMP_PORT_FILTER_DIAG = "[LAB] Test Component Port Filter"
 EX_ITEMS_FILTER_DIAG = "[SDFB] Test ExchangeItem Filter"
 DEFAULT_ACTIVATED_FILTERS = frozenset(
-    [
+    {
         "ModelExtensionFilter",
         "hide.overlappedfunctional.chains.label.filter",
         "hide.overlappedfunctional.chains.icon.filter",
-    ]
+    }
 )
 EX_ITEMS_FILTER = "show.exchange.items.filter"
 NAME_AND_EX_ITEMS_FILTER = "show.functional.exchanges.exchange.items.filter"
