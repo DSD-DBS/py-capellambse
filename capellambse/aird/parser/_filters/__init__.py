@@ -334,7 +334,7 @@ class ActiveFilters(t.MutableSet[str]):
         self._diagram.invalidate_cache()
 
     def discard(self, name: str) -> None:  # pylint: disable=arguments-renamed
-        """Remove the filter with the given `name` from the diagram.
+        """Remove the filter with the given ``name`` from the diagram.
 
         Deletes <activatedFilters> XML element from the diagram element
         tree.
