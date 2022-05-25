@@ -336,8 +336,8 @@ class ActiveFilters(t.MutableSet[str]):
     def discard(self, name: str) -> None:  # pylint: disable=arguments-renamed
         """Remove the filter with the given ``name`` from the diagram.
 
-        Deletes <activatedFilters> XML element from the diagram element
-        tree.
+        Deletes ``<activatedFilters>`` XML element from the diagram
+        element tree.
         """
         for filter in self._elements:
             search = self._get_filter_name(filter)
