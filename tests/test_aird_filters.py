@@ -47,7 +47,7 @@ def test_remove_activated_filter_on_diagram(
 
     diag.filters.remove(filter_name)
 
-    assert filter_name not in diag.filters
+    assert diag.filters == DEFAULT_ACTIVATED_FILTERS - {filter_name}
 
 
 def test_remove_activated_filter_fails_if_not_active(
