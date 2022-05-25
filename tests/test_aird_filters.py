@@ -6,7 +6,7 @@ import pytest
 
 import capellambse
 from capellambse import aird
-from capellambse import model as _m
+from capellambse import model as model_
 
 COMP_PORT_FILTER_DIAG = "[LAB] Test Component Port Filter"
 EX_ITEMS_FILTER_DIAG = "[SDFB] Test ExchangeItem Filter"
@@ -24,7 +24,9 @@ NAME_AND_EX_ITEMS_FILTER = "show.functional.exchanges.exchange.items.filter"
 def test_diagram_has_activated_filters(
     model_5_2: capellambse.MelodyModel,
 ) -> None:
-    diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
+        EX_ITEMS_FILTER_DIAG
+    )
 
     assert diag.filters == DEFAULT_ACTIVATED_FILTERS
 
@@ -32,7 +34,9 @@ def test_diagram_has_activated_filters(
 def test_add_activated_filter_to_diagram(
     model_5_2: capellambse.MelodyModel,
 ) -> None:
-    diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
+        EX_ITEMS_FILTER_DIAG
+    )
 
     diag.filters.add(EX_ITEMS_FILTER)
 
@@ -43,7 +47,9 @@ def test_add_activated_filter_to_diagram(
 def test_remove_activated_filter_on_diagram(
     model_5_2: capellambse.MelodyModel, filter_name: str
 ) -> None:
-    diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
+        EX_ITEMS_FILTER_DIAG
+    )
 
     diag.filters.remove(filter_name)
 
@@ -53,7 +59,9 @@ def test_remove_activated_filter_on_diagram(
 def test_remove_activated_filter_fails_if_not_active(
     model_5_2: capellambse.MelodyModel,
 ) -> None:
-    diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
+        EX_ITEMS_FILTER_DIAG
+    )
 
     with pytest.raises(KeyError):
         diag.filters.remove(EX_ITEMS_FILTER)
@@ -62,9 +70,11 @@ def test_remove_activated_filter_fails_if_not_active(
 def test_component_ports_filter_is_applied(
     model: capellambse.MelodyModel,
 ) -> None:
-    diag: _m.diagram.Diagram = model.diagrams.by_name(COMP_PORT_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model.diagrams.by_name(
+        COMP_PORT_FILTER_DIAG
+    )
 
-    diagram: aird.Diagram = diag.render(None)
+    diagram = diag.render(None)
 
     assert all(
         d.hidden
@@ -76,11 +86,13 @@ def test_component_ports_filter_is_applied(
 def test_fex_exchangeitems_filter_is_applied(
     model_5_2: capellambse.MelodyModel,
 ) -> None:
-    diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
+        EX_ITEMS_FILTER_DIAG
+    )
 
     diag.render_params["sorted_exchangedItems"] = False
     diag.filters.add(EX_ITEMS_FILTER)
-    diagram: aird.Diagram = diag.render(None)
+    diagram = diag.render(None)
     fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
 
     assert isinstance(fex_edge, aird.Edge)
@@ -106,11 +118,13 @@ def test_fex_exchangeitems_filter_is_applied(
 def test_fex_exchangeitems_filter_with_name_is_applied(
     model_5_2: capellambse.MelodyModel, sort: bool, expected_label: str
 ) -> None:
-    diag: _m.diagram.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
+        EX_ITEMS_FILTER_DIAG
+    )
 
     diag.filters.add(NAME_AND_EX_ITEMS_FILTER)
     diag.render_params["sorted_exchangedItems"] = sort
-    diagram: aird.Diagram = diag.render(None)
+    diagram = diag.render(None)
     fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
 
     assert isinstance(fex_edge, aird.Edge)
