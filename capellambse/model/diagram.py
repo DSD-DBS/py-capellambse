@@ -328,7 +328,7 @@ class Diagram(AbstractDiagram):
         self.invalidate_cache()
 
     @filters.setter
-    def filters(self, filters: t.MutableSet[str]) -> None:
+    def filters(self, filters: cabc.Iterable[str]) -> None:
         for filter in filters:
             self._filters.add(filter)
         self.invalidate_cache()
