@@ -22,6 +22,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import tempfile
 import textwrap
 import typing as t
 import urllib.parse
@@ -450,7 +451,9 @@ class GitFileHandler(FileHandler):
     known_hosts_file: str
     cache_dir: pathlib.Path
 
+    __fnz: object
     __lfsfiles: frozenset[str]
+    __repo: pathlib.Path
 
     def __init__(
         self,
@@ -475,6 +478,7 @@ class GitFileHandler(FileHandler):
         self.update_cache = update_cache
 
         self.__init_cache_dir()
+        self.__init_worktree()
 
         self._transaction: _GitTransaction | None = None
         try:
@@ -561,6 +565,17 @@ class GitFileHandler(FileHandler):
 
     write_transaction.__doc__ = _GitTransaction.__init__.__doc__
 
+    @staticmethod
+    def __cleanup_worktree(
+        repo_root: pathlib.Path, worktree: pathlib.Path, /
+    ) -> None:
+        LOGGER.debug("Removing worktree at %s", worktree)
+        subprocess.run(
+            ["git", "worktree", "remove", "-f", str(worktree)],
+            check=True,
+            cwd=repo_root,
+        )
+
     def __get_git_env(self) -> dict[str, str]:
         git_env = os.environ.copy()
         if not os.environ.get("GIT_ASKPASS"):
@@ -632,6 +647,33 @@ class GitFileHandler(FileHandler):
         elif self.update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
             self._git("fetch")
+
+    def __init_worktree(self) -> None:
+        worktree = pathlib.Path(
+            tempfile.mkdtemp(None, f"capellambse-{os.getpid()}-")
+        )
+        LOGGER.debug("Setting up a worktree at %s", worktree)
+        try:
+            self._git(
+                "worktree",
+                "add",
+                "--detach",
+                "--no-checkout",
+                worktree,
+                self.revision,
+                silent=True,
+            )
+        except:
+            os.rmdir(worktree)
+            raise
+        self.__repo = self.cache_dir
+        self.cache_dir = worktree
+
+        self.__fnz = weakref.finalize(  # pylint: disable=unused-private-member
+            self, self.__cleanup_worktree, self.__repo, worktree
+        )
+
+        self._git("reset", "--mixed", self.revision)
 
     def __open_from_index(self, filename: pathlib.PurePosixPath) -> bytes:
         return self._git("cat-file", "blob", f"{self.revision}:{filename}")
