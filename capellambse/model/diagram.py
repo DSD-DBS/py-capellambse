@@ -169,9 +169,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         """
 
     def __create_error_image(
-        self,
-        stage: str,
-        error: Exception,
+        self, stage: str, error: Exception
     ) -> aird.Diagram:
         err_name = (
             "An error occured while rendering diagram\n"
