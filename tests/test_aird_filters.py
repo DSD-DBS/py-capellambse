@@ -90,9 +90,8 @@ def test_fex_exchangeitems_filter_is_applied(
         EX_ITEMS_FILTER_DIAG
     )
 
-    diag.render_params["sorted_exchangedItems"] = False
     diag.filters.add(EX_ITEMS_FILTER)
-    diagram = diag.render(None)
+    diagram = diag.render(None, sorted_exchangedItems=False)
     fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
 
     assert isinstance(fex_edge, aird.Edge)
@@ -123,8 +122,7 @@ def test_fex_exchangeitems_filter_with_name_is_applied(
     )
 
     diag.filters.add(NAME_AND_EX_ITEMS_FILTER)
-    diag.render_params["sorted_exchangedItems"] = sort
-    diagram = diag.render(None)
+    diagram = diag.render(None, sorted_exchangedItems=sort)
     fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
 
     assert isinstance(fex_edge, aird.Edge)

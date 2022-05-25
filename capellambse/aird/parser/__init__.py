@@ -13,8 +13,8 @@ __all__ = [
 ]
 
 import collections.abc as cabc
-import dataclasses
 import pathlib
+import typing as t
 import urllib.parse
 
 from lxml import etree
@@ -37,15 +37,13 @@ Other representations (e.g. data tables) will not be listed by
 """
 
 
-@dataclasses.dataclass
-class DiagramDescriptor:
+class DiagramDescriptor(t.NamedTuple):
     fragment: pathlib.PurePosixPath
     name: str
     styleclass: str | None
     uid: str
     viewpoint: str
     target: etree._Element
-    render_params: dict[str, bool] | None = None
 
 
 def enumerate_diagrams(
@@ -146,7 +144,9 @@ def enumerate_diagrams(
                 raise
 
 
-def parse_diagrams(model: loader.MelodyLoader) -> cabc.Iterator[aird.Diagram]:
+def parse_diagrams(
+    model: loader.MelodyLoader, **params: t.Any
+) -> cabc.Iterator[aird.Diagram]:
     """Parse all diagrams from the model."""
     for descriptor in enumerate_diagrams(model):
         C.LOGGER.info(
@@ -154,11 +154,11 @@ def parse_diagrams(model: loader.MelodyLoader) -> cabc.Iterator[aird.Diagram]:
             descriptor.name,
             descriptor.styleclass,
         )
-        yield parse_diagram(model, descriptor)
+        yield parse_diagram(model, descriptor, **params)
 
 
 def parse_diagram(
-    model: loader.MelodyLoader, descriptor: DiagramDescriptor
+    model: loader.MelodyLoader, descriptor: DiagramDescriptor, **params: t.Any
 ) -> aird.Diagram:
     """Parse a single diagram from the model.
 
@@ -168,10 +168,7 @@ def parse_diagram(
         A DiagramDescriptor as obtained from :func:`enumerate_diagrams`.
     """
     diagram = aird.Diagram(
-        descriptor.name,
-        styleclass=descriptor.styleclass,
-        uuid=descriptor.uid,
-        render_params=descriptor.render_params,
+        descriptor.name, styleclass=descriptor.styleclass, uuid=descriptor.uid
     )
     dgtree = model.follow_link(
         model.trees[descriptor.fragment].root, descriptor.uid
@@ -212,7 +209,9 @@ def parse_diagram(
         )
     else:
         diagram.calculate_viewport()
-        _filters.applyfilters(diagram, dgtree, model)
+        _filters.applyfilters(
+            _filters.FilterArguments(diagram, dgtree, model, params)
+        )
     return diagram
 
 

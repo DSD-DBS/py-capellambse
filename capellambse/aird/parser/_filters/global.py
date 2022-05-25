@@ -9,21 +9,18 @@ import lxml.etree
 import capellambse.loader
 from capellambse import aird, helpers, model
 
-from . import composite, global_filter
+from . import FilterArguments, composite, global_filter
 
 XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 
 
 @global_filter("show.functional.exchanges.exchange.items.filter")
 def show_name_and_exchangeitems_fex(
-    target_diagram: aird.Diagram,
-    diagram_root: lxml.etree._Element,
-    flt: lxml.etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
+    args: FilterArguments, flt: lxml.etree._Element
 ) -> None:
     """Change FEX labels to show Name and ExchangeItems."""
-    del diagram_root, flt
-    for obj in target_diagram:
+    del flt
+    for obj in args.target_diagram:
         if not isinstance(obj, aird.Edge):
             continue
 
@@ -32,24 +29,19 @@ def show_name_and_exchangeitems_fex(
             continue
 
         assert isinstance(label.label, str)
-        sort_items = target_diagram.render_params.get(
-            "sorted_exchangedItems", False
-        )
+        sort_items = args.params.get("sorted_exchangedItems", False)
         label.label += " " + _stringify_exchange_items(
-            obj, melodyloader, sort_items
+            obj, args.melodyloader, sort_items
         )
 
 
 @global_filter("show.exchange.items.filter")
 def show_exchangeitems_fex(
-    target_diagram: aird.Diagram,
-    diagram_root: lxml.etree._Element,
-    flt: lxml.etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
+    args: FilterArguments, flt: lxml.etree._Element
 ) -> None:
     """Change FEX labels to only show ExchangeItems."""
-    del diagram_root, flt
-    for obj in target_diagram:
+    del flt
+    for obj in args.target_diagram:
         if not isinstance(obj, aird.Edge):
             continue
 
@@ -58,25 +50,20 @@ def show_exchangeitems_fex(
             continue
 
         assert isinstance(label.label, str)
-        sort_items = target_diagram.render_params.get(
-            "sorted_exchangedItems", False
-        )
+        sort_items = args.params.get("sorted_exchangedItems", False)
         exchange_items_label = _stringify_exchange_items(
-            obj, melodyloader, sort_items
+            obj, args.melodyloader, sort_items
         )
         label.label = exchange_items_label or label.label
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
 def show_exchangeitems_cex(
-    target_diagram: aird.Diagram,
-    diagram_root: lxml.etree._Element,
-    flt: lxml.etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
+    args: FilterArguments, flt: lxml.etree._Element
 ) -> None:
     """Change CEX labels to show ExchangeItems."""
-    del diagram_root, flt
-    for obj in target_diagram:
+    del flt
+    for obj in args.target_diagram:
         if not isinstance(obj, aird.Edge):
             continue
         label = _get_primary_edge_label(obj, "ComponentExchange")
@@ -87,7 +74,7 @@ def show_exchangeitems_cex(
         elm, items = _get_allocated_exchangeitem_names(
             obj.uuid,
             alloc_attr="convoyedInformations",
-            melodyloader=melodyloader,
+            melodyloader=args.melodyloader,
         )
         if elm is None:
             continue
@@ -97,7 +84,7 @@ def show_exchangeitems_cex(
             items += _get_allocated_exchangeitem_names(
                 fex.attrib["targetElement"],
                 alloc_attr="exchangedItems",
-                melodyloader=melodyloader,
+                melodyloader=args.melodyloader,
             )[1]
         label.label = ", ".join(items)
 
@@ -106,14 +93,11 @@ def show_exchangeitems_cex(
     "Show Exchange Items on Component Exchange without Functional Exchanges"
 )
 def show_exchangeitems_cex_no_fex(
-    target_diagram: aird.Diagram,
-    diagram_root: lxml.etree._Element,
-    flt: lxml.etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
+    args: FilterArguments, flt: lxml.etree._Element
 ) -> None:
     """Change CEX labels to show directly allocated ExchangeItems."""
-    del diagram_root, flt
-    for obj in target_diagram:
+    del flt
+    for obj in args.target_diagram:
         if not isinstance(obj, aird.Edge):
             continue
         label = _get_primary_edge_label(obj, "ComponentExchange")
@@ -124,21 +108,18 @@ def show_exchangeitems_cex_no_fex(
         _, items = _get_allocated_exchangeitem_names(
             obj.uuid,
             alloc_attr="convoyedInformations",
-            melodyloader=melodyloader,
+            melodyloader=args.melodyloader,
         )
         label.label = ", ".join(items)
 
 
 @global_filter("Hide Component Ports without Exchanges")
 def hide_all_empty_ports(
-    target_diagram: aird.Diagram,
-    diagram_root: lxml.etree._Element,
-    flt: lxml.etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
+    args: FilterArguments, flt: lxml.etree._Element
 ) -> None:
     """Hide all ports that do not have edges connected."""
-    del diagram_root, flt, melodyloader
-    for dgobj in target_diagram:
+    del flt
+    for dgobj in args.target_diagram:
         if isinstance(dgobj, aird.Box) and dgobj.children:
             composite.hide_empty_ports(
                 None, dgobj, classes=composite.PORT_CL_COMPONENT
@@ -147,28 +128,25 @@ def hide_all_empty_ports(
 
 @global_filter("Hide Allocated Functional Exchanges")
 def hide_alloc_func_exch(
-    target_diagram: aird.Diagram,
-    diagram_root: lxml.etree._Element,
-    flt: lxml.etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
+    args: FilterArguments, flt: lxml.etree._Element
 ) -> None:
     """Hide functional exchanges that are allocated to a component exchange."""
-    del diagram_root, flt
+    del flt
 
     component_exchanges = []
-    for element in target_diagram:
+    for element in args.target_diagram:
         if not element.hidden and element.styleclass == "ComponentExchange":
             component_exchanges.append(element)
 
     for cex in component_exchanges:
         assert cex.uuid is not None
         # Find all allocated functional exchanges
-        for fex in melodyloader[cex.uuid].iterchildren(
+        for fex in args.melodyloader[cex.uuid].iterchildren(
             "ownedComponentExchangeFunctionalExchangeAllocations"
         ):
             fex = fex.attrib["targetElement"].split("#")[-1]
             try:
-                target_diagram[fex].hidden = True
+                args.target_diagram[fex].hidden = True
             except KeyError:
                 pass  # not in this diagram
 

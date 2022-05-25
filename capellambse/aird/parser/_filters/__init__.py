@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import dataclasses
 import importlib
 import logging
 import typing as t
@@ -26,15 +27,7 @@ CompositeFilter = t.Callable[
 #: Maps composite filter names to phase-1 callables
 COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
 
-GlobalFilter = t.Callable[
-    [
-        aird.Diagram,
-        etree._Element,
-        etree._Element,
-        capellambse.loader.MelodyLoader,
-    ],
-    None,
-]
+GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 LOGGER = logging.getLogger(__name__)
@@ -141,11 +134,17 @@ def setfilters(
     return dgobject
 
 
-def applyfilters(
-    target_diagram: aird.Diagram,
-    diagram_root: etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
-) -> None:
+@dataclasses.dataclass(frozen=True)
+class FilterArguments:
+    """Basic arguments for diagram-filters."""
+
+    target_diagram: aird.Diagram
+    diagram_root: etree._Element
+    melodyloader: capellambse.loader.MelodyLoader
+    params: dict[str, t.Any]
+
+
+def applyfilters(args: FilterArguments) -> None:
     """Apply filters on the ``target_diagram``.
 
     This function performs two tasks.
@@ -155,18 +154,9 @@ def applyfilters(
 
     Secondly it applies the diagram's global filters.  These are always
     applied after all composite filters have run.
-
-    Parameters
-    ----------
-    target_diagram
-        The diagram.
-    diagram_root
-        The LXML element that is this diagram's root.
-    melodyloader
-        The MelodyLoader instance.
     """
     # Apply post-processing filters on elements
-    for dgobject in target_diagram:
+    for dgobject in args.target_diagram:
         try:
             filters = dgobject._compfilters  # type: ignore[union-attr]
         except AttributeError:
@@ -182,14 +172,14 @@ def applyfilters(
                 dgobject.styleclass or dgobject.__class__.__name__,
                 dgobject.uuid,
             )
-            data_element = melodyloader[dgobject.uuid]
+            data_element = args.melodyloader[dgobject.uuid]
             p2flt(
                 c.ElementBuilder(
-                    target_diagram=target_diagram,
-                    diagram_tree=diagram_root,
+                    target_diagram=args.target_diagram,
+                    diagram_tree=args.diagram_root,
                     data_element=data_element,
-                    melodyloader=melodyloader,
-                    fragment=melodyloader.find_fragment(data_element),
+                    melodyloader=args.melodyloader,
+                    fragment=args.melodyloader.find_fragment(data_element),
                 ),
                 dgobject,
             )
@@ -197,7 +187,7 @@ def applyfilters(
         del dgobject._compfilters  # type: ignore[union-attr]
 
     # Apply global diagram filters
-    for flt in diagram_root.iterchildren("activatedFilters"):
+    for flt in args.diagram_root.iterchildren("activatedFilters"):
         try:
             flttype = flt.attrib[c.ATT_XMT]
         except KeyError:
@@ -219,7 +209,7 @@ def applyfilters(
             continue
 
         c.LOGGER.debug("Applying global filter %r", fltname)
-        fltfunc(target_diagram, diagram_root, flt, melodyloader)
+        fltfunc(args, flt)
 
 
 def _set_composite_filter(

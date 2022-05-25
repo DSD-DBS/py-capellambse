@@ -60,9 +60,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     _model: capellambse.MelodyModel
     _render: aird.Diagram
     _error: BaseException
+    _render_params: dict[str, bool]
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
+        self._render_params = {}
 
     def __dir__(self) -> list[str]:
         return dir(type(self)) + [
@@ -138,14 +140,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
-    def render(self, fmt: None) -> aird.Diagram:
+    def render(self, fmt: None, **params) -> aird.Diagram:
         ...
 
     @t.overload
-    def render(self, fmt: str) -> t.Any:
+    def render(self, fmt: str, **params) -> t.Any:
         ...
 
-    def render(self, fmt: str | None) -> t.Any:
+    def render(self, fmt: str | None, **params) -> t.Any:
         """Render the diagram in the given format."""
         conv: t.Any
         if fmt is None:
@@ -157,10 +159,10 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             return self.__load_cache(conv)
         except KeyError:
             pass
-        return conv(self.__render_fresh())
+        return conv(self.__render_fresh(params))
 
     @abc.abstractmethod
-    def _create_diagram(self) -> aird.Diagram:
+    def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
         """Perform the actual rendering of the diagram.
 
         This method should only be called by the public :meth:`render`
@@ -232,11 +234,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
         return fromcache(cache)
 
-    def __render_fresh(self):
+    def __render_fresh(self, params: dict[str, t.Any]) -> aird.Diagram:
         # pylint: disable=broad-except
-        if not hasattr(self, "_render"):
+        if not hasattr(self, "_render") or self._render_params != params:
             try:
-                self._render = self._create_diagram()
+                self._render = self._create_diagram(params)
             except Exception as err:
                 self._error = err
                 self._render = self.__create_error_image("parse", self._error)
@@ -270,8 +272,6 @@ class Diagram(AbstractDiagram):
 
     _element: aird.DiagramDescriptor
     _filters: aird.ActiveFilters
-    _render_params: dict[str, bool]
-    _force_fresh_rendering: bool
 
     @classmethod
     def from_model(
@@ -284,7 +284,6 @@ class Diagram(AbstractDiagram):
         self._model = model
         self._element = descriptor
         self._filters = aird.ActiveFilters(self._model, self)
-        self._render_params = {"sorted_exchangedItems": False}
         return self
 
     def __init__(self, **kw: t.Any) -> None:
@@ -326,13 +325,13 @@ class Diagram(AbstractDiagram):
     def filters(self) -> None:
         active_filters = aird.parser._filters.ActiveFilters(self._model, self)
         active_filters.clear()
-        self._force_fresh_rendering = True
+        self.invalidate_cache()
 
     @filters.setter
     def filters(self, filters: t.MutableSet[str]) -> None:
         for filter in filters:
             self._filters.add(filter)
-        self._force_fresh_rendering = True
+        self.invalidate_cache()
 
     @property
     def render_params(self) -> dict[str, bool]:
@@ -347,13 +346,8 @@ class Diagram(AbstractDiagram):
         """
         return self._render_params
 
-    def _create_diagram(self) -> aird.Diagram:
-        if self._element.render_params != self._render_params:
-            self._element.render_params = self._render_params
-
-        diagram = aird.parse_diagram(self._model._loader, self._element)
-        self._force_fresh_rendering = False
-        return diagram
+    def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
+        return aird.parse_diagram(self._model._loader, self._element, **params)
 
 
 class DiagramAccessor(c.Accessor):
