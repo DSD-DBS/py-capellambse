@@ -70,7 +70,7 @@ class StackingBox(aird.Box):
 
     CHILD_MARGIN = 0
 
-    children: StackingBox._StackingChildren  # type: ignore[name-defined]
+    children: StackingBox._StackingChildren
     __features: cabc.MutableSequence[str] | None
 
     def __init__(
