@@ -1,6 +1,8 @@
 # Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
+import math
 import typing as t
 
 import markupsafe
@@ -754,3 +756,30 @@ class TestArchitectureLayers:
         cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
 
         assert cex.allocating_physical_path == cex.owner == path
+
+
+@pytest.mark.parametrize(
+    ["attr", "value"],
+    [("min_card", 1), ("max_card", math.inf)],
+)
+def test_literal_numeric_value_star_is_infinity(
+    model: capellambse.MelodyModel, attr: str, value: float | int
+):
+    prop = model.by_uuid("424efd65-eaa9-4220-b61b-fb3340dbc19a")
+
+    assert getattr(prop, attr).value == value
+
+
+@pytest.mark.parametrize(
+    ["value", "expected_xml"],
+    [(math.inf, "*"), (1, "1"), (0, "0")],
+)
+def test_literal_numeric_value_infinity_is_star(
+    model: capellambse.MelodyModel, value, expected_xml
+):
+    prop = model.by_uuid("424efd65-eaa9-4220-b61b-fb3340dbc19a")
+    max_card = prop.max_card
+
+    max_card.value = value
+
+    assert max_card._element.get("value") == expected_xml

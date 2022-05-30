@@ -190,21 +190,15 @@ class NumericAttributeProperty(AttributeProperty):
         return self.number_type(value)
 
     def __set__(self, obj, value) -> None:
-        try:
-            value = self.number_type(value)
-        except TypeError as err:
-            raise TypeError(
-                "This property only accepts numeric types"
-            ) from err
+        if not isinstance(value, (int, float)):
+            raise TypeError(f"Not a number: {value}")
 
         if value == math.inf:
             strvalue = "*"
         elif value == -math.inf:
             raise ValueError("Cannot set value to negative infinity")
-        elif math.isnan(value):
-            raise ValueError("Cannot set value to NaN")
         else:
-            strvalue = str(value)
+            strvalue = str(self.number_type(value))
         super().__set__(obj, strvalue)
 
 
