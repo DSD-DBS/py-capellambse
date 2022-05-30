@@ -226,7 +226,9 @@ class MelodyModel:
         self._loader.save(**kw)
 
     def search(
-        self, *xtypes: str | type[common.GenericElement]
+        self,
+        *xtypes: str | type[common.GenericElement],
+        below: common.GenericElement | None = None,
     ) -> common.ElementList:
         r"""Search for all elements with any of the given ``xsi:type``\ s.
 
@@ -237,6 +239,18 @@ class MelodyModel:
         If no ``xtypes`` are given at all, this method will return an
         exhaustive list of all (semantic) model objects that have an
         ``xsi:type`` set.
+
+        Parameters
+        ----------
+        xtypes
+            The ``xsi:type``\ s to search for, or the classes
+            corresponding to them (or a mix of both).
+        below
+            A model element to constrain the search. If given, only
+            those elements will be returned that are (immediate or
+            nested) children of this element. This option takes into
+            account model fragmentation, but it does not treat link
+            elements specially.
         """
         xtypes_: list[str] = []
         for i in xtypes:
@@ -254,11 +268,12 @@ class MelodyModel:
             for k, v in self._loader.trees.items()
             if v.fragment_type is loader.FragmentType.SEMANTIC
         }
-        return cls(
-            self,
-            list(self._loader.iterall_xt(*xtypes_, trees=trees)),
-            common.GenericElement,
-        )
+        matches = self._loader.iterall_xt(*xtypes_, trees=trees)
+        if below is not None:
+            matches = (
+                i for i in matches if below._element in i.iterancestors()
+            )
+        return cls(self, list(matches), common.GenericElement)
 
     def by_uuid(self, uuid: str) -> common.GenericElement:
         """Search the entire model for an element with the given UUID."""
