@@ -452,6 +452,21 @@ def test_model_search_finds_elements(
         assert item in found
 
 
+def test_model_search_below_filters_elements_by_ancestor(
+    model: capellambse.MelodyModel,
+):
+    parent = model.by_uuid("6583b560-6d2f-4190-baa2-94eef179c8ea")
+    expected = {
+        "3bdd4fa2-5646-44a1-9fa6-80c68433ddb7",
+        "a58821df-c5b4-4958-9455-0d30755be6b1",
+    }
+
+    nested = model.search("LogicalComponent", below=parent)
+
+    actual = {i.uuid for i in nested}
+    assert actual == expected
+
+
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
     comm = model.by_uuid("6638ccd2-61cc-481e-bb23-4c1b147e1dbc")
     env = model.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
