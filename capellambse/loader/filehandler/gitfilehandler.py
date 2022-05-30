@@ -452,7 +452,8 @@ class GitFileHandler(FileHandler):
     cache_dir: pathlib.Path
 
     __fnz: object
-    __lfsfiles: frozenset[str]
+    __has_lfs: bool
+    __lfsfiles: dict[pathlib.PurePosixPath, bool]
     __repo: pathlib.Path
 
     def __init__(
@@ -482,14 +483,14 @@ class GitFileHandler(FileHandler):
 
         self._transaction: _GitTransaction | None = None
         try:
-            self.__lfsfiles = frozenset(
-                self._git("lfs", "ls-files", "-n", silent=True)
-                .decode("utf-8", errors="surrogateescape")
-                .splitlines()
-            )
+            self._git("lfs", "env", silent=True)
         except subprocess.CalledProcessError:
             LOGGER.debug("LFS not installed, disabling related functionality")
-            self.__lfsfiles = frozenset()
+            self.__has_lfs = False
+        else:
+            LOGGER.debug("LFS support detected")
+            self.__has_lfs = True
+        self.__lfsfiles = {}
 
     def open(
         self,
@@ -509,7 +510,7 @@ class GitFileHandler(FileHandler):
 
     def __open_readable(self, path: pathlib.PurePosixPath) -> t.BinaryIO:
         try:
-            if str(path) in self.__lfsfiles:
+            if self.__is_lfs(path):
                 content = self.__open_from_lfs(path)
             else:
                 content = self.__open_from_index(path)
@@ -524,7 +525,7 @@ class GitFileHandler(FileHandler):
         assert self._transaction is not None
 
         cls: type[_WritableLFSFile] | type[_WritableIndexFile]
-        if str(path) in self.__lfsfiles:
+        if self.__is_lfs(path):
             cls = _WritableLFSFile
         else:
             cls = _WritableIndexFile
@@ -674,6 +675,35 @@ class GitFileHandler(FileHandler):
         )
 
         self._git("reset", "--mixed", self.revision)
+
+    def __is_lfs(self, path: pathlib.PurePosixPath) -> bool:
+        """Check whether a file uses LFS or not.
+
+        As a side effect, this method will raise an exception if
+        ``__init__`` has detected that ``git-lfs`` is not installed and
+        the ``path`` is determined to be an LFS file.
+        """
+        try:
+            return self.__lfsfiles[path]
+        except KeyError:
+            pass
+
+        attrs = self._git("check-attr", "--all", "--cached", "-z", "--", path)
+        for _, attr, value in capellambse.helpers.ntuples(
+            3, attrs.split(b"\0")
+        ):
+            if attr == b"filter" and value == b"lfs":
+                break
+        else:
+            self.__lfsfiles[path] = False
+            return False
+
+        self.__lfsfiles[path] = True
+        if not self.__has_lfs:
+            raise RuntimeError(
+                f"Cannot open LFS file, git-lfs is not installed: {path}"
+            )
+        return True
 
     def __open_from_index(self, filename: pathlib.PurePosixPath) -> bytes:
         return self._git("cat-file", "blob", f"{self.revision}:{filename}")
