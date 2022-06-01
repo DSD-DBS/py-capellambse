@@ -17,58 +17,6 @@ The library works with [PVMT](https://www.eclipse.org/capella/addons.html) and [
 
 It started as a basic library somewhere mid 2019. Since then it was re-architected a few times and now has a full read/write capability for most of the present Capella ontology. We are continuously improving the API (introducing shortcuts), increasing the meta-model coverage and have more engineering automations and improvements in the pipeline to share.
 
-## Getting started
-
-Click on this button to launch a Binder instance and start exploring our test models within seconds:
-
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01%20Introduction.ipynb)
-
-*Warning:* [Do not enter confidential information], such as passwords for non-public models, into a notebook hosted on myBinder. If you want to try out `capellambse` with those models, please install and run it in a local, trusted environment (see below)!
-
-[Do not enter confidential information]: <https://github.com/alan-turing-institute/the-turing-way/blob/b36c3ac1c78acbbe18441beaa89514544ed12021/workshops/boost-research-reproducibility-binder/workshop-presentations/zero-to-binder-python.md#private-files>
-
-Alternatively, to start using the project on your local machine, follow these steps:
-
-1. Clone the repository.
-
-   ```bash
-   git clone https://github.com/DSD-DBS/py-capellambse.git
-   cd py-capellambse
-   ```
-
-2. Create a virtual environment.
-
-   ```bash
-   python3 -m venv .venv
-
-   # on Linux or Mac:
-   source .venv/bin/activate
-
-   # on Windows using cmd.exe:
-   .venv\Scripts\activate.bat
-
-   # on Windows using PowerShell:
-   .venv/Scripts/activate.ps1
-   ```
-
-3. Install `capellambse` and `Jupyter`.
-
-   ```bash
-   pip install -e .
-   pip install jupyter
-   ```
-
-4. Open the example notebooks.
-
-   ```bash
-   cd examples
-   jupyter-notebook
-   ```
-
-The above code should clone the library and install it and all of its dependencies in a fresh virtual environment. Then, it should have started a jupyter-notebook server right in the examples folder. If your browser did not open automatically, follow the instructions in the terminal to start it manually.
-
-Once in the browser, simply click on the [`01_Introduction.ipynb`](examples/01_Introduction.ipynb) notebook to start!
-
 ## Documentation and examples
 
 The library is designed to be easy to use and discover, especially in an
@@ -78,9 +26,17 @@ are added.
 
 [API documentation]: https://dsd-dbs.github.io/py-capellambse/
 
-You are encouraged to explore our test models and demo notebooks on either a
-public myBinder instance or by installing the library locally ([see
-above](#getting-started)).
+You are encouraged to explore our test models and demo notebooks. Click on the
+button below to start a myBinder instance and get started in seconds:
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01%20Introduction.ipynb)
+
+*Warning:* [Do not enter confidential information], such as passwords for
+non-public models, into a notebook hosted on myBinder. If you want to try out
+`capellambse` with those models, please [install and run](#installation) it in
+a local, trusted environment!
+
+[Do not enter confidential information]: <https://github.com/alan-turing-institute/the-turing-way/blob/b36c3ac1c78acbbe18441beaa89514544ed12021/workshops/boost-research-reproducibility-binder/workshop-presentations/zero-to-binder-python.md#private-files>
 
 The `examples` directory contains several hands-on example notebooks that you
 can immediately run and start experimenting with. Below is a short summary of
@@ -121,6 +77,60 @@ be shown a statically rendered preview of the notebook.
 We are constantly working on improving everything shown here, as well as adding
 even more useful functionality and helpful demos. If you have any new ideas
 that were not mentioned yet, [don't hesitate to contribute](CONTRIBUTING.md)!
+
+## Installation
+
+In order to use private models that are not publicly available, please install
+and use `capellambse` in a local, trusted environment.
+
+You can follow these instructions to start a local Jupyter notebook server
+within minutes:
+
+1. Create a virtual environment.
+
+   ```bash
+   python3 -m venv .venv
+
+   # on Linux or Mac:
+   source .venv/bin/activate
+
+   # on Windows using cmd.exe:
+   .venv\Scripts\activate.bat
+
+   # on Windows using PowerShell:
+   .venv/Scripts/activate.ps1
+   ```
+
+2. You can install the latest stable version of `capellambse`, as well as the
+   Jupyter notebook server from the public PyPI repository.
+
+   ```bash
+   pip install jupyter capellambse
+   ```
+
+   Alternatively, you can install the latest developmental version straight
+   from Github:
+
+   ```basbh
+   pip install jupyter git+https://github.com/DSD-DBS/py-capellambse.git
+   ```
+
+3. Open the example notebooks.
+
+   ```bash
+   cd examples
+   jupyter-notebook
+   ```
+
+The above steps installed the library and all of its dependencies in a fresh
+virtual environment. Then, it has started a jupyter-notebook server right in
+the examples folder.
+
+If your browser did not open automatically, follow the instructions in the
+terminal to start it manually.
+
+Once in the browser, simply click on the [`01
+Introduction.ipynb`](examples/01%20Introduction.ipynb) notebook to start!
 
 ## Dependencies on 3rd party components and re-distributions
 
