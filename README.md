@@ -48,34 +48,45 @@ the notebook names to directly open them in a new lab tab. On Github, you will
 be shown a statically rendered preview of the notebook.
 
 - [`01 Introduction.ipynb`](examples/01%20Introduction.ipynb) provides a
-  high-level overview of the library features, with some visual examples
-  leveraging Jupyter's and IPython's rich display functionality.
+  high-level overview of the library features. It visualizes examples like a
+  Component - Function allocation table by leveraging Jupyter's and IPython's
+  rich display functionality.
 - [`02 Intro to Physical
   Architecture.ipynb`](examples/02%20Intro%20to%20Physical%20Architecture%20API.ipynb)
   explores some more advanced concepts on the example of the Physical
-  Architecture Layer. It also showcases how to use `pandas` dataframes to
-  effectively manage and search through large numbers of model elements.
-- [`03 Data Values.ipynb`](examples/03%20Data%20Values.ipynb) introduces the
-  data value classes from the `information.datavalue` package, which are used
-  in several places throughout a Capella model.
+  Architecture Layer. It shows how to derive tabular data, like a Bill of
+  Materials or a Software to Hardware allocation table, by using `pandas`
+  dataframes.
+- [`03 Data Values.ipynb`](examples/03%20Data%20Values.ipynb) shows how the API
+  can be used to explore classes, class instances and other objects related to
+  data modeling.
 - [`04 Intro to Jinja
   templating.ipynb`](examples/04%20Intro%20to%20Jinja%20templating.ipynb)
   demonstrates how to effectively combine `capellambse` with the powerful
-  [Jinja templating engine](https://palletsprojects.com/p/jinja/).
+  [Jinja] templating engine. This enables the creation of all sorts of
+  model-derived documents and artifacts, including interactive web pages, PDF
+  documents and any other textual representations of your models.
 - [`05 Introduction to
   Libraries.ipynb`](examples/05%20Introduction%20to%20Libraries.ipynb) shows
-  how to use Capella Library Projects within capellambse. These allow multiple
-  collaborators to work on different parts of a project, or on derived
-  projects, independently from one another.
+  how to use Capella Library Projects within capellambse. In this example
+  you'll learn how the API can be used to open a project that is based on a
+  library and find objects in both models.
 - [`06 Introduction to Requirement access and management with ReqIF
   extension.ipynb`](examples/06%20Introduction%20to%20Requirement%20access%20and%20management%20with%20ReqIF%20extension.ipynb)
-  introduces the optional ReqIF extension. If this extension is installed and
-  activated in Capella, Requirement objects can be managed right in a model,
-  and linked up with other model elements. Based on this functionality,
-  `capellambse` also provides a basic exporter for `.reqif` and `.reqifz`
-  files.
+  shows how the API can be used to work with requirements objects, introduced
+  by the Capella [Requirements Viewpoint]. In this example you'll see how to
+  find requirements in the model, see which objects requirements are linked /
+  traced to and even export requirements to Excel or ReqIF formats.
 - [`07 Code Generation.ipynb`](examples/07%20Code%20Generation.ipynb) shows how
-  to generate code from class diagrams.
+  to generate code from class diagrams. In particular, we focus on Interface
+  Descriptive Languages with concrete examples for `Class` to [ROS2 IDL] and
+  Google [Protocol Buffers]. We also show how simple Python stubs could be
+  generated given a `Class` object.
+
+[Jinja]: https://palletsprojects.com/p/jinja/
+[Requirements Viewpoint]: https://www.eclipse.org/capella/addons.html
+[ROS2 IDL]: https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html
+[Protocol Buffers]: https://developers.google.com/protocol-buffers
 
 We are constantly working on improving everything shown here, as well as adding
 even more useful functionality and helpful demos. If you have any new ideas
