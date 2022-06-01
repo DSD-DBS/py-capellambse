@@ -265,8 +265,9 @@ class MelodyModel:
                     matching_types.extend(t for t in l if t.endswith(suffix))
                 if not matching_types:
                     raise ValueError(f"Unknown incomplete type name: {i}")
+                xtypes_.extend(matching_types)
 
-        cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
+        cls = (common.MixedElementList, common.ElementList)[len(xtypes_) == 1]
         trees = {
             k
             for k, v in self._loader.trees.items()
