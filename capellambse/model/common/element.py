@@ -399,7 +399,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                     indices.append(i)
                     elements.append(self.parent._elements[i])
 
-            if not self.single:
+            if not single:
                 return self.parent._newlist(elements)
             if len(elements) > 1:
                 raise KeyError(

@@ -50,7 +50,7 @@ from ._namespaces import (
     check_plugin_version,
     yield_key_and_version_from_namespaces_by_plugin,
 )
-from .loader.filehandler import get_filehandler
+from .loader.filehandler import FileHandler, get_filehandler
 from .model import MelodyModel
 from .model.common import ModelObject
 

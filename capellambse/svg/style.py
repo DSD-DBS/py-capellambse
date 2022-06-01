@@ -18,10 +18,8 @@ from svgwrite import base, gradients
 
 from capellambse import aird
 
-from . import decorations, symbols
-
 if t.TYPE_CHECKING:
-    from .drawing import Drawing
+    from .drawing import Drawing  # pylint: disable=unused-import
 
 logger = logging.getLogger(__name__)
 RE_ELMCLASS = re.compile(r"^([A-Z][a-z_]*)(\.[A-Za-z][A-Za-z0-9_]*)?(:.+)?$")
@@ -187,8 +185,7 @@ class Styling:
                 stroke = (
                     defaultstyles.get(self._style_name("stroke")) or "#000"
                 )
-            value = f'url("#{value}_{aird.RGB.fromcss(stroke).tohex()}")'
-            return value
+            return f'url("#{value}_{aird.RGB.fromcss(stroke).tohex()}")'
 
         return super().__getattribute__(attr)
 
@@ -213,7 +210,7 @@ class Styling:
             operator.methodcaller("startswith", "_"), dir(self)
         )
 
-    def __getitem__(self, attrs: str | tuple[str] | Styling) -> str | None:
+    def __getitem__(self, attrs: str | cabc.Iterable[str]) -> str | None:
         if isinstance(attrs, str):
             attrs = (attrs,) if attrs else self
         return (
@@ -223,11 +220,15 @@ class Styling:
 
     @classmethod
     def _to_css(
-        cls, value: float | int | str | cabc.Iterable
+        cls, value: float | int | str | aird.RGB | cabc.Iterable | None
     ) -> float | int | str:
         if isinstance(value, (str, int, float)):
             return value
-        if isinstance(value, cabc.Iterable):
+        elif value is None:
+            return "none"
+        elif isinstance(value, aird.RGB):
+            return f"#{value.tohex()}"
+        elif isinstance(value, cabc.Iterable):
             return f'url("#{cls._generate_id("CustomGradient", value)}")'
         raise ValueError(f"Invalid styling value: {value!r}")
 
@@ -243,52 +244,6 @@ class Styling:
 
     def __str__(self) -> str:
         return self[""] or ""
-
-    def _deploy_defs(self, drawing: Drawing) -> None:
-        defs_ids = {d.attribs.get("id") for d in drawing.defs.elements}
-        for attr in self:
-            val = getattr(self, attr)
-            if isinstance(val, cabc.Iterable) and not isinstance(val, str):
-                grad_id = self._generate_id("CustomGradient", val)
-                if grad_id not in defs_ids:
-                    drawing.defs.add(
-                        symbols._make_lgradient(id_=grad_id, stop_colors=val)
-                    )
-                    defs_ids.add(grad_id)
-
-        defaultstyles = aird.get_style(self._diagram_class, self._class)
-
-        def getstyleattr(sobj: object, attr: str) -> t.Any:
-            return getattr(sobj, attr, None) or defaultstyles.get(
-                self._style_name(attr)
-            )
-
-        markers = (
-            getstyleattr(super(), "marker-start"),
-            getstyleattr(super(), "marker-end"),
-        )
-        for marker in markers:
-            if marker is None:
-                continue
-
-            stroke = str(getstyleattr(self, "stroke"))
-            stroke_width = str(getstyleattr(self, "stroke-width"))
-            marker_id = self._generate_id(marker, [stroke])
-            if marker_id not in defs_ids:
-                drawing.defs.add(
-                    decorations.deco_factories[marker](
-                        marker_id,
-                        style=Styling(
-                            self._diagram_class,
-                            self._class,
-                            _prefix=self._prefix,
-                            fill=stroke,
-                            stroke=stroke,
-                            stroke_width=stroke_width,
-                        ),
-                    )
-                )
-                defs_ids.add(marker_id)
 
     def _style_name(self, attr: str) -> str:
         if not self._prefix:

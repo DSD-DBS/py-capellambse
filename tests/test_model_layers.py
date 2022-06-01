@@ -1,6 +1,8 @@
 # Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
+import math
 import typing as t
 
 import markupsafe
@@ -450,6 +452,21 @@ def test_model_search_finds_elements(
         assert item in found
 
 
+def test_model_search_below_filters_elements_by_ancestor(
+    model: capellambse.MelodyModel,
+):
+    parent = model.by_uuid("6583b560-6d2f-4190-baa2-94eef179c8ea")
+    expected = {
+        "3bdd4fa2-5646-44a1-9fa6-80c68433ddb7",
+        "a58821df-c5b4-4958-9455-0d30755be6b1",
+    }
+
+    nested = model.search("LogicalComponent", below=parent)
+
+    actual = {i.uuid for i in nested}
+    assert actual == expected
+
+
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
     comm = model.by_uuid("6638ccd2-61cc-481e-bb23-4c1b147e1dbc")
     env = model.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
@@ -754,3 +771,30 @@ class TestArchitectureLayers:
         cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
 
         assert cex.allocating_physical_path == cex.owner == path
+
+
+@pytest.mark.parametrize(
+    ["attr", "value"],
+    [("min_card", 1), ("max_card", math.inf)],
+)
+def test_literal_numeric_value_star_is_infinity(
+    model: capellambse.MelodyModel, attr: str, value: float | int
+):
+    prop = model.by_uuid("424efd65-eaa9-4220-b61b-fb3340dbc19a")
+
+    assert getattr(prop, attr).value == value
+
+
+@pytest.mark.parametrize(
+    ["value", "expected_xml"],
+    [(math.inf, "*"), (1, "1"), (0, "0")],
+)
+def test_literal_numeric_value_infinity_is_star(
+    model: capellambse.MelodyModel, value, expected_xml
+):
+    prop = model.by_uuid("424efd65-eaa9-4220-b61b-fb3340dbc19a")
+    max_card = prop.max_card
+
+    max_card.value = value
+
+    assert max_card._element.get("value") == expected_xml
