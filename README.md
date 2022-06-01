@@ -115,6 +115,8 @@ be shown a statically rendered preview of the notebook.
   and linked up with other model elements. Based on this functionality,
   `capellambse` also provides a basic exporter for `.reqif` and `.reqifz`
   files.
+- [`07 Code Generation.ipynb`](examples/07%20Code%20Generation.ipynb) shows how
+  to generate code from class diagrams.
 
 We are constantly working on improving everything shown here, as well as adding
 even more useful functionality and helpful demos. If you have any new ideas
