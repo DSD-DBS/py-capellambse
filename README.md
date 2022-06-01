@@ -27,7 +27,10 @@ are added.
 [API documentation]: https://dsd-dbs.github.io/py-capellambse/
 
 You are encouraged to explore our test models and demo notebooks. Click on the
-button below to start a myBinder instance and get started in seconds:
+button below to launch a [Jupyter notebook server] on the public myBinder
+service, and get started in seconds:
+
+[Jupyter notebook server]: https://jupyter.org/
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01%20Introduction.ipynb)
 
@@ -83,7 +86,7 @@ that were not mentioned yet, [don't hesitate to contribute](CONTRIBUTING.md)!
 In order to use private models that are not publicly available, please install
 and use `capellambse` in a local, trusted environment.
 
-You can follow these instructions to start a local Jupyter notebook server
+You can follow these instructions to start a local [Jupyter notebook server]
 within minutes:
 
 1. Create a virtual environment.
