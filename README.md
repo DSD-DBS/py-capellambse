@@ -71,8 +71,8 @@ be shown a statically rendered preview of the notebook.
   how to use Capella Library Projects within capellambse. In this example
   you'll learn how the API can be used to open a project that is based on a
   library and find objects in both models.
-- [`06 Introduction to Requirement access and management with ReqIF
-  extension.ipynb`](examples/06%20Introduction%20to%20Requirement%20access%20and%20management%20with%20ReqIF%20extension.ipynb)
+- [`06 Introduction to Requirement access and
+  management.ipynb`](examples/06%20Introduction%20to%20Requirement%20access%20and%20management.ipynb)
   shows how the API can be used to work with requirements objects, introduced
   by the Capella [Requirements Viewpoint]. In this example you'll see how to
   find requirements in the model, see which objects requirements are linked /
