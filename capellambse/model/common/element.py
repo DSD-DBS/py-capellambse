@@ -18,6 +18,7 @@ import functools
 import inspect
 import operator
 import re
+import textwrap
 import typing as t
 
 import markupsafe
@@ -240,6 +241,37 @@ class GenericElement:
         return hash(self._element)
 
     def __repr__(self) -> str:  # pragma: no cover
+        header = self._short_repr_()
+
+        attrs: list[str] = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            try:
+                value = getattr(self, attr)
+            except Exception:
+                continue
+
+            if inspect.ismethod(value):
+                continue
+
+            if hasattr(value, "_short_repr_"):
+                value_repr = f"{value._short_repr_()}"
+            else:
+                value_repr = textwrap.shorten(repr(value), 250)
+
+            prefix = f".{attr} = "
+            blankprefix = " " * len(prefix)
+            value_repr = "\n".join(
+                (prefix, blankprefix)[bool(i)] + line
+                for i, line in enumerate(value_repr.splitlines() or [""])
+            )
+            attrs.append(value_repr)
+
+        attr_text = "\n".join(attrs)
+        return f"{header}\n{attr_text}"
+
+    def _short_repr_(self) -> str:
         # pylint: disable=unidiomatic-typecheck
         if type(self) is GenericElement:
             mytype = f"Model element ({self.xtype})"
@@ -659,7 +691,25 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return "\n".join(f"* {e!s}" for e in self)
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
+        if not self:
+            return "[]"
+
+        items: list[str] = []
+        for i, item in enumerate(self):
+            if hasattr(item, "_short_repr_"):
+                rv = item._short_repr_()
+            else:
+                rv = repr(item)
+            r = rv.splitlines() or [""]
+            prefix = f"[{i}] "
+            r[0] = prefix + r[0]
+            prefix = " " * len(prefix)
+            r[1:] = [prefix + l for l in r[1:]]
+            items.append("\n".join(r))
+        return "\n".join(items)
+
+    def _short_repr_(self) -> str:
+        return repr(self)
 
     def __html__(self) -> markupsafe.Markup:
         if not self:
