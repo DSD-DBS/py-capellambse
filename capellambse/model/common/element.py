@@ -355,12 +355,12 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     class _Filter(t.Generic[U]):
         """Filters this list based on an extractor function."""
 
-        __slots__ = ("extractor_func", "parent", "positive", "single")
+        __slots__ = ("attr", "parent", "positive", "single")
 
         def __init__(
             self,
             parent: ElementList[T],
-            extract_key: cabc.Callable[[T], U],
+            attr: str,
             *,
             positive: bool = True,
             single: bool = False,
@@ -386,13 +386,14 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 none match, a ``KeyError`` is raised.
                 Can be overridden at call time.
             """
-            self.extractor_func = extract_key
+            self.attr = attr
             self.parent = parent
             self.positive = positive
             self.single = single
 
         def extract_key(self, element: T) -> U | str:
-            value: U | enum.Enum | str = self.extractor_func(element)
+            extractor = operator.attrgetter(self.attr)
+            value: U | enum.Enum | str = extractor(element)
             if isinstance(value, enum.Enum):
                 value = value.name
             return value
@@ -616,17 +617,13 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     ) -> cabc.Callable[..., T | ElementList[T]]:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
-            extractor = operator.attrgetter(attr)
             if attr in {"name", "uuid"}:
-                # single match only
-                return self._Filter(self, extractor, single=True)
-            # multiple matches
-            return self._Filter(self, extractor)
+                return self._Filter(self, attr, single=True)
+            return self._Filter(self, attr)
 
         if attr.startswith("exclude_") and attr.endswith("s"):
             attr = attr[len("exclude_") : -len("s")]
-            extractor = operator.attrgetter(attr)
-            return self._Filter(self, extractor, positive=False)
+            return self._Filter(self, attr, positive=False)
 
         return getattr(super(), attr)
 
@@ -791,6 +788,11 @@ class MixedElementList(ElementList[GenericElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
     class _LowercaseFilter(ElementList._Filter[U], t.Generic[U]):
+        def extract_key(self, element: ModelObject) -> U | str:
+            value = super().extract_key(element)
+            assert isinstance(value, str)
+            return value.lower()
+
         def make_values_container(self, *values: U) -> cabc.Container[U]:
             return tuple(map(operator.methodcaller("lower"), values))
 
@@ -815,9 +817,7 @@ class MixedElementList(ElementList[GenericElement]):
         self, attr: str
     ) -> cabc.Callable[..., GenericElement | ElementList[GenericElement]]:
         if attr == "by_type":
-            return self._LowercaseFilter(
-                self, lambda e: type(e).__name__.lower()
-            )
+            return self._LowercaseFilter(self, "__class__.__name__")
         return super().__getattr__(attr)
 
     def __dir__(self) -> list[str]:  # pragma: no cover
