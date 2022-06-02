@@ -355,7 +355,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     class _Filter(t.Generic[U]):
         """Filters this list based on an extractor function."""
 
-        __slots__ = ("attr", "parent", "positive", "single")
+        __slots__ = ("_attr", "_parent", "_positive", "_single")
 
         def __init__(
             self,
@@ -386,13 +386,13 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 none match, a ``KeyError`` is raised.
                 Can be overridden at call time.
             """
-            self.attr = attr
-            self.parent = parent
-            self.positive = positive
-            self.single = single
+            self._attr = attr
+            self._parent = parent
+            self._positive = positive
+            self._single = single
 
         def extract_key(self, element: T) -> U | str:
-            extractor = operator.attrgetter(self.attr)
+            extractor = operator.attrgetter(self._attr)
             value: U | enum.Enum | str = extractor(element)
             if isinstance(value, enum.Enum):
                 value = value.name
@@ -407,7 +407,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             except AttributeError:
                 return False
 
-            return self.positive == (value in valueset)
+            return self._positive == (value in valueset)
 
         def __call__(
             self, *values: U, single: bool | None = None
@@ -423,17 +423,17 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 the constructor for this filter call.
             """
             if single is None:
-                single = self.single
+                single = self._single
             valueset = self.make_values_container(*values)
             indices = []
             elements = []
-            for i, elm in enumerate(self.parent):
+            for i, elm in enumerate(self._parent):
                 if self.ismatch(elm, valueset):
                     indices.append(i)
-                    elements.append(self.parent._elements[i])
+                    elements.append(self._parent._elements[i])
 
             if not single:
-                return self.parent._newlist(elements)
+                return self._parent._newlist(elements)
             if len(elements) > 1:
                 raise KeyError(
                     "Multiple matches for {!r}".format(
@@ -442,7 +442,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 )
             if len(elements) == 0:
                 raise KeyError(values[0] if len(values) == 1 else values)
-            return self.parent[indices[0]]  # Ensure proper construction
+            return self._parent[indices[0]]  # Ensure proper construction
 
         def __iter__(self) -> cabc.Iterator[U | str]:
             """Yield values that result in a non-empty list when filtered for.
@@ -457,7 +457,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             # Use list, since not all elements may be hashable.
             yielded: set[U | str] = set()
 
-            for elm in self.parent:
+            for elm in self._parent:
                 key = self.extract_key(elm)
                 if key not in yielded:
                     yield key
@@ -465,10 +465,20 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
         def __contains__(self, value: U) -> bool:
             valueset = self.make_values_container(value)
-            for elm in self.parent:
+            for elm in self._parent:
                 if self.ismatch(elm, valueset):
                     return True
             return False
+
+        def __getattr__(self, attr: str) -> ElementList._Filter[U]:
+            if attr.startswith("_"):
+                raise AttributeError(f"Invalid filter attribute name: {attr}")
+            return type(self)(
+                self._parent,
+                f"{self._attr}.{attr}",
+                positive=self._positive,
+                single=self._single,
+            )
 
     def __init__(
         self,
@@ -746,11 +756,11 @@ class CachedElementList(ElementList[T], t.Generic[T]):
             newlist: T | ElementList[T] = super().__call__(
                 *values, single=single
             )
-            if single or self.single:
+            if single or self._single:
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = self.parent.cacheattr  # type: ignore[assignment]
+            newlist.cacheattr = self._parent.cacheattr  # type: ignore[assignment]
             return newlist
 
     def __init__(
