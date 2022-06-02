@@ -630,43 +630,6 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
         return getattr(super(), attr)
 
-    def _filter(
-        self,
-        extract_key: cabc.Callable[[T], t.Any],
-        *values: t.Any,
-        positive: bool = True,
-        single: bool = False,
-    ) -> T | ElementList[T]:
-        """Filter elements using an arbitrary extractor function.
-
-        If the extractor returns an :class:`enum.Enum` member for any
-        element, the enum member's name will be used for comparisons
-        against any ``values``.
-
-        The matched elements are encapsulated in a new instance of the
-        same class that this method was called on.  If ``single`` is
-        True, then only the single element that was matched is returned
-        instead.  If ``single`` is True and nothing matches, a
-        ``KeyError`` is raised; otherwise an empty list is returned.
-
-        Parameters
-        ----------
-        extract_key
-            A single-parameter Callable that extracts the search key
-            from a list element.
-        values
-            The values to check
-        positive
-            True to use the elements that match, False to use the
-            elements that do **not** match.
-        single
-            Return a single element instead of a list.  If this is True,
-            matching multiple elements is an error.
-        """
-        return self._Filter(
-            self, extract_key, positive=positive, single=single
-        )(*values)
-
     def __dir__(self) -> list[str]:  # pragma: no cover
         no_dir_attr = re.compile(r"^(_|as_|pvmt$|nodes$|diagrams?$)")
 
