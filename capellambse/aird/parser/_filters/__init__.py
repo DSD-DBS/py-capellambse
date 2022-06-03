@@ -32,7 +32,7 @@ GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 LOGGER = logging.getLogger(__name__)
 
-XP_PLUGIN = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
+PLUGIN_PATH = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
@@ -284,7 +284,7 @@ class ActiveFilters(t.MutableSet[str]):
     @staticmethod
     def _get_filter_name(filter: etree._Element) -> str | None:
         filter_name = c.RE_COMPOSITE_FILTER.search(filter.get("href", ""))
-        if filter_name is not None:
+        if filter_name:
             return filter_name.group(1)
         return None
 
@@ -295,7 +295,7 @@ class ActiveFilters(t.MutableSet[str]):
 
     def __iter__(self) -> cabc.Iterator[str]:
         for filter in self._elements:
-            if (filter_name := self._get_filter_name(filter)) is not None:
+            if filter_name := self._get_filter_name(filter):
                 yield filter_name
 
     def __len__(self) -> int:
@@ -304,14 +304,14 @@ class ActiveFilters(t.MutableSet[str]):
     def add(self, value: str) -> None:
         """Add an activated filter to the diagram.
 
-        Writes a new <activatedFilters> XML element to the
-        <diagram:DSemanticDiagram> XML element. If the ``value`` is not
+        Writes a new ``<activatedFilters>`` XML element to the
+        ``<diagram:DSemanticDiagram>`` XML element. If the ``value`` is not
         apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it can
         not be applied when rendering. It should still be visible in the
         GUI.
         """
-        if value in iter(self):
-            raise ValueError("This filter is already active on this diagram.")
+        if value in self:
+            return
 
         diag_descriptor = self._diagram._element
         viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
@@ -319,7 +319,7 @@ class ActiveFilters(t.MutableSet[str]):
         diagclass = urllib.parse.quote(diag_descriptor.styleclass)
         href = "/".join(
             (
-                f"platform:{XP_PLUGIN}",
+                f"platform:{PLUGIN_PATH}",
                 f"@ownedViewpoints[name='{viewpoint}']",
                 f"@ownedRepresentations[name='{diagclass}']",
                 f"@filters[name='{value}']",

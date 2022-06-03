@@ -273,6 +273,19 @@ class Diagram(AbstractDiagram):
 
     _element: aird.DiagramDescriptor
     _filters: aird.ActiveFilters
+    _render_params: dict[str, bool] = {}
+    """
+    Additional rendering parameters.
+
+    Rendering options for :class:`aird.Diagram`s. Changing them will
+    force a fresh rendering of the diagram, neglecting the cache.
+
+    The following parameters are currently supported:
+
+        - ``sorted_exchangedItems`` (*bool*): Enable ExchangeItem
+        sorting when rendering diagrams with active ExchangeItems
+        filter (``show.exchange.items.filter``).
+    """
 
     @classmethod
     def from_model(
@@ -316,7 +329,7 @@ class Diagram(AbstractDiagram):
             return modeltypes.DiagramType.UNKNOWN
 
     @property
-    def filters(self) -> aird.parser._filters.ActiveFilters:
+    def filters(self) -> t.MutableSet[str]:
         """Return a set of currently activated filters on this diagram."""
         return aird.ActiveFilters(self._model, self)
 
@@ -327,19 +340,6 @@ class Diagram(AbstractDiagram):
         self.invalidate_cache()
         for filter in filters:
             active_filters.add(filter)
-
-    @property
-    def render_params(self) -> dict[str, bool]:
-        """
-        Return additional rendering parameters.
-
-        Rendering options for :class:`aird.Diagram`s in conjunction with
-        :attr:`Diagram.filters`. For e.g. enable ExchangeItem sorting when
-        rendering diagrams with active ExchangeItems filter
-        (`show.exchange.items.filter`). Changing them will force a fresh
-        rendering of the diagram, neglecting the cache.
-        """
-        return self._render_params
 
     def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
         return aird.parse_diagram(self._model._loader, self._element, **params)
