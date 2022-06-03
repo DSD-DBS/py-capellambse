@@ -284,12 +284,10 @@ class Diagram(AbstractDiagram):
         self = cls.__new__(cls)
         self._model = model
         self._element = descriptor
-        self._filters = aird.ActiveFilters(self._model, self)
         return self
 
     def __init__(self, **kw: t.Any) -> None:
         # pylint: disable=super-init-not-called
-        # Do I need to explain this suppression?
         raise TypeError("Cannot create a Diagram this way")
 
     def __eq__(self, other: object) -> bool:
@@ -320,19 +318,15 @@ class Diagram(AbstractDiagram):
     @property
     def filters(self) -> aird.parser._filters.ActiveFilters:
         """Return a set of currently activated filters on this diagram."""
-        return self._filters
-
-    @filters.deleter
-    def filters(self) -> None:
-        active_filters = aird.parser._filters.ActiveFilters(self._model, self)
-        active_filters.clear()
-        self.invalidate_cache()
+        return aird.ActiveFilters(self._model, self)
 
     @filters.setter
     def filters(self, filters: cabc.Iterable[str]) -> None:
-        for filter in filters:
-            self._filters.add(filter)
+        active_filters = aird.ActiveFilters(self._model, self)
+        active_filters.clear()
         self.invalidate_cache()
+        for filter in filters:
+            active_filters.add(filter)
 
     @property
     def render_params(self) -> dict[str, bool]:
