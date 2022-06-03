@@ -31,7 +31,7 @@ def test_AttributeAuditor_handles_recursive_uuid(
     assert {comp.uuid} == auditor.recorded_ids
 
 
-def test_AttributeAuditor_destroys_model_when_detach(
+def test_AttributeAuditor_destroys_model_reference_when_detach(
     model: capellambse.MelodyModel,
 ):
     auditor = auditing.AttributeAuditor(model, {"name"})
