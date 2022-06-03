@@ -34,10 +34,8 @@ def test_AttributeAuditor_handles_recursive_uuid(
 def test_AttributeAuditor_destroys_model_when_detach(
     model: capellambse.MelodyModel,
 ):
-    model_mid = id(model)
     auditor = auditing.AttributeAuditor(model, {"name"})
 
     auditor.detach()
 
     assert auditor.model is None
-    assert id(auditor.model) != model_mid
