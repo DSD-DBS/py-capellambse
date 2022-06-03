@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import sys
 import warnings
 
 import markupsafe
@@ -540,7 +541,9 @@ class AttrProxyAccessor(PhysicalAccessor):
             else:
                 next_xtype = elemref
 
-        return self._make_list(obj, elems)
+        rv = self._make_list(obj, elems)
+        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def __set__(
         self,

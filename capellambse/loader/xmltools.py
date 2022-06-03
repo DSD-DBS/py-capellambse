@@ -9,6 +9,7 @@ import collections.abc as cabc
 import datetime
 import enum
 import math
+import sys
 import typing as t
 
 from lxml import etree
@@ -94,7 +95,7 @@ class AttributeProperty:
 
         xml_element = getattr(obj, self.xmlattr)
         try:
-            return self.returntype(xml_element.attrib[self.attribute])
+            rv = self.returntype(xml_element.attrib[self.attribute])
         except KeyError:
             if self.default is not self.NOT_OPTIONAL:
                 return self.default and self.returntype(
@@ -103,6 +104,9 @@ class AttributeProperty:
             raise TypeError(
                 f"Mandatory XML attribute {self.attribute!r} not found on {xml_element!r}"
             ) from None
+
+        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def __set__(self, obj, value) -> None:
         xml_element = getattr(obj, self.xmlattr)
