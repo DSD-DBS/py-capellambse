@@ -30,7 +30,7 @@ class AttributeAuditor:
     >>> auditor.recorded_ids
     {'0d2edb8f-fa34-4e73-89ec-fb9a63001440'}
     >>> # Cleanup
-    >>> auditor.model.detach()
+    >>> auditor.detach()
 
     >>> with AttributeAuditor(model, {"name", "description"}) as recorded_ids:
     ...     print(model.la.all_components[0].name)
