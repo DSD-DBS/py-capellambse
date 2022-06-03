@@ -340,10 +340,9 @@ class ActiveFilters(t.MutableSet[str]):
         for filter in self._elements:
             filter_name = self._get_filter_name(filter)
             if filter_name is not None and value == filter_name:
+                self._target.remove(filter)
+                self._diagram.invalidate_cache()
                 break
-
-        self._target.remove(filter)  # pylint: disable=undefined-loop-variable
-        self._diagram.invalidate_cache()
 
     def __repr__(self) -> str:  # pragma: no cover
         return f"{set(self)!r}"
