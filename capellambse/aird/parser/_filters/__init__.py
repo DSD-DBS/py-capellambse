@@ -32,7 +32,7 @@ GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 LOGGER = logging.getLogger(__name__)
 
-XP_PLUGIN = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
+PLUGIN_PATH = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
@@ -319,7 +319,7 @@ class ActiveFilters(t.MutableSet[str]):
         diagclass = urllib.parse.quote(diag_descriptor.styleclass)
         href = "/".join(
             (
-                f"platform:{XP_PLUGIN}",
+                f"platform:{PLUGIN_PATH}",
                 f"@ownedViewpoints[name='{viewpoint}']",
                 f"@ownedRepresentations[name='{diagclass}']",
                 f"@filters[name='{value}']",
