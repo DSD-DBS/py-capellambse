@@ -48,7 +48,6 @@ class AttributeAuditor:
         self.model: capellambse.MelodyModel | None = model
         self.attrs = attrs or helpers.EverythingContainer()
         self.recorded_ids: set[str] = set()
-        self.last_audit = (None, "")
 
         sys.addaudithook(self.__audit)
 
@@ -63,14 +62,11 @@ class AttributeAuditor:
 
     def __audit(self, event: str, args: tuple[t.Any, ...]) -> None:
         if event == "capellambse.read_attribute":
-            obj, attr_name, _ = args
-            last_obj, last_attr = self.last_audit
-            if obj is last_obj and attr_name == last_attr:
-                return
-
-            self.last_audit = (obj, attr_name)
+            obj, attr_name, attr_value = args
             if not hasattr(obj, "_model") or obj._model is not self.model:
                 return
 
-            if attr_name in self.attrs and hasattr(obj, "uuid"):
-                self.recorded_ids.add(obj.uuid)
+            if attr_name in self.attrs:
+                self.recorded_ids.add(
+                    attr_value if attr_name == "uuid" else obj.uuid
+                )
