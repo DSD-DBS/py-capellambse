@@ -427,19 +427,20 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             raise TypeError("Cannot create objects here")
 
         if type_hints:
-            elmclass, xtype = self._match_xtype(*type_hints)
+            elmclass, kw["xtype"] = self._match_xtype(*type_hints)
         else:
-            elmclass, xtype = self._guess_xtype()
+            elmclass, kw["xtype"] = self._guess_xtype()
 
         assert elmclass is not None
         assert isinstance(elmlist._parent, element.GenericElement)
         assert issubclass(elmclass, element.GenericElement)
 
         parent = elmlist._parent._element
-        with elmlist._model._loader.new_uuid(parent) as obj_id:
-            obj = elmclass(
-                elmlist._model, parent, **kw, xtype=xtype, uuid=obj_id
-            )
+        want_id: str | None = None
+        if "uuid" in kw:
+            want_id = kw.pop("uuid")
+        with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
+            obj = elmclass(elmlist._model, parent, **kw, uuid=obj_id)
         return obj  # type: ignore[return-value]
 
     def insert(

@@ -4,9 +4,15 @@
 """Helps loading Capella models (including fragmented variants)."""
 from __future__ import annotations
 
+__all__ = [
+    "FragmentType",
+    "MelodyLoader",
+]
+
 import collections
 import collections.abc as cabc
 import contextlib
+import enum
 import itertools
 import logging
 import operator
@@ -27,21 +33,28 @@ from capellambse.loader.filehandler import localfilehandler
 from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
-VALID_EXTS = frozenset(
+VISUAL_EXTS = frozenset(
     {
-        ".afm",
         ".aird",
         ".airdfragment",
+    }
+)
+SEMANTIC_EXTS = frozenset(
+    {
         ".capella",
         ".capellafragment",
         ".melodyfragment",
         ".melodymodeller",
     }
 )
+VALID_EXTS = VISUAL_EXTS | SEMANTIC_EXTS | {".afm"}
 ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
 IDTYPES_RESOLVED = frozenset(helpers.resolve_namespace(t) for t in IDTYPES)
+RE_VALID_ID = re.compile(
+    r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
+)
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
 CROSS_FRAGMENT_LINK = re.compile(
     r"""
@@ -82,6 +95,14 @@ def _unquote_ref(ref: str) -> str:
     return ref
 
 
+class FragmentType(enum.Enum):
+    """The type of an XML fragment."""
+
+    SEMANTIC = enum.auto()
+    VISUAL = enum.auto()
+    OTHER = enum.auto()
+
+
 class MissingResourceLocationError(KeyError):
     """Raised when a model needs an additional resource location."""
 
@@ -94,9 +115,18 @@ class ResourceLocationManager(dict):
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
-    __xtypecache: dict[str | None, list[etree._Element]]
+    __xtypecache: dict[str, list[etree._Element]]
     __idcache: dict[str, etree._Element]
     __hrefsources: dict[str, etree._Element]
+
+    @property
+    def fragment_type(self) -> FragmentType:
+        if self.filename.suffix in SEMANTIC_EXTS:
+            return FragmentType.SEMANTIC
+        elif self.filename.suffix in VISUAL_EXTS:
+            return FragmentType.VISUAL
+        else:
+            return FragmentType.OTHER
 
     def __init__(
         self, filename: pathlib.PurePosixPath, handler: filehandler.FileHandler
@@ -119,7 +149,9 @@ class ModelFile:
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``."""
         for elm in subtree.iter():
-            self.__xtypecache[helpers.xtype_of(elm)].append(elm)
+            xtype = helpers.xtype_of(elm)
+            if xtype is not None:
+                self.__xtypecache[xtype].append(elm)
 
             for idtype in IDTYPES_RESOLVED:
                 elm_id = elm.get(idtype, None)
@@ -141,7 +173,9 @@ class ModelFile:
 
         else:
             for elm in source.iter():
-                self.__xtypecache[helpers.xtype_of(elm)].remove(elm)
+                xtype = helpers.xtype_of(elm)
+                if xtype:
+                    self.__xtypecache[xtype].remove(elm)
                 for idtype in IDTYPES_RESOLVED:
                     elm_id = elm.get(idtype, None)
                     if elm_id is None:
@@ -362,25 +396,42 @@ class MelodyLoader:
         for tree in self.trees.values():
             tree.idcache_rebuild()
 
-    def generate_uuid(self, parent: etree._Element) -> str:
+    def generate_uuid(
+        self, parent: etree._Element, *, want: str | None = None
+    ) -> str:
         """Generate a unique UUID for a new child of ``parent``.
 
         The generated ID is guaranteed to be unique across all currently
         loaded fragments.
+
+        Parameters
+        ----------
+        want
+            Try this UUID first, and use it if it satisfies all other
+            constraints. If it does not satisfy all constraints (e.g. it
+            would be non-unique), a random UUID will be generated as
+            normal.
         """
+
+        def idstream() -> t.Iterator[str]:
+            if want and RE_VALID_ID.fullmatch(want):
+                yield want
+            while True:
+                yield str(uuid.uuid4())
+
         _, tree = self._find_fragment(parent)
 
-        while True:
-            new_id = str(uuid.uuid4())
+        for new_id in idstream():
             try:
                 self[new_id]
             except KeyError:
                 tree.idcache_reserve(new_id)
                 return new_id
+        assert False
 
     @contextlib.contextmanager
     def new_uuid(
-        self, parent: etree._Element
+        self, parent: etree._Element, *, want: str | None = None
     ) -> cabc.Generator[str, None, None]:
         """Context Manager around :meth:`generate_uuid()`.
 
@@ -412,7 +463,7 @@ class MelodyLoader:
             The parent element below which the new UUID will be used.
         """
         _, tree = self._find_fragment(parent)
-        new_uuid = self.generate_uuid(parent)
+        new_uuid = self.generate_uuid(parent, want=want)
 
         def cleanup_after_failure() -> None:
             tree.idcache_remove(new_uuid)
@@ -527,9 +578,6 @@ class MelodyLoader:
             A list of XML elements to use as roots for the query.
             Defaults to all tree roots.
         """
-        if not xsi_types:
-            return []
-
         if roots is None:
             return list(self.iterall_xt(*xsi_types))
         elif isinstance(roots, etree._Element):
@@ -541,7 +589,7 @@ class MelodyLoader:
         return [
             i
             for i in itertools.chain.from_iterable(roots)
-            if helpers.xtype_of(i) in xtset
+            if (xt := helpers.xtype_of(i)) is not None and xt in xtset
         ]
 
     def iterall(self, *tags: str) -> cabc.Iterator[etree._Element]:
@@ -559,6 +607,7 @@ class MelodyLoader:
     def iterall_xt(
         self,
         *xtypes: str,
+        trees: cabc.Container[pathlib.PurePosixPath] | None = None,
     ) -> cabc.Iterator[etree._Element]:
         r"""Iterate over all elements in all trees by ``xsi:type``\ s.
 
@@ -566,12 +615,17 @@ class MelodyLoader:
         ----------
         xtypes
             Optionally restrict the iterator to these ``xsi:type``\ s
+        trees
+            Optionally restrict the iterator to elements that reside in
+            any of the named trees.
         """
         xtset = self._nonempty_hashset(xtypes)
+        if trees is None:
+            files: cabc.Iterable[ModelFile] = self.trees.values()
+        else:
+            files = (v for k, v in self.trees.items() if k in trees)
         return itertools.chain.from_iterable(
-            map(
-                operator.methodcaller("iterall_xt", xtset), self.trees.values()
-            )
+            map(operator.methodcaller("iterall_xt", xtset), files)
         )
 
     def iterdescendants(

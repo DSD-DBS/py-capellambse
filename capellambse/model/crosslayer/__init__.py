@@ -27,11 +27,10 @@ class BaseArchitectureLayer(c.GenericElement):
         information.Union, deep=True, aslist=c.ElementList
     )
     all_enumerations = c.ProxyAccessor(
-        information.Enumeration, deep=True, aslist=c.ElementList
+        information.datatype.Enumeration, deep=True, aslist=c.ElementList
     )
     all_complex_values = c.ProxyAccessor(
-        information.ComplexValue,
-        "org.polarsys.capella.core.data.information.datavalue:ComplexValue",
+        information.datavalue.ComplexValue,
         deep=True,
         aslist=c.ElementList,
         follow_abstract=False,

@@ -65,6 +65,7 @@ class MelodyModel:
         *,
         diagram_cache: str | os.PathLike | None = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
+        jupyter_untrusted: bool = False,
         **kwargs: t.Any,
     ) -> None:
         """Load a project.
@@ -150,6 +151,12 @@ class MelodyModel:
             looking them up in the ``diagram_cache``.
 
             *This argument is **not** passed to the file handler.*
+        jupyter_untrusted
+            If set to True, restricts or disables some features that are
+            unavailable in an untrusted Jupyter environment. Currently
+            this only disables the SVG format as rich display option for
+            Ipython, which is needed to avoid rendering issues with
+            Github's Jupyter notebook viewer.
 
         See Also
         --------
@@ -166,6 +173,7 @@ class MelodyModel:
         """
         self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
+        self.jupyter_untrusted = jupyter_untrusted
 
         try:
             self._pvext = capellambse.pvmt.load_pvmt_from_model(self._loader)
@@ -218,13 +226,31 @@ class MelodyModel:
         self._loader.save(**kw)
 
     def search(
-        self, *xtypes: str | type[common.GenericElement]
+        self,
+        *xtypes: str | type[common.GenericElement],
+        below: common.GenericElement | None = None,
     ) -> common.ElementList:
         r"""Search for all elements with any of the given ``xsi:type``\ s.
 
         If only one xtype is given, the return type will be
         :class:`common.ElementList`, otherwise it will be
         :class:`common.MixedElementList`.
+
+        If no ``xtypes`` are given at all, this method will return an
+        exhaustive list of all (semantic) model objects that have an
+        ``xsi:type`` set.
+
+        Parameters
+        ----------
+        xtypes
+            The ``xsi:type``\ s to search for, or the classes
+            corresponding to them (or a mix of both).
+        below
+            A model element to constrain the search. If given, only
+            those elements will be returned that are (immediate or
+            nested) children of this element. This option takes into
+            account model fragmentation, but it does not treat link
+            elements specially.
         """
         xtypes_: list[str] = []
         for i in xtypes:
@@ -233,15 +259,26 @@ class MelodyModel:
             elif ":" in i:
                 xtypes_.append(i)
             else:
-                for _, l in common.XTYPE_HANDLERS.items():
-                    xtypes_.extend(t for t in l if t.endswith(":" + i))
+                suffix = ":" + i
+                matching_types: list[str] = []
+                for l in common.XTYPE_HANDLERS.values():
+                    matching_types.extend(t for t in l if t.endswith(suffix))
+                if not matching_types:
+                    raise ValueError(f"Unknown incomplete type name: {i}")
+                xtypes_.extend(matching_types)
 
-        cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
-        return cls(
-            self,
-            self._loader.find_by_xsi_type(*xtypes_),
-            common.GenericElement,
-        )
+        cls = (common.MixedElementList, common.ElementList)[len(xtypes_) == 1]
+        trees = {
+            k
+            for k, v in self._loader.trees.items()
+            if v.fragment_type is loader.FragmentType.SEMANTIC
+        }
+        matches = self._loader.iterall_xt(*xtypes_, trees=trees)
+        if below is not None:
+            matches = (
+                i for i in matches if below._element in i.iterancestors()
+            )
+        return cls(self, list(matches), common.GenericElement)
 
     def by_uuid(self, uuid: str) -> common.GenericElement:
         """Search the entire model for an element with the given UUID."""

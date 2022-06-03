@@ -13,9 +13,10 @@ import typing as t
 from svgwrite import base, container, drawing, shapes
 from svgwrite import text as svgtext
 
+from capellambse import aird
 from capellambse import helpers as chelpers
 
-from . import decorations, generate, helpers, style
+from . import decorations, generate, helpers, style, symbols
 
 LOGGER = logging.getLogger(__name__)
 DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
@@ -51,8 +52,9 @@ class Drawing(drawing.Drawing):
         super().__init__(**superparams)
         self.diagram_class = metadata.class_
         self.stylesheet = self.make_stylesheet()
-        self.obj_cache: dict[str | None, t.Any] = {}
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
+
+        self.obj_cache: dict[str | None, t.Any] = {}
 
     def add_backdrop(
         self, pos: tuple[float, float], size: tuple[float, float]
@@ -407,9 +409,11 @@ class Drawing(drawing.Drawing):
         parent_id: str | None,
         *,
         class_: str,
+        obj_style: style.Styling | None = None,
         label: LabelDict | None = None,
         id_: str | None = None,
     ) -> container.Group:
+        styles = None if obj_style is None else obj_style[""]
         grp = self.g(class_=f"Box {class_}", id_=id_)
         if class_ in decorations.all_directed_ports:
             port_id = "#ErrorSymbol"
@@ -418,6 +422,7 @@ class Drawing(drawing.Drawing):
             elif class_ in decorations.component_ports:
                 port_id = "#ComponentPortSymbol"
 
+            grp.style = styles
             grp.add(
                 self.use(
                     href=port_id,
@@ -438,6 +443,7 @@ class Drawing(drawing.Drawing):
                     transform=self.get_port_transformation(
                         pos, size, class_, parent_id
                     ),
+                    style=styles,
                 )
             )
 
@@ -496,8 +502,57 @@ class Drawing(drawing.Drawing):
 
         drawfunc(**objparams, obj_style=obj_style, text_style=text_style)
 
-        obj_style._deploy_defs(self)
-        text_style._deploy_defs(self)
+        self._deploy_defs(obj_style)
+        self._deploy_defs(text_style)
+
+    def _deploy_defs(self, styling: style.Styling) -> None:
+        defs_ids = {d.attribs.get("id") for d in self.defs.elements}
+        for attr in styling:
+            val = getattr(styling, attr)
+            if isinstance(val, cabc.Iterable) and not isinstance(
+                val, (str, aird.RGB)
+            ):
+                grad_id = styling._generate_id("CustomGradient", val)
+                if grad_id not in defs_ids:
+                    gradient = symbols._make_lgradient(
+                        id_=grad_id, stop_colors=val
+                    )
+                    self.defs.add(gradient)
+                    defs_ids.add(grad_id)
+
+        defaultstyles = aird.get_style(self.diagram_class, styling._class)
+
+        def getstyleattr(sobj: object, attr: str) -> t.Any:
+            return getattr(sobj, attr, None) or defaultstyles.get(
+                styling._style_name(attr)
+            )
+
+        markers = (
+            getstyleattr(super(), "marker-start"),
+            getstyleattr(super(), "marker-end"),
+        )
+        for marker in markers:
+            if marker is None:
+                continue
+
+            stroke = str(getstyleattr(styling, "stroke"))
+            stroke_width = str(getstyleattr(styling, "stroke-width"))
+            marker_id = styling._generate_id(marker, [stroke])
+            if marker_id not in defs_ids:
+                self.defs.add(
+                    decorations.deco_factories[marker](
+                        marker_id,
+                        style=style.Styling(
+                            self.diagram_class,
+                            styling._class,
+                            _prefix=styling._prefix,
+                            fill=stroke,
+                            stroke=stroke,
+                            stroke_width=stroke_width,
+                        ),
+                    )
+                )
+                defs_ids.add(marker_id)
 
     def _draw_symbol(
         self,

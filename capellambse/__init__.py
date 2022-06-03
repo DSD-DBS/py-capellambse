@@ -51,8 +51,9 @@ from ._namespaces import (
     yield_key_and_version_from_namespaces_by_plugin,
 )
 from .auditing import AttributeAuditor
-from .loader.filehandler import get_filehandler
+from .loader.filehandler import FileHandler, get_filehandler
 from .model import MelodyModel
+from .model.common import ModelObject
 
 
 def load_model_extensions() -> None:

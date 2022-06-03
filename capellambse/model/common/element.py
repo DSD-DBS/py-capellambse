@@ -18,6 +18,7 @@ import functools
 import inspect
 import operator
 import re
+import textwrap
 import typing as t
 
 import markupsafe
@@ -98,7 +99,6 @@ class ModelObject(t.Protocol):
         cls, model: capellambse.MelodyModel, element: t.Any
     ) -> ModelObject:
         """Instantiate a ModelObject from existing model elements."""
-        ...
 
 
 class GenericElement:
@@ -241,6 +241,37 @@ class GenericElement:
         return hash(self._element)
 
     def __repr__(self) -> str:  # pragma: no cover
+        header = self._short_repr_()
+
+        attrs: list[str] = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            try:
+                value = getattr(self, attr)
+            except Exception:
+                continue
+
+            if inspect.ismethod(value):
+                continue
+
+            if hasattr(value, "_short_repr_"):
+                value_repr = f"{value._short_repr_()}"
+            else:
+                value_repr = textwrap.shorten(repr(value), 250)
+
+            prefix = f".{attr} = "
+            blankprefix = " " * len(prefix)
+            value_repr = "\n".join(
+                (prefix, blankprefix)[bool(i)] + line
+                for i, line in enumerate(value_repr.splitlines() or [""])
+            )
+            attrs.append(value_repr)
+
+        attr_text = "\n".join(attrs)
+        return f"{header}\n{attr_text}"
+
+    def _short_repr_(self) -> str:
         # pylint: disable=unidiomatic-typecheck
         if type(self) is GenericElement:
             mytype = f"Model element ({self.xtype})"
@@ -324,12 +355,12 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     class _Filter(t.Generic[U]):
         """Filters this list based on an extractor function."""
 
-        __slots__ = ("extractor_func", "parent", "positive", "single")
+        __slots__ = ("_attr", "_parent", "_positive", "_single")
 
         def __init__(
             self,
             parent: ElementList[T],
-            extract_key: cabc.Callable[[T], U],
+            attr: str,
             *,
             positive: bool = True,
             single: bool = False,
@@ -353,14 +384,16 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 When listing all matches, return a single element
                 instead.  If multiple elements match, it is an error; if
                 none match, a ``KeyError`` is raised.
+                Can be overridden at call time.
             """
-            self.extractor_func = extract_key
-            self.parent = parent
-            self.positive = positive
-            self.single = single
+            self._attr = attr
+            self._parent = parent
+            self._positive = positive
+            self._single = single
 
         def extract_key(self, element: T) -> U | str:
-            value: U | enum.Enum | str = self.extractor_func(element)
+            extractor = operator.attrgetter(self._attr)
+            value: U | enum.Enum | str = extractor(element)
             if isinstance(value, enum.Enum):
                 value = value.name
             return value
@@ -374,20 +407,33 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             except AttributeError:
                 return False
 
-            return self.positive == (value in valueset)
+            return self._positive == (value in valueset)
 
-        def __call__(self, *values: U) -> T | ElementList[T]:
-            """List all elements that match this filter."""
+        def __call__(
+            self, *values: U, single: bool | None = None
+        ) -> T | ElementList[T]:
+            """List all elements that match this filter.
+
+            Parameters
+            ----------
+            values
+                The values to match against.
+            single
+                If not ``None``, overrides the ``single`` argument to
+                the constructor for this filter call.
+            """
+            if single is None:
+                single = self._single
             valueset = self.make_values_container(*values)
             indices = []
             elements = []
-            for i, elm in enumerate(self.parent):
+            for i, elm in enumerate(self._parent):
                 if self.ismatch(elm, valueset):
                     indices.append(i)
-                    elements.append(self.parent._elements[i])
+                    elements.append(self._parent._elements[i])
 
-            if not self.single:
-                return self.parent._newlist(elements)
+            if not single:
+                return self._parent._newlist(elements)
             if len(elements) > 1:
                 raise KeyError(
                     "Multiple matches for {!r}".format(
@@ -396,7 +442,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 )
             if len(elements) == 0:
                 raise KeyError(values[0] if len(values) == 1 else values)
-            return self.parent[indices[0]]  # Ensure proper construction
+            return self._parent[indices[0]]  # Ensure proper construction
 
         def __iter__(self) -> cabc.Iterator[U | str]:
             """Yield values that result in a non-empty list when filtered for.
@@ -411,7 +457,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             # Use list, since not all elements may be hashable.
             yielded: set[U | str] = set()
 
-            for elm in self.parent:
+            for elm in self._parent:
                 key = self.extract_key(elm)
                 if key not in yielded:
                     yield key
@@ -419,10 +465,20 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
         def __contains__(self, value: U) -> bool:
             valueset = self.make_values_container(value)
-            for elm in self.parent:
+            for elm in self._parent:
                 if self.ismatch(elm, valueset):
                     return True
             return False
+
+        def __getattr__(self, attr: str) -> ElementList._Filter[U]:
+            if attr.startswith("_"):
+                raise AttributeError(f"Invalid filter attribute name: {attr}")
+            return type(self)(
+                self._parent,
+                f"{self._attr}.{attr}",
+                positive=self._positive,
+                single=self._single,
+            )
 
     def __init__(
         self,
@@ -571,56 +627,15 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     ) -> cabc.Callable[..., T | ElementList[T]]:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
-            extractor = operator.attrgetter(attr)
             if attr in {"name", "uuid"}:
-                # single match only
-                return self._Filter(self, extractor, single=True)
-            # multiple matches
-            return self._Filter(self, extractor)
+                return self._Filter(self, attr, single=True)
+            return self._Filter(self, attr)
 
         if attr.startswith("exclude_") and attr.endswith("s"):
             attr = attr[len("exclude_") : -len("s")]
-            extractor = operator.attrgetter(attr)
-            return self._Filter(self, extractor, positive=False)
+            return self._Filter(self, attr, positive=False)
 
         return getattr(super(), attr)
-
-    def _filter(
-        self,
-        extract_key: cabc.Callable[[T], t.Any],
-        *values: t.Any,
-        positive: bool = True,
-        single: bool = False,
-    ) -> T | ElementList[T]:
-        """Filter elements using an arbitrary extractor function.
-
-        If the extractor returns an :class:`enum.Enum` member for any
-        element, the enum member's name will be used for comparisons
-        against any ``values``.
-
-        The matched elements are encapsulated in a new instance of the
-        same class that this method was called on.  If ``single`` is
-        True, then only the single element that was matched is returned
-        instead.  If ``single`` is True and nothing matches, a
-        ``KeyError`` is raised; otherwise an empty list is returned.
-
-        Parameters
-        ----------
-        extract_key
-            A single-parameter Callable that extracts the search key
-            from a list element.
-        values
-            The values to check
-        positive
-            True to use the elements that match, False to use the
-            elements that do **not** match.
-        single
-            Return a single element instead of a list.  If this is True,
-            matching multiple elements is an error.
-        """
-        return self._Filter(
-            self, extract_key, positive=positive, single=single
-        )(*values)
 
     def __dir__(self) -> list[str]:  # pragma: no cover
         no_dir_attr = re.compile(r"^(_|as_|pvmt$|nodes$|diagrams?$)")
@@ -646,7 +661,25 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return "\n".join(f"* {e!s}" for e in self)
 
     def __repr__(self) -> str:  # pragma: no cover
-        return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
+        if not self:
+            return "[]"
+
+        items: list[str] = []
+        for i, item in enumerate(self):
+            if hasattr(item, "_short_repr_"):
+                rv = item._short_repr_()
+            else:
+                rv = repr(item)
+            r = rv.splitlines() or [""]
+            prefix = f"[{i}] "
+            r[0] = prefix + r[0]
+            prefix = " " * len(prefix)
+            r[1:] = [prefix + l for l in r[1:]]
+            items.append("\n".join(r))
+        return "\n".join(items)
+
+    def _short_repr_(self) -> str:
+        return repr(self)
 
     def __html__(self) -> markupsafe.Markup:
         if not self:
@@ -717,13 +750,17 @@ class CachedElementList(ElementList[T], t.Generic[T]):
     """An ElementList that caches the constructed proxies by UUID."""
 
     class _Filter(ElementList._Filter[U], t.Generic[U]):
-        def __call__(self, *values: U) -> T | ElementList[T]:
-            newlist: T | ElementList[T] = super().__call__(*values)
-            if self.single:
+        def __call__(
+            self, *values: U, single: bool | None = None
+        ) -> T | ElementList[T]:
+            newlist: T | ElementList[T] = super().__call__(
+                *values, single=single
+            )
+            if single or self._single:
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = self.parent.cacheattr  # type: ignore[assignment]
+            newlist.cacheattr = self._parent.cacheattr  # type: ignore[assignment]
             return newlist
 
     def __init__(
@@ -761,6 +798,11 @@ class MixedElementList(ElementList[GenericElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
     class _LowercaseFilter(ElementList._Filter[U], t.Generic[U]):
+        def extract_key(self, element: ModelObject) -> U | str:
+            value = super().extract_key(element)
+            assert isinstance(value, str)
+            return value.lower()
+
         def make_values_container(self, *values: U) -> cabc.Container[U]:
             return tuple(map(operator.methodcaller("lower"), values))
 
@@ -785,9 +827,7 @@ class MixedElementList(ElementList[GenericElement]):
         self, attr: str
     ) -> cabc.Callable[..., GenericElement | ElementList[GenericElement]]:
         if attr == "by_type":
-            return self._LowercaseFilter(
-                self, lambda e: type(e).__name__.lower()
-            )
+            return self._LowercaseFilter(self, "__class__.__name__")
         return super().__getattr__(attr)
 
     def __dir__(self) -> list[str]:  # pragma: no cover

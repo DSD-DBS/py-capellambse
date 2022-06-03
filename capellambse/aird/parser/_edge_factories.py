@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import dataclasses
+import math
 import typing as t
 
 from capellambse import aird, helpers
@@ -29,12 +30,6 @@ XT_EXITEM = "org.polarsys.capella.core.data.information:ExchangeItem"
 def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create an Edge from the diagram XML."""
     bendpoints, sourceport, targetport = extract_bendpoints(seb)
-    if sourceport is ... or targetport is ...:
-        C.LOGGER.warning(
-            "Source or target of edge %r were deleted, skipping",
-            seb.data_element.attrib[C.ATT_XMID],
-        )
-        raise C.SkipObject()
 
     try:
         ostyle = next(seb.diag_element.iterchildren("ownedStyle"))
@@ -46,9 +41,13 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
         ) from None
     routingstyle = ostyle.attrib.get("routingStyle")
 
-    {"manhattan": route_manhattan, "tree": route_tree,}.get(
-        routingstyle, lambda *args: None
-    )(bendpoints, sourceport, targetport)
+    if not bendpoints:
+        if routingstyle == "manhattan":
+            bendpoints = route_manhattan(sourceport, targetport)
+        elif routingstyle == "tree":
+            bendpoints = route_tree(sourceport, targetport)
+        else:
+            bendpoints = route_oblique(sourceport, targetport)
 
     edge = aird.Edge(
         bendpoints,
@@ -66,13 +65,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     edge.labels.extend(_construct_labels(edge, seb))
 
     if isinstance(targetport, aird.Box):
-        snaptarget(edge.points, -1, -2, targetport, movetarget=not edge.hidden)
-    if targetport is not None:
-        snaptarget(edge.points, -1, -2, targetport)
+        snaptarget(edge, -1, -2, targetport, not edge.hidden, routingstyle)
     if isinstance(sourceport, aird.Box):
-        snaptarget(edge.points, 0, 1, sourceport, movetarget=not edge.hidden)
-    if sourceport is not None:
-        snaptarget(edge.points, 0, 1, sourceport)
+        snaptarget(edge, 0, 1, sourceport, not edge.hidden, routingstyle)
 
     sourceport.add_context(seb.data_element.attrib["element"])
     if targetport is not None:
@@ -103,7 +98,6 @@ def extract_bendpoints(
     )
     sourceport, targetport = get_end_ports(seb)
     sourcebounds = sourceport.bounds
-    targetbounds = targetport.bounds
 
     try:
         bendpoints_elm = next(seb.data_element.iterchildren("bendpoints"))
@@ -134,12 +128,8 @@ def extract_bendpoints(
                 refpos + helpers.ssvparse(point, int, parens="[]", num=4)[:2]
             )
 
-        if all(b == bendpoints[0] for b in bendpoints):
-            # Draw a straight line between source's and target's center
-            bendpoints = [
-                sourcebounds.pos + (sourcebounds.size / 2),
-                targetbounds.pos + (targetbounds.size / 2),
-            ]
+        if len(bendpoints) == 1 or all(b == bendpoints[0] for b in bendpoints):
+            bendpoints = []
     else:
         raise ValueError(f"Unknown bendpoint type {bendpoint_type}")
 
@@ -173,10 +163,9 @@ def get_end_ports(
 
 
 def route_manhattan(
-    points: cabc.MutableSequence[aird.Vector2D],
     source: aird.DiagramElement,
     target: aird.DiagramElement,
-) -> None:
+) -> list[aird.Vector2D]:
     """Reroute an Edge using the "Manhattan" routing style.
 
     Parameters
@@ -188,112 +177,70 @@ def route_manhattan(
     target
         A Box or Edge to point to
     """
-    # TODO Implement full rerouting
-    #      Currently all this function does is slightly straighten the line,
-    #      with very narrow angle constraints.  This works okay for many cases,
-    #      but — especially when no points were given at all — this simple
-    #      approach sometimes fails to provide usable results.
-    del source, target
 
-    # Add synthetic bendpoints in the center, so line straightening will work
-    if len(points) == 2:
-        direction = points[1] - points[0]
-        axis = direction.closestaxis()
-        angle = abs(axis.angleto(direction))
-        # XXX Rough estimates for threshold - adjust if needed
-        if 0.017453292519943295 < angle < 0.4363323129985824:  # 1° .. 25°
-            center = points[0] + direction / 2
-            points = [points[0], center, center, points[1]]
+    source_point = source.vector_snap(
+        source.center, source=target.center, style=aird.RoutingStyle.MANHATTAN
+    )
+    target_point = target.vector_snap(
+        target.center, source=source.center, style=aird.RoutingStyle.MANHATTAN
+    )
 
-    if len(points) > 2:
-        # Snap the second and second-to-last bendpoint to make perfect
-        # straight lines if their angle deviation is below a threshold
-        for i, next_i in [(1, 0), (-2, -1)]:
-            direction = points[next_i] - points[i]
-            axis = direction.closestaxis()
-            if abs(axis.angleto(direction)) < 0.4363323129985824:  # 25°
-                points[i] = aird.Vector2D(
-                    points[i].x if axis.x != 0 else points[next_i].x,
-                    points[i].y if axis.y != 0 else points[next_i].y,
-                )
+    if abs(source_point.x - target_point.x) > abs(
+        source_point.y - target_point.y
+    ):
+        p1 = aird.Vector2D(
+            (source_point.x + target_point.x) / 2, source_point.y
+        )
+        p2 = aird.Vector2D(p1.x, target_point.y)
+    else:
+        p1 = aird.Vector2D(
+            source_point.x, (source_point.y + target_point.y) / 2
+        )
+        p2 = aird.Vector2D(target_point.x, p1.y)
+
+    return [source_point, p1, p2, target_point]
 
 
 def route_tree(
-    points: cabc.MutableSequence[aird.Vector2D],
     source: aird.DiagramElement,
     target: aird.DiagramElement,
-) -> None:
+) -> list[aird.Vector2D]:
     """Reroute an Edge using the "Tree" routing style.
 
     Parameters
     ----------
-    points
-        The list of points
     source
         A Box to originate from
     target
         A Box or Edge to point to
     """
-    assert len(points) >= 2
     sourcebounds = source.bounds
     sourcecenter = sourcebounds.pos + sourcebounds.size / 2
     targetbounds = target.bounds
     targetcenter = targetbounds.pos + targetbounds.size / 2
 
-    source_y = (
-        points[0]
-        .boxsnap(
-            sourcebounds.pos,
-            sourcebounds.pos + sourcebounds.size,
-            (0, targetcenter.y - sourcecenter.y),
-        )
-        .y
+    source_y = sourcebounds.pos.y + sourcebounds.size.y * (
+        sourcecenter.y > targetcenter.y
     )
-    target_y = (
-        points[-1]
-        .boxsnap(
-            targetbounds.pos,
-            targetbounds.pos + targetbounds.size,
-            (0, sourcecenter.y - targetcenter.y),
-        )
-        .y
+    target_y = targetbounds.pos.y + targetbounds.size.y * (
+        targetcenter.y > sourcecenter.y
     )
-    sourcepoint = aird.Vector2D(sourcecenter.x, source_y)
-    targetpoint = aird.Vector2D(targetcenter.x, target_y)
+    centerpoint_y = (source_y + target_y) / 2
 
-    if len(points) == 4:
-        centerpoint_y = (points[1].y + points[2].y) / 2
-    else:
-        centerpoint_y = (source_y + target_y) / 2
-
-    points[:] = [
-        sourcepoint,
-        aird.Vector2D(sourcepoint.x, centerpoint_y),
-        aird.Vector2D(targetpoint.x, centerpoint_y),
-        targetpoint,
+    return [
+        aird.Vector2D(sourcecenter.x, source_y),
+        aird.Vector2D(sourcecenter.x, centerpoint_y),
+        aird.Vector2D(targetcenter.x, centerpoint_y),
+        aird.Vector2D(targetcenter.x, target_y),
     ]
 
 
-@t.overload
-def snaptarget(
-    points: cabc.MutableSequence[aird.Vector2D],
-    i: int,
-    next_i: int,
-    target: aird.Box,
-    movetarget: bool = False,
-) -> None:
-    ...
-
-
-@t.overload
-def snaptarget(
-    points: cabc.MutableSequence[aird.Vector2D],
-    i: int,
-    next_i: int,
+def route_oblique(
+    source: aird.DiagramElement,
     target: aird.DiagramElement,
-    movetarget: t.Literal[False] = ...,
-) -> None:
-    ...
+) -> list[aird.Vector2D]:
+    """Reroute an Edge using the "Oblique" routing style."""
+    return [source.center, target.center]
 
 
 def snaptarget(
@@ -302,6 +249,7 @@ def snaptarget(
     next_i: int,
     target: aird.DiagramElement,
     movetarget: bool = False,
+    routingstyle: str | None = None,
 ) -> None:
     """Snap an Edge's end and (optionally) its target into place.
 
@@ -318,45 +266,89 @@ def snaptarget(
     movetarget
         Allow to move the target under certain conditions
     """
+    del movetarget
+
+    if i < 0:
+        i += len(points)
+    if next_i < 0:
+        next_i += len(points)
+    assert i >= 0
+    assert next_i >= 0
+
     if not diagram.SNAPPING or target is None:
         return
 
-    direction = points[next_i] - points[i]
+    if routingstyle == "manhattan":
+        snap_manhattan(points, i, next_i, target)
+    elif routingstyle == "tree":
+        snap_tree(points, i, next_i, target)
+    else:
+        snap_oblique(points, i, next_i, target)
+
+
+def snap_oblique(
+    points: t.MutableSequence[aird.Vector2D],
+    i: int,
+    next_i: int,
+    target: aird.DiagramElement,
+) -> None:
+    """Snap ``points``' end to ``target`` in a straight line."""
+    points[i] = target.vector_snap(
+        points[i], source=points[next_i], style=aird.RoutingStyle.OBLIQUE
+    )
+
+
+def snap_manhattan(
+    points: t.MutableSequence[aird.Vector2D],
+    i: int,
+    next_i: int,
+    target: aird.DiagramElement,
+) -> None:
+    """Snap ``points``' end to ``target`` with axis-parallel lines."""
+    direction = points[i] - points[next_i]
     axis = direction.closestaxis()
-    angle = abs(axis.angleto(direction))
-    tbounds = target.bounds
+    manhattan = math.isclose(axis.angleto(direction), 0)
+    if not manhattan:
+        translate = points[next_i] @ (not axis.x, not axis.y)
+        end = points[i] @ abs(axis)
+        points[i] = end + translate
 
-    if angle <= 0.08726646259971647:  # 5°
-        if len(points) > 2:
-            # Prefer to move the Edge's next point instead of the target
-            naxis = aird.Vector2D(axis.y, axis.x)
-            snapped = (
-                tbounds.pos + tbounds.size / 2
-                if target.port
-                else target.vector_snap(points[next_i], direction)
-            )
-            points[next_i] = points[next_i] @ abs(axis) + snapped @ abs(naxis)
-        elif movetarget and target.port and not target.context:
-            # The target port doesn't have other context yet,
-            # so it's safe to move it around.
-            assert isinstance(target, aird.Box)
-            target.pos = aird.Vector2D(
-                target.pos.x
-                if axis.x != 0
-                else points[next_i].x - target.size.x / 2,
-                target.pos.y
-                if axis.y != 0
-                else points[next_i].y - target.size.y / 2,
-            )
-            target.snap_to_parent()
+    endpoint = target.vector_snap(
+        points[i], source=points[next_i], style=aird.RoutingStyle.MANHATTAN
+    )
 
-    # Snap the Edge into the target
-    if target.port:
-        # Use the port's center instead of the calculated position
-        assert isinstance(target, aird.Box)
-        points[i] = target.pos + target.size / 2
+    if axis.x:
+        if math.isclose(endpoint.y, points[i].y):
+            points[i] = endpoint
+        else:
+            points[i] = aird.Vector2D(endpoint.x, points[i].y)
+            points.insert(i + (i > next_i), endpoint)
+    else:
+        if math.isclose(endpoint.x, points[i].x):
+            points[i] = endpoint
+        else:
+            points[i] = aird.Vector2D(points[i].x, endpoint.y)
+            points.insert(i + (i > next_i), endpoint)
 
-    points[i] = target.vector_snap(points[i], direction)
+
+def snap_tree(
+    points: t.MutableSequence[aird.Vector2D],
+    i: int,
+    next_i: int,
+    target: aird.DiagramElement,
+) -> None:
+    """Snap ``points``' end to ``target`` in tree routing style."""
+    endpoint = target.vector_snap(
+        points[i], source=points[next_i], style=aird.RoutingStyle.TREE
+    )
+
+    if math.isclose(endpoint.x, points[i].x):
+        points[i] = endpoint
+    else:
+        points[i] = aird.Vector2D(endpoint.x, points[i].y)
+        points.insert(
+            i + (i > next_i), aird.Vector2D(endpoint.x, points[next_i].y)
+        )
 
 
 def _construct_labels(
@@ -381,9 +373,7 @@ def _construct_labels(
         )
 
         # Rotate the position vector into place
-        label_pos = label_pos.rotatedby(
-            aird.Vector2D(1, 0).angleto(travel_direction)
-        )
+        label_pos = label_pos.rotatedby(travel_direction.angleto((1, 0)))
 
         labels.append(
             C.CenterAnchoredBox(
@@ -537,6 +527,13 @@ def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     assert edge.styleclass is not None and edge.target is not None
     if edge.target.styleclass == "OperationalActivity":
         edge.styleclass = "OperationalExchange"
+    return edge
+
+
+def eie_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+    """Create an exchange item element link."""
+    edge = generic_factory(seb)
+    edge.labels = edge.labels[:1]
     return edge
 
 

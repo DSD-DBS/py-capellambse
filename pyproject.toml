@@ -76,6 +76,7 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 # Untyped third party libraries
 module = [
+  "cairosvg.*",
   "cssutils.*",
   "lxml.*",
   "PIL.*",
@@ -104,6 +105,7 @@ expected-line-ending-format = "LF"
 
 [tool.pylint.master]
 extension-pkg-allow-list = [
+  "lxml.builder",
   "lxml.etree",
 ]
 ignore = [

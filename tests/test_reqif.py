@@ -13,8 +13,7 @@ import pytest
 
 import capellambse
 from capellambse.extensions import reqif
-
-from . import RE_VALID_IDREF
+from capellambse.loader.core import RE_VALID_ID
 
 long_req_text = textwrap.dedent(
     """\
@@ -53,80 +52,6 @@ def test_path_nesting(model: capellambse.MelodyModel) -> None:
     assert len(modules[0].folders) == 1
     assert len(modules[0].folders[0].folders) == 1
     assert len(modules[0].folders[0].folders[0].requirements) == 1
-
-
-@pytest.mark.parametrize(
-    "_repr",
-    [
-        pytest.param(
-            "<RequirementsModule 'Test Module' (f8e2195d-b5f5-4452-a12b-79233d943d5e)>",
-            id="Module",
-        ),
-        pytest.param(
-            "<RequirementsFolder 'Test Module/This is a folder.' (e16f5cc1-3299-43d0-b1a0-82d31a137111)>",
-            id="Folder",
-        ),
-        pytest.param(
-            "<RequirementsFolder 'Test Module/This is a folder./Subfolder' (e179d6ff-5301-42a6-bf6f-4fec79b18827)>",
-            id="Sub-Folder",
-        ),
-        pytest.param(
-            "<Requirement 'Test Module/This is a folder./Subfolder/TestReq3' (79291c33-5147-4543-9398-9077d582576d)>",
-            id="Requirement",
-        ),
-        pytest.param(
-            "<RequirementsOutRelation from <Requirement 'Test Module/This is a folder./<p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>\\n\\n<p>&lt; &gt; &quot; &#39;</p>\\n\\n<ul>\\n\\t<li>This&nbsp;is a list</li>\\n\\t<li>an unordered one</li>\\n</ul>\\n\\n<ol>\\n\\t<li>Ordered list</li>\\n\\t<li>Ok</li>\\n</ol>\\n' (3c2d312c-37c9-41b5-8c32-67578fa52dc3)> to <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)> (57033242-3766-4961-8091-ce3d9326ed67)>",
-            id="Relation",
-        ),
-        pytest.param(
-            "<DateValueAttribute [AttrDef] (7351093e-2c1c-4b1a-bb47-43443f530e8d)>",
-            id="Attribute",
-        ),
-        pytest.param(
-            "<EnumerationValueAttribute [MultiEnum] (148bdf2f-6dc2-4a83-833b-596886ce5b07)>",
-            id="Enum Attribute",
-        ),
-        pytest.param(
-            "<RequirementsTypesFolder 'Types' (67bba9cf-953c-4f0b-9986-41991c68d241)>",
-            id="Type Folder",
-        ),
-        pytest.param(
-            "<DataTypeDefinition 'DataTypeDef' (3b7ec38a-e26a-4c23-9fa3-275af3f629ee)>",
-            id="Data Type Definition",
-        ),
-        pytest.param(
-            "<EnumDataTypeDefinition 'EnumDataTypeDef' (637caf95-3229-4607-99a0-7d7b990bc97f)>",
-            id="Enum Data Type Definition",
-        ),
-        pytest.param(
-            "<ModuleType 'ModuleType' (a67e7f43-4b49-425c-a6a7-d44e1054a488)>",
-            id="Module Type",
-        ),
-        pytest.param(
-            "<RelationType 'RelationType' (f1aceb81-5f70-4469-a127-94830eb9be04)>",
-            id="Relation Type",
-        ),
-        pytest.param(
-            "<RequirementType 'ReqType' (db47fca9-ddb6-4397-8d4b-e397e53d277e)>",
-            id="Requirement Type",
-        ),
-        pytest.param(
-            "<AttributeDefinition 'AttrDef' (682bd51d-5451-4930-a97e-8bfca6c3a127)>",
-            id="Attribute Definition",
-        ),
-        pytest.param(
-            "<AttributeDefinitionEnumeration 'AttrDefEnum' (c316ab07-c5c3-4866-a896-92e34733055c)>",
-            id="Enumeration Attribute Definition",
-        ),
-        pytest.param(
-            "<BooleanValueAttribute [] (dcb8614e-2d1c-4cb3-aa0c-667a297e7489)>",
-            id="Attribute with Undefined definition",
-        ),
-    ],
-)
-def test_appearances(model: capellambse.MelodyModel, _repr: str) -> None:
-    uuid = RE_VALID_IDREF.findall(_repr)[-1]
-    assert _repr == repr(model.by_uuid(uuid))
 
 
 class TestRequirementAttributes:
@@ -524,7 +449,7 @@ class TestReqIFModification:
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition == definition
-        assert isinstance(attr, reqif.RequirementsAttribute)
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     def test_create_RequirementType_AttributeDefinition_creation(
         self, model: capellambse.MelodyModel
@@ -555,7 +480,7 @@ class TestReqIFModification:
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition is None
-        assert isinstance(attr, reqif.RequirementsAttribute)
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     def test_create_enum_value_attribute_on_requirements(
         self, model: capellambse.MelodyModel
@@ -652,9 +577,6 @@ class TestReqIFModification:
     @pytest.mark.parametrize(
         "uuid,value",
         [
-            pytest.param(
-                "9c692405-b8aa-4caa-b988-51d27db5cd1b", None, id="NoneType"
-            ),
             pytest.param("b97c09b5-948a-46e8-a656-69d764ddce7d", 1, id="Int"),
         ],
     )
@@ -662,7 +584,7 @@ class TestReqIFModification:
         self, model: capellambse.MelodyModel, uuid: str, value: t.Any
     ):
         attr = model.by_uuid(uuid)
-        assert isinstance(attr, reqif.RequirementsAttribute)
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
         with pytest.raises(TypeError):
             attr.value = value  # type: ignore[arg-type]

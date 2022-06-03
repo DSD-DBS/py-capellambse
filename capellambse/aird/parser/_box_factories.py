@@ -95,8 +95,8 @@ def generic_factory(
 
     label = seb.melodyobjs[0].attrib.get("name")
     pos += (
-        int(seb.diag_element.attrib.get("width", "0")),
-        int(seb.diag_element.attrib.get("height", "0")),
+        int(seb.diag_element.attrib.get("width", (5, -1)[box_is_port])),
+        int(seb.diag_element.attrib.get("height", (5, -1)[box_is_port])),
     )
 
     if box_is_port and parent is not None:
@@ -111,7 +111,6 @@ def generic_factory(
         pos,
         size,
         label=label,
-        parent=parent,
         collapsed=_is_collapsed(seb),
         port=box_is_port,
         uuid=seb.data_element.attrib["element"],
@@ -123,7 +122,9 @@ def generic_factory(
     if box_is_symbol:
         box.JSON_TYPE = "symbol"
         box.minsize = (30, 30)
-    return _filters.setfilters(seb, box)
+    _filters.setfilters(seb, box)
+    box.parent = parent
+    return box
 
 
 def generic_stacked_factory(seb: C.SemanticElementBuilder) -> C.StackingBox:

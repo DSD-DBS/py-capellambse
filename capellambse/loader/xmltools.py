@@ -6,7 +6,9 @@ from __future__ import annotations
 
 import abc
 import collections.abc as cabc
+import datetime
 import enum
+import math
 import sys
 import typing as t
 
@@ -69,7 +71,7 @@ class AttributeProperty:
         self.writable = writable
         self.xmlattr = xmlattr
         self.returntype = returntype
-        if optional:
+        if optional or default is not None:
             self.default = default
         else:
             self.default = self.NOT_OPTIONAL
@@ -113,7 +115,21 @@ class AttributeProperty:
                 f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 
-        xml_element.attrib[self.attribute] = value
+        if value == self.default:
+            self.__delete__(obj)
+            return
+
+        stringified = str(value)
+
+        try:
+            roundtripped = self.returntype(stringified)
+        except (TypeError, ValueError) as err:
+            raise TypeError(f"Value is not round-trip safe: {value}") from err
+
+        if roundtripped != value:
+            raise TypeError(f"Value is not round-trip safe: {value}")
+
+        xml_element.attrib[self.attribute] = stringified
 
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
@@ -132,6 +148,62 @@ class AttributeProperty:
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
+
+
+class NumericAttributeProperty(AttributeProperty):
+    """Attribute property that handles (possibly infinite) numeric values.
+
+    Positive infinity is stored in Capella XML as `*`. This class takes
+    care of converting to and from that value when setting or retrieving
+    the value.
+
+    Note that there is currently no representation of negative infinity,
+    which is why ``-inf`` is rejected with a :class:`ValueError`.
+
+    ``NaN`` values are rejected with a ValueError as well.
+    """
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        optional: bool = False,
+        default: int | float | None = None,
+        allow_float: bool = True,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            optional=optional,
+            default=default,
+            writable=writable,
+            __doc__=__doc__,
+        )
+        self.number_type = float if allow_float else int
+
+    def __get__(self, obj, objtype=None):
+        value = super().__get__(obj, objtype)
+        if not isinstance(value, str):
+            return value
+
+        if value == "*":
+            return math.inf
+        return self.number_type(value)
+
+    def __set__(self, obj, value) -> None:
+        if not isinstance(value, (int, float)):
+            raise TypeError(f"Not a number: {value}")
+
+        if value == math.inf:
+            strvalue = "*"
+        elif value == -math.inf:
+            raise ValueError("Cannot set value to negative infinity")
+        else:
+            strvalue = str(self.number_type(value))
+        super().__set__(obj, strvalue)
 
 
 class BooleanAttributeProperty(AttributeProperty):
@@ -174,6 +246,64 @@ class BooleanAttributeProperty(AttributeProperty):
             super().__set__(obj, "true")
         else:
             self.__delete__(obj)
+
+
+class DatetimeAttributeProperty(AttributeProperty):
+    """An AttributeProperty that stores a datetime.
+
+    The value stored in the XML will be formatted according to the
+    ``format`` given to the constructor. When loading a value, it must
+    strictly be parsable with the same format, otherwise an exception
+    will be raised.
+    """
+
+    __slots__ = ("format",)
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        format: str,
+        optional: bool = True,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            optional=optional,
+            writable=writable,
+            __doc__=__doc__,
+        )
+        self.format = format
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type) -> DatetimeAttributeProperty:
+        ...
+
+    @t.overload
+    def __get__(
+        self, obj: t.Any, objtype: type | None = None
+    ) -> datetime.datetime:
+        ...
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+
+        formatted = super().__get__(obj, objtype)
+        if formatted is None:
+            return None
+        return datetime.datetime.strptime(formatted, self.format)
+
+    def __set__(self, obj, value) -> None:
+        if value is None:
+            self.__delete__(obj)
+        elif isinstance(value, datetime.datetime):
+            super().__set__(obj, value.strftime(self.format))
+        else:
+            raise TypeError(f"Expected datetime, not {type(value).__name__}")
 
 
 class EnumAttributeProperty(AttributeProperty):
@@ -225,18 +355,18 @@ class EnumAttributeProperty(AttributeProperty):
                 "enumcls must be an Enum subclass, not {!r}".format(enumcls)
             )
 
-        super().__init__(xmlattr, attribute, *args, **kw)
-        self.enumcls = enumcls
         if default is None or isinstance(default, enumcls):
-            self.default = default
+            pass
         elif isinstance(default, str):
-            self.default = enumcls[default]
+            default = enumcls[default]
         else:
             raise TypeError(
-                "default must be a member (or its name) of {!r}, not {!r}".format(
-                    enumcls, default
-                )
+                f"default must be a member (or its name) of {enumcls!r}, not {default!r}"
             )
+        super().__init__(
+            xmlattr, attribute, *args, optional=True, default=default, **kw
+        )
+        self.enumcls = enumcls
 
     def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any:
         if obj is None:

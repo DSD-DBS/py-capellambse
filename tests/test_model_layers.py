@@ -1,6 +1,8 @@
 # Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
 
+import math
 import typing as t
 
 import markupsafe
@@ -436,18 +438,43 @@ def test_constraint_without_specification_raises_AttributeError(
 def test_model_search_finds_elements(
     model: capellambse.MelodyModel, searchkey
 ):
-    expected = [
-        model.by_uuid("8164ae8b-36d5-4502-a184-5ec064db4ec3"),
-        model.by_uuid("0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"),
-        model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464"),
-        model.by_uuid("bbc296e1-ed4c-40cf-b37d-c8eb8613228a"),
-        model.by_uuid("c710f1c2-ede6-444e-9e2b-0ff30d7fd040"),
-        model.by_uuid("1adf8097-18f9-474e-b136-6c845fc6d9e9"),
-        model.by_uuid("ca79bf38-5e82-4104-8c49-e6e16b3748e9"),
-    ]
+    expected = {
+        "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
+        "1adf8097-18f9-474e-b136-6c845fc6d9e9",
+        "2a923851-a4ca-4fd2-a4b3-302edb8ac178",
+        "3eb1833e-7a42-4297-8ee0-88cdc5fd6025",
+        "8164ae8b-36d5-4502-a184-5ec064db4ec3",
+        "959b5222-7717-4ee9-bd3a-f8a209899464",
+        "a7ecc231-c55e-4ab9-ae14-9558e3ec2a34",
+        "bbc296e1-ed4c-40cf-b37d-c8eb8613228a",
+        "c371cebb-8021-4a38-8706-4525734de76d",
+        "c3c96805-d6f6-4092-b9f4-df7970651cdc",
+        "c5ea0585-7657-4764-9eb2-3a6584980ce6",
+        "c710f1c2-ede6-444e-9e2b-0ff30d7fd040",
+        "c89849fd-0643-4708-a4da-74c9ea9ca7b1",
+        "ca79bf38-5e82-4104-8c49-e6e16b3748e9",
+        "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
+    }
+
     found = model.search(searchkey)
-    for item in expected:
-        assert item in found
+    actual = {i.uuid for i in found}
+
+    assert actual == expected
+
+
+def test_model_search_below_filters_elements_by_ancestor(
+    model: capellambse.MelodyModel,
+):
+    parent = model.by_uuid("6583b560-6d2f-4190-baa2-94eef179c8ea")
+    expected = {
+        "3bdd4fa2-5646-44a1-9fa6-80c68433ddb7",
+        "a58821df-c5b4-4958-9455-0d30755be6b1",
+    }
+
+    nested = model.search("LogicalComponent", below=parent)
+
+    actual = {i.uuid for i in nested}
+    assert actual == expected
 
 
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
@@ -754,3 +781,30 @@ class TestArchitectureLayers:
         cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
 
         assert cex.allocating_physical_path == cex.owner == path
+
+
+@pytest.mark.parametrize(
+    ["attr", "value"],
+    [("min_card", 1), ("max_card", math.inf)],
+)
+def test_literal_numeric_value_star_is_infinity(
+    model: capellambse.MelodyModel, attr: str, value: float | int
+):
+    prop = model.by_uuid("424efd65-eaa9-4220-b61b-fb3340dbc19a")
+
+    assert getattr(prop, attr).value == value
+
+
+@pytest.mark.parametrize(
+    ["value", "expected_xml"],
+    [(math.inf, "*"), (1, "1"), (0, "0")],
+)
+def test_literal_numeric_value_infinity_is_star(
+    model: capellambse.MelodyModel, value, expected_xml
+):
+    prop = model.by_uuid("424efd65-eaa9-4220-b61b-fb3340dbc19a")
+    max_card = prop.max_card
+
+    max_card.value = value
+
+    assert max_card._element.get("value") == expected_xml
