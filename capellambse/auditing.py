@@ -16,7 +16,7 @@ class AttributeAuditor:
     """Audits access to attributes of ModelElements.
 
     .. warning::
-         This will permanently add an audit hook to the global hook
+        This will permanently add an audit hook to the global hook
         table. The auditor will keep the model alive, which may consume
         excessive memory. To avoid this, call the auditor object's
         ``detach()`` method once you are done with it. This is
@@ -30,13 +30,13 @@ class AttributeAuditor:
     >>> auditor.recorded_ids
     {'0d2edb8f-fa34-4e73-89ec-fb9a63001440'}
     >>> # Cleanup
-    >>> auditor.model = None
+    >>> auditor.model.detach()
 
-    >>> with AttributeAuditor(model, {"name", "description"}) as auditor:
+    >>> with AttributeAuditor(model, {"name", "description"}) as recorded_ids:
     ...     print(model.la.all_components[0].name)
     ...
     Hogwarts
-    >>> auditor.recorded_ids
+    >>> recorded_ids
     {'0d2edb8f-fa34-4e73-89ec-fb9a63001440'}
     """
 
@@ -51,11 +51,11 @@ class AttributeAuditor:
 
         sys.addaudithook(self.__audit)
 
-    def __enter__(self) -> AttributeAuditor:
-        return self
+    def __enter__(self) -> set[str]:
+        return self.recorded_ids
 
     def __exit__(self, *_: t.Any) -> None:
-        return self.detach()
+        self.detach()
 
     def detach(self) -> None:
         self.model = None
