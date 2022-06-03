@@ -128,7 +128,6 @@ class StackingBox(aird.Box):
 
     @property
     def size(self) -> aird.Vector2D:
-        # pylint: disable=unpacking-non-sequence  # false-positive
         pwidth, pheight = self._topsection_size()
         child_bounds = [i.bounds for i in self.children if not i.hidden]
         try:
