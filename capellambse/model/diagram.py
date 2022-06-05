@@ -61,11 +61,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     _model: capellambse.MelodyModel
     _render: aird.Diagram
     _error: BaseException
-    _render_params: dict[str, bool]
+    _last_render_params: dict[str, t.Any] = {}
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
-        self._render_params = {}
+        self._last_render_params = {}
 
     def __dir__(self) -> list[str]:
         return dir(type(self)) + [
@@ -237,7 +237,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __render_fresh(self, params: dict[str, t.Any]) -> aird.Diagram:
         # pylint: disable=broad-except
-        if not hasattr(self, "_render") or self._render_params != params:
+        if not hasattr(self, "_render") or self._last_render_params != params:
+            self.invalidate_cache()
             try:
                 self._render = self._create_diagram(params)
             except Exception as err:
@@ -273,7 +274,6 @@ class Diagram(AbstractDiagram):
 
     _element: aird.DiagramDescriptor
     _filters: aird.ActiveFilters
-    _render_params: dict[str, bool] = {}
     """
     Additional rendering parameters.
 
