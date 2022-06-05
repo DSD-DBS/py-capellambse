@@ -92,7 +92,9 @@ def test_fex_exchangeitems_filter_is_applied(
 
     diag.filters.add(EX_ITEMS_FILTER)
     diagram = diag.render(None, sorted_exchangedItems=False)
-    fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
+    fex_edge = next(
+        ex for ex in diagram if ex.styleclass == "FunctionalExchange"
+    )
 
     assert isinstance(fex_edge, aird.Edge)
     assert len(fex_edge.labels) == 1
