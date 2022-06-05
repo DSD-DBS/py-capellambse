@@ -170,6 +170,14 @@
             id="99df05af-71bf-4233-9035-bcd3d4439182" name="Root Operational Activity">
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.oa:OperationalProcess"
               id="d588e41f-ec4d-4fa9-ad6d-056868c66274" name="Obtain food via hunting">
+            <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                id="db29c72b-5c2d-4241-a753-697186f7a034" name="Test Constraint" constrainedElements="#41e2ff3c-bc49-4eb1-ace9-66920b21179d">
+              <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                  id="90ec76a6-6b10-4d51-a0bd-9bc2ce9348d5">
+                <bodies>A test spec.</bodies>
+                <languages>capella:linkedText</languages>
+              </ownedSpecification>
+            </ownedConstraints>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink"
                 id="41e2ff3c-bc49-4eb1-ace9-66920b21179d" involved="#55b90f9a-c5af-47fc-9c1c-48090414d1f1"
                 exchangeContext="#95cbd4af-7224-43fe-98cb-f13dda540b8e" exchangedItems="#1ca7b206-be29-4315-a036-0b532b26a191"
@@ -178,7 +186,7 @@
                   id="95cbd4af-7224-43fe-98cb-f13dda540b8e" name="">
                 <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
                     id="37abec6a-22ed-4ad1-8b11-7826620b099c">
-                  <bodies>This is a test context.&lt;a href=&quot;0e0164c3-076e-42c1-8f82-7a43ab84385c&quot;/> </bodies>
+                  <bodies>This is a test context.&lt;a href=&quot;0e0164c3-076e-42c1-8f82-7a43ab84385c&quot;/></bodies>
                   <languages>capella:linkedText</languages>
                 </ownedSpecification>
               </ownedConstraints>
