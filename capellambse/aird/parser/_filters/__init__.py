@@ -7,7 +7,6 @@ from __future__ import annotations
 import collections.abc as cabc
 import dataclasses
 import importlib
-import logging
 import typing as t
 import urllib.parse
 
@@ -30,7 +29,6 @@ COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
 GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
-LOGGER = logging.getLogger(__name__)
 
 PLUGIN_PATH = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
 
