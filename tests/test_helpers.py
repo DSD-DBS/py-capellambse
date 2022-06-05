@@ -5,7 +5,7 @@ import pathlib
 
 import pytest
 
-from capellambse import MelodyModel, helpers
+from capellambse import helpers
 
 
 def test_paths_relative_to_root_are_not_changed():
