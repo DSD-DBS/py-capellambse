@@ -62,6 +62,19 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     _render: aird.Diagram
     _error: BaseException
     _last_render_params: dict[str, t.Any] = {}
+    """
+    Additional rendering parameters for the cached rendered diagram.
+
+    Rendering options for :class:`aird.Diagram`s. Handing over
+    parameters that differ to these will force a fresh rendering of the
+    diagram, flushing the cached diagram.
+
+    The following parameters are currently supported:
+
+        - ``sorted_exchangedItems`` (*bool*): Enable ExchangeItem
+        sorting when rendering diagrams with active ExchangeItems
+        filter (``show.exchange.items.filter``).
+    """
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
@@ -273,19 +286,6 @@ class Diagram(AbstractDiagram):
     """Obsolete."""
 
     _element: aird.DiagramDescriptor
-    _filters: aird.ActiveFilters
-    """
-    Additional rendering parameters.
-
-    Rendering options for :class:`aird.Diagram`s. Changing them will
-    force a fresh rendering of the diagram, neglecting the cache.
-
-    The following parameters are currently supported:
-
-        - ``sorted_exchangedItems`` (*bool*): Enable ExchangeItem
-        sorting when rendering diagrams with active ExchangeItems
-        filter (``show.exchange.items.filter``).
-    """
 
     @classmethod
     def from_model(
