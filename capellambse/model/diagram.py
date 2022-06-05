@@ -72,8 +72,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     The following parameters are currently supported:
 
         - ``sorted_exchangedItems`` (*bool*): Enable ExchangeItem
-        sorting when rendering diagrams with active ExchangeItems
-        filter (``show.exchange.items.filter``).
+          sorting when rendering diagrams with active ExchangeItems
+          filter (``show.exchange.items.filter``).
     """
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
@@ -335,11 +335,9 @@ class Diagram(AbstractDiagram):
 
     @filters.setter
     def filters(self, filters: cabc.Iterable[str]) -> None:
-        active_filters = aird.ActiveFilters(self._model, self)
-        active_filters.clear()
-        self.invalidate_cache()
+        self.filters.clear()
         for filter in filters:
-            active_filters.add(filter)
+            self.filters.add(filter)
 
     def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
         return aird.parse_diagram(self._model._loader, self._element, **params)
