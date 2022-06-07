@@ -519,7 +519,7 @@ def test_FunctionalChainInvolvementLink_attributes(
     ex_item_uuids = [ex.uuid for ex in link.exchanged_items]
     expected_uuids = ["1ca7b206-be29-4315-a036-0b532b26a191"]
     expected_context = "This is a test context."
-    expected_end = f"{target.name}({target.uuid})"
+    expected_end = f"{target.name} ({target.uuid})"
 
     assert link in chain.involvements
     assert ex_item_uuids == expected_uuids

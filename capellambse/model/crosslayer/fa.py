@@ -164,7 +164,7 @@ class FunctionalChainInvolvementLink(c.GenericElement):
 
     @property
     def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.involved.name}({self.involved.uuid})"
+        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
 
 
 @c.xtype_handler(None)
