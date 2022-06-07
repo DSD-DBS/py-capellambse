@@ -153,11 +153,11 @@ class MelodyModel:
 
             *This argument is **not** passed to the file handler.*
         jupyter_untrusted
-            An optional parameter for controling rich representation
-            format for automatic diagram rendering and display via
-            ``_repr_svg_`` or ``_repr_png_`` in a jupyter kernel
-            environment. Defaults to False. If True some features such
-            as ``_repr_svg_`` are disabled.
+            If set to True, restricts or disables some features that are
+            unavailable in an untrusted Jupyter environment. Currently
+            this only disables the SVG format as rich display option for
+            Ipython, which is needed to avoid rendering issues with
+            Github's Jupyter notebook viewer.
 
         See Also
         --------
@@ -229,7 +229,9 @@ class MelodyModel:
         self._loader.save(**kw)
 
     def search(
-        self, *xtypes: str | type[common.GenericElement]
+        self,
+        *xtypes: str | type[common.GenericElement],
+        below: common.GenericElement | None = None,
     ) -> common.ElementList:
         r"""Search for all elements with any of the given ``xsi:type``\ s.
 
@@ -240,6 +242,18 @@ class MelodyModel:
         If no ``xtypes`` are given at all, this method will return an
         exhaustive list of all (semantic) model objects that have an
         ``xsi:type`` set.
+
+        Parameters
+        ----------
+        xtypes
+            The ``xsi:type``\ s to search for, or the classes
+            corresponding to them (or a mix of both).
+        below
+            A model element to constrain the search. If given, only
+            those elements will be returned that are (immediate or
+            nested) children of this element. This option takes into
+            account model fragmentation, but it does not treat link
+            elements specially.
         """
         xtypes_: list[str] = []
         for i in xtypes:
@@ -248,20 +262,26 @@ class MelodyModel:
             elif ":" in i:
                 xtypes_.append(i)
             else:
-                for _, l in common.XTYPE_HANDLERS.items():
-                    xtypes_.extend(t for t in l if t.endswith(":" + i))
+                suffix = ":" + i
+                matching_types: list[str] = []
+                for l in common.XTYPE_HANDLERS.values():
+                    matching_types.extend(t for t in l if t.endswith(suffix))
+                if not matching_types:
+                    raise ValueError(f"Unknown incomplete type name: {i}")
+                xtypes_.extend(matching_types)
 
-        cls = (common.MixedElementList, common.ElementList)[len(xtypes) == 1]
+        cls = (common.MixedElementList, common.ElementList)[len(xtypes_) == 1]
         trees = {
             k
             for k, v in self._loader.trees.items()
             if v.fragment_type is loader.FragmentType.SEMANTIC
         }
-        return cls(
-            self,
-            list(self._loader.iterall_xt(*xtypes_, trees=trees)),
-            common.GenericElement,
-        )
+        matches = self._loader.iterall_xt(*xtypes_, trees=trees)
+        if below is not None:
+            matches = (
+                i for i in matches if below._element in i.iterancestors()
+            )
+        return cls(self, list(matches), common.GenericElement)
 
     def by_uuid(self, uuid: str) -> common.GenericElement:
         """Search the entire model for an element with the given UUID."""

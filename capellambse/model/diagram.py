@@ -22,16 +22,24 @@ from .. import aird, svg
 from . import common as c
 from . import modeltypes
 
-DiagramConverter = t.Callable[[aird.Diagram], t.Any]
 
-
+@t.runtime_checkable
 class DiagramFormat(t.Protocol):
     filename_extension: str
 
     @classmethod
-    def from_cache(cls, cache: bytes) -> str:
+    def convert(cls, diagram: aird.Diagram) -> t.Any:
         ...
 
+    @classmethod
+    def from_cache(cls, cache: bytes) -> t.Any:
+        ...
+
+
+DiagramConverter = t.Union[
+    t.Callable[[aird.Diagram], t.Any],
+    DiagramFormat,
+]
 
 LOGGER = logging.getLogger(__name__)
 
@@ -99,7 +107,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 else:
                     err_img = self.__create_error_image("render", err)
                 assert err_img is not None
-                return _find_format_converter(fmt)(err_img)
+                converter = _find_format_converter(fmt)
+                if isinstance(converter, DiagramFormat):
+                    return converter.convert(err_img)
+                else:
+                    return converter(err_img)
         return getattr(super(), attr)
 
     def __repr__(self) -> str:
@@ -163,17 +175,21 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def render(self, fmt: str | None, **params) -> t.Any:
         """Render the diagram in the given format."""
-        conv: t.Any
-        if fmt is None:
-            conv = lambda i: i
-        else:
+        if fmt is not None:
             conv = _find_format_converter(fmt)
+        else:
+            conv = lambda i: i
 
         try:
             return self.__load_cache(conv)
         except KeyError:
             pass
-        return conv(self.__render_fresh(params))
+
+        render = self.__render_fresh(params)
+        if isinstance(conv, DiagramFormat):
+            return conv.convert(render)
+        else:
+            return conv(render)
 
     @abc.abstractmethod
     def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
@@ -231,22 +247,23 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         diag.calculate_viewport()
         return diag
 
-    def __load_cache(self, converter: DiagramFormat):
-        try:
-            cache_handler = self._model._diagram_cache
-            cachedir = self._model._diagram_cache_subdir
-            fromcache = converter.from_cache
-            ext = converter.filename_extension
-        except AttributeError:
-            raise KeyError(self.uuid) from None
+    def __load_cache(self, converter: DiagramConverter):
+        cache_handler = getattr(self._model, "_diagram_cache", None)
+        cachedir = getattr(self._model, "_diagram_cache_subdir", None)
+        if cache_handler is None or cachedir is None:
+            raise KeyError(self.uuid)
+
+        if not isinstance(converter, DiagramFormat):
+            raise KeyError(self.uuid)
 
         try:
+            ext = converter.filename_extension
             with cache_handler.open(cachedir / (self.uuid + ext)) as f:
                 cache = f.read()
         except FileNotFoundError:
             raise KeyError(self.uuid) from None
 
-        return fromcache(cache)
+        return converter.from_cache(cache)
 
     def __render_fresh(self, params: dict[str, t.Any]) -> aird.Diagram:
         # pylint: disable=broad-except
@@ -382,7 +399,8 @@ class SVGFormat:
 
     filename_extension = ".svg"
 
-    def __new__(cls, diagram) -> str:  # type: ignore[misc]
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
         return convert_svgdiagram(diagram).to_string()
 
     @staticmethod
@@ -395,16 +413,17 @@ class PNGFormat:
 
     filename_extension = ".png"
 
-    def __new__(cls, diagram) -> bytes:  # type: ignore[misc]
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> bytes:
         try:
             import cairosvg
         except OSError as error:
             raise RuntimeError(
                 "Cannot import cairosvg. You are likely missing .dll's."
-                "Please see the README for instructions."
+                " Please see the README for instructions."
             ) from error
 
-        return cairosvg.svg2png(SVGFormat(diagram))
+        return cairosvg.svg2png(SVGFormat.convert(diagram))
 
     @staticmethod
     def from_cache(cache: bytes) -> bytes:
@@ -430,8 +449,9 @@ class ConfluenceSVGFormat:
     )
     postfix = "]]></ac:plain-text-body></ac:structured-macro>"
 
-    def __new__(cls, diagram):
-        return "".join((cls.prefix, SVGFormat(diagram), cls.postfix))  # type: ignore[arg-type]
+    @classmethod
+    def convert(cls, diagram: aird.Diagram) -> str:
+        return "".join((cls.prefix, SVGFormat.convert(diagram), cls.postfix))
 
     @classmethod
     def from_cache(cls, cache: bytes) -> str:
@@ -442,8 +462,9 @@ class SVGDataURIFormat:
     filename_extension = ".svg"
     preamble = "data:image/svg+xml;base64,"
 
-    def __new__(cls, diagram):
-        payload = SVGFormat(diagram)
+    @classmethod
+    def convert(cls, diagram: aird.Diagram) -> str:
+        payload = SVGFormat.convert(diagram)
         b64 = base64.standard_b64encode(payload.encode("utf-8"))  # type: ignore[attr-defined]
         return "".join((cls.preamble, b64.decode("ascii")))
 
@@ -456,8 +477,9 @@ class SVGDataURIFormat:
 class SVGInHTMLIMGFormat:
     filename_extension = ".svg"
 
-    def __new__(cls, diagram):
-        payload = SVGDataURIFormat(diagram)
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> markupsafe.Markup:
+        payload = SVGDataURIFormat.convert(diagram)
         return c.markuptype(f'<img src="{payload}"/>')
 
     @staticmethod
@@ -469,7 +491,8 @@ class SVGInHTMLIMGFormat:
 class JSONFormat:
     filename_extension = ".json"
 
-    def __new__(cls, diagram):
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
         return aird.DiagramJSONEncoder().encode(diagram)
 
     @staticmethod
@@ -480,7 +503,8 @@ class JSONFormat:
 class PrettyJSONFormat:
     filename_extension = ".json"
 
-    def __new__(cls, diagram):
+    @staticmethod
+    def convert(diagram: aird.Diagram) -> str:
         return aird.DiagramJSONEncoder(indent=4).encode(diagram)
 
     @staticmethod

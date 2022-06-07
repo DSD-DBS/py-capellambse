@@ -276,8 +276,10 @@ class TestVectorSnapping:
     def test_snap_manhattan_to_middle_of_port_side(
         self, points: list[aird.Vector2D], expected: aird.Vector2D
     ):
-        """Test snapping of edges of all sides to the closest point on
-        border of port. Port movement not allowed.
+        """Test snapping of edges of all sides to the closest point on border
+        of port.
+
+        Port movement not allowed.
         """
         aird.parser._edge_factories.snaptarget(
             points, -1, -2, self.PORTBOX, False, "manhattan"

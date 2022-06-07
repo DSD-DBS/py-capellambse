@@ -197,6 +197,7 @@ def _make_marker(
         orient="auto",
         markerUnits="userSpaceOnUse",
     )
+    style._marker = True
     marker.add(path.Path(d=d, style=str(style), **kwargs))
     return marker
 
@@ -1022,12 +1023,12 @@ def fine_arrow_mark(
     id_: str = "FineArrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
     return _make_marker(
-        (14, 7),
-        (15, 15),
+        (7, 3.5),
+        (7.5, 7.5),
         id_=id_,
         d=(
-            "M 0.90706313,0.21449614 14.619528,7.2414781 0.98360138,14.814827 "
-            "0.2888162,14.139896 12.829523,7.2633468 0.27291254,0.95838308 Z"
+            "M 0.4535,0.107 7.309,3.621 0.492,7.407 "
+            "0.144,7.407 6.414,3.63 0.136,0.479 Z"
         ),
         style=style,
         **kw,
@@ -1038,7 +1039,6 @@ def fine_arrow_mark(
 def arrow_mark(
     id_: str = "Arrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
-    style._marker = True
     return _make_marker(
         (5, 2.5), (5.5, 5.5), id_=id_, d="M 0,0 5,2.5 0,5", style=style, **kw
     )
@@ -1048,7 +1048,6 @@ def arrow_mark(
 def diamond_mark(
     id_: str = "Diamond", *, style: style_.Styling, **kw
 ) -> container.Marker:
-    style._marker = True
     return _make_marker(
         (0, 3),
         (11, 6),
