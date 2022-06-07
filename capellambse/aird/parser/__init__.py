@@ -6,6 +6,7 @@ from __future__ import annotations
 
 __all__ = [
     "DiagramDescriptor",
+    "ActiveFilters",
     "enumerate_diagrams",
     "parse_diagrams",
     "parse_diagram",
@@ -23,6 +24,7 @@ from capellambse import aird, helpers, loader
 
 from . import _common as C
 from . import _filters, _semantic, _visual
+from ._filters import ActiveFilters
 
 DIAGRAM_ROOTS = {
     f"{{{capellambse.NAMESPACES['sequence']}}}SequenceDDiagram",
@@ -142,7 +144,9 @@ def enumerate_diagrams(
                 raise
 
 
-def parse_diagrams(model: loader.MelodyLoader) -> cabc.Iterator[aird.Diagram]:
+def parse_diagrams(
+    model: loader.MelodyLoader, **params: t.Any
+) -> cabc.Iterator[aird.Diagram]:
     """Parse all diagrams from the model."""
     for descriptor in enumerate_diagrams(model):
         C.LOGGER.info(
@@ -150,11 +154,11 @@ def parse_diagrams(model: loader.MelodyLoader) -> cabc.Iterator[aird.Diagram]:
             descriptor.name,
             descriptor.styleclass,
         )
-        yield parse_diagram(model, descriptor)
+        yield parse_diagram(model, descriptor, **params)
 
 
 def parse_diagram(
-    model: loader.MelodyLoader, descriptor: DiagramDescriptor
+    model: loader.MelodyLoader, descriptor: DiagramDescriptor, **params: t.Any
 ) -> aird.Diagram:
     """Parse a single diagram from the model.
 
@@ -205,7 +209,9 @@ def parse_diagram(
         )
     else:
         diagram.calculate_viewport()
-        _filters.applyfilters(diagram, dgtree, model)
+        _filters.applyfilters(
+            _filters.FilterArguments(diagram, dgtree, model, params)
+        )
     return diagram
 
 

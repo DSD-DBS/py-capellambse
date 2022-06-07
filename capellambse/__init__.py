@@ -50,9 +50,12 @@ from ._namespaces import (
     check_plugin_version,
     yield_key_and_version_from_namespaces_by_plugin,
 )
+from .auditing import AttributeAuditor
 from .loader.filehandler import FileHandler, get_filehandler
 from .model import MelodyModel
 from .model.common import ModelObject
+
+_has_loaded_extensions = False
 
 
 def load_model_extensions() -> None:
@@ -69,6 +72,11 @@ def load_model_extensions() -> None:
     import importlib.metadata as imm
     import logging
 
+    global _has_loaded_extensions
+    if _has_loaded_extensions:
+        return
+    _has_loaded_extensions = True
+
     try:
         entrypoints = imm.entry_points()["capellambse.model_extensions"]
     except KeyError:
@@ -84,7 +92,3 @@ def load_model_extensions() -> None:
                 entrypoint,
                 entrypoint.value,
             )
-
-
-load_model_extensions()
-del load_model_extensions

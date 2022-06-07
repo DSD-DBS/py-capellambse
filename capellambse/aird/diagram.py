@@ -868,12 +868,14 @@ class Diagram:
         ----------
         name
             The diagram's name.
-        uuid
-            The unique ID of this diagram.
         viewport
             A Box describing this diagram's viewport.
         elements
             A :class:`list` containing the diagram's initial elements.
+        uuid
+            The unique ID of this diagram.
+        styleclass
+            The diagram class.
         """
         self.name = name
         self.uuid = uuid
