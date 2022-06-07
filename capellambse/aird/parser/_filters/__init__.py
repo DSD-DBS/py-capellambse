@@ -5,15 +5,15 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import dataclasses
 import importlib
-import pkgutil
 import typing as t
 import urllib.parse
 
 from lxml import etree
 
 import capellambse.loader
-from capellambse import aird
+from capellambse import aird, model
 
 from .. import _common as c
 
@@ -26,17 +26,11 @@ CompositeFilter = t.Callable[
 #: Maps composite filter names to phase-1 callables
 COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
 
-GlobalFilter = t.Callable[
-    [
-        aird.Diagram,
-        etree._Element,
-        etree._Element,
-        capellambse.loader.MelodyLoader,
-    ],
-    None,
-]
+GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
+
+PLUGIN_PATH = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
@@ -138,11 +132,17 @@ def setfilters(
     return dgobject
 
 
-def applyfilters(
-    target_diagram: aird.Diagram,
-    diagram_root: etree._Element,
-    melodyloader: capellambse.loader.MelodyLoader,
-) -> None:
+@dataclasses.dataclass(frozen=True)
+class FilterArguments:
+    """Basic arguments for diagram-filters."""
+
+    target_diagram: aird.Diagram
+    diagram_root: etree._Element
+    melodyloader: capellambse.loader.MelodyLoader
+    params: dict[str, t.Any]
+
+
+def applyfilters(args: FilterArguments) -> None:
     """Apply filters on the ``target_diagram``.
 
     This function performs two tasks.
@@ -152,18 +152,9 @@ def applyfilters(
 
     Secondly it applies the diagram's global filters.  These are always
     applied after all composite filters have run.
-
-    Parameters
-    ----------
-    target_diagram
-        The diagram.
-    diagram_root
-        The LXML element that is this diagram's root.
-    melodyloader
-        The MelodyLoader instance.
     """
     # Apply post-processing filters on elements
-    for dgobject in target_diagram:
+    for dgobject in args.target_diagram:
         try:
             filters = dgobject._compfilters  # type: ignore[union-attr]
         except AttributeError:
@@ -179,14 +170,14 @@ def applyfilters(
                 dgobject.styleclass or dgobject.__class__.__name__,
                 dgobject.uuid,
             )
-            data_element = melodyloader[dgobject.uuid]
+            data_element = args.melodyloader[dgobject.uuid]
             p2flt(
                 c.ElementBuilder(
-                    target_diagram=target_diagram,
-                    diagram_tree=diagram_root,
+                    target_diagram=args.target_diagram,
+                    diagram_tree=args.diagram_root,
                     data_element=data_element,
-                    melodyloader=melodyloader,
-                    fragment=melodyloader.find_fragment(data_element),
+                    melodyloader=args.melodyloader,
+                    fragment=args.melodyloader.find_fragment(data_element),
                 ),
                 dgobject,
             )
@@ -194,7 +185,7 @@ def applyfilters(
         del dgobject._compfilters  # type: ignore[union-attr]
 
     # Apply global diagram filters
-    for flt in diagram_root.iterchildren("activatedFilters"):
+    for flt in args.diagram_root.iterchildren("activatedFilters"):
         try:
             flttype = flt.attrib[c.ATT_XMT]
         except KeyError:
@@ -216,7 +207,7 @@ def applyfilters(
             continue
 
         c.LOGGER.debug("Applying global filter %r", fltname)
-        fltfunc(target_diagram, diagram_root, flt, melodyloader)
+        fltfunc(args, flt)
 
 
 def _set_composite_filter(
@@ -263,6 +254,96 @@ def _extract_filter_type(flt_elm: etree._Element) -> str:
         raise ValueError("Filter href does not match known pattern") from None
 
     return urllib.parse.unquote(flttype.group(1))
+
+
+class ActiveFilters(t.MutableSet[str]):
+    """A set of active filters on a :class:`diag.Diagram`.
+
+    Enable access to set, add and remove active filters on a
+    :class:`diag.Diagram`.
+    """
+
+    __slots__ = ("_model", "_target", "_diagram")
+    _xml_tag = "activatedFilters"
+
+    def __init__(
+        self,
+        model: model.MelodyModel,  # pylint: disable=redefined-outer-name
+        diagram: model.diagram.Diagram,
+    ) -> None:
+        self._model = model
+        self._diagram = diagram
+        self._target = self._model._loader[diagram._element.uid]
+
+    @property
+    def _elements(self) -> t.Iterator[etree._Element]:
+        return self._target.iterchildren(self._xml_tag)
+
+    @staticmethod
+    def _get_filter_name(filter: etree._Element) -> str | None:
+        filter_name = c.RE_COMPOSITE_FILTER.search(filter.get("href", ""))
+        if filter_name:
+            return filter_name.group(1)
+        return None
+
+    def __contains__(self, filter: object) -> bool:
+        if not isinstance(filter, str):
+            return False
+        return filter in iter(self)
+
+    def __iter__(self) -> cabc.Iterator[str]:
+        for filter in self._elements:
+            if filter_name := self._get_filter_name(filter):
+                yield filter_name
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self)
+
+    def add(self, value: str) -> None:
+        """Add an activated filter to the diagram.
+
+        Writes a new ``<activatedFilters>`` XML element to the
+        ``<diagram:DSemanticDiagram>`` XML element. If the ``value`` is not
+        apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it can
+        not be applied when rendering. It should still be visible in the
+        GUI.
+        """
+        if value in self:
+            return
+
+        diag_descriptor = self._diagram._element
+        viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
+        assert diag_descriptor.styleclass is not None
+        diagclass = urllib.parse.quote(diag_descriptor.styleclass)
+        href = "/".join(
+            (
+                f"platform:{PLUGIN_PATH}",
+                f"@ownedViewpoints[name='{viewpoint}']",
+                f"@ownedRepresentations[name='{diagclass}']",
+                f"@filters[name='{value}']",
+            )
+        )
+        elt = c.ELEMENT.activatedFilters(
+            {"href": href, c.ATT_XMT: "filter:CompositeFilterDescription"}
+        )
+        self._target.append(elt)
+        self._diagram.invalidate_cache()
+
+    def discard(self, value: str) -> None:
+        """Remove the filter with the given ``value`` from the diagram.
+
+        Deletes ``<activatedFilters>`` XML element from the diagram
+        element tree.
+        """
+        for filter in self._elements:
+            filter_name = self._get_filter_name(filter)
+            if filter_name is not None and value == filter_name:
+                self._target.remove(filter)
+                self._diagram.invalidate_cache()
+                break
+
+    def __repr__(self) -> str:  # pragma: no cover
+        return f"{set(self)!r}"
 
 
 # Load filter modules

@@ -55,6 +55,8 @@ from .loader.filehandler import FileHandler, get_filehandler
 from .model import MelodyModel
 from .model.common import ModelObject
 
+_has_loaded_extensions = False
+
 
 def load_model_extensions() -> None:
     """Load all model extensions.
@@ -69,6 +71,11 @@ def load_model_extensions() -> None:
     # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
     import importlib.metadata as imm
     import logging
+
+    global _has_loaded_extensions
+    if _has_loaded_extensions:
+        return
+    _has_loaded_extensions = True
 
     try:
         entrypoints = imm.entry_points()["capellambse.model_extensions"]
@@ -85,7 +92,3 @@ def load_model_extensions() -> None:
                 entrypoint,
                 entrypoint.value,
             )
-
-
-load_model_extensions()
-del load_model_extensions

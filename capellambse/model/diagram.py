@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import abc
 import base64
+import collections as cabc
 import importlib.metadata as imm
 import logging
 import operator
@@ -68,9 +69,24 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     _model: capellambse.MelodyModel
     _render: aird.Diagram
     _error: BaseException
+    _last_render_params: dict[str, t.Any] = {}
+    """
+    Additional rendering parameters for the cached rendered diagram.
+
+    Rendering options for :class:`aird.Diagram`s. Handing over
+    parameters that differ to these will force a fresh rendering of the
+    diagram, flushing the cached diagram.
+
+    The following parameters are currently supported:
+
+        - ``sorted_exchangedItems`` (*bool*): Enable ExchangeItem
+          sorting when rendering diagrams with active ExchangeItems
+          filter (``show.exchange.items.filter``).
+    """
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
+        self._last_render_params = {}
 
     def __dir__(self) -> list[str]:
         return dir(type(self)) + [
@@ -150,14 +166,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
-    def render(self, fmt: None) -> aird.Diagram:
+    def render(self, fmt: None, **params) -> aird.Diagram:
         ...
 
     @t.overload
-    def render(self, fmt: str) -> t.Any:
+    def render(self, fmt: str, **params) -> t.Any:
         ...
 
-    def render(self, fmt: str | None) -> t.Any:
+    def render(self, fmt: str | None, **params) -> t.Any:
         """Render the diagram in the given format."""
         if fmt is not None:
             conv = _find_format_converter(fmt)
@@ -168,14 +184,15 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             return self.__load_cache(conv)
         except KeyError:
             pass
-        render = self.__render_fresh()
+
+        render = self.__render_fresh(params)
         if isinstance(conv, DiagramFormat):
             return conv.convert(render)
         else:
             return conv(render)
 
     @abc.abstractmethod
-    def _create_diagram(self) -> aird.Diagram:
+    def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
         """Perform the actual rendering of the diagram.
 
         This method should only be called by the public :meth:`render`
@@ -183,9 +200,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         """
 
     def __create_error_image(
-        self,
-        stage: str,
-        error: Exception,
+        self, stage: str, error: Exception
     ) -> aird.Diagram:
         err_name = (
             "An error occured while rendering diagram\n"
@@ -250,11 +265,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
         return converter.from_cache(cache)
 
-    def __render_fresh(self):
+    def __render_fresh(self, params: dict[str, t.Any]) -> aird.Diagram:
         # pylint: disable=broad-except
-        if not hasattr(self, "_render"):
+        if not hasattr(self, "_render") or self._last_render_params != params:
+            self.invalidate_cache()
             try:
-                self._render = self._create_diagram()
+                self._render = self._create_diagram(params)
             except Exception as err:
                 self._error = err
                 self._render = self.__create_error_image("parse", self._error)
@@ -262,6 +278,18 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         if hasattr(self, "_error"):
             raise self._error
         return self._render
+
+    def invalidate_cache(self) -> None:
+        """Reset internal diagram cache."""
+        try:
+            del self._render
+        except AttributeError:
+            pass
+
+        try:
+            del self._error
+        except AttributeError:
+            pass
 
 
 class Diagram(AbstractDiagram):
@@ -290,7 +318,6 @@ class Diagram(AbstractDiagram):
 
     def __init__(self, **kw: t.Any) -> None:
         # pylint: disable=super-init-not-called
-        # Do I need to explain this suppression?
         raise TypeError("Cannot create a Diagram this way")
 
     def __eq__(self, other: object) -> bool:
@@ -318,8 +345,19 @@ class Diagram(AbstractDiagram):
             LOGGER.warning("Unknown diagram type %r", sc)
             return modeltypes.DiagramType.UNKNOWN
 
-    def _create_diagram(self) -> aird.Diagram:
-        return aird.parse_diagram(self._model._loader, self._element)
+    @property
+    def filters(self) -> t.MutableSet[str]:
+        """Return a set of currently activated filters on this diagram."""
+        return aird.ActiveFilters(self._model, self)
+
+    @filters.setter
+    def filters(self, filters: cabc.Iterable[str]) -> None:
+        self.filters.clear()
+        for filter in filters:
+            self.filters.add(filter)
+
+    def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
+        return aird.parse_diagram(self._model._loader, self._element, **params)
 
 
 class DiagramAccessor(c.Accessor):
