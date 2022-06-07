@@ -59,17 +59,8 @@ class OperationalActivity(fa.AbstractFunction):
 
 
 @c.xtype_handler(XT_ARCH)
-class OperationalProcess(c.GenericElement):
+class OperationalProcess(fa.FunctionalChain):
     """An operational process."""
-
-    _xmltag = "ownedFunctionalChains"
-
-    involved = c.ProxyAccessor(
-        c.GenericElement,
-        fa.XT_FCI,
-        aslist=c.MixedElementList,
-        follow="involved",
-    )
 
 
 @c.xtype_handler(XT_ARCH)

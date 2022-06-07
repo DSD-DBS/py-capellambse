@@ -170,9 +170,27 @@
             id="99df05af-71bf-4233-9035-bcd3d4439182" name="Root Operational Activity">
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.oa:OperationalProcess"
               id="d588e41f-ec4d-4fa9-ad6d-056868c66274" name="Obtain food via hunting">
+            <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                id="db29c72b-5c2d-4241-a753-697186f7a034" name="Test Constraint" constrainedElements="#41e2ff3c-bc49-4eb1-ace9-66920b21179d">
+              <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                  id="90ec76a6-6b10-4d51-a0bd-9bc2ce9348d5">
+                <bodies>A test spec.</bodies>
+                <languages>capella:linkedText</languages>
+              </ownedSpecification>
+            </ownedConstraints>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink"
                 id="41e2ff3c-bc49-4eb1-ace9-66920b21179d" involved="#55b90f9a-c5af-47fc-9c1c-48090414d1f1"
-                source="#3ecb9f00-67ce-49b1-9294-d48c6d95d066" target="#8e732f5a-a760-468c-b862-ba1a276206d1"/>
+                exchangeContext="#95cbd4af-7224-43fe-98cb-f13dda540b8e" exchangedItems="#1ca7b206-be29-4315-a036-0b532b26a191"
+                source="#3ecb9f00-67ce-49b1-9294-d48c6d95d066" target="#8e732f5a-a760-468c-b862-ba1a276206d1">
+              <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                  id="95cbd4af-7224-43fe-98cb-f13dda540b8e" name="">
+                <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                    id="37abec6a-22ed-4ad1-8b11-7826620b099c">
+                  <bodies>This is a test context.&lt;a href=&quot;0e0164c3-076e-42c1-8f82-7a43ab84385c&quot;/></bodies>
+                  <languages>capella:linkedText</languages>
+                </ownedSpecification>
+              </ownedConstraints>
+            </ownedFunctionalChainInvolvements>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
                 id="8e732f5a-a760-468c-b862-ba1a276206d1" involved="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7"/>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction"
@@ -251,7 +269,7 @@
               id="55cdd645-fb98-459a-a1c5-52d6a504c164" name="Kill"/>
           <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
               id="55b90f9a-c5af-47fc-9c1c-48090414d1f1" name="Prepared food" target="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7"
-              source="#0e0164c3-076e-42c1-8f82-7a43ab84385c"/>
+              source="#0e0164c3-076e-42c1-8f82-7a43ab84385c" exchangedItems="#1ca7b206-be29-4315-a036-0b532b26a191 #e3ccf45c-d714-40cd-9261-21f5b79f1a77"/>
           <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
               id="dd2d0dab-a35f-4104-91e5-b412f35cba15" name="Hunted animal" target="#0e0164c3-076e-42c1-8f82-7a43ab84385c"
               source="#a5ba1fbc-59a3-4684-9043-3d5cd3dec5fe"/>
@@ -1095,7 +1113,17 @@ The predator is far away</bodies>
                   id="28208081-40b1-4030-b341-f75374095717" involved="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
               <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink"
                   id="7311e58e-9500-4c72-9620-aac32e4a1458" involved="#1a414995-f4cd-488c-8152-486e459fb9de"
-                  source="#edbb1a8f-c826-421d-9fc1-2b65df64c3cb" target="#28208081-40b1-4030-b341-f75374095717"/>
+                  exchangeContext="#f0b9e371-88f8-4cc3-a540-ae841fdff965" exchangedItems="#1ca7b206-be29-4315-a036-0b532b26a191"
+                  source="#edbb1a8f-c826-421d-9fc1-2b65df64c3cb" target="#28208081-40b1-4030-b341-f75374095717">
+                <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                    id="f0b9e371-88f8-4cc3-a540-ae841fdff965" name="">
+                  <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                      id="ec3ca039-5676-4afb-b3dd-f3f72d61098d">
+                    <bodies>This is a test context.</bodies>
+                    <languages>capella:linkedText</languages>
+                  </ownedSpecification>
+                </ownedConstraints>
+              </ownedFunctionalChainInvolvements>
               <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
                   id="764c65e0-f522-4be7-80fa-52f43ccb92bd" kind="AND"/>
               <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
@@ -2091,7 +2119,17 @@ The predator is far away</bodies>
                 id="39429cb1-d9a9-45a2-87d0-fff8846a0e5a" involved="#0e71a0d3-0a18-4671-bba0-71b5f88f95dd"/>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink"
                 id="b0ef207a-cde6-41bc-8692-3c8eff09e650" involved="#96a0cf4c-adfe-4490-92d1-bcf75ee77004"
-                source="#49a7171a-4610-430f-bd82-af92b61b4f78" target="#a5940470-8bc3-4472-a197-93c6122a8d47"/>
+                exchangeContext="#1f012592-0c9a-407f-9f40-6894146b0056" source="#49a7171a-4610-430f-bd82-af92b61b4f78"
+                target="#a5940470-8bc3-4472-a197-93c6122a8d47">
+              <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                  id="1f012592-0c9a-407f-9f40-6894146b0056" name="">
+                <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                    id="8af8296e-17a6-476c-a2bd-028c11f82ff1">
+                  <bodies></bodies>
+                  <languages>capella:linkedText</languages>
+                </ownedSpecification>
+              </ownedConstraints>
+            </ownedFunctionalChainInvolvements>
             <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"
                 id="fba3c7af-4e20-4ddc-82bb-c0f856ca1af8" kind="AND"/>
             <ownedSequenceNodes xsi:type="org.polarsys.capella.core.data.fa:ControlNode"

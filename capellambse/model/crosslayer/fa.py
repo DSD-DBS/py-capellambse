@@ -21,7 +21,7 @@ from capellambse.loader import xmltools
 
 from .. import common as c
 from .. import modeltypes
-from . import capellacommon, information
+from . import capellacommon, capellacore, information
 
 if t.TYPE_CHECKING:
     from . import cs
@@ -151,8 +151,37 @@ class FunctionalExchange(AbstractExchange):
 
 
 @c.xtype_handler(None)
+class FunctionalChainInvolvementLink(c.GenericElement):
+    """An element linking a FunctionalChain to an Exchange."""
+
+    exchanged_items = c.AttrProxyAccessor(
+        information.ExchangeItem, "exchangedItems", aslist=c.ElementList
+    )
+    exchange_context = c.AttrProxyAccessor(
+        capellacore.Constraint, "exchangeContext"
+    )
+    involved = c.AttrProxyAccessor(c.GenericElement, "involved")
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
+
+
+@c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):
     """A functional chain."""
+
+    _xmltag = "ownedFunctionalChains"
+
+    involved = c.ProxyAccessor(
+        c.GenericElement,
+        XT_FCI,
+        aslist=c.MixedElementList,
+        follow="involved",
+    )
+    involvements = c.ProxyAccessor(
+        FunctionalChainInvolvementLink, XT_FCI, aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)

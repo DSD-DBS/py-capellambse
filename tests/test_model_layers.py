@@ -490,6 +490,46 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
     assert cmd in comm.allocated_exchange_items
 
 
+@pytest.mark.parametrize(
+    "fc_uuid,link_uuid,target_uuid",
+    [
+        pytest.param(
+            "d588e41f-ec4d-4fa9-ad6d-056868c66274",
+            "41e2ff3c-bc49-4eb1-ace9-66920b21179d",
+            "55b90f9a-c5af-47fc-9c1c-48090414d1f1",
+            id="OperationalProcess",
+        ),
+        pytest.param(
+            "dfc4341d-253a-4ae9-8a30-63a9d9faca39",
+            "7311e58e-9500-4c72-9620-aac32e4a1458",
+            "1a414995-f4cd-488c-8152-486e459fb9de",
+            id="FunctionalChain",
+        ),
+    ],
+)
+def test_FunctionalChainInvolvementLink_attributes(
+    model_5_2: capellambse.MelodyModel,
+    fc_uuid: str,
+    link_uuid: str,
+    target_uuid: str,
+) -> None:
+    chain = model_5_2.by_uuid(fc_uuid)
+    link = model_5_2.by_uuid(link_uuid)
+    target = model_5_2.by_uuid(target_uuid)
+    ex_item_uuids = [ex.uuid for ex in link.exchanged_items]
+    expected_uuids = ["1ca7b206-be29-4315-a036-0b532b26a191"]
+    expected_context = "This is a test context."
+    expected_end = f"{target.name} ({target.uuid})"
+
+    assert link in chain.involvements
+    assert ex_item_uuids == expected_uuids
+    assert markupsafe.escape(link.exchange_context.specification).startswith(
+        expected_context
+    )
+    assert link.involved == target
+    assert link.name == f"[FunctionalChainInvolvementLink] to {expected_end}"
+
+
 class TestArchitectureLayers:
     @pytest.mark.parametrize(
         "layer,definitions",
