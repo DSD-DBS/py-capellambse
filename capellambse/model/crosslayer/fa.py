@@ -176,7 +176,7 @@ class FunctionalChainInvolvementLink(FunctionalChainInvolvement):
 
 @c.xtype_handler(None)
 class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
-    """An element linking to a FunctionalChain to a Function"""
+    """An element linking a FunctionalChain to a Function"""
 
 
 @c.xtype_handler(None)
