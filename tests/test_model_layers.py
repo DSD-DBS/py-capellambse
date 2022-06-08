@@ -530,6 +530,31 @@ def test_FunctionalChainInvolvementLink_attributes(
     assert link.name == f"[FunctionalChainInvolvementLink] to {expected_end}"
 
 
+@pytest.mark.parametrize(
+    "trace_uuid,target_uuid",
+    [
+        pytest.param(
+            "9f84f273-1af4-49c2-a9f1-143e94ab816b",
+            "ed272baf-43f2-4fa1-ad50-49c00563258b",
+        ),
+        pytest.param(
+            "0880af85-4f96-4a77-b588-2e7a0385629d",
+            "01788b49-ccef-4a37-93d2-119287f8dd53",
+        ),
+    ],
+)
+def test_Class_has_GenericTraces(
+    model_5_2: capellambse.MelodyModel, trace_uuid: str, target_uuid: str
+) -> None:
+    cls = model_5_2.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")
+    trace = model_5_2.by_uuid(trace_uuid)
+    target = model_5_2.by_uuid(target_uuid)
+    expected_end = f"{target.name} ({target.uuid})"
+
+    assert trace in cls.traces
+    assert trace.name == f"[GenericTrace] to {expected_end}"
+
+
 class TestArchitectureLayers:
     @pytest.mark.parametrize(
         "layer,definitions",

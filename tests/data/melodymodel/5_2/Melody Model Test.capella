@@ -1379,6 +1379,20 @@ The predator is far away</bodies>
                   sourceElement="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"/>
             </ownedClasses>
           </ownedDataPkgs>
+          <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
+              id="80b36e27-cf57-44e6-862b-37f52b77bcc8" name="TestTrace">
+            <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+                id="ed272baf-43f2-4fa1-ad50-49c00563258b" name="Class Trace"/>
+            <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+                id="ad876857-33d3-4f2e-9fe2-71545a78352d" name="Class 2">
+              <ownedTraces xsi:type="org.polarsys.capella.core.data.capellacommon:GenericTrace"
+                  id="9f84f273-1af4-49c2-a9f1-143e94ab816b" targetElement="#ed272baf-43f2-4fa1-ad50-49c00563258b"
+                  sourceElement="#ad876857-33d3-4f2e-9fe2-71545a78352d"/>
+              <ownedTraces xsi:type="org.polarsys.capella.core.data.capellacommon:GenericTrace"
+                  id="0880af85-4f96-4a77-b588-2e7a0385629d" targetElement="#01788b49-ccef-4a37-93d2-119287f8dd53"
+                  sourceElement="#ad876857-33d3-4f2e-9fe2-71545a78352d"/>
+            </ownedClasses>
+          </ownedDataPkgs>
           <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
               id="959b5222-7717-4ee9-bd3a-f8a209899464" name="1st Specialization of SuperClass"
               summary="" description="&lt;p>This is a test description for a class.&lt;/p>&#xA;"

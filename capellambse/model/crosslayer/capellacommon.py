@@ -100,6 +100,18 @@ class StateTransition(c.GenericElement):
     guard = c.AttrProxyAccessor(capellacore.Constraint, "guard")
 
 
+@c.xtype_handler(None)
+class GenericTrace(c.GenericElement):
+    """A trace between two elements."""
+
+    source = c.AttrProxyAccessor(c.GenericElement, attr="sourceElement")
+    target = c.AttrProxyAccessor(c.GenericElement, attr="targetElement")
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"[{self.__class__.__name__}] to {self.target.name} ({self.target.uuid})"
+
+
 c.set_accessor(
     AbstractStateMode,
     "realized_states",
@@ -139,4 +151,9 @@ c.set_accessor(
     Region,
     "transitions",
     c.ProxyAccessor(StateTransition, aslist=c.ElementList),
+)
+c.set_accessor(
+    c.GenericElement,
+    "traces",
+    c.ProxyAccessor(GenericTrace, aslist=c.ElementList),
 )
