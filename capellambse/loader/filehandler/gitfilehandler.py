@@ -644,10 +644,40 @@ class GitFileHandler(FileHandler):
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
             LOGGER.debug("Cloning %r to %s", self.path, self.cache_dir)
-            self._git("clone", self.path, ".", "--bare", "--mirror")
+            self._git(
+                "clone",
+                "--bare",
+                "--mirror",
+                "--single-branch",
+                "--depth=1",
+                f"-b{self.revision}",
+                self.path,
+                ".",
+            )
         elif self.update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            self._git("fetch")
+            refspec = self.__make_fetch_refspec(self.revision)
+            self._git("fetch", "--depth=1", self.path, refspec)
+
+    def __make_fetch_refspec(self, ref: str) -> str:
+        """Resolve the given ``ref`` on the remote."""
+        LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
+        listing = self._git("ls-remote", self.path, ref, encoding="utf-8")
+        if not listing:
+            if not re.match("[0-9a-fA-F]{4,}", ref):
+                raise ValueError(f"Ref does not exist on remote: {ref}")
+            LOGGER.debug("Ref %r not found, assuming object name", ref)
+            return ref
+        refs = [i.split("\t") for i in listing.strip().split("\n")]
+        if len(refs) > 1:
+            raise ValueError(
+                f"Ambiguous ref name {ref}, found {len(refs)}:"
+                f" {', '.join(i[1] for i in refs)}"
+            )
+
+        _, refname = refs[0]
+        LOGGER.debug("Resolved ref %r as remote ref %r", ref, refname)
+        return f"{ref}:{refname}"
 
     def __init_worktree(self) -> None:
         worktree = pathlib.Path(
