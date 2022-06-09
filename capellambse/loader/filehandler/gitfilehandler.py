@@ -450,6 +450,7 @@ class GitFileHandler(FileHandler):
     identity_file: str
     known_hosts_file: str
     cache_dir: pathlib.Path
+    shallow: bool
 
     __fnz: object
     __has_lfs: bool
@@ -468,6 +469,7 @@ class GitFileHandler(FileHandler):
         update_cache: bool = True,
         *,
         subdir: str | pathlib.PurePosixPath = "/",
+        shallow: bool = True,
     ) -> None:
         super().__init__(path, subdir=subdir)
         self.revision = revision
@@ -477,6 +479,7 @@ class GitFileHandler(FileHandler):
         self.identity_file = identity_file
         self.known_hosts_file = known_hosts_file
         self.update_cache = update_cache
+        self.shallow = shallow
 
         self.__init_cache_dir()
         self.__init_worktree()
@@ -644,20 +647,24 @@ class GitFileHandler(FileHandler):
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
             LOGGER.debug("Cloning %r to %s", self.path, self.cache_dir)
+            shallow_opts = ("--depth=1", f"-b{self.revision}") * self.shallow
             self._git(
                 "clone",
                 "--bare",
                 "--mirror",
                 "--single-branch",
-                "--depth=1",
-                f"-b{self.revision}",
+                *shallow_opts,
                 self.path,
                 ".",
             )
         elif self.update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            refspec = self.__make_fetch_refspec(self.revision)
-            self._git("fetch", "--depth=1", self.path, refspec)
+            if self.shallow:
+                refspec = self.__make_fetch_refspec(self.revision)
+                shallow_opts = ("--depth=1", refspec)
+            else:
+                shallow_opts = ()
+            self._git("fetch", self.path, *shallow_opts)
 
     def __make_fetch_refspec(self, ref: str) -> str:
         """Resolve the given ``ref`` on the remote."""
