@@ -491,7 +491,7 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
 
 
 @pytest.mark.parametrize(
-    "fc_uuid,link_uuid,target_uuid",
+    "chain_uuid,link_uuid,target_uuid",
     [
         pytest.param(
             "d588e41f-ec4d-4fa9-ad6d-056868c66274",
@@ -507,30 +507,13 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
         ),
     ],
 )
-def test_FunctionalChainInvolvementLink_attributes(
+def test_FunctionalChainInvolvementLink_has_exchanged_items_and_exchange_context(
     model_5_2: capellambse.MelodyModel,
-    fc_uuid: str,
+    chain_uuid: str,
     link_uuid: str,
     target_uuid: str,
 ) -> None:
-    """Test if a FunctionalChainLink covers all of its attributes.
-
-    Covered attributes are
-        * exchanged_items - List of all ExchangeItems spec. on the
-          FunctionalChainLink
-        * exchange_context - A context markup.
-
-    Parameters
-    ----------
-    fc_uuid
-        UUID of the FunctionalChain (i.e. parent of FunctionalChainLink)
-    link_uuid
-        UUID of the FunctionalChainLink
-    target_uuid
-        UUID of the FunctionalChainLink target (i.e. the element behind
-        `.involved`)
-    """
-    chain = model_5_2.by_uuid(fc_uuid)
+    chain = model_5_2.by_uuid(chain_uuid)
     link = model_5_2.by_uuid(link_uuid)
     target = model_5_2.by_uuid(target_uuid)
     ex_item_uuids = [ex.uuid for ex in link.exchanged_items]
@@ -548,7 +531,7 @@ def test_FunctionalChainInvolvementLink_attributes(
 
 
 @pytest.mark.parametrize(
-    "fc_uuid,fnc_uuid,target_uuid",
+    "chain_uuid,fnc_uuid,target_uuid",
     [
         pytest.param(
             "d588e41f-ec4d-4fa9-ad6d-056868c66274",
@@ -564,13 +547,13 @@ def test_FunctionalChainInvolvementLink_attributes(
         ),
     ],
 )
-def test_FunctionalChainInvolvementFunction_attributes(
+def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
     model_5_2: capellambse.MelodyModel,
-    fc_uuid: str,
+    chain_uuid: str,
     fnc_uuid: str,
     target_uuid: str,
 ) -> None:
-    chain = model_5_2.by_uuid(fc_uuid)
+    chain = model_5_2.by_uuid(chain_uuid)
     fnc = model_5_2.by_uuid(fnc_uuid)
     target = model_5_2.by_uuid(target_uuid)
     expected_end = f"{target.name} ({target.uuid})"
