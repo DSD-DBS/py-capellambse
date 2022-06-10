@@ -646,20 +646,15 @@ class GitFileHandler(FileHandler):
         if self.cache_dir.exists() and self.disable_cache:
             shutil.rmtree(str(self.cache_dir))
 
+        update_cache = self.update_cache
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-            LOGGER.debug("Cloning %r to %s", self.path, self.cache_dir)
-            shallow_opts = ("--depth=1", f"-b{self.revision}") * self.shallow
-            self._git(
-                "clone",
-                "--bare",
-                "--mirror",
-                "--single-branch",
-                *shallow_opts,
-                self.path,
-                ".",
-            )
-        elif self.update_cache:
+            LOGGER.debug("Creating a new git repo in %s", self.cache_dir)
+            self._git("init", "--bare")
+            self._git("remote", "add", "--mirror=fetch", "origin", self.path)
+            update_cache = True
+
+        if update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
             shallow_opts = (
                 "--depth=1",
