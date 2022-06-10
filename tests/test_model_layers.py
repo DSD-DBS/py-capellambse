@@ -513,8 +513,7 @@ def test_FunctionalChainInvolvementLink_attributes(
     link_uuid: str,
     target_uuid: str,
 ) -> None:
-    """
-    Test if a FunctionalChainLink covers all of its attributes.
+    """Test if a FunctionalChainLink covers all of its attributes.
 
     Covered attributes are
         * exchanged_items - List of all ExchangeItems spec. on the
