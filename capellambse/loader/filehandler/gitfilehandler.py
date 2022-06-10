@@ -472,7 +472,6 @@ class GitFileHandler(FileHandler):
         shallow: bool = True,
     ) -> None:
         super().__init__(path, subdir=subdir)
-        self.revision = revision
         self.disable_cache = disable_cache
         self.username = username
         self.password = password
@@ -480,6 +479,9 @@ class GitFileHandler(FileHandler):
         self.known_hosts_file = known_hosts_file
         self.update_cache = update_cache
         self.shallow = shallow
+
+        self.cache_dir = None  # type: ignore[assignment]
+        self.revision = self.__resolve_remote_ref(revision)
 
         self.__init_cache_dir()
         self.__init_worktree()
@@ -659,14 +661,13 @@ class GitFileHandler(FileHandler):
             )
         elif self.update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            if self.shallow:
-                refspec = self.__make_fetch_refspec(self.revision)
-                shallow_opts = ("--depth=1", refspec)
-            else:
-                shallow_opts = ()
+            shallow_opts = (
+                "--depth=1",
+                f"+{self.revision}:{self.revision}",
+            ) * self.shallow
             self._git("fetch", self.path, *shallow_opts)
 
-    def __make_fetch_refspec(self, ref: str) -> str:
+    def __resolve_remote_ref(self, ref: str) -> str:
         """Resolve the given ``ref`` on the remote."""
         LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
         listing = self._git("ls-remote", self.path, ref, encoding="utf-8")
@@ -684,7 +685,7 @@ class GitFileHandler(FileHandler):
 
         _, refname = refs[0]
         LOGGER.debug("Resolved ref %r as remote ref %r", ref, refname)
-        return f"{ref}:{refname}"
+        return refname
 
     def __init_worktree(self) -> None:
         worktree = pathlib.Path(
