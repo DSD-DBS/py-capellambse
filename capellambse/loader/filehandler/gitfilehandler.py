@@ -650,7 +650,7 @@ class GitFileHandler(FileHandler):
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
             LOGGER.debug("Creating a new git repo in %s", self.cache_dir)
-            self._git("init", "--bare")
+            self._git("-c", "init.defaultBranch=master", "init", "--bare")
             self._git("remote", "add", "--mirror=fetch", "origin", self.path)
             update_cache = True
 
