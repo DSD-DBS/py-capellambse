@@ -181,6 +181,12 @@ def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
             id="[Operational] Includes",
         ),
         pytest.param(
+            "30bd2c21-b170-40d3-b476-7c2016b58031",
+            "84adfa3f-11c9-43d1-801c-b1535fcba802",
+            "generalizes",
+            id="[Operational] Generalizes",
+        ),
+        pytest.param(
             "9390b7d5-598a-42db-bef8-23677e45ba06",
             "562c5128-5acd-45cc-8b49-1d8d686f450a",
             "extends",
@@ -191,6 +197,12 @@ def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
             "9390b7d5-598a-42db-bef8-23677e45ba06",
             "includes",
             id="[System] Includes",
+        ),
+        pytest.param(
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "562c5128-5acd-45cc-8b49-1d8d686f450a",
+            "generalizes",
+            id="[System] Generalizes",
         ),
     ],
 )
