@@ -69,6 +69,15 @@ class OperationalCapability(c.GenericElement):
 
     _xmltag = "ownedOperationalCapabilities"
 
+    extends = c.ProxyAccessor(
+        interaction.AbstractCapabilityExtend, aslist=c.ElementList
+    )
+    includes = c.ProxyAccessor(
+        interaction.AbstractCapabilityInclude, aslist=c.ElementList
+    )
+    generalizes = c.ProxyAccessor(
+        interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
+    )
     involved_activities = c.ProxyAccessor(
         OperationalActivity,
         interaction.XT_CAP2ACT,
@@ -246,16 +255,6 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
     )  # type: ignore[assignment]
 
 
-c.set_accessor(
-    OperationalCapability,
-    "inheritance",
-    c.ProxyAccessor(
-        OperationalCapability,
-        interaction.XT_CAP_GEN,
-        follow="super",
-        aslist=c.ElementList,
-    ),
-)
 c.set_accessor(
     OperationalActivity,
     "packages",

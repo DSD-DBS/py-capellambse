@@ -102,6 +102,15 @@ class Capability(c.GenericElement):
 
     _xmltag = "ownedCapabilities"
 
+    extends = c.ProxyAccessor(
+        interaction.AbstractCapabilityExtend, aslist=c.ElementList
+    )
+    includes = c.ProxyAccessor(
+        interaction.AbstractCapabilityInclude, aslist=c.ElementList
+    )
+    generalizes = c.ProxyAccessor(
+        interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
+    )
     owned_chains = c.ProxyAccessor(fa.FunctionalChain, aslist=c.ElementList)
     involved_functions = c.ProxyAccessor(
         SystemFunction,
@@ -210,16 +219,6 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     )  # type: ignore[assignment]
 
 
-c.set_accessor(
-    Capability,
-    "inheritance",
-    c.ProxyAccessor(
-        Capability,
-        interaction.XT_CAP_GEN,
-        follow="super",
-        aslist=c.ElementList,
-    ),
-)
 c.set_accessor(
     SystemFunction,
     "owner",
