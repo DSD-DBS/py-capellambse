@@ -48,8 +48,6 @@ class DiagramDescriptor(t.NamedTuple):
 
 def enumerate_diagrams(
     model: loader.MelodyLoader,
-    *,
-    err_abort: bool = False,
 ) -> cabc.Iterator[DiagramDescriptor]:
     """Enumerate the diagrams in the model.
 
@@ -57,9 +55,6 @@ def enumerate_diagrams(
     ----------
     model
         The MelodyLoader instance
-    err_abort
-        Abort when encountering any error.  If False, enumerate all
-        diagrams that are usable and ignore the others.
     """
     raw_views = model.xpath2(C.XP_VIEWS)
     views: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
@@ -95,7 +90,7 @@ def enumerate_diagrams(
             name = descriptor[1].attrib["name"]
             uid = descriptor[1].attrib["repPath"]
             if not uid.startswith("#"):
-                raise ValueError("Invalid diagram reference: {uid!r}")
+                raise ValueError("Malformed diagram reference: {uid!r}")
 
             diag_root = model[uid]
             if diag_root.tag not in DIAGRAM_ROOTS:
@@ -117,13 +112,13 @@ def enumerate_diagrams(
                 styleclass = urllib.parse.unquote(styleclass_match.group(1))
 
             target_anchors = list(descriptor[1].iterchildren("target"))
-            if not target_anchors:
-                raise RuntimeError("Invalid XML: No <target> anchors found")
             if len(target_anchors) != 1:
-                raise RuntimeError("Invalid XML: More than 1 <target> anchor")
+                raise RuntimeError(
+                    f"Expected 1 <target> anchor, found {len(target_anchors)}"
+                )
             target_href = target_anchors[0].get("href")
             if not target_href:
-                raise RuntimeError("Invalid XML: <target> has no href")
+                raise RuntimeError("<target> anchor has no href")
             target = model.follow_link(descriptor[1], target_href)
 
             yield DiagramDescriptor(
@@ -134,14 +129,10 @@ def enumerate_diagrams(
                 viewpoint=descriptor[2],
                 target=target,
             )
-        except Exception:
-            C.LOGGER.exception(
-                "Error parsing descriptor for diagram with uid %r and name %r",
-                uid,
-                name,
+        except Exception as err:
+            C.LOGGER.warning(
+                "Ignoring invalid diagram %s (%r): %s", uid, name, err
             )
-            if err_abort:
-                raise
 
 
 def parse_diagrams(
