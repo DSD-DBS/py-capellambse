@@ -559,6 +559,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.AbstractCapabilityExtend": {
             "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
         },
         "Edge.AbstractCapabilityGeneralization": {
             "marker-end": "GeneralizationMark",
@@ -575,6 +576,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Edge.Entity": {},
         "Edge.EntityOperationalCapabilityInvolvement": {
             "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
         },
         "Edge.OperationalActor": {},
     },
