@@ -36,4 +36,4 @@ jobs:
           python -m pip install pylint==2.13.9
       - name: Run pylint
         run: |-
-          pylint -dfixme -- capellambse || exit $(($? & ~24))
+          pylint -dfixme capellambse || exit $(($? & ~24))

@@ -566,8 +566,6 @@ def _make_snapped_floating_label(
 
 
 def _is_collapsed(seb: C.SemanticElementBuilder) -> bool:
-    # pylint: disable=undefined-loop-variable
-    # <https://github.com/PyCQA/pylint/issues/1175>
     for data_container in seb.data_element.iterchildren():
         if data_container.get("type") == "7002":
             break
