@@ -1064,10 +1064,10 @@ def generalization_mark(
 ) -> container.Marker:
     style.fill = "#fff"
     return _make_marker(
-        (14, 8),
-        (15, 15),
+        (7, 4),
+        (7.5, 7.5),
         id_=id_,
-        d="M 0.1275,15 15,7.5 0,0 Z",
+        d="M 0.1275,7.5 7.5,3.75 0,0 Z",
         style=style,
         **kw,
     )
