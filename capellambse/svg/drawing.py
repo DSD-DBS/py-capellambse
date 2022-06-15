@@ -287,7 +287,6 @@ class Drawing(drawing.Drawing):
         assert "text" not in builder.label or isinstance(
             builder.label["text"], str
         )
-
         text = self.text(
             text="",
             insert=(builder.label["x"], builder.label["y"]),
@@ -297,64 +296,44 @@ class Drawing(drawing.Drawing):
             style=builder.labelstyle[""],
         )
         builder.group.add(text)
-        max_text_width = builder.label["width"]
+
         render_icon = (
             f"{builder.class_}Symbol" in decorations.deco_factories
             and builder.icon
         )
+        lines = render_hbounded_lines(builder, render_icon)
 
-        (
-            lines,
-            label_margin,
-            max_text_width,
-        ) = helpers.check_for_horizontal_overflow(
-            str(builder.label["text"]),
-            builder.label["width"],
-            decorations.icon_padding if render_icon else 0,
-            builder.icon_size if render_icon else 0,
-        )
-        lines_to_render = helpers.check_for_vertical_overflow(
-            lines, builder.label["height"], max_text_width
-        )
-        line_height = max(
-            j for _, j in map(chelpers.extent_func, lines_to_render)
-        )
-        text_height = line_height * len(lines_to_render)
-        max_line_width = max(
-            w for w, _ in map(chelpers.extent_func, lines_to_render)
-        )
-        assert max_text_width >= max_line_width
         if builder.text_anchor == "start":
             x = (
                 builder.label["x"]
-                + label_margin
+                + lines.margin
                 + (builder.icon_size + decorations.icon_padding) * render_icon
             )
-            icon_x = builder.label["x"] + label_margin
+            icon_x = builder.label["x"] + lines.margin
         else:
             x = builder.label["x"] + builder.label["width"] / 2
-            icon_x = x - max_line_width / 2 - builder.icon_size
+            icon_x = x - lines.max_line_width / 2 - builder.icon_size
 
-        dominant_baseline_adjust = (
-            chelpers.extent_func(lines_to_render[0])[1] / 2
-        )
+        dominant_baseline_adjust = chelpers.extent_func(lines.lines[0])[1] / 2
         if builder.y_margin is None:
-            builder.y_margin = (builder.label["height"] - text_height) / 2
+            builder.y_margin = (
+                builder.label["height"] - lines.text_height
+            ) / 2
 
         y = builder.label["y"] + builder.y_margin + dominant_baseline_adjust
-        for line in lines_to_render:
+        for line in lines.lines:
             text.add(
                 svgtext.TSpan(
                     insert=(x, y), text=line, **{"xml:space": "preserve"}
                 )
             )
-            y += line_height
+            y += lines.line_height
 
         if render_icon:
             icon_y = (
                 builder.label["y"]
                 + builder.y_margin
-                + (text_height - builder.icon_size) / 2
+                + (lines.text_height - builder.icon_size) / 2
             )
             if (
                 icon_x < builder.label["x"] - 2
@@ -364,7 +343,7 @@ class Drawing(drawing.Drawing):
 
             self.add_label_image(builder, (icon_x, icon_y))
 
-        return x, text_height, max_line_width, builder.y_margin
+        return x, lines.text_height, lines.max_line_width, builder.y_margin
 
     def add_label_image(
         self, builder: LabelBuilder, pos: tuple[float, float]
@@ -862,3 +841,39 @@ class Drawing(drawing.Drawing):
             )
         )
         return lines
+
+
+class LinesData(t.NamedTuple):
+    lines: list[str]
+    line_height: float
+    text_height: float
+    margin: float
+    max_line_width: float
+
+
+def render_hbounded_lines(
+    builder: LabelBuilder, render_icon: bool
+) -> LinesData:
+    assert builder.label is not None
+    (
+        lines,
+        label_margin,
+        max_text_width,
+    ) = helpers.check_for_horizontal_overflow(
+        str(builder.label["text"]),
+        builder.label["width"],
+        decorations.icon_padding if render_icon else 0,
+        builder.icon_size if render_icon else 0,
+    )
+    lines_to_render = helpers.check_for_vertical_overflow(
+        lines, builder.label["height"], max_text_width
+    )
+    line_height = max(j for _, j in map(chelpers.extent_func, lines_to_render))
+    text_height = line_height * len(lines_to_render)
+    max_line_width = max(
+        w for w, _ in map(chelpers.extent_func, lines_to_render)
+    )
+    assert max_text_width >= max_line_width
+    return LinesData(
+        lines_to_render, line_height, text_height, label_margin, max_line_width
+    )
