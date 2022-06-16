@@ -21,6 +21,9 @@ from . import decorations, generate, helpers, style, symbols
 
 LOGGER = logging.getLogger(__name__)
 DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
+"""Debug flag to render helping lines."""
+LABEL_ICON_PADDING = 2
+"""Default (right)-padding for label icons."""
 
 
 LabelDict = t.TypedDict(
@@ -35,19 +38,7 @@ LabelDict = t.TypedDict(
     },
     total=False,
 )
-
-
-@dataclasses.dataclass
-class LabelBuilder:
-    label: LabelDict | None
-    group: container.Group
-    labelstyle: style.Styling
-    class_: str | None = None
-    y_margin: int | float | None = None
-    text_anchor: str = "start"
-    icon: bool = True
-    icon_size: float | int = decorations.icon_size
-
+"""Stores relevant data of labels."""
 
 # FIXME: refactor this, so a Drawing contains an "svg drawing". Always prefer composition over inheritance.
 class Drawing(drawing.Drawing):
@@ -156,6 +147,14 @@ class Drawing(drawing.Drawing):
                 pos[0] + (size[0] - icon_size / 4) / 2,
                 pos[1] + (decorations.feature_space - 15) / 2,
             )
+            label = {  # XXX: Instead of allowing None > more asserts
+                "x": labelpos[0],
+                "y": labelpos[1],
+                "width": 0.0,
+                "height": 0.0,
+                "text": "",
+                "class": "",
+            }
             self.add_label_image(
                 LabelBuilder(
                     label, grp, text_style, class_=class_, icon_size=icon_size
@@ -231,6 +230,7 @@ class Drawing(drawing.Drawing):
 
         if DEBUG:
             assert builder.label is not None
+            assert y_margin is not None
             debug_y = int(builder.label["y"]) + y_margin
             debug_y1 = (
                 int(builder.label["y"])
@@ -278,8 +278,7 @@ class Drawing(drawing.Drawing):
 
     def _draw_label(
         self, builder: LabelBuilder
-    ) -> tuple[float, float, float, float | int]:
-        assert builder.label is not None
+    ) -> tuple[float, float, float, float | int | None]:
         assert isinstance(builder.label["x"], (int, float))
         assert isinstance(builder.label["y"], (int, float))
         assert isinstance(builder.label["width"], (int, float))
@@ -302,25 +301,8 @@ class Drawing(drawing.Drawing):
             and builder.icon
         )
         lines = render_hbounded_lines(builder, render_icon)
-
-        if builder.text_anchor == "start":
-            x = (
-                builder.label["x"]
-                + lines.margin
-                + (builder.icon_size + decorations.icon_padding) * render_icon
-            )
-            icon_x = builder.label["x"] + lines.margin
-        else:
-            x = builder.label["x"] + builder.label["width"] / 2
-            icon_x = x - lines.max_line_width / 2 - builder.icon_size
-
-        dominant_baseline_adjust = chelpers.extent_func(lines.lines[0])[1] / 2
-        if builder.y_margin is None:
-            builder.y_margin = (
-                builder.label["height"] - lines.text_height
-            ) / 2
-
-        y = builder.label["y"] + builder.y_margin + dominant_baseline_adjust
+        x, icon_x = get_label_position_x(builder, lines, render_icon)
+        y = get_label_position_y(builder, lines)
         for line in lines.lines:
             text.add(
                 svgtext.TSpan(
@@ -330,18 +312,10 @@ class Drawing(drawing.Drawing):
             y += lines.line_height
 
         if render_icon:
-            icon_y = (
-                builder.label["y"]
-                + builder.y_margin
-                + (lines.text_height - builder.icon_size) / 2
+            icon_pos = get_label_icon_position(
+                builder, lines.text_height, icon_x
             )
-            if (
-                icon_x < builder.label["x"] - 2
-                and builder.label["class"] != "Annotation"
-            ):
-                icon_x = builder.label["x"] - 2
-
-            self.add_label_image(builder, (icon_x, icon_y))
+            self.add_label_image(builder, icon_pos)
 
         return x, lines.text_height, lines.max_line_width, builder.y_margin
 
@@ -582,7 +556,6 @@ class Drawing(drawing.Drawing):
             )
 
         self.add(grp)
-
         if label_:
             label_["class"] = "Annotation"
             self._draw_label(
@@ -843,6 +816,18 @@ class Drawing(drawing.Drawing):
         return lines
 
 
+@dataclasses.dataclass
+class LabelBuilder:
+    label: LabelDict
+    group: container.Group
+    labelstyle: style.Styling
+    class_: str | None = None
+    y_margin: int | float | None = None
+    text_anchor: str = "start"
+    icon: bool = True
+    icon_size: float | int = decorations.icon_size
+
+
 class LinesData(t.NamedTuple):
     lines: list[str]
     line_height: float
@@ -854,7 +839,6 @@ class LinesData(t.NamedTuple):
 def render_hbounded_lines(
     builder: LabelBuilder, render_icon: bool
 ) -> LinesData:
-    assert builder.label is not None
     (
         lines,
         label_margin,
@@ -877,3 +861,49 @@ def render_hbounded_lines(
     return LinesData(
         lines_to_render, line_height, text_height, label_margin, max_line_width
     )
+
+
+def get_label_position_x(
+    builder: LabelBuilder, lines: LinesData, render_icon: bool
+) -> tuple[float, float]:
+    """Return x-coordinate of label-text and icon."""
+    if builder.text_anchor == "start":
+        x = (
+            builder.label["x"]
+            + lines.margin
+            + (builder.icon_size + decorations.icon_padding) * render_icon
+        )
+        return x, builder.label["x"] + lines.margin
+    x = builder.label["x"] + builder.label["width"] / 2
+    return x, x - lines.max_line_width / 2 - builder.icon_size
+
+
+def get_label_position_y(builder: LabelBuilder, lines: LinesData) -> float:
+    """Return y-coordinate of label-text."""
+    dominant_baseline_adjust = chelpers.extent_func(lines.lines[0])[1] / 2
+    if builder.y_margin is None:
+        builder.y_margin = (builder.label["height"] - lines.text_height) / 2
+    return builder.label["y"] + builder.y_margin + dominant_baseline_adjust
+
+
+def get_label_icon_position(
+    builder: LabelBuilder, text_height: int | float, icon_x: int | float
+) -> tuple[float, float]:
+    """Return icon position for labels.
+
+    Determines mainly y-coordinate and adjusts x-coordinate if
+    label-class does not equal `Annotation` and x-coordinate
+    overflows into label-text with `decorations.icon_padding`.
+    """
+    assert builder.y_margin is not None
+    icon_y = (
+        builder.label["y"]
+        + builder.y_margin
+        + (text_height - builder.icon_size) / 2
+    )
+    if (
+        icon_x < builder.label["x"] - decorations.icon_padding
+        and builder.label["class"] != "Annotation"
+    ):
+        icon_x = builder.label["x"] - decorations.icon_padding
+    return icon_x, icon_y
