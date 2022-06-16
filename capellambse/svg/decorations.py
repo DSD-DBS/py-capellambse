@@ -12,8 +12,11 @@ import typing as t
 logger = logging.getLogger(__name__)
 
 icon_size = 20
+"""Default icon size."""
 icon_padding = 2
+"""Default icon padding(right-side)."""
 feature_space = 24
+"""Default space for feature text."""
 
 function_ports = {"FIP", "FOP"}
 directed_component_ports = {"CP_IN", "CP_OUT"}
