@@ -108,7 +108,11 @@ class SVGDiagram:
     def draw_object(self, obj: ContentsDict) -> None:
         self.drawing.draw_object(obj)
 
-    def save_drawing(self, pretty: bool = False, indent: int = 2) -> None:
+    def save_drawing(
+        self, pretty: bool = False, indent: int = 2, filename: str = ""
+    ) -> None:
+        if filename:
+            self.drawing.filename = filename
         self.drawing.save(pretty=pretty, indent=indent)
 
     def to_string(self) -> str:
