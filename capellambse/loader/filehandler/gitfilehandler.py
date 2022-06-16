@@ -35,6 +35,8 @@ from . import FileHandler, TransactionClosedError
 
 LOGGER = logging.getLogger(__name__)
 
+_git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
+
 
 class _TreeEntry(t.NamedTuple):
     mode: str
@@ -252,7 +254,7 @@ class _GitTransaction:
         if targetref == "HEAD":
             targetref = self.__resolve_head() or targetref
 
-        if re.search("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$", targetref):
+        if _git_object_name.search(targetref):
             raise ValueError(
                 f"Target ref looks like a git object, use a different remote_branch: {targetref}"
             )
@@ -481,7 +483,7 @@ class GitFileHandler(FileHandler):
         self.shallow = shallow
 
         self.cache_dir = None  # type: ignore[assignment]
-        self.revision = self.__resolve_remote_ref(revision)
+        self.__hash, self.revision = self.__resolve_remote_ref(revision)
 
         self.__init_cache_dir()
         self.__init_worktree()
@@ -656,21 +658,23 @@ class GitFileHandler(FileHandler):
 
         if update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            shallow_opts = (
-                "--depth=1",
-                f"+{self.revision}:{self.revision}",
-            ) * self.shallow
+            shallow_opts: tuple[str, ...] = ()
+            if self.shallow:
+                fetchspec = f"+{self.revision}"
+                if not _git_object_name.search(self.revision):
+                    fetchspec += f":{self.revision}"
+                shallow_opts = ("--depth=1", fetchspec)
             self._git("fetch", self.path, *shallow_opts)
 
-    def __resolve_remote_ref(self, ref: str) -> str:
+    def __resolve_remote_ref(self, ref: str) -> tuple[str, str]:
         """Resolve the given ``ref`` on the remote."""
         LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
         listing = self._git("ls-remote", self.path, ref, encoding="utf-8")
         if not listing:
-            if not re.match("[0-9a-fA-F]{4,}", ref):
+            if not _git_object_name.search(ref):
                 raise ValueError(f"Ref does not exist on remote: {ref}")
             LOGGER.debug("Ref %r not found, assuming object name", ref)
-            return ref
+            return ref, ref
         refs = [i.split("\t") for i in listing.strip().split("\n")]
         if len(refs) > 1:
             raise ValueError(
@@ -678,9 +682,11 @@ class GitFileHandler(FileHandler):
                 f" {', '.join(i[1] for i in refs)}"
             )
 
-        _, refname = refs[0]
-        LOGGER.debug("Resolved ref %r as remote ref %r", ref, refname)
-        return refname
+        hash, refname = refs[0]
+        LOGGER.debug(
+            "Resolved ref %r as remote ref %r (%s)", ref, refname, hash
+        )
+        return hash, refname
 
     def __init_worktree(self) -> None:
         worktree = pathlib.Path(
@@ -694,7 +700,7 @@ class GitFileHandler(FileHandler):
                 "--detach",
                 "--no-checkout",
                 worktree,
-                self.revision,
+                self.__hash,
                 silent=True,
             )
         except:
