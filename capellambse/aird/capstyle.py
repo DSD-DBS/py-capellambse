@@ -503,6 +503,38 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
         },
     },
+    "Missions Capabilities Blank": {
+        "Box.SystemComponent": {
+            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+        },
+        "Edge.AbstractCapabilityExtend": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.AbstractCapabilityGeneralization": {
+            "marker-end": "GeneralizationMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.AbstractCapabilityInclude": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.CapabilityExploitation": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.CapabilityInvolvement": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+    },
     "Mode State Machine": {  # (from common.odesign)
         "Box.ChoicePseudoState": {
             "fill": COLORS["_CAP_ChoicePseudoState_Color"],
