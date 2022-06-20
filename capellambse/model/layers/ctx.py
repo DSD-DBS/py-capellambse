@@ -17,6 +17,7 @@ from . import oa
 
 XT_ARCH = "org.polarsys.capella.core.data.ctx:SystemAnalysis"
 XT_CAP_INV = "org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
+XT_CAP_EXP = "org.polarsys.capella.core.data.ctx:CapabilityExploitation"
 
 
 @c.xtype_handler(XT_ARCH)
@@ -42,23 +43,6 @@ class SystemFunctionPkg(c.GenericElement):
     _xmltag = "ownedFunctionPkg"
 
     functions = c.ProxyAccessor(SystemFunction, aslist=c.ElementList)
-    packages: c.Accessor
-
-
-@c.xtype_handler(XT_ARCH)
-class Mission(c.GenericElement):
-    """A mission."""
-
-    _xmltag = "ownedMissions"
-
-
-@c.xtype_handler(XT_ARCH)
-class MissionPkg(c.GenericElement):
-    """A system mission package that can hold missions."""
-
-    _xmltag = "ownedMissionPkg"
-
-    missions = c.ProxyAccessor(Mission, aslist=c.ElementList)
     packages: c.Accessor
 
 
@@ -97,6 +81,11 @@ class SystemComponentPkg(c.GenericElement):
 
 
 @c.xtype_handler(XT_ARCH)
+class CapabilityInvolvement(interaction.AbstractInvolvement):
+    """A CapabilityInvolvement."""
+
+
+@c.xtype_handler(XT_ARCH)
 class Capability(c.GenericElement):
     """A capability."""
 
@@ -130,6 +119,9 @@ class Capability(c.GenericElement):
         follow="involved",
         aslist=c.MixedElementList,
     )
+    component_involvements = c.ProxyAccessor(
+        CapabilityInvolvement, aslist=c.ElementList
+    )
     realized_capabilities = c.ProxyAccessor(
         oa.OperationalCapability,
         interaction.XT_CAP_REAL,
@@ -146,6 +138,54 @@ class Capability(c.GenericElement):
         capellacommon.State, "availableInStates", aslist=c.ElementList
     )
 
+    packages: c.Accessor
+
+
+@c.xtype_handler(XT_ARCH)
+class MissionInvolvement(interaction.AbstractInvolvement):
+    """A MissionInvolvement."""
+
+    _xmltag = "ownedMissionInvolvements"
+
+
+@c.xtype_handler(XT_ARCH)
+class CapabilityExploitation(c.GenericElement):
+    """A CapabilityExploitation."""
+
+    _xmltag = "ownedCapabilityExploitations"
+
+    capability = c.AttrProxyAccessor(Capability, "capability")
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"[{self.__class__.__name__}] to {self.capability.name} ({self.capability.uuid})"
+
+
+@c.xtype_handler(XT_ARCH)
+class Mission(c.GenericElement):
+    """A mission."""
+
+    _xmltag = "ownedMissions"
+
+    involvements = c.ProxyAccessor(MissionInvolvement, aslist=c.ElementList)
+    exploits = c.ProxyAccessor(
+        Capability,
+        xtypes=XT_CAP_EXP,
+        follow="capability",
+        aslist=c.ElementList,
+    )
+    exploitations = c.ProxyAccessor(
+        CapabilityExploitation, aslist=c.ElementList
+    )
+
+
+@c.xtype_handler(XT_ARCH)
+class MissionPkg(c.GenericElement):
+    """A system mission package that can hold missions."""
+
+    _xmltag = "ownedMissionPkg"
+
+    missions = c.ProxyAccessor(Mission, aslist=c.ElementList)
     packages: c.Accessor
 
 
@@ -202,6 +242,11 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
         deep=True,
     )
 
+    all_capability_exploitations = c.ProxyAccessor(
+        CapabilityExploitation,
+        aslist=c.ElementList,
+        deep=True,
+    )
     all_function_exchanges = c.ProxyAccessor(
         fa.FunctionalExchange,
         aslist=c.ElementList,
@@ -243,6 +288,17 @@ c.set_accessor(
         Capability,
         operator.attrgetter("_model.sa.all_capabilities"),
         matchtransform=operator.attrgetter("realized_capabilities"),
+        aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    Capability,
+    "incoming_exploitations",
+    c.CustomAccessor(
+        CapabilityExploitation,
+        operator.attrgetter("_model.sa.all_capability_exploitations"),
+        elmmatcher=operator.eq,
+        matchtransform=operator.attrgetter("capability"),
         aslist=c.ElementList,
     ),
 )

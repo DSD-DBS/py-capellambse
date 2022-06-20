@@ -64,6 +64,11 @@ class OperationalProcess(fa.FunctionalChain):
 
 
 @c.xtype_handler(XT_ARCH)
+class EntityOperationalCapabilityInvolvement(interaction.AbstractInvolvement):
+    """An EntityOperationalCapabilityInvolvement."""
+
+
+@c.xtype_handler(XT_ARCH)
 class OperationalCapability(c.GenericElement):
     """A capability in the OperationalAnalysis layer."""
 
@@ -89,6 +94,9 @@ class OperationalCapability(c.GenericElement):
         XT_EOCI,
         follow="involved",
         aslist=c.MixedElementList,
+    )
+    entity_involvements = c.ProxyAccessor(
+        EntityOperationalCapabilityInvolvement, aslist=c.ElementList
     )
     involved_processes = c.ProxyAccessor(
         OperationalProcess,

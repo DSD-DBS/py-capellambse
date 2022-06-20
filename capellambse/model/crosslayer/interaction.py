@@ -46,3 +46,18 @@ class AbstractCapabilityGeneralization(Exchange):
     _xmltag = "superGeneralizations"
 
     target = c.AttrProxyAccessor(c.GenericElement, "super")
+
+
+class AbstractInvolvement(c.GenericElement):
+    """An abstract Involvement."""
+
+    involved = c.AttrProxyAccessor(c.GenericElement, "involved")
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
+
+
+@c.xtype_handler(None)
+class AbstractFunctionAbstractCapabilityInvolvement(AbstractInvolvement):
+    """An abstract CapabilityInvolvement linking to SystemFunctions."""
