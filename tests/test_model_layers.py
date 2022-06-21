@@ -551,7 +551,7 @@ def test_GenericElement_has_GenericTraces(
 
     assert trace in cls.traces
     assert trace.name == expected
-    
+
 
 @pytest.mark.parametrize(
     "chain_uuid,fnc_uuid,target_uuid",
