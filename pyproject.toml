@@ -130,7 +130,6 @@ disable = [
   "missing-final-newline",  # auto-formatting
   "missing-function-docstring",
   "missing-kwoa",  # handled by mypy
-  "missing-method-docstring",
   "missing-module-docstring",
   "mixed-line-endings",  # auto-formatting
   "multiple-imports",  # auto-formatting

@@ -150,8 +150,20 @@ class FunctionalExchange(AbstractExchange):
         return self.allocating_component_exchange
 
 
+class FunctionalChainInvolvement(c.GenericElement):
+    """Abstract class for FunctionalChainInvolvementLink/Function."""
+
+    _xml = "ownedFunctionalChainInvolvements"
+
+    involved = c.AttrProxyAccessor(c.GenericElement, "involved")
+
+    @property
+    def name(self) -> str:  # type: ignore
+        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
+
+
 @c.xtype_handler(None)
-class FunctionalChainInvolvementLink(c.GenericElement):
+class FunctionalChainInvolvementLink(FunctionalChainInvolvement):
     """An element linking a FunctionalChain to an Exchange."""
 
     exchanged_items = c.AttrProxyAccessor(
@@ -160,11 +172,11 @@ class FunctionalChainInvolvementLink(c.GenericElement):
     exchange_context = c.AttrProxyAccessor(
         capellacore.Constraint, "exchangeContext"
     )
-    involved = c.AttrProxyAccessor(c.GenericElement, "involved")
 
-    @property
-    def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
+
+@c.xtype_handler(None)
+class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
+    """An element linking a FunctionalChain to a Function"""
 
 
 @c.xtype_handler(None)
@@ -174,13 +186,10 @@ class FunctionalChain(c.GenericElement):
     _xmltag = "ownedFunctionalChains"
 
     involved = c.ProxyAccessor(
-        c.GenericElement,
-        XT_FCI,
-        aslist=c.MixedElementList,
-        follow="involved",
+        c.GenericElement, XT_FCI, aslist=c.MixedElementList, follow="involved"
     )
     involvements = c.ProxyAccessor(
-        FunctionalChainInvolvementLink, XT_FCI, aslist=c.ElementList
+        c.GenericElement, XT_FCI, aslist=c.ElementList
     )
 
 
