@@ -387,6 +387,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["black"],
             "stroke-width": 1,
         },
+        "Edge.MissionInvolvement": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
     },
     "Error": {},
     "Functional Chain Description": {
@@ -540,6 +545,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke-width": 1,
         },
         "Edge.CapabilityInvolvement": {
+            "marker-end": "FineArrowMark",
+            "stroke": COLORS["black"],
+            "stroke-width": 1,
+        },
+        "Edge.MissionInvolvement": {
             "marker-end": "FineArrowMark",
             "stroke": COLORS["black"],
             "stroke-width": 1,
