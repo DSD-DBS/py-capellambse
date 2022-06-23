@@ -889,7 +889,7 @@ def get_label_position_y(builder: LabelBuilder, lines: LinesData) -> float:
 def get_label_icon_position(
     builder: LabelBuilder, text_height: int | float, icon_x: int | float
 ) -> tuple[float, float]:
-    """It calculates the position of the icon relative to the label.
+    """Calculate the position of the icon relative to the label.
 
     Parameters
     ----------
