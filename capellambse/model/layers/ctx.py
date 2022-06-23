@@ -292,12 +292,8 @@ c.set_accessor(
 c.set_accessor(
     Capability,
     "incoming_exploitations",
-    c.CustomAccessor(
-        CapabilityExploitation,
-        operator.attrgetter("_model.sa.all_capability_exploitations"),
-        elmmatcher=operator.eq,
-        matchtransform=operator.attrgetter("capability"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        CapabilityExploitation, "capability", aslist=c.ElementList
     ),
 )
 c.set_accessor(
