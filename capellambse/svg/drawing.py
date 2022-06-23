@@ -23,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
 """Debug flag to render helping lines."""
 LABEL_ICON_PADDING = 2
-"""Default (right)-padding for label icons."""
+"""Default padding between a label's icon and text."""
 
 
 LabelDict = t.TypedDict(
@@ -38,7 +38,7 @@ LabelDict = t.TypedDict(
     },
     total=False,
 )
-"""Stores relevant data of labels."""
+
 
 # FIXME: refactor this, so a Drawing contains an "svg drawing". Always prefer composition over inheritance.
 class Drawing(drawing.Drawing):
@@ -231,13 +231,13 @@ class Drawing(drawing.Drawing):
         if DEBUG:
             assert builder.label is not None
             assert y_margin is not None
-            debug_y = int(builder.label["y"]) + y_margin
+            debug_y = builder.label["y"] + y_margin
             debug_y1 = (
-                int(builder.label["y"])
-                + (int(builder.label["height"]) - decorations.icon_size) / 2
+                builder.label["y"]
+                + (builder.label["height"] - decorations.icon_size) / 2
             )
             x = (
-                int(builder.label["x"])
+                builder.label["x"]
                 + decorations.icon_size
                 + 2 * decorations.icon_padding
             )
@@ -249,7 +249,7 @@ class Drawing(drawing.Drawing):
             bbox: LabelDict = {
                 "x": x
                 if builder.text_anchor == "start"
-                else x - int(builder.label["width"]) / 2,
+                else x - builder.label["width"] / 2,
                 "y": debug_y if debug_y <= debug_y1 else debug_y1,
                 "width": builder.label["width"],
                 "height": debug_height,
@@ -889,11 +889,21 @@ def get_label_position_y(builder: LabelBuilder, lines: LinesData) -> float:
 def get_label_icon_position(
     builder: LabelBuilder, text_height: int | float, icon_x: int | float
 ) -> tuple[float, float]:
-    """Return icon position for labels.
+    """It calculates the position of the icon relative to the label.
 
-    Determines mainly y-coordinate and adjusts x-coordinate if
-    label-class does not equal `Annotation` and x-coordinate
-    overflows into label-text with `decorations.icon_padding`.
+    Parameters
+    ----------
+    builder : LabelBuilder
+        LabelBuilder
+    text_height : int | float
+        The height of the text in the label.
+    icon_x : int | float
+        The x position of the icon.
+
+    Returns
+    -------
+    icon_coords : tuple[float, float]
+        The x and y coordinates of the icon.
     """
     assert builder.y_margin is not None
     icon_y = (

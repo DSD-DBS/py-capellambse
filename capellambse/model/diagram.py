@@ -66,7 +66,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     *   The element which is considered to be the "element of interest".
     """
     filters: cabc.MutableSet[str]
-    """Return a set of currently activated filters on this diagram."""
+    """The filters that are activated for this diagram."""
 
     _model: capellambse.MelodyModel
     _render: aird.Diagram

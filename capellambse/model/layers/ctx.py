@@ -16,8 +16,6 @@ from ..crosslayer import capellacommon, capellacore, cs, fa, interaction
 from . import oa
 
 XT_ARCH = "org.polarsys.capella.core.data.ctx:SystemAnalysis"
-XT_CAP_INV = "org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
-XT_CAP_EXP = "org.polarsys.capella.core.data.ctx:CapabilityExploitation"
 
 
 @c.xtype_handler(XT_ARCH)
@@ -115,7 +113,7 @@ class Capability(c.GenericElement):
     )
     involved_components = c.ProxyAccessor(
         SystemComponent,
-        XT_CAP_INV,
+        xtypes=CapabilityInvolvement,
         follow="involved",
         aslist=c.MixedElementList,
     )
@@ -170,7 +168,7 @@ class Mission(c.GenericElement):
     involvements = c.ProxyAccessor(MissionInvolvement, aslist=c.ElementList)
     exploits = c.ProxyAccessor(
         Capability,
-        xtypes=XT_CAP_EXP,
+        xtypes=CapabilityExploitation,
         follow="capability",
         aslist=c.ElementList,
     )

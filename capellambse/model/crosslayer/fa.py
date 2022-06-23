@@ -161,8 +161,6 @@ class FunctionalChainInvolvementLink(interaction.AbstractInvolvement):
         capellacore.Constraint, "exchangeContext"
     )
 
-    involved: c.AttrProxyAccessor
-
 
 @c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):

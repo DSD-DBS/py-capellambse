@@ -111,9 +111,11 @@ class SVGDiagram:
     def save_drawing(
         self, pretty: bool = False, indent: int = 2, filename: str = ""
     ) -> None:
-        if filename:
-            self.drawing.filename = filename
-        self.drawing.save(pretty=pretty, indent=indent)
+        self.drawing.saveas(
+            filename=filename or self.drawing.filename,
+            pretty=pretty,
+            indent=indent,
+        )
 
     def to_string(self) -> str:
         return self.drawing.tostring()
