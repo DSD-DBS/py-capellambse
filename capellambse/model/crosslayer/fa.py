@@ -1,7 +1,7 @@
 # Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Implementation of objects and relations for Functional Analysis
+"""Implementation of objects and relations for Functional Analysis.
 
 Functional Analysis objects inheritance tree (taxonomy):
 
@@ -21,7 +21,7 @@ from capellambse.loader import xmltools
 
 from .. import common as c
 from .. import modeltypes
-from . import capellacommon, capellacore, information
+from . import capellacommon, capellacore, information, interaction
 
 if t.TYPE_CHECKING:
     from . import cs
@@ -83,7 +83,7 @@ class AbstractExchange(c.GenericElement):
 
 @c.xtype_handler(None)
 class AbstractFunction(c.GenericElement):
-    """An AbstractFunction"""
+    """An AbstractFunction."""
 
     available_in_states = c.AttrProxyAccessor(
         capellacommon.State, "availableInStates", aslist=c.ElementList
@@ -92,7 +92,7 @@ class AbstractFunction(c.GenericElement):
 
 @c.xtype_handler(None)
 class FunctionPort(c.GenericElement):
-    """A function port"""
+    """A function port."""
 
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
@@ -150,16 +150,10 @@ class FunctionalExchange(AbstractExchange):
         return self.allocating_component_exchange
 
 
-class FunctionalChainInvolvement(c.GenericElement):
+class FunctionalChainInvolvement(interaction.AbstractInvolvement):
     """Abstract class for FunctionalChainInvolvementLink/Function."""
 
-    _xml = "ownedFunctionalChainInvolvements"
-
-    involved = c.AttrProxyAccessor(c.GenericElement, "involved")
-
-    @property
-    def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
+    _xmltag = "ownedFunctionalChainInvolvements"
 
 
 @c.xtype_handler(None)
@@ -176,7 +170,7 @@ class FunctionalChainInvolvementLink(FunctionalChainInvolvement):
 
 @c.xtype_handler(None)
 class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
-    """An element linking a FunctionalChain to a Function"""
+    """An element linking a FunctionalChain to a Function."""
 
 
 @c.xtype_handler(None)

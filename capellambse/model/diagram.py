@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import abc
 import base64
-import collections as cabc
+import collections.abc as cabc
 import importlib.metadata as imm
 import logging
 import operator
@@ -65,6 +65,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     *   The only top-level element in the diagram **OR**
     *   The element which is considered to be the "element of interest".
     """
+    filters: cabc.MutableSet[str]
+    """The filters that are activated for this diagram."""
 
     _model: capellambse.MelodyModel
     _render: aird.Diagram
@@ -345,8 +347,8 @@ class Diagram(AbstractDiagram):
             LOGGER.warning("Unknown diagram type %r", sc)
             return modeltypes.DiagramType.UNKNOWN
 
-    @property
-    def filters(self) -> t.MutableSet[str]:
+    @property  # type: ignore[override]
+    def filters(self) -> cabc.MutableSet[str]:  # type: ignore[override]
         """Return a set of currently activated filters on this diagram."""
         return aird.ActiveFilters(self._model, self)
 

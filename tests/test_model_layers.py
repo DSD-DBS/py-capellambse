@@ -166,6 +166,57 @@ def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
 
 
 @pytest.mark.parametrize(
+    "uuid,trg_uuid,attr_name",
+    [
+        pytest.param(
+            "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422",
+            "83d1334f-6180-46c4-a80d-6839341df688",
+            "extends",
+            id="[Operational] Extends",
+        ),
+        pytest.param(
+            "53c58b24-3938-4d6a-b84a-bb9bff355a41",
+            "83d1334f-6180-46c4-a80d-6839341df688",
+            "includes",
+            id="[Operational] Includes",
+        ),
+        pytest.param(
+            "30bd2c21-b170-40d3-b476-7c2016b58031",
+            "84adfa3f-11c9-43d1-801c-b1535fcba802",
+            "generalizes",
+            id="[Operational] Generalizes",
+        ),
+        pytest.param(
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "562c5128-5acd-45cc-8b49-1d8d686f450a",
+            "extends",
+            id="[System] Extends",
+        ),
+        pytest.param(
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "includes",
+            id="[System] Includes",
+        ),
+        pytest.param(
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "562c5128-5acd-45cc-8b49-1d8d686f450a",
+            "generalizes",
+            id="[System] Generalizes",
+        ),
+    ],
+)
+def test_Capability_exchange(
+    model_5_2: MelodyModel, uuid: str, trg_uuid: str, attr_name: str
+):
+    cap = model_5_2.by_uuid(uuid)
+    expected = model_5_2.by_uuid(trg_uuid)
+    exchange_targets = (ex.target for ex in getattr(cap, attr_name))
+
+    assert expected in exchange_targets
+
+
+@pytest.mark.parametrize(
     "uuid,real_uuid,real_attr",
     [
         pytest.param(

@@ -64,11 +64,25 @@ class OperationalProcess(fa.FunctionalChain):
 
 
 @c.xtype_handler(XT_ARCH)
+class EntityOperationalCapabilityInvolvement(interaction.AbstractInvolvement):
+    """An EntityOperationalCapabilityInvolvement."""
+
+
+@c.xtype_handler(XT_ARCH)
 class OperationalCapability(c.GenericElement):
     """A capability in the OperationalAnalysis layer."""
 
     _xmltag = "ownedOperationalCapabilities"
 
+    extends = c.ProxyAccessor(
+        interaction.AbstractCapabilityExtend, aslist=c.ElementList
+    )
+    includes = c.ProxyAccessor(
+        interaction.AbstractCapabilityInclude, aslist=c.ElementList
+    )
+    generalizes = c.ProxyAccessor(
+        interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
+    )
     involved_activities = c.ProxyAccessor(
         OperationalActivity,
         interaction.XT_CAP2ACT,
@@ -80,6 +94,9 @@ class OperationalCapability(c.GenericElement):
         XT_EOCI,
         follow="involved",
         aslist=c.MixedElementList,
+    )
+    entity_involvements = c.ProxyAccessor(
+        EntityOperationalCapabilityInvolvement, aslist=c.ElementList
     )
     involved_processes = c.ProxyAccessor(
         OperationalProcess,
@@ -246,16 +263,6 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
     )  # type: ignore[assignment]
 
 
-c.set_accessor(
-    OperationalCapability,
-    "inheritance",
-    c.ProxyAccessor(
-        OperationalCapability,
-        interaction.XT_CAP_GEN,
-        follow="super",
-        aslist=c.ElementList,
-    ),
-)
 c.set_accessor(
     OperationalActivity,
     "packages",

@@ -110,7 +110,7 @@ class CapabilityRealization(c.GenericElement):
     )
     involved_components = c.ProxyAccessor(
         LogicalComponent,
-        ctx.XT_CAP_INV,
+        xtypes=ctx.CapabilityInvolvement,
         follow="involved",
         aslist=c.MixedElementList,
     )

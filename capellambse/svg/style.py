@@ -57,6 +57,12 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "PortSymbol",
         "FunctionalExchangeSymbol",
     ),
+    "Missions Capabilities Blank": (
+        "CapabilitySymbol",
+        "MissionSymbol",
+        "SystemActorSymbol",
+        "SystemHumanActorSymbol",
+    ),
     "Mode State Machine": (
         "FinalStateSymbol",
         "InitialPseudoStateSymbol",
