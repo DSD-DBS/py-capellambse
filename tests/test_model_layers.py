@@ -542,7 +542,7 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
 
 
 @pytest.mark.parametrize(
-    "fc_uuid,link_uuid,target_uuid",
+    "chain_uuid,link_uuid,target_uuid",
     [
         pytest.param(
             "d588e41f-ec4d-4fa9-ad6d-056868c66274",
@@ -558,13 +558,13 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
         ),
     ],
 )
-def test_FunctionalChainInvolvementLink_attributes(
+def test_FunctionalChainInvolvementLink_has_exchanged_items_and_exchange_context(
     model_5_2: capellambse.MelodyModel,
-    fc_uuid: str,
+    chain_uuid: str,
     link_uuid: str,
     target_uuid: str,
 ) -> None:
-    chain = model_5_2.by_uuid(fc_uuid)
+    chain = model_5_2.by_uuid(chain_uuid)
     link = model_5_2.by_uuid(link_uuid)
     target = model_5_2.by_uuid(target_uuid)
     ex_item_uuids = [ex.uuid for ex in link.exchanged_items]
@@ -579,6 +579,64 @@ def test_FunctionalChainInvolvementLink_attributes(
     )
     assert link.involved == target
     assert link.name == f"[FunctionalChainInvolvementLink] to {expected_end}"
+
+
+@pytest.mark.parametrize(
+    "trace_uuid,expected",
+    [
+        pytest.param(
+            "9f84f273-1af4-49c2-a9f1-143e94ab816b",
+            "[GenericTrace] to Class TraceTarget (ed272baf-43f2-4fa1-ad50-49c00563258b)",
+        ),
+        pytest.param(
+            "0880af85-4f96-4a77-b588-2e7a0385629d",
+            "[GenericTrace] to Hunt (01788b49-ccef-4a37-93d2-119287f8dd53)",
+        ),
+    ],
+)
+def test_GenericElement_has_GenericTraces(
+    model_5_2: capellambse.MelodyModel, trace_uuid: str, expected: str
+) -> None:
+    cls = model_5_2.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")
+    trace = model_5_2.by_uuid(trace_uuid)
+
+    assert trace in cls.traces
+    assert trace.name == expected
+
+
+@pytest.mark.parametrize(
+    "chain_uuid,fnc_uuid,target_uuid",
+    [
+        pytest.param(
+            "d588e41f-ec4d-4fa9-ad6d-056868c66274",
+            "8e732f5a-a760-468c-b862-ba1a276206d1",
+            "8bcb11e6-443b-4b92-bec2-ff1d87a224e7",
+            id="OperationalProcess",
+        ),
+        pytest.param(
+            "dfc4341d-253a-4ae9-8a30-63a9d9faca39",
+            "28208081-40b1-4030-b341-f75374095717",
+            "ceffa011-7b66-4b3c-9885-8e075e312ffa",
+            id="FunctionalChain",
+        ),
+    ],
+)
+def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
+    model_5_2: capellambse.MelodyModel,
+    chain_uuid: str,
+    fnc_uuid: str,
+    target_uuid: str,
+) -> None:
+    chain = model_5_2.by_uuid(chain_uuid)
+    fnc = model_5_2.by_uuid(fnc_uuid)
+    target = model_5_2.by_uuid(target_uuid)
+    expected_end = f"{target.name} ({target.uuid})"
+
+    assert fnc in chain.involvements
+    assert fnc.involved == target
+    assert (
+        fnc.name == f"[FunctionalChainInvolvementFunction] to {expected_end}"
+    )
 
 
 class TestArchitectureLayers:

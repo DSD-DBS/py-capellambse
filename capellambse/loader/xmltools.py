@@ -124,10 +124,16 @@ class AttributeProperty:
         try:
             roundtripped = self.returntype(stringified)
         except (TypeError, ValueError) as err:
-            raise TypeError(f"Value is not round-trip safe: {value}") from err
+            raise TypeError(
+                "Value is not round-trip safe:"
+                f" Cannot read back {stringified} as {value}"
+            ) from err
 
         if roundtripped != value:
-            raise TypeError(f"Value is not round-trip safe: {value}")
+            raise TypeError(
+                "Value is not round-trip safe:"
+                f"{value} would be read back as {roundtripped}"
+            )
 
         xml_element.attrib[self.attribute] = stringified
 

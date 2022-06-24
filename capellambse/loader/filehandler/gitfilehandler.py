@@ -189,7 +189,7 @@ class _GitTransaction:
         commit_msg: str = "Changes made with python-capellambse",
         remote_branch: str | None = None,
         push: bool = True,
-        push_options: cabc.Sequence[str] | None = None,
+        push_options: cabc.Sequence[str] = (),
         **kw: t.Any,
     ) -> None:
         """Create a transaction that records all changes as a new commit.
@@ -239,7 +239,7 @@ class _GitTransaction:
         self.__dry_run = dry_run
         self.__commit_msg = commit_msg
         self.__push = push
-        self.__push_opts = [f"--push-option={i}" for i in push_options or ()]
+        self.__push_opts = [f"--push-option={i}" for i in push_options]
 
         self.__gitenv: dict[str, str] = {}
         if author_name:

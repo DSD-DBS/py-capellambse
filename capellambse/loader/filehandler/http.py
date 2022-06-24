@@ -61,13 +61,13 @@ class DownloadStream(t.BinaryIO):
         self.__buffer = self.__buffer[n:]
         return chunk
 
-    def readable(self) -> bool:  # pylint: disable=no-self-use
+    def readable(self) -> bool:
         return True
 
     def write(self, s: bytes | bytearray) -> int:
         raise TypeError("Cannot write to a read-only stream")
 
-    def writable(self) -> bool:  # pylint: disable=no-self-use
+    def writable(self) -> bool:
         return False
 
     def close(self) -> None:

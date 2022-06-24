@@ -1,7 +1,7 @@
 # Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Implementation of objects and relations for Functional Analysis
+"""Implementation of objects and relations for Functional Analysis.
 
 Functional Analysis objects inheritance tree (taxonomy):
 
@@ -83,7 +83,7 @@ class AbstractExchange(c.GenericElement):
 
 @c.xtype_handler(None)
 class AbstractFunction(c.GenericElement):
-    """An AbstractFunction"""
+    """An AbstractFunction."""
 
     available_in_states = c.AttrProxyAccessor(
         capellacommon.State, "availableInStates", aslist=c.ElementList
@@ -92,7 +92,7 @@ class AbstractFunction(c.GenericElement):
 
 @c.xtype_handler(None)
 class FunctionPort(c.GenericElement):
-    """A function port"""
+    """A function port."""
 
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
@@ -150,8 +150,14 @@ class FunctionalExchange(AbstractExchange):
         return self.allocating_component_exchange
 
 
+class FunctionalChainInvolvement(interaction.AbstractInvolvement):
+    """Abstract class for FunctionalChainInvolvementLink/Function."""
+
+    _xmltag = "ownedFunctionalChainInvolvements"
+
+
 @c.xtype_handler(None)
-class FunctionalChainInvolvementLink(interaction.AbstractInvolvement):
+class FunctionalChainInvolvementLink(FunctionalChainInvolvement):
     """An element linking a FunctionalChain to an Exchange."""
 
     exchanged_items = c.AttrProxyAccessor(
@@ -163,19 +169,21 @@ class FunctionalChainInvolvementLink(interaction.AbstractInvolvement):
 
 
 @c.xtype_handler(None)
+class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
+    """An element linking a FunctionalChain to a Function."""
+
+
+@c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):
     """A functional chain."""
 
     _xmltag = "ownedFunctionalChains"
 
     involved = c.ProxyAccessor(
-        c.GenericElement,
-        XT_FCI,
-        aslist=c.MixedElementList,
-        follow="involved",
+        c.GenericElement, XT_FCI, aslist=c.MixedElementList, follow="involved"
     )
     involvements = c.ProxyAccessor(
-        FunctionalChainInvolvementLink, XT_FCI, aslist=c.ElementList
+        c.GenericElement, XT_FCI, aslist=c.ElementList
     )
 
 
