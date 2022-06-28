@@ -30,9 +30,11 @@ def show_name_and_exchangeitems_fex(
 
         assert isinstance(label.label, str)
         sort_items = args.params.get("sorted_exchangedItems", False)
-        label.label += " " + _stringify_exchange_items(
+        ex_items = _stringify_exchange_items(
             obj, args.melodyloader, sort_items
         )
+        if ex_items:
+            label.label += " " + ex_items
 
 
 @global_filter("show.exchange.items.filter")
