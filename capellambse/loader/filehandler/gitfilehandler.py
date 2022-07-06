@@ -35,6 +35,8 @@ from . import FileHandler, TransactionClosedError
 
 LOGGER = logging.getLogger(__name__)
 
+_git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
+
 
 class _TreeEntry(t.NamedTuple):
     mode: str
@@ -252,7 +254,7 @@ class _GitTransaction:
         if targetref == "HEAD":
             targetref = self.__resolve_head() or targetref
 
-        if re.search("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$", targetref):
+        if _git_object_name.search(targetref):
             raise ValueError(
                 f"Target ref looks like a git object, use a different remote_branch: {targetref}"
             )
@@ -450,6 +452,7 @@ class GitFileHandler(FileHandler):
     identity_file: str
     known_hosts_file: str
     cache_dir: pathlib.Path
+    shallow: bool
 
     __fnz: object
     __has_lfs: bool
@@ -468,15 +471,19 @@ class GitFileHandler(FileHandler):
         update_cache: bool = True,
         *,
         subdir: str | pathlib.PurePosixPath = "/",
+        shallow: bool = True,
     ) -> None:
         super().__init__(path, subdir=subdir)
-        self.revision = revision
         self.disable_cache = disable_cache
         self.username = username
         self.password = password
         self.identity_file = identity_file
         self.known_hosts_file = known_hosts_file
         self.update_cache = update_cache
+        self.shallow = shallow
+
+        self.cache_dir = None  # type: ignore[assignment]
+        self.__hash, self.revision = self.__resolve_remote_ref(revision)
 
         self.__init_cache_dir()
         self.__init_worktree()
@@ -641,13 +648,45 @@ class GitFileHandler(FileHandler):
         if self.cache_dir.exists() and self.disable_cache:
             shutil.rmtree(str(self.cache_dir))
 
+        update_cache = self.update_cache
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-            LOGGER.debug("Cloning %r to %s", self.path, self.cache_dir)
-            self._git("clone", self.path, ".", "--bare", "--mirror")
-        elif self.update_cache:
+            LOGGER.debug("Creating a new git repo in %s", self.cache_dir)
+            self._git("-c", "init.defaultBranch=master", "init", "--bare")
+            self._git("remote", "add", "--mirror=fetch", "origin", self.path)
+            update_cache = True
+
+        if update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            self._git("fetch")
+            shallow_opts: tuple[str, ...] = ()
+            if self.shallow:
+                fetchspec = f"+{self.revision}"
+                if not _git_object_name.search(self.revision):
+                    fetchspec += f":{self.revision}"
+                shallow_opts = ("--depth=1", fetchspec)
+            self._git("fetch", self.path, *shallow_opts)
+
+    def __resolve_remote_ref(self, ref: str) -> tuple[str, str]:
+        """Resolve the given ``ref`` on the remote."""
+        LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
+        listing = self._git("ls-remote", self.path, ref, encoding="utf-8")
+        if not listing:
+            if not _git_object_name.search(ref):
+                raise ValueError(f"Ref does not exist on remote: {ref}")
+            LOGGER.debug("Ref %r not found, assuming object name", ref)
+            return ref, ref
+        refs = [i.split("\t") for i in listing.strip().split("\n")]
+        if len(refs) > 1:
+            raise ValueError(
+                f"Ambiguous ref name {ref}, found {len(refs)}:"
+                f" {', '.join(i[1] for i in refs)}"
+            )
+
+        hash, refname = refs[0]
+        LOGGER.debug(
+            "Resolved ref %r as remote ref %r (%s)", ref, refname, hash
+        )
+        return hash, refname
 
     def __init_worktree(self) -> None:
         worktree = pathlib.Path(
@@ -661,7 +700,7 @@ class GitFileHandler(FileHandler):
                 "--detach",
                 "--no-checkout",
                 worktree,
-                self.revision,
+                self.__hash,
                 silent=True,
             )
         except:
