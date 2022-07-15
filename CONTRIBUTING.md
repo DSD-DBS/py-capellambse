@@ -67,6 +67,11 @@ differences are:
 
 - **Docstrings**: The [Numpy style
   guide](https://numpydoc.readthedocs.io/en/latest/format.html) applies here.
+- **Overridden methods**: If the documentation did not change from the base
+  class (i.e. the base class' method's docstring still applies without
+  modification), do not add a short docstring á la "See base class". This lets
+  automated tools pick up the full base class docstring instead, and is
+  therefore more useful in IDEs etc.
 - **Linting**: Use [pylint](https://github.com/PyCQA/pylint) for static code
   analysis, and [mypy](https://github.com/python/mypy) for static type
   checking.

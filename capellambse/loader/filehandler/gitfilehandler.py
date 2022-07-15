@@ -445,7 +445,52 @@ class _GitTransaction:
 
 
 class GitFileHandler(FileHandler):
-    """File handler for ``git://`` and related protocols."""
+    """File handler for ``git://`` and related protocols.
+
+    Parameters
+    ----------
+    revision
+        The Git revision to check out. Either a branch or tag name, a
+        full ref name, or the object name (i.e. hash) of a commit-ish.
+    username
+        The user name for authentication with the Git remote.
+    password
+        The password for authentication with the Git remote.
+    identity_file
+        Authenticate against the remote with the private key in this
+        file. Defaults to using SSH's algorithm for determining a
+        suitable key. (SSH only, ignored otherwise)
+    known_hosts_file
+        An OpenSSH-style ``known_hosts`` file containing the public key
+        of the remote server. (SSH only, ignored otherwise)
+    disable_cache
+        Wipe the local cache and create a fresh, new clone.
+    update_cache
+        Contact the remote and make sure that the local cache is up to
+        date. Note that setting this to ``False`` does not necessarily
+        inhibit all attempts to contact the remote; it just disables the
+        initial "fetch" operation. Later operations may still require to
+        access the server, for example to download Git-LFS files.
+    shallow
+        Make a shallow clone. This can drastically reduce network and
+        disk usage when cloning large models, by only downloading the
+        latest ``revision`` and not downloading the history that leads
+        up to it.
+
+        Note that, when this is set to ``True`` (the default), existing
+        non-shallow caches will be made shallow. However, when it is set
+        to ``False``, shallow caches will not be unshallowed.
+
+    Attributes
+    ----------
+    cache_dir
+        The path to the temporary work tree created by instances of this
+        file handler.
+
+    See Also
+    --------
+    FileHandler : Documentation of common parameters.
+    """
 
     username: str
     password: str
