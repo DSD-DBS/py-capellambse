@@ -854,6 +854,9 @@ class GitFileHandler(FileHandler):
                 ret_level = logging.DEBUG
 
             if stderr:
-                for line in stderr.decode("utf-8").splitlines():
+                if isinstance(stderr, bytes):
+                    stderr = stderr.decode("utf-8")
+
+                for line in stderr.splitlines():
                     LOGGER.getChild("git").log(err_level, "%s", line)
             LOGGER.log(ret_level, "Exit status: %d", returncode)
