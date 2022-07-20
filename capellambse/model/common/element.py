@@ -271,13 +271,13 @@ class GenericElement:
         attr_text = "\n".join(attrs)
         return f"{header}\n{attr_text}"
 
-    def _short_repr_(self) -> str:
+    def _short_repr_(self, name: str = "") -> str:
         # pylint: disable=unidiomatic-typecheck
         if type(self) is GenericElement:
             mytype = f"Model element ({self.xtype})"
         else:
             mytype = type(self).__name__
-        return f"<{mytype} {self.name!r} ({self.uuid})>"
+        return f"<{mytype} {name or self.name!r} ({self.uuid})>"
 
     def __html__(self) -> markupsafe.Markup:
         fragments: list[str] = []

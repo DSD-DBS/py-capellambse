@@ -279,6 +279,9 @@ class ReqIFElement(c.GenericElement):
 
         return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
 
+    def _short_repr_(self, name: str = "") -> str:
+        return super()._short_repr_(name or self.name or self.long_name)
+
     def _short_html_(self) -> markupsafe.Markup:
         return markupsafe.Markup(
             self._wrap_short_html(
