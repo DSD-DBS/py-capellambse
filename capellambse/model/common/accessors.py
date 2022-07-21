@@ -440,7 +440,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         if "uuid" in kw:
             want_id = kw.pop("uuid")
         with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
-            obj = elmclass(elmlist._model, parent, **kw, uuid=obj_id)
+            obj = elmclass(elmlist._model, parent, uuid=obj_id, **kw)
         return obj  # type: ignore[return-value]
 
     def insert(

@@ -405,30 +405,38 @@ class TestReqIFModification:
         assert new_rel in target.relations
 
     @pytest.mark.parametrize(
-        "type_hint,def_uuid",
+        "type_hint,values,def_uuid",
         [
             pytest.param(
                 "Int",
+                (0, 1),
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
                 id="IntegerAttributeValue",
             ),
             pytest.param(
                 "Str",
+                ("", "test"),
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
                 id="StringAttributeValue",
             ),
             pytest.param(
                 "Float",
+                (0.0, 1.0),
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
                 id="RealAttributeValue",
             ),
             pytest.param(
                 "Date",
+                (
+                    None,
+                    datetime.datetime(1987, 7, 27),
+                ),
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
                 id="DateValueAttributeValue",
             ),
             pytest.param(
                 "Bool",
+                (False, True),
                 "682bd51d-5451-4930-a97e-8bfca6c3a127",
                 id="BooleanAttributeValue",
             ),
@@ -438,18 +446,27 @@ class TestReqIFModification:
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
+        values: tuple[int | str | float | datetime.datetime | bool, ...],
         def_uuid: str,
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         assert isinstance(req, reqif.Requirement)
 
         assert not req.attributes
+        default, value = values
         definition = model.by_uuid(def_uuid)
         attr = req.attributes.create(type_hint, definition=definition)
+        default_attr = req.attributes.create(type_hint, value=default)
+        value_attr = req.attributes.create(type_hint, value=value)
 
-        assert len(req.attributes) == 1
-        assert req.attributes[0] == attr
+        assert len(req.attributes) == 3
+        assert tuple(req.attributes) == (attr, default_attr, value_attr)
         assert attr.definition == definition
+        assert default_attr.value == default
+        # XXX: Default values are not written to xml (Remove before merge)
+        assert default_attr._element.get("value") is None
+        assert value_attr.value == value
+        assert value_attr._element.get("value") == str(value).lower()
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     def test_create_RequirementType_AttributeDefinition_creation(
@@ -481,25 +498,6 @@ class TestReqIFModification:
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition is None
-        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
-
-    @pytest.mark.parametrize(
-        "value",
-        [
-            pytest.param(True, id="Boolean Attribute set to True"),
-            pytest.param(False, id="Boolean Attribute set to False"),
-        ],
-    )
-    def test_create_bool_attr(
-        self, model: capellambse.MelodyModel, value: boolean
-    ):
-        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
-        assert isinstance(req, reqif.Requirement)
-
-        assert not req.attributes
-        attr = req.attributes.create("Bool", value=value)
-        assert len(req.attributes) == 1
-        assert req.attributes[0] == attr
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     def test_create_enum_value_attribute_on_requirements(

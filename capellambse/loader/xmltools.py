@@ -110,13 +110,15 @@ class AttributeProperty:
 
     def __set__(self, obj, value) -> None:
         xml_element = getattr(obj, self.xmlattr)
-        if not self.writable and xml_element.get(self.attribute) is not None:
+        attribute_exists = xml_element.get(self.attribute) is not None
+        if not self.writable and attribute_exists:
             raise TypeError(
                 f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 
         if value == self.default:
-            self.__delete__(obj)
+            if attribute_exists:
+                self.__delete__(obj)
             return
 
         stringified = str(value)
@@ -250,7 +252,7 @@ class BooleanAttributeProperty(AttributeProperty):
     def __set__(self, obj, value) -> None:
         if value:
             super().__set__(obj, "true")
-        else:
+        elif getattr(obj, self.xmlattr).get(self.attribute) is not None:
             self.__delete__(obj)
 
 
@@ -305,7 +307,8 @@ class DatetimeAttributeProperty(AttributeProperty):
 
     def __set__(self, obj, value) -> None:
         if value is None:
-            self.__delete__(obj)
+            if getattr(obj, self.xmlattr).get(self.attribute):
+                self.__delete__(obj)
         elif isinstance(value, datetime.datetime):
             super().__set__(obj, value.strftime(self.format))
         else:
