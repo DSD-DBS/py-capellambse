@@ -146,19 +146,16 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             exclude = ()
 
         formats: dict[str, DiagramConverter] = {}
-        eligible_formats = [("image/png", "png")]
-        # XXX Hack to disable SVG in Jupyter notebooks, when requested
-        if not self._model.jupyter_untrusted:
-            eligible_formats.append(("image/svg+xml", "svg"))
-
-        for mime, formatname in eligible_formats:
-            if mime not in include or mime in exclude:
+        for conv in _iter_format_converters():
+            mime = getattr(conv, "mimetype", None)
+            if not mime or mime not in include or mime in exclude:
                 continue
 
-            try:
-                formats[mime] = _find_format_converter(formatname)
-            except (ImportError, UnknownOutputFormat):
-                pass
+            # XXX Hack to disable SVG in Jupyter notebooks, when requested
+            if mime == "image/svg+xml" and self._model.jupyter_untrusted:
+                continue
+
+            formats[mime] = conv
         if not formats:
             return None
 
@@ -444,6 +441,7 @@ class SVGFormat:
     """Convert the diagram to SVG."""
 
     filename_extension = ".svg"
+    mimetype = "image/svg+xml"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> str:
@@ -458,6 +456,7 @@ class PNGFormat:
     """Convert the diagram to PNG."""
 
     filename_extension = ".png"
+    mimetype = "image/png"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> bytes:
@@ -522,6 +521,7 @@ class SVGDataURIFormat:
 
 class SVGInHTMLIMGFormat:
     filename_extension = ".svg"
+    mimetype = "text/html"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> markupsafe.Markup:
@@ -548,6 +548,7 @@ class JSONFormat:
 
 class PrettyJSONFormat:
     filename_extension = ".json"
+    mimetype = "application/json"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> str:
@@ -569,3 +570,13 @@ def _find_format_converter(fmt: str) -> DiagramConverter:
         raise UnknownOutputFormat(
             f"Unknown image output format {fmt}"
         ) from None
+
+
+def _iter_format_converters() -> t.Iterator[DiagramConverter]:
+    for ep in imm.entry_points()["capellambse.diagram.formats"]:
+        try:
+            conv = ep.load()
+        except ImportError:
+            pass
+        else:
+            yield conv
