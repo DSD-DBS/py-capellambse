@@ -18,7 +18,7 @@ import markupsafe
 
 import capellambse
 
-from .. import aird, svg
+from .. import aird, helpers, svg
 from . import common as c
 from . import modeltypes
 
@@ -134,13 +134,57 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             f"(uuid: {markupsafe.Markup.escape(self.uuid)})"
         )
 
-    def _repr_svg_(self) -> t.Any | None:
-        if self._model.jupyter_untrusted:
-            return None
-        return self.render("svg")
+    def _repr_mimebundle_(
+        self,
+        include: cabc.Container[str] | None = None,
+        exclude: cabc.Container[str] | None = None,
+        **_,
+    ) -> tuple[dict[str, t.Any], dict[t.Any, t.Any]] | dict[str, t.Any] | None:
+        if include is None:
+            include = helpers.EverythingContainer()
+        if exclude is None:
+            exclude = ()
 
-    def _repr_png_(self) -> t.Any | None:
-        return self.render("png")
+        formats: dict[str, DiagramConverter] = {}
+        eligible_formats = [("image/png", "png")]
+        # XXX Hack to disable SVG in Jupyter notebooks, when requested
+        if not self._model.jupyter_untrusted:
+            eligible_formats.append(("image/svg+xml", "svg"))
+
+        for mime, formatname in eligible_formats:
+            if mime not in include or mime in exclude:
+                continue
+
+            try:
+                formats[mime] = _find_format_converter(formatname)
+            except (ImportError, UnknownOutputFormat):
+                pass
+        if not formats:
+            return None
+
+        bundle: dict[str, t.Any] = {}
+        for mime, conv in formats.items():
+            try:
+                bundle[mime] = self.__load_cache(conv)
+            except KeyError:
+                pass
+
+        if bundle:
+            return bundle
+
+        render = self.__render_fresh({})
+        for mime, conv in formats.items():
+            try:
+                if isinstance(conv, DiagramFormat):
+                    bundle[mime] = conv.convert(render)
+                else:
+                    bundle[mime] = conv(render)
+            except Exception:
+                LOGGER.exception("Failed converting diagram with %r", conv)
+        if not bundle:
+            LOGGER.error("Failed converting diagram for MIME bundle")
+            bundle["text/plain"] = repr(self)
+        return bundle
 
     @property
     def nodes(self) -> c.MixedElementList:
