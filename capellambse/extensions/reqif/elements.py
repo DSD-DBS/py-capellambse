@@ -312,12 +312,11 @@ class AbstractRequirementsAttribute(c.GenericElement):
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
     def __repr__(self) -> str:
-        mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
-        try:
-            name = self.definition.long_name
-        except AttributeError:
-            name = ""
-        return f"<{mytype} [{name}] ({self.uuid})>"
+        return self._short_repr_()
+
+    def _short_repr_(self, _: str = "") -> str:
+        name = self.definition.long_name if self.definition is not None else _
+        return super()._short_repr_(name)
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
