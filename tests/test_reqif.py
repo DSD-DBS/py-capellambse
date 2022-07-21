@@ -8,6 +8,7 @@ import datetime
 import operator
 import textwrap
 import typing as t
+from xmlrpc.client import boolean
 
 import pytest
 
@@ -482,6 +483,25 @@ class TestReqIFModification:
         assert attr.definition is None
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
+    @pytest.mark.parametrize(
+        "value",
+        [
+            pytest.param(True, id="Boolean Attribute set to True"),
+            pytest.param(False, id="Boolean Attribute set to False"),
+        ],
+    )
+    def test_create_bool_attr(
+        self, model: capellambse.MelodyModel, value: boolean
+    ):
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+        assert isinstance(req, reqif.Requirement)
+
+        assert not req.attributes
+        attr = req.attributes.create("Bool", value=value)
+        assert len(req.attributes) == 1
+        assert req.attributes[0] == attr
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
+
     def test_create_enum_value_attribute_on_requirements(
         self, model: capellambse.MelodyModel
     ):
@@ -510,6 +530,7 @@ class TestReqIFModification:
         "value",
         [
             pytest.param(True, id="Boolean Attribute"),
+            pytest.param(False, id="Boolean Attribute"),
             pytest.param(1, id="Integer Attribute"),
             pytest.param(
                 datetime.datetime(
