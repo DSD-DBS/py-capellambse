@@ -8,6 +8,7 @@ import datetime
 import operator
 import textwrap
 import typing as t
+from xmlrpc.client import boolean
 
 import pytest
 
@@ -403,53 +404,65 @@ class TestReqIFModification:
         assert new_rel in req.relations
         assert new_rel in target.relations
 
+    TEST_DATETIME = datetime.datetime(1987, 7, 27)
+    TEST_TZ_DELTA = TEST_DATETIME.astimezone().utcoffset()
+    assert TEST_TZ_DELTA is not None
+    TEST_TZ_HRS, TEST_TZ_SECS = divmod(TEST_TZ_DELTA.seconds, 3600)
+    TEST_TZ_MINS, TEST_TZ_SECS = divmod(TEST_TZ_SECS, 60)
+    TEST_TZ_OFFSET = f"{TEST_TZ_HRS:+03d}{TEST_TZ_MINS:02d}"
+
     @pytest.mark.parametrize(
-        "type_hint,def_uuid",
+        "type_hint,value,xml,expected_repr_name",
         [
+            pytest.param("Int", 0, None, "[Integer Value Attribute]"),
+            pytest.param("Int", 1, "1", "[Integer Value Attribute]"),
+            pytest.param("Str", "", None, "[String Value Attribute]"),
+            pytest.param("Str", "test", "test", "[String Value Attribute]"),
+            pytest.param("Float", 0.0, None, "[Real Value Attribute]"),
+            pytest.param("Float", 1.0, "1.0", "[Real Value Attribute]"),
+            pytest.param("Date", None, None, "[Date Value Attribute]"),
             pytest.param(
-                "Int",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="IntegerAttributeValue",
-            ),
-            pytest.param(
-                "Str",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="StringAttributeValue",
-            ),
-            pytest.param(
-                "Float",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="RealAttributeValue",
+                "Date",
+                TEST_DATETIME,
+                f"1987-07-27T00:00:00.000000{TEST_TZ_OFFSET}",
+                "[Date Value Attribute]",
             ),
             pytest.param(
                 "Date",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="DateValueAttributeValue",
+                datetime.datetime(1987, 7, 27, tzinfo=datetime.timezone.utc),
+                "1987-07-27T00:00:00.000000+0000",
+                "[Date Value Attribute]",
             ),
-            pytest.param(
-                "Bool",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="BooleanAttributeValue",
-            ),
+            pytest.param("Bool", False, None, "[Boolean Value Attribute]"),
+            pytest.param("Bool", True, "true", "[Boolean Value Attribute]"),
         ],
     )
     def test_create_requirements_attributes(
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
-        def_uuid: str,
+        value: t.Any,
+        xml: str | None,
+        expected_repr_name: str,
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         assert isinstance(req, reqif.Requirement)
 
         assert not req.attributes
-        definition = model.by_uuid(def_uuid)
+        definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         attr = req.attributes.create(type_hint, definition=definition)
+        value_attr = req.attributes.create(type_hint, value=value)
 
-        assert len(req.attributes) == 1
-        assert req.attributes[0] == attr
+        if isinstance(value, datetime.datetime):
+            value = value.astimezone()
+
+        assert len(req.attributes) == 2
+        assert tuple(req.attributes) == (attr, value_attr)
         assert attr.definition == definition
-        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
+        assert definition.long_name in repr(attr)
+        assert value_attr.value == value
+        assert value_attr._element.get("value") == xml
+        assert expected_repr_name in repr(value_attr)
 
     def test_create_RequirementType_AttributeDefinition_creation(
         self, model: capellambse.MelodyModel
@@ -510,6 +523,7 @@ class TestReqIFModification:
         "value",
         [
             pytest.param(True, id="Boolean Attribute"),
+            pytest.param(False, id="Boolean Attribute"),
             pytest.param(1, id="Integer Attribute"),
             pytest.param(
                 datetime.datetime(
