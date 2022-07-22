@@ -440,27 +440,29 @@ class TestReqIFModification:
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     @pytest.mark.parametrize(
-        "type_hint,value,xml",
+        "type_hint,value,xml,expected_repr_name",
         [
-            pytest.param("Int", 0, None),
-            pytest.param("Int", 1, "1"),
-            pytest.param("Str", "", None),
-            pytest.param("Str", "test", "test"),
-            pytest.param("Float", 0.0, None),
-            pytest.param("Float", 1.0, "1.0"),
-            pytest.param("Date", None, None),
+            pytest.param("Int", 0, None, "[Integer Value Attribute]"),
+            pytest.param("Int", 1, "1", "[Integer Value Attribute]"),
+            pytest.param("Str", "", None, "[String Value Attribute]"),
+            pytest.param("Str", "test", "test", "[String Value Attribute]"),
+            pytest.param("Float", 0.0, None, "[Real Value Attribute]"),
+            pytest.param("Float", 1.0, "1.0", "[Real Value Attribute]"),
+            pytest.param("Date", None, None, "[Date Value Attribute]"),
             pytest.param(
                 "Date",
                 TEST_DATETIME,
                 f"1987-07-27T00:00:00.000000{TEST_TZ_OFFSET}",
+                "[Date Value Attribute]",
             ),
             pytest.param(
                 "Date",
                 datetime.datetime(1987, 7, 27, tzinfo=datetime.timezone.utc),
                 "1987-07-27T00:00:00.000000+0000",
+                "[Date Value Attribute]",
             ),
-            pytest.param("Bool", False, None),
-            pytest.param("Bool", True, "true"),
+            pytest.param("Bool", False, None, "[Boolean Value Attribute]"),
+            pytest.param("Bool", True, "true", "[Boolean Value Attribute]"),
         ],
     )
     def test_create_requirements_attributes_with_non_default_values(
@@ -469,6 +471,7 @@ class TestReqIFModification:
         type_hint: str,
         value: t.Any,
         xml: str | None,
+        expected_repr_name: str,
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
 
@@ -482,6 +485,7 @@ class TestReqIFModification:
         assert req.attributes == [value_attr]
         assert value_attr.value == value
         assert value_attr._element.get("value") == xml
+        assert expected_repr_name in repr(value_attr)
 
     def test_create_value_attribute_on_requirements_without_definition(
         self, model: capellambse.MelodyModel
