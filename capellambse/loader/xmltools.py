@@ -310,6 +310,8 @@ class DatetimeAttributeProperty(AttributeProperty):
             if getattr(obj, self.xmlattr).get(self.attribute):
                 self.__delete__(obj)
         elif isinstance(value, datetime.datetime):
+            if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+                value = value.astimezone()
             super().__set__(obj, value.strftime(self.format))
         else:
             raise TypeError(f"Expected datetime, not {type(value).__name__}")
