@@ -1,0 +1,53 @@
+capellambse.aird package
+========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse.aird.parser
+
+Submodules
+----------
+
+capellambse.aird.capstyle module
+--------------------------------
+
+.. automodule:: capellambse.aird.capstyle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.aird.diagram module
+-------------------------------
+
+.. automodule:: capellambse.aird.diagram
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.aird.json\_enc module
+---------------------------------
+
+.. automodule:: capellambse.aird.json_enc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.aird.vector2d module
+--------------------------------
+
+.. automodule:: capellambse.aird.vector2d
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: capellambse.aird
+   :members:
+   :undoc-members:
+   :show-inheritance:

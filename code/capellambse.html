@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.aird package" href="capellambse.aird.html" />
+    <link rel="prev" title="py-capellambse" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">capellambse package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-capellambse.sphinx">capellambse.sphinx module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+      <li>capellambse package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-package">
+<h1>capellambse package<a class="headerlink" href="#capellambse-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.aird.parser.html">capellambse.aird.parser package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.parser.html#module-capellambse.aird.parser">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#module-capellambse.aird.capstyle">capellambse.aird.capstyle module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#module-capellambse.aird.diagram">capellambse.aird.diagram module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#module-capellambse.aird.json_enc">capellambse.aird.json_enc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#module-capellambse.aird.vector2d">capellambse.aird.vector2d module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.html#module-capellambse.aird">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#module-capellambse.extensions.reqif.elements">capellambse.extensions.reqif.elements module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#module-capellambse.extensions.reqif.exporter">capellambse.extensions.reqif.exporter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#module-capellambse.extensions.reqif">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.html#module-capellambse.extensions.pvmt">capellambse.extensions.pvmt module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.html#module-capellambse.extensions">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.loader.filehandler.html">capellambse.loader.filehandler package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.filehandler.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.git_askpass">capellambse.loader.filehandler.git_askpass module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.gitfilehandler">capellambse.loader.filehandler.gitfilehandler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.http">capellambse.loader.filehandler.http module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.localfilehandler">capellambse.loader.filehandler.localfilehandler module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#module-capellambse.loader.core">capellambse.loader.core module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#module-capellambse.loader.exs">capellambse.loader.exs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#module-capellambse.loader.modelinfo">capellambse.loader.modelinfo module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#module-capellambse.loader.xmltools">capellambse.loader.xmltools module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.html#module-capellambse.loader">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.model.common.html">capellambse.model.common package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.common.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.common.html#module-capellambse.model.common.accessors">capellambse.model.common.accessors module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.common.html#module-capellambse.model.common.element">capellambse.model.common.element module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.common.html#module-capellambse.model.common">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.model.crosslayer.html">capellambse.model.crosslayer package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.capellacommon">capellambse.model.crosslayer.capellacommon module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.capellacore">capellambse.model.crosslayer.capellacore module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.cs">capellambse.model.crosslayer.cs module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.fa">capellambse.model.crosslayer.fa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.interaction">capellambse.model.crosslayer.interaction module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.model.layers.html">capellambse.model.layers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.ctx">capellambse.model.layers.ctx module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.la">capellambse.model.layers.la module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.oa">capellambse.model.layers.oa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.pa">capellambse.model.layers.pa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.html#module-capellambse.model.diagram">capellambse.model.diagram module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.html#module-capellambse.model.modeltypes">capellambse.model.modeltypes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.html#module-capellambse.model">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#module-capellambse.pvmt.core">capellambse.pvmt.core module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#module-capellambse.pvmt.exceptions">capellambse.pvmt.exceptions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#module-capellambse.pvmt.model">capellambse.pvmt.model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#module-capellambse.pvmt.types">capellambse.pvmt.types module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#module-capellambse.pvmt.validation">capellambse.pvmt.validation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.pvmt.html#module-capellambse.pvmt">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg.decorations">capellambse.svg.decorations module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg.drawing">capellambse.svg.drawing module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg.generate">capellambse.svg.generate module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg.helpers">capellambse.svg.helpers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg.style">capellambse.svg.style module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg.symbols">capellambse.svg.symbols module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.svg.html#module-capellambse.svg">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.auditing">
+<span id="capellambse-auditing-module"></span><h2>capellambse.auditing module<a class="headerlink" href="#module-capellambse.auditing" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.auditing.AttributeAuditor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.auditing.</span></span><span class="sig-name descname"><span class="pre">AttributeAuditor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">capellambse.MelodyModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Container</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.auditing.AttributeAuditor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Audits access to attributes of ModelElements.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This will permanently add an audit hook to the global hook
+table. The auditor will keep the model alive, which may consume
+excessive memory. To avoid this, call the auditor object’s
+<code class="docutils literal notranslate"><span class="pre">detach()</span></code> method once you are done with it. This is
+automatically done if you use it as a context manager.</p>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">auditor</span> <span class="o">=</span> <span class="n">AttributeAuditor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">all_components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="go">Hogwarts</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">auditor</span><span class="o">.</span><span class="n">recorded_ids</span>
+<span class="go">{&#39;0d2edb8f-fa34-4e73-89ec-fb9a63001440&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Cleanup</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">auditor</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">AttributeAuditor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">})</span> <span class="k">as</span> <span class="n">recorded_ids</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">all_components</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">Hogwarts</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recorded_ids</span>
+<span class="go">{&#39;0d2edb8f-fa34-4e73-89ec-fb9a63001440&#39;}</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.auditing.AttributeAuditor.detach">
+<span class="sig-name descname"><span class="pre">detach</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.auditing.AttributeAuditor.detach" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.helpers">
+<span id="capellambse-helpers-module"></span><h2>capellambse.helpers module<a class="headerlink" href="#module-capellambse.helpers" title="Permalink to this heading"></a></h2>
+<p>Miscellaneous utility functions used throughout the modules.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.helpers.EverythingContainer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">EverythingContainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwds</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.helpers.EverythingContainer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Container</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Any</span></code>]</p>
+<p>A container that contains everything.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.escape_linked_text">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">escape_linked_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.loader.html#capellambse.loader.core.MelodyLoader" title="capellambse.loader.core.MelodyLoader"><span class="pre">MelodyLoader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.helpers.escape_linked_text" title="Permalink to this definition"></a></dt>
+<dd><p>Transform simple HTML with object links into <code class="docutils literal notranslate"><span class="pre">LinkedText</span></code>.</p>
+<p>This is the inverse operation of <a class="reference internal" href="#capellambse.helpers.unescape_linked_text" title="capellambse.helpers.unescape_linked_text"><code class="xref py py-func docutils literal notranslate"><span class="pre">unescape_linked_text()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.extent_func">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">extent_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fonttype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'segoeui.ttf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.helpers.extent_func" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the display size of the given text.</p>
+<dl class="simple">
+<dt>text</dt><dd><p>Text to calculate pixel size on</p>
+</dd>
+<dt>fonttype</dt><dd><p>The font type / face</p>
+</dd>
+<dt>size</dt><dd><p>Font size (px)</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>width</dt><dd><p>The calculated width of the text (px).</p>
+</dd>
+<dt>height</dt><dd><p>The calculated height of the text (px).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.flatten_html_string">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">flatten_html_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.helpers.flatten_html_string" title="Permalink to this definition"></a></dt>
+<dd><p>Convert an HTML-string to plain text.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.get_text_extent">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">get_text_extent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">inf</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.helpers.get_text_extent" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the bounding box size of <code class="docutils literal notranslate"><span class="pre">text</span></code> after line wrapping.</p>
+<dl class="simple">
+<dt>text</dt><dd><p>Text to calculate the size for.</p>
+</dd>
+<dt>width</dt><dd><p>Maximum line length (px).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>width</dt><dd><p>The width of the text after word wrapping (px).</p>
+</dd>
+<dt>height</dt><dd><p>The height of the text after word wrapping (px).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.get_transformation">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">get_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.helpers.get_transformation" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate transformation for class.</p>
+<p>The Scaling factor .725, translation constants (6, 5) are arbitrarily
+chosen to fit. Currently only ChoicePseudoState is tranformed.</p>
+<dl class="simple">
+<dt><a href="#id1"><span class="problematic" id="id2">class_</span></a></dt><dd><p>Classtype string</p>
+</dd>
+<dt>pos</dt><dd><p>Position-vector</p>
+</dd>
+<dt>size</dt><dd><p>Size vector</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.load_font">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">load_font</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fonttype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FreeTypeFont</span></span></span><a class="headerlink" href="#capellambse.helpers.load_font" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.normalize_pure_path">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">normalize_pure_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pathlib.PurePosixPath</span></span></span><a class="headerlink" href="#capellambse.helpers.normalize_pure_path" title="Permalink to this definition"></a></dt>
+<dd><p>Make a PurePosixPath relative to <code class="docutils literal notranslate"><span class="pre">/</span></code> and collapse <code class="docutils literal notranslate"><span class="pre">..</span></code> components.</p>
+<dl class="simple">
+<dt>path</dt><dd><p>The input path to normalize.</p>
+</dd>
+<dt>base</dt><dd><p>The base directory to which relative paths should be
+interpreted.  Ignored if the input path is not relative.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>path</dt><dd><p>The normalized path.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.ntuples">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">ntuples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">False</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.helpers.ntuples" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">ntuples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iterable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pad</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
+<dd><p>Yield N items of <code class="docutils literal notranslate"><span class="pre">iterable</span></code> at once.</p>
+<dl class="simple">
+<dt>num</dt><dd><p>The number of items to yield at once.</p>
+</dd>
+<dt>iterable</dt><dd><p>An iterable.</p>
+</dd>
+<dt>pad</dt><dd><p>If the items in <code class="docutils literal notranslate"><span class="pre">iterable</span></code> are not evenly divisible by <code class="docutils literal notranslate"><span class="pre">n</span></code>,
+pad the last yielded tuple with <code class="docutils literal notranslate"><span class="pre">None</span></code>s.  If False, the last
+tuple will be discarded.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>items</dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">num</span></code> long tuple of items from <code class="docutils literal notranslate"><span class="pre">iterable</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.repair_html">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">repair_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">markup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.helpers.repair_html" title="Permalink to this definition"></a></dt>
+<dd><p>Try to repair broken HTML markup to prevent parse errors.</p>
+<dl class="simple">
+<dt>markup</dt><dd><p>The markup to try and repair.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>markup</dt><dd><p>The repaired markup.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.resolve_namespace">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">resolve_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.helpers.resolve_namespace" title="Permalink to this definition"></a></dt>
+<dd><p>Resolve a ‘:’-delimited symbolic namespace to its canonical form.</p>
+<dl class="simple">
+<dt>tag</dt><dd><p>Symbolic namespace delimited by ‘:’.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>tag</dt><dd><p>Tag string in canonical form.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.ssvparse">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">ssvparse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('',</span> <span class="pre">'')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">','</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.helpers.ssvparse" title="Permalink to this definition"></a></dt>
+<dd><p>Parse a string of <code class="docutils literal notranslate"><span class="pre">sep</span></code>-separated values wrapped in <code class="docutils literal notranslate"><span class="pre">parens</span></code>.</p>
+<dl class="simple">
+<dt>string</dt><dd><p>The input string.</p>
+</dd>
+<dt>cast</dt><dd><p>A type to cast the values into.</p>
+</dd>
+<dt>parens</dt><dd><p>The parentheses that must exist around the input.  Either a
+two-character string or a 2-tuple of strings.</p>
+</dd>
+<dt>sep</dt><dd><p>The separator between values.</p>
+</dd>
+<dt>num</dt><dd><p>If non-zero, only accept exactly this many values.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>values</dt><dd><p>List of values cast into given type.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ValueError</dt><dd><ul class="simple">
+<li><p>If the parentheses are missing around the input string.</p></li>
+<li><p>If the expected number of values doesn’t match the actual
+number.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.unescape_linked_text">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">unescape_linked_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">capellambse.loader.MelodyLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">markupsafe.Markup</span></span></span><a class="headerlink" href="#capellambse.helpers.unescape_linked_text" title="Permalink to this definition"></a></dt>
+<dd><p>Transform the <code class="docutils literal notranslate"><span class="pre">linkedText</span></code> into regular HTML.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.word_wrap">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">word_wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.helpers.word_wrap" title="Permalink to this definition"></a></dt>
+<dd><p>Perform word wrapping for proportional fonts.</p>
+<p>Whitespace at the beginning of input lines is preserved, but other
+whitespace is collapsed to single spaces.</p>
+<dl class="simple">
+<dt>text</dt><dd><p>The text to wrap.</p>
+</dd>
+<dt>width</dt><dd><p>The width in pixels to wrap to.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>lines</dt><dd><p>A list of strings, one for each line, after wrapping.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.xpath_fetch_unique">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">xpath_fetch_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">etree.XPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elm_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elm_uid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">False</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_Element</span></span></span><a class="headerlink" href="#capellambse.helpers.xpath_fetch_unique" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">xpath_fetch_unique</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xpath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">etree.XPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elm_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elm_uid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span></dt>
+<dd><p>Fetch an XPath result from the tree, ensuring that it’s unique.</p>
+<dl class="simple">
+<dt>xpath</dt><dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree.XPath</span></code> object to apply, or an XPath
+expression as str.</p>
+</dd>
+<dt>tree</dt><dd><p>The (sub-)tree to which the XPath will be applied.</p>
+</dd>
+<dt>elm_name</dt><dd><p>A human-readable element name for error messages.</p>
+</dd>
+<dt>elm_uid</dt><dd><p>UID of the element which triggered this lookup.  Will be
+included in the error message if an error occured.</p>
+</dd>
+<dt>optional</dt><dd><p>True to return None in case the element is not found.  Otherwise
+a ValueError will be raised.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>element</dt><dd><p>The Element found by given <code class="docutils literal notranslate"><span class="pre">xpath</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ValueError</dt><dd><ul class="simple">
+<li><p>If more than one element was found matching the <code class="docutils literal notranslate"><span class="pre">xpath</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">optional</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and no element was found
+matching the <code class="docutils literal notranslate"><span class="pre">xpath</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.helpers.xtype_of">
+<span class="sig-prename descclassname"><span class="pre">capellambse.helpers.</span></span><span class="sig-name descname"><span class="pre">xtype_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.helpers.xtype_of" title="Permalink to this definition"></a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> of the element.</p>
+<p>If the element has an <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> attribute, its value is returned.</p>
+<p>If the element does not have an <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>, this function resolves
+the tag’s namespace to the symbolic name and reconstructs the type
+with the <code class="docutils literal notranslate"><span class="pre">namespace:tag</span></code> template.</p>
+<dl class="simple">
+<dt>elem</dt><dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree._Element</span></code> object to return the
+<code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> for.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>xtype</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> string of the provided element or <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+the type could not be determined.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.sphinx">
+<span id="capellambse-sphinx-module"></span><h2>capellambse.sphinx module<a class="headerlink" href="#module-capellambse.sphinx" title="Permalink to this heading"></a></h2>
+<p>Sphinx extension for python-capella-mbse.</p>
+<p>This extension is be used to display diagrams in Sphinx-generated
+documentation.</p>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h3>
+<p>To render a diagram in your documentation, simply define a diagram directive.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">diagram</span><span class="p">::</span> <span class="p">[</span><span class="n">CDB</span><span class="p">]</span> <span class="n">BaseLayer</span> <span class="n">ORM</span>
+    <span class="p">:</span><span class="n">alt</span><span class="p">:</span> <span class="n">Base</span> <span class="n">layer</span> <span class="n">diagram</span>
+    <span class="p">:</span><span class="n">height</span><span class="p">:</span> <span class="mi">480</span>
+    <span class="p">:</span><span class="n">width</span><span class="p">:</span> <span class="mi">640</span>
+    <span class="p">:</span><span class="n">align</span><span class="p">:</span> <span class="n">center</span> <span class="o">--</span> <span class="n">can</span> <span class="n">be</span> <span class="n">left</span><span class="o">/</span><span class="n">right</span><span class="o">/</span><span class="n">center</span>
+</pre></div>
+</div>
+<p>The options are optional.</p>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h3>
+<p>To enable this extension, add it to your list of extensions in Sphinx’
+<code class="docutils literal notranslate"><span class="pre">conf.py</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># conf.py</span>
+
+<span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="s1">&#39;capellambse.sphinx&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The following configuration variables are understood by this extension:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">capellambse_model</span></code>: Path to the Capella model.</p>
+<p>Set this variable to the root <code class="docutils literal notranslate"><span class="pre">.aird</span></code> file of the model you want
+to use in the documentation.  The path must be relative to Sphinx’
+current working directory, which should be the directory containing
+the <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> file.</p>
+</li>
+</ul>
+</section>
+<section id="known-limitations">
+<h3>Known limitations<a class="headerlink" href="#known-limitations" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>The extension currently does not detect changes to the model, nor
+does it track which source files are using it.  This means that,
+after changing the model, you need to force a full rebuild of all
+pages by passing <code class="docutils literal notranslate"><span class="pre">--fresh-env</span></code> to Sphinx’ build command.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.sphinx.DiagramDirective">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.sphinx.</span></span><span class="sig-name descname"><span class="pre">DiagramDirective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arguments</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lineno</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_machine</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.sphinx.DiagramDirective" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">SphinxDirective</span></code></p>
+<p>The “<code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">diagram::</span></code>” reST directive.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.sphinx.DiagramDirective.final_argument_whitespace">
+<span class="sig-name descname"><span class="pre">final_argument_whitespace</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#capellambse.sphinx.DiagramDirective.final_argument_whitespace" title="Permalink to this definition"></a></dt>
+<dd><p>May the final argument contain whitespace?</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.sphinx.DiagramDirective.has_content">
+<span class="sig-name descname"><span class="pre">has_content</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">Ellipsis</span></em><a class="headerlink" href="#capellambse.sphinx.DiagramDirective.has_content" title="Permalink to this definition"></a></dt>
+<dd><p>May the directive have content?</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.sphinx.DiagramDirective.option_spec">
+<span class="sig-name descname"><span class="pre">option_spec</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'align':</span> <span class="pre">&lt;function</span> <span class="pre">DiagramDirective.&lt;lambda&gt;&gt;,</span> <span class="pre">'alt':</span> <span class="pre">&lt;function</span> <span class="pre">unchanged&gt;,</span> <span class="pre">'height':</span> <span class="pre">&lt;function</span> <span class="pre">nonnegative_int&gt;,</span> <span class="pre">'width':</span> <span class="pre">&lt;function</span> <span class="pre">nonnegative_int&gt;}</span></em><a class="headerlink" href="#capellambse.sphinx.DiagramDirective.option_spec" title="Permalink to this definition"></a></dt>
+<dd><p>Mapping of option names to validator functions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.sphinx.DiagramDirective.required_arguments">
+<span class="sig-name descname"><span class="pre">required_arguments</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.sphinx.DiagramDirective.required_arguments" title="Permalink to this definition"></a></dt>
+<dd><p>Number of required directive arguments.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.sphinx.DiagramDirective.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">nodes.Node</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.sphinx.DiagramDirective.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.sphinx.load_model">
+<span class="sig-prename descclassname"><span class="pre">capellambse.sphinx.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sphinx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BuildEnvironment</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.sphinx.load_model" title="Permalink to this definition"></a></dt>
+<dd><p>Load the model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.sphinx.setup">
+<span class="sig-prename descclassname"><span class="pre">capellambse.sphinx.</span></span><span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">sphinx.application.Sphinx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.sphinx.setup" title="Permalink to this definition"></a></dt>
+<dd><p>Called by Sphinx to set up the extension.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.sphinx.unload_model">
+<span class="sig-prename descclassname"><span class="pre">capellambse.sphinx.</span></span><span class="sig-name descname"><span class="pre">unload_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BuildEnvironment</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.sphinx.unload_model" title="Permalink to this definition"></a></dt>
+<dd><p>Unload the model.</p>
+<p>The LXML tree cannot be pickled together with the rest of the build
+environment.  This means we need to unload the model again after
+processing the source files.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="module-capellambse">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse" title="Permalink to this heading"></a></h2>
+<p>The Python capellambse package.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.load_model_extensions">
+<span class="sig-prename descclassname"><span class="pre">capellambse.</span></span><span class="sig-name descname"><span class="pre">load_model_extensions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.load_model_extensions" title="Permalink to this definition"></a></dt>
+<dd><p>Load all model extensions.</p>
+<p>This function loads all entry points in the group
+<code class="docutils literal notranslate"><span class="pre">capellambse.model_extensions</span></code> and executes them.</p>
+<p>Note that this function must be placed at the end of the top-level
+<code class="docutils literal notranslate"><span class="pre">__init__.py</span></code>, in order to ensure that all submodules were
+initialized before loading any extensions.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="py-capellambse" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.aird.html" class="btn btn-neutral float-right" title="capellambse.aird package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

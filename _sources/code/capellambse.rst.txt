@@ -1,0 +1,50 @@
+capellambse package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse.aird
+   capellambse.extensions
+   capellambse.loader
+   capellambse.model
+   capellambse.pvmt
+   capellambse.svg
+
+Submodules
+----------
+
+capellambse.auditing module
+---------------------------
+
+.. automodule:: capellambse.auditing
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.helpers module
+--------------------------
+
+.. automodule:: capellambse.helpers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.sphinx module
+-------------------------
+
+.. automodule:: capellambse.sphinx
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: capellambse
+   :members:
+   :undoc-members:
+   :show-inheritance:

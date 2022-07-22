@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.loader package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.loader.filehandler package" href="capellambse.loader.filehandler.html" />
+    <link rel="prev" title="capellambse.extensions.reqif package" href="capellambse.extensions.reqif.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+      <li>capellambse.loader package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-loader-package">
+<h1>capellambse.loader package<a class="headerlink" href="#capellambse-loader-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.loader.filehandler.html">capellambse.loader.filehandler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.filehandler.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.git_askpass">capellambse.loader.filehandler.git_askpass module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.gitfilehandler">capellambse.loader.filehandler.gitfilehandler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.http">capellambse.loader.filehandler.http module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler.localfilehandler">capellambse.loader.filehandler.localfilehandler module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.loader.filehandler.html#module-capellambse.loader.filehandler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.loader.core">
+<span id="capellambse-loader-core-module"></span><h2>capellambse.loader.core module<a class="headerlink" href="#module-capellambse.loader.core" title="Permalink to this heading"></a></h2>
+<p>Helps loading Capella models (including fragmented variants).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.core.FragmentType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">FragmentType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.core.FragmentType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The type of an XML fragment.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.core.FragmentType.OTHER">
+<span class="sig-name descname"><span class="pre">OTHER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#capellambse.loader.core.FragmentType.OTHER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.core.FragmentType.SEMANTIC">
+<span class="sig-name descname"><span class="pre">SEMANTIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.loader.core.FragmentType.SEMANTIC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.core.FragmentType.VISUAL">
+<span class="sig-name descname"><span class="pre">VISUAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.loader.core.FragmentType.VISUAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="capellambse.loader.filehandler.html#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><span class="pre">filehandler.FileHandler</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">entrypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="capellambse.loader.filehandler.html#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><span class="pre">filehandler.FileHandler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Facilitates extensive access to Polarsys / Capella projects.</p>
+<p>Construct a MelodyLoader.</p>
+<dl class="simple">
+<dt>path</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">path</span></code> argument to the primary file handler, or the
+primary file handler itself.</p>
+</dd>
+<dt>entrypoint</dt><dd><p>The entry point into the model, i.e. the top-level <code class="docutils literal notranslate"><span class="pre">.aird</span></code>
+file. This must be located within the primary file handler.</p>
+</dd>
+<dt>resources</dt><dd><p>Additional file handler instances that provide library
+resources that are referenced from the model.</p>
+</dd>
+<dt>kwargs</dt><dd><p>Additional arguments to the primary file handler, if
+necessary.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.create_link">
+<span class="sig-name descname"><span class="pre">create_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.create_link" title="Permalink to this definition"></a></dt>
+<dd><p>Create a link to <code class="docutils literal notranslate"><span class="pre">to_element</span></code> from <code class="docutils literal notranslate"><span class="pre">from_element</span></code>.</p>
+<p>The resulting link is valid for insertion into <code class="docutils literal notranslate"><span class="pre">from_element</span></code>
+or any of its children, and will reference <code class="docutils literal notranslate"><span class="pre">to_element</span></code> either
+in the same or a different fragment.  It has one of the
+following three formats:</p>
+<ol class="arabic simple">
+<li><p>Within the same fragment: <code class="docutils literal notranslate"><span class="pre">#UUID</span></code></p></li>
+<li><p>Across different fragments: <code class="docutils literal notranslate"><span class="pre">target_xsitype</span> <span class="pre">relpath#UUID</span></code></p></li>
+<li><p>Across different fragments, if the target does not have an
+<code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>: <code class="docutils literal notranslate"><span class="pre">relpath#UUID</span></code></p></li>
+</ol>
+<dl class="simple">
+<dt>from_element</dt><dd><p>The source element of the link.</p>
+</dd>
+<dt>to_element</dt><dd><p>The target element of the link.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.filehandler">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filehandler</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.loader.filehandler.html#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><span class="pre">FileHandler</span></a></em><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.filehandler" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.find_by_xsi_type">
+<span class="sig-name descname"><span class="pre">find_by_xsi_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xsi_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.find_by_xsi_type" title="Permalink to this definition"></a></dt>
+<dd><p>Find all elements matching any of the given <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s.</p>
+<dl class="simple">
+<dt>xsi_types</dt><dd><p><code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> strings to match, for example
+“org.polarsys.capella.core.data.cs:InterfacePkg”</p>
+</dd>
+<dt>roots</dt><dd><p>A list of XML elements to use as roots for the query.
+Defaults to all tree roots.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.find_fragment">
+<span class="sig-name descname"><span class="pre">find_fragment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PurePosixPath</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.find_fragment" title="Permalink to this definition"></a></dt>
+<dd><p>Find the name of the fragment that contains <code class="docutils literal notranslate"><span class="pre">element</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.follow_link">
+<span class="sig-name descname"><span class="pre">follow_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">etree._Element</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.follow_link" title="Permalink to this definition"></a></dt>
+<dd><p>Follow a single link and return the target element.</p>
+<p>The link is considered relative to the <code class="docutils literal notranslate"><span class="pre">from_element</span></code>, if
+given. The accepted formats are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xtype</span> <span class="n">fragment</span><span class="c1">#UUID</span>
+<span class="n">fragment</span><span class="c1">#UUID</span>
+<span class="c1">#UUID</span>
+<span class="n">UUID</span>
+</pre></div>
+</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xtype</span></code> is the target element’s <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>.  If given
+and it does not match, an exception is raised.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fragment</span></code> is the fragment file in which to find the
+target element.  If not given, first the source fragment
+will be searched, and if unsuccessful, the search will be
+extended to all fragments.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">UUID</span></code> is the unique <code class="docutils literal notranslate"><span class="pre">id</span></code> of the target element.</p></li>
+</ul>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If the link is malformed</p>
+</dd>
+<dt>FileNotFoundError</dt><dd><p>If the target fragment is not loaded (only applicable if
+<code class="docutils literal notranslate"><span class="pre">from_element</span></code> is not None and <code class="docutils literal notranslate"><span class="pre">fragment</span></code> is part of the
+link)</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>If the expected <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> does not match the actual
+<code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> of the found target</p>
+</dd>
+<dt>KeyError</dt><dd><p>If the target cannot be found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.follow_links">
+<span class="sig-name descname"><span class="pre">follow_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.follow_links" title="Permalink to this definition"></a></dt>
+<dd><p>Follow multiple links and return all results as list.</p>
+<p>The format for an individual link is the same as accepted by
+<a class="reference internal" href="#capellambse.loader.core.MelodyLoader.follow_link" title="capellambse.loader.core.MelodyLoader.follow_link"><code class="xref py py-meth docutils literal notranslate"><span class="pre">follow_link()</span></code></a>.  Multiple links must be given as a single
+space-separated string.</p>
+<p>If any target cannot be found, <code class="docutils literal notranslate"><span class="pre">None</span></code> will be inserted at that
+point in the returned list.</p>
+<dl class="simple">
+<dt>ValueError</dt><dd><p>If any link is malformed.</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>If any expected <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> does not match the actual
+<code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> of the found target.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.generate_uuid">
+<span class="sig-name descname"><span class="pre">generate_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">want</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.generate_uuid" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a unique UUID for a new child of <code class="docutils literal notranslate"><span class="pre">parent</span></code>.</p>
+<p>The generated ID is guaranteed to be unique across all currently
+loaded fragments.</p>
+<dl class="simple">
+<dt>want</dt><dd><p>Try this UUID first, and use it if it satisfies all other
+constraints. If it does not satisfy all constraints (e.g. it
+would be non-unique), a random UUID will be generated as
+normal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.get_model_info">
+<span class="sig-name descname"><span class="pre">get_model_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.loader.modelinfo.ModelInfo" title="capellambse.loader.modelinfo.ModelInfo"><span class="pre">ModelInfo</span></a></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.get_model_info" title="Permalink to this definition"></a></dt>
+<dd><p>Return the Capella version found in the leading comment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.idcache_index">
+<span class="sig-name descname"><span class="pre">idcache_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.idcache_index" title="Permalink to this definition"></a></dt>
+<dd><p>Index the IDs of <code class="docutils literal notranslate"><span class="pre">subtree</span></code>.</p>
+<p>This method must be called after adding <code class="docutils literal notranslate"><span class="pre">subtree</span></code> to the XML
+tree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.idcache_rebuild">
+<span class="sig-name descname"><span class="pre">idcache_rebuild</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.idcache_rebuild" title="Permalink to this definition"></a></dt>
+<dd><p>Rebuild the ID caches of all <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelFile</span></code>s.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.idcache_remove">
+<span class="sig-name descname"><span class="pre">idcache_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.idcache_remove" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the <code class="docutils literal notranslate"><span class="pre">subtree</span></code> from the ID cache.</p>
+<p>This method must be called before actually removing <code class="docutils literal notranslate"><span class="pre">subtree</span></code>
+from the XML tree.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.iterall">
+<span class="sig-name descname"><span class="pre">iterall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.iterall" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over all elements in all trees by tags.</p>
+<dl class="simple">
+<dt>tags</dt><dd><p>Optionally restrict the iterator to the given tags.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.iterall_xt">
+<span class="sig-name descname"><span class="pre">iterall_xt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Container</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.PurePosixPath</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.iterall_xt" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over all elements in all trees by <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s.</p>
+<dl class="simple">
+<dt>xtypes</dt><dd><p>Optionally restrict the iterator to these <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s</p>
+</dd>
+<dt>trees</dt><dd><p>Optionally restrict the iterator to elements that reside in
+any of the named trees.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.iterancestors">
+<span class="sig-name descname"><span class="pre">iterancestors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.iterancestors" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over the ancestors of <code class="docutils literal notranslate"><span class="pre">element</span></code>.</p>
+<p>This method will follow fragment links back to the origin point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.iterchildren_xt">
+<span class="sig-name descname"><span class="pre">iterchildren_xt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.iterchildren_xt" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over the children of <code class="docutils literal notranslate"><span class="pre">element</span></code>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s are given in <code class="docutils literal notranslate"><span class="pre">xtypes</span></code>, restrict yielded
+elements to the ones with matching type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.iterdescendants">
+<span class="sig-name descname"><span class="pre">iterdescendants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_elm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tags</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.iterdescendants" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over all descendants of <code class="docutils literal notranslate"><span class="pre">root_elm</span></code>.</p>
+<p>This method will follow links into different fragment files and
+yield those elements as if they were part of the origin subtree.</p>
+<dl class="simple">
+<dt>root_elm</dt><dd><p>The root element of the tree</p>
+</dd>
+<dt>tags</dt><dd><p>Element tags to filter for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.iterdescendants_xt">
+<span class="sig-name descname"><span class="pre">iterdescendants_xt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.iterdescendants_xt" title="Permalink to this definition"></a></dt>
+<dd><p>Iterate over all descendants of <code class="docutils literal notranslate"><span class="pre">element</span></code> by <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>.</p>
+<p>This method will follow links into different fragment files and
+yield those elements as if they were part of the origin subtree.</p>
+<dl class="simple">
+<dt>element</dt><dd><p>The root element of the tree</p>
+</dd>
+<dt>xtypes</dt><dd><p>Elements that have any of these <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s will be
+yielded.  If nothing is given here, all elements will be
+yielded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.new_uuid">
+<span class="sig-name descname"><span class="pre">new_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">want</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.new_uuid" title="Permalink to this definition"></a></dt>
+<dd><p>Context Manager around <a class="reference internal" href="#capellambse.loader.core.MelodyLoader.generate_uuid" title="capellambse.loader.core.MelodyLoader.generate_uuid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_uuid()</span></code></a>.</p>
+<p>This context manager yields a newly generated model-wide unique
+UUID that can be inserted into a new element during the <code class="docutils literal notranslate"><span class="pre">with</span></code>
+block.  It tries to keep the ID cache consistent in some harder
+to manage edge cases, like exceptions being thrown.
+Additionally it checks that the generated UUID was actually used
+in the tree; not using it before the <code class="docutils literal notranslate"><span class="pre">with</span></code> block ends is an
+error and provokes an Exception.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You still need to call <a class="reference internal" href="#capellambse.loader.core.MelodyLoader.idcache_index" title="capellambse.loader.core.MelodyLoader.idcache_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">idcache_index()</span></code></a> on the
+newly inserted element!</p>
+</div>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ldr</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(</span><span class="n">parent_elm</span><span class="p">)</span> <span class="k">as</span> <span class="n">obj_id</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">child_elm</span> <span class="o">=</span> <span class="n">parent_elm</span><span class="o">.</span><span class="n">makeelement</span><span class="p">(</span><span class="s2">&quot;ownedObjects&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">child_elm</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">parent_elm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_elm</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">ldr</span><span class="o">.</span><span class="n">idcache_index</span><span class="p">(</span><span class="n">child_elm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you intend to reserve a UUID that should be inserted later,
+use <a class="reference internal" href="#capellambse.loader.core.MelodyLoader.generate_uuid" title="capellambse.loader.core.MelodyLoader.generate_uuid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_uuid()</span></code></a> directly.</p>
+<dl class="simple">
+<dt>parent</dt><dd><p>The parent element below which the new UUID will be used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.save" title="Permalink to this definition"></a></dt>
+<dd><p>Save all model files back to their original locations.</p>
+<dl class="simple">
+<dt>kw</dt><dd><p>Additional keyword arguments accepted by the file handler in
+use. Please see the respective documentation for more info.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :</dt><dd><p>Accepted <code class="docutils literal notranslate"><span class="pre">**kw</span></code> when using local directories</p>
+</dd>
+<dt>capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :</dt><dd><p>Accepted <code class="docutils literal notranslate"><span class="pre">**kw</span></code> when using <code class="docutils literal notranslate"><span class="pre">git://</span></code> and similar URLs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.xpath">
+<span class="sig-name descname"><span class="pre">xpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">etree.XPath</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.xpath" title="Permalink to this definition"></a></dt>
+<dd><p>Run an XPath query on all fragments.</p>
+<dl class="simple">
+<dt>query</dt><dd><p>The XPath query</p>
+</dd>
+<dt>namespaces</dt><dd><p>Namespaces used in the query.  Defaults to all known
+namespaces.</p>
+</dd>
+<dt>roots</dt><dd><p>A list of XML elements to use as roots for the query.
+Defaults to all tree roots.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.core.MelodyLoader.xpath2">
+<span class="sig-name descname"><span class="pre">xpath2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">etree.XPath</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pathlib.PurePosixPath</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">etree._Element</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.core.MelodyLoader.xpath2" title="Permalink to this definition"></a></dt>
+<dd><p>Run an XPath query and return the fragments and elements.</p>
+<p>The tuples have the fragment where the match was found as first
+element, and the LXML element as second one.</p>
+<dl class="simple">
+<dt>query</dt><dd><p>The XPath query</p>
+</dd>
+<dt>namespaces</dt><dd><p>Namespaces used in the query.  Defaults to all known
+namespaces.</p>
+</dd>
+<dt>roots</dt><dd><p>A list of XML elements to use as roots for the query.
+Defaults to all tree roots.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader.exs">
+<span id="capellambse-loader-exs-module"></span><h2>capellambse.loader.exs module<a class="headerlink" href="#module-capellambse.loader.exs" title="Permalink to this heading"></a></h2>
+<p>An Eclipse-like XML serializer.</p>
+<p>The libxml2 XML serializer produces very different output from the one
+used by Capella.  This causes a file saved by libxml2 to look vastly
+different, even though semantically nothing might have changed at all.
+This module implements a serializer which produces output like Capella
+does.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.exs.serialize">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.exs.</span></span><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">lxml.etree._Element</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">lxml.etree._ElementTree</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#capellambse.loader.exs.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize an XML tree.</p>
+<p>The iterator returned by this function yields the serialized XML
+piece by piece.</p>
+<dl class="simple">
+<dt>tree</dt><dd><p>The XML tree to serialize.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Iterator[str]</dt><dd><p>An iterator that yields the serialized XML piece by piece.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.exs.to_bytes">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.exs.</span></span><span class="sig-name descname"><span class="pre">to_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">declare_encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#capellambse.loader.exs.to_bytes" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize an XML tree as a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>At the start of the document, an XML processing instruction will be
+inserted declaring the used encoding.  Pass
+<code class="docutils literal notranslate"><span class="pre">declare_encoding=False</span></code> to inhibit this behavior.</p>
+<dl class="simple">
+<dt>tree</dt><dd><p>The XML tree to serialize.</p>
+</dd>
+<dt>encoding</dt><dd><p>The encoding to use.  An XML processing instruction will be
+inserted which declares the used encoding.</p>
+</dd>
+<dt>errors</dt><dd><p>How to handle errors during encoding.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>bytes</dt><dd><p>The serialized XML, encoded using <code class="docutils literal notranslate"><span class="pre">encoding</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.exs.to_string">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.exs.</span></span><span class="sig-name descname"><span class="pre">to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.loader.exs.to_string" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize an XML tree as a <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>No XML processing instruction will be inserted at the start of the
+document.</p>
+<dl class="simple">
+<dt>tree</dt><dd><p>The XML tree to serialize.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>str</dt><dd><p>The serialized XML.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.exs.write">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.exs.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">lxml.etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_HasWrite</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'strict'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.loader.exs.write" title="Permalink to this definition"></a></dt>
+<dd><p>Write the XML tree to <code class="docutils literal notranslate"><span class="pre">file</span></code>.</p>
+<dl class="simple">
+<dt>tree</dt><dd><p>The XML tree to serialize.</p>
+</dd>
+<dt>file</dt><dd><p>An open file or a PathLike to write the XML into.</p>
+</dd>
+<dt>encoding</dt><dd><p>The file encoding to use when opening a file.</p>
+</dd>
+<dt>errors</dt><dd><p>Set the encoding error handling behavior of newly opened files.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader.modelinfo">
+<span id="capellambse-loader-modelinfo-module"></span><h2>capellambse.loader.modelinfo module<a class="headerlink" href="#module-capellambse.loader.modelinfo" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.modelinfo.</span></span><span class="sig-name descname"><span class="pre">ModelInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">branch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rev_hash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capella_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo.branch">
+<span class="sig-name descname"><span class="pre">branch</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo.branch" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo.capella_version">
+<span class="sig-name descname"><span class="pre">capella_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo.capella_version" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo.rev_hash">
+<span class="sig-name descname"><span class="pre">rev_hash</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo.rev_hash" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo.revision">
+<span class="sig-name descname"><span class="pre">revision</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo.revision" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo.title">
+<span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo.title" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.modelinfo.ModelInfo.url">
+<span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.loader.modelinfo.ModelInfo.url" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader.xmltools">
+<span id="capellambse-loader-xmltools-module"></span><h2>capellambse.loader.xmltools module<a class="headerlink" href="#module-capellambse.loader.xmltools" title="Permalink to this heading"></a></h2>
+<p>Useful helpers for making object-oriented XML proxy classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.xmltools.</span></span><span class="sig-name descname"><span class="pre">AttributeProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">xmlattr:</span> <span class="pre">str,</span> <span class="pre">attribute:</span> <span class="pre">str,</span> <span class="pre">*,</span> <span class="pre">returntype:</span> <span class="pre">cabc.Callable[[str],</span> <span class="pre">t.Any]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">optional:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">default:</span> <span class="pre">t.Any</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">writable:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True,</span> <span class="pre">__doc__:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A property that forwards access to the underlying XML element.</p>
+<p>Create an AttributeProperty.</p>
+<dl class="simple">
+<dt>xmlattr</dt><dd><p>The owning type’s instance attribute pointing to the XML
+element.</p>
+</dd>
+<dt>attribute</dt><dd><p>The attribute on the XML element to handle.</p>
+</dd>
+<dt>returntype</dt><dd><p>The type to return the result as. Must accept a single
+<code class="docutils literal notranslate"><span class="pre">str</span></code> as argument.</p>
+</dd>
+<dt>optional</dt><dd><p>If False (default) and the XML attribute does not exist, an
+AttributeError is raised.  Otherwise a default value is
+returned.</p>
+</dd>
+<dt>default</dt><dd><p>A new-style format string to use as fallback value.  You can
+access the object instance as <code class="docutils literal notranslate"><span class="pre">self</span></code> and the XML element
+as <code class="docutils literal notranslate"><span class="pre">xml</span></code>.</p>
+</dd>
+<dt>writable</dt><dd><p>Whether to allow modifying the XML attribute.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty.NOT_OPTIONAL">
+<span class="sig-name descname"><span class="pre">NOT_OPTIONAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;object</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty.NOT_OPTIONAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty.attribute">
+<span class="sig-name descname"><span class="pre">attribute</span></span><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty.attribute" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty.default">
+<span class="sig-name descname"><span class="pre">default</span></span><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty.default" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty.returntype">
+<span class="sig-name descname"><span class="pre">returntype</span></span><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty.returntype" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty.writable">
+<span class="sig-name descname"><span class="pre">writable</span></span><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty.writable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.AttributeProperty.xmlattr">
+<span class="sig-name descname"><span class="pre">xmlattr</span></span><a class="headerlink" href="#capellambse.loader.xmltools.AttributeProperty.xmlattr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.BooleanAttributeProperty">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.xmltools.</span></span><span class="sig-name descname"><span class="pre">BooleanAttributeProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmlattr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__doc__</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.xmltools.BooleanAttributeProperty" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.xmltools.AttributeProperty" title="capellambse.loader.xmltools.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeProperty</span></code></a></p>
+<p>An AttributeProperty that works with booleans.</p>
+<p>Create an AttributeProperty.</p>
+<dl class="simple">
+<dt>xmlattr</dt><dd><p>The owning type’s instance attribute pointing to the XML
+element.</p>
+</dd>
+<dt>attribute</dt><dd><p>The attribute on the XML element to handle.</p>
+</dd>
+<dt>returntype</dt><dd><p>The type to return the result as. Must accept a single
+<code class="docutils literal notranslate"><span class="pre">str</span></code> as argument.</p>
+</dd>
+<dt>optional</dt><dd><p>If False (default) and the XML attribute does not exist, an
+AttributeError is raised.  Otherwise a default value is
+returned.</p>
+</dd>
+<dt>default</dt><dd><p>A new-style format string to use as fallback value.  You can
+access the object instance as <code class="docutils literal notranslate"><span class="pre">self</span></code> and the XML element
+as <code class="docutils literal notranslate"><span class="pre">xml</span></code>.</p>
+</dd>
+<dt>writable</dt><dd><p>Whether to allow modifying the XML attribute.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.BooleanAttributeProperty.attribute">
+<span class="sig-name descname"><span class="pre">attribute</span></span><a class="headerlink" href="#capellambse.loader.xmltools.BooleanAttributeProperty.attribute" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.BooleanAttributeProperty.default">
+<span class="sig-name descname"><span class="pre">default</span></span><a class="headerlink" href="#capellambse.loader.xmltools.BooleanAttributeProperty.default" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.BooleanAttributeProperty.returntype">
+<span class="sig-name descname"><span class="pre">returntype</span></span><a class="headerlink" href="#capellambse.loader.xmltools.BooleanAttributeProperty.returntype" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.BooleanAttributeProperty.writable">
+<span class="sig-name descname"><span class="pre">writable</span></span><a class="headerlink" href="#capellambse.loader.xmltools.BooleanAttributeProperty.writable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.BooleanAttributeProperty.xmlattr">
+<span class="sig-name descname"><span class="pre">xmlattr</span></span><a class="headerlink" href="#capellambse.loader.xmltools.BooleanAttributeProperty.xmlattr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.DatetimeAttributeProperty">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.xmltools.</span></span><span class="sig-name descname"><span class="pre">DatetimeAttributeProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmlattr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__doc__</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.xmltools.DatetimeAttributeProperty" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.xmltools.AttributeProperty" title="capellambse.loader.xmltools.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeProperty</span></code></a></p>
+<p>An AttributeProperty that stores a datetime.</p>
+<p>The value stored in the XML will be formatted according to the
+<code class="docutils literal notranslate"><span class="pre">format</span></code> given to the constructor. When loading a value, it must
+strictly be parsable with the same format, otherwise an exception
+will be raised.</p>
+<p>Create an AttributeProperty.</p>
+<dl class="simple">
+<dt>xmlattr</dt><dd><p>The owning type’s instance attribute pointing to the XML
+element.</p>
+</dd>
+<dt>attribute</dt><dd><p>The attribute on the XML element to handle.</p>
+</dd>
+<dt>returntype</dt><dd><p>The type to return the result as. Must accept a single
+<code class="docutils literal notranslate"><span class="pre">str</span></code> as argument.</p>
+</dd>
+<dt>optional</dt><dd><p>If False (default) and the XML attribute does not exist, an
+AttributeError is raised.  Otherwise a default value is
+returned.</p>
+</dd>
+<dt>default</dt><dd><p>A new-style format string to use as fallback value.  You can
+access the object instance as <code class="docutils literal notranslate"><span class="pre">self</span></code> and the XML element
+as <code class="docutils literal notranslate"><span class="pre">xml</span></code>.</p>
+</dd>
+<dt>writable</dt><dd><p>Whether to allow modifying the XML attribute.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.DatetimeAttributeProperty.format">
+<span class="sig-name descname"><span class="pre">format</span></span><a class="headerlink" href="#capellambse.loader.xmltools.DatetimeAttributeProperty.format" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.EnumAttributeProperty">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.xmltools.</span></span><span class="sig-name descname"><span class="pre">EnumAttributeProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmlattr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enumcls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">enum.Enum</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">enum.Enum</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.xmltools.EnumAttributeProperty" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.xmltools.AttributeProperty" title="capellambse.loader.xmltools.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeProperty</span></code></a></p>
+<p>An AttributeProperty whose values are determined by an Enum.</p>
+<p>This works in much the same way as the standard AttributeProperty,
+except that the returned and consumed values are not simple strings,
+but members of the Enum that was passed into the constructor.</p>
+<p>Usually it is expected that the enum members will be directly
+assigned to this property.  However it is also possible to assign a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> instead.  In this case, the string will be taken to be
+an enum member’s name.  In both cases, the enum member’s value will
+be placed in the underlying XML attribute.</p>
+<p>If the XML attribute contains a value that does not correspond to
+any of the Enum’s members, a KeyError will be raised. If the
+attribute is completely missing from the XML and there was no
+<code class="docutils literal notranslate"><span class="pre">default=</span></code> value set during construction, this property will
+return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p>Create an EnumAttributeProperty.</p>
+<dl class="simple">
+<dt>enumcls</dt><dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.Enum</span></code> subclass to use.  The class’ members’
+values are used as the possible values for the XML
+attribute.</p>
+</dd>
+<dt>default</dt><dd><p>The default value to return if the attribute is not present
+in the XML.  If None, an AttributeError will be raised
+instead.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.EnumAttributeProperty.enumcls">
+<span class="sig-name descname"><span class="pre">enumcls</span></span><a class="headerlink" href="#capellambse.loader.xmltools.EnumAttributeProperty.enumcls" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.NumericAttributeProperty">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.xmltools.</span></span><span class="sig-name descname"><span class="pre">NumericAttributeProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xmlattr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_float</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">writable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__doc__</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.xmltools.NumericAttributeProperty" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.xmltools.AttributeProperty" title="capellambse.loader.xmltools.AttributeProperty"><code class="xref py py-class docutils literal notranslate"><span class="pre">AttributeProperty</span></code></a></p>
+<p>Attribute property that handles (possibly infinite) numeric values.</p>
+<p>Positive infinity is stored in Capella XML as <cite>*</cite>. This class takes
+care of converting to and from that value when setting or retrieving
+the value.</p>
+<p>Note that there is currently no representation of negative infinity,
+which is why <code class="docutils literal notranslate"><span class="pre">-inf</span></code> is rejected with a <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">NaN</span></code> values are rejected with a ValueError as well.</p>
+<p>Create an AttributeProperty.</p>
+<dl class="simple">
+<dt>xmlattr</dt><dd><p>The owning type’s instance attribute pointing to the XML
+element.</p>
+</dd>
+<dt>attribute</dt><dd><p>The attribute on the XML element to handle.</p>
+</dd>
+<dt>returntype</dt><dd><p>The type to return the result as. Must accept a single
+<code class="docutils literal notranslate"><span class="pre">str</span></code> as argument.</p>
+</dd>
+<dt>optional</dt><dd><p>If False (default) and the XML attribute does not exist, an
+AttributeError is raised.  Otherwise a default value is
+returned.</p>
+</dd>
+<dt>default</dt><dd><p>A new-style format string to use as fallback value.  You can
+access the object instance as <code class="docutils literal notranslate"><span class="pre">self</span></code> and the XML element
+as <code class="docutils literal notranslate"><span class="pre">xml</span></code>.</p>
+</dd>
+<dt>writable</dt><dd><p>Whether to allow modifying the XML attribute.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.NumericAttributeProperty.attribute">
+<span class="sig-name descname"><span class="pre">attribute</span></span><a class="headerlink" href="#capellambse.loader.xmltools.NumericAttributeProperty.attribute" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.NumericAttributeProperty.default">
+<span class="sig-name descname"><span class="pre">default</span></span><a class="headerlink" href="#capellambse.loader.xmltools.NumericAttributeProperty.default" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.NumericAttributeProperty.returntype">
+<span class="sig-name descname"><span class="pre">returntype</span></span><a class="headerlink" href="#capellambse.loader.xmltools.NumericAttributeProperty.returntype" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.NumericAttributeProperty.writable">
+<span class="sig-name descname"><span class="pre">writable</span></span><a class="headerlink" href="#capellambse.loader.xmltools.NumericAttributeProperty.writable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.NumericAttributeProperty.xmlattr">
+<span class="sig-name descname"><span class="pre">xmlattr</span></span><a class="headerlink" href="#capellambse.loader.xmltools.NumericAttributeProperty.xmlattr" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.XMLDictProxy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.xmltools.</span></span><span class="sig-name descname"><span class="pre">XMLDictProxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">etree._Element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">childtag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keyattr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">capellambse.loader.MelodyLoader</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.xmltools.XMLDictProxy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></p>
+<p>Provides dict-like access to underlying XML structures.</p>
+<p>Subclasses of this class behave like regular Python dictionary,
+except that all key/value accesses are transparently forwarded to
+the underlying XML.</p>
+<p>Initialize the XMLDictProxy.</p>
+<dl class="simple">
+<dt>xml_element</dt><dd><p>The underlying XML element.</p>
+</dd>
+<dt>childtag</dt><dd><p>The XML tag of handled child elements.</p>
+</dd>
+<dt>keyattr</dt><dd><p>The element attribute to use as dictionary key.</p>
+</dd>
+<dt>model</dt><dd><p>Reference to the original MelodyLoader.  If not None, the
+loader will be informed about element creation and deletion.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.xmltools.XMLDictProxy.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.xmltools.XMLDictProxy.copy" title="Permalink to this definition"></a></dt>
+<dd><p>Make a copy of this proxy as standard Python <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.loader" title="Permalink to this heading"></a></h2>
+<p>The MelodyLoader loads and provides access to a Capella model.</p>
+<p>It is using LXML internally to efficiently parse and navigate through
+the Capella-generated XML files.  For more information about LXML, see
+the <a class="reference external" href="https://lxml.de/">LXML Documentation</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.extensions.reqif.html" class="btn btn-neutral float-left" title="capellambse.extensions.reqif package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.loader.filehandler.html" class="btn btn-neutral float-right" title="capellambse.loader.filehandler package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

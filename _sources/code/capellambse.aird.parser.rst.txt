@@ -1,0 +1,10 @@
+capellambse.aird.parser package
+===============================
+
+Module contents
+---------------
+
+.. automodule:: capellambse.aird.parser
+   :members:
+   :undoc-members:
+   :show-inheritance:

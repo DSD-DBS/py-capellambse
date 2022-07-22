@@ -1,0 +1,29 @@
+capellambse.model.crosslayer.information package
+================================================
+
+Submodules
+----------
+
+capellambse.model.crosslayer.information.datatype module
+--------------------------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.information.datatype
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.crosslayer.information.datavalue module
+---------------------------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.information.datavalue
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: capellambse.model.crosslayer.information
+   :members:
+   :undoc-members:
+   :show-inheritance:

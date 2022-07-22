@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.pvmt package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.svg package" href="capellambse.svg.html" />
+    <link rel="prev" title="capellambse.model.layers package" href="capellambse.model.layers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+      <li>capellambse.pvmt package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-pvmt-package">
+<h1>capellambse.pvmt package<a class="headerlink" href="#capellambse-pvmt-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.pvmt.core">
+<span id="capellambse-pvmt-core-module"></span><h2>capellambse.pvmt.core module<a class="headerlink" href="#module-capellambse.pvmt.core" title="Permalink to this heading"></a></h2>
+<p>Core functionality shared by all PVMT submodules.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.core.Generic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.core.</span></span><span class="sig-name descname"><span class="pre">Generic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.core.Generic" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for PropertyValues, Domains etc.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.core.Generic.from_xml_element">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_xml_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.core.Generic.from_xml_element" title="Permalink to this definition"></a></dt>
+<dd><p>Construct an object from the given XML element.</p>
+<p>This function is used to allow subclasses more control over how
+they are instantiated from existing XML elements, compared to
+creating them from scratch.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.core.Generic.idx">
+<span class="sig-name descname"><span class="pre">idx</span></span><a class="headerlink" href="#capellambse.pvmt.core.Generic.idx" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.core.Generic.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#capellambse.pvmt.core.Generic.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.core.Generic.sid">
+<span class="sig-name descname"><span class="pre">sid</span></span><a class="headerlink" href="#capellambse.pvmt.core.Generic.sid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.core.XMLDictProxy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.core.</span></span><span class="sig-name descname"><span class="pre">XMLDictProxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.core.XMLDictProxy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.Generic" title="capellambse.pvmt.core.Generic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>, <a class="reference internal" href="capellambse.loader.html#capellambse.loader.xmltools.XMLDictProxy" title="capellambse.loader.xmltools.XMLDictProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDictProxy</span></code></a></p>
+<p>Facilitates usage of the <code class="xref py py-class docutils literal notranslate"><span class="pre">capellambse.loader.XMLDictProxy</span></code>.</p>
+<p>Initialize the XMLDictProxy.</p>
+<dl class="simple">
+<dt>xml_element</dt><dd><p>The underlying XML element.</p>
+</dd>
+<dt>childtag</dt><dd><p>The XML tag of handled child elements.</p>
+</dd>
+<dt>keyattr</dt><dd><p>The element attribute to use as dictionary key.</p>
+</dd>
+<dt>model</dt><dd><p>Reference to the original MelodyLoader.  If not None, the
+loader will be informed about element creation and deletion.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.pvmt.exceptions">
+<span id="capellambse-pvmt-exceptions-module"></span><h2>capellambse.pvmt.exceptions module<a class="headerlink" href="#module-capellambse.pvmt.exceptions" title="Permalink to this heading"></a></h2>
+<p>Exceptions that may be raised by the PVMT module.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.pvmt.exceptions.CastingError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.exceptions.</span></span><span class="sig-name descname"><span class="pre">CastingError</span></span><a class="headerlink" href="#capellambse.pvmt.exceptions.CastingError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.exceptions.PropertyValueError" title="capellambse.pvmt.exceptions.PropertyValueError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropertyValueError</span></code></a></p>
+<p>A supplied value cannot be cast from or to the XML representation.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.pvmt.exceptions.GroupNotAppliedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.exceptions.</span></span><span class="sig-name descname"><span class="pre">GroupNotAppliedError</span></span><a class="headerlink" href="#capellambse.pvmt.exceptions.GroupNotAppliedError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.exceptions.PropertyValueError" title="capellambse.pvmt.exceptions.PropertyValueError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropertyValueError</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></p>
+<p>The property value group has not been applied to this element.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.pvmt.exceptions.PropertyValueError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.exceptions.</span></span><span class="sig-name descname"><span class="pre">PropertyValueError</span></span><a class="headerlink" href="#capellambse.pvmt.exceptions.PropertyValueError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base class for all property-value related errors.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.pvmt.exceptions.ScopeError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.exceptions.</span></span><span class="sig-name descname"><span class="pre">ScopeError</span></span><a class="headerlink" href="#capellambse.pvmt.exceptions.ScopeError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.exceptions.PropertyValueError" title="capellambse.pvmt.exceptions.PropertyValueError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropertyValueError</span></code></a></p>
+<p>Attempted to apply a PV group to an element outside its scope.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.pvmt.exceptions.UndefinedKeyError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.exceptions.</span></span><span class="sig-name descname"><span class="pre">UndefinedKeyError</span></span><a class="headerlink" href="#capellambse.pvmt.exceptions.UndefinedKeyError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.exceptions.PropertyValueError" title="capellambse.pvmt.exceptions.PropertyValueError"><code class="xref py py-class docutils literal notranslate"><span class="pre">PropertyValueError</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></p>
+<p>A key is attempted to be added which is not defined for the group.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.pvmt.model">
+<span id="capellambse-pvmt-model-module"></span><h2>capellambse.pvmt.model module<a class="headerlink" href="#module-capellambse.pvmt.model" title="Permalink to this heading"></a></h2>
+<p>Provides easy access to the Polarsys Capella PVMT extensions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.Domain">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.model.</span></span><span class="sig-name descname"><span class="pre">Domain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.model.Domain" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.XMLDictProxy" title="capellambse.pvmt.core.XMLDictProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDictProxy</span></code></a></p>
+<p>A PVMT Domain.</p>
+<p>Initialize the XMLDictProxy.</p>
+<dl class="simple">
+<dt>xml_element</dt><dd><p>The underlying XML element.</p>
+</dd>
+<dt>childtag</dt><dd><p>The XML tag of handled child elements.</p>
+</dd>
+<dt>keyattr</dt><dd><p>The element attribute to use as dictionary key.</p>
+</dd>
+<dt>model</dt><dd><p>Reference to the original MelodyLoader.  If not None, the
+loader will be informed about element creation and deletion.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.Domain.groups">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">groups</span></span><a class="headerlink" href="#capellambse.pvmt.model.Domain.groups" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of all property value groups in this domain.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.Group">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.model.</span></span><span class="sig-name descname"><span class="pre">Group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.model.Group" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.XMLDictProxy" title="capellambse.pvmt.core.XMLDictProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDictProxy</span></code></a></p>
+<p>PVMT Group.</p>
+<p>Initialize the XMLDictProxy.</p>
+<dl class="simple">
+<dt>xml_element</dt><dd><p>The underlying XML element.</p>
+</dd>
+<dt>childtag</dt><dd><p>The XML tag of handled child elements.</p>
+</dd>
+<dt>keyattr</dt><dd><p>The element attribute to use as dictionary key.</p>
+</dd>
+<dt>model</dt><dd><p>Reference to the original MelodyLoader.  If not None, the
+loader will be informed about element creation and deletion.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.Group.properties">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">properties</span></span><a class="headerlink" href="#capellambse.pvmt.model.Group.properties" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of all properties defined in this group.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.Group.scope">
+<span class="sig-name descname"><span class="pre">scope</span></span><a class="headerlink" href="#capellambse.pvmt.model.Group.scope" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.PVMTExtension">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.model.</span></span><span class="sig-name descname"><span class="pre">PVMTExtension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.model.PVMTExtension" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.XMLDictProxy" title="capellambse.pvmt.core.XMLDictProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDictProxy</span></code></a></p>
+<p>Facilitates access to property values.</p>
+<p>Initialize the XMLDictProxy.</p>
+<dl class="simple">
+<dt>xml_element</dt><dd><p>The underlying XML element.</p>
+</dd>
+<dt>childtag</dt><dd><p>The XML tag of handled child elements.</p>
+</dd>
+<dt>keyattr</dt><dd><p>The element attribute to use as dictionary key.</p>
+</dd>
+<dt>model</dt><dd><p>Reference to the original MelodyLoader.  If not None, the
+loader will be informed about element creation and deletion.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.PVMTExtension.domains">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">domains</span></span><a class="headerlink" href="#capellambse.pvmt.model.PVMTExtension.domains" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of all property value domains in the model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.PVMTExtension.get_element_pv">
+<span class="sig-name descname"><span class="pre">get_element_pv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.pvmt.types.AppliedPropertyValueGroup" title="capellambse.pvmt.types.AppliedPropertyValueGroup"><span class="pre">AppliedPropertyValueGroup</span></a></span></span><a class="headerlink" href="#capellambse.pvmt.model.PVMTExtension.get_element_pv" title="Permalink to this definition"></a></dt>
+<dd><p>Return the named PVMT group on <code class="docutils literal notranslate"><span class="pre">element</span></code>.</p>
+<dl class="simple">
+<dt>element</dt><dd><p>An LXML element with property value groups.</p>
+</dd>
+<dt>groupname</dt><dd><p>The fully qualified name of the property value group, in the
+format “domain.group”.</p>
+</dd>
+<dt>create</dt><dd><p>True to create (apply) the group if necessary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.pvmt.model.load_pvmt_from_model">
+<span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.model.</span></span><span class="sig-name descname"><span class="pre">load_pvmt_from_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.model.load_pvmt_from_model" title="Permalink to this definition"></a></dt>
+<dd><p>Load the Property Value management extension for the given model.</p>
+<p>This function is the main entry point for the <code class="docutils literal notranslate"><span class="pre">pvmt</span></code> module.  It
+should be called after constructing a <code class="docutils literal notranslate"><span class="pre">MelodyLoader</span></code> instance on
+the model file.  It will return a <code class="docutils literal notranslate"><span class="pre">PVMTExtension</span></code> object, which
+can be used to easily access the property values of the model given
+during intialization.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.pvmt.types">
+<span id="capellambse-pvmt-types-module"></span><h2>capellambse.pvmt.types module<a class="headerlink" href="#module-capellambse.pvmt.types" title="Permalink to this heading"></a></h2>
+<p>Classes that represent different property value types.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.AppliedPropertyValueGroup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">AppliedPropertyValueGroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvmt_ext</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.AppliedPropertyValueGroup" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.XMLDictProxy" title="capellambse.pvmt.core.XMLDictProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDictProxy</span></code></a></p>
+<p>A group of applied property values.</p>
+<p>Create an AppliedPropertyValueGroup.</p>
+<dl class="simple">
+<dt>pvmt_ext</dt><dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">PVMTExtension</span></code> object of the model.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.AppliedPropertyValueGroup.applyto">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">applyto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvmt_ext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupname</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.AppliedPropertyValueGroup.applyto" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the named property value group to the given element.</p>
+<dl class="simple">
+<dt>pvmt_ext</dt><dd><p>The PVMT extension object</p>
+</dd>
+<dt>xml_element</dt><dd><p>The XML element of the target object</p>
+</dd>
+<dt>groupname</dt><dd><p>The fully qualified name of the PVMT group</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>element</dt><dd><p>The newly created XML element, a child of xml_element.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.AppliedPropertyValueGroup.get_definition">
+<span class="sig-name descname"><span class="pre">get_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.AppliedPropertyValueGroup.get_definition" title="Permalink to this definition"></a></dt>
+<dd><p>Return the PV definition instance for the given key.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.BooleanPropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">BooleanPropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.BooleanPropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.types.GenericPropertyValue" title="capellambse.pvmt.types.GenericPropertyValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericPropertyValue</span></code></a></p>
+<p>A boolean property value.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.BooleanPropertyValue.cast">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.BooleanPropertyValue.cast" title="Permalink to this definition"></a></dt>
+<dd><p>Cast the given string into an appropriate Python object.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.BooleanPropertyValue.serialize">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.BooleanPropertyValue.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize the given value into an XML string.</p>
+<p>This function must be able to handle two types of input values:</p>
+<ol class="arabic simple">
+<li><p>The type produced by <code class="docutils literal notranslate"><span class="pre">.cast()</span></code>, which shall be turned back
+into its XML form, so that it can be passed into <code class="docutils literal notranslate"><span class="pre">.cast()</span></code>
+again.</p></li>
+<li><p>The XML representation of a valid value, i.e. its own output.</p></li>
+</ol>
+<p>If it is ambiguous which of the two types is being handled, the
+former shall be assumed.</p>
+<p>Note that escaping of XML special characters is handled by the
+underlying XML library.</p>
+<p>The default implementation works for the simple case where
+<code class="docutils literal notranslate"><span class="pre">cast</span></code> is a type constructor, but for more complex cases it
+should be overridden.</p>
+<dl class="simple">
+<dt>value</dt><dd><p>The value that should be serialized.</p>
+</dd>
+<dt>element</dt><dd><p>The XML element into which the value will be inserted.  This
+may be used to construct links across fragment boundaries.
+This parameter may be None, in which case it is assumed that
+all elements exist within the same fragment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">EnumerationPropertyType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.XMLDictProxy" title="capellambse.pvmt.core.XMLDictProxy"><code class="xref py py-class docutils literal notranslate"><span class="pre">XMLDictProxy</span></code></a></p>
+<p>Maps the literals’ UUIDs to their human-readable values.</p>
+<p>Initialize the XMLDictProxy.</p>
+<dl class="simple">
+<dt>xml_element</dt><dd><p>The underlying XML element.</p>
+</dd>
+<dt>childtag</dt><dd><p>The XML tag of handled child elements.</p>
+</dd>
+<dt>keyattr</dt><dd><p>The element attribute to use as dictionary key.</p>
+</dd>
+<dt>model</dt><dd><p>Reference to the original MelodyLoader.  If not None, the
+loader will be informed about element creation and deletion.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyType.literals">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">literals</span></span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyType.literals" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of valid literal values for this enumeration.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">EnumerationPropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typedef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.types.GenericPropertyValue" title="capellambse.pvmt.types.GenericPropertyValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericPropertyValue</span></code></a></p>
+<p>An enumeration property value.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue.applyto">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">applyto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvmt_ext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defelem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetelem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue.applyto" title="Permalink to this definition"></a></dt>
+<dd><p>Apply a property value to <code class="docutils literal notranslate"><span class="pre">targetelem</span></code>.</p>
+<dl class="simple">
+<dt>pvmt_ext</dt><dd><p>The PVMT Extension object.</p>
+</dd>
+<dt>defelem</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">ownedPropertyValues</span></code> element that should be applied.</p>
+</dd>
+<dt>modelobj</dt><dd><p>A model object’s XML element that will be a (direct or
+indirect) parent to this property value.</p>
+</dd>
+<dt>targetelem</dt><dd><p>The new <code class="docutils literal notranslate"><span class="pre">ownedPropertyValues</span></code> element.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue.cast">
+<span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue.cast" title="Permalink to this definition"></a></dt>
+<dd><p>Cast the given string into an appropriate Python object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue.default_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_value</span></span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue.default_value" title="Permalink to this definition"></a></dt>
+<dd><p>Return this property’s default value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue.parent" title="Permalink to this definition"></a></dt>
+<dd><p>Return the parent group of this property value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize the given value into an XML string.</p>
+<p>This function must be able to handle two types of input values:</p>
+<ol class="arabic simple">
+<li><p>The type produced by <code class="docutils literal notranslate"><span class="pre">.cast()</span></code>, which shall be turned back
+into its XML form, so that it can be passed into <code class="docutils literal notranslate"><span class="pre">.cast()</span></code>
+again.</p></li>
+<li><p>The XML representation of a valid value, i.e. its own output.</p></li>
+</ol>
+<p>If it is ambiguous which of the two types is being handled, the
+former shall be assumed.</p>
+<p>Note that escaping of XML special characters is handled by the
+underlying XML library.</p>
+<p>The default implementation works for the simple case where
+<code class="docutils literal notranslate"><span class="pre">cast</span></code> is a type constructor, but for more complex cases it
+should be overridden.</p>
+<dl class="simple">
+<dt>value</dt><dd><p>The value that should be serialized.</p>
+</dd>
+<dt>element</dt><dd><p>The XML element into which the value will be inserted.  This
+may be used to construct links across fragment boundaries.
+This parameter may be None, in which case it is assumed that
+all elements exist within the same fragment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.EnumerationPropertyValue.typedef">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">typedef</span></span><a class="headerlink" href="#capellambse.pvmt.types.EnumerationPropertyValue.typedef" title="Permalink to this definition"></a></dt>
+<dd><p>Return the type definition of this enumeration.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.FloatPropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">FloatPropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.FloatPropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.types.GenericPropertyValue" title="capellambse.pvmt.types.GenericPropertyValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericPropertyValue</span></code></a></p>
+<p>A floating point property value.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.FloatPropertyValue.cast">
+<span class="sig-name descname"><span class="pre">cast</span></span><a class="headerlink" href="#capellambse.pvmt.types.FloatPropertyValue.cast" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.FloatPropertyValue.unit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#capellambse.pvmt.types.FloatPropertyValue.unit" title="Permalink to this definition"></a></dt>
+<dd><p>Return the measurement unit of this property value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.GenericPropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">GenericPropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.GenericPropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.core.Generic" title="capellambse.pvmt.core.Generic"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a></p>
+<p>Base class for property value types.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.GenericPropertyValue.applyto">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">applyto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvmt_ext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defelem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelobj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targetelem</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.GenericPropertyValue.applyto" title="Permalink to this definition"></a></dt>
+<dd><p>Apply a property value to <code class="docutils literal notranslate"><span class="pre">targetelem</span></code>.</p>
+<dl class="simple">
+<dt>pvmt_ext</dt><dd><p>The PVMT Extension object.</p>
+</dd>
+<dt>defelem</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">ownedPropertyValues</span></code> element that should be applied.</p>
+</dd>
+<dt>modelobj</dt><dd><p>A model object’s XML element that will be a (direct or
+indirect) parent to this property value.</p>
+</dd>
+<dt>targetelem</dt><dd><p>The new <code class="docutils literal notranslate"><span class="pre">ownedPropertyValues</span></code> element.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.GenericPropertyValue.cast">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.GenericPropertyValue.cast" title="Permalink to this definition"></a></dt>
+<dd><p>Cast the given string into an appropriate Python object.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.GenericPropertyValue.description">
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#capellambse.pvmt.types.GenericPropertyValue.description" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.GenericPropertyValue.serialize">
+<span class="sig-name descname"><span class="pre">serialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.GenericPropertyValue.serialize" title="Permalink to this definition"></a></dt>
+<dd><p>Serialize the given value into an XML string.</p>
+<p>This function must be able to handle two types of input values:</p>
+<ol class="arabic simple">
+<li><p>The type produced by <code class="docutils literal notranslate"><span class="pre">.cast()</span></code>, which shall be turned back
+into its XML form, so that it can be passed into <code class="docutils literal notranslate"><span class="pre">.cast()</span></code>
+again.</p></li>
+<li><p>The XML representation of a valid value, i.e. its own output.</p></li>
+</ol>
+<p>If it is ambiguous which of the two types is being handled, the
+former shall be assumed.</p>
+<p>Note that escaping of XML special characters is handled by the
+underlying XML library.</p>
+<p>The default implementation works for the simple case where
+<code class="docutils literal notranslate"><span class="pre">cast</span></code> is a type constructor, but for more complex cases it
+should be overridden.</p>
+<dl class="simple">
+<dt>value</dt><dd><p>The value that should be serialized.</p>
+</dd>
+<dt>element</dt><dd><p>The XML element into which the value will be inserted.  This
+may be used to construct links across fragment boundaries.
+This parameter may be None, in which case it is assumed that
+all elements exist within the same fragment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.GenericPropertyValue.xtype">
+<span class="sig-name descname"><span class="pre">xtype</span></span><a class="headerlink" href="#capellambse.pvmt.types.GenericPropertyValue.xtype" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.IntegerPropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">IntegerPropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.IntegerPropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.types.GenericPropertyValue" title="capellambse.pvmt.types.GenericPropertyValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericPropertyValue</span></code></a></p>
+<p>An integer property value.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.IntegerPropertyValue.cast">
+<span class="sig-name descname"><span class="pre">cast</span></span><a class="headerlink" href="#capellambse.pvmt.types.IntegerPropertyValue.cast" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.IntegerPropertyValue.unit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#capellambse.pvmt.types.IntegerPropertyValue.unit" title="Permalink to this definition"></a></dt>
+<dd><p>Return the measurement unit of this property value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.StringPropertyValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">StringPropertyValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.StringPropertyValue" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.pvmt.types.GenericPropertyValue" title="capellambse.pvmt.types.GenericPropertyValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericPropertyValue</span></code></a></p>
+<p>A string property value.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.StringPropertyValue.cast">
+<span class="sig-name descname"><span class="pre">cast</span></span><a class="headerlink" href="#capellambse.pvmt.types.StringPropertyValue.cast" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.pvmt.types.select_property_loader">
+<span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.types.</span></span><span class="sig-name descname"><span class="pre">select_property_loader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.types.select_property_loader" title="Permalink to this definition"></a></dt>
+<dd><p>Execute the appropriate loader for the PV definition element.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.pvmt.validation">
+<span id="capellambse-pvmt-validation-module"></span><h2>capellambse.pvmt.validation module<a class="headerlink" href="#module-capellambse.pvmt.validation" title="Permalink to this heading"></a></h2>
+<p>Validation functions for PVMT.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.pvmt.validation.validate_group_scope">
+<span class="sig-prename descclassname"><span class="pre">capellambse.pvmt.validation.</span></span><span class="sig-name descname"><span class="pre">validate_group_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pvmt_ext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groupdef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_element</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.pvmt.validation.validate_group_scope" title="Permalink to this definition"></a></dt>
+<dd><p>Verify that the <code class="docutils literal notranslate"><span class="pre">groupdef</span></code>’s scope applies to the given element.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.pvmt">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.pvmt" title="Permalink to this heading"></a></h2>
+<p>Provides easy access to the Polarsys Capella PVMT extension.</p>
+<p>The public API of this submodule uses raw LXML elements.  For a more
+object oriented and user friendly way to access property values in a
+model, see the <code class="xref py py-class docutils literal notranslate"><span class="pre">capellambse.MelodyModel</span></code> class.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.model.layers.html" class="btn btn-neutral float-left" title="capellambse.model.layers package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.svg.html" class="btn btn-neutral float-right" title="capellambse.svg package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

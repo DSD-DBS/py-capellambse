@@ -1,0 +1,45 @@
+capellambse.loader.filehandler package
+======================================
+
+Submodules
+----------
+
+capellambse.loader.filehandler.git\_askpass module
+--------------------------------------------------
+
+.. automodule:: capellambse.loader.filehandler.git_askpass
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.loader.filehandler.gitfilehandler module
+----------------------------------------------------
+
+.. automodule:: capellambse.loader.filehandler.gitfilehandler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.loader.filehandler.http module
+------------------------------------------
+
+.. automodule:: capellambse.loader.filehandler.http
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.loader.filehandler.localfilehandler module
+------------------------------------------------------
+
+.. automodule:: capellambse.loader.filehandler.localfilehandler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: capellambse.loader.filehandler
+   :members:
+   :undoc-members:
+   :show-inheritance:

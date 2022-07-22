@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.model package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.model.common package" href="capellambse.model.common.html" />
+    <link rel="prev" title="capellambse.loader.filehandler package" href="capellambse.loader.filehandler.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+      <li>capellambse.model package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-model-package">
+<h1>capellambse.model package<a class="headerlink" href="#capellambse-model-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.model.common.html">capellambse.model.common package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.common.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.common.html#module-capellambse.model.common.accessors">capellambse.model.common.accessors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.common.html#module-capellambse.model.common.element">capellambse.model.common.element module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.common.html#module-capellambse.model.common">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.model.crosslayer.html">capellambse.model.crosslayer package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.model.crosslayer.information.html">capellambse.model.crosslayer.information package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.information.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.information.html#module-capellambse.model.crosslayer.information.datatype">capellambse.model.crosslayer.information.datatype module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.information.html#module-capellambse.model.crosslayer.information.datavalue">capellambse.model.crosslayer.information.datavalue module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.crosslayer.information.html#module-capellambse.model.crosslayer.information">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.capellacommon">capellambse.model.crosslayer.capellacommon module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.capellacore">capellambse.model.crosslayer.capellacore module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.cs">capellambse.model.crosslayer.cs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.fa">capellambse.model.crosslayer.fa module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer.interaction">capellambse.model.crosslayer.interaction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.crosslayer.html#module-capellambse.model.crosslayer">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.model.layers.html">capellambse.model.layers package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.layers.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.ctx">capellambse.model.layers.ctx module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.la">capellambse.model.layers.la module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.oa">capellambse.model.layers.oa module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers.pa">capellambse.model.layers.pa module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.model.layers.html#module-capellambse.model.layers">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.model.diagram">
+<span id="capellambse-model-diagram-module"></span><h2>capellambse.model.diagram module<a class="headerlink" href="#module-capellambse.model.diagram" title="Permalink to this heading"></a></h2>
+<p>Classes that allow access to diagrams in the model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">AbstractDiagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.model.MelodyModel" title="capellambse.model.MelodyModel"><span class="pre">MelodyModel</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract superclass of model diagrams.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.filters">
+<span class="sig-name descname"><span class="pre">filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">cabc.MutableSet</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.filters" title="Permalink to this definition"></a></dt>
+<dd><p>The filters that are activated for this diagram.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.invalidate_cache">
+<span class="sig-name descname"><span class="pre">invalidate_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.invalidate_cache" title="Permalink to this definition"></a></dt>
+<dd><p>Reset internal diagram cache.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.name" title="Permalink to this definition"></a></dt>
+<dd><p>Human-readable name for this diagram.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.nodes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.MixedElementList" title="capellambse.model.common.element.MixedElementList"><span class="pre">MixedElementList</span></a></em><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.nodes" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of all nodes visible in this diagram.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></span><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.render" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span></dt>
+<dd><p>Render the diagram in the given format.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.target">
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.GenericElement</span></em><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.target" title="Permalink to this definition"></a></dt>
+<dd><p>This diagram’s “target”.</p>
+<p>The target of a diagram is usually:</p>
+<ul class="simple">
+<li><p>The model element which is the direct parent of all visible
+nodes <strong>OR</strong></p></li>
+<li><p>The only top-level element in the diagram <strong>OR</strong></p></li>
+<li><p>The element which is considered to be the “element of interest”.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.AbstractDiagram.uuid">
+<span class="sig-name descname"><span class="pre">uuid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.model.diagram.AbstractDiagram.uuid" title="Permalink to this definition"></a></dt>
+<dd><p>Unique ID of this diagram.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.ConfluenceSVGFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">ConfluenceSVGFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.ConfluenceSVGFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Convert the diagram to Confluence-style SVG.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.ConfluenceSVGFormat.convert">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.ConfluenceSVGFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.ConfluenceSVGFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.svg'</span></em><a class="headerlink" href="#capellambse.model.diagram.ConfluenceSVGFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.ConfluenceSVGFormat.from_cache">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.ConfluenceSVGFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.ConfluenceSVGFormat.postfix">
+<span class="sig-name descname"><span class="pre">postfix</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">']]&gt;&lt;/ac:plain-text-body&gt;&lt;/ac:structured-macro&gt;'</span></em><a class="headerlink" href="#capellambse.model.diagram.ConfluenceSVGFormat.postfix" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.ConfluenceSVGFormat.prefix">
+<span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;ac:structured-macro</span> <span class="pre">ac:macro-id=&quot;0efe83a1-afd4-48c9-a335-e3583c25f3d0&quot;</span> <span class="pre">ac:name=&quot;html&quot;</span> <span class="pre">ac:schema-version=&quot;1&quot;&gt;&lt;ac:plain-text-body&gt;&lt;![CDATA['</span></em><a class="headerlink" href="#capellambse.model.diagram.ConfluenceSVGFormat.prefix" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">Diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.diagram.Diagram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.diagram.AbstractDiagram" title="capellambse.model.diagram.AbstractDiagram"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDiagram</span></code></a></p>
+<p>Provides access to a single diagram.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.model.diagram.Diagram.description" title="Permalink to this definition"></a></dt>
+<dd><p>Return the diagram description.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.filters">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">cabc.MutableSet</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.diagram.Diagram.filters" title="Permalink to this definition"></a></dt>
+<dd><p>Return a set of currently activated filters on this diagram.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.from_model">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.model.MelodyModel" title="capellambse.model.MelodyModel"><span class="pre">MelodyModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.parser.html#capellambse.aird.parser.DiagramDescriptor" title="capellambse.aird.parser.DiagramDescriptor"><span class="pre">DiagramDescriptor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.model.diagram.Diagram" title="capellambse.model.diagram.Diagram"><span class="pre">Diagram</span></a></span></span><a class="headerlink" href="#capellambse.model.diagram.Diagram.from_model" title="Permalink to this definition"></a></dt>
+<dd><p>Wrap a diagram already defined in the Capella AIRD.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#capellambse.model.diagram.Diagram.name" title="Permalink to this definition"></a></dt>
+<dd><p>attrgetter(attr, …) –&gt; attrgetter object</p>
+<p>Return a callable object that fetches the given attribute(s) from its operand.
+After f = attrgetter(‘name’), the call f(r) returns r.name.
+After g = attrgetter(‘name’, ‘date’), the call g(r) returns (r.name, r.date).
+After h = attrgetter(‘name.first’, ‘name.last’), the call h(r) returns
+(r.name.first, r.name.last).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.target">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><span class="pre">GenericElement</span></a></em><a class="headerlink" href="#capellambse.model.diagram.Diagram.target" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.target_uuid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_uuid</span></span><a class="headerlink" href="#capellambse.model.diagram.Diagram.target_uuid" title="Permalink to this definition"></a></dt>
+<dd><p>Obsolete.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.model.modeltypes.DiagramType" title="capellambse.model.modeltypes.DiagramType"><span class="pre">DiagramType</span></a></em><a class="headerlink" href="#capellambse.model.diagram.Diagram.type" title="Permalink to this definition"></a></dt>
+<dd><p>Return the type of this diagram.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.uuid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uuid</span></span><a class="headerlink" href="#capellambse.model.diagram.Diagram.uuid" title="Permalink to this definition"></a></dt>
+<dd><p>attrgetter(attr, …) –&gt; attrgetter object</p>
+<p>Return a callable object that fetches the given attribute(s) from its operand.
+After f = attrgetter(‘name’), the call f(r) returns r.name.
+After g = attrgetter(‘name’, ‘date’), the call g(r) returns (r.name, r.date).
+After h = attrgetter(‘name.first’, ‘name.last’), the call h(r) returns
+(r.name.first, r.name.last).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.viewpoint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">viewpoint</span></span><a class="headerlink" href="#capellambse.model.diagram.Diagram.viewpoint" title="Permalink to this definition"></a></dt>
+<dd><p>attrgetter(attr, …) –&gt; attrgetter object</p>
+<p>Return a callable object that fetches the given attribute(s) from its operand.
+After f = attrgetter(‘name’), the call f(r) returns r.name.
+After g = attrgetter(‘name’, ‘date’), the call g(r) returns (r.name, r.date).
+After h = attrgetter(‘name.first’, ‘name.last’), the call h(r) returns
+(r.name.first, r.name.last).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.Diagram.xtype">
+<span class="sig-name descname"><span class="pre">xtype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'viewpoint:DRepresentationDescriptor'</span></em><a class="headerlink" href="#capellambse.model.diagram.Diagram.xtype" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.DiagramAccessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">DiagramAccessor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viewpoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cacheattr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.diagram.DiagramAccessor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.Accessor" title="capellambse.model.common.accessors.Accessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Accessor</span></code></a></p>
+<p>Provides access to a list of diagrams below the specified viewpoint.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.DiagramFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">DiagramFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.diagram.DiagramFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.DiagramFormat.convert">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#capellambse.model.diagram.DiagramFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.DiagramFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.model.diagram.DiagramFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.DiagramFormat.from_cache">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#capellambse.model.diagram.DiagramFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.JSONFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">JSONFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.JSONFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.JSONFormat.convert">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.JSONFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.JSONFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.json'</span></em><a class="headerlink" href="#capellambse.model.diagram.JSONFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.JSONFormat.from_cache">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.JSONFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PNGFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">PNGFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.PNGFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Convert the diagram to PNG.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PNGFormat.convert">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#capellambse.model.diagram.PNGFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PNGFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.png'</span></em><a class="headerlink" href="#capellambse.model.diagram.PNGFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PNGFormat.from_cache">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#capellambse.model.diagram.PNGFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PrettyJSONFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">PrettyJSONFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.PrettyJSONFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PrettyJSONFormat.convert">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.PrettyJSONFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PrettyJSONFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.json'</span></em><a class="headerlink" href="#capellambse.model.diagram.PrettyJSONFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.PrettyJSONFormat.from_cache">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.PrettyJSONFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGDataURIFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">SVGDataURIFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.SVGDataURIFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGDataURIFormat.convert">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.SVGDataURIFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGDataURIFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.svg'</span></em><a class="headerlink" href="#capellambse.model.diagram.SVGDataURIFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGDataURIFormat.from_cache">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.SVGDataURIFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGDataURIFormat.preamble">
+<span class="sig-name descname"><span class="pre">preamble</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'data:image/svg+xml;base64,'</span></em><a class="headerlink" href="#capellambse.model.diagram.SVGDataURIFormat.preamble" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">SVGFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.SVGFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Convert the diagram to SVG.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGFormat.convert">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.SVGFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.svg'</span></em><a class="headerlink" href="#capellambse.model.diagram.SVGFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGFormat.from_cache">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.SVGFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGInHTMLIMGFormat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">SVGInHTMLIMGFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.SVGInHTMLIMGFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGInHTMLIMGFormat.convert">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Markup</span></span></span><a class="headerlink" href="#capellambse.model.diagram.SVGInHTMLIMGFormat.convert" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGInHTMLIMGFormat.filename_extension">
+<span class="sig-name descname"><span class="pre">filename_extension</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.svg'</span></em><a class="headerlink" href="#capellambse.model.diagram.SVGInHTMLIMGFormat.filename_extension" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.diagram.SVGInHTMLIMGFormat.from_cache">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.model.diagram.SVGInHTMLIMGFormat.from_cache" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.model.diagram.UnknownOutputFormat">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">UnknownOutputFormat</span></span><a class="headerlink" href="#capellambse.model.diagram.UnknownOutputFormat" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<p>An unknown output format was requested for the diagram.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.model.diagram.convert_svgdiagram">
+<span class="sig-prename descclassname"><span class="pre">capellambse.model.diagram.</span></span><span class="sig-name descname"><span class="pre">convert_svgdiagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.svg.html#capellambse.svg.generate.SVGDiagram" title="capellambse.svg.generate.SVGDiagram"><span class="pre">SVGDiagram</span></a></span></span><a class="headerlink" href="#capellambse.model.diagram.convert_svgdiagram" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the diagram to a SVGDiagram.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.model.modeltypes">
+<span id="capellambse-model-modeltypes-module"></span><h2>capellambse.model.modeltypes module<a class="headerlink" href="#module-capellambse.model.modeltypes" title="Permalink to this heading"></a></h2>
+<p>Enumeration types used by the MelodyModel.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.CollectionKind">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">CollectionKind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.CollectionKind" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.CollectionKind.ARRAY">
+<span class="sig-name descname"><span class="pre">ARRAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.CollectionKind.ARRAY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.CollectionKind.SEQUENCE">
+<span class="sig-name descname"><span class="pre">SEQUENCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.CollectionKind.SEQUENCE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.CollectionKind.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.CollectionKind.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">DiagramType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The types of diagrams that Capella knows about.</p>
+<p>Extracted from:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$CAPELLA/eclipse/configuration/org.eclipse.osgi/635/0/.cp/description
+</pre></div>
+</div>
+<p>with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="s1">&#39;&lt;ownedRepresentations&#39;</span> <span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="p">)</span>         <span class="o">|</span> <span class="n">grep</span> <span class="o">--</span><span class="n">color</span><span class="o">=</span><span class="n">always</span> <span class="o">-</span><span class="n">P</span> <span class="s1">&#39;(?&lt;=name=&quot;).*?(?=&quot;)&#39;</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CC">
+<span class="sig-name descname"><span class="pre">CC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Capability'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CDB">
+<span class="sig-name descname"><span class="pre">CDB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Class</span> <span class="pre">Diagram</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CDB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CDI">
+<span class="sig-name descname"><span class="pre">CDI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Component</span> <span class="pre">Detailed</span> <span class="pre">Interfaces'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CDI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CEI">
+<span class="sig-name descname"><span class="pre">CEI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Component</span> <span class="pre">External</span> <span class="pre">Interfaces'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CEI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CIBD">
+<span class="sig-name descname"><span class="pre">CIBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Configuration</span> <span class="pre">Items</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CIBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CII">
+<span class="sig-name descname"><span class="pre">CII</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Component</span> <span class="pre">Internal</span> <span class="pre">Interfaces'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CII" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CM">
+<span class="sig-name descname"><span class="pre">CM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Mission'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.COC">
+<span class="sig-name descname"><span class="pre">COC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Operational</span> <span class="pre">Capability'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.COC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CRB">
+<span class="sig-name descname"><span class="pre">CRB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Capability</span> <span class="pre">Realization</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CRB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CRI">
+<span class="sig-name descname"><span class="pre">CRI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">Capability</span> <span class="pre">Realization</span> <span class="pre">Involvement'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CRI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CRR">
+<span class="sig-name descname"><span class="pre">CRR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Capability</span> <span class="pre">Realization</span> <span class="pre">Refinement'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CRR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.CSA">
+<span class="sig-name descname"><span class="pre">CSA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Contextual</span> <span class="pre">System</span> <span class="pre">Actors'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.CSA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.EAB">
+<span class="sig-name descname"><span class="pre">EAB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EPBS</span> <span class="pre">Architecture</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.EAB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.ES">
+<span class="sig-name descname"><span class="pre">ES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Component</span> <span class="pre">Exchanges</span> <span class="pre">Scenario'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.ES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.FS">
+<span class="sig-name descname"><span class="pre">FS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Functional</span> <span class="pre">Scenario'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.FS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.ID">
+<span class="sig-name descname"><span class="pre">ID</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Interface</span> <span class="pre">Delegations'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.ID" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.IDB">
+<span class="sig-name descname"><span class="pre">IDB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Interfaces</span> <span class="pre">Diagram</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.IDB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.IS">
+<span class="sig-name descname"><span class="pre">IS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Component</span> <span class="pre">Interfaces</span> <span class="pre">Scenario'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.IS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.LAB">
+<span class="sig-name descname"><span class="pre">LAB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Logical</span> <span class="pre">Architecture</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.LAB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.LCBD">
+<span class="sig-name descname"><span class="pre">LCBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Logical</span> <span class="pre">Component</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.LCBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.LDFB">
+<span class="sig-name descname"><span class="pre">LDFB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Logical</span> <span class="pre">Data</span> <span class="pre">Flow</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.LDFB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.LFBD">
+<span class="sig-name descname"><span class="pre">LFBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Logical</span> <span class="pre">Function</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.LFBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.LFCD">
+<span class="sig-name descname"><span class="pre">LFCD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Functional</span> <span class="pre">Chain</span> <span class="pre">Description'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.LFCD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.MB">
+<span class="sig-name descname"><span class="pre">MB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Missions</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.MB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.MCB">
+<span class="sig-name descname"><span class="pre">MCB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Missions</span> <span class="pre">Capabilities</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.MCB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.MSM">
+<span class="sig-name descname"><span class="pre">MSM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Mode</span> <span class="pre">State</span> <span class="pre">Machine'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.MSM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OAB">
+<span class="sig-name descname"><span class="pre">OAB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Entity</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OAB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OABD">
+<span class="sig-name descname"><span class="pre">OABD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Activity</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OABD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OAIB">
+<span class="sig-name descname"><span class="pre">OAIB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Activity</span> <span class="pre">Interaction</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OAIB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OAS">
+<span class="sig-name descname"><span class="pre">OAS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Activity</span> <span class="pre">Interaction</span> <span class="pre">Scenario'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OAS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OCB">
+<span class="sig-name descname"><span class="pre">OCB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Capabilities</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OCB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OEBD">
+<span class="sig-name descname"><span class="pre">OEBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Entity</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OEBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OES">
+<span class="sig-name descname"><span class="pre">OES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Interaction</span> <span class="pre">Scenario'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.OPD">
+<span class="sig-name descname"><span class="pre">OPD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Process</span> <span class="pre">Description'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.OPD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.ORB">
+<span class="sig-name descname"><span class="pre">ORB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Operational</span> <span class="pre">Role</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.ORB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PAB">
+<span class="sig-name descname"><span class="pre">PAB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Physical</span> <span class="pre">Architecture</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PAB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PCBD">
+<span class="sig-name descname"><span class="pre">PCBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Physical</span> <span class="pre">Component</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PCBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PD">
+<span class="sig-name descname"><span class="pre">PD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Package</span> <span class="pre">Dependencies'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PDFB">
+<span class="sig-name descname"><span class="pre">PDFB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Physical</span> <span class="pre">Data</span> <span class="pre">Flow</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PDFB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PFBD">
+<span class="sig-name descname"><span class="pre">PFBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Physical</span> <span class="pre">Function</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PFBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PFCD">
+<span class="sig-name descname"><span class="pre">PFCD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Functional</span> <span class="pre">Chain</span> <span class="pre">Description'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PFCD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.PPD">
+<span class="sig-name descname"><span class="pre">PPD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Physical</span> <span class="pre">Path</span> <span class="pre">Description'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.PPD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.SAB">
+<span class="sig-name descname"><span class="pre">SAB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'System</span> <span class="pre">Architecture</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.SAB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.SDFB">
+<span class="sig-name descname"><span class="pre">SDFB</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'System</span> <span class="pre">Data</span> <span class="pre">Flow</span> <span class="pre">Blank'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.SDFB" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.SFBD">
+<span class="sig-name descname"><span class="pre">SFBD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'System</span> <span class="pre">Function</span> <span class="pre">Breakdown'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.SFBD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.SFCD">
+<span class="sig-name descname"><span class="pre">SFCD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Functional</span> <span class="pre">Chain</span> <span class="pre">Description'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.SFCD" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.UNKNOWN">
+<span class="sig-name descname"><span class="pre">UNKNOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'(Unknown</span> <span class="pre">Diagram</span> <span class="pre">Type)'</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.UNKNOWN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.DiagramType.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.DiagramType.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">ExchangeItemType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The “TYPE” of <code class="docutils literal notranslate"><span class="pre">ExchangeItem</span></code>s.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType.EVENT">
+<span class="sig-name descname"><span class="pre">EVENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType.EVENT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType.FLOW">
+<span class="sig-name descname"><span class="pre">FLOW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType.FLOW" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType.OPERATION">
+<span class="sig-name descname"><span class="pre">OPERATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType.OPERATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType.SHARED_DATA">
+<span class="sig-name descname"><span class="pre">SHARED_DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType.SHARED_DATA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType.UNSET">
+<span class="sig-name descname"><span class="pre">UNSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType.UNSET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.ExchangeItemType.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.ExchangeItemType.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.FPortDir">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">FPortDir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.FPortDir" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Flag</span></code></p>
+<p>Direction of component and function ports.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.FPortDir.IN">
+<span class="sig-name descname"><span class="pre">IN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.FPortDir.IN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.FPortDir.INOUT">
+<span class="sig-name descname"><span class="pre">INOUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#capellambse.model.modeltypes.FPortDir.INOUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.FPortDir.OUT">
+<span class="sig-name descname"><span class="pre">OUT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.FPortDir.OUT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.FPortDir.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.FPortDir.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">Kind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.Kind" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The “KIND” of <code class="docutils literal notranslate"><span class="pre">PhysicalComponent</span></code>s.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.DATA">
+<span class="sig-name descname"><span class="pre">DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.DATA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.FACILITIES">
+<span class="sig-name descname"><span class="pre">FACILITIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">9</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.FACILITIES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.FIRMWARE">
+<span class="sig-name descname"><span class="pre">FIRMWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.FIRMWARE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.HARDWARE">
+<span class="sig-name descname"><span class="pre">HARDWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.HARDWARE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.HARDWARE_COMPUTER">
+<span class="sig-name descname"><span class="pre">HARDWARE_COMPUTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.HARDWARE_COMPUTER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.MATERIALS">
+<span class="sig-name descname"><span class="pre">MATERIALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.MATERIALS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.PERSON">
+<span class="sig-name descname"><span class="pre">PERSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">13</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.PERSON" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.PROCESSES">
+<span class="sig-name descname"><span class="pre">PROCESSES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.PROCESSES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.SERVICES">
+<span class="sig-name descname"><span class="pre">SERVICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">7</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.SERVICES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.SOFTWARE">
+<span class="sig-name descname"><span class="pre">SOFTWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">11</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.SOFTWARE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.SOFTWARE_APPLICATION">
+<span class="sig-name descname"><span class="pre">SOFTWARE_APPLICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">14</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.SOFTWARE_APPLICATION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.SOFTWARE_DEPLOYMENT_UNIT">
+<span class="sig-name descname"><span class="pre">SOFTWARE_DEPLOYMENT_UNIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.SOFTWARE_DEPLOYMENT_UNIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.SOFTWARE_EXECUTION_UNIT">
+<span class="sig-name descname"><span class="pre">SOFTWARE_EXECUTION_UNIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">8</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.SOFTWARE_EXECUTION_UNIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.UNSET">
+<span class="sig-name descname"><span class="pre">UNSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.UNSET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Kind.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Kind.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Nature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">Nature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.Nature" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The “NATURE” of <code class="docutils literal notranslate"><span class="pre">PhysicalComponent</span></code>s.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Nature.BEHAVIOR">
+<span class="sig-name descname"><span class="pre">BEHAVIOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Nature.BEHAVIOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Nature.NODE">
+<span class="sig-name descname"><span class="pre">NODE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Nature.NODE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.Nature.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.Nature.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.UnionKind">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">UnionKind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.UnionKind" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.UnionKind.UNION">
+<span class="sig-name descname"><span class="pre">UNION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.UnionKind.UNION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.UnionKind.VARIANT">
+<span class="sig-name descname"><span class="pre">VARIANT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.UnionKind.VARIANT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.UnionKind.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.UnionKind.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.modeltypes.</span></span><span class="sig-name descname"><span class="pre">VisibilityKind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StringyEnumMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Visibility kind</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind.PACKAGE">
+<span class="sig-name descname"><span class="pre">PACKAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5</span></em><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind.PACKAGE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind.PRIVATE">
+<span class="sig-name descname"><span class="pre">PRIVATE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind.PRIVATE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind.PROTECTED">
+<span class="sig-name descname"><span class="pre">PROTECTED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind.PROTECTED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind.PUBLIC">
+<span class="sig-name descname"><span class="pre">PUBLIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind.PUBLIC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind.UNSET">
+<span class="sig-name descname"><span class="pre">UNSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind.UNSET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.modeltypes.VisibilityKind.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Any</span></em><a class="headerlink" href="#capellambse.model.modeltypes.VisibilityKind.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.model">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.model" title="Permalink to this heading"></a></h2>
+<p>Implements a high-level interface to Capella projects.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.</span></span><span class="sig-name descname"><span class="pre">MelodyModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram_cache_subdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jupyter_untrusted</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.model.MelodyModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Provides high-level access to a model.</p>
+<p>This class builds upon the lower-level
+<a class="reference internal" href="capellambse.loader.html#capellambse.loader.core.MelodyLoader" title="capellambse.loader.core.MelodyLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">capellambse.loader.core.MelodyLoader</span></code></a> to provide an
+abstract, high-level interface for easy access to various model
+aspects.</p>
+<p>Load a project.</p>
+<p>For complete information on which exact <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> are
+supported, consult the documentation of the used file handler.
+Refer to the “See Also” section for a collection of links.</p>
+<p>Below are some common parameter names and their usual meanings.
+Not all file handlers support all parameters.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Passing in arguments that are not accepted by the selected
+file handler will result in an exception being raised.
+Similarly, leaving out arguments that are required by the
+file handler will also result in an exception.</p>
+</div>
+<dl>
+<dt>path</dt><dd><p>Path or URL to the project. The following formats are
+accepted:</p>
+<ul>
+<li><p>A path to a local <code class="docutils literal notranslate"><span class="pre">.aird</span></code> file.</p></li>
+<li><p>A path to a local directory (requires <code class="docutils literal notranslate"><span class="pre">entrypoint</span></code>).</p></li>
+<li><p>An SCP-style short URL, which will be treated as referring
+to a Git repository.</p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">git&#64;github.com:DSD-DBS/py-capellambse.git</span></code></p>
+</li>
+<li><p>A remote URL, with a protocol or prefix that indicates
+which file handler to invoke (requires <code class="docutils literal notranslate"><span class="pre">entrypoint</span></code>).</p>
+<p>Examples:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">git://git.example.com/model/coffeemaker.git</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git+https://git.example.com/model/coffeemaker.git</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">git+ssh://git&#64;git.example.com/model/coffeemaker.git</span></code></p></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt>entrypoint</dt><dd><p>Entrypoint from path to the main <code class="docutils literal notranslate"><span class="pre">.aird</span></code> file.</p>
+</dd>
+<dt>revision</dt><dd><p>The revision to use, if loading a model from a version
+control system like git. Defaults to the current HEAD. If
+the used VCS does not have a notion of “current HEAD”, this
+argument is mandatory.</p>
+</dd>
+<dt>disable_cache</dt><dd><p>Disable local caching of remote content.</p>
+</dd>
+<dt>update_cache</dt><dd><p>Update the local cache. Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>, but can be
+disabled to reuse the last cached state.</p>
+</dd>
+<dt>identity_file</dt><dd><p>The identity file (private key) to use when connecting via
+SSH.</p>
+</dd>
+<dt>known_hosts_file</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">known_hosts</span></code> file to pass to SSH for verifying the
+server’s host key.</p>
+</dd>
+<dt>username</dt><dd><p>The username to log in as remotely.</p>
+</dd>
+<dt>password</dt><dd><p>The password to use for logging in. Will be ignored when
+<code class="docutils literal notranslate"><span class="pre">identity_file</span></code> is passed as well.</p>
+</dd>
+<dt>diagram_cache</dt><dd><p>An optional place where to find pre-rendered, cached
+diagrams. When a diagram is found in this cache, it will be
+loaded from there instead of being rendered on access. Note
+that diagrams will only be loaded from there, but not be put
+back, i.e. to use it effectively, the cache has to be
+pre-populated.</p>
+<p>This argument accepts the same formats as <code class="docutils literal notranslate"><span class="pre">path</span></code>.</p>
+<p>The file names looked up in the cache built in the format
+<code class="docutils literal notranslate"><span class="pre">uuid.ext</span></code>, where <code class="docutils literal notranslate"><span class="pre">uuid</span></code> is the UUID of the diagram (as
+reported by <code class="docutils literal notranslate"><span class="pre">diag_obj.uuid</span></code>) and <code class="docutils literal notranslate"><span class="pre">ext</span></code> is the render
+format. Example:</p>
+<ul class="simple">
+<li><p>Diagram ID: <code class="docutils literal notranslate"><span class="pre">_7FWu4KrxEeqOgqWuHJrXFA</span></code></p></li>
+<li><p>Render call: <code class="docutils literal notranslate"><span class="pre">diag_obj.as_svg</span></code> or <code class="docutils literal notranslate"><span class="pre">diag_obj.render(&quot;svg&quot;)</span></code></p></li>
+<li><p>Cache file name: <code class="docutils literal notranslate"><span class="pre">_7FWu4KrxEeqOgqWuHJrXFA.svg</span></code></p></li>
+</ul>
+<p><em>This argument is **not*</em> passed to the file handler.*</p>
+</dd>
+<dt>diagram_cache_subdir</dt><dd><p>A sub-directory prefix to prepend to diagram UUIDs before
+looking them up in the <code class="docutils literal notranslate"><span class="pre">diagram_cache</span></code>.</p>
+<p><em>This argument is **not*</em> passed to the file handler.*</p>
+</dd>
+<dt>jupyter_untrusted</dt><dd><p>If set to True, restricts or disables some features that are
+unavailable in an untrusted Jupyter environment. Currently
+this only disables the SVG format as rich display option for
+Ipython, which is needed to avoid rendering issues with
+Github’s Jupyter notebook viewer.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>capellambse.loader.filehandler.FileHandler :</dt><dd><p>Abstract super class for file handlers. Contains information
+needed for implementing custom handlers.</p>
+</dd>
+<dt>capellambse.loader.filehandler.localfilehandler.LocalFileHandler :</dt><dd><p>The file handler responsible for local files and
+directories.</p>
+</dd>
+<dt>capellambse.loader.filehandler.gitfilehandler.GitFileHandler :</dt><dd><p>The file handler implementing the <code class="docutils literal notranslate"><span class="pre">git://</span></code> protocol.</p>
+</dd>
+<dt>capellambse.loader.filehandler.http.HTTPFileHandler :</dt><dd><p>A simple <code class="docutils literal notranslate"><span class="pre">http(s)://</span></code> file handler.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.by_uuid">
+<span class="sig-name descname"><span class="pre">by_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><span class="pre">GenericElement</span></a></span></span><a class="headerlink" href="#capellambse.model.MelodyModel.by_uuid" title="Permalink to this definition"></a></dt>
+<dd><p>Search the entire model for an element with the given UUID.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.diagrams">
+<span class="sig-name descname"><span class="pre">diagrams</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.diagrams" title="Permalink to this definition"></a></dt>
+<dd><p>Provides access to a list of diagrams below the specified viewpoint.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.la">
+<span class="sig-name descname"><span class="pre">la</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.la" title="Permalink to this definition"></a></dt>
+<dd><p>Creates proxy objects on the fly.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.name" title="Permalink to this definition"></a></dt>
+<dd><p>The name of this model.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.oa">
+<span class="sig-name descname"><span class="pre">oa</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.oa" title="Permalink to this definition"></a></dt>
+<dd><p>Creates proxy objects on the fly.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.pa">
+<span class="sig-name descname"><span class="pre">pa</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.pa" title="Permalink to this definition"></a></dt>
+<dd><p>Creates proxy objects on the fly.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.sa">
+<span class="sig-name descname"><span class="pre">sa</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.sa" title="Permalink to this definition"></a></dt>
+<dd><p>Creates proxy objects on the fly.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.model.MelodyModel.save" title="Permalink to this definition"></a></dt>
+<dd><p>Save the model back to where it was loaded from.</p>
+<dl class="simple">
+<dt>kw</dt><dd><p>Additional keyword arguments accepted by the file handler in
+use. Please see the respective documentation for more info.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :</dt><dd><p>Accepted <code class="docutils literal notranslate"><span class="pre">**kw</span></code> when using local directories</p>
+</dd>
+<dt>capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :</dt><dd><p>Accepted <code class="docutils literal notranslate"><span class="pre">**kw</span></code> when using <code class="docutils literal notranslate"><span class="pre">git://</span></code> and similar URLs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.search">
+<span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">[</span></span><span class="pre">common.GenericElement</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">below</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">common.GenericElement</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">common.ElementList</span></span></span><a class="headerlink" href="#capellambse.model.MelodyModel.search" title="Permalink to this definition"></a></dt>
+<dd><p>Search for all elements with any of the given <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s.</p>
+<p>If only one xtype is given, the return type will be
+<code class="xref py py-class docutils literal notranslate"><span class="pre">common.ElementList</span></code>, otherwise it will be
+<code class="xref py py-class docutils literal notranslate"><span class="pre">common.MixedElementList</span></code>.</p>
+<p>If no <code class="docutils literal notranslate"><span class="pre">xtypes</span></code> are given at all, this method will return an
+exhaustive list of all (semantic) model objects that have an
+<code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> set.</p>
+<dl class="simple">
+<dt>xtypes</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s to search for, or the classes
+corresponding to them (or a mix of both).</p>
+</dd>
+<dt>below</dt><dd><p>A model element to constrain the search. If given, only
+those elements will be returned that are (immediate or
+nested) children of this element. This option takes into
+account model fragmentation, but it does not treat link
+elements specially.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.MelodyModel.uuid">
+<span class="sig-name descname"><span class="pre">uuid</span></span><a class="headerlink" href="#capellambse.model.MelodyModel.uuid" title="Permalink to this definition"></a></dt>
+<dd><p>The unique ID of the model’s root element.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.loader.filehandler.html" class="btn btn-neutral float-left" title="capellambse.loader.filehandler package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.model.common.html" class="btn btn-neutral float-right" title="capellambse.model.common package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

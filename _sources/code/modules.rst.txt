@@ -1,0 +1,10 @@
+py-capellambse
+==============
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse
+   setup
+   tests
+   versioneer

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.aird.parser package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.extensions package" href="capellambse.extensions.html" />
+    <link rel="prev" title="capellambse.aird package" href="capellambse.aird.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+          <li><a href="capellambse.aird.html">capellambse.aird package</a> &raquo;</li>
+      <li>capellambse.aird.parser package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-aird-parser-package">
+<h1>capellambse.aird.parser package<a class="headerlink" href="#capellambse-aird-parser-package" title="Permalink to this heading"></a></h1>
+<section id="module-capellambse.aird.parser">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.aird.parser" title="Permalink to this heading"></a></h2>
+<p>Functions for parsing and interacting with diagrams in a Capella model.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.parser.ActiveFilters">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.parser.</span></span><span class="sig-name descname"><span class="pre">ActiveFilters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.model.html#capellambse.model.MelodyModel" title="capellambse.model.MelodyModel"><span class="pre">MelodyModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">diagram</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.model.html#capellambse.model.diagram.Diagram" title="capellambse.model.diagram.Diagram"><span class="pre">Diagram</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.parser.ActiveFilters" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MutableSet</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</p>
+<p>A set of active filters on a <code class="xref py py-class docutils literal notranslate"><span class="pre">diag.Diagram</span></code>.</p>
+<p>Enable access to set, add and remove active filters on a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">diag.Diagram</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.parser.ActiveFilters.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.parser.ActiveFilters.add" title="Permalink to this definition"></a></dt>
+<dd><p>Add an activated filter to the diagram.</p>
+<p>Writes a new <code class="docutils literal notranslate"><span class="pre">&lt;activatedFilters&gt;</span></code> XML element to the
+<code class="docutils literal notranslate"><span class="pre">&lt;diagram:DSemanticDiagram&gt;</span></code> XML element. If the <code class="docutils literal notranslate"><span class="pre">value</span></code> is not
+apparent in <code class="xref py py-data docutils literal notranslate"><span class="pre">aird.parser.GLOBAL_FILTERS</span></code> as a key it can
+not be applied when rendering. It should still be visible in the
+GUI.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.parser.ActiveFilters.discard">
+<span class="sig-name descname"><span class="pre">discard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.parser.ActiveFilters.discard" title="Permalink to this definition"></a></dt>
+<dd><p>Remove the filter with the given <code class="docutils literal notranslate"><span class="pre">value</span></code> from the diagram.</p>
+<p>Deletes <code class="docutils literal notranslate"><span class="pre">&lt;activatedFilters&gt;</span></code> XML element from the diagram
+element tree.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.parser.</span></span><span class="sig-name descname"><span class="pre">DiagramDescriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fragment</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleclass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewpoint</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Create new instance of DiagramDescriptor(fragment, name, styleclass, uid, viewpoint, target)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor.fragment">
+<span class="sig-name descname"><span class="pre">fragment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></em><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor.fragment" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor.name" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor.styleclass">
+<span class="sig-name descname"><span class="pre">styleclass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor.styleclass" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor.target">
+<span class="sig-name descname"><span class="pre">target</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">etree._Element</span></em><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor.target" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor.uid">
+<span class="sig-name descname"><span class="pre">uid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor.uid" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.parser.DiagramDescriptor.viewpoint">
+<span class="sig-name descname"><span class="pre">viewpoint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.aird.parser.DiagramDescriptor.viewpoint" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.aird.parser.enumerate_diagrams">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.parser.</span></span><span class="sig-name descname"><span class="pre">enumerate_diagrams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">loader.MelodyLoader</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.aird.parser.DiagramDescriptor" title="capellambse.aird.parser.DiagramDescriptor"><span class="pre">DiagramDescriptor</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.aird.parser.enumerate_diagrams" title="Permalink to this definition"></a></dt>
+<dd><p>Enumerate the diagrams in the model.</p>
+<dl class="simple">
+<dt>model</dt><dd><p>The MelodyLoader instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.aird.parser.parse_diagram">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.parser.</span></span><span class="sig-name descname"><span class="pre">parse_diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="capellambse.loader.html#capellambse.loader.core.MelodyLoader" title="capellambse.loader.core.MelodyLoader"><span class="pre">MelodyLoader</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.parser.DiagramDescriptor" title="capellambse.aird.parser.DiagramDescriptor"><span class="pre">DiagramDescriptor</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.aird.html#capellambse.aird.diagram.Diagram" title="capellambse.aird.diagram.Diagram"><span class="pre">Diagram</span></a></span></span><a class="headerlink" href="#capellambse.aird.parser.parse_diagram" title="Permalink to this definition"></a></dt>
+<dd><p>Parse a single diagram from the model.</p>
+<dl class="simple">
+<dt>descriptor</dt><dd><p>A DiagramDescriptor as obtained from <a class="reference internal" href="#capellambse.aird.parser.enumerate_diagrams" title="capellambse.aird.parser.enumerate_diagrams"><code class="xref py py-func docutils literal notranslate"><span class="pre">enumerate_diagrams()</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.aird.parser.parse_diagrams">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.parser.</span></span><span class="sig-name descname"><span class="pre">parse_diagrams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">loader.MelodyLoader</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">aird.Diagram</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.aird.parser.parse_diagrams" title="Permalink to this definition"></a></dt>
+<dd><p>Parse all diagrams from the model.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.aird.html" class="btn btn-neutral float-left" title="capellambse.aird package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.extensions.html" class="btn btn-neutral float-right" title="capellambse.extensions package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.loader.filehandler package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.model package" href="capellambse.model.html" />
+    <link rel="prev" title="capellambse.loader package" href="capellambse.loader.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+          <li><a href="capellambse.loader.html">capellambse.loader package</a> &raquo;</li>
+      <li>capellambse.loader.filehandler package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-loader-filehandler-package">
+<h1>capellambse.loader.filehandler package<a class="headerlink" href="#capellambse-loader-filehandler-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.loader.filehandler.git_askpass">
+<span id="capellambse-loader-filehandler-git-askpass-module"></span><h2>capellambse.loader.filehandler.git_askpass module<a class="headerlink" href="#module-capellambse.loader.filehandler.git_askpass" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.loader.filehandler.gitfilehandler">
+<span id="capellambse-loader-filehandler-gitfilehandler-module"></span><h2>capellambse.loader.filehandler.gitfilehandler module<a class="headerlink" href="#module-capellambse.loader.filehandler.gitfilehandler" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.gitfilehandler.</span></span><span class="sig-name descname"><span class="pre">GitFileHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">revision</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HEAD'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">known_hosts_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shallow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileHandler</span></code></a></p>
+<p>File handler for <code class="docutils literal notranslate"><span class="pre">git://</span></code> and related protocols.</p>
+<dl>
+<dt>revision</dt><dd><p>The Git revision to check out. Either a branch or tag name, a
+full ref name, or the object name (i.e. hash) of a commit-ish.</p>
+</dd>
+<dt>username</dt><dd><p>The user name for authentication with the Git remote.</p>
+</dd>
+<dt>password</dt><dd><p>The password for authentication with the Git remote.</p>
+</dd>
+<dt>identity_file</dt><dd><p>Authenticate against the remote with the private key in this
+file. Defaults to using SSH’s algorithm for determining a
+suitable key. (SSH only, ignored otherwise)</p>
+</dd>
+<dt>known_hosts_file</dt><dd><p>An OpenSSH-style <code class="docutils literal notranslate"><span class="pre">known_hosts</span></code> file containing the public key
+of the remote server. (SSH only, ignored otherwise)</p>
+</dd>
+<dt>disable_cache</dt><dd><p>Wipe the local cache and create a fresh, new clone.</p>
+</dd>
+<dt>update_cache</dt><dd><p>Contact the remote and make sure that the local cache is up to
+date. Note that setting this to <code class="docutils literal notranslate"><span class="pre">False</span></code> does not necessarily
+inhibit all attempts to contact the remote; it just disables the
+initial “fetch” operation. Later operations may still require to
+access the server, for example to download Git-LFS files.</p>
+</dd>
+<dt>shallow</dt><dd><p>Make a shallow clone. This can drastically reduce network and
+disk usage when cloning large models, by only downloading the
+latest <code class="docutils literal notranslate"><span class="pre">revision</span></code> and not downloading the history that leads
+up to it.</p>
+<p>Note that, when this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code> (the default), existing
+non-shallow caches will be made shallow. However, when it is set
+to <code class="docutils literal notranslate"><span class="pre">False</span></code>, shallow caches will not be unshallowed.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>cache_dir</dt><dd><p>The path to the temporary work tree created by instances of this
+file handler.</p>
+</dd>
+</dl>
+<p>FileHandler : Documentation of common parameters.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.cache_dir">
+<span class="sig-name descname"><span class="pre">cache_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pathlib.Path</span></em><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.cache_dir" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.get_model_info">
+<span class="sig-name descname"><span class="pre">get_model_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.loader.html#capellambse.loader.modelinfo.ModelInfo" title="capellambse.loader.modelinfo.ModelInfo"><span class="pre">ModelInfo</span></a></span></span><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.get_model_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.identity_file">
+<span class="sig-name descname"><span class="pre">identity_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.identity_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.known_hosts_file">
+<span class="sig-name descname"><span class="pre">known_hosts_file</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.known_hosts_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'r'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'w'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'wb'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rb'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">t.BinaryIO</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.open" title="Permalink to this definition"></a></dt>
+<dd><p>Open the model file for reading or writing.</p>
+<p>A “file” in this context does not necessarily refer to a
+physical file on disk; it may just as well be streamed in via
+network or other means.  Due to this, the file-like returned by
+this method is not required to support random access.</p>
+<dl class="simple">
+<dt>filename</dt><dd><p>The name of the file, relative to the <code class="docutils literal notranslate"><span class="pre">path</span></code> that was
+given to the constructor.</p>
+</dd>
+<dt>mode</dt><dd><p>The mode to open the file in.  Either <code class="docutils literal notranslate"><span class="pre">&quot;r&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rb&quot;</span></code>
+for reading, or <code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;wb&quot;</span></code> for writing a new file.
+Be aware that this method may refuse to open a file for
+writing unless a transaction was started with
+<a class="reference internal" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction" title="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_transaction()</span></code></a> first.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.shallow">
+<span class="sig-name descname"><span class="pre">shallow</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.shallow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.username">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.username" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction">
+<span class="sig-name descname"><span class="pre">write_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">t.ContextManager</span><span class="p"><span class="pre">[</span></span><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Create a transaction that records all changes as a new commit.</p>
+<dl>
+<dt>author_name</dt><dd><p>The name of the commit author.</p>
+</dd>
+<dt>author_email</dt><dd><p>The e-mail address of the commit author.</p>
+</dd>
+<dt>commit_msg</dt><dd><p>The commit message.</p>
+</dd>
+<dt>dry_run</dt><dd><p>If True, stop before updating the <code class="docutils literal notranslate"><span class="pre">revision</span></code> pointer. The
+commit will be created, but will not be part of any branch
+or tag.</p>
+</dd>
+<dt>remote_branch</dt><dd><p>An alternative branch name to push to on the remote, instead
+of pushing back to the same branch.  This is required if
+<code class="docutils literal notranslate"><span class="pre">push</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code> and the <code class="docutils literal notranslate"><span class="pre">revision</span></code> that was passed to
+the constructor does not refer to a branch (or looks like a
+git object).</p>
+<p>Note: For convenience, <code class="docutils literal notranslate"><span class="pre">refs/heads/</span></code> will be prepended
+automatically to this name if it isn’t already present. This
+also means that it is not possible to create tags or other
+types of refs; passing in something like <code class="docutils literal notranslate"><span class="pre">refs/tags/v2.4</span></code>
+would result in the full ref name
+<code class="docutils literal notranslate"><span class="pre">refs/heads/refs/tags/v2.4</span></code>.</p>
+</dd>
+<dt>push</dt><dd><p>Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> to inhibit pushing the changes back.</p>
+</dd>
+<dt>push_options</dt><dd><p>Additional git push options.  See <code class="docutils literal notranslate"><span class="pre">--push-option</span></code> in
+<code class="docutils literal notranslate"><span class="pre">git-push(1)</span></code>. Ignored if <code class="docutils literal notranslate"><span class="pre">push</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ValueError</dt><dd><ul class="simple">
+<li><p>If a commit hash was used during loading, and no
+<code class="docutils literal notranslate"><span class="pre">remote_branch</span></code> was given</p></li>
+<li><p>If the given <code class="docutils literal notranslate"><span class="pre">remote_branch</span></code> (or the final part of the
+originally given revision) looks like a git object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader.filehandler.http">
+<span id="capellambse-loader-filehandler-http-module"></span><h2>capellambse.loader.filehandler.http module<a class="headerlink" href="#module-capellambse.loader.filehandler.http" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.DownloadStream">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.http.</span></span><span class="sig-name descname"><span class="pre">DownloadStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1048576</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.filehandler.http.DownloadStream" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryIO</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.DownloadStream.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.DownloadStream.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.DownloadStream.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bytes</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.DownloadStream.read" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.DownloadStream.readable">
+<span class="sig-name descname"><span class="pre">readable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.DownloadStream.readable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.DownloadStream.writable">
+<span class="sig-name descname"><span class="pre">writable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.DownloadStream.writable" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.DownloadStream.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytearray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.DownloadStream.write" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.HTTPFileHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.http.</span></span><span class="sig-name descname"><span class="pre">HTTPFileHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.filehandler.http.HTTPFileHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileHandler</span></code></a></p>
+<p>A remote file handler that fetches files using HTTP GET.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.HTTPFileHandler.get_model_info">
+<span class="sig-name descname"><span class="pre">get_model_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.loader.html#capellambse.loader.modelinfo.ModelInfo" title="capellambse.loader.modelinfo.ModelInfo"><span class="pre">ModelInfo</span></a></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.HTTPFileHandler.get_model_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.HTTPFileHandler.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'r'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'w'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'wb'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rb'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">t.BinaryIO</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.HTTPFileHandler.open" title="Permalink to this definition"></a></dt>
+<dd><p>Open the model file for reading or writing.</p>
+<p>A “file” in this context does not necessarily refer to a
+physical file on disk; it may just as well be streamed in via
+network or other means.  Due to this, the file-like returned by
+this method is not required to support random access.</p>
+<dl class="simple">
+<dt>filename</dt><dd><p>The name of the file, relative to the <code class="docutils literal notranslate"><span class="pre">path</span></code> that was
+given to the constructor.</p>
+</dd>
+<dt>mode</dt><dd><p>The mode to open the file in.  Either <code class="docutils literal notranslate"><span class="pre">&quot;r&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rb&quot;</span></code>
+for reading, or <code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;wb&quot;</span></code> for writing a new file.
+Be aware that this method may refuse to open a file for
+writing unless a transaction was started with
+<a class="reference internal" href="#capellambse.loader.filehandler.http.HTTPFileHandler.write_transaction" title="capellambse.loader.filehandler.http.HTTPFileHandler.write_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_transaction()</span></code></a> first.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.HTTPFileHandler.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></em><a class="headerlink" href="#capellambse.loader.filehandler.http.HTTPFileHandler.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.http.HTTPFileHandler.write_transaction">
+<span class="sig-name descname"><span class="pre">write_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NoReturn</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.http.HTTPFileHandler.write_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Start a transaction for writing new model files.</p>
+<p>During a transaction, writable objects returned by
+<a class="reference internal" href="#capellambse.loader.filehandler.http.HTTPFileHandler.open" title="capellambse.loader.filehandler.http.HTTPFileHandler.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> buffer their contents in a temporary location,
+and once the transaction ends, all updated files are committed
+to their destinations at once.  If the transaction is aborted,
+for example because an exception was raised, then all changes
+must be rolled back to the state immediately before the
+transaction.  If, during a transaction, any relevant file is
+touched without the file handler knowing about it, the behavior
+is undefined.</p>
+<p>Note that <a class="reference internal" href="#capellambse.loader.filehandler.http.HTTPFileHandler.open" title="capellambse.loader.filehandler.http.HTTPFileHandler.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> may refuse to open a file as writable
+if no transaction is currently open.  This depends on the needs
+of the underlying abstract file system.</p>
+<p>A concrete file handler implementation may accept arbitrary
+additional arguments to this method.  The implementation should
+however always support the case of no arguments given, in which
+case it should start a transaction with sensible defaults, and
+it should also accept and ignore any arguments it does not
+understand.  All additional arguments must be passed in via
+keywords.  Positional arguments are not supported.</p>
+<p>The return value of the context manager’s <code class="docutils literal notranslate"><span class="pre">__enter__()</span></code> method
+is expected to be a mapping of all the keyword arguments that
+were not understood.  Client code may use this to react properly
+(e.g. by aborting the transaction early) if a required keyword
+argument is found to be not supported by the underlying file
+handler.  If a subclass wishes to call its super class’
+<code class="docutils literal notranslate"><span class="pre">write_transaction()</span></code> method, it should remove all the keyword
+arguments that it handles itself and pass on the others
+unchanged.</p>
+<p>The following arguments are considered well-known, and their
+meaning is expected to be the same for all file handlers that
+support them.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dry_run</span></code> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>): If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, changes made
+during the transaction should be rolled back instead of
+being committed, just as if an exception had been raised.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">author_name</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): The name of the author of the
+changes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">author_email</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): The e-mail address to record
+alongside the <code class="docutils literal notranslate"><span class="pre">author_name</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">commit_msg</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): A message describing the changes,
+which will be recorded in the version control system.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remote_branch</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): If the model came from a remote
+version control system, changes are normally pushed back to
+the same branch on that remote.  This argument specifies an
+alternative branch name to push to (which may not yet exist
+on the remote).</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader.filehandler.localfilehandler">
+<span id="capellambse-loader-filehandler-localfilehandler-module"></span><h2>capellambse.loader.filehandler.localfilehandler module<a class="headerlink" href="#module-capellambse.loader.filehandler.localfilehandler" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.localfilehandler.LocalFileHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.localfilehandler.</span></span><span class="sig-name descname"><span class="pre">LocalFileHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.filehandler.localfilehandler.LocalFileHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileHandler</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.localfilehandler.LocalFileHandler.get_model_info">
+<span class="sig-name descname"><span class="pre">get_model_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.loader.html#capellambse.loader.modelinfo.ModelInfo" title="capellambse.loader.modelinfo.ModelInfo"><span class="pre">ModelInfo</span></a></span></span><a class="headerlink" href="#capellambse.loader.filehandler.localfilehandler.LocalFileHandler.get_model_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.localfilehandler.LocalFileHandler.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'r'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'w'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'wb'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rb'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">t.BinaryIO</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.localfilehandler.LocalFileHandler.open" title="Permalink to this definition"></a></dt>
+<dd><p>Open the model file for reading or writing.</p>
+<p>A “file” in this context does not necessarily refer to a
+physical file on disk; it may just as well be streamed in via
+network or other means.  Due to this, the file-like returned by
+this method is not required to support random access.</p>
+<dl class="simple">
+<dt>filename</dt><dd><p>The name of the file, relative to the <code class="docutils literal notranslate"><span class="pre">path</span></code> that was
+given to the constructor.</p>
+</dd>
+<dt>mode</dt><dd><p>The mode to open the file in.  Either <code class="docutils literal notranslate"><span class="pre">&quot;r&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rb&quot;</span></code>
+for reading, or <code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;wb&quot;</span></code> for writing a new file.
+Be aware that this method may refuse to open a file for
+writing unless a transaction was started with
+<a class="reference internal" href="#capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction" title="capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_transaction()</span></code></a> first.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.localfilehandler.LocalFileHandler.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></em><a class="headerlink" href="#capellambse.loader.filehandler.localfilehandler.LocalFileHandler.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction">
+<span class="sig-name descname"><span class="pre">write_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Start a write transaction.</p>
+<p>During the transaction, file writes are redirected to temporary
+files next to the target files, and if the transaction ends
+successfully they are moved to their destinations all at once.</p>
+<dl class="simple">
+<dt>dry_run</dt><dd><p>Discard the temporary files after a successful transaction
+instead of committing them to their destinations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.loader.filehandler">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.loader.filehandler" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.FileHandler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.</span></span><span class="sig-name descname"><span class="pre">FileHandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.loader.filehandler.FileHandler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract super class for file handler implementations.</p>
+<dl class="simple">
+<dt>path</dt><dd><p>The location of the remote. The exact accepted forms are
+determined by the specific file handler implementation, for
+example the <code class="docutils literal notranslate"><span class="pre">LocalFileHandler</span></code> accepts only local paths, and
+the <code class="docutils literal notranslate"><span class="pre">GitFileHandler</span></code> accepts everything that Git accepts.</p>
+</dd>
+<dt>subdir</dt><dd><p>Consider all paths relative to this subdirectory, instead of the
+root of the file handler’s hierarchy.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.FileHandler.get_model_info">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_model_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="capellambse.loader.html#capellambse.loader.modelinfo.ModelInfo" title="capellambse.loader.modelinfo.ModelInfo"><span class="pre">ModelInfo</span></a></span></span><a class="headerlink" href="#capellambse.loader.filehandler.FileHandler.get_model_info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.FileHandler.open">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pathlib.PurePosixPath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'r'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'rb'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'w'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'wb'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rb'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">t.BinaryIO</span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.FileHandler.open" title="Permalink to this definition"></a></dt>
+<dd><p>Open the model file for reading or writing.</p>
+<p>A “file” in this context does not necessarily refer to a
+physical file on disk; it may just as well be streamed in via
+network or other means.  Due to this, the file-like returned by
+this method is not required to support random access.</p>
+<dl class="simple">
+<dt>filename</dt><dd><p>The name of the file, relative to the <code class="docutils literal notranslate"><span class="pre">path</span></code> that was
+given to the constructor.</p>
+</dd>
+<dt>mode</dt><dd><p>The mode to open the file in.  Either <code class="docutils literal notranslate"><span class="pre">&quot;r&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;rb&quot;</span></code>
+for reading, or <code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;wb&quot;</span></code> for writing a new file.
+Be aware that this method may refuse to open a file for
+writing unless a transaction was started with
+<a class="reference internal" href="#capellambse.loader.filehandler.FileHandler.write_transaction" title="capellambse.loader.filehandler.FileHandler.write_transaction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_transaction()</span></code></a> first.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.FileHandler.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></em><a class="headerlink" href="#capellambse.loader.filehandler.FileHandler.path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.FileHandler.write_transaction">
+<span class="sig-name descname"><span class="pre">write_transaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">t.ContextManager</span><span class="p"><span class="pre">[</span></span><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.FileHandler.write_transaction" title="Permalink to this definition"></a></dt>
+<dd><p>Start a transaction for writing new model files.</p>
+<p>During a transaction, writable objects returned by
+<a class="reference internal" href="#capellambse.loader.filehandler.FileHandler.open" title="capellambse.loader.filehandler.FileHandler.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> buffer their contents in a temporary location,
+and once the transaction ends, all updated files are committed
+to their destinations at once.  If the transaction is aborted,
+for example because an exception was raised, then all changes
+must be rolled back to the state immediately before the
+transaction.  If, during a transaction, any relevant file is
+touched without the file handler knowing about it, the behavior
+is undefined.</p>
+<p>Note that <a class="reference internal" href="#capellambse.loader.filehandler.FileHandler.open" title="capellambse.loader.filehandler.FileHandler.open"><code class="xref py py-meth docutils literal notranslate"><span class="pre">open()</span></code></a> may refuse to open a file as writable
+if no transaction is currently open.  This depends on the needs
+of the underlying abstract file system.</p>
+<p>A concrete file handler implementation may accept arbitrary
+additional arguments to this method.  The implementation should
+however always support the case of no arguments given, in which
+case it should start a transaction with sensible defaults, and
+it should also accept and ignore any arguments it does not
+understand.  All additional arguments must be passed in via
+keywords.  Positional arguments are not supported.</p>
+<p>The return value of the context manager’s <code class="docutils literal notranslate"><span class="pre">__enter__()</span></code> method
+is expected to be a mapping of all the keyword arguments that
+were not understood.  Client code may use this to react properly
+(e.g. by aborting the transaction early) if a required keyword
+argument is found to be not supported by the underlying file
+handler.  If a subclass wishes to call its super class’
+<code class="docutils literal notranslate"><span class="pre">write_transaction()</span></code> method, it should remove all the keyword
+arguments that it handles itself and pass on the others
+unchanged.</p>
+<p>The following arguments are considered well-known, and their
+meaning is expected to be the same for all file handlers that
+support them.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dry_run</span></code> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>): If set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, changes made
+during the transaction should be rolled back instead of
+being committed, just as if an exception had been raised.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">author_name</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): The name of the author of the
+changes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">author_email</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): The e-mail address to record
+alongside the <code class="docutils literal notranslate"><span class="pre">author_name</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">commit_msg</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): A message describing the changes,
+which will be recorded in the version control system.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">remote_branch</span></code> (<code class="docutils literal notranslate"><span class="pre">str</span></code>): If the model came from a remote
+version control system, changes are normally pushed back to
+the same branch on that remote.  This argument specifies an
+alternative branch name to push to (which may not yet exist
+on the remote).</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.TransactionClosedError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.</span></span><span class="sig-name descname"><span class="pre">TransactionClosedError</span></span><a class="headerlink" href="#capellambse.loader.filehandler.TransactionClosedError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>Raised when a transaction must be opened first to write files.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.get_filehandler">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.</span></span><span class="sig-name descname"><span class="pre">get_filehandler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><span class="pre">FileHandler</span></a></span></span><a class="headerlink" href="#capellambse.loader.filehandler.get_filehandler" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.load_entrypoint">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.</span></span><span class="sig-name descname"><span class="pre">load_entrypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">handler_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.loader.filehandler.FileHandler" title="capellambse.loader.filehandler.FileHandler"><span class="pre">FileHandler</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.load_entrypoint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.loader.filehandler.split_protocol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.loader.filehandler.</span></span><span class="sig-name descname"><span class="pre">split_protocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.loader.filehandler.split_protocol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.loader.html" class="btn btn-neutral float-left" title="capellambse.loader package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.model.html" class="btn btn-neutral float-right" title="capellambse.model package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

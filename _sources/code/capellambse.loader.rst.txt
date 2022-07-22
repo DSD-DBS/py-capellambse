@@ -1,0 +1,53 @@
+capellambse.loader package
+==========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse.loader.filehandler
+
+Submodules
+----------
+
+capellambse.loader.core module
+------------------------------
+
+.. automodule:: capellambse.loader.core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.loader.exs module
+-----------------------------
+
+.. automodule:: capellambse.loader.exs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.loader.modelinfo module
+-----------------------------------
+
+.. automodule:: capellambse.loader.modelinfo
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.loader.xmltools module
+----------------------------------
+
+.. automodule:: capellambse.loader.xmltools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: capellambse.loader
+   :members:
+   :undoc-members:
+   :show-inheritance:

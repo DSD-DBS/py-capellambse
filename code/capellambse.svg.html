@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.svg package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="setup module" href="setup.html" />
+    <link rel="prev" title="capellambse.pvmt package" href="capellambse.pvmt.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+      <li>capellambse.svg package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-svg-package">
+<h1>capellambse.svg package<a class="headerlink" href="#capellambse-svg-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.svg.decorations">
+<span id="capellambse-svg-decorations-module"></span><h2>capellambse.svg.decorations module<a class="headerlink" href="#module-capellambse.svg.decorations" title="Permalink to this heading"></a></h2>
+<p>The decoration factories for svg elements.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.decorations.DecoFactories">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.decorations.</span></span><span class="sig-name descname"><span class="pre">DecoFactories</span></span><a class="headerlink" href="#capellambse.svg.decorations.DecoFactories" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>]</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.svg.decorations.feature_space">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.decorations.</span></span><span class="sig-name descname"><span class="pre">feature_space</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">24</span></em><a class="headerlink" href="#capellambse.svg.decorations.feature_space" title="Permalink to this definition"></a></dt>
+<dd><p>Default margins/padding (top/bot and left/right) for feature text.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.svg.decorations.icon_padding">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.decorations.</span></span><span class="sig-name descname"><span class="pre">icon_padding</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.svg.decorations.icon_padding" title="Permalink to this definition"></a></dt>
+<dd><p>Default icon padding (left/right side).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.svg.decorations.icon_size">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.decorations.</span></span><span class="sig-name descname"><span class="pre">icon_size</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#capellambse.svg.decorations.icon_size" title="Permalink to this definition"></a></dt>
+<dd><p>Default icon size.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.svg.drawing">
+<span id="capellambse-svg-drawing-module"></span><h2>capellambse.svg.drawing module<a class="headerlink" href="#module-capellambse.svg.drawing" title="Permalink to this heading"></a></h2>
+<p>Custom extensions to the svgwrite <code class="docutils literal notranslate"><span class="pre">Drawing</span></code> object.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.DEBUG">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">DEBUG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#capellambse.svg.drawing.DEBUG" title="Permalink to this definition"></a></dt>
+<dd><p>Debug flag to render helping lines.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">Drawing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.generate.DiagramMetadata" title="capellambse.svg.generate.DiagramMetadata"><span class="pre">DiagramMetadata</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.drawing.Drawing" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Drawing</span></code></p>
+<p>The main container that stores all svg elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>string</em>) – filesystem filename valid for <code class="xref py py-func docutils literal notranslate"><span class="pre">open()</span></code></p></li>
+<li><p><strong>size</strong> (<em>2-tuple</em>) – width, height</p></li>
+<li><p><strong>extra</strong> (<em>keywords</em>) – additional svg-attributes for the <em>SVG</em> object</p></li>
+</ul>
+</dd>
+</dl>
+<p>Important (and not SVG Attributes) <strong>extra</strong> parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profile</strong> (<em>string</em>) – <code class="docutils literal notranslate"><span class="pre">'tiny</span> <span class="pre">|</span> <span class="pre">full'</span></code> - define the SVG baseProfile</p></li>
+<li><p><strong>debug</strong> (<em>bool</em>) – switch validation on/off</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.add_backdrop">
+<span class="sig-name descname"><span class="pre">add_backdrop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.add_backdrop" title="Permalink to this definition"></a></dt>
+<dd><p>Add a white background rectangle to the drawing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.add_label_image">
+<span class="sig-name descname"><span class="pre">add_label_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelBuilder" title="capellambse.svg.drawing.LabelBuilder"><span class="pre">LabelBuilder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.add_label_image" title="Permalink to this definition"></a></dt>
+<dd><p>Add label svgobject to given group.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.add_port">
+<span class="sig-name descname"><span class="pre">add_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">style.Styling</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj_style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">style.Styling</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelDict" title="capellambse.svg.drawing.LabelDict"><span class="pre">LabelDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">container.Group</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.add_port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.add_rect">
+<span class="sig-name descname"><span class="pre">add_rect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rectstyle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">style.Styling</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelDict" title="capellambse.svg.drawing.LabelDict"><span class="pre">LabelDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">container.Group</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.add_rect" title="Permalink to this definition"></a></dt>
+<dd><p>Add a rectangle with auto-aligned text to the group.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.draw_object">
+<span class="sig-name descname"><span class="pre">draw_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.draw_object" title="Permalink to this definition"></a></dt>
+<dd><p>Draw an object into this drawing.</p>
+<dl class="simple">
+<dt>obj</dt><dd><p>The (decoded) JSON-dict of a single diagram object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.get_port_transformation">
+<span class="sig-name descname"><span class="pre">get_port_transformation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.get_port_transformation" title="Permalink to this definition"></a></dt>
+<dd><p>Return rotation transformation for port-object-styling.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.Drawing.make_stylesheet">
+<span class="sig-name descname"><span class="pre">make_stylesheet</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.svg.style.SVGStylesheet" title="capellambse.svg.style.SVGStylesheet"><span class="pre">SVGStylesheet</span></a></span></span><a class="headerlink" href="#capellambse.svg.drawing.Drawing.make_stylesheet" title="Permalink to this definition"></a></dt>
+<dd><p>Return created stylesheet and add sheet and decorations to defs.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LABEL_ICON_PADDING">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">LABEL_ICON_PADDING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.svg.drawing.LABEL_ICON_PADDING" title="Permalink to this definition"></a></dt>
+<dd><p>Default padding between a label’s icon and text.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">LabelBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'LabelDict'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'container.Group'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelstyle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'style.Styling'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int</span> <span class="pre">|</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'start'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">int'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.class_">
+<span class="sig-name descname"><span class="pre">class_</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.class_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.group">
+<span class="sig-name descname"><span class="pre">group</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">container.Group</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.group" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.icon">
+<span class="sig-name descname"><span class="pre">icon</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.icon" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.icon_size">
+<span class="sig-name descname"><span class="pre">icon_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.icon_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.label">
+<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.svg.drawing.LabelDict" title="capellambse.svg.drawing.LabelDict"><span class="pre">LabelDict</span></a></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.label" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.labelstyle">
+<span class="sig-name descname"><span class="pre">labelstyle</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">style.Styling</span></a></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.labelstyle" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.text_anchor">
+<span class="sig-name descname"><span class="pre">text_anchor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'start'</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.text_anchor" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelBuilder.y_margin">
+<span class="sig-name descname"><span class="pre">y_margin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelBuilder.y_margin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">LabelDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.drawing.LabelDict" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict.class">
+<span class="sig-name descname"><span class="pre">class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelDict.class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict.height">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelDict.height" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict.text">
+<span class="sig-name descname"><span class="pre">text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelDict.text" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict.width">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelDict.width" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelDict.x" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LabelDict.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LabelDict.y" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LinesData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">LinesData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_line_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.drawing.LinesData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Create new instance of LinesData(lines, line_height, text_height, margin, max_line_width)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LinesData.line_height">
+<span class="sig-name descname"><span class="pre">line_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LinesData.line_height" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LinesData.lines">
+<span class="sig-name descname"><span class="pre">lines</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.svg.drawing.LinesData.lines" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LinesData.margin">
+<span class="sig-name descname"><span class="pre">margin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LinesData.margin" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LinesData.max_line_width">
+<span class="sig-name descname"><span class="pre">max_line_width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LinesData.max_line_width" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.LinesData.text_height">
+<span class="sig-name descname"><span class="pre">text_height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.drawing.LinesData.text_height" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.get_label_icon_position">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">get_label_icon_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelBuilder" title="capellambse.svg.drawing.LabelBuilder"><span class="pre">LabelBuilder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.svg.drawing.get_label_icon_position" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the position of the icon relative to the label.</p>
+<dl class="simple">
+<dt>builder<span class="classifier">LabelBuilder</span></dt><dd><p>LabelBuilder</p>
+</dd>
+<dt>text_height<span class="classifier">int | float</span></dt><dd><p>The height of the text in the label.</p>
+</dd>
+<dt>icon_x<span class="classifier">int | float</span></dt><dd><p>The x position of the icon.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>icon_coords<span class="classifier">tuple[float, float]</span></dt><dd><p>The x and y coordinates of the icon.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.get_label_position_x">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">get_label_position_x</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelBuilder" title="capellambse.svg.drawing.LabelBuilder"><span class="pre">LabelBuilder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LinesData" title="capellambse.svg.drawing.LinesData"><span class="pre">LinesData</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_icon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.svg.drawing.get_label_position_x" title="Permalink to this definition"></a></dt>
+<dd><p>Return x-coordinate of label-text and icon.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.get_label_position_y">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">get_label_position_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelBuilder" title="capellambse.svg.drawing.LabelBuilder"><span class="pre">LabelBuilder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LinesData" title="capellambse.svg.drawing.LinesData"><span class="pre">LinesData</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#capellambse.svg.drawing.get_label_position_y" title="Permalink to this definition"></a></dt>
+<dd><p>Return y-coordinate of label-text.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.drawing.render_hbounded_lines">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.drawing.</span></span><span class="sig-name descname"><span class="pre">render_hbounded_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">builder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.drawing.LabelBuilder" title="capellambse.svg.drawing.LabelBuilder"><span class="pre">LabelBuilder</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_icon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.svg.drawing.LinesData" title="capellambse.svg.drawing.LinesData"><span class="pre">LinesData</span></a></span></span><a class="headerlink" href="#capellambse.svg.drawing.render_hbounded_lines" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-capellambse.svg.generate">
+<span id="capellambse-svg-generate-module"></span><h2>capellambse.svg.generate module<a class="headerlink" href="#module-capellambse.svg.generate" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.generate.</span></span><span class="sig-name descname"><span class="pre">ContentsDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.generate.ContentsDict" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.class">
+<span class="sig-name descname"><span class="pre">class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.height">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.height" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.label">
+<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.svg.drawing.LabelDict" title="capellambse.svg.drawing.LabelDict"><span class="pre">LabelDict</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.label" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.points">
+<span class="sig-name descname"><span class="pre">points</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.points" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.width">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.width" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.x" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.ContentsDict.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.ContentsDict.y" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadata">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.generate.</span></span><span class="sig-name descname"><span class="pre">DiagramMetadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">t.Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadata" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Holds metadata about a diagram.</p>
+<p>The metadata of a diagram includes the diagram-name, <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code>
+position, <code class="docutils literal notranslate"><span class="pre">(w,</span> <span class="pre">h)</span></code> size, the viewbox string and the diagram class,
+e.g. <code class="docutils literal notranslate"><span class="pre">LogicalArchitectureBlank</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadata.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.generate.DiagramMetadataDict" title="capellambse.svg.generate.DiagramMetadataDict"><span class="pre">DiagramMetadataDict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.svg.generate.DiagramMetadata" title="capellambse.svg.generate.DiagramMetadata"><span class="pre">DiagramMetadata</span></a></span></span><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadata.from_dict" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.generate.</span></span><span class="sig-name descname"><span class="pre">DiagramMetadataDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.class">
+<span class="sig-name descname"><span class="pre">class</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.class" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.contents">
+<span class="sig-name descname"><span class="pre">contents</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.svg.generate.ContentsDict" title="capellambse.svg.generate.ContentsDict"><span class="pre">ContentsDict</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.contents" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.height">
+<span class="sig-name descname"><span class="pre">height</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.height" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.width">
+<span class="sig-name descname"><span class="pre">width</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.width" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.x" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.generate.DiagramMetadataDict.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.svg.generate.DiagramMetadataDict.y" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.generate.SVGDiagram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.generate.</span></span><span class="sig-name descname"><span class="pre">SVGDiagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.generate.DiagramMetadata" title="capellambse.svg.generate.DiagramMetadata"><span class="pre">DiagramMetadata</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.svg.generate.ContentsDict" title="capellambse.svg.generate.ContentsDict"><span class="pre">ContentsDict</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.generate.SVGDiagram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An SVG diagram that can be drawn on and serialized.</p>
+<p>SVG diagram object that takes the <code class="docutils literal notranslate"><span class="pre">metadata</span></code> of a diagram via the
+<a class="reference internal" href="#capellambse.svg.generate.DiagramMetadata" title="capellambse.svg.generate.DiagramMetadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">DiagramMetadata</span></code></a> and a list of objects that are dictionaries
+describing the components to be drawn on the diagram canvas of type
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Drawing</span></code>.</p>
+<p>Example of expected json-file/string:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;FA00 - Functional Architecture Example&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;LogicalArchitectureBlank&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="s2">&quot;contents&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;box&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;_ZNVPYDHuEeqOg4absf8kjA&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;class&quot;</span><span class="p">:</span> <span class="s2">&quot;LogicalFunction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span>
+            <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span>
+            <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="mi">101</span><span class="p">,</span>
+            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="s2">&quot;example label&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.generate.SVGDiagram.draw_object">
+<span class="sig-name descname"><span class="pre">draw_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.generate.ContentsDict" title="capellambse.svg.generate.ContentsDict"><span class="pre">ContentsDict</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.generate.SVGDiagram.draw_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.generate.SVGDiagram.from_json">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jsonstring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.svg.generate.SVGDiagram" title="capellambse.svg.generate.SVGDiagram"><span class="pre">SVGDiagram</span></a></span></span><a class="headerlink" href="#capellambse.svg.generate.SVGDiagram.from_json" title="Permalink to this definition"></a></dt>
+<dd><p>Create an SVGDiagram from the given JSON string.</p>
+<dl class="simple">
+<dt>jsonstring</dt><dd><p>Json/dictionary in <code class="docutils literal notranslate"><span class="pre">str</span></code> format</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>diagram</dt><dd><p>SVG diagram object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.generate.SVGDiagram.from_json_path">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_json_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">os.PathLike</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.svg.generate.SVGDiagram" title="capellambse.svg.generate.SVGDiagram"><span class="pre">SVGDiagram</span></a></span></span><a class="headerlink" href="#capellambse.svg.generate.SVGDiagram.from_json_path" title="Permalink to this definition"></a></dt>
+<dd><p>Create an SVGDiagram from the given JSON file.</p>
+<dl class="simple">
+<dt>path</dt><dd><p>path to .json file</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>diagram</dt><dd><p>SVG diagram object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.generate.SVGDiagram.save_drawing">
+<span class="sig-name descname"><span class="pre">save_drawing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pretty</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.generate.SVGDiagram.save_drawing" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.generate.SVGDiagram.to_string">
+<span class="sig-name descname"><span class="pre">to_string</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.svg.generate.SVGDiagram.to_string" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.svg.helpers">
+<span id="capellambse-svg-helpers-module"></span><h2>capellambse.svg.helpers module<a class="headerlink" href="#module-capellambse.svg.helpers" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.helpers.check_for_horizontal_overflow">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.helpers.</span></span><span class="sig-name descname"><span class="pre">check_for_horizontal_overflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.svg.helpers.check_for_horizontal_overflow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.helpers.check_for_vertical_overflow">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.helpers.</span></span><span class="sig-name descname"><span class="pre">check_for_vertical_overflow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_text_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.svg.helpers.check_for_vertical_overflow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-capellambse.svg.style">
+<span id="capellambse-svg-style-module"></span><h2>capellambse.svg.style module<a class="headerlink" href="#module-capellambse.svg.style" title="Permalink to this heading"></a></h2>
+<p>Stylesheet generator for SVG diagrams.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.style.SVGStylesheet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.style.</span></span><span class="sig-name descname"><span class="pre">SVGStylesheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.style.SVGStylesheet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>CSS stylesheet for SVG.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.style.SVGStylesheet.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.style.SVGStylesheet.create" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a stylesheet for the given drawing.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.svg.style.SVGStylesheet.sheet">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sheet</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.svg.style.Style" title="capellambse.svg.style.Style"><span class="pre">Style</span></a></em><a class="headerlink" href="#capellambse.svg.style.SVGStylesheet.sheet" title="Permalink to this definition"></a></dt>
+<dd><p>Return Sheet str from builder.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.style.SVGStylesheet.yield_gradients">
+<span class="sig-name descname"><span class="pre">yield_gradients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">cabc.Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">gradients.LinearGradient</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.svg.style.SVGStylesheet.yield_gradients" title="Permalink to this definition"></a></dt>
+<dd><p>Yield an svgwrite LinearGradient for all gradients in this sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.style.Style">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.style.</span></span><span class="sig-name descname"><span class="pre">Style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.style.Style" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseElement</span></code></p>
+<p>An embedded cascading style sheet.</p>
+<p>Initialize Style class.</p>
+<dl class="simple">
+<dt>text</dt><dd><p>The stylesheet</p>
+</dd>
+<dt>extra</dt><dd><p>Additional attributes as keyword arguments</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.style.Style.elementname">
+<span class="sig-name descname"><span class="pre">elementname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'style'</span></em><a class="headerlink" href="#capellambse.svg.style.Style.elementname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.style.Style.get_xml">
+<span class="sig-name descname"><span class="pre">get_xml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_Element</span></span></span><a class="headerlink" href="#capellambse.svg.style.Style.get_xml" title="Permalink to this definition"></a></dt>
+<dd><p>Get the XML representation as <cite>ElementTree</cite> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>XML <cite>ElementTree</cite> of this object and all its subelements</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.style.StyleBuilder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.style.</span></span><span class="sig-name descname"><span class="pre">StyleBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.style.StyleBuilder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Helper class that bundles together all needed objects.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.style.StyleBuilder.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.style.StyleBuilder.create" title="Permalink to this definition"></a></dt>
+<dd><p>Create style builder and all needed components.</p>
+<p>Create sheet string buffer from _base string template.  Copy
+global styles from aird.STYLES and update with class-specific
+styles.  Write styles to sheet.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.style.StyleBuilder.sheet">
+<span class="sig-name descname"><span class="pre">sheet</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">io.StringIO</span></em><a class="headerlink" href="#capellambse.svg.style.StyleBuilder.sheet" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.svg.style.StyleBuilder.styles">
+<span class="sig-name descname"><span class="pre">styles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">aird.CSSdef</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.svg.style.StyleBuilder.styles" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.svg.style.StyleBuilder.write_styles">
+<span class="sig-name descname"><span class="pre">write_styles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.style.StyleBuilder.write_styles" title="Permalink to this definition"></a></dt>
+<dd><p>Write edge and box styles to sheet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.svg.style.Styling">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.svg.style.</span></span><span class="sig-name descname"><span class="pre">Styling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagram_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.style.Styling" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for style attributes of svg objects.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Attributes containing ‘-’ are only referenceable via getattr()
+or subscripting syntax, due to Python identifier naming rules.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.style.deep_update_dict">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.style.</span></span><span class="sig-name descname"><span class="pre">deep_update_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">updates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MutableMapping</span></span></span><a class="headerlink" href="#capellambse.svg.style.deep_update_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Apply the <code class="docutils literal notranslate"><span class="pre">updates</span></code> to the nested <code class="docutils literal notranslate"><span class="pre">target</span></code> dict recursively.</p>
+<dl class="simple">
+<dt>target</dt><dd><p>The target dict, which will be modified in place.</p>
+</dd>
+<dt>updates</dt><dd><p>A dict containing the updates to apply.  If one of the values is
+the special object <code class="docutils literal notranslate"><span class="pre">deep_update_dict.delete</span></code>, the
+corresponding key will be deleted from the target.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>dict</dt><dd><p>The target dict, after modifying it in place.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.style.get_symbol_styleclass">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.style.</span></span><span class="sig-name descname"><span class="pre">get_symbol_styleclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dstyle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.svg.style.get_symbol_styleclass" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-capellambse.svg.symbols">
+<span id="capellambse-svg-symbols-module"></span><h2>capellambse.svg.symbols module<a class="headerlink" href="#module-capellambse.svg.symbols" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.and_control_node_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">and_control_node_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'AndControlNodeSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.and_control_node_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.arrow_mark">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">arrow_mark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Arrow'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">Styling</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Marker</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.arrow_mark" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.capability_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">capability_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'CapabilitySymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.capability_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.class_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">class_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ClassSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.class_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.component_exchange_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">component_exchange_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ComponentExchangeSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.component_exchange_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.component_port_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">component_port_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ComponentPortSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.component_port_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.diamond_mark">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">diamond_mark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Diamond'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">Styling</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Marker</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.diamond_mark" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.entity_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">entity_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'EntitySymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.entity_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.error_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">error_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ErrorSymbol'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.error_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.final_state_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">final_state_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'FinalStateSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.final_state_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.fine_arrow_mark">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">fine_arrow_mark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'FineArrow'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">Styling</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Marker</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.fine_arrow_mark" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.function_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">function_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'FunctionSymbol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('#6CB35B',</span> <span class="pre">'#ffffff')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'F'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">container.Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.function_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.functional_exchange_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">functional_exchange_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'FunctionalExchangeSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.functional_exchange_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.generalization_mark">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">generalization_mark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Generalization'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.svg.style.Styling" title="capellambse.svg.style.Styling"><span class="pre">Styling</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Marker</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.generalization_mark" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.initial_pseudo_state_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">initial_pseudo_state_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'InitialPseudoStateSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.initial_pseudo_state_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.iterate_control_node_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">iterate_control_node_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'IterateControlNodeSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.iterate_control_node_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.logical_actor_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">logical_actor_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LogicalActorSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.logical_actor_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.logical_component_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">logical_component_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LogicalComponentSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.logical_component_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.logical_function_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">logical_function_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LogicalFunctionSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.logical_function_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.logical_human_actor_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">logical_human_actor_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LogicalHumanActorSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.logical_human_actor_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.logical_human_component_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">logical_human_component_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LogicalHumanComponentSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.logical_human_component_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.mission_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">mission_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'MissionSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.mission_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.mode_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">mode_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ModeSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.mode_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.operational_activity_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">operational_activity_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'OperationalActivitySymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.operational_activity_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.operational_actor_box_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">operational_actor_box_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OperationalActorBoxSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.operational_actor_box_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.operational_actor_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">operational_actor_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OperationalActorSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.operational_actor_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.operational_capability_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">operational_capability_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OperationalCapabilitySymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.operational_capability_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.operational_exchange_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">operational_exchange_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'OperationalExchangeSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.operational_exchange_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.or_control_node_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">or_control_node_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'OrControlNodeSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.or_control_node_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.physical_function_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">physical_function_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'PhysicalFunctionSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.physical_function_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.physical_link_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">physical_link_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'PhysicalLinkSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.physical_link_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.port_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">port_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'PortSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.port_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.requirement_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">requirement_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'RequirementSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.requirement_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.state_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">state_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'StateSymbol'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.state_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.stick_figure_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">stick_figure_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'StickFigureSymbol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">container.Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.stick_figure_symbol" title="Permalink to this definition"></a></dt>
+<dd><p>Generate StickFigure svg symbol.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.system_actor_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">system_actor_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SystemActorSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.system_actor_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.system_function_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">system_function_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SystemFunctionSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.system_function_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.system_human_actor_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">system_human_actor_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'SystemHumanActorSymbol'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Symbol</span></span></span><a class="headerlink" href="#capellambse.svg.symbols.system_human_actor_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.svg.symbols.terminate_pseudo_state_symbol">
+<span class="sig-prename descclassname"><span class="pre">capellambse.svg.symbols.</span></span><span class="sig-name descname"><span class="pre">terminate_pseudo_state_symbol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'TerminatePseudoStateSymbol'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stroke_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.165</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.svg.symbols.terminate_pseudo_state_symbol" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-capellambse.svg">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.svg" title="Permalink to this heading"></a></h2>
+<p>Export diagrams to <code class="docutils literal notranslate"><span class="pre">.svg</span></code> files.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.pvmt.html" class="btn btn-neutral float-left" title="capellambse.pvmt package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-right" title="setup module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

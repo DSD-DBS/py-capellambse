@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>capellambse.aird package &mdash; py-capellambse  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="capellambse.aird.parser package" href="capellambse.aird.parser.html" />
+    <link rel="prev" title="capellambse package" href="capellambse.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> py-capellambse
+          </a>
+              <div class="version">
+                0.4.12+16.g89ca58b
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/prerequisites.html">Prerequisites</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/developing-docs.html">Documentation development</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">py-capellambse</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="capellambse.html">capellambse package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="capellambse.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">capellambse.aird package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.auditing">capellambse.auditing module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.helpers">capellambse.helpers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse.sphinx">capellambse.sphinx module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.html#module-capellambse">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="versioneer.html">versioneer module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-capellambse</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="modules.html">py-capellambse</a> &raquo;</li>
+          <li><a href="capellambse.html">capellambse package</a> &raquo;</li>
+      <li>capellambse.aird package</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capellambse-aird-package">
+<h1>capellambse.aird package<a class="headerlink" href="#capellambse-aird-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.aird.parser.html">capellambse.aird.parser package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.aird.parser.html#module-capellambse.aird.parser">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-capellambse.aird.capstyle">
+<span id="capellambse-aird-capstyle-module"></span><h2>capellambse.aird.capstyle module<a class="headerlink" href="#module-capellambse.aird.capstyle" title="Permalink to this heading"></a></h2>
+<p>The color palette and default style definitions used by Capella.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.COLORS">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.capstyle.</span></span><span class="sig-name descname"><span class="pre">COLORS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><span class="pre">RGB</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'_CAP_Activity_Border_Orange':</span> <span class="pre">RGB(r=91,</span> <span class="pre">g=64,</span> <span class="pre">b=64,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Activity_Orange':</span> <span class="pre">RGB(r=247,</span> <span class="pre">g=218,</span> <span class="pre">b=116,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Activity_Orange_min':</span> <span class="pre">RGB(r=255,</span> <span class="pre">g=255,</span> <span class="pre">b=197,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Actor_Blue':</span> <span class="pre">RGB(r=198,</span> <span class="pre">g=230,</span> <span class="pre">b=255,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Actor_Blue_label':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Actor_Blue_min':</span> <span class="pre">RGB(r=218,</span> <span class="pre">g=253,</span> <span class="pre">b=255,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Actor_Border_Blue':</span> <span class="pre">RGB(r=74,</span> <span class="pre">g=74,</span> <span class="pre">b=151,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Association_Color':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_ChoicePseudoState_Border_Gray':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_ChoicePseudoState_Color':</span> <span class="pre">RGB(r=168,</span> <span class="pre">g=168,</span> <span class="pre">b=168,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Class_Border_Brown':</span> <span class="pre">RGB(r=123,</span> <span class="pre">g=105,</span> <span class="pre">b=79,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Class_Brown':</span> <span class="pre">RGB(r=232,</span> <span class="pre">g=224,</span> <span class="pre">b=210,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_CombinedFragment_Gray':</span> <span class="pre">RGB(r=242,</span> <span class="pre">g=242,</span> <span class="pre">b=242,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Component_Blue':</span> <span class="pre">RGB(r=150,</span> <span class="pre">g=177,</span> <span class="pre">b=218,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Component_Blue_min':</span> <span class="pre">RGB(r=195,</span> <span class="pre">g=230,</span> <span class="pre">b=255,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Component_Border_Blue':</span> <span class="pre">RGB(r=74,</span> <span class="pre">g=74,</span> <span class="pre">b=151,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Component_Label_Blue':</span> <span class="pre">RGB(r=74,</span> <span class="pre">g=74,</span> <span class="pre">b=151,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_ConfigurationItem_Gray':</span> <span class="pre">RGB(r=242,</span> <span class="pre">g=238,</span> <span class="pre">b=225,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_ConfigurationItem_Gray_min':</span> <span class="pre">RGB(r=249,</span> <span class="pre">g=248,</span> <span class="pre">b=245,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Datatype_Border_Gray':</span> <span class="pre">RGB(r=103,</span> <span class="pre">g=103,</span> <span class="pre">b=103,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Datatype_Gray':</span> <span class="pre">RGB(r=225,</span> <span class="pre">g=223,</span> <span class="pre">b=215,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Datatype_LightBrown':</span> <span class="pre">RGB(r=232,</span> <span class="pre">g=224,</span> <span class="pre">b=210,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Entity_Gray':</span> <span class="pre">RGB(r=221,</span> <span class="pre">g=221,</span> <span class="pre">b=200,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Entity_Gray_border':</span> <span class="pre">RGB(r=69,</span> <span class="pre">g=69,</span> <span class="pre">b=69,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Entity_Gray_label':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Entity_Gray_min':</span> <span class="pre">RGB(r=249,</span> <span class="pre">g=248,</span> <span class="pre">b=245,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_ExchangeItem_Pinkkish':</span> <span class="pre">RGB(r=246,</span> <span class="pre">g=235,</span> <span class="pre">b=235,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_FCD':</span> <span class="pre">RGB(r=233,</span> <span class="pre">g=243,</span> <span class="pre">b=222,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_FCinFCD_Green':</span> <span class="pre">RGB(r=148,</span> <span class="pre">g=199,</span> <span class="pre">b=97,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_InterfaceDataPackage_LightGray':</span> <span class="pre">RGB(r=250,</span> <span class="pre">g=250,</span> <span class="pre">b=250,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Interface_Border_Reddish':</span> <span class="pre">RGB(r=124,</span> <span class="pre">g=61,</span> <span class="pre">b=61,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Interface_Pink':</span> <span class="pre">RGB(r=240,</span> <span class="pre">g=221,</span> <span class="pre">b=221,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Lifeline_Gray':</span> <span class="pre">RGB(r=128,</span> <span class="pre">g=128,</span> <span class="pre">b=128,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_MSM_Mode_Gray':</span> <span class="pre">RGB(r=195,</span> <span class="pre">g=208,</span> <span class="pre">b=208,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_MSM_Mode_Gray_min':</span> <span class="pre">RGB(r=234,</span> <span class="pre">g=239,</span> <span class="pre">b=239,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_MSM_State_Gray':</span> <span class="pre">RGB(r=208,</span> <span class="pre">g=208,</span> <span class="pre">b=208,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_MSM_State_Gray_min':</span> <span class="pre">RGB(r=239,</span> <span class="pre">g=239,</span> <span class="pre">b=239,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Mode_Gray':</span> <span class="pre">RGB(r=165,</span> <span class="pre">g=182,</span> <span class="pre">b=180,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Node_Yellow':</span> <span class="pre">RGB(r=255,</span> <span class="pre">g=252,</span> <span class="pre">b=183,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Node_Yellow_Border':</span> <span class="pre">RGB(r=123,</span> <span class="pre">g=105,</span> <span class="pre">b=79,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Node_Yellow_Label':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Node_Yellow_min':</span> <span class="pre">RGB(r=255,</span> <span class="pre">g=255,</span> <span class="pre">b=220,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_OperationalRole_Purple':</span> <span class="pre">RGB(r=203,</span> <span class="pre">g=174,</span> <span class="pre">b=200,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Operational_Process_Reference_Orange':</span> <span class="pre">RGB(r=250,</span> <span class="pre">g=239,</span> <span class="pre">b=203,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_PhysicalPort_Yellow':</span> <span class="pre">RGB(r=255,</span> <span class="pre">g=244,</span> <span class="pre">b=119,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_StateMode_Border_Gray':</span> <span class="pre">RGB(r=117,</span> <span class="pre">g=117,</span> <span class="pre">b=117,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_StateTransition_Color':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_State_Gray':</span> <span class="pre">RGB(r=228,</span> <span class="pre">g=228,</span> <span class="pre">b=228,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Unit_LightBrown':</span> <span class="pre">RGB(r=214,</span> <span class="pre">g=197,</span> <span class="pre">b=171,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_Value_LightBrown':</span> <span class="pre">RGB(r=254,</span> <span class="pre">g=253,</span> <span class="pre">b=250,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xAB_Activity_Label_Orange':</span> <span class="pre">RGB(r=91,</span> <span class="pre">g=64,</span> <span class="pre">b=64,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xAB_Function_Border_Green':</span> <span class="pre">RGB(r=9,</span> <span class="pre">g=92,</span> <span class="pre">b=46,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xAB_Function_Green':</span> <span class="pre">RGB(r=197,</span> <span class="pre">g=255,</span> <span class="pre">b=166,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xAB_Function_Label_Green':</span> <span class="pre">RGB(r=9,</span> <span class="pre">g=92,</span> <span class="pre">b=46,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xBD_ControlNode':</span> <span class="pre">RGB(r=223,</span> <span class="pre">g=223,</span> <span class="pre">b=223,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xDFB_Function_Border_Green':</span> <span class="pre">RGB(r=77,</span> <span class="pre">g=137,</span> <span class="pre">b=20,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xDFB_Function_Green':</span> <span class="pre">RGB(r=197,</span> <span class="pre">g=255,</span> <span class="pre">b=166,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xDFB_Function_Green_Label':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xDFB_Function_Green_min':</span> <span class="pre">RGB(r=244,</span> <span class="pre">g=255,</span> <span class="pre">b=224,</span> <span class="pre">a=1.0),</span> <span class="pre">'_CAP_xDF_Activity_Label_Orange':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'black':</span> <span class="pre">RGB(r=0,</span> <span class="pre">g=0,</span> <span class="pre">b=0,</span> <span class="pre">a=1.0),</span> <span class="pre">'dark_gray':</span> <span class="pre">RGB(r=69,</span> <span class="pre">g=69,</span> <span class="pre">b=69,</span> <span class="pre">a=1.0),</span> <span class="pre">'dark_orange':</span> <span class="pre">RGB(r=224,</span> <span class="pre">g=133,</span> <span class="pre">b=3,</span> <span class="pre">a=1.0),</span> <span class="pre">'dark_purple':</span> <span class="pre">RGB(r=114,</span> <span class="pre">g=73,</span> <span class="pre">b=110,</span> <span class="pre">a=1.0),</span> <span class="pre">'gray':</span> <span class="pre">RGB(r=136,</span> <span class="pre">g=136,</span> <span class="pre">b=136,</span> <span class="pre">a=1.0),</span> <span class="pre">'light_purple':</span> <span class="pre">RGB(r=217,</span> <span class="pre">g=196,</span> <span class="pre">b=215,</span> <span class="pre">a=1.0),</span> <span class="pre">'light_yellow':</span> <span class="pre">RGB(r=255,</span> <span class="pre">g=245,</span> <span class="pre">b=181,</span> <span class="pre">a=1.0),</span> <span class="pre">'red':</span> <span class="pre">RGB(r=239,</span> <span class="pre">g=41,</span> <span class="pre">b=41,</span> <span class="pre">a=1.0),</span> <span class="pre">'white':</span> <span class="pre">RGB(r=255,</span> <span class="pre">g=255,</span> <span class="pre">b=255,</span> <span class="pre">a=1.0)}</span></em><a class="headerlink" href="#capellambse.aird.capstyle.COLORS" title="Permalink to this definition"></a></dt>
+<dd><p>This dict maps the color names used by Capella to RGB tuples.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.CSSdef">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.capstyle.</span></span><span class="sig-name descname"><span class="pre">CSSdef</span></span><a class="headerlink" href="#capellambse.aird.capstyle.CSSdef" title="Permalink to this definition"></a></dt>
+<dd><p>This dict contains the default styles that Capella applies, grouped
+by the diagram class they belong to.</p>
+<p>The first level of keys are the diagrams’ styleclasses.  The special
+key “__GLOBAL__” applies to all diagrams.</p>
+<p>The second level contains the style definitions for each element that
+can appear in the diagram.  The keys work in the following way:</p>
+<blockquote>
+<div><p>Type.Class</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Type</span></code> is the element type; one of “Box” or “Edge” (note casing!)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Class</span></code> is the element’s styleclass, e.g. “LogicalComponent”</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">Class</span></code> and the preceding dot may be absent, in which case that
+styling applies to all elements of that <code class="docutils literal notranslate"><span class="pre">Type</span></code> regardless of their
+style class.</p>
+<p>The order of precedence for the four possible cases is the following,
+from most to least important:</p>
+<ol class="arabic simple">
+<li><p>Diagram class specific, element type and class</p></li>
+<li><p>__GLOBAL__, element type and class</p></li>
+<li><p>Diagram class specific, only element type</p></li>
+<li><p>__GLOBAL__, only element type</p></li>
+</ol>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RGB</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RGB</span></code></a>]]]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.capstyle.</span></span><span class="sig-name descname"><span class="pre">RGB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.capstyle.RGB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>A color.</p>
+<p>Each color component (red, green, blue) is an integer in the range
+of 0..255 (inclusive).  The alpha channel is a float between 0.0 and
+1.0 (inclusive).  If it is 1, then the <code class="docutils literal notranslate"><span class="pre">str()</span></code> form does not
+include transparency information.</p>
+<p>Create new instance of RGB(r, g, b, a)</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.a">
+<span class="sig-name descname"><span class="pre">a</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.aird.capstyle.RGB.a" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.b">
+<span class="sig-name descname"><span class="pre">b</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#capellambse.aird.capstyle.RGB.b" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.fromcss">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromcss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cssstring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><span class="pre">RGB</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><span class="pre">RGB</span></a></span></span><a class="headerlink" href="#capellambse.aird.capstyle.RGB.fromcss" title="Permalink to this definition"></a></dt>
+<dd><p>Create an RGB from a CSS color definition.</p>
+<p>Examples of recognized color definitions and their equivalent
+constructor calls:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;rgb(10, 20, 30)&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="s2">&quot;rgba(50, 60, 70, 0.5)&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="s2">&quot;#FF00FF&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="s2">&quot;#ff00ff&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="s2">&quot;#f0f&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="s2">&quot;#FF00FF80&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="s2">&quot;#f0fa&quot;</span> <span class="o">-&gt;</span> <span class="n">RGB</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.fromcsv">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromcsv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvstring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><span class="pre">RGB</span></a></span></span><a class="headerlink" href="#capellambse.aird.capstyle.RGB.fromcsv" title="Permalink to this definition"></a></dt>
+<dd><p>Create an RGB from a <code class="docutils literal notranslate"><span class="pre">&quot;r,</span> <span class="pre">g,</span> <span class="pre">b[,</span> <span class="pre">a]&quot;</span></code> string.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.fromhex">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fromhex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hexstring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><span class="pre">RGB</span></a></span></span><a class="headerlink" href="#capellambse.aird.capstyle.RGB.fromhex" title="Permalink to this definition"></a></dt>
+<dd><p>Create an RGB from a hexadecimal string.</p>
+<p>The string can have 3, 4, 6 or 8 hexadecimal characters.  In the
+cases of 3 and 6 characters, the alpha channel is set to 1.0
+(fully opaque) and the remaining characters are interpreted as
+the red, green and blue components.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.g">
+<span class="sig-name descname"><span class="pre">g</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#capellambse.aird.capstyle.RGB.g" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.r">
+<span class="sig-name descname"><span class="pre">r</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#capellambse.aird.capstyle.RGB.r" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.RGB.tohex">
+<span class="sig-name descname"><span class="pre">tohex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#capellambse.aird.capstyle.RGB.tohex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.aird.capstyle.get_style">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.capstyle.</span></span><span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">diagramclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">t.Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#capellambse.aird.capstyle.get_style" title="Permalink to this definition"></a></dt>
+<dd><p>Fetch the default style for the given drawtype and styleclass.</p>
+<p>The style is returned as a dict with key-value pairs as used by CSS
+inside SVG graphics.</p>
+<p>All values contained in this dict are either of type <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>,
+or of a class whose <code class="docutils literal notranslate"><span class="pre">str()</span></code> representation results in a valid CSS
+value for its respective key – with one exception: color gradients.</p>
+<p>Flat colors are represented using the <a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RGB</span></code></a> tuple subclass.
+Gradients are returned as a two-element list of <a class="reference internal" href="#capellambse.aird.capstyle.RGB" title="capellambse.aird.capstyle.RGB"><code class="xref py py-class docutils literal notranslate"><span class="pre">RGB</span></code></a>s the
+first one is the color at the top of the object, the second one at
+the bottom.</p>
+<dl>
+<dt>diagramclass</dt><dd><p>The style class of the diagram.</p>
+</dd>
+<dt>objectclass</dt><dd><p>A packed <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> describing the element’s type and style
+class in the form:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Type</span><span class="o">.</span><span class="n">StyleClass</span>
+</pre></div>
+</div>
+<p>The type can be: <code class="docutils literal notranslate"><span class="pre">Box</span></code>, <code class="docutils literal notranslate"><span class="pre">Edge</span></code>.  The style class can be any
+known style class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.aird.diagram">
+<span id="capellambse-aird-diagram-module"></span><h2>capellambse.aird.diagram module<a class="headerlink" href="#module-capellambse.aird.diagram" title="Permalink to this heading"></a></h2>
+<p>Classes that represent different aspects of a diagram.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.diagram.</span></span><span class="sig-name descname"><span class="pre">Box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collapsed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Vector2D(x=0,</span> <span class="pre">y=0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Vector2D(x=inf,</span> <span class="pre">y=inf)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.MutableSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleoverrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_StyleOverrides</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidelabel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.diagram.Box" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Box.  Some may call it rectangle.</p>
+<p>Create a new box.</p>
+<dl class="simple">
+<dt>pos</dt><dd><p>A Vector2D describing the spatial position.</p>
+</dd>
+<dt>size</dt><dd><p>A Vector2D describing the box’ size.  If one or both of its
+components are 0, it/they will be calculated based on the
+Box’ label text and contained children.</p>
+</dd>
+<dt>label</dt><dd><p>This box’ label text.</p>
+</dd>
+<dt>uuid</dt><dd><p>UUID of the semantic element this box represents.</p>
+</dd>
+<dt>parent</dt><dd><p>This box’ parent box.</p>
+</dd>
+<dt>collapsed</dt><dd><p>Collapse this box and hide all its children.  Note that
+setting this flag does not change the box’ size.</p>
+</dd>
+<dt>minsize</dt><dd><p>When dynamically calculating Box size, the minimum size it
+should have.  Default: zero.</p>
+</dd>
+<dt>maxsize</dt><dd><p>When dynamically calculating Box size, the maximum size it
+can have.  Default: inifite.</p>
+</dd>
+<dt>context</dt><dd><p>A list of UUIDs of objects in this box’ context.  This
+includes children and associated edges.</p>
+</dd>
+<dt>port</dt><dd><p>Flag this box as a port.  Affects how context is added.</p>
+</dd>
+<dt>features</dt><dd><p>Certain classes of Box (like <code class="docutils literal notranslate"><span class="pre">Class</span></code>) have features, which
+is a list of strings that will be displayed inside the Box,
+separated from the label by a horizontal line.</p>
+</dd>
+<dt>styleclass</dt><dd><p>The CSS style class to use.</p>
+</dd>
+<dt>styleoverrides</dt><dd><p>A dict of CSS properties to override.</p>
+</dd>
+<dt>hidelabel</dt><dd><p>Set to True to skip drawing this box’ label.</p>
+</dd>
+<dt>hidden</dt><dd><p>Set to True to skip drawing this entire box.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.CHILD_MARGIN">
+<span class="sig-name descname"><span class="pre">CHILD_MARGIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.aird.diagram.Box.CHILD_MARGIN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.JSON_TYPE">
+<span class="sig-name descname"><span class="pre">JSON_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'box'</span></em><a class="headerlink" href="#capellambse.aird.diagram.Box.JSON_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.PORT_OVERHANG">
+<span class="sig-name descname"><span class="pre">PORT_OVERHANG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.aird.diagram.Box.PORT_OVERHANG" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.add_context">
+<span class="sig-name descname"><span class="pre">add_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.add_context" title="Permalink to this definition"></a></dt>
+<dd><p>Add a UUID as context for this box.</p>
+<p>The context will bubble to the immediate parent if this box is a
+port.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.bounds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Box.bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the bounding box of this Box.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Box.center" title="Permalink to this definition"></a></dt>
+<dd><p>The center point of this Box.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.create_portlabel">
+<span class="sig-name descname"><span class="pre">create_portlabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labeltext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.create_portlabel" title="Permalink to this definition"></a></dt>
+<dd><p>Add a label to a port box.</p>
+<p>The port that this is called for must be snapped to its parent’s
+left or right side.</p>
+<dl class="simple">
+<dt>labeltext</dt><dd><p>The label text.</p>
+</dd>
+<dt>margin</dt><dd><p>Space between the label text and the port Box.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.hidden">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#capellambse.aird.diagram.Box.hidden" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether to skip this Box during rendering.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.maxsize">
+<span class="sig-name descname"><span class="pre">maxsize</span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.maxsize" title="Permalink to this definition"></a></dt>
+<dd><p>A property that automatically converts 2-tuples into Vector2D.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.minsize">
+<span class="sig-name descname"><span class="pre">minsize</span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.minsize" title="Permalink to this definition"></a></dt>
+<dd><p>A property that automatically converts 2-tuples into Vector2D.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.move" title="Permalink to this definition"></a></dt>
+<dd><p>Move the box by the specified offset.</p>
+<dl class="simple">
+<dt>children</dt><dd><p>Recursively move children as well.  If False, the positions
+of children need to be adjusted separately.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.padding">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">padding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Box.padding" title="Permalink to this definition"></a></dt>
+<dd><p>Return the horizontal and vertical padding of label text.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.parent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.aird.diagram.Box.parent" title="Permalink to this definition"></a></dt>
+<dd><p>The parent element of this Box.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.pos">
+<span class="sig-name descname"><span class="pre">pos</span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.pos" title="Permalink to this definition"></a></dt>
+<dd><p>A property that automatically converts 2-tuples into Vector2D.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Box.size" title="Permalink to this definition"></a></dt>
+<dd><p>Return the size of this Box.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.snap_to_parent">
+<span class="sig-name descname"><span class="pre">snap_to_parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.snap_to_parent" title="Permalink to this definition"></a></dt>
+<dd><p>Snap this Box into the constraints set by its parent.</p>
+<p>If this Box is a port, ensure it lines up with the parent’s
+border, keeping an overhang of 2px.</p>
+<p>Otherwise, ensures that this Box will not overflow out of the
+parent’s border, keeping a padding of 2px.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Box.vector_snap">
+<span class="sig-name descname"><span class="pre">vector_snap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.diagram.RoutingStyle" title="capellambse.aird.diagram.RoutingStyle"><span class="pre">RoutingStyle</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RoutingStyle.OBLIQUE</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">aird.Vector2D</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Box.vector_snap" title="Permalink to this definition"></a></dt>
+<dd><p>Snap the <code class="docutils literal notranslate"><span class="pre">point</span></code> into this Box, coming from <code class="docutils literal notranslate"><span class="pre">source</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.diagram.</span></span><span class="sig-name descname"><span class="pre">Circle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">aird.Vec2ish</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleoverrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_StyleOverrides</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.diagram.Circle" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a circle.</p>
+<p>Construct a Circle.</p>
+<dl class="simple">
+<dt>center</dt><dd><p>The Circle’s center point as Vector2D or 2-tuple.</p>
+</dd>
+<dt>radius</dt><dd><p>The Circle radius in pixels.</p>
+</dd>
+<dt>uuid</dt><dd><p>The Circle’s unique identifier.</p>
+</dd>
+<dt>styleclass</dt><dd><p>The Circle’s CSS class.</p>
+</dd>
+<dt>styleoverrides</dt><dd><p>Dict of CSS key/value pairs that override the class
+defaults.</p>
+</dd>
+<dt>hidden</dt><dd><p>True to skip drawing this Circle.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.JSON_TYPE">
+<span class="sig-name descname"><span class="pre">JSON_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'circle'</span></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.JSON_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.add_context">
+<span class="sig-name descname"><span class="pre">add_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Circle.add_context" title="Permalink to this definition"></a></dt>
+<dd><p>Do nothing.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.bounds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the bounding box of this Circle.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.center">
+<span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#capellambse.aird.diagram.Circle.center" title="Permalink to this definition"></a></dt>
+<dd><p>A property that automatically converts 2-tuples into Vector2D.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.collapsed">
+<span class="sig-name descname"><span class="pre">collapsed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.collapsed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.context">
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">cabc.Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({})</span></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.context" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.hidelabel">
+<span class="sig-name descname"><span class="pre">hidelabel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.hidelabel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.label">
+<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.label" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Circle.move" title="Permalink to this definition"></a></dt>
+<dd><p>Move this Circle on the 2-dimensional plane.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.port">
+<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#capellambse.aird.diagram.Circle.port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Circle.vector_snap">
+<span class="sig-name descname"><span class="pre">vector_snap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.diagram.RoutingStyle" title="capellambse.aird.diagram.RoutingStyle"><span class="pre">RoutingStyle</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RoutingStyle.OBLIQUE</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></span><a class="headerlink" href="#capellambse.aird.diagram.Circle.vector_snap" title="Permalink to this definition"></a></dt>
+<dd><p>Snap the <code class="docutils literal notranslate"><span class="pre">vector</span></code> onto this Circle, preferably in <cite>direction</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Diagram">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.diagram.</span></span><span class="sig-name descname"><span class="pre">Diagram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Untitled</span> <span class="pre">Diagram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">viewport</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">DiagramElement</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.diagram.Diagram" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A complete diagram, including all elements required by it.</p>
+<p>Construct a new diagram.</p>
+<dl class="simple">
+<dt>name</dt><dd><p>The diagram’s name.</p>
+</dd>
+<dt>viewport</dt><dd><p>A Box describing this diagram’s viewport.</p>
+</dd>
+<dt>elements</dt><dd><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> containing the diagram’s initial elements.</p>
+</dd>
+<dt>uuid</dt><dd><p>The unique ID of this diagram.</p>
+</dd>
+<dt>styleclass</dt><dd><p>The diagram class.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Diagram.add_element">
+<span class="sig-name descname"><span class="pre">add_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.diagram.Edge" title="capellambse.aird.diagram.Edge"><span class="pre">Edge</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.diagram.Circle" title="capellambse.aird.diagram.Circle"><span class="pre">Circle</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extend_viewport</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Diagram.add_element" title="Permalink to this definition"></a></dt>
+<dd><p>Add an element to this diagram.</p>
+<dl class="simple">
+<dt>element</dt><dd><p>The element to add.</p>
+</dd>
+<dt>extend_viewport</dt><dd><p>True to automatically extend the diagram viewport so that
+the added element is fully visible.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Diagram.calculate_viewport">
+<span class="sig-name descname"><span class="pre">calculate_viewport</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Diagram.calculate_viewport" title="Permalink to this definition"></a></dt>
+<dd><p>Recalculate the viewport so that all elements are contained.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Diagram.normalize_viewport">
+<span class="sig-name descname"><span class="pre">normalize_viewport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">aird.Vec2ish</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Diagram.normalize_viewport" title="Permalink to this definition"></a></dt>
+<dd><p>Normalize the viewport.</p>
+<p>This function moves all elements contained within this diagram
+so that the top left corner of the viewport is at (0, 0) (or the
+specified offset, if given).</p>
+<p>If a single value is given as offset, it is applied to both X
+and Y coordinates.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.diagram.</span></span><span class="sig-name descname"><span class="pre">Edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">aird.Vec2ish</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.MutableSequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramElement</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DiagramElement</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">styleoverrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_StyleOverrides</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.diagram.Edge" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.aird.vector2d.Vec2List" title="capellambse.aird.vector2d.Vec2List"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vec2List</span></code></a></p>
+<p>An edge in the diagram.</p>
+<p>An Edge consists of a series of points that are traversed in order.
+Each point is given as Vector2D containing absolute coordinates.  At
+least two points are required.</p>
+<p>Construct an Edge.</p>
+<dl class="simple">
+<dt>source</dt><dd><p>The source diagram element of this Edge.</p>
+</dd>
+<dt>target</dt><dd><p>The target diagram element of this Edge.</p>
+</dd>
+<dt>labels</dt><dd><p>Labels for this Edge. Each label is a <code class="docutils literal notranslate"><span class="pre">Box</span></code> with <code class="docutils literal notranslate"><span class="pre">pos</span></code>,
+<code class="docutils literal notranslate"><span class="pre">size</span></code> and a simple <code class="docutils literal notranslate"><span class="pre">str</span></code> label. Other configurations of
+Boxes are not supported. The <code class="docutils literal notranslate"><span class="pre">hidden</span></code> flag is honored
+during rendering calculations.</p>
+</dd>
+<dt>points</dt><dd><p>A list of <a href="#id1"><span class="problematic" id="id2">``</span></a>Vector2D``s with the (absolute) points this edge
+follows.</p>
+</dd>
+<dt>uuid</dt><dd><p>UUID of the semantic element this Edge represents.</p>
+</dd>
+<dt>styleclass</dt><dd><p>The CSS style class to use.</p>
+</dd>
+<dt>styleoverrides</dt><dd><p>A dict of CSS properties to override.</p>
+</dd>
+<dt>hidden</dt><dd><p>True to skip drawing this edge entirely.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.JSON_TYPE">
+<span class="sig-name descname"><span class="pre">JSON_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'edge'</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.JSON_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.add_context">
+<span class="sig-name descname"><span class="pre">add_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">uuid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Edge.add_context" title="Permalink to this definition"></a></dt>
+<dd><p>Do nothing.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.bounds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.diagram.Box" title="capellambse.aird.diagram.Box"><span class="pre">Box</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the bounding Box of this Edge.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.center" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the point in the middle of this edge.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.collapsed">
+<span class="sig-name descname"><span class="pre">collapsed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.collapsed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.context">
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">cabc.Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({})</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.context" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.hidden">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.hidden" title="Permalink to this definition"></a></dt>
+<dd><p>Return whether to skip this Edge during rendering.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.hidelabel">
+<span class="sig-name descname"><span class="pre">hidelabel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.hidelabel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.length" title="Permalink to this definition"></a></dt>
+<dd><p>Return length of this edge.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.diagram.Edge.move" title="Permalink to this definition"></a></dt>
+<dd><p>Move all points of this edge by the specified offset.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.points">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">points</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vec2List" title="capellambse.aird.vector2d.Vec2List"><span class="pre">Vec2List</span></a></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.points" title="Permalink to this definition"></a></dt>
+<dd><p>Return an iterable over this edge’s points.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.port">
+<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#capellambse.aird.diagram.Edge.port" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.Edge.vector_snap">
+<span class="sig-name descname"><span class="pre">vector_snap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.diagram.RoutingStyle" title="capellambse.aird.diagram.RoutingStyle"><span class="pre">RoutingStyle</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">RoutingStyle.OBLIQUE</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></span><a class="headerlink" href="#capellambse.aird.diagram.Edge.vector_snap" title="Permalink to this definition"></a></dt>
+<dd><p>Snap the <code class="docutils literal notranslate"><span class="pre">vector</span></code> onto this Edge.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.RoutingStyle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.diagram.</span></span><span class="sig-name descname"><span class="pre">RoutingStyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.diagram.RoutingStyle" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.RoutingStyle.MANHATTAN">
+<span class="sig-name descname"><span class="pre">MANHATTAN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#capellambse.aird.diagram.RoutingStyle.MANHATTAN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.RoutingStyle.OBLIQUE">
+<span class="sig-name descname"><span class="pre">OBLIQUE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#capellambse.aird.diagram.RoutingStyle.OBLIQUE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.diagram.RoutingStyle.TREE">
+<span class="sig-name descname"><span class="pre">TREE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#capellambse.aird.diagram.RoutingStyle.TREE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.aird.json_enc">
+<span id="capellambse-aird-json-enc-module"></span><h2>capellambse.aird.json_enc module<a class="headerlink" href="#module-capellambse.aird.json_enc" title="Permalink to this heading"></a></h2>
+<p>This module handles converting diagrams to the intermediary JSON format.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.json_enc.DiagramJSONEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.json_enc.</span></span><span class="sig-name descname"><span class="pre">DiagramJSONEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.json_enc.DiagramJSONEncoder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
+<p>JSON encoder that knows how to handle AIRD diagrams.</p>
+<p>Constructor for JSONEncoder, with sensible defaults.</p>
+<p>If skipkeys is false, then it is a TypeError to attempt
+encoding of keys that are not str, int, float or None.  If
+skipkeys is True, such items are simply skipped.</p>
+<p>If ensure_ascii is true, the output is guaranteed to be str
+objects with all incoming non-ASCII characters escaped.  If
+ensure_ascii is false, the output can contain non-ASCII characters.</p>
+<p>If check_circular is true, then lists, dicts, and custom encoded
+objects will be checked for circular references during encoding to
+prevent an infinite recursion (which would cause an OverflowError).
+Otherwise, no such check takes place.</p>
+<p>If allow_nan is true, then NaN, Infinity, and -Infinity will be
+encoded as such.  This behavior is not JSON specification compliant,
+but is consistent with most JavaScript based encoders and decoders.
+Otherwise, it will be a ValueError to encode such floats.</p>
+<p>If sort_keys is true, then the output of dictionaries will be
+sorted by key; this is useful for regression tests to ensure
+that JSON serializations can be compared on a day-to-day basis.</p>
+<p>If indent is a non-negative integer, then JSON array
+elements and object members will be pretty-printed with that
+indent level.  An indent level of 0 will only insert newlines.
+None is the most compact representation.</p>
+<p>If specified, separators should be an (item_separator, key_separator)
+tuple.  The default is (’, ‘, ‘: ‘) if <em>indent</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and
+(‘,’, ‘: ‘) otherwise.  To get the most compact JSON representation,
+you should specify (‘,’, ‘:’) to eliminate whitespace.</p>
+<p>If specified, default is a function that gets called for objects
+that can’t otherwise be serialized.  It should return a JSON encodable
+version of the object or raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.json_enc.DiagramJSONEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="headerlink" href="#capellambse.aird.json_enc.DiagramJSONEncoder.default" title="Permalink to this definition"></a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.aird.vector2d">
+<span id="capellambse-aird-vector2d-module"></span><h2>capellambse.aird.vector2d module<a class="headerlink" href="#module-capellambse.aird.vector2d" title="Permalink to this heading"></a></h2>
+<p>Two dimensional vector calculation utility.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2List">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.vector2d.</span></span><span class="sig-name descname"><span class="pre">Vec2List</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Vec2ish</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.vector2d.Vec2List" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MutableSequence</span></code>[<a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vector2D</span></code></a>]</p>
+<p>A list that automatically converts its elements into Vector2D.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2List.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vec2List.append" title="Permalink to this definition"></a></dt>
+<dd><p>S.append(value) – append value to the end of the sequence</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2List.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vec2List" title="capellambse.aird.vector2d.Vec2List"><span class="pre">Vec2List</span></a></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vec2List.copy" title="Permalink to this definition"></a></dt>
+<dd><p>Create a copy of this Vec2List.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2List.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">cabc.Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Vec2ish</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vec2List.extend" title="Permalink to this definition"></a></dt>
+<dd><p>S.extend(iterable) – extend sequence by appending elements from the iterable</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2List.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vec2List.insert" title="Permalink to this definition"></a></dt>
+<dd><p>S.insert(index, value) – insert value before index</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2Property">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.vector2d.</span></span><span class="sig-name descname"><span class="pre">Vec2Property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Vec2ish</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.vector2d.Vec2Property" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A property that automatically converts 2-tuples into Vector2D.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2Property.default">
+<span class="sig-name descname"><span class="pre">default</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.aird.vector2d.Vec2Property.default" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vec2Property.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#capellambse.aird.vector2d.Vec2Property.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.aird.vector2d.</span></span><span class="sig-name descname"><span class="pre">Vector2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Vec2Element</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Vec2Element</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>A vector in 2-dimensional space.</p>
+<p>Create new instance of Vector2D(x, y)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.angleto">
+<span class="sig-name descname"><span class="pre">angleto</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.angleto" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the angle to <code class="docutils literal notranslate"><span class="pre">other</span></code>.</p>
+<p>This method calculates the angle that <code class="docutils literal notranslate"><span class="pre">other</span></code> was rotated by
+in order to have the same direction as <code class="docutils literal notranslate"><span class="pre">self</span></code>, in radians.</p>
+<p>The returned angle will always constitute the shortest rotation
+possible, i.e. it can have values between <span class="math notranslate nohighlight">\(-\pi\)</span> and
+<span class="math notranslate nohighlight">\(+\pi\)</span>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.boxsnap">
+<span class="sig-name descname"><span class="pre">boxsnap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corner1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corner2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.boxsnap" title="Permalink to this definition"></a></dt>
+<dd><p>Snap this vector to the side of a box and return the result.</p>
+<dl class="simple">
+<dt>corner1</dt><dd><p>A Vector2D describing the first corner of the target box.</p>
+</dd>
+<dt>corner2</dt><dd><p>A Vector2D describing the second corner of the target box.</p>
+</dd>
+<dt>dirvec</dt><dd><p>Ignored.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.closestaxis">
+<span class="sig-name descname"><span class="pre">closestaxis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.closestaxis" title="Permalink to this definition"></a></dt>
+<dd><p>Determine the axis closest to this Vector2D.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.length">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">length</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.length" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the length of this vector.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.normalized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></em><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.normalized" title="Permalink to this definition"></a></dt>
+<dd><p>Create a unit Vector2D with the same direction as this one.</p>
+<dl class="simple">
+<dt>ZeroDivisionError</dt><dd><p>if this Vector2D has zero length</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.rotatedby">
+<span class="sig-name descname"><span class="pre">rotatedby</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></span><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.rotatedby" title="Permalink to this definition"></a></dt>
+<dd><p>Rotate this Vector2D by <code class="docutils literal notranslate"><span class="pre">theta</span></code> radians.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.sqlength">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sqlength</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.sqlength" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the squared length of this vector.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.x">
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.x" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.Vector2D.y">
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.aird.vector2d.Vector2D.y" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.aird.vector2d.line_intersect">
+<span class="sig-prename descclassname"><span class="pre">capellambse.aird.vector2d.</span></span><span class="sig-name descname"><span class="pre">line_intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Vec2ish</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Vec2ish</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Vec2ish</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Vec2ish</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#capellambse.aird.vector2d.Vector2D" title="capellambse.aird.vector2d.Vector2D"><span class="pre">Vector2D</span></a></span></span><a class="headerlink" href="#capellambse.aird.vector2d.line_intersect" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the point where <code class="docutils literal notranslate"><span class="pre">line1</span></code> and <code class="docutils literal notranslate"><span class="pre">line2</span></code> intersect.</p>
+<p>Both lines are straight lines with infinite length that are defined
+by the given points.</p>
+<p>The implementation is based on
+<cite>https://mathworld.wolfram.com/Line-LineIntersection.html</cite>.</p>
+</dd></dl>
+
+</section>
+<section id="module-capellambse.aird">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-capellambse.aird" title="Permalink to this heading"></a></h2>
+<p>The AIRD parser and various other diagramming related tools.</p>
+<p>This module is used to enumerate, access and export the diagrams from
+Capella projects.  The JSON output it produces can be fed for example
+into the <a class="reference internal" href="capellambse.svg.html#module-capellambse.svg" title="capellambse.svg"><code class="xref py py-mod docutils literal notranslate"><span class="pre">capellambse.svg</span></code></a> module for conversion to SVG.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="capellambse.html" class="btn btn-neutral float-left" title="capellambse package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="capellambse.aird.parser.html" class="btn btn-neutral float-right" title="capellambse.aird.parser package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, DB Netz AG.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
