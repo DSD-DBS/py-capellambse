@@ -59,6 +59,7 @@ __all__ = [
 import collections.abc as cabc
 import logging
 import os
+import re
 import typing as t
 
 import markupsafe
@@ -311,13 +312,17 @@ class AbstractRequirementsAttribute(c.GenericElement):
 
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
+    value: xmltools.AttributeProperty | c.AttrProxyAccessor
+
     def __repr__(self) -> str:
         return self._short_repr_()
 
     def _short_repr_(self) -> str:
+        mytype = type(self).__name__
         if self.definition is not None:
-            return f"<{type(self).__name__} {self.definition.long_name!r} ({self.uuid})>"
-        return super()._short_repr_()
+            return f"<{mytype} {self.definition.long_name!r} ({self.uuid})>"
+        default_name = re.sub(r"([A-Z])", r" \1", mytype).split()
+        return f"<{mytype} [{' '.join(default_name)}] ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
