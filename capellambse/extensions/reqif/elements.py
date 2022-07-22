@@ -279,6 +279,9 @@ class ReqIFElement(c.GenericElement):
 
         return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
 
+    def _short_repr_(self) -> str:
+        return f"<{type(self).__name__} {self.long_name!r} ({self.uuid})>"
+
     def _short_html_(self) -> markupsafe.Markup:
         return markupsafe.Markup(
             self._wrap_short_html(
@@ -309,12 +312,12 @@ class AbstractRequirementsAttribute(c.GenericElement):
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
     def __repr__(self) -> str:
-        mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
-        try:
-            name = self.definition.long_name
-        except AttributeError:
-            name = ""
-        return f"<{mytype} [{name}] ({self.uuid})>"
+        return self._short_repr_()
+
+    def _short_repr_(self) -> str:
+        if self.definition is not None:
+            return f"<{type(self).__name__} {self.definition.long_name!r} ({self.uuid})>"
+        return super()._short_repr_()
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
