@@ -289,7 +289,7 @@ def word_wrap(text: str, width: float | int) -> cabc.Sequence[str]:
 
 
 # XML tree modification and navigation
-def repair_html(markup: str) -> str:
+def repair_html(markup: str) -> markupsafe.Markup:
     """Try to repair broken HTML markup to prevent parse errors.
 
     Parameters
@@ -321,7 +321,7 @@ def repair_html(markup: str) -> str:
         etree.tostring(i, encoding="utf-8") for i in nodes
     ).decode("utf-8")
 
-    return firstnode + othernodes
+    return markupsafe.Markup(firstnode + othernodes)
 
 
 def resolve_namespace(tag: str) -> str:

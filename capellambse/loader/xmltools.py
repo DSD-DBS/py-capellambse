@@ -12,9 +12,11 @@ import math
 import sys
 import typing as t
 
+import markupsafe
 from lxml import etree
 
 import capellambse.loader
+from capellambse import helpers
 
 
 class AttributeProperty:
@@ -79,6 +81,13 @@ class AttributeProperty:
         self.__name__ = "(unknown)"
         self.__objclass__: type[t.Any] | None = None
         self.__doc__ = __doc__
+
+    @property
+    def _qualname(self) -> str:
+        """Generate the qualified name of this descriptor."""
+        if self.__objclass__ is None:
+            return f"(unknown {type(self).__name__} - call __set_name__)"
+        return f"{type(self.__objclass__.__name__)}.{self.__name__}"
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty:
@@ -154,6 +163,56 @@ class AttributeProperty:
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
+
+
+class HTMLAttributeProperty(AttributeProperty):
+    """An AttributeProperty that gracefully handles HTML-in-XML."""
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        optional: bool = False,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            default=None,
+            optional=optional,
+            writable=writable,
+            __doc__=__doc__,
+        )
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type) -> HTMLAttributeProperty:
+        ...
+
+    @t.overload
+    def __get__(
+        self, obj: t.Any, objtype: type | None = None
+    ) -> markupsafe.Markup | None:
+        ...
+
+    def __get__(
+        self, obj: t.Any, objtype: type | None = None
+    ) -> HTMLAttributeProperty | markupsafe.Markup | None:
+        if obj is None:
+            return self
+
+        value = super().__get__(obj, objtype)
+        return markupsafe.Markup(value)
+
+    def __set__(self, obj: t.Any, value: str) -> None:
+        if not isinstance(value, str):
+            raise TypeError(
+                f"Cannot set {self._qualname} on {obj!r}:"
+                f" Expected str, got {type(value).__name__}"
+            )
+        value = helpers.repair_html(value)
+        super().__set__(obj, value)
 
 
 class NumericAttributeProperty(AttributeProperty):
