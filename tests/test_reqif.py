@@ -13,7 +13,6 @@ import pytest
 
 import capellambse
 from capellambse.extensions import reqif
-from capellambse.loader.core import RE_VALID_ID
 
 long_req_text = textwrap.dedent(
     """\
@@ -403,78 +402,94 @@ class TestReqIFModification:
         assert new_rel in req.relations
         assert new_rel in target.relations
 
+    TEST_DATETIME = datetime.datetime(1987, 7, 27)
+    TEST_TZ_DELTA = TEST_DATETIME.astimezone().utcoffset()
+    assert TEST_TZ_DELTA is not None
+    TEST_TZ_HRS, TEST_TZ_SECS = divmod(TEST_TZ_DELTA.seconds, 3600)
+    TEST_TZ_MINS, TEST_TZ_SECS = divmod(TEST_TZ_SECS, 60)
+    TEST_TZ_OFFSET = f"{TEST_TZ_HRS:+03d}{TEST_TZ_MINS:02d}"
+
     @pytest.mark.parametrize(
-        "type_hint,def_uuid",
+        "type_hint,default_value",
         [
-            pytest.param(
-                "Int",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="IntegerAttributeValue",
-            ),
-            pytest.param(
-                "Str",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="StringAttributeValue",
-            ),
-            pytest.param(
-                "Float",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="RealAttributeValue",
-            ),
-            pytest.param(
-                "Date",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="DateValueAttributeValue",
-            ),
-            pytest.param(
-                "Bool",
-                "682bd51d-5451-4930-a97e-8bfca6c3a127",
-                id="BooleanAttributeValue",
-            ),
+            pytest.param("Int", 0),
+            pytest.param("Str", ""),
+            pytest.param("Float", 0.0),
+            pytest.param("Date", None),
+            pytest.param("Bool", False),
         ],
     )
-    def test_create_requirements_attributes(
+    def test_create_requirements_attributes_with_default_values(
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
-        def_uuid: str,
+        default_value: t.Any,
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
-        assert isinstance(req, reqif.Requirement)
 
+        assert isinstance(req, reqif.Requirement)
         assert not req.attributes
-        definition = model.by_uuid(def_uuid)
+
+        definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         attr = req.attributes.create(type_hint, definition=definition)
 
-        assert len(req.attributes) == 1
-        assert req.attributes[0] == attr
+        assert req.attributes == [attr]
         assert attr.definition == definition
+        assert attr.value == default_value
+        assert attr._element.get("value") is None
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
-    def test_create_RequirementType_AttributeDefinition_creation(
-        self, model: capellambse.MelodyModel
+    @pytest.mark.parametrize(
+        "type_hint,value,xml",
+        [
+            pytest.param("Int", 0, None),
+            pytest.param("Int", 1, "1"),
+            pytest.param("Str", "", None),
+            pytest.param("Str", "test", "test"),
+            pytest.param("Float", 0.0, None),
+            pytest.param("Float", 1.0, "1.0"),
+            pytest.param("Date", None, None),
+            pytest.param(
+                "Date",
+                TEST_DATETIME,
+                f"1987-07-27T00:00:00.000000{TEST_TZ_OFFSET}",
+            ),
+            pytest.param(
+                "Date",
+                datetime.datetime(1987, 7, 27, tzinfo=datetime.timezone.utc),
+                "1987-07-27T00:00:00.000000+0000",
+            ),
+            pytest.param("Bool", False, None),
+            pytest.param("Bool", True, "true"),
+        ],
+    )
+    def test_create_requirements_attributes_with_non_default_values(
+        self,
+        model: capellambse.MelodyModel,
+        type_hint: str,
+        value: t.Any,
+        xml: str | None,
     ):
-        reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
-        definitions = reqtype.attribute_definitions
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
 
-        attr_def = reqtype.attribute_definitions.create(
-            "AttributeDefinition", long_name="First"
-        )
-        enum_def = reqtype.attribute_definitions.create(
-            "AttributeDefinitionEnumeration", long_name="Second"
-        )
+        assert isinstance(req, reqif.Requirement)
+        assert not req.attributes
 
-        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
-        assert attr_def in reqtype.attribute_definitions
-        assert enum_def in reqtype.attribute_definitions
+        value_attr = req.attributes.create(type_hint, value=value)
+        if isinstance(value, datetime.datetime):
+            value = value.astimezone()
+
+        assert req.attributes == [value_attr]
+        assert value_attr.value == value
+        assert value_attr._element.get("value") == xml
 
     def test_create_value_attribute_on_requirements_without_definition(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         assert isinstance(req, reqif.Requirement)
-
         assert not req.attributes
+
         attr = req.attributes.create("Int")
 
         assert len(req.attributes) == 1
@@ -510,6 +525,7 @@ class TestReqIFModification:
         "value",
         [
             pytest.param(True, id="Boolean Attribute"),
+            pytest.param(False, id="Boolean Attribute"),
             pytest.param(1, id="Integer Attribute"),
             pytest.param(
                 datetime.datetime(
@@ -522,9 +538,7 @@ class TestReqIFModification:
         ],
     )
     def test_setting_attribute_values_on_requirement(
-        self,
-        model: capellambse.MelodyModel,
-        value: t.Any,
+        self, model: capellambse.MelodyModel, value: t.Any
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
@@ -588,6 +602,23 @@ class TestReqIFModification:
 
         with pytest.raises(TypeError):
             attr.value = value  # type: ignore[arg-type]
+
+    def test_create_RequirementType_AttributeDefinition_creation(
+        self, model: capellambse.MelodyModel
+    ):
+        reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        definitions = reqtype.attribute_definitions
+
+        attr_def = reqtype.attribute_definitions.create(
+            "AttributeDefinition", long_name="First"
+        )
+        enum_def = reqtype.attribute_definitions.create(
+            "AttributeDefinitionEnumeration", long_name="Second"
+        )
+
+        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
+        assert attr_def in reqtype.attribute_definitions
+        assert enum_def in reqtype.attribute_definitions
 
 
 class TestRequirementsFiltering:

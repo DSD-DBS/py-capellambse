@@ -116,8 +116,7 @@ class AttributeProperty:
             )
 
         if value == self.default:
-            self.__delete__(obj)
-            return
+            return self.__delete__(obj)
 
         stringified = str(value)
 
@@ -147,9 +146,7 @@ class AttributeProperty:
         try:
             del xml_element.attrib[self.attribute]
         except KeyError:
-            raise AttributeError(
-                f"{obj!r} does not have {self.__name__} set"
-            ) from None
+            pass
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
@@ -307,6 +304,8 @@ class DatetimeAttributeProperty(AttributeProperty):
         if value is None:
             self.__delete__(obj)
         elif isinstance(value, datetime.datetime):
+            if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+                value = value.astimezone()
             super().__set__(obj, value.strftime(self.format))
         else:
             raise TypeError(f"Expected datetime, not {type(value).__name__}")
