@@ -8,13 +8,11 @@ import datetime
 import operator
 import textwrap
 import typing as t
-from xmlrpc.client import boolean
 
 import pytest
 
 import capellambse
 from capellambse.extensions import reqif
-from capellambse.loader.core import RE_VALID_ID
 
 long_req_text = textwrap.dedent(
     """\
