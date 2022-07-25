@@ -433,7 +433,7 @@ class TestReqIFModification:
         definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         attr = req.attributes.create(type_hint, definition=definition)
 
-        assert tuple(req.attributes) == (attr,)
+        assert req.attributes == [attr]
         assert attr.definition == definition
         assert attr.value == default_value
         assert attr._element.get("value") is None
@@ -479,7 +479,7 @@ class TestReqIFModification:
         if isinstance(value, datetime.datetime):
             value = value.astimezone()
 
-        assert tuple(req.attributes) == (value_attr,)
+        assert req.attributes == [value_attr]
         assert value_attr.value == value
         assert value_attr._element.get("value") == xml
 
@@ -488,8 +488,8 @@ class TestReqIFModification:
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         assert isinstance(req, reqif.Requirement)
-
         assert not req.attributes
+
         attr = req.attributes.create("Int")
 
         assert len(req.attributes) == 1
