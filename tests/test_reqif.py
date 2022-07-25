@@ -636,10 +636,11 @@ class TestRequirementsFiltering:
             "32d66740-e428-4600-be68-8410d9d568cc",
         }
     )
+    reqtype_uuid = "db47fca9-ddb6-4397-8d4b-e397e53d277e"
 
     def test_filtering_by_type_name(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
-        rt = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        rt = model.by_uuid(self.reqtype_uuid)
         assert isinstance(rt, reqif.RequirementType)
 
         rtype_reqs = requirements.by_type(rt.long_name)
@@ -649,7 +650,7 @@ class TestRequirementsFiltering:
 
     def test_filtering_by_type_names(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
-        rt1 = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        rt1 = model.by_uuid(self.reqtype_uuid)
         rt2 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
         assert isinstance(rt1, reqif.RequirementType)
         assert isinstance(rt2, reqif.RequirementType)
@@ -664,14 +665,14 @@ class TestRequirementsFiltering:
         self, model: capellambse.MelodyModel
     ):
         requirements = model.search(reqif.XT_REQUIREMENT)
-        rt = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        rt = model.by_uuid(self.reqtype_uuid)
 
         uuids = {r.uuid for r in requirements.by_type(rt)}
         assert uuids & self.uuids == self.uuids
 
     def test_filtering_by_types(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
-        rt1 = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        rt1 = model.by_uuid(self.reqtype_uuid)
         rt2 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
         expected_uuids = self.uuids | {"db4d4c74-b913-4d9a-8905-7d93d3360560"}
 
@@ -680,7 +681,7 @@ class TestRequirementsFiltering:
 
     def test_filtering_by_name_and_type(self, model: capellambse.MelodyModel):
         requirements = model.search(reqif.XT_REQUIREMENT)
-        rt1 = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        rt1 = model.by_uuid(self.reqtype_uuid)
         rt2 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
         assert isinstance(rt1, reqif.RequirementType)
         assert isinstance(rt2, reqif.RequirementType)
@@ -773,7 +774,7 @@ class TestRequirementsFiltering:
     def test_requirement_type_is_hashable(
         self, model: capellambse.MelodyModel
     ):
-        req_type = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        req_type = model.by_uuid(self.reqtype_uuid)
 
         assert isinstance(req_type, reqif.RequirementType)
         assert isinstance(req_type, t.Hashable)
