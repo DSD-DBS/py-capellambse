@@ -756,6 +756,20 @@ class TestRequirementsFiltering:
 
         assert [i.uuid for i in filtered_related] == target_uuids
 
+    def test_attributes_filtering_by_definition_long_name(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.by_uuid("85d41db2-9e17-438b-95cf-49342452ddf3")
+        ex_definition = model.by_uuid("c316ab07-c5c3-4866-a896-92e34733055c")
+        def_name = ex_definition.long_name
+
+        attributes = req.attributes.by_definition.long_name(def_name)
+        attr = req.attributes.by_definition.long_name(def_name, single=True)
+
+        assert def_name in req.attributes.by_definition.long_name
+        assert [attr.definition for attr in attributes] == [ex_definition]
+        assert attr.definition == ex_definition
+
     def test_RelationsLists_slicing(self, model: capellambse.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
