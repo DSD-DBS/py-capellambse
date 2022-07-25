@@ -151,8 +151,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             if not mime or mime not in include or mime in exclude:
                 continue
 
-            # XXX Hack to disable SVG in Jupyter notebooks, when requested
-            if mime == "image/svg+xml" and self._model.jupyter_untrusted:
+            # XXX Hack to fix diagram previews on Github-rendered notebooks
+            if self._model.jupyter_untrusted and mime != "image/png":
                 continue
 
             formats[mime] = conv
