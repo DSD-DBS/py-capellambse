@@ -18,7 +18,7 @@ import markupsafe
 
 import capellambse
 
-from .. import aird, svg
+from .. import aird, helpers, svg
 from . import common as c
 from . import modeltypes
 
@@ -134,13 +134,54 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             f"(uuid: {markupsafe.Markup.escape(self.uuid)})"
         )
 
-    def _repr_svg_(self) -> t.Any | None:
-        if self._model.jupyter_untrusted:
-            return None
-        return self.render("svg")
+    def _repr_mimebundle_(
+        self,
+        include: cabc.Container[str] | None = None,
+        exclude: cabc.Container[str] | None = None,
+        **_,
+    ) -> tuple[dict[str, t.Any], dict[t.Any, t.Any]] | dict[str, t.Any] | None:
+        if include is None:
+            include = helpers.EverythingContainer()
+        if exclude is None:
+            exclude = ()
 
-    def _repr_png_(self) -> t.Any | None:
-        return self.render("png")
+        formats: dict[str, DiagramConverter] = {}
+        for conv in _iter_format_converters():
+            mime = getattr(conv, "mimetype", None)
+            if not mime or mime not in include or mime in exclude:
+                continue
+
+            # XXX Hack to fix diagram previews on Github-rendered notebooks
+            if self._model.jupyter_untrusted and mime != "image/png":
+                continue
+
+            formats[mime] = conv
+        if not formats:
+            return None
+
+        bundle: dict[str, t.Any] = {}
+        for mime, conv in formats.items():
+            try:
+                bundle[mime] = self.__load_cache(conv)
+            except KeyError:
+                pass
+
+        if bundle:
+            return bundle
+
+        render = self.__render_fresh({})
+        for mime, conv in formats.items():
+            try:
+                if isinstance(conv, DiagramFormat):
+                    bundle[mime] = conv.convert(render)
+                else:
+                    bundle[mime] = conv(render)
+            except Exception:
+                LOGGER.exception("Failed converting diagram with %r", conv)
+        if not bundle:
+            LOGGER.error("Failed converting diagram for MIME bundle")
+            bundle["text/plain"] = repr(self)
+        return bundle
 
     @property
     def nodes(self) -> c.MixedElementList:
@@ -400,6 +441,7 @@ class SVGFormat:
     """Convert the diagram to SVG."""
 
     filename_extension = ".svg"
+    mimetype = "image/svg+xml"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> str:
@@ -414,6 +456,7 @@ class PNGFormat:
     """Convert the diagram to PNG."""
 
     filename_extension = ".png"
+    mimetype = "image/png"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> bytes:
@@ -478,6 +521,7 @@ class SVGDataURIFormat:
 
 class SVGInHTMLIMGFormat:
     filename_extension = ".svg"
+    mimetype = "text/html"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> markupsafe.Markup:
@@ -504,6 +548,7 @@ class JSONFormat:
 
 class PrettyJSONFormat:
     filename_extension = ".json"
+    mimetype = "application/json"
 
     @staticmethod
     def convert(diagram: aird.Diagram) -> str:
@@ -525,3 +570,13 @@ def _find_format_converter(fmt: str) -> DiagramConverter:
         raise UnknownOutputFormat(
             f"Unknown image output format {fmt}"
         ) from None
+
+
+def _iter_format_converters() -> t.Iterator[DiagramConverter]:
+    for ep in imm.entry_points()["capellambse.diagram.formats"]:
+        try:
+            conv = ep.load()
+        except ImportError:
+            pass
+        else:
+            yield conv
