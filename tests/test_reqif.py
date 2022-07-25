@@ -410,6 +410,36 @@ class TestReqIFModification:
     TEST_TZ_OFFSET = f"{TEST_TZ_HRS:+03d}{TEST_TZ_MINS:02d}"
 
     @pytest.mark.parametrize(
+        "type_hint,default_value",
+        [
+            pytest.param("Int", 0),
+            pytest.param("Str", ""),
+            pytest.param("Float", 0.0),
+            pytest.param("Date", None),
+            pytest.param("Bool", False),
+        ],
+    )
+    def test_create_requirements_attributes_with_default_values(
+        self,
+        model: capellambse.MelodyModel,
+        type_hint: str,
+        default_value: t.Any,
+    ):
+        req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+
+        assert isinstance(req, reqif.Requirement)
+        assert not req.attributes
+
+        definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
+        attr = req.attributes.create(type_hint, definition=definition)
+
+        assert tuple(req.attributes) == (attr,)
+        assert attr.definition == definition
+        assert attr.value == default_value
+        assert attr._element.get("value") is None
+        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
+
+    @pytest.mark.parametrize(
         "type_hint,value,xml",
         [
             pytest.param("Int", 0, None),
@@ -433,7 +463,7 @@ class TestReqIFModification:
             pytest.param("Bool", True, "true"),
         ],
     )
-    def test_create_requirements_attributes(
+    def test_create_requirements_attributes_with_non_default_values(
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
@@ -441,39 +471,17 @@ class TestReqIFModification:
         xml: str | None,
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
+
         assert isinstance(req, reqif.Requirement)
-
         assert not req.attributes
-        definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
-        attr = req.attributes.create(type_hint, definition=definition)
-        value_attr = req.attributes.create(type_hint, value=value)
 
+        value_attr = req.attributes.create(type_hint, value=value)
         if isinstance(value, datetime.datetime):
             value = value.astimezone()
 
-        assert len(req.attributes) == 2
-        assert tuple(req.attributes) == (attr, value_attr)
-        assert attr.definition == definition
+        assert tuple(req.attributes) == (value_attr,)
         assert value_attr.value == value
         assert value_attr._element.get("value") == xml
-        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
-
-    def test_create_RequirementType_AttributeDefinition_creation(
-        self, model: capellambse.MelodyModel
-    ):
-        reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
-        definitions = reqtype.attribute_definitions
-
-        attr_def = reqtype.attribute_definitions.create(
-            "AttributeDefinition", long_name="First"
-        )
-        enum_def = reqtype.attribute_definitions.create(
-            "AttributeDefinitionEnumeration", long_name="Second"
-        )
-
-        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
-        assert attr_def in reqtype.attribute_definitions
-        assert enum_def in reqtype.attribute_definitions
 
     def test_create_value_attribute_on_requirements_without_definition(
         self, model: capellambse.MelodyModel
@@ -530,9 +538,7 @@ class TestReqIFModification:
         ],
     )
     def test_setting_attribute_values_on_requirement(
-        self,
-        model: capellambse.MelodyModel,
-        value: t.Any,
+        self, model: capellambse.MelodyModel, value: t.Any
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
@@ -596,6 +602,23 @@ class TestReqIFModification:
 
         with pytest.raises(TypeError):
             attr.value = value  # type: ignore[arg-type]
+
+    def test_create_RequirementType_AttributeDefinition_creation(
+        self, model: capellambse.MelodyModel
+    ):
+        reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
+        definitions = reqtype.attribute_definitions
+
+        attr_def = reqtype.attribute_definitions.create(
+            "AttributeDefinition", long_name="First"
+        )
+        enum_def = reqtype.attribute_definitions.create(
+            "AttributeDefinitionEnumeration", long_name="Second"
+        )
+
+        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
+        assert attr_def in reqtype.attribute_definitions
+        assert enum_def in reqtype.attribute_definitions
 
 
 class TestRequirementsFiltering:
