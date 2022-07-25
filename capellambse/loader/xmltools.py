@@ -110,16 +110,13 @@ class AttributeProperty:
 
     def __set__(self, obj, value) -> None:
         xml_element = getattr(obj, self.xmlattr)
-        attribute_exists = xml_element.get(self.attribute) is not None
-        if not self.writable and attribute_exists:
+        if not self.writable and xml_element.get(self.attribute) is not None:
             raise TypeError(
                 f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
             )
 
         if value == self.default:
-            if attribute_exists:
-                self.__delete__(obj)
-            return
+            return self.__delete__(obj)
 
         stringified = str(value)
 
@@ -149,9 +146,7 @@ class AttributeProperty:
         try:
             del xml_element.attrib[self.attribute]
         except KeyError:
-            raise AttributeError(
-                f"{obj!r} does not have {self.__name__} set"
-            ) from None
+            pass
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
@@ -252,7 +247,7 @@ class BooleanAttributeProperty(AttributeProperty):
     def __set__(self, obj, value) -> None:
         if value:
             super().__set__(obj, "true")
-        elif getattr(obj, self.xmlattr).get(self.attribute) is not None:
+        else:
             self.__delete__(obj)
 
 
@@ -307,8 +302,7 @@ class DatetimeAttributeProperty(AttributeProperty):
 
     def __set__(self, obj, value) -> None:
         if value is None:
-            if getattr(obj, self.xmlattr).get(self.attribute):
-                self.__delete__(obj)
+            self.__delete__(obj)
         elif isinstance(value, datetime.datetime):
             if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
                 value = value.astimezone()
