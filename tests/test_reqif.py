@@ -16,12 +16,12 @@ from capellambse.extensions import reqif
 
 long_req_text = textwrap.dedent(
     """\
-    <p>Test requirement 1 really l o n g text that is\xa0way too long to display here as that</p>
+    <p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>
 
-    <p>&lt; &gt; \" '</p>
+    <p>&lt; &gt; &quot; &#39;</p>
 
     <ul>
-    \t<li>This\xa0is a list</li>
+    \t<li>This&nbsp;is a list</li>
     \t<li>an unordered one</li>
     </ul>
 
@@ -287,23 +287,7 @@ class TestReqIFAccess:
             "long_name": "1",
             "name": "TestReq1",
             "prefix": "3",
-            "text": textwrap.dedent(
-                """\
-                <p>Test requirement 1 really l o n g text that is\xA0way too long to display here as that</p>
-
-                <p>&lt; &gt; " '</p>
-
-                <ul>
-                \t<li>This\xA0is a list</li>
-                \t<li>an unordered one</li>
-                </ul>
-
-                <ol>
-                \t<li>Ordered list</li>
-                \t<li>Ok</li>
-                </ol>
-                """
-            ),
+            "text": long_req_text,
         }.items():
             assert getattr(req, attr) == expected
 

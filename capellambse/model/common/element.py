@@ -28,7 +28,7 @@ import capellambse
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, T, U, accessors, markuptype
+from . import XTYPE_HANDLERS, T, U, accessors
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -109,11 +109,11 @@ class GenericElement:
     name = xmltools.AttributeProperty(
         "_element", "name", optional=True, default="(Unnamed {self.xtype})"
     )
-    description = xmltools.AttributeProperty(
-        "_element", "description", optional=True, returntype=markuptype
+    description = xmltools.HTMLAttributeProperty(
+        "_element", "description", optional=True
     )
-    summary = xmltools.AttributeProperty(
-        "_element", "summary", optional=True, returntype=markuptype
+    summary = xmltools.HTMLAttributeProperty(
+        "_element", "summary", optional=True
     )
     diagrams = property(
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)

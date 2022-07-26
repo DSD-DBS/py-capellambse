@@ -241,7 +241,7 @@ class ReqIFElement(c.GenericElement):
     long_name = xmltools.AttributeProperty(
         "_element", "ReqIFLongName", optional=True
     )
-    description = xmltools.AttributeProperty(
+    description: str = xmltools.AttributeProperty(  # type: ignore[assignment]
         "_element", "ReqIFDescription", optional=True
     )
     name = xmltools.AttributeProperty("_element", "ReqIFName", optional=True)
@@ -551,8 +551,8 @@ class Requirement(ReqIFElement):
     foreign_id = xmltools.AttributeProperty(
         "_element", "ReqIFForeignID", optional=True, returntype=int
     )
-    text = xmltools.AttributeProperty(
-        "_element", "ReqIFText", optional=True, returntype=c.markuptype
+    text = xmltools.HTMLAttributeProperty(
+        "_element", "ReqIFText", optional=True
     )
     attributes = AttributeAccessor()
     relations = RequirementsRelationAccessor()

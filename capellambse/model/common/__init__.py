@@ -13,7 +13,6 @@ import typing as t
 
 import markupsafe
 
-from capellambse import helpers
 from capellambse.loader import xmltools
 
 S = t.TypeVar("S", bound=t.Optional[str])
@@ -69,10 +68,6 @@ def enumliteral(
     return generic_element.from_model(
         generic_element._model, generic_element._model._loader[uuid]
     ).name
-
-
-def markuptype(markup: str, *args: t.Any, **kw: t.Any) -> markupsafe.Markup:
-    return markupsafe.Markup(helpers.repair_html(markup), *args, **kw)
 
 
 def set_accessor(
