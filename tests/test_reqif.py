@@ -34,6 +34,8 @@ long_req_text = textwrap.dedent(
 
 
 def test_extension_was_loaded():
+    capellambse.load_model_extensions()
+
     assert hasattr(capellambse.model.common.GenericElement, "requirements")
     for layer in (
         capellambse.model.layers.oa.OperationalAnalysis,
