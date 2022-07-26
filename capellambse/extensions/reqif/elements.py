@@ -321,8 +321,8 @@ class AbstractRequirementsAttribute(c.GenericElement):
         mytype = type(self).__name__
         if self.definition is not None:
             return f"<{mytype} {self.definition.long_name!r} ({self.uuid})>"
-        default_name = re.sub(r"([A-Z])", r" \1", mytype).split()
-        return f"<{mytype} [{' '.join(default_name)}] ({self.uuid})>"
+        default_name = re.sub(r"(?<!^)([A-Z])", r" \1", mytype)
+        return f"<{mytype} [{default_name}] ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
