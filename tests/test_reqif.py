@@ -498,17 +498,29 @@ class TestReqIFModification:
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     @pytest.mark.parametrize(
-        "type_hint",
+        "type_hint,expected_type",
         [
-            pytest.param("Integer"),
-            pytest.param("String"),
-            pytest.param("Real"),
-            pytest.param("Date"),
-            pytest.param("Boolean"),
+            pytest.param("Int", "Integer"),
+            pytest.param("Integer", "Integer"),
+            pytest.param("Integervalueattribute", "Integer"),
+            pytest.param("Str", "String"),
+            pytest.param("String", "String"),
+            pytest.param("Stringvalueattribute", "String"),
+            pytest.param("Float", "Real"),
+            pytest.param("Real", "Real"),
+            pytest.param("Realvalueattribute", "Real"),
+            pytest.param("Date", "Date"),
+            pytest.param("Datevalueattribute", "Date"),
+            pytest.param("Bool", "Boolean"),
+            pytest.param("Boolean", "Boolean"),
+            pytest.param("Booleanvalueattribute", "Boolean"),
         ],
     )
     def test_requirements_attribute_value_default_reprs(
-        self, model: capellambse.MelodyModel, type_hint: str
+        self,
+        model: capellambse.MelodyModel,
+        type_hint: str,
+        expected_type: str,
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
 
@@ -516,7 +528,7 @@ class TestReqIFModification:
 
         attr = req.attributes.create(type_hint)
 
-        assert f"[{type_hint} Value Attribute]" in repr(attr)
+        assert f"[{expected_type} Value Attribute]" in repr(attr)
 
     def test_create_enum_value_attribute_on_requirements(
         self, model: capellambse.MelodyModel

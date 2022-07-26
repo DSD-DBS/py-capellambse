@@ -764,7 +764,12 @@ _attr_type_hints = {
     "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
-    "boolvalueattribute": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "boolean": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "booleanvalueattribute": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
     "enum": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
-    "enumvalueattribute": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+    "enumeration": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+    "enumerationvalueattribute": (
+        EnumerationValueAttribute,
+        XT_REQ_ATTR_ENUMVALUE,
+    ),
 }
