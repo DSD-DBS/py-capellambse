@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+import operator
 import typing as t
 
 import markupsafe
@@ -957,3 +958,27 @@ def test_literal_numeric_value_infinity_is_star(
     max_card.value = value
 
     assert max_card._element.get("value") == expected_xml
+
+
+@pytest.mark.parametrize(
+    ["attr", "value"],
+    [
+        ("name", "[MSM] States of Functional Human Being"),
+        ("description", None),
+        ("filters", {"ModelExtensionFilter"}),
+        ("target.uuid", "eeeb98a7-6063-4115-8b4b-40a51cc0df49"),
+        ("type", "MSM"),
+        ("type", capellambse.model.modeltypes.DiagramType.MSM),
+        ("viewpoint", "Common"),
+        ("xtype", "viewpoint:DRepresentationDescriptor"),
+    ],
+)
+def test_diagram_attributes(
+    model: capellambse.MelodyModel, attr: str, value: t.Any
+) -> None:
+    diagram = model.diagrams.by_uuid("_7FWu4KrxEeqOgqWuHJrXFA")
+    get_attribute_under_test = operator.attrgetter(attr)
+
+    actual = get_attribute_under_test(diagram)
+
+    assert actual == value
