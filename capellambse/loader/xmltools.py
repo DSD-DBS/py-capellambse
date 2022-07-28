@@ -178,29 +178,11 @@ class HTMLAttributeProperty(AttributeProperty):
             xmlattr,
             attribute,
             default=None,
+            returntype=markupsafe.Markup,
             optional=optional,
             writable=writable,
             __doc__=__doc__,
         )
-
-    @t.overload
-    def __get__(self, obj: None, objtype: type) -> HTMLAttributeProperty:
-        ...
-
-    @t.overload
-    def __get__(
-        self, obj: t.Any, objtype: type | None = None
-    ) -> markupsafe.Markup | None:
-        ...
-
-    def __get__(
-        self, obj: t.Any, objtype: type | None = None
-    ) -> HTMLAttributeProperty | markupsafe.Markup | None:
-        if obj is None:
-            return self
-
-        value = super().__get__(obj, objtype)
-        return markupsafe.Markup(value)
 
     def __set__(self, obj: t.Any, value: str) -> None:
         if not isinstance(value, str):
