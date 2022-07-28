@@ -17,7 +17,6 @@ import uuid
 import markupsafe
 
 import capellambse
-from capellambse.loader import xmltools
 
 from .. import aird, helpers, svg
 from . import common as c
@@ -345,9 +344,6 @@ class Diagram(AbstractDiagram):
     viewpoint: str = property(operator.attrgetter("_element.viewpoint"))  # type: ignore[assignment]
     target_uuid: str = property(lambda self: self.target.uuid)  # type: ignore[assignment]
     """Obsolete."""
-    description = xmltools.HTMLAttributeProperty(
-        "_element", "documentation", optional=True
-    )
 
     _element: aird.DiagramDescriptor
 
@@ -371,6 +367,12 @@ class Diagram(AbstractDiagram):
         if not isinstance(other, type(self)):
             return NotImplemented
         return self._model is other._model and self._element == other._element
+
+    @property
+    def description(self) -> str:
+        """Return the diagram description."""
+        desc = self._model._loader[self.uuid].get("documentation")
+        return desc and helpers.repair_html(desc)
 
     @property
     def target(self) -> c.GenericElement:  # type: ignore[override]
