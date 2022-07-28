@@ -87,7 +87,7 @@ class AttributeProperty:
         """Generate the qualified name of this descriptor."""
         if self.__objclass__ is None:
             return f"(unknown {type(self).__name__} - call __set_name__)"
-        return f"{type(self.__objclass__.__name__)}.{self.__name__}"
+        return f"{self.__objclass__.__name__}.{self.__name__}"
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty:
