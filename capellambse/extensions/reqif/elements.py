@@ -717,6 +717,15 @@ def init() -> None:
         ),
     )
     c.set_accessor(
+        RequirementsModule,
+        "requirement_types_folders",
+        c.ProxyAccessor(
+            RequirementsTypesFolder,
+            XT_REQ_TYPES_F,
+            aslist=c.ElementList,
+        ),
+    )
+    c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "all_requirement_types",
         c.ProxyAccessor(
