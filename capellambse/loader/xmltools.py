@@ -87,7 +87,7 @@ class AttributeProperty:
         """Generate the qualified name of this descriptor."""
         if self.__objclass__ is None:
             return f"(unknown {type(self).__name__} - call __set_name__)"
-        return f"{type(self.__objclass__.__name__)}.{self.__name__}"
+        return f"{self.__objclass__.__name__}.{self.__name__}"
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty:
@@ -178,29 +178,11 @@ class HTMLAttributeProperty(AttributeProperty):
             xmlattr,
             attribute,
             default=None,
+            returntype=markupsafe.Markup,
             optional=optional,
             writable=writable,
             __doc__=__doc__,
         )
-
-    @t.overload
-    def __get__(self, obj: None, objtype: type) -> HTMLAttributeProperty:
-        ...
-
-    @t.overload
-    def __get__(
-        self, obj: t.Any, objtype: type | None = None
-    ) -> markupsafe.Markup | None:
-        ...
-
-    def __get__(
-        self, obj: t.Any, objtype: type | None = None
-    ) -> HTMLAttributeProperty | markupsafe.Markup | None:
-        if obj is None:
-            return self
-
-        value = super().__get__(obj, objtype)
-        return markupsafe.Markup(value)
 
     def __set__(self, obj: t.Any, value: str) -> None:
         if not isinstance(value, str):
