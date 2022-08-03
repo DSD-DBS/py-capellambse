@@ -493,6 +493,7 @@ class ReferencingProxyAccessor(DirectProxyAccessor[T]):
             rootelem=rootelem,
             list_extra_args=list_extra_args,
         )
+        self.follow = follow
 
     def _resolve(
         self, obj: element.ModelObject, elem: etree._Element
