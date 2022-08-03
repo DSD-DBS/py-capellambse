@@ -13,10 +13,8 @@ class Enumeration(c.GenericElement):
 
     _xmltag = "ownedDataTypes"
 
-    owned_literals = c.ProxyAccessor(
-        datavalue.EnumerationLiteral,
-        aslist=c.ElementList,
-        follow_abstract=False,
+    owned_literals = c.DirectProxyAccessor(
+        datavalue.EnumerationLiteral, aslist=c.ElementList
     )
 
     sub: c.Accessor

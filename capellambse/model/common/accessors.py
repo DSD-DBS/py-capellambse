@@ -11,7 +11,9 @@ import markupsafe
 __all__ = [
     "Accessor",
     "WritableAccessor",
-    "ProxyAccessor",
+    "DirectProxyAccessor",
+    "DeepProxyAccessor",
+    "ReferencingProxyAccessor",
     "AttrProxyAccessor",
     "AlternateAccessor",
     "ParentAccessor",
@@ -270,15 +272,10 @@ class PhysicalAccessor(Accessor[T]):
         )
 
 
-class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Creates proxy objects on the fly."""
 
-    __slots__ = (
-        "deep",
-        "follow",
-        "follow_abstract",
-        "rootelem",
-    )
+    __slots__ = ("follow_abstract", "rootelem")
 
     aslist: type[ElementListCouplingMixin] | None
 
@@ -288,9 +285,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
         aslist: type[element.ElementList] | None = None,
-        deep: bool = False,
-        follow: str | None = None,
-        follow_abstract: bool = True,
+        follow_abstract: bool = False,
         rootelem: (
             str
             | type[element.GenericElement]
@@ -299,7 +294,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         ) = None,
         list_extra_args: dict[str, t.Any] | None = None,
     ):
-        """Create a ProxyAccessor.
+        """Create a DirectProxyAccessor.
 
         Parameters
         ----------
@@ -330,8 +325,6 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         super().__init__(
             class_, xtypes, aslist=aslist, list_extra_args=list_extra_args
         )
-        self.deep: bool = deep
-        self.follow: str | None = follow
         self.follow_abstract: bool = follow_abstract
         if rootelem is None:
             self.rootelem: cabc.Sequence[str] = []
@@ -347,33 +340,36 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             ]
 
     def __get__(self, obj, objtype=None):
+        del objtype
         if obj is None:  # pragma: no cover
             return self
 
-        elems = [self.__follow_attr(obj, e) for e in self.__getsubelems(obj)]
-        elems = [x for x in elems if x is not None]
+        elems = [
+            self._resolve(obj, e)
+            for e in self._getsubelems(obj)
+            if e.get("id") is not None
+        ]
         return self._make_list(obj, elems)
 
-    def __getsubelems(
+    def _resolve(
+        self, obj: element.ModelObject, elem: etree._Element
+    ) -> etree._Element:
+        if self.follow_abstract:
+            if abstype := elem.get("abstractType"):
+                elem = obj._model._loader[abstype]
+            else:
+                raise RuntimeError("Broken XML: No abstractType defined?")
+        return elem
+
+    def _getsubelems(
         self, obj: element.ModelObject
     ) -> cabc.Iterator[etree._Element]:
-        yielded_uuids = {None}
+        return itertools.chain.from_iterable(
+            obj._model._loader.iterchildren_xt(i, *iter(self.xtypes))
+            for i in self._findroots(obj)
+        )
 
-        if self.deep:
-            it_func = obj._model._loader.iterdescendants_xt
-        else:
-            it_func = obj._model._loader.iterchildren_xt
-        for elem in itertools.chain.from_iterable(
-            it_func(i, *iter(self.xtypes)) for i in self.__findroots(obj)
-        ):
-            elemid = elem.get("id")
-            if elemid in yielded_uuids:
-                continue
-
-            yielded_uuids.add(elemid)
-            yield elem
-
-    def __findroots(self, obj: element.ModelObject) -> list[etree._Element]:
+    def _findroots(self, obj: element.ModelObject) -> list[etree._Element]:
         roots = [obj._element]
         for xtype in self.rootelem:
             roots = list(
@@ -382,28 +378,6 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 )
             )
         return roots
-
-    def __follow_attr(
-        self, obj: element.ModelObject, elem: etree._Element
-    ) -> etree._Element:
-        if self.follow:
-            if self.follow in elem.attrib:
-                elem = obj._model._loader[elem.attrib[self.follow]]
-            else:
-                return None
-        return self.__follow_href(obj, elem)
-
-    def __follow_href(
-        self, obj: element.ModelObject, elem: etree._Element
-    ) -> etree._Element:
-        href = elem.get("href")
-        if href:
-            elem = obj._model._loader[href]
-        if self.follow_abstract:
-            abstype = elem.get("abstractType")
-            if abstype is not None:
-                elem = obj._model._loader[abstype]
-        return elem
 
     def _make_list(self, parent_obj, elements):
         if self.aslist is None:
@@ -423,7 +397,7 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
-        if self.deep or self.follow or self.rootelem:
+        if self.rootelem:
             raise TypeError("Cannot create objects here")
 
         if type_hints:
@@ -473,6 +447,64 @@ class ProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         assert obj._model is elmlist._model
         elmlist._model._loader.idcache_remove(obj._element)
         elmlist._parent._element.remove(obj._element)
+
+
+class DeepProxyAccessor(DirectProxyAccessor[T]):
+    """Creates proxy objects that searches recursively through the tree."""
+
+    __slots__ = ()
+
+    def _getsubelems(
+        self, obj: element.ModelObject
+    ) -> cabc.Iterator[etree._Element]:
+        return itertools.chain.from_iterable(
+            obj._model._loader.iterdescendants_xt(i, *iter(self.xtypes))
+            for i in self._findroots(obj)
+        )
+
+
+class ReferencingProxyAccessor(DirectProxyAccessor[T]):
+    """Creates proxy objects via UUID-referenced elements."""
+
+    __slots__ = ("follow",)
+
+    def __init__(
+        self,
+        class_: type[T],
+        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
+        *,
+        aslist: type[element.ElementList] | None = None,
+        follow: str,
+        follow_abstract: bool = False,
+        rootelem: (
+            str
+            | type[element.GenericElement]
+            | cabc.Sequence[str | type[element.GenericElement]]
+            | None
+        ) = None,
+        list_extra_args: dict[str, t.Any] | None = None,
+    ) -> None:
+        self.follow = follow
+        super().__init__(
+            class_,
+            xtypes,
+            aslist=aslist,
+            follow_abstract=follow_abstract,
+            rootelem=rootelem,
+            list_extra_args=list_extra_args,
+        )
+
+    def _resolve(
+        self, obj: element.ModelObject, elem: etree._Element
+    ) -> etree._Element:
+        if self.follow:
+            if self.follow in elem.attrib:
+                elem = obj._model._loader[elem.attrib[self.follow]]
+            else:
+                return None
+        if href := elem.get("href"):
+            elem = obj._model._loader[href]
+        return super()._resolve(obj, elem)
 
 
 class AttrProxyAccessor(PhysicalAccessor):
@@ -610,7 +642,7 @@ class ParentAccessor(PhysicalAccessor[T]):
 
 
 class CustomAccessor(PhysicalAccessor[T]):
-    """Customizable alternative to the ProxyAccessor."""
+    """Customizable alternative to the DirectProxyAccessor."""
 
     __slots__ = (
         "elmfinders",
@@ -666,7 +698,7 @@ class CustomAccessor(PhysicalAccessor[T]):
         return self._make_list(obj, matches)
 
 
-class AttributeMatcherAccessor(ProxyAccessor[T]):
+class AttributeMatcherAccessor(DirectProxyAccessor[T]):
     __slots__ = (
         "_AttributeMatcherAccessor__aslist",
         "attributes",

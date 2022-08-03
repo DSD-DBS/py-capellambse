@@ -39,10 +39,12 @@ class MelodyModel:
     aspects.
     """
 
-    oa = common.ProxyAccessor(oa.OperationalAnalysis, rootelem=XT_SYSENG)
-    sa = common.ProxyAccessor(ctx.SystemAnalysis, rootelem=XT_SYSENG)
-    la = common.ProxyAccessor(la.LogicalArchitecture, rootelem=XT_SYSENG)
-    pa = common.ProxyAccessor(pa.PhysicalArchitecture, rootelem=XT_SYSENG)
+    oa = common.DirectProxyAccessor(oa.OperationalAnalysis, rootelem=XT_SYSENG)
+    sa = common.DirectProxyAccessor(ctx.SystemAnalysis, rootelem=XT_SYSENG)
+    la = common.DirectProxyAccessor(la.LogicalArchitecture, rootelem=XT_SYSENG)
+    pa = common.DirectProxyAccessor(
+        pa.PhysicalArchitecture, rootelem=XT_SYSENG
+    )
     diagrams = diagram.DiagramAccessor(
         None, cacheattr="_MelodyModel__diagram_cache"
     )

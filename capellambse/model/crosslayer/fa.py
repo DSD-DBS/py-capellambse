@@ -96,7 +96,7 @@ class FunctionPort(c.GenericElement):
 
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
-    state_machines = c.ProxyAccessor(
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
 
@@ -128,8 +128,8 @@ class Function(AbstractFunction):
 
     is_leaf = property(lambda self: not self.functions)
 
-    inputs = c.ProxyAccessor(FunctionInputPort, aslist=c.ElementList)
-    outputs = c.ProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
+    inputs = c.DirectProxyAccessor(FunctionInputPort, aslist=c.ElementList)
+    outputs = c.DirectProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
 
     functions: c.Accessor
     packages: c.Accessor
@@ -179,10 +179,10 @@ class FunctionalChain(c.GenericElement):
 
     _xmltag = "ownedFunctionalChains"
 
-    involved = c.ProxyAccessor(
+    involved = c.ReferencingProxyAccessor(
         c.GenericElement, XT_FCI, aslist=c.MixedElementList, follow="involved"
     )
-    involvements = c.ProxyAccessor(
+    involvements = c.DirectProxyAccessor(
         c.GenericElement, XT_FCI, aslist=c.ElementList
     )
 
@@ -206,7 +206,7 @@ class ComponentExchange(AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_functional_exchanges = c.ProxyAccessor(
+    allocated_functional_exchanges = c.ReferencingProxyAccessor(
         FunctionalExchange,
         XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,

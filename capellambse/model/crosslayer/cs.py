@@ -45,11 +45,10 @@ class Interface(c.GenericElement):
 class InterfacePkg(c.GenericElement):
     """A package that can hold interfaces and exchange items."""
 
-    exchange_items = c.ProxyAccessor(
-        information.ExchangeItem,
-        aslist=c.ElementList,
+    exchange_items = c.DirectProxyAccessor(
+        information.ExchangeItem, aslist=c.ElementList
     )
-    interfaces = c.ProxyAccessor(Interface, aslist=c.ElementList)
+    interfaces = c.DirectProxyAccessor(Interface, aslist=c.ElementList)
 
     packages: c.Accessor
 
@@ -70,7 +69,7 @@ class PhysicalLink(PhysicalPort):
     linkEnds = c.AttrProxyAccessor(
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
-    exchanges = c.ProxyAccessor(
+    exchanges = c.ReferencingProxyAccessor(
         fa.ComponentExchange,
         xtypes=fa.XT_COMP_EX_ALLOC,
         aslist=c.ElementList,
@@ -86,13 +85,13 @@ class PhysicalPath(c.GenericElement):
 
     _xmltag = "ownedPhysicalPath"
 
-    involved_items = c.ProxyAccessor(
+    involved_items = c.ReferencingProxyAccessor(
         c.GenericElement,
         xtypes=XT_PHYS_PATH_INV,
         aslist=c.MixedElementList,
         follow="involved",
     )
-    exchanges = c.ProxyAccessor(
+    exchanges = c.ReferencingProxyAccessor(
         fa.ComponentExchange,
         xtypes=fa.XT_COMP_EX_ALLOC,
         aslist=c.ElementList,
@@ -120,14 +119,14 @@ class Component(c.GenericElement):
     )
 
     owner = c.ParentAccessor(c.GenericElement)
-    state_machines = c.ProxyAccessor(
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
-    ports = c.ProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
-    physical_ports = c.ProxyAccessor(PhysicalPort, aslist=c.ElementList)
+    ports = c.DirectProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
+    physical_ports = c.DirectProxyAccessor(PhysicalPort, aslist=c.ElementList)
     parts = c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList)
-    physical_paths = c.ProxyAccessor(PhysicalPath, aslist=c.ElementList)
-    physical_links = c.ProxyAccessor(PhysicalLink, aslist=c.ElementList)
+    physical_paths = c.DirectProxyAccessor(PhysicalPath, aslist=c.ElementList)
+    physical_links = c.DirectProxyAccessor(PhysicalLink, aslist=c.ElementList)
     exchanges = c.ReferenceSearchingAccessor(
         fa.ComponentExchange,
         "source.owner",
@@ -146,17 +145,13 @@ class ComponentRealization(c.GenericElement):
 c.set_accessor(
     InterfacePkg,
     "packages",
-    c.ProxyAccessor(InterfacePkg, aslist=c.ElementList),
+    c.DirectProxyAccessor(InterfacePkg, aslist=c.ElementList),
 )
 c.set_accessor(
     Part,
     "deployed_parts",
-    c.ProxyAccessor(
-        Part,
-        XT_DEPLOY_LINK,
-        aslist=c.ElementList,
-        follow="deployedElement",
-        follow_abstract=False,
+    c.ReferencingProxyAccessor(
+        Part, XT_DEPLOY_LINK, aslist=c.ElementList, follow="deployedElement"
     ),
 )
 c.set_accessor(
