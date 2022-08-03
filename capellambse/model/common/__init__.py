@@ -81,7 +81,7 @@ def set_accessor(
 
 def set_self_references(*args: tuple[type[GenericElement], str]) -> None:
     for cls, attr in args:
-        set_accessor(cls, attr, ProxyAccessor(cls, aslist=ElementList))
+        set_accessor(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
 
 
 def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570

@@ -134,12 +134,10 @@ class Class(c.GenericElement):
     visibility = xmltools.EnumAttributeProperty(
         "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
-    state_machines = c.ProxyAccessor(
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
-    owned_properties = c.ProxyAccessor(
-        Property, aslist=c.ElementList, follow_abstract=False
-    )
+    owned_properties = c.DirectProxyAccessor(Property, aslist=c.ElementList)
 
     @property
     def properties(self) -> c.ElementList[Property]:
@@ -180,12 +178,14 @@ class Collection(c.GenericElement):
 class DataPkg(c.GenericElement):
     """A data package that can hold classes."""
 
-    classes = c.ProxyAccessor(Class, aslist=c.ElementList)
-    unions = c.ProxyAccessor(Union, aslist=c.ElementList)
-    collections = c.ProxyAccessor(Collection, aslist=c.ElementList)
-    enumerations = c.ProxyAccessor(datatype.Enumeration, aslist=c.ElementList)
-    complex_values = c.ProxyAccessor(
-        datavalue.ComplexValue, aslist=c.ElementList, follow_abstract=False
+    classes = c.DirectProxyAccessor(Class, aslist=c.ElementList)
+    unions = c.DirectProxyAccessor(Union, aslist=c.ElementList)
+    collections = c.DirectProxyAccessor(Collection, aslist=c.ElementList)
+    enumerations = c.DirectProxyAccessor(
+        datatype.Enumeration, aslist=c.ElementList
+    )
+    complex_values = c.DirectProxyAccessor(
+        datavalue.ComplexValue, aslist=c.ElementList
     )
     packages: c.Accessor
 
@@ -212,11 +212,7 @@ class ExchangeItem(c.GenericElement):
         modeltypes.ExchangeItemType,
         default="UNSET",
     )
-    elements = c.ProxyAccessor(
-        ExchangeItemElement,
-        aslist=c.ElementList,
-        follow_abstract=False,
-    )
+    elements = c.DirectProxyAccessor(ExchangeItemElement, aslist=c.ElementList)
     exchanges = c.CustomAccessor(
         c.GenericElement,
         _search_all_exchanges,
@@ -229,11 +225,8 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
         "super",
-        c.ProxyAccessor(
-            cls,
-            capellacore.Generalization,
-            follow="super",
-            follow_abstract=False,
+        c.ReferencingProxyAccessor(
+            cls, capellacore.Generalization, follow="super"
         ),
     )
     c.set_accessor(
@@ -248,6 +241,6 @@ c.set_accessor(
     c.ParentAccessor(datatype.Enumeration),
 )
 c.set_accessor(
-    DataPkg, "packages", c.ProxyAccessor(DataPkg, aslist=c.ElementList)
+    DataPkg, "packages", c.DirectProxyAccessor(DataPkg, aslist=c.ElementList)
 )
 c.set_accessor(ExchangeItemElement, "owner", c.ParentAccessor(ExchangeItem))

@@ -29,5 +29,5 @@ class Generalization(c.GenericElement):
 c.set_accessor(
     c.GenericElement,
     "constraints",
-    c.ProxyAccessor(Constraint, aslist=c.ElementList),
+    c.DirectProxyAccessor(Constraint, aslist=c.ElementList),
 )

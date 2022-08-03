@@ -50,7 +50,7 @@ class ComplexValue(c.GenericElement):
     _xmltag = "ownedDataValues"
 
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
-    value_parts = c.ProxyAccessor(ValuePart, aslist=c.ElementList)
+    value_parts = c.DirectProxyAccessor(ValuePart, aslist=c.ElementList)
 
 
 @c.attr_equal("name")
