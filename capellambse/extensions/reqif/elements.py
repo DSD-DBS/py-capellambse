@@ -126,10 +126,12 @@ class RequirementsRelationAccessor(
 
     # pylint: disable=abstract-method  # Only partially implemented for now
 
-    __slots__ = ("aslist",)
+    __slots__ = ("aslist", "single_attr")
 
     def __init__(self, *args, **kw) -> None:
-        super().__init__(*args, **kw, aslist=c.ElementList)
+        super().__init__(
+            *args, **kw, aslist=c.ElementList, single_attr="long_name"
+        )
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -204,10 +206,10 @@ class ElementRelationAccessor(
 
     # pylint: disable=abstract-method  # Only partially implemented for now
 
-    __slots__ = ("aslist",)
+    __slots__ = ("aslist", "single_attr")
 
     def __init__(self) -> None:
-        super().__init__(aslist=RelationsList)
+        super().__init__(aslist=RelationsList, single_attr="long_name")
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -342,6 +344,7 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
                 "mapkey": "definition.long_name",
                 "mapvalue": "value",
             },
+            single_attr=None,
         )
 
     def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
@@ -474,7 +477,10 @@ class EnumDataTypeDefinition(ReqIFElement):
     _xmltag = "ownedDefinitionTypes"
 
     values = c.DirectProxyAccessor(
-        EnumValue, XT_REQ_TYPE_ATTR_ENUM, aslist=c.ElementList
+        EnumValue,
+        XT_REQ_TYPE_ATTR_ENUM,
+        aslist=c.ElementList,
+        single_attr="long_name",
     )
 
 

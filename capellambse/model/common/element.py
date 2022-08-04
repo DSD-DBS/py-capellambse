@@ -214,6 +214,32 @@ class GenericElement:
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
                     )
+                elif isinstance(val, cabc.Mapping):
+                    raise NotImplementedError
+                elif isinstance(val, cabc.Iterable) and not isinstance(
+                    val, str
+                ):
+                    target = getattr(self, key)
+                    for v in val:
+                        if isinstance(v, cabc.Mapping):
+                            type_hints = v.get("type_hints", [])
+                            if type_hints:
+                                del v[  # type:ignore[attr-defined]
+                                    "type_hints"
+                                ]
+
+                            if isinstance(
+                                type_hints, cabc.Iterable
+                            ) and not isinstance(type_hints, str):
+                                for hint in type_hints:
+                                    assert isinstance(hint, str)
+                            else:
+                                assert isinstance(type_hints, str)
+                                type_hints = [type_hints]
+
+                            target.create(*type_hints, **v)
+                        else:
+                            target.create_singleattr(v)
                 else:
                     setattr(self, key, val)
             self._model._loader.idcache_index(self._element)
