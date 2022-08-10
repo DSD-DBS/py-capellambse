@@ -48,7 +48,7 @@ class PhysicalFunctionPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    components = c.DirectProxyAccessor(PhysicalFunction, aslist=c.ElementList)
+    functions = c.DirectProxyAccessor(PhysicalFunction, aslist=c.ElementList)
 
     packages: c.Accessor
 
@@ -122,7 +122,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         rootelem=PhysicalComponentPkg,
     )
     root_function = c.DirectProxyAccessor(
-        PhysicalComponent, rootelem=PhysicalFunctionPkg
+        PhysicalFunction, rootelem=PhysicalFunctionPkg
     )
 
     function_package = c.DirectProxyAccessor(PhysicalFunctionPkg)
