@@ -366,7 +366,9 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             for e in self._getsubelems(obj)
             if e.get("id") is not None
         ]
-        return self._make_list(obj, elems)
+        if (elements := self._make_list(obj, elems)) is not None:
+            return elements
+        return self
 
     def _resolve(
         self, obj: element.ModelObject, elem: etree._Element
@@ -407,15 +409,24 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             **self.list_extra_args,
         )
 
-    def create(
+    def create(  # pylint: disable=keyword-arg-before-vararg
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: ElementListCouplingMixin | None = None,
         /,
         *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
+        rootelem = None
         if self.rootelem:
-            raise TypeError("Cannot create objects here")
+            try:
+                rootelem = kw.pop("root")
+            except KeyError as error:
+                raise TypeError(
+                    "Cannot create object. Pass 'root'."
+                ) from error
+
+        if elmlist is None and rootelem is None:
+            raise TypeError("Cannot create object. Pass 'root'.")
 
         if type_hints:
             elmclass, kw["xtype"] = self._match_xtype(*type_hints)
@@ -423,15 +434,22 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             elmclass, kw["xtype"] = self._guess_xtype()
 
         assert elmclass is not None
-        assert isinstance(elmlist._parent, element.GenericElement)
         assert issubclass(elmclass, element.GenericElement)
+        if rootelem is None:
+            assert elmlist is not None
+            assert isinstance(elmlist._parent, element.GenericElement)
+            parent = elmlist._parent._element
+            model = elmlist._model
+        else:
+            assert isinstance(rootelem, element.GenericElement)
+            parent = rootelem._element
+            model = rootelem._model
 
-        parent = elmlist._parent._element
         want_id: str | None = None
         if "uuid" in kw:
             want_id = kw.pop("uuid")
-        with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
-            obj = elmclass(elmlist._model, parent, uuid=obj_id, **kw)
+        with model._loader.new_uuid(parent, want=want_id) as obj_id:
+            obj = elmclass(model, parent, uuid=obj_id, **kw)
         return obj  # type: ignore[return-value]
 
     def insert(
@@ -754,7 +772,7 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
                 pass
 
         if self.__aslist is None:
-            return no_list(self, obj._model, matches, self.class_)
+            return no_list(self, obj._model, matches, self.class_) or self
         return self.__aslist(obj._model, matches, self.class_)
 
 

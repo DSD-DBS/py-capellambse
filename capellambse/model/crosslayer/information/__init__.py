@@ -144,7 +144,7 @@ class Class(c.GenericElement):
         """Return all owned and inherited properties."""
         return (
             self.owned_properties + self.super.properties
-            if self.super is not None
+            if isinstance(self.super, Class)
             else self.owned_properties
         )
 

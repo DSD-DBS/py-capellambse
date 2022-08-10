@@ -175,6 +175,11 @@ class GenericElement:
         self._element = element
         return self
 
+    def delete(self) -> None:
+        assert isinstance(self.parent._element, etree._Element)
+        self._model._loader.idcache_remove(self._element)
+        self.parent._element.remove(self._element)
+
     def __init__(
         self,
         model: capellambse.MelodyModel,

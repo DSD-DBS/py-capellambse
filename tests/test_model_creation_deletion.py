@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Tests for creating and deleting model elements"""
-# pylint: disable=missing-function-docstring, protected-access, redefined-outer-name
+
+# pylint: disable=[missing-function-docstring, protected-access, redefined-outer-name]
+import operator
 import pathlib
 
 import pytest
@@ -46,6 +48,50 @@ def test_created_elements_show_up_in_xml_after_adding_them(
     assert model._loader.xpath(
         XPATH_UUID.format(newobj.uuid)
     ), "Cannot find added element via XPath"
+
+
+@pytest.mark.parametrize("layer", ["sa", "la", "pa"])
+@pytest.mark.parametrize(
+    "element,rootelement,name",
+    [
+        ("root_function", "function_package", "Function"),
+        ("root_component", "component_package", "Component"),
+    ],
+)
+def test_create_elements_with_rootelem(
+    model: capellambse.MelodyModel,
+    layer: str,
+    element: str,
+    rootelement: str,
+    name: str,
+):
+    old_obj = (obj_getter := operator.attrgetter(f"{layer}.{element}"))(model)
+    old_obj.delete()
+    root = operator.attrgetter(f"{layer}.{rootelement}")(model)
+    new_obj = obj_getter(model).create(name=name, root=root)
+
+    assert new_obj.name == name
+    assert new_obj.parent == root
+    assert old_obj.uuid != new_obj.uuid
+
+
+def test_create_elements_with_rootelem_and_elmlist(
+    model: capellambse.MelodyModel,
+):
+    root = model.la.function_package
+    new_fnc = model.la.all_functions.create(name="Test Function", root=root)
+
+    assert new_fnc.name == "Test Function"
+    assert new_fnc.parent == root
+
+
+def test_create_elements_on_lookup_fails_when_no_root_is_given(
+    model: capellambse.MelodyModel,
+):
+    with pytest.raises(TypeError) as error:
+        model.la.all_functions.create(name="Test Function")
+
+    assert error.value.args[0] == "Cannot create object. Pass 'root'."
 
 
 @pytest.mark.parametrize(
