@@ -78,3 +78,11 @@ def test_delete_all_deletes_matching_objects(model: capellambse.MelodyModel):
     comps.delete_all(name="Delete Me")
     assert len(comps) == 1
     assert comps[0].name == "Keep Me"
+
+
+def test_delete_elements_from_lookups(model: capellambse.MelodyModel):
+    assert model.la.all_functions[0] == model.la.root_function
+
+    del model.la.all_functions[0]
+
+    assert not model.la.all_functions

@@ -463,7 +463,8 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     ) -> None:
         assert obj._model is elmlist._model
         elmlist._model._loader.idcache_remove(obj._element)
-        elmlist._parent._element.remove(obj._element)
+        obj_parent = obj._element.getparent()
+        obj_parent.remove(obj._element)
 
 
 class DeepProxyAccessor(DirectProxyAccessor[T]):
