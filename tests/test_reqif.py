@@ -531,6 +531,17 @@ class TestReqIFModification:
         assert attr.definition == definition
         assert isinstance(attr, reqif.EnumerationValueAttribute)
 
+    def test_create_enum_value_attribute_with_passing_values(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.oa.all_requirements[0]
+        dtdef = model.by_uuid("637caf95-3229-4607-99a0-7d7b990bc97f")
+
+        attr = req.attributes.create("Enum", values=dtdef.values[:1])
+
+        assert attr in req.attributes
+        assert attr.values == dtdef.values[:1]
+
     def test_create_requirement_attribute_with_wrong_type_hint_raises_ValueError(
         self, model: capellambse.MelodyModel
     ):
