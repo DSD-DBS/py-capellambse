@@ -132,3 +132,40 @@ def test_delete_elements_from_lookups(model: capellambse.MelodyModel):
     del model.la.all_functions[0]
 
     assert not model.la.all_functions
+
+
+def test_create_architecture_layer_from_mapping(
+    model: capellambse.MelodyModel,
+):
+    del model.pa
+    model.pa = {
+        "name": "New Physical Arch",
+        "component_package": {
+            "name": "Components",
+            "components": [
+                {
+                    "name": "Root Component",
+                    "nature": modeltypes.Nature.NODE,
+                }
+            ],
+            "packages": [
+                {
+                    "name": "SubComponents",
+                    "components": [{"name": "SubComponent"}],
+                }
+            ],
+        },
+        "function_package": {
+            "name": "PhysicalFunctionPkg",
+            "functions": [{"name": "Function"}],
+        },
+    }
+
+    assert model.pa.name == "New Physical Arch"
+    assert model.pa.owner == model
+    assert model.pa.root_component.name == "Root Component"
+    assert model.pa.root_component.nature == modeltypes.Nature.NODE
+    assert model.pa.all_components[1].name == "SubComponent"
+    assert model.pa.all_components[1].owner.name == "SubComponents"
+    assert model.pa.all_functions[0].name == "Function"
+    assert model.pa.function_package.name == "PhysicalFunctionPkg"
