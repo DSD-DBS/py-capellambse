@@ -716,11 +716,11 @@ class TestReqIFModification:
             long_name="Test",
             data_type_definitions=[
                 {
-                    "type_hints": "DataTypeDefinition",
+                    "_type": "DataTypeDefinition",
                     "long_name": "TestAttrDataTypeDef",
                 },
                 {
-                    "type_hints": "EnumerationDataTypeDefinition",
+                    "_type": "EnumerationDataTypeDefinition",
                     "long_name": "TestEnumAttrDataTypeDef",
                     "values": ["a", "b"],
                 },
