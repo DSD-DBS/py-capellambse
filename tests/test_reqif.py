@@ -673,8 +673,19 @@ class TestReqIFModification:
         assert edt_def in reqtypesfolder.data_type_definitions
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param(["val", "val1"], id="Singleattr"),
+            pytest.param(
+                [{"long_name": "val"}, {"long_name": "val1"}], id="Dictionary"
+            ),
+        ],
+    )
     def test_create_RequirementTypesFolder_EnumDataTypeDefinition_creating_EnumValues(
-        self, model: capellambse.MelodyModel
+        self,
+        model: capellambse.MelodyModel,
+        values: list[str | t.Dict[str, t.Any]],
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
         dt_definitions = reqtypesfolder.data_type_definitions
@@ -682,25 +693,7 @@ class TestReqIFModification:
         edt_def = reqtypesfolder.data_type_definitions.create(
             "EnumerationDataTypeDefinition",
             long_name="Enum",
-            values=[{"long_name": "val"}, {"long_name": "val1"}],
-        )
-
-        assert len(dt_definitions) + 1 == len(
-            reqtypesfolder.data_type_definitions
-        )
-        assert edt_def in reqtypesfolder.data_type_definitions
-        assert set(edt_def.values.by_long_name) == {"val", "val1"}
-
-    def test_create_RequirementTypesFolder_EnumDataTypeDefinition_creating_EnumValues_with_singleattr(
-        self, model: capellambse.MelodyModel
-    ):
-        reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
-        dt_definitions = reqtypesfolder.data_type_definitions
-
-        edt_def = reqtypesfolder.data_type_definitions.create(
-            "EnumerationDataTypeDefinition",
-            long_name="Enum",
-            values=["val", "val1"],
+            values=values,
         )
 
         assert len(dt_definitions) + 1 == len(
