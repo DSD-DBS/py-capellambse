@@ -536,11 +536,15 @@ class TestReqIFModification:
     ):
         req = model.oa.all_requirements[0]
         dtdef = model.by_uuid("637caf95-3229-4607-99a0-7d7b990bc97f")
+        values = [
+            model.by_uuid("efd6e108-3461-43c6-ad86-24168339ed3c"),
+            model.by_uuid("3c2390a4-ce9c-472c-9982-d0b825931978"),
+        ]
 
-        attr = req.attributes.create("Enum", values=dtdef.values[:1])
+        attr = req.attributes.create("Enum", values=values)
 
         assert attr in req.attributes
-        assert attr.values == dtdef.values[:1]
+        assert attr.values == dtdef.values
 
     def test_create_requirement_attribute_with_wrong_type_hint_raises_ValueError(
         self, model: capellambse.MelodyModel
@@ -724,7 +728,6 @@ class TestReqIFModification:
         )
 
         adtdef, edtdef = reqtypesfolder.data_type_definitions
-
         assert isinstance(adtdef, reqif.DataTypeDefinition)
         assert adtdef.long_name == "TestAttrDataTypeDef"
         assert isinstance(edtdef, reqif.EnumDataTypeDefinition)
