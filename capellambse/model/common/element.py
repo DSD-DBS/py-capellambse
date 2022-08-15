@@ -222,7 +222,7 @@ class GenericElement:
                     val, str
                 ):
                     val = list(val)
-                    if all((isinstance(v, GenericElement) for v in val)):
+                    if all(isinstance(v, GenericElement) for v in val):
                         setattr(self, key, val)
                     else:
                         target = getattr(self, key)

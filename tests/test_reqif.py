@@ -732,7 +732,7 @@ class TestReqIFModification:
         assert adtdef.long_name == "TestAttrDataTypeDef"
         assert isinstance(edtdef, reqif.EnumDataTypeDefinition)
         assert edtdef.long_name == "TestEnumAttrDataTypeDef"
-        assert list(edtdef.values.by_long_name) == ["a", "b"]
+        assert edtdef.values == ["a", "b"]
 
 
 class TestRequirementsFiltering:
