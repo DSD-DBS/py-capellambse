@@ -964,7 +964,11 @@ def test_literal_numeric_value_infinity_is_star(
     ["attr", "value"],
     [
         ("name", "[MSM] States of Functional Human Being"),
-        ("description", None),
+        (
+            "description",
+            "<p>This diagram shows the states that a Functional Human Being"
+            " can have, as well as how it transitions between them.</p>\n",
+        ),
         ("filters", {"ModelExtensionFilter"}),
         ("target.uuid", "eeeb98a7-6063-4115-8b4b-40a51cc0df49"),
         ("type", "MSM"),
@@ -982,3 +986,14 @@ def test_diagram_attributes(
     actual = get_attribute_under_test(diagram)
 
     assert actual == value
+
+
+def test_diagram_without_documentation_has_None_description(
+    model: capellambse.MelodyModel,
+) -> None:
+    diagram = model.diagrams.by_uuid("_KK2wcKyJEeqCdMaqCWkrKg")
+    expected = None
+
+    actual = diagram.description
+
+    assert actual == expected
