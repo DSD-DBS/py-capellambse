@@ -3,11 +3,6 @@
 
 from __future__ import annotations
 
-import sys
-import warnings
-
-import markupsafe
-
 __all__ = [
     "Accessor",
     "WritableAccessor",
@@ -29,8 +24,11 @@ import abc
 import collections.abc as cabc
 import itertools
 import operator
+import sys
 import typing as t
+import warnings
 
+import markupsafe
 from lxml import etree
 
 import capellambse
