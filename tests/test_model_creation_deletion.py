@@ -2,13 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Tests for creating and deleting model elements"""
-# pylint: disable=missing-function-docstring, protected-access, redefined-outer-name
+# pylint: disable=missing-function-docstring, redefined-outer-name
 import pathlib
 
 import pytest
 
 import capellambse
-from capellambse.model import modeltypes
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "writemodel"
 TEST_MODEL = "WriteTestModel.aird"
