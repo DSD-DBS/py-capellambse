@@ -215,7 +215,9 @@ class GenericElement:
                         f"Cannot set {key!r} on {type(self).__name__}"
                     )
                 elif isinstance(val, cabc.Mapping):
-                    raise NotImplementedError
+                    raise NotImplementedError(
+                        "Multicreation of elements is not yet supported"
+                    )
                 elif isinstance(val, cabc.Iterable) and not isinstance(
                     val, str
                 ):

@@ -79,10 +79,8 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
-    __slots__ = ()
-
     aslist: type[ElementListCouplingMixin] | None
-    single_attr: str | None = None
+    single_attr: str | None
 
     def __init__(
         self,
@@ -92,7 +90,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         **kw: t.Any,
     ) -> None:
         super().__init__(*args, **kw)  # type: ignore[call-arg]
-        self.single_attr = single_attr  # type: ignore[misc]
+        self.single_attr = single_attr
         if aslist is not None:
             self.aslist = type(  # type: ignore[misc]
                 "Coupled" + aslist.__name__,
@@ -131,7 +129,10 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     ) -> T:
         """Create and return a new single attribute element."""
         if self.single_attr is None:
-            raise TypeError("Cannot create object. You need to pass a dict.")
+            raise TypeError(
+                "Cannot create object: "
+                "You need to pass a dict where the key value pair specifies the attribute name and value."
+            )
         return self.create(elmlist, **{self.single_attr: arg})
 
     def insert(
@@ -285,7 +286,7 @@ class PhysicalAccessor(Accessor[T]):
 class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Creates proxy objects on the fly."""
 
-    __slots__ = ("follow_abstract", "rootelem", "single_attr")
+    __slots__ = ("follow_abstract", "rootelem")
 
     aslist: type[ElementListCouplingMixin] | None
     single_attr: str | None
@@ -1043,8 +1044,11 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     def create_singleattr(self, arg: t.Any) -> T:
         """Make a new model object (instance of GenericElement).
 
-        This new object has only one interesting attribute. See
-        :meth:`ElementList.create` for additional explanation.
+        This new object has only one interesting attribute.
+
+        See Also
+        --------
+        create : :meth:`ElementList.create` for additional explanation.
         """
         assert self._parent is not None
         acc = type(self)._accessor
