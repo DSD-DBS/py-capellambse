@@ -128,8 +128,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         """Create and return a new single attribute element."""
         if self.single_attr is None:
             raise TypeError(
-                "Cannot create object: "
-                "You need to pass a dict where the key value pair specifies the attribute name and value."
+                "Cannot create object from string, a dictionary is required"
             )
         return self.create(elmlist, **{self.single_attr: arg})
 
