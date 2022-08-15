@@ -126,7 +126,7 @@ class RequirementsRelationAccessor(
 
     # pylint: disable=abstract-method  # Only partially implemented for now
 
-    __slots__ = ("aslist", "single_attr")
+    __slots__ = ("aslist",)
 
     def __init__(self, *args, **kw) -> None:
         super().__init__(
@@ -206,7 +206,7 @@ class ElementRelationAccessor(
 
     # pylint: disable=abstract-method  # Only partially implemented for now
 
-    __slots__ = ("aslist", "single_attr")
+    __slots__ = ("aslist",)
 
     def __init__(self) -> None:
         super().__init__(aslist=RelationsList, single_attr="long_name")
@@ -344,7 +344,6 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
                 "mapkey": "definition.long_name",
                 "mapvalue": "value",
             },
-            single_attr=None,
         )
 
     def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
