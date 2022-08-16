@@ -126,7 +126,7 @@ __ https://google.github.io/styleguide/pyguide.html
   available using ``from __future__ import annotations`` since Python 3.8.
 
   Be aware however that this only works in the context of annotations; the code
-  still needs to run on Python 3.8! This means that in some (rare) cases, you
+  still needs to run on Python 3.9! This means that in some (rare) cases, you
   *must* use the old-style type hints.
 
   - Instead of ``t.Tuple``, ``t.List`` etc. use the builtin classes ``tuple``,
