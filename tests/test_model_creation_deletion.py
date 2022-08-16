@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Tests for creating and deleting model elements"""
-# pylint: disable=missing-function-docstring
-# pylint: disable=protected-access
+# pylint: disable=missing-function-docstring, redefined-outer-name
 import pathlib
 
 import pytest
@@ -21,7 +20,9 @@ def model():
     return capellambse.MelodyModel(TEST_ROOT / TEST_MODEL)
 
 
-def test_created_elements_can_be_accessed_in_model(model):
+def test_created_elements_can_be_accessed_in_model(
+    model: capellambse.MelodyModel,
+):
     newobj = model.la.root_component.components.create(name="TestComponent")
 
     assert newobj is not None
@@ -29,7 +30,9 @@ def test_created_elements_can_be_accessed_in_model(model):
     assert newobj in model.la.root_component.components
 
 
-def test_created_elements_show_up_in_xml_after_adding_them(model):
+def test_created_elements_show_up_in_xml_after_adding_them(
+    model: capellambse.MelodyModel,
+):
     newobj = model.la.root_component.components.create(name="TestComponent")
 
     try:
@@ -48,7 +51,9 @@ def test_created_elements_show_up_in_xml_after_adding_them(model):
     "deletion_target",
     [0, slice(None, 1)],
 )
-def test_deleted_elements_are_removed(model, deletion_target):
+def test_deleted_elements_are_removed(
+    model: capellambse.MelodyModel, deletion_target
+):
     comps = model.la.root_component.components
     assert len(comps) == 2, "Precondition not met: Bad list length"
 
@@ -58,14 +63,14 @@ def test_deleted_elements_are_removed(model, deletion_target):
     assert len(comps) != 2, "List length did not change"
 
     with pytest.raises(KeyError):
-        model._loader[olduuid]
+        model._loader[olduuid]  # pylint: disable=pointless-statement
 
     assert not model._loader.xpath(
         XPATH_UUID.format(olduuid)
     ), "Element is still present in tree after deleting"
 
 
-def test_delete_all_deletes_matching_objects(model):
+def test_delete_all_deletes_matching_objects(model: capellambse.MelodyModel):
     comps = model.la.root_component.components
     assert len(comps) == 2
 

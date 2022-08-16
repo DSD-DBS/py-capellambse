@@ -429,7 +429,7 @@ class EnumAttributeProperty(AttributeProperty):
             return None
         return self.enumcls[rawvalue]
 
-    def __set__(self, obj: t.Any, value: t.Any) -> None:
+    def __set__(self, obj: t.Any, value: str | enum.Enum) -> None:
         assert self.__objclass__ is not None
         if isinstance(value, str):
             try:
@@ -447,7 +447,7 @@ class EnumAttributeProperty(AttributeProperty):
                 )
             )
 
-        return super().__set__(obj, value.value)
+        return super().__set__(obj, value.name)
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name

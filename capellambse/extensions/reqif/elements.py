@@ -129,7 +129,9 @@ class RequirementsRelationAccessor(
     __slots__ = ("aslist",)
 
     def __init__(self, *args, **kw) -> None:
-        super().__init__(*args, **kw, aslist=c.ElementList)
+        super().__init__(
+            *args, **kw, aslist=c.ElementList, single_attr="long_name"
+        )
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -207,7 +209,7 @@ class ElementRelationAccessor(
     __slots__ = ("aslist",)
 
     def __init__(self) -> None:
-        super().__init__(aslist=RelationsList)
+        super().__init__(aslist=RelationsList, single_attr="long_name")
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -474,7 +476,10 @@ class EnumDataTypeDefinition(ReqIFElement):
     _xmltag = "ownedDefinitionTypes"
 
     values = c.DirectProxyAccessor(
-        EnumValue, XT_REQ_TYPE_ATTR_ENUM, aslist=c.ElementList
+        EnumValue,
+        XT_REQ_TYPE_ATTR_ENUM,
+        aslist=c.ElementList,
+        single_attr="long_name",
     )
 
 

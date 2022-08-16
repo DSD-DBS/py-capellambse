@@ -531,6 +531,21 @@ class TestReqIFModification:
         assert attr.definition == definition
         assert isinstance(attr, reqif.EnumerationValueAttribute)
 
+    def test_create_enum_value_attribute_with_passing_values(
+        self, model: capellambse.MelodyModel
+    ):
+        req = model.oa.all_requirements[0]
+        dtdef = model.by_uuid("637caf95-3229-4607-99a0-7d7b990bc97f")
+        values = [
+            model.by_uuid("efd6e108-3461-43c6-ad86-24168339ed3c"),
+            model.by_uuid("3c2390a4-ce9c-472c-9982-d0b825931978"),
+        ]
+
+        attr = req.attributes.create("Enum", values=values)
+
+        assert attr in req.attributes
+        assert attr.values == dtdef.values
+
     def test_create_requirement_attribute_with_wrong_type_hint_raises_ValueError(
         self, model: capellambse.MelodyModel
     ):
@@ -638,6 +653,80 @@ class TestReqIFModification:
         assert len(definitions) + 2 == len(reqtype.attribute_definitions)
         assert attr_def in reqtype.attribute_definitions
         assert enum_def in reqtype.attribute_definitions
+
+    def test_create_RequirementTypesFolder_EnumDataTypeDefinition_setting_EnumValues(
+        self, model: capellambse.MelodyModel
+    ):
+        reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
+        dt_definitions = reqtypesfolder.data_type_definitions
+
+        edt_def = reqtypesfolder.data_type_definitions.create(
+            "EnumerationDataTypeDefinition",
+            long_name="Enum",
+        )
+        edt_def.values.create(long_name="val")
+        edt_def.values.create(long_name="val1")
+
+        assert len(dt_definitions) + 1 == len(
+            reqtypesfolder.data_type_definitions
+        )
+        assert edt_def in reqtypesfolder.data_type_definitions
+        assert set(edt_def.values.by_long_name) == {"val", "val1"}
+
+    @pytest.mark.parametrize(
+        "values",
+        [
+            pytest.param(["val", "val1"], id="Singleattr"),
+            pytest.param(
+                [{"long_name": "val"}, {"long_name": "val1"}], id="Dictionary"
+            ),
+            pytest.param(["val", {"long_name": "val1"}], id="Mixed"),
+        ],
+    )
+    def test_create_RequirementTypesFolder_EnumDataTypeDefinition_creating_EnumValues(
+        self,
+        model: capellambse.MelodyModel,
+        values: list[str | t.Dict[str, t.Any]],
+    ):
+        reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
+        dt_definitions = reqtypesfolder.data_type_definitions
+
+        edt_def = reqtypesfolder.data_type_definitions.create(
+            "EnumerationDataTypeDefinition",
+            long_name="Enum",
+            values=values,
+        )
+
+        assert len(dt_definitions) + 1 == len(
+            reqtypesfolder.data_type_definitions
+        )
+        assert edt_def in reqtypesfolder.data_type_definitions
+        assert set(edt_def.values.by_long_name) == {"val", "val1"}
+
+    def test_create_RequirementTypesFolder_from_mapping(
+        self, model: capellambse.MelodyModel
+    ):
+        reqtypesfolder = model.la.requirement_types_folders.create(
+            long_name="Test",
+            data_type_definitions=[
+                {
+                    "_type": "DataTypeDefinition",
+                    "long_name": "TestAttrDataTypeDef",
+                },
+                {
+                    "_type": "EnumerationDataTypeDefinition",
+                    "long_name": "TestEnumAttrDataTypeDef",
+                    "values": ["a", "b"],
+                },
+            ],
+        )
+
+        adtdef, edtdef = reqtypesfolder.data_type_definitions
+        assert isinstance(adtdef, reqif.DataTypeDefinition)
+        assert adtdef.long_name == "TestAttrDataTypeDef"
+        assert isinstance(edtdef, reqif.EnumDataTypeDefinition)
+        assert edtdef.long_name == "TestEnumAttrDataTypeDef"
+        assert edtdef.values == ["a", "b"]
 
 
 class TestRequirementsFiltering:

@@ -3,11 +3,6 @@
 
 from __future__ import annotations
 
-import sys
-import warnings
-
-import markupsafe
-
 __all__ = [
     "Accessor",
     "WritableAccessor",
@@ -29,8 +24,11 @@ import abc
 import collections.abc as cabc
 import itertools
 import operator
+import sys
 import typing as t
+import warnings
 
+import markupsafe
 from lxml import etree
 
 import capellambse
@@ -79,18 +77,18 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
-    __slots__ = ()
-
     aslist: type[ElementListCouplingMixin] | None
+    single_attr: str | None
 
     def __init__(
         self,
         *args: t.Any,
         aslist: type[element.ElementList] | None,
+        single_attr: str | None = None,
         **kw: t.Any,
     ) -> None:
         super().__init__(*args, **kw)  # type: ignore[call-arg]
-
+        self.single_attr = single_attr
         if aslist is not None:
             self.aslist = type(  # type: ignore[misc]
                 "Coupled" + aslist.__name__,
@@ -123,6 +121,16 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             ``elmclass`` constructor.
         """
         raise TypeError("Cannot create objects")
+
+    def create_singleattr(
+        self, elmlist: ElementListCouplingMixin, arg: t.Any, /
+    ) -> T:
+        """Create and return a new single attribute element."""
+        if self.single_attr is None:
+            raise TypeError(
+                "Cannot create object from string, a dictionary is required"
+            )
+        return self.create(elmlist, **{self.single_attr: arg})
 
     def insert(
         self,
@@ -278,6 +286,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     __slots__ = ("follow_abstract", "rootelem")
 
     aslist: type[ElementListCouplingMixin] | None
+    single_attr: str | None
 
     def __init__(
         self,
@@ -286,13 +295,14 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         *,
         aslist: type[element.ElementList] | None = None,
         follow_abstract: bool = False,
+        list_extra_args: dict[str, t.Any] | None = None,
         rootelem: (
             str
             | type[element.GenericElement]
             | cabc.Sequence[str | type[element.GenericElement]]
             | None
         ) = None,
-        list_extra_args: dict[str, t.Any] | None = None,
+        single_attr: str | None = None,
     ):
         """Create a DirectProxyAccessor.
 
@@ -310,20 +320,25 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             :class:`elements.DecoupledElementList`.  It will be used to return a
             list of all matched objects.  Incompatible with ``xtypes =
             None``.
-        deep
-            True to search the entire XML subtree, False to only
-            consider direct children.  Ignored if ``xtype = None``.
-        follow
-            If not None, must be the name of an attribute on the found
-            elements.  That attribute contains a reference to the actual
-            element that will be used instead.
+        follow_abstract
+            If True the element(s) found via the :class:`loader.MelodyLoader`
+            by passing the href behind ``abstractType`` is(are) taken instead.
+        list_extra_args
+            Pass key and value pair for mapping in :class:`elements.ElementList``
         rootelem
             A ``/``-separated list of ``xsi:type``s that defines the
             path from the current object's element to the search root.
             If None, the current element will be used directly.
+        single_attr
+            The name of the only attribute needed for creation. Passing
+            a string enables convenient creation via `create_singleattr`.
         """
         super().__init__(
-            class_, xtypes, aslist=aslist, list_extra_args=list_extra_args
+            class_,
+            xtypes,
+            aslist=aslist,
+            list_extra_args=list_extra_args,
+            single_attr=single_attr,
         )
         self.follow_abstract: bool = follow_abstract
         if rootelem is None:
@@ -484,7 +499,6 @@ class ReferencingProxyAccessor(DirectProxyAccessor[T]):
         ) = None,
         list_extra_args: dict[str, t.Any] | None = None,
     ) -> None:
-        self.follow = follow
         super().__init__(
             class_,
             xtypes,
@@ -493,6 +507,7 @@ class ReferencingProxyAccessor(DirectProxyAccessor[T]):
             rootelem=rootelem,
             list_extra_args=list_extra_args,
         )
+        self.follow = follow
 
     def _resolve(
         self, obj: element.ModelObject, elem: etree._Element
@@ -1020,6 +1035,22 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create(self, *args, **kw)
+        self._newlist_type().insert(self, len(self), newobj)
+        return newobj
+
+    def create_singleattr(self, arg: t.Any) -> T:
+        """Make a new model object (instance of GenericElement).
+
+        This new object has only one interesting attribute.
+
+        See Also
+        --------
+        create : :meth:`ElementList.create` for additional explanation.
+        """
+        assert self._parent is not None
+        acc = type(self)._accessor
+        assert isinstance(acc, WritableAccessor)
+        newobj = acc.create_singleattr(self, arg)
         self._newlist_type().insert(self, len(self), newobj)
         return newobj
 
