@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: CC0-1.0
+
 # Minimal makefile for Sphinx documentation
 #
 

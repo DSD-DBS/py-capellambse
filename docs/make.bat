@@ -1,4 +1,6 @@
 @ECHO OFF
+REM SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+REM SPDX-License-Identifier: CC0-1.0
 
 pushd %~dp0
 
@@ -10,8 +12,6 @@ if "%SPHINXBUILD%" == "" (
 set SOURCEDIR=source
 set BUILDDIR=build
 
-if "%1" == "" goto help
-
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
 	echo.
@@ -21,9 +21,11 @@ if errorlevel 9009 (
 	echo.may add the Sphinx directory to PATH.
 	echo.
 	echo.If you don't have Sphinx installed, grab it from
-	echo.http://sphinx-doc.org/
+	echo.https://www.sphinx-doc.org/
 	exit /b 1
 )
+
+if "%1" == "" goto help
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
