@@ -680,6 +680,7 @@ class TestReqIFModification:
             pytest.param(
                 [{"long_name": "val"}, {"long_name": "val1"}], id="Dictionary"
             ),
+            pytest.param(["val", {"long_name": "val1"}], id="Mixed"),
         ],
     )
     def test_create_RequirementTypesFolder_EnumDataTypeDefinition_creating_EnumValues(
