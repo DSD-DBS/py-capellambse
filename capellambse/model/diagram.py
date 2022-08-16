@@ -369,9 +369,9 @@ class Diagram(AbstractDiagram):
         return self._model is other._model and self._element == other._element
 
     @property
-    def description(self) -> str:
+    def description(self) -> str | None:
         """Return the diagram description."""
-        desc = self._model._loader[self.uuid].get("documentation")
+        desc = self._element.descriptor.get("documentation")
         return desc and helpers.repair_html(desc)
 
     @property

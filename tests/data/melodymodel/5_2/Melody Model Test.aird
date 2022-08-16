@@ -8,7 +8,7 @@
     </ownedViews>
     <ownedViews xmi:type="viewpoint:DView" uid="__FJxoKDzEeqf7Mw7EIo_Ew">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_7Ft7QKrxEeqOgqWuHJrXFA" name="[MSM] States of Functional Human Being" repPath="#_7FWu4KrxEeqOgqWuHJrXFA" changeId="fba16650-bdda-4b1d-b8a6-ca9d175a51d7">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_7Ft7QKrxEeqOgqWuHJrXFA" documentation="&lt;p>This diagram shows the states that a Functional Human Being can have, as well as how it transitions between them.&lt;/p>&#xA;" name="[MSM] States of Functional Human Being" repPath="#_7FWu4KrxEeqOgqWuHJrXFA" changeId="fba16650-bdda-4b1d-b8a6-ca9d175a51d7">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Mode%20State%20Machine']"/>
         <target xmi:type="org.polarsys.capella.core.data.capellacommon:Region" href="Melody%20Model%20Test.capella#eeeb98a7-6063-4115-8b4b-40a51cc0df49"/>
       </ownedRepresentationDescriptors>

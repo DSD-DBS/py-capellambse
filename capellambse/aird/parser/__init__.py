@@ -41,6 +41,7 @@ class DiagramDescriptor(t.NamedTuple):
     fragment: pathlib.PurePosixPath
     name: str
     styleclass: str | None
+    descriptor: etree._Element
     uid: str
     viewpoint: str
     target: etree._Element
@@ -128,6 +129,7 @@ def enumerate_diagrams(
                 uid=uid[1:],
                 viewpoint=descriptor[2],
                 target=target,
+                descriptor=descriptor[1],
             )
         except Exception as err:
             C.LOGGER.warning(
