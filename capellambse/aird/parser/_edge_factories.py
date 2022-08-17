@@ -115,6 +115,8 @@ def extract_bendpoints(
             ).attrib["id"]
         except (StopIteration, KeyError):
             sourceanchor = "(0.5, 0.5)"
+        if sourceanchor.endswith(" custom"):
+            sourceanchor = sourceanchor[: -len(" custom")]
         sourceanchor = helpers.ssvparse(
             sourceanchor, float, parens="()", num=2
         )
