@@ -1,3 +1,8 @@
+<!--
+ ~ SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+ ~ SPDX-License-Identifier: Apache-2.0
+ -->
+
 # Maintainers
 
 The `capellambse` Python bindings are maintained by the following people:

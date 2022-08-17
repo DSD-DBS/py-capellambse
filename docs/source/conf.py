@@ -1,9 +1,6 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 # -- Path setup --------------------------------------------------------------
 
@@ -16,20 +13,24 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../.."))
 
-from setuptools.config import read_configuration
-
 import capellambse
 
 # -- Project information -----------------------------------------------------
 
-config = read_configuration("../../setup.cfg")
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore[no-redef]
+with open("../../pyproject.toml", "rb") as f:
+    _metadata = tomllib.load(f)["project"]
+
 project = "py-capellambse"
 pypi = "capellambse"
-author = config["metadata"]["author"]
-copyright = "2021, %s" % author
-license = config["metadata"]["license"]
-install_requirements = config["options"]["install_requires"]
-python_requirement = config["options"]["python_requires"]
+author = _metadata["authors"][0]["name"]
+copyright = f"{author} and the {_metadata['name']} contributors"
+license = _metadata["license"]["text"]
+install_requirements = _metadata["dependencies"]
+python_requirement = _metadata["requires-python"]
 
 # -- General configuration ---------------------------------------------------
 

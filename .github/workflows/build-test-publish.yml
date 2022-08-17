@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: CC0-1.0
+
 name: Build
 
 on:
@@ -14,10 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python_version: ["3.8", "3.9", "3.10"]
+        python_version:
+          - "3.9"
+          - "3.10"
         include:
           - os: windows-latest
-            python_version: "3.8"
+            python_version: "3.9"
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{matrix.python_version}}
@@ -27,7 +32,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{runner.os}}-pip-${{hashFiles('setup.cfg')}}
+          key: ${{runner.os}}-pip-${{hashFiles('pyproject.toml')}}
           restore-keys: |
             ${{runner.os}}-pip-
             ${{runner.os}}-
@@ -50,7 +55,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.8"
+          python-version: "3.9"
       - name: Install dependencies
         run: |-
           python -m pip install -U pip

@@ -1,7 +1,7 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""The Python capellambse package."""
+"""The capellambse package."""
 import platformdirs
 
 
@@ -39,10 +39,13 @@ dirs = platformdirs.PlatformDirs("capellambse")
 migrate_cache_dir()
 del platformdirs, migrate_cache_dir
 
-from ._version import get_versions
+from importlib import metadata
 
-__version__ = get_versions()["version"]
-del get_versions
+try:
+    __version__ = metadata.version("capellambse")
+except metadata.PackageNotFoundError:
+    __version__ = "0.0.0+unknown"
+del metadata
 
 
 from ._namespaces import (
@@ -69,7 +72,7 @@ def load_model_extensions() -> None:
     initialized before loading any extensions.
     """
     # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
-    import importlib.metadata as imm
+    import importlib.metadata as imm  # pylint: disable=reimported
     import logging
 
     global _has_loaded_extensions

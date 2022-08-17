@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Useful helpers for making object-oriented XML proxy classes."""

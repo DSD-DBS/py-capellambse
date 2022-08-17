@@ -1,4 +1,6 @@
-exclude: '^(versioneer\.py|.*/_version\.py)$'
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: CC0-1.0
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
@@ -33,16 +35,53 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies:
+          - sphinx
           - types-docutils==0.17.0
           - types-requests==2.25.11
-          - sphinx
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.1.13
     hooks:
       - id: insert-license
-        files: '.+/.+\.py$'
+        name: Insert license headers (shell-style comments)
+        files: '(?:^|/)(?:.*\.(?:py|sh|toml|ya?ml)|Dockerfile|Makefile)$'
+        exclude: '(?:^|/)\..+|^docs/Makefile$'
         args:
+          - --detect-license-in-X-top-lines=15
           - --license-filepath
-          - license_header.txt
+          - LICENSES/.license_header.txt
           - --comment-style
           - '#'
+      - id: insert-license
+        name: Insert license headers (XML-style comments)
+        files: '\.(?:html|md|xml)$'
+        exclude: '(?:^|/)\..+'
+        args:
+          - --detect-license-in-X-top-lines=15
+          - --license-filepath
+          - LICENSES/.license_header.txt
+          - --comment-style
+          - '<!--| ~| -->'
+      - id: insert-license
+        name: Insert license headers (C-style comments)
+        files: '\.(?:css|js|ts)$'
+        exclude: '(?:^|/)\..+'
+        args:
+          - --detect-license-in-X-top-lines=15
+          - --license-filepath
+          - LICENSES/.license_header.txt
+          - --comment-style
+          - '/*| *| */'
+      - id: insert-license
+        name: Insert license headers (reST comments)
+        files: '\.rst$'
+        exclude: '(?:^|/)\..+'
+        args:
+          - --detect-license-in-X-top-lines=15
+          - --license-filepath
+          - LICENSES/.license_header.txt
+          - --comment-style
+          - '..|  |'
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v1.0.0
+    hooks:
+      - id: reuse
