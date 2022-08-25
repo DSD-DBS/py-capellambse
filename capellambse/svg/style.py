@@ -61,6 +61,7 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "CapabilitySymbol",
         "MissionSymbol",
         "SystemActorSymbol",
+        "SystemComponentSymbol",
         "SystemHumanActorSymbol",
     ),
     "Mode State Machine": (
@@ -110,6 +111,7 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
         "FunctionalExchangeSymbol",
         "PhysicalLinkSymbol",
         "SystemActorSymbol",
+        "SystemComponentSymbol",
         "SystemFunctionSymbol",
         "SystemHumanActorSymbol",
         "PortSymbol",
