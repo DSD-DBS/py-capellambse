@@ -487,7 +487,7 @@ class EnumDataTypeDefinition(ReqIFElement):
 class AttributeDefinitionEnumeration(ReqIFElement):
     """An enumeration attribute definition for requirement types"""
 
-    _xmltag = "enumeration"
+    _xmltag = "ownedAttributes"
 
     data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
     multi_valued = xmltools.BooleanAttributeProperty(
