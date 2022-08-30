@@ -10,6 +10,7 @@ import markupsafe
 import pytest
 
 import capellambse
+import capellambse.model.common as c
 from capellambse.model import MelodyModel, modeltypes
 from capellambse.model.crosslayer.capellacommon import (
     Region,
@@ -527,6 +528,19 @@ def test_model_search_below_filters_elements_by_ancestor(
 
     actual = {i.uuid for i in nested}
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "xtype",
+    {i for map in c.XTYPE_HANDLERS.values() for i in map.values()},
+)
+def test_model_search_does_not_contain_duplicates(
+    model: capellambse.MelodyModel, xtype: type[t.Any]
+) -> None:
+    results = model.search(xtype)
+    uuids = [i.uuid for i in results]
+
+    assert len(uuids) == len(set(uuids))
 
 
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
