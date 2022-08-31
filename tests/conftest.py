@@ -12,6 +12,20 @@ import capellambse
 from . import TEST_MODEL, TEST_ROOT
 
 
+@pytest.fixture(scope="session")
+def session_shared_model() -> capellambse.MelodyModel:
+    """Load the standard test model.
+
+    Unlike the ``model`` fixture, this fixture is shared across the
+    entire test session. As such, the test functions using this fixture
+    are expected to not modify it.
+
+    This fixture exists as a speed optimization for tests that only read
+    from the model.
+    """
+    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+
+
 @pytest.fixture
 def model(monkeypatch) -> capellambse.MelodyModel:
     """Return test model"""
