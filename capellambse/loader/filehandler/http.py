@@ -14,6 +14,7 @@ import collections.abc as cabc
 import itertools
 import os
 import pathlib
+import re
 import typing as t
 import urllib.parse
 
@@ -86,6 +87,55 @@ class HTTPFileHandler(FileHandler):
         *,
         subdir: str | pathlib.PurePosixPath = "/",
     ) -> None:
+        """Connect to a remote server through HTTP or HTTPS.
+
+        This file handler supports three ways of specifying a URL:
+
+        1.  If a plain URL is passed, the requested file name is
+            appended after a forward slash ``/``.
+        2.  If the URL contains ``%s``, it will be replaced by the
+            requested file name, instead of appending it at the end.
+            This allows for example to pass query parameters after the
+            file name. File names are percent-escaped as implemented by
+            ``urllib.parse.quote``.
+        3.  The sequence ``%q`` is replaced similar to ``%s``, but the
+            forward slash ``/`` is not considered a safe character and
+            is percent-escaped as well.
+
+        Examples: When requesting the file name ``demo/my model.aird``,
+        ...
+
+        - ``https://example.com/~user`` as ``path`` results in the URL
+          ``https://example.com/~user/demo/my%20model.aird``
+        - ``https://example.com/~user/%s`` results in
+          ``https://example.com/~user/demo/my%20model.aird``
+        - ``https://example.com/?file=%q`` results in
+          ``https://example.com/?file=demo%2Fmy%20model.aird``
+
+        Note that the file name that is inserted into the URL will never
+        start with a forward slash. This means that a URL like
+        ``https://example.com%s`` will not work; you need to hard-code
+        the slash at the appropriate place.
+
+        This also applies to the ``%q`` escape. If the server expects
+        the file name argument to start with a slash, hard-code a
+        percent-escaped slash in the URL. For example, instead of
+        ``...?file=%q`` use ``...?file=%2F%q``.
+
+        Parameters
+        ----------
+        path
+            The base URL to fetch files from. Must start with
+            ``http://`` or ``https://``. See above for how to specify
+            complex URLs.
+        username
+            The username for HTTP Basic Auth.
+        password
+            The password for HTTP Basic Auth.
+        subdir
+            Prepend this path to all requested files. It is subject to
+            the same file name escaping rules explained above.
+        """
         if not isinstance(path, str):
             raise TypeError(
                 f"HTTPFileHandler requires a str path, not {type(path).__name__}"
@@ -94,9 +144,11 @@ class HTTPFileHandler(FileHandler):
             raise ValueError(
                 "Either both username and password must be given, or neither"
             )
-        if subdir != "/":
-            raise ValueError("`subdir=` is not supported in HTTP(S)")
-        super().__init__(path)
+
+        if "%s" not in path and "%q" not in path:
+            path = path.rstrip("/") + "/%s"
+
+        super().__init__(path, subdir=subdir)
 
         self.session = requests.Session()
         if username and password:
@@ -118,10 +170,15 @@ class HTTPFileHandler(FileHandler):
         if "w" in mode:
             raise NotImplementedError("Cannot upload to HTTP(S) locations")
         assert isinstance(self.path, str)
-        fname_str = str(helpers.normalize_pure_path(filename))
-        return DownloadStream(  # type: ignore[abstract] # false-positive
-            "/".join((self.path, fname_str))
-        )
+        fname = self.subdir / helpers.normalize_pure_path(filename)
+        fname_str = str(fname).lstrip("/")
+        replace = {
+            "%s": urllib.parse.quote(fname_str, safe="/"),
+            "%q": urllib.parse.quote(fname_str, safe=""),
+        }
+        url = re.sub("%[sq]", lambda m: replace[m.group(0)], self.path)
+        assert url != self.path
+        return DownloadStream(url)  # type: ignore[abstract] # false-positive
 
     def write_transaction(self, **kw: t.Any) -> t.NoReturn:
         raise NotImplementedError(

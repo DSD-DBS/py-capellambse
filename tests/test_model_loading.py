@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
+# pylint: disable=redefined-outer-name
 from __future__ import annotations
 
 import pathlib
 from importlib import metadata
 
 import pytest
+import requests_mock
 
 import capellambse
 
@@ -124,3 +126,49 @@ def test_MelodyLoader_follow_link_finds_target(link: str):
 
     with pytest.raises(KeyError):
         assert loader.follow_link(None, link) is not None
+
+
+@pytest.mark.parametrize(
+    ["path", "subdir", "req_url"],
+    [
+        (
+            "https://example.com/~user",
+            "/",
+            "https://example.com/~user/demo/my%20model.aird",
+        ),
+        (
+            "https://example.com/~user/%s",
+            "/",
+            "https://example.com/~user/demo/my%20model.aird",
+        ),
+        (
+            "https://example.com/?file=%q",
+            "/",
+            "https://example.com/?file=demo%2Fmy%20model.aird",
+        ),
+        (
+            "https://example.com/",
+            "~user",
+            "https://example.com/~user/demo/my%20model.aird",
+        ),
+        (
+            "https://example.com/%s",
+            "~user",
+            "https://example.com/~user/demo/my%20model.aird",
+        ),
+        (
+            "https://example.com/?file=%q",
+            "~user",
+            "https://example.com/?file=~user%2Fdemo%2Fmy%20model.aird",
+        ),
+    ],
+)
+def test_http_file_handler_replaces_percent_s_percent_q(
+    requests_mock: requests_mock.Mocker, path: str, subdir: str, req_url: str
+) -> None:
+    endpoint = requests_mock.get(req_url)
+
+    file_handler = capellambse.get_filehandler(path, subdir=subdir)
+    file_handler.open("demo/my model.aird", "rb").close()
+
+    assert endpoint.called_once
