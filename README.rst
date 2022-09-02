@@ -2,25 +2,24 @@
    SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
    SPDX-License-Identifier: Apache-2.0
 
-.. highlight:: bash
-
 Python-Capellambse
 ==================
 
-.. image:: https://github.com/DSD-DBS/capellambse/actions/workflows/build-test-publish.yml/badge.svg
+.. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
 
-.. image:: https://github.com/DSD-DBS/capellambse/actions/workflows/lint.yml/badge.svg
+.. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
 
 *A Python 3 headless implementation of the Capella modeling tool*
 
 Intro
 -----
 
-``capellambse`` allows you reading and writing Capella models from Python without
-Java or the `Capella tool`__ on any (reasonable) platform. We wanted to "talk"
-to Capella models from Python, but without any Java on the way. We thought this
-project will help individuals and organisations getting through the MBSE
-adoption journey with Capella faster and so we made it public and open-source.
+``capellambse`` allows you reading and writing Capella models from Python
+without Java or the `Capella tool`__ on any (reasonable) platform. We wanted to
+"talk" to Capella models from Python, but without any Java on the way. We
+thought this project will help individuals and organisations getting through
+the MBSE adoption journey with Capella faster and so we made it public and
+open-source.
 
 __ https://www.eclipse.org/capella/
 
@@ -73,26 +72,26 @@ each notebook's goal. If you are in the JupyterLab environment, you can click
 the notebook names to directly open them in a new lab tab. On Github, you will
 be shown a statically rendered preview of the notebook.
 
-- ```01 Introduction.ipynb```__ provides a high-level overview of the library
+- `01 Introduction.ipynb`__ provides a high-level overview of the library
   features. It visualizes examples like a Component - Function allocation table
   by leveraging Jupyter's and IPython's rich display functionality.
 
   __ examples/01%20Introduction.ipynb
 
-- ```02 Intro to Physical Architecture.ipynb```__ explores some more advanced
+- `02 Intro to Physical Architecture.ipynb`__ explores some more advanced
   concepts on the example of the Physical Architecture Layer. It shows how to
   derive tabular data, like a Bill of Materials or a Software to Hardware
   allocation table, by using ``pandas`` dataframes.
 
   __ examples/02%20Intro%20to%20Physical%20Architecture%20API.ipynb
 
-- ```03 Data Values.ipynb```__ shows how the API can be used to explore
-  classes, class instances and other objects related to data modeling.
+- `03 Data Values.ipynb`__ shows how the API can be used to explore classes,
+  class instances and other objects related to data modeling.
 
   __ examples/03%20Data%20Values.ipynb
 
-- ```04 Intro to Jinja templating.ipynb```__ demonstrates how to effectively
-  combine ``capellambse`` with the powerful Jinja_ templating engine. This
+- `04 Intro to Jinja templating.ipynb`__ demonstrates how to effectively
+  combine ``capellambse`` with the powerful Jinja__ templating engine. This
   enables the creation of all sorts of model-derived documents and artifacts,
   including interactive web pages, PDF documents and any other textual
   representations of your models.
@@ -100,27 +99,27 @@ be shown a statically rendered preview of the notebook.
   __ examples/04%20Intro%20to%20Jinja%20templating.ipynb
   __ https://palletsprojects.com/p/jinja/
 
-- ```05 Introduction to Libraries.ipynb```__ shows how to use Capella Library
+- `05 Introduction to Libraries.ipynb`__ shows how to use Capella Library
   Projects within capellambse. In this example you'll learn how the API can be
   used to open a project that is based on a library and find objects in both
   models.
 
   __ examples/05%20Introduction%20to%20Libraries.ipynb
 
-- ```06 Introduction to Requirement access and management.ipynb```__ shows how
-  the API can be used to work with requirements objects, introduced by the
-  Capella [Requirements Viewpoint]. In this example you'll see how to find
+- `06 Introduction to Requirement access and management.ipynb`__ shows how the
+  API can be used to work with requirements objects, introduced by the Capella
+  `Requirements Viewpoint`__. In this example you'll see how to find
   requirements in the model, see which objects requirements are linked / traced
   to and even export requirements to Excel or ReqIF formats.
 
   __ examples/06%20Introduction%20to%20Requirement%20access%20and%20management.ipynb
   __ https://www.eclipse.org/capella/addons.html
 
-- ```07 Code Generation.ipynb```__ shows how to generate code from class
-  diagrams. In particular, we focus on Interface Descriptive Languages with
-  concrete examples for ``Class`` to `ROS2 IDL`__ and Google `Protocol
-  Buffers`__. We also show how simple Python stubs could be generated given a
-  ``Class`` object.
+- `07 Code Generation.ipynb`__ shows how to generate code from class diagrams.
+  In particular, we focus on Interface Descriptive Languages with concrete
+  examples for ``Class`` to `ROS2 IDL`__ and Google `Protocol Buffers`__. We
+  also show how simple Python stubs could be generated given a ``Class``
+  object.
 
   __ examples/07%20Code%20Generation.ipynb
   __ https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html
@@ -149,7 +148,7 @@ virtual environment.
 
 .. code::
 
-    git clone https://github.com/DSD-DBS/capellambse
+    git clone https://github.com/DSD-DBS/py-capellambse
     cd capellambse
     python -m venv .venv
 
@@ -173,8 +172,8 @@ following additional commands:
 If your browser did not open automatically, follow the instructions in the
 terminal to start it manually.
 
-Once in the browser, simply click on the ```01 Introduction.ipynb```__ notebook
-to start!
+Once in the browser, simply click on the `01 Introduction.ipynb`__ notebook to
+start!
 
 __ examples/01%20Introduction.ipynb
 
@@ -182,15 +181,20 @@ Current limitations
 -------------------
 
 We are continuously improving coverage of Capella onthology with our
-[high-level API](#TODO) (the current coverage map is available [here](#TODO)),
-however it is still incomplete. It covers most of the commonly used paths but
-when you need to get to an ontology element that isnt covered yet you may do so
-by using the [low-level API](##TODO).
+`high-level API`__ (the current coverage map is available `here`__), however it
+is still incomplete. It covers most of the commonly used paths but when you
+need to get to an ontology element that isnt covered yet you may do so by using
+the `low-level API`__.
+
+__ #TODO
+__ #TODO
+__ #TODO
 
 Also, as we started in mid 2019 and there was no such thing as
-[Python4Capella](https://github.com/labs4capella/python4capella) yet, we are
-not API compatible with that project. However, we intend to add API
-compatibility with Python4Capella in later releases.
+`Python4Capella`__ yet, we are not API compatible with that project. However,
+we intend to add API compatibility with Python4Capella in later releases.
+
+__ https://github.com/labs4capella/python4capella
 
 The generated diagrams are currently not persisted in ``.aird`` files, and
 currently there is no plan to implement this. If there is a genuine usecase for
@@ -200,12 +204,19 @@ existing one.
 Render diagrams in untrusted jupyter notebooks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The SVG format relies on a stylesheet, however in untrusted notebooks any stylesheets
-are stripped. As a workaround we support the PNG format. For this the [cairosvg](https://pypi.org/project/CairoSVG/)
-library is needed which requires the following additional setup steps on windows:
+The SVG format relies on a stylesheet, however in untrusted notebooks any
+stylesheets are stripped. As a workaround we support the PNG format. For this
+the `cairosvg`__ library is needed which requires the following additional
+setup steps on windows:
 
-- Download and execute the [latest GTK installer](https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases/tag/2022-01-04).
-- Reboot to add the path to the installed compiled libraries into your system environment PATH
+__ https://pypi.org/project/CairoSVG/
+
+- Download and execute the `latest GTK installer`__.
+
+  __ https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases/tag/2022-01-04
+
+- Reboot to add the path to the installed compiled libraries into your system
+  environment PATH
 
 Contributing
 ------------
@@ -220,14 +231,16 @@ This project is compliant with the `REUSE Specification Version 3.0`__.
 
 __ https://git.fsfe.org/reuse/docs/src/commit/d173a27231a36e1a2a3af07421f5e557ae0fec46/spec.md
 
-Copyright DB Netz AG, licensed under Apache 2.0 (see full text in `<LICENSES/Apache-2.0.txt>`__)
+Copyright DB Netz AG, licensed under Apache 2.0 (see full text in
+`<LICENSES/Apache-2.0.txt>`__)
 
-Dot-files are licensed under CC0-1.0 (see full text in `<LICENSES/CC0-1.0.txt>`__)
+Dot-files are licensed under CC0-1.0 (see full text in
+`<LICENSES/CC0-1.0.txt>`__)
 
 To provide the same look and feel across platforms, we distribute our library
 bundled with the OpenSans font (``capellambse/OpenSans-Regular.ttf``). The
 OpenSans font is Copyright 2020 `The Open Sans Project Authors`__, licensed
-under OFL-1.1 (see full text in `<LICENSES/OFL-1.1.txt>`).
+under OFL-1.1 (see full text in `<LICENSES/OFL-1.1.txt>`__).
 
 __ https://github.com/googlefonts/opensans
 

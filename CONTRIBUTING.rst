@@ -2,8 +2,6 @@
    SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
    SPDX-License-Identifier: Apache-2.0
 
-.. highlight:: bash
-
 Contributing
 ============
 
@@ -17,8 +15,8 @@ issue`__. Or go ahead and `open a pull request`__ to contribute code. In order
 to reduce the burden on our maintainers, please make sure that your code
 follows our style guidelines outlined below.
 
-__ https://github.com/DSD-DBS/capellambse/issues
-__ https://github.com/DSD-DBS/capellambse/pulls
+__ https://github.com/DSD-DBS/py-capellambse/issues
+__ https://github.com/DSD-DBS/py-capellambse/pulls
 
 Developing
 ----------
