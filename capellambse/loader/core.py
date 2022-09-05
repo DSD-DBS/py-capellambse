@@ -133,7 +133,7 @@ class ResourceLocationManager(dict):
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
-    __xtypecache: dict[str, list[etree._Element]]
+    __xtypecache: dict[str, set[etree._Element]]
     __idcache: dict[str, etree._Element]
     __hrefsources: dict[str, etree._Element]
 
@@ -174,7 +174,7 @@ class ModelFile:
         for elm in subtree.iter():
             xtype = helpers.xtype_of(elm)
             if xtype is not None:
-                self.__xtypecache[xtype].append(elm)
+                self.__xtypecache[xtype].add(elm)
 
             for idtype in idtypes:
                 elm_id = elm.get(idtype, None)
@@ -221,7 +221,7 @@ class ModelFile:
     def idcache_rebuild(self) -> None:
         """Invalidate and rebuild this file's ID cache."""
         LOGGER.debug("Indexing file %s...", self.filename)
-        self.__xtypecache = collections.defaultdict(list)
+        self.__xtypecache = collections.defaultdict(set)
         self.__idcache = {}
         self.__hrefsources = {}
         self.idcache_index(self.root)
