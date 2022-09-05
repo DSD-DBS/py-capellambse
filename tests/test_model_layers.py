@@ -10,6 +10,7 @@ import markupsafe
 import pytest
 
 import capellambse
+import capellambse.model.common as c
 from capellambse.model import MelodyModel, modeltypes
 from capellambse.model.crosslayer.capellacommon import (
     Region,
@@ -488,7 +489,7 @@ def test_constraint_without_specification_raises_AttributeError(
     [Class, "org.polarsys.capella.core.data.information:Class", "Class"],
 )
 def test_model_search_finds_elements(
-    model: capellambse.MelodyModel, searchkey
+    session_shared_model: capellambse.MelodyModel, searchkey
 ):
     expected = {
         "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
@@ -508,25 +509,40 @@ def test_model_search_finds_elements(
         "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
     }
 
-    found = model.search(searchkey)
+    found = session_shared_model.search(searchkey)
     actual = {i.uuid for i in found}
 
     assert actual == expected
 
 
 def test_model_search_below_filters_elements_by_ancestor(
-    model: capellambse.MelodyModel,
+    session_shared_model: capellambse.MelodyModel,
 ):
-    parent = model.by_uuid("6583b560-6d2f-4190-baa2-94eef179c8ea")
+    parent = session_shared_model.by_uuid(
+        "6583b560-6d2f-4190-baa2-94eef179c8ea"
+    )
     expected = {
         "3bdd4fa2-5646-44a1-9fa6-80c68433ddb7",
         "a58821df-c5b4-4958-9455-0d30755be6b1",
     }
 
-    nested = model.search("LogicalComponent", below=parent)
+    nested = session_shared_model.search("LogicalComponent", below=parent)
 
     actual = {i.uuid for i in nested}
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "xtype",
+    {i for map in c.XTYPE_HANDLERS.values() for i in map.values()},
+)
+def test_model_search_does_not_contain_duplicates(
+    session_shared_model: capellambse.MelodyModel, xtype: type[t.Any]
+) -> None:
+    results = session_shared_model.search(xtype)
+    uuids = [i.uuid for i in results]
+
+    assert len(uuids) == len(set(uuids))
 
 
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:

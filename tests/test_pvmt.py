@@ -216,7 +216,7 @@ class TestAppliedPropertyValueGroupXML:
         def mock_generate_uuid(*__, **_):
             nonlocal call_count
             call_count += 1
-            return "01234567-89ab-4def-8123-456789abcdef"
+            return f"00000000-0000-0000-0000-{call_count:012x}"
 
         monkeypatch.setattr(
             "capellambse.loader.MelodyLoader.generate_uuid",

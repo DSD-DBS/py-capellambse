@@ -52,6 +52,15 @@ ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
 IDTYPES_RESOLVED = frozenset(helpers.resolve_namespace(t) for t in IDTYPES)
+IDTYPES_PER_FILETYPE: t.Final[dict[str, frozenset]] = {
+    ".afm": frozenset(),
+    ".aird": frozenset({"uid", helpers.resolve_namespace("xmi:id")}),
+    ".airdfragment": frozenset({"uid", helpers.resolve_namespace("xmi:id")}),
+    ".capella": frozenset({"id"}),
+    ".capellafragment": frozenset({"id"}),
+    ".melodymodeller": frozenset({"id"}),
+    ".melodyfragment": frozenset({"id"}),
+}
 RE_VALID_ID = re.compile(
     r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
 )
@@ -107,6 +116,15 @@ class MissingResourceLocationError(KeyError):
     """Raised when a model needs an additional resource location."""
 
 
+class CorruptModelError(Exception):
+    """Raised when the model is corrupted and cannot be processed safely.
+
+    In addition to the short description in the exception's arguments,
+    some validators may also produce additional information in the form
+    of CRITICAL log messages just before this exception is raised.
+    """
+
+
 class ResourceLocationManager(dict):
     def __missing__(self, key: str) -> t.NoReturn:
         raise MissingResourceLocationError(key)
@@ -146,17 +164,28 @@ class ModelFile:
     def __getitem__(self, key: str) -> etree._Element:
         return self.__idcache[key]
 
+    def enumerate_uuids(self) -> set[str]:
+        """Enumerate all UUIDs used in this fragment."""
+        return set(self.__idcache)
+
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``."""
+        idtypes = IDTYPES_PER_FILETYPE[self.filename.suffix]
         for elm in subtree.iter():
             xtype = helpers.xtype_of(elm)
             if xtype is not None:
                 self.__xtypecache[xtype].append(elm)
 
-            for idtype in IDTYPES_RESOLVED:
+            for idtype in idtypes:
                 elm_id = elm.get(idtype, None)
                 if elm_id is None:
                     continue
+                existing = self.__idcache.get(elm_id)
+                if existing is not None and existing is not elm:
+                    raise CorruptModelError(
+                        f"Duplicate UUID {elm_id!r}"
+                        f" within fragment {self.filename!s}"
+                    )
                 self.__idcache[elm_id] = elm
 
             href = elm.get("href")
@@ -296,9 +325,29 @@ class MelodyLoader:
             pathlib.PurePosixPath("\0", self.entrypoint)
         )
 
+        self.check_duplicate_uuids()
+
     @property
     def filehandler(self) -> filehandler.FileHandler:
         return self.resources["\0"]
+
+    def check_duplicate_uuids(self):
+        seen_ids = set[str]()
+        has_dups = False
+        for fragment, tree in self.trees.items():
+            tree_ids = set(tree.enumerate_uuids())
+            if duplicates := seen_ids & tree_ids:
+                LOGGER.critical(
+                    "Duplicate UUIDs across fragments (found in %s): %r",
+                    fragment,
+                    duplicates,
+                )
+                has_dups = True
+        if has_dups:
+            raise CorruptModelError(
+                "Model has duplicated UUIDs across fragments"
+                " - check the 'resources' for duplicate models"
+            )
 
     def __derive_entrypoint(
         self, entrypoint: str | pathlib.PurePosixPath | None
@@ -346,6 +395,7 @@ class MelodyLoader:
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
         """
+        self.check_duplicate_uuids()
         LOGGER.debug("Saving model %r", self.get_model_info().title)
         with self.filehandler.write_transaction(**kw) as unsupported_kws:
             if unsupported_kws:
