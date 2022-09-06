@@ -87,6 +87,11 @@ class HTTPFileHandler(FileHandler):
         username: str | None = None,
         password: str | None = None,
         *,
+        headers: (
+            dict[str, str]
+            | requests.structures.CaseInsensitiveDict[str]
+            | None
+        ) = None,
         subdir: str | pathlib.PurePosixPath = "/",
     ) -> None:
         """Connect to a remote server through HTTP or HTTPS.
@@ -153,6 +158,7 @@ class HTTPFileHandler(FileHandler):
         super().__init__(path, subdir=subdir)
 
         self.session = requests.Session()
+        self.session.headers.update(headers or {})
         if username and password:
             self.session.auth = (username, password)
 

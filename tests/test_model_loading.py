@@ -195,3 +195,20 @@ def test_http_file_handler_hands_auth_to_server(
     file_handler.open("test.svg", "rb").close()
 
     assert endpoint.called_once
+
+
+def test_http_file_handlers_passed_through_custom_headers(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    expected_headers = {"X-Test-Header": "PASSED"}
+    endpoint = requests_mock.get(
+        "https://example.com/test.svg",
+        request_headers=expected_headers,
+    )
+
+    file_handler = capellambse.get_filehandler(
+        "https://example.com", headers=expected_headers
+    )
+    file_handler.open("test.svg", "rb").close()
+
+    assert endpoint.called_once
