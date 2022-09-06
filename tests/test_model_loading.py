@@ -4,6 +4,7 @@
 # pylint: disable=redefined-outer-name
 from __future__ import annotations
 
+import base64
 import pathlib
 from importlib import metadata
 
@@ -170,5 +171,27 @@ def test_http_file_handler_replaces_percent_s_percent_q(
 
     file_handler = capellambse.get_filehandler(path, subdir=subdir)
     file_handler.open("demo/my model.aird", "rb").close()
+
+    assert endpoint.called_once
+
+
+def test_http_file_handler_hands_auth_to_server(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    username = "testuser"
+    password = "testpassword"
+    auth_header = base64.standard_b64encode(
+        f"{username}:{password}".encode("utf-8")
+    ).decode("ascii")
+    expected_headers = {"Authorization": f"Basic {auth_header}"}
+    endpoint = requests_mock.get(
+        "https://example.com/test.svg",
+        request_headers=expected_headers,
+    )
+
+    file_handler = capellambse.get_filehandler(
+        "https://example.com", username=username, password=password
+    )
+    file_handler.open("test.svg", "rb").close()
 
     assert endpoint.called_once

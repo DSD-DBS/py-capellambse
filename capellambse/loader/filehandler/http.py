@@ -29,11 +29,13 @@ class DownloadStream(t.BinaryIO):
     __stream: cabc.Iterator[bytes]
     __buffer: memoryview
 
-    def __init__(self, url: str, chunk_size: int = 1024**2) -> None:
+    def __init__(
+        self, session: requests.Session, url: str, chunk_size: int = 1024**2
+    ) -> None:
         self.url = url
         self.chunk_size = chunk_size
 
-        response = requests.get(self.url, stream=True)
+        response = session.get(self.url, stream=True)
         if response.status_code == 404:
             raise FileNotFoundError(url)
         response.raise_for_status()
@@ -178,7 +180,9 @@ class HTTPFileHandler(FileHandler):
         }
         url = re.sub("%[sq]", lambda m: replace[m.group(0)], self.path)
         assert url != self.path
-        return DownloadStream(url)  # type: ignore[abstract] # false-positive
+        return DownloadStream(  # type: ignore[abstract] # false-positive
+            self.session, url
+        )
 
     def write_transaction(self, **kw: t.Any) -> t.NoReturn:
         raise NotImplementedError(
