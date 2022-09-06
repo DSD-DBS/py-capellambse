@@ -6,6 +6,7 @@ from __future__ import annotations
 
 __all__ = ["MelodyModel"]
 
+import collections.abc as cabc
 import logging
 import os
 import pathlib
@@ -66,7 +67,9 @@ class MelodyModel:
         self,
         path: str | os.PathLike,
         *,
-        diagram_cache: str | os.PathLike | None = None,
+        diagram_cache: (
+            str | os.PathLike | loader.FileHandler | dict[str, t.Any] | None
+        ) = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         jupyter_untrusted: bool = False,
         **kwargs: t.Any,
@@ -192,6 +195,10 @@ class MelodyModel:
         if diagram_cache:
             if diagram_cache == path:
                 self._diagram_cache = self._loader.filehandler
+            elif isinstance(diagram_cache, loader.FileHandler):
+                self._diagram_cache = diagram_cache
+            elif isinstance(diagram_cache, cabc.Mapping):
+                self._diagram_cache = loader.get_filehandler(**diagram_cache)
             else:
                 self._diagram_cache = loader.get_filehandler(diagram_cache)
             self._diagram_cache_subdir = pathlib.PurePosixPath(
