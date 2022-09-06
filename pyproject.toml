@@ -54,6 +54,7 @@ test = [
   "cssutils",
   "pytest",
   "pytest-cov",
+  "requests-mock",
 ]
 
 httpfiles = [
@@ -112,6 +113,7 @@ module = [
   "cssutils.*",
   "lxml.*",
   "PIL.*",
+  "requests_mock.*",
   "svgwrite.*",
 ]
 ignore_missing_imports = true
