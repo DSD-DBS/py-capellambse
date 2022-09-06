@@ -812,34 +812,34 @@ class TestRequirementsFiltering:
             (
                 "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
                 "outgoing",
-                ["85d41db2-9e17-438b-95cf-49342452ddf3"],
+                {"85d41db2-9e17-438b-95cf-49342452ddf3"},
             ),
             (
                 "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
                 "incoming",
-                [
+                {
                     "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
                     "79291c33-5147-4543-9398-9077d582576d",
-                ],
+                },
             ),
-            ("00e7b925-cf4c-4cb0-929e-5409a1cd872b", "internal", []),
+            ("00e7b925-cf4c-4cb0-929e-5409a1cd872b", "internal", set()),
             (
                 "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
                 "outgoing",
-                ["0d2edb8f-fa34-4e73-89ec-fb9a63001440"],
+                {"0d2edb8f-fa34-4e73-89ec-fb9a63001440"},
             ),
             (
                 "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
                 "incoming",
-                [
+                {
                     "4bf0356c-89dd-45e9-b8a6-e0332c026d33",
                     "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
-                ],
+                },
             ),
             (
                 "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
                 "internal",
-                ["85d41db2-9e17-438b-95cf-49342452ddf3"],
+                {"85d41db2-9e17-438b-95cf-49342452ddf3"},
             ),
         ],
     )
@@ -858,7 +858,7 @@ class TestRequirementsFiltering:
             related = obj.requirements
         filtered_related = related.by_relation_class(relation_class)
 
-        assert [i.uuid for i in filtered_related] == target_uuids
+        assert {i.uuid for i in filtered_related} == target_uuids
 
     def test_attributes_filtering_by_definition_long_name(
         self, model: capellambse.MelodyModel
