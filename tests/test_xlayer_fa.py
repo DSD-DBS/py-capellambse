@@ -2,11 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # pylint: disable=no-self-use
-import typing as t
-
-import pytest
-
-import capellambse.model.common as c
 from capellambse import MelodyModel
 
 
