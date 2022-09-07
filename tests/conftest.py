@@ -3,13 +3,15 @@
 
 """Global fixtures for pytest"""
 import io
+import pathlib
 import sys
 
 import pytest
 
 import capellambse
 
-from . import TEST_MODEL, TEST_ROOT
+TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
+TEST_MODEL = "Melody Model Test.aird"
 
 
 @pytest.fixture(scope="session")
