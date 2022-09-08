@@ -13,7 +13,7 @@ import requests_mock
 
 import capellambse
 
-from . import TEST_MODEL, TEST_ROOT
+from .conftest import TEST_MODEL, TEST_ROOT
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 

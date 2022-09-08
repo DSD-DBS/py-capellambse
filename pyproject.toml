@@ -211,6 +211,7 @@ enable = [
 
 [tool.pytest.ini_options]
 addopts = """
+  --import-mode=importlib
   --strict-config
   --strict-markers
 """
