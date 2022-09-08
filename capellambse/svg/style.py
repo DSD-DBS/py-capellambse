@@ -368,7 +368,8 @@ class StyleBuilder:
                 continue
 
             elmtype = tuple(i or "" for i in elmtype_match.groups())
-            self.stylewriters[elmtype[0]](elmtype, styles)
+            if (cls := elmtype[0]) != "Circle":
+                self.stylewriters[cls](elmtype, styles)
 
     def create(self) -> None:
         """Create style builder and all needed components.
