@@ -116,6 +116,7 @@ class TestSVG:
         assert cp_in_exists
         assert cp_out_exists
         assert cp_inout_exists
+        assert cp_unset_exists
         assert cp_reference_exists
 
     @pytest.fixture

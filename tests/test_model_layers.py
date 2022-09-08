@@ -25,7 +25,8 @@ from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
 from capellambse.model.layers.oa import OperationalCapability
 
-from .conftest import TEST_MODEL, TEST_ROOT
+# pylint: disable-next=relative-beyond-top-level
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
 
 
 def test_model_info_contains_capella_version(model: MelodyModel):
@@ -118,7 +119,7 @@ def test_GenericElement_has_pvmt(model: MelodyModel):
         RuntimeError,
         match="^Cannot access PVMT: extension is not loaded$",
     ):
-        elm.pvmt
+        elm.pvmt  # pylint: disable=pointless-statement
 
 
 def test_GenericElement_has_progress_status(model: MelodyModel):
@@ -363,13 +364,13 @@ class TestStateMachines:
     def test_stm_state_has_functions(self, model: MelodyModel):
         state = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
         assert len(state.functions) == 4  # leaf functions only
-        fnc = state.functions.by_name("teach Care of Magical Creatures")
+        assert "teach Care of Magical Creatures" in state.functions.by_name
 
 
 def test_exchange_items_of_a_function_port(model: MelodyModel):
     port = model.by_uuid("db64f0c9-ea1c-4962-b043-1774547c36f7")
-    exchange_item_1 = port.exchange_items.by_name("good advise")
-    exchange_item_2 = port.exchange_items.by_name("not so good advise")
+    assert "good advise" in port.exchange_items.by_name
+    assert "not so good advise" in port.exchange_items.by_name
     assert len(port.exchange_items) == 2
 
 
@@ -451,7 +452,7 @@ def test_constraint_specification_has_linked_object_name_in_body(
 def test_function_is_available_in_state(model: MelodyModel) -> None:
     function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
     states = function.available_in_states
-    state = states.by_name("Open")
+    assert "Open" in states.by_name
     assert len(states) == 1
 
 
@@ -481,7 +482,7 @@ def test_constraint_without_specification_raises_AttributeError(
     assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
 
     with pytest.raises(AttributeError, match="^No specification found$"):
-        con.specification
+        con.specification  # pylint: disable=pointless-statement
 
 
 @pytest.mark.parametrize(
