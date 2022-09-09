@@ -1,0 +1,60 @@
+{
+  "configurations": [
+    {
+      "name": "Interact with the documentation model",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "pythonArgs": [
+        "-Xdev"
+      ],
+      "module": "capellambse.repl",
+      "args": [
+        "docs"
+      ]
+    },
+    {
+      "name": "Interact with the 5.0 test model",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "pythonArgs": [
+        "-Xdev"
+      ],
+      "module": "capellambse.repl",
+      "args": [
+        "test-5.0"
+      ]
+    },
+    {
+      "name": "Interact with the 5.2 test model",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "pythonArgs": [
+        "-Xdev"
+      ],
+      "module": "capellambse.repl",
+      "args": [
+        "test-5.2"
+      ]
+    },
+    {
+      "name": "Interact with the library test model",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "pythonArgs": [
+        "-Xdev"
+      ],
+      "module": "capellambse.repl",
+      "args": [
+        "test-lib"
+      ]
+    }
+  ]
+}
