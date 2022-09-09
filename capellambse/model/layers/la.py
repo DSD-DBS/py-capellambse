@@ -59,7 +59,7 @@ class LogicalComponent(cs.Component):
 
     _xmltag = "ownedLogicalComponents"
 
-    functions = c.ReferencingProxyAccessor(
+    allocated_functions = c.ReferencingProxyAccessor(
         LogicalFunction,
         fa.XT_FCALLOC,
         aslist=c.ElementList,

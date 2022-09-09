@@ -66,7 +66,7 @@ class PhysicalComponent(cs.Component):
         "_element", "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
     )
 
-    functions = c.ReferencingProxyAccessor(
+    allocated_functions = c.ReferencingProxyAccessor(
         PhysicalFunction,
         fa.XT_FCALLOC,
         aslist=c.ElementList,
