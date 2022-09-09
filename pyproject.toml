@@ -10,7 +10,7 @@ dynamic = ["version"]
 
 name = "capellambse"
 description = "Provides access to Capella MBSE projects in Python"
-readme = "README.md"
+readme = "README.rst"
 requires-python = ">=3.9, <3.11"
 license = { text = "Apache-2.0" }
 authors = [
