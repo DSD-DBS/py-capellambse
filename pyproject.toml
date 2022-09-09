@@ -231,3 +231,4 @@ exclude = ["LICENSES"]
 
 [tool.setuptools_scm]
 # This section must exist for setuptools_scm to work
+local_scheme = "no-local-version"
