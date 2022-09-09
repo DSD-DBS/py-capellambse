@@ -13,7 +13,8 @@ import requests_mock
 
 import capellambse
 
-from .conftest import TEST_MODEL, TEST_ROOT
+# pylint: disable-next=relative-beyond-top-level
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 

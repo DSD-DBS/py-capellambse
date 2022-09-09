@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
+# pylint: disable=redefined-outer-name
 import pathlib
 import shutil
 import tempfile
@@ -131,7 +132,7 @@ class TestAppliedPropertyValueGroup:
         assert elem_pv["Plugs per side"] == 1
         assert elem_pv["Price"] == 14.99
         with pytest.raises(KeyError):
-            elem_pv["price"]
+            elem_pv["price"]  # pylint: disable=pointless-statement
 
     def test___setitem___modify(self, model, pvext):
         elem = model[self.elem_uuid]
