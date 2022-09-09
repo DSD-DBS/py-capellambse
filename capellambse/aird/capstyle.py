@@ -799,7 +799,17 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_xAB_Function_Border_Green"],
             "stroke-width": 0,
         },
+        "Box.SystemActor": {
+            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+        },
         "Box.SystemComponent": {
+            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+        },
+        "Box.SystemHumanActor": {
             "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
             "stroke": COLORS["_CAP_Actor_Border_Blue"],
             "text_fill": COLORS["_CAP_Actor_Blue_label"],
