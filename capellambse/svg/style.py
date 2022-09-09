@@ -367,8 +367,11 @@ class StyleBuilder:
                 logger.error("Invalid style key: %s", key)
                 continue
 
-            elmtype = tuple(i or "" for i in elmtype_match.groups())
-            self.stylewriters[elmtype[0]](elmtype, styles)
+            elmtype, elmclass, pseudoclass = elmtype_match.groups()
+            if elmtype not in self.stylewriters:
+                continue
+            write_styles_real = self.stylewriters[elmtype]
+            write_styles_real(elmclass or "", pseudoclass or "", styles)
 
     def create(self) -> None:
         """Create style builder and all needed components.
@@ -398,10 +401,10 @@ class StyleBuilder:
 
     def _write_styles_box(
         self,
-        selector_parts: tuple[str, ...],
+        elmclass: str,
+        pseudo: str,
         styles: dict[str, aird.CSSdef],
     ) -> None:
-        _, elmclass, pseudo = selector_parts
         selectors = [
             f"g.Box{elmclass}{pseudo} > {tag}" for tag in ("rect", "use")
         ]
@@ -416,10 +419,10 @@ class StyleBuilder:
 
     def _write_styles_edge(
         self,
-        selector_parts: tuple[str, ...],
+        elmclass: str,
+        pseudo: str,
         styles: dict[str, aird.CSSdef],
     ) -> None:
-        _, elmclass, pseudo = selector_parts
         selector = f"g.Edge{elmclass}{pseudo} > path"
         selector_text = f"g.Edge{elmclass}{pseudo} > text"
         self._write_styledict(
