@@ -6,8 +6,10 @@ Python-Capellambse
 ==================
 
 .. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
+  :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
 
 .. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
+  :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
 
 *A Python 3 headless implementation of the Capella modeling tool*
 
