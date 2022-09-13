@@ -51,6 +51,7 @@ docs = [
 ]
 
 test = [
+  "click",
   "cssutils",
   "pytest",
   "pytest-cov",

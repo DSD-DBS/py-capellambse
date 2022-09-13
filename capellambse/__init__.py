@@ -54,6 +54,7 @@ from ._namespaces import (
     yield_key_and_version_from_namespaces_by_plugin,
 )
 from .auditing import AttributeAuditor
+from .cli_helpers import *
 from .loader.filehandler import FileHandler, get_filehandler
 from .model import MelodyModel
 from .model.common import ModelObject

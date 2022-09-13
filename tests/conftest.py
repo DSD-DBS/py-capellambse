@@ -10,6 +10,8 @@ import pytest
 
 import capellambse
 
+INSTALLED_PACKAGE = pathlib.Path(capellambse.__file__).parent
+
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
 TEST_MODEL = "Melody Model Test.aird"
 
