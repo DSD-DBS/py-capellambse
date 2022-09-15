@@ -1,11 +1,14 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: CC0-1.0
 
+default_install_hook_types: [commit-msg, pre-commit]
+default_stages: [commit, merge-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
       - id: check-added-large-files
+      - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-executables-have-shebangs
@@ -85,3 +88,7 @@ repos:
     rev: v1.0.0
     hooks:
       - id: reuse
+  - repo: https://github.com/qoomon/git-conventional-commits
+    rev: v2.1.1
+    hooks:
+      - id: conventional-commits

@@ -139,14 +139,11 @@ extension-pkg-allow-list = [
   "lxml.builder",
   "lxml.etree",
 ]
-ignore = [
-  "_version.py",
-]
+max-line-length = 79
 
 [tool.pylint.messages_control]
 disable = [
   "broad-except",
-  "consider-using-f-string",
   "cyclic-import",
   "global-statement",
   "import-outside-toplevel",
@@ -175,7 +172,6 @@ disable = [
   # Auto-formatting
   "bad-indentation",
   "inconsistent-quotes",
-  "line-too-long",
   "missing-final-newline",
   "mixed-line-endings",
   "multiple-imports",
