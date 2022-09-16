@@ -56,7 +56,12 @@ test = [
   "cssutils",
   "pytest",
   "pytest-cov",
+  "pyyaml>=6.0",
   "requests-mock",
+]
+
+decl = [
+  "pyyaml>=6.0",
 ]
 
 httpfiles = [

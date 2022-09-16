@@ -40,6 +40,7 @@ repos:
         additional_dependencies:
           - sphinx
           - types-docutils==0.17.0
+          - types-pyyaml==6.0.11
           - types-requests==2.25.11
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.1.13
