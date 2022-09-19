@@ -101,26 +101,8 @@ def _operate_create(
     for attr, value in creations.items():
         if not isinstance(value, cabc.Iterable):
             raise TypeError("values below `create:*:` must be lists")
-        try:
-            target = getattr(parent, attr)
-        except AttributeError:
-            raise TypeError(
-                "Cannot create object:"
-                f" {type(parent).__name__} has no attribute {attr!r}"
-            ) from None
-        if not isinstance(target, common.ElementList):
-            raise TypeError(
-                "Cannot create object:"
-                f" {type(parent).__name__}.{attr} is not a list"
-            )
-        if not hasattr(target, "create"):
-            raise TypeError(
-                "Cannot create object:"
-                f"{type(parent).__name__}.{attr} is not modifiable"
-            )
 
-        for child in value:
-            _create_complex_object(target, child)
+        _create_complex_objects(parent, attr, value)
 
 
 def _operate_delete(
@@ -144,10 +126,51 @@ _OPERATIONS = collections.OrderedDict(
 )
 
 
-def _create_complex_object(
-    target: common.ElementList, obj_desc: dict[str, t.Any]
+def _create_complex_objects(
+    parent: capellambse.ModelObject,
+    attr: str,
+    objs: cabc.Iterable[cabc.Mapping[str, t.Any]],
 ) -> None:
-    target.create(**obj_desc)
+    try:
+        target = getattr(parent, attr)
+    except AttributeError:
+        raise TypeError(
+            "Cannot create object:"
+            f" {type(parent).__name__} has no attribute {attr!r}"
+        ) from None
+    if not isinstance(target, common.ElementList):
+        raise TypeError(
+            "Cannot create object:"
+            f" {type(parent).__name__}.{attr} is not a list"
+        )
+    if not isinstance(target, common.ElementListCouplingMixin):
+        raise TypeError(
+            "Cannot create object:"
+            f" {type(parent).__name__}.{attr} is not model-coupled"
+        )
+    for child in objs:
+        _create_complex_object(target, child)
+
+
+def _create_complex_object(
+    target: common.ElementListCouplingMixin,
+    obj_desc: cabc.Mapping[str, t.Any],
+) -> None:
+    complex_attrs = {
+        k: v
+        for k, v in obj_desc.items()
+        if isinstance(v, cabc.Iterable) and not isinstance(v, str)
+    }
+    simple_attrs = {
+        k: v for k, v in obj_desc.items() if k not in complex_attrs
+    }
+    assert isinstance(target, common.ElementListCouplingMixin)
+    obj = target.create(**simple_attrs)
+    for subkey, subval in complex_attrs.items():
+        if isinstance(subval, cabc.Iterable):
+            _create_complex_objects(obj, subkey, subval)
+        else:
+            raise TypeError(f"Expected list, got {type(subval).__name__}")
 
 
 @dataclasses.dataclass(frozen=True)

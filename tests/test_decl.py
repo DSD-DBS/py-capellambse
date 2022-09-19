@@ -120,3 +120,28 @@ class TestApplyCreate:
         assert actual_len == expected_len
         for i in ("first", "second", "third"):
             assert f"pass the {i} test" in parent_obj.functions.by_name
+
+    @staticmethod
+    def test_decl_creates_nested_complex_objects_where_they_belong(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root = model.by_uuid(ROOT_FUNCTION)
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              create:
+                functions:
+                  - name: pass the unit test
+                    functions:
+                      - name: run the test function
+                      - name: make assertions
+            """
+        expected_len = len(model.search()) + 3
+
+        decl.apply(model, io.StringIO(yml))
+
+        actual_len = len(model.search())
+        assert actual_len == expected_len
+        assert "pass the unit test" in root.functions.by_name
+        parent = root.functions.by_name("pass the unit test", single=True)
+        assert "run the test function" in parent.functions.by_name
+        assert "make assertions" in parent.functions.by_name
