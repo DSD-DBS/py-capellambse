@@ -991,7 +991,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         del self[index]
         if isinstance(index, slice):
             assert isinstance(value, cabc.Iterable)
-            for i, elm in enumerate(value, start=index.start):
+            for i, elm in enumerate(value, start=index.start or 0):
                 self.insert(i, elm)
         else:
             assert not isinstance(value, cabc.Iterable)
