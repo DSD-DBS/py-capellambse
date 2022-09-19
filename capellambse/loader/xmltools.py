@@ -140,7 +140,7 @@ class AttributeProperty:
         if roundtripped != value:
             raise TypeError(
                 "Value is not round-trip safe:"
-                f"{value} would be read back as {roundtripped}"
+                f" {value!r} would be read back as {roundtripped!r}"
             )
 
         xml_element.attrib[self.attribute] = stringified
