@@ -672,20 +672,9 @@ class TestReqIFModification:
         assert edt_def in reqtypesfolder.data_type_definitions
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
-    @pytest.mark.parametrize(
-        "values",
-        [
-            pytest.param(["val", "val1"], id="Singleattr"),
-            pytest.param(
-                [{"long_name": "val"}, {"long_name": "val1"}], id="Dictionary"
-            ),
-            pytest.param(["val", {"long_name": "val1"}], id="Mixed"),
-        ],
-    )
     def test_create_RequirementTypesFolder_EnumDataTypeDefinition_creating_EnumValues(
         self,
         model: capellambse.MelodyModel,
-        values: list[str | t.Dict[str, t.Any]],
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
         dt_definitions = reqtypesfolder.data_type_definitions
@@ -693,7 +682,7 @@ class TestReqIFModification:
         edt_def = reqtypesfolder.data_type_definitions.create(
             "EnumerationDataTypeDefinition",
             long_name="Enum",
-            values=values,
+            values=["val", "val1"],
         )
 
         assert len(dt_definitions) + 1 == len(
@@ -701,31 +690,6 @@ class TestReqIFModification:
         )
         assert edt_def in reqtypesfolder.data_type_definitions
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
-
-    def test_create_RequirementTypesFolder_from_mapping(
-        self, model: capellambse.MelodyModel
-    ):
-        reqtypesfolder = model.la.requirement_types_folders.create(
-            long_name="Test",
-            data_type_definitions=[
-                {
-                    "_type": "DataTypeDefinition",
-                    "long_name": "TestAttrDataTypeDef",
-                },
-                {
-                    "_type": "EnumerationDataTypeDefinition",
-                    "long_name": "TestEnumAttrDataTypeDef",
-                    "values": ["a", "b"],
-                },
-            ],
-        )
-
-        adtdef, edtdef = reqtypesfolder.data_type_definitions
-        assert isinstance(adtdef, reqif.DataTypeDefinition)
-        assert adtdef.long_name == "TestAttrDataTypeDef"
-        assert isinstance(edtdef, reqif.EnumDataTypeDefinition)
-        assert edtdef.long_name == "TestEnumAttrDataTypeDef"
-        assert edtdef.values == ["a", "b"]
 
 
 class TestRequirementsFiltering:
