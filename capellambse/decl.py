@@ -13,10 +13,12 @@ __all__ = [
     "UUIDReference",
     "YDMDumper",
     "YDMLoader",
+    "apply",
     "dump",
     "load",
 ]
 
+import collections
 import collections.abc as cabc
 import contextlib
 import dataclasses
@@ -25,7 +27,9 @@ import typing as t
 
 import yaml
 
+import capellambse
 from capellambse import helpers
+from capellambse.model import common
 
 FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
 
@@ -53,6 +57,97 @@ def load(file: FileOrPath) -> list[dict[str, t.Any]]:
 
     with ctx as opened_file:
         return yaml.load(opened_file, Loader=YDMLoader)
+
+
+def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
+    """Apply a declarative modelling file to the given model.
+
+    Parameters
+    ----------
+    model
+        The model to apply the instructions to.
+    file
+        An open file-like object to read YAML instructions from, or a
+        path to such a file. Files will be read with UTF-8 encoding.
+
+    Notes
+    -----
+    This function is not transactional: If an exception occurs during
+    this function, the model will be left partially modified, with no
+    reliable way to know how much of the YAML input has been consumed.
+    It is therefore advised to reload or discard the model immediately
+    in these cases, to avoid working with an inconsistent state.
+    """
+    instructions = load(file)
+
+    for instruction in instructions:
+        parent = instruction.pop("parent")
+        if isinstance(parent, UUIDReference):
+            parent = model.by_uuid(parent.uuid)
+        for op_type, apply_op in _OPERATIONS.items():
+            try:
+                op = instruction.pop(op_type)
+            except KeyError:
+                continue
+            apply_op(parent, op)
+        if instruction:
+            keys = ", ".join(instruction)
+            raise ValueError(f"Unrecognized keys in instruction: {keys}")
+
+
+def _operate_create(
+    parent: capellambse.ModelObject, creations: dict[str, t.Any]
+):
+    for attr, value in creations.items():
+        if not isinstance(value, cabc.Iterable):
+            raise TypeError("values below `create:*:` must be lists")
+        try:
+            target = getattr(parent, attr)
+        except AttributeError:
+            raise TypeError(
+                "Cannot create object:"
+                f" {type(parent).__name__} has no attribute {attr!r}"
+            ) from None
+        if not isinstance(target, common.ElementList):
+            raise TypeError(
+                "Cannot create object:"
+                f" {type(parent).__name__}.{attr} is not a list"
+            )
+        if not hasattr(target, "create"):
+            raise TypeError(
+                "Cannot create object:"
+                f"{type(parent).__name__}.{attr} is not modifiable"
+            )
+
+        for child in value:
+            _create_complex_object(target, child)
+
+
+def _operate_delete(
+    parent: capellambse.ModelObject, deletions: dict[str, t.Any]
+):
+    raise NotImplementedError("Deleting objects is not yet implemented")
+
+
+def _operate_modify(
+    parent: capellambse.ModelObject, modifications: dict[str, t.Any]
+):
+    raise NotImplementedError("Modifying objects is not yet implemented")
+
+
+_OPERATIONS = collections.OrderedDict(
+    (
+        ("create", _operate_create),
+        ("modify", _operate_modify),
+        ("delete", _operate_delete),
+    )
+)
+
+
+def _create_complex_object(
+    target: common.ElementList, obj_desc: dict[str, t.Any]
+) -> None:
+    target.create(**obj_desc)
 
 
 @dataclasses.dataclass(frozen=True)

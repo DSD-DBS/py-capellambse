@@ -4,7 +4,12 @@ from __future__ import annotations
 
 import io
 
+import pytest
+
+import capellambse
 from capellambse import decl, helpers
+
+ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
 
 
 class TestDumpLoad:
@@ -47,3 +52,71 @@ class TestDumpLoad:
         actual = decl.load(io.StringIO(yaml))
 
         assert actual == expected
+
+
+class TestApplyCreate:
+    @staticmethod
+    def test_decl_errors_on_unknown_operations(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              invalid_operation: {{}}
+            """
+
+        with pytest.raises(ValueError, match="invalid_operation"):
+            decl.apply(model, io.StringIO(yml))
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        ["parent_str", "parent_getter"],
+        [
+            pytest.param(
+                f"!uuid {ROOT_FUNCTION}",
+                lambda m: m.by_uuid(ROOT_FUNCTION),
+                id="!uuid",
+            ),
+        ],
+    )
+    def test_decl_finds_parent_to_act_on(
+        model: capellambse.MelodyModel, parent_str, parent_getter
+    ) -> None:
+        funcname = "pass the unit test"
+        yml = f"""\
+            - parent: {parent_str}
+              create:
+                functions:
+                  - name: {funcname!r}
+            """
+        expected_len = len(model.search()) + 1
+        assert funcname not in parent_getter(model).functions.by_name
+
+        decl.apply(model, io.StringIO(yml))
+
+        actual_len = len(model.search())
+        assert actual_len == expected_len
+        assert funcname in parent_getter(model).functions.by_name
+
+    @staticmethod
+    def test_decl_creates_each_object_in_a_list(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        parent_obj = model.by_uuid(ROOT_FUNCTION)
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              create:
+                functions:
+                  - name: pass the first test
+                  - name: pass the second test
+                  - name: pass the third test
+            """
+        expected_len = len(model.search()) + 3
+        for i in ("first", "second", "third"):
+            assert f"pass the {i} test" not in parent_obj.functions.by_name
+
+        decl.apply(model, io.StringIO(yml))
+
+        actual_len = len(model.search())
+        assert actual_len == expected_len
+        for i in ("first", "second", "third"):
+            assert f"pass the {i} test" in parent_obj.functions.by_name
