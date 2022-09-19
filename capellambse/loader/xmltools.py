@@ -436,22 +436,14 @@ class EnumAttributeProperty(AttributeProperty):
                 value = self.enumcls[value]
             except KeyError:
                 raise ValueError(
-                    "{!r} is not a valid value for {}.{}".format(
-                        value, self.__objclass__.__name__, self.__name__
-                    )
+                    f"{value!r} is not a valid value for {self._qualname}"
                 ) from None
         elif not isinstance(value, self.enumcls):
             raise TypeError(
-                "Expected str or member of {}, not {!r}".format(
-                    self.enumcls, value
-                )
+                f"Expected str or member of {self.enumcls}, not {value!r}"
             )
 
         return super().__set__(obj, value.name)
-
-    def __set_name__(self, owner: type[t.Any], name: str) -> None:
-        self.__name__ = name
-        self.__objclass__ = owner
 
 
 class XMLDictProxy(cabc.MutableMapping):

@@ -71,7 +71,14 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self.__name__ = name
 
     def __repr__(self) -> str:
-        return f"<'{self.__objclass__.__name__}.{self.__name__}' {type(self).__name__}>"
+        return f"<{self._qualname!r} {type(self).__name__}>"
+
+    @property
+    def _qualname(self) -> str:
+        """Generate the qualified name of this descriptor."""
+        if not hasattr(self, "__objclass__"):
+            return f"(unknown {type(self).__name__} - call __set_name__)"
+        return f"{self.__objclass__.__name__}.{self.__name__}"
 
 
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
@@ -601,8 +608,7 @@ class AttrProxyAccessor(PhysicalAccessor):
             values = (values,)
         elif self.aslist is None:
             raise TypeError(
-                f"{self.__objclass__.__name__}.{self.__name__}"
-                " requires a single item, not an iterable"
+                f"{self._qualname} requires a single item, not an iterable"
             )
 
         assert isinstance(values, cabc.Iterable)
@@ -943,9 +949,7 @@ def no_list(
         return None
     if len(elems) > 1:  # pragma: no cover
         raise RuntimeError(
-            "Expected 1 object for {}.{}, got {}".format(
-                desc.__objclass__.__name__, desc.__name__, len(elems)
-            )
+            f"Expected 1 object for {desc._qualname}, got {len(elems)}"
         )
     return class_.from_model(model, elems[0])
 
