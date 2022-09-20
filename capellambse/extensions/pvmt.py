@@ -18,9 +18,9 @@ class PropertyValueProxy:
 
     Example for accessing property values on any object that has pvmt::
 
-        >>> model.la.functions[0].pvmt['domain.group.property']
+        >>> model.la.all_functions[0].pvmt['domain.group.property']
         'property'
-        >>> model.la.functions[0].pvmt['domain.group']
+        >>> model.la.all_functions[0].pvmt['domain.group']
         <pvmt.AppliedPropertyValueGroup "domain.group"(abcdef01-2345-6789-abcd-ef0123456789)>
 
     .. note::

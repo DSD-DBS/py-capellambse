@@ -36,7 +36,7 @@ class LogicalFunction(fa.Function):
             return next(
                 i
                 for i in self._model.search("LogicalComponent")
-                if self in i.functions
+                if self in i.allocated_functions
             )
         except StopIteration:
             return None
