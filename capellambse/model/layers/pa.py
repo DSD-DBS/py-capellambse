@@ -32,7 +32,7 @@ class PhysicalFunction(fa.Function):
     owner = c.CustomAccessor(
         c.GenericElement,
         operator.attrgetter("_model.pa.all_components"),
-        matchtransform=operator.attrgetter("functions"),
+        matchtransform=operator.attrgetter("allocated_functions"),
     )
     realized_logical_functions = c.ReferencingProxyAccessor(
         la.LogicalFunction,
