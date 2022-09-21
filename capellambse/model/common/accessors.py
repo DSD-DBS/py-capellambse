@@ -456,8 +456,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             else:
                 parent_index = index
         except ValueError:
-            # FIXME: self._parent is part of ElementListCouplingMixin
-            parent_index = len(self._parent)  # type: ignore[attr-defined]
+            parent_index = len(elmlist._parent)
         elmlist._parent._element.insert(parent_index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
