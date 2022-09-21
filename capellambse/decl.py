@@ -32,6 +32,7 @@ from capellambse import helpers
 from capellambse.model import common
 
 FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
+_FulfilledPromise = tuple["Promise", capellambse.ModelObject]
 
 
 def dump(instructions: cabc.Sequence[cabc.Mapping[str, t.Any]]) -> str:
@@ -80,6 +81,7 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
     """
     instructions = load(file)
 
+    promises = dict[Promise, capellambse.ModelObject]()
     for instruction in instructions:
         parent = instruction.pop("parent")
         if isinstance(parent, UUIDReference):
@@ -89,31 +91,42 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
                 op = instruction.pop(op_type)
             except KeyError:
                 continue
-            apply_op(parent, op)
+            for promise, object in apply_op(promises, parent, op):
+                if promise in promises:
+                    raise ValueError(
+                        f"promise_id defined twice: {promise.identifier}"
+                    )
+                promises[promise] = object
         if instruction:
             keys = ", ".join(instruction)
             raise ValueError(f"Unrecognized keys in instruction: {keys}")
 
 
 def _operate_create(
-    parent: capellambse.ModelObject, creations: dict[str, t.Any]
-):
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    creations: dict[str, t.Any],
+) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
     for attr, value in creations.items():
         if not isinstance(value, cabc.Iterable):
             raise TypeError("values below `create:*:` must be lists")
 
-        _create_complex_objects(parent, attr, value)
+        yield from _create_complex_objects(promises, parent, attr, value)
 
 
 def _operate_delete(
-    parent: capellambse.ModelObject, deletions: dict[str, t.Any]
-):
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    deletions: dict[str, t.Any],
+) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
     raise NotImplementedError("Deleting objects is not yet implemented")
 
 
 def _operate_modify(
-    parent: capellambse.ModelObject, modifications: dict[str, t.Any]
-):
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    modifications: dict[str, t.Any],
+) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
     raise NotImplementedError("Modifying objects is not yet implemented")
 
 
@@ -127,10 +140,11 @@ _OPERATIONS = collections.OrderedDict(
 
 
 def _create_complex_objects(
+    promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     attr: str,
-    objs: cabc.Iterable[cabc.Mapping[str, t.Any]],
-) -> None:
+    objs: cabc.Iterable[dict[str, t.Any] | Promise],
+) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
     try:
         target = getattr(parent, attr)
     except AttributeError:
@@ -149,13 +163,28 @@ def _create_complex_objects(
             f" {type(parent).__name__}.{attr} is not model-coupled"
         )
     for child in objs:
-        _create_complex_object(target, child)
+        if isinstance(child, Promise):
+            try:
+                obj = promises[child]
+            except KeyError:
+                raise ValueError(
+                    f"Unfulfilled promise: {child.identifier}"
+                ) from None
+            target.append(obj)
+        else:
+            yield from _create_complex_object(promises, target, child)
 
 
 def _create_complex_object(
+    promises: dict[Promise, capellambse.ModelObject],
     target: common.ElementListCouplingMixin,
-    obj_desc: cabc.Mapping[str, t.Any],
-) -> None:
+    obj_desc: dict[str, t.Any],
+) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
+    try:
+        promise: str | Promise | None = obj_desc.pop("promise_id")
+    except KeyError:
+        promise = None
+
     complex_attrs = {
         k: v
         for k, v in obj_desc.items()
@@ -166,9 +195,13 @@ def _create_complex_object(
     }
     assert isinstance(target, common.ElementListCouplingMixin)
     obj = target.create(**simple_attrs)
+    if promise is not None:
+        if isinstance(promise, str):
+            promise = Promise(promise)
+        yield (promise, obj)
     for subkey, subval in complex_attrs.items():
         if isinstance(subval, cabc.Iterable):
-            _create_complex_objects(obj, subkey, subval)
+            yield from _create_complex_objects(promises, obj, subkey, subval)
         else:
             raise TypeError(f"Expected list, got {type(subval).__name__}")
 

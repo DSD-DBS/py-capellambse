@@ -9,6 +9,7 @@ import pytest
 import capellambse
 from capellambse import decl, helpers
 
+ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
 
 
@@ -145,3 +146,31 @@ class TestApplyCreate:
         parent = root.functions.by_name("pass the unit test", single=True)
         assert "run the test function" in parent.functions.by_name
         assert "make assertions" in parent.functions.by_name
+
+
+class TestApplyPromises:
+    @staticmethod
+    def test_promises_can_backwards_reference_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_func = model.by_uuid(ROOT_FUNCTION)
+        root_comp = model.by_uuid(ROOT_COMPONENT)
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              create:
+                functions:
+                  - name: pass the unit test
+                    promise_id: pass-test
+            - parent: !uuid {ROOT_COMPONENT}
+              create:
+                allocated_functions:
+                  - !promise pass-test
+            """
+        expected_len = len(root_comp.allocated_functions) + 1
+
+        decl.apply(model, io.StringIO(yml))
+
+        actual_len = len(root_comp.allocated_functions)
+        assert actual_len == expected_len
+        assert "pass the unit test" in root_func.functions.by_name
+        assert "pass the unit test" in root_comp.allocated_functions.by_name
