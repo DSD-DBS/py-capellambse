@@ -83,26 +83,26 @@ class OperationalCapability(c.GenericElement):
     generalizes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
     )
-    involved_activities = c.ReferencingProxyAccessor(
-        OperationalActivity,
+    involved_activities = c.LinkAccessor[OperationalActivity](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2ACT,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_entities = c.ReferencingProxyAccessor(
-        c.GenericElement,
+    involved_entities = c.LinkAccessor[c.GenericElement](
+        None,  # FIXME fill in tag
         XT_EOCI,
-        follow="involved",
         aslist=c.MixedElementList,
+        attr="involved",
     )
     entity_involvements = c.DirectProxyAccessor(
         EntityOperationalCapabilityInvolvement, aslist=c.ElementList
     )
-    involved_processes = c.ReferencingProxyAccessor(
-        OperationalProcess,
+    involved_processes = c.LinkAccessor[OperationalProcess](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
     owned_processes = c.DirectProxyAccessor(
         OperationalProcess, aslist=c.ElementList
@@ -138,11 +138,11 @@ class OperationalCapabilityPkg(c.GenericElement):
 class AbstractEntity(cs.Component):
     """Common code for Entities."""
 
-    activities = c.ReferencingProxyAccessor(
-        OperationalActivity,
+    activities = c.LinkAccessor[OperationalActivity](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
     capabilities = c.CustomAccessor(
         OperationalCapability,
@@ -188,11 +188,11 @@ class CommunicationMean(fa.AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_interactions = c.ReferencingProxyAccessor(
-        fa.FunctionalExchange,
+    allocated_interactions = c.LinkAccessor[fa.FunctionalExchange](
+        None,  # FIXME fill in tag
         fa.XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
     allocated_exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem,

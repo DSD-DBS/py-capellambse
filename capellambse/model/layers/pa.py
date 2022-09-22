@@ -34,11 +34,11 @@ class PhysicalFunction(fa.Function):
         operator.attrgetter("_model.pa.all_components"),
         matchtransform=operator.attrgetter("functions"),
     )
-    realized_logical_functions = c.ReferencingProxyAccessor(
-        la.LogicalFunction,
+    realized_logical_functions = c.LinkAccessor[la.LogicalFunction](
+        None,  # FIXME fill in tag
         fa.FunctionRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
 
@@ -66,17 +66,17 @@ class PhysicalComponent(cs.Component):
         "_element", "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
     )
 
-    allocated_functions = c.ReferencingProxyAccessor(
-        PhysicalFunction,
+    allocated_functions = c.LinkAccessor[PhysicalFunction](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
-    realized_logical_components = c.ReferencingProxyAccessor(
-        la.LogicalComponent,
+    realized_logical_components = c.LinkAccessor[la.LogicalComponent](
+        None,  # FIXME fill in tag
         cs.ComponentRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
     owned_components: c.Accessor

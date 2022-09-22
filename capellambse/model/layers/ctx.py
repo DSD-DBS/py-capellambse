@@ -24,11 +24,11 @@ class SystemFunction(fa.Function):
 
     _xmltag = "ownedFunctions"
 
-    realized_operational_activities = c.ReferencingProxyAccessor(
-        oa.OperationalActivity,
+    realized_operational_activities = c.LinkAccessor[oa.OperationalActivity](
+        None,  # FIXME fill in tag
         fa.FunctionRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
     owner: c.Accessor
@@ -50,17 +50,17 @@ class SystemComponent(cs.Component):
 
     _xmltag = "ownedSystemComponents"
 
-    allocated_functions = c.ReferencingProxyAccessor(
-        SystemFunction,
+    allocated_functions = c.LinkAccessor[SystemFunction](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     )
-    realized_operational_entities = c.ReferencingProxyAccessor(
-        oa.Entity,
+    realized_operational_entities = c.LinkAccessor[oa.Entity](
+        None,  # FIXME fill in tag
         cs.ComponentRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
 
@@ -101,32 +101,32 @@ class Capability(c.GenericElement):
     owned_chains = c.DirectProxyAccessor(
         fa.FunctionalChain, aslist=c.ElementList
     )
-    involved_functions = c.ReferencingProxyAccessor(
-        SystemFunction,
+    involved_functions = c.LinkAccessor[SystemFunction](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2ACT,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_chains = c.ReferencingProxyAccessor(
-        fa.FunctionalChain,
+    involved_chains = c.LinkAccessor[fa.FunctionalChain](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_components = c.ReferencingProxyAccessor(
-        SystemComponent,
-        xtypes=CapabilityInvolvement,
-        follow="involved",
+    involved_components = c.LinkAccessor[SystemComponent](
+        None,  # FIXME fill in tag
+        CapabilityInvolvement,
         aslist=c.MixedElementList,
+        attr="involved",
     )
     component_involvements = c.DirectProxyAccessor(
         CapabilityInvolvement, aslist=c.ElementList
     )
-    realized_capabilities = c.ReferencingProxyAccessor(
-        oa.OperationalCapability,
+    realized_capabilities = c.LinkAccessor[oa.OperationalCapability](
+        None,  # FIXME fill in tag
         interaction.XT_CAP_REAL,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     )
 
     postcondition = c.AttrProxyAccessor(
@@ -172,11 +172,11 @@ class Mission(c.GenericElement):
     involvements = c.DirectProxyAccessor(
         MissionInvolvement, aslist=c.ElementList
     )
-    exploits = c.ReferencingProxyAccessor(
-        Capability,
-        xtypes=CapabilityExploitation,
-        follow="capability",
+    exploits = c.LinkAccessor[Capability](
+        None,  # FIXME fill in tag
+        CapabilityExploitation,
         aslist=c.ElementList,
+        attr="capability",
     )
     exploitations = c.DirectProxyAccessor(
         CapabilityExploitation, aslist=c.ElementList

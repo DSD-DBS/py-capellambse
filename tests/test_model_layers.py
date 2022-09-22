@@ -1014,3 +1014,52 @@ def test_diagram_without_documentation_has_None_description(
     actual = diagram.description
 
     assert actual == expected
+
+
+def test_lists_of_links_appear_to_contain_target_objects(
+    model: capellambse.MelodyModel,
+):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    expected = [
+        "0e71a0d3-0a18-4671-bba0-71b5f88f95dd",
+        "264fb47d-67b7-4bdc-8d06-8a0e5139edbf",
+    ]
+
+    actual = [i.uuid for i in hogwarts.allocated_functions]
+
+    assert actual == expected
+
+
+def test_lists_of_links_cannot_create_objects(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+
+    with pytest.raises(TypeError, match="create"):
+        hogwarts.allocated_functions.create(name="fall to the Death Eaters")
+
+
+def test_lists_of_links_can_be_appended_to(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
+
+    hogwarts.allocated_functions.append(defend_the_stone)
+
+    assert hogwarts.allocated_functions[-1] == defend_the_stone
+
+
+def test_lists_of_links_can_be_inserted_into(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
+
+    hogwarts.allocated_functions.insert(0, defend_the_stone)
+
+    assert hogwarts.allocated_functions[0] == defend_the_stone
+
+
+def test_lists_of_links_can_be_removed_from(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    protect_students = model.by_uuid("264fb47d-67b7-4bdc-8d06-8a0e5139edbf")
+    assert protect_students in hogwarts.allocated_functions
+
+    hogwarts.allocated_functions.remove(protect_students)
+
+    assert protect_students not in hogwarts.allocated_functions

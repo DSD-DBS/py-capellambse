@@ -69,11 +69,8 @@ class PhysicalLink(PhysicalPort):
     linkEnds = c.AttrProxyAccessor(
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
-    exchanges = c.ReferencingProxyAccessor(
-        fa.ComponentExchange,
-        xtypes=fa.XT_COMP_EX_ALLOC,
-        aslist=c.ElementList,
-        follow="targetElement",
+    exchanges = c.LinkAccessor[fa.ComponentExchange](
+        None, fa.XT_COMP_EX_ALLOC, aslist=c.ElementList, attr="targetElement"
     )
 
     physical_paths: c.Accessor
@@ -85,17 +82,11 @@ class PhysicalPath(c.GenericElement):
 
     _xmltag = "ownedPhysicalPath"
 
-    involved_items = c.ReferencingProxyAccessor(
-        c.GenericElement,
-        xtypes=XT_PHYS_PATH_INV,
-        aslist=c.MixedElementList,
-        follow="involved",
+    involved_items = c.LinkAccessor[c.GenericElement](  # FIXME fill in tag
+        None, XT_PHYS_PATH_INV, aslist=c.MixedElementList, attr="involved"
     )
-    exchanges = c.ReferencingProxyAccessor(
-        fa.ComponentExchange,
-        xtypes=fa.XT_COMP_EX_ALLOC,
-        aslist=c.ElementList,
-        follow="targetElement",
+    exchanges = c.LinkAccessor[fa.ComponentExchange](  # FIXME fill in tag
+        None, fa.XT_COMP_EX_ALLOC, aslist=c.ElementList, attr="targetElement"
     )
 
     @property
@@ -150,8 +141,8 @@ c.set_accessor(
 c.set_accessor(
     Part,
     "deployed_parts",
-    c.ReferencingProxyAccessor(
-        Part, XT_DEPLOY_LINK, aslist=c.ElementList, follow="deployedElement"
+    c.LinkAccessor(  # FIXME fill in tag
+        None, XT_DEPLOY_LINK, aslist=c.ElementList, attr="deployedElement"
     ),
 )
 c.set_accessor(

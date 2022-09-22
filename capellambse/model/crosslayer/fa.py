@@ -31,12 +31,6 @@ XT_COMP_EX_ALLOC = (
     "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
 )
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-XT_FCI: cabc.Set[str] = frozenset(
-    {
-        "org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction",
-        "org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink",
-    }
-)
 
 
 @c.xtype_handler(None)
@@ -179,12 +173,27 @@ class FunctionalChain(c.GenericElement):
 
     _xmltag = "ownedFunctionalChains"
 
-    involved = c.ReferencingProxyAccessor(
-        c.GenericElement, XT_FCI, aslist=c.MixedElementList, follow="involved"
-    )
     involvements = c.DirectProxyAccessor(
-        c.GenericElement, XT_FCI, aslist=c.ElementList
+        c.GenericElement,
+        (FunctionalChainInvolvementFunction, FunctionalChainInvolvementLink),
+        aslist=c.ElementList,
     )
+    involved_functions = c.LinkAccessor[AbstractFunction](
+        None,  # FIXME fill in tag
+        FunctionalChainInvolvementFunction,
+        aslist=c.MixedElementList,
+        attr="involved",
+    )
+    involved_links = c.LinkAccessor[AbstractExchange](
+        None,  # FIXME fill in tag
+        FunctionalChainInvolvementLink,
+        aslist=c.MixedElementList,
+        attr="involved",
+    )
+
+    @property
+    def involved(self) -> c.MixedElementList:
+        return self.involved_functions + self.involved_links
 
 
 @c.xtype_handler(None)
@@ -206,11 +215,11 @@ class ComponentExchange(AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_functional_exchanges = c.ReferencingProxyAccessor(
-        FunctionalExchange,
+    allocated_functional_exchanges = c.LinkAccessor[FunctionalExchange](
+        None,  # FIXME fill in tag
         XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
     allocated_exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem,

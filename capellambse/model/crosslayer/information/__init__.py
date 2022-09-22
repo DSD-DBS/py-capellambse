@@ -225,8 +225,8 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
         "super",
-        c.ReferencingProxyAccessor(
-            cls, capellacore.Generalization, follow="super"
+        c.LinkAccessor(  # FIXME fill in tag
+            None, capellacore.Generalization, attr="super"
         ),
     )
     c.set_accessor(
