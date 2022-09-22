@@ -85,6 +85,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
     aslist: type[ElementListCouplingMixin] | None
+    class_: type[T]
+    list_extra_args: cabc.Mapping[str, t.Any]
     single_attr: str | None
 
     def __init__(
@@ -161,6 +163,19 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         """Delete the ``obj`` from the model."""
         raise NotImplementedError("Objects in this list cannot be deleted")
 
+    def _make_list(self, parent_obj, elements):
+        assert hasattr(self, "class_")
+        assert hasattr(self, "list_extra_args")
+        if self.aslist is None:
+            return no_list(self, parent_obj._model, elements, self.class_)
+        return self.aslist(
+            parent_obj._model,
+            elements,
+            self.class_,
+            parent=parent_obj,
+            **self.list_extra_args,
+        )
+
     def _match_xtype(
         self,
         type_1: str | object | None = _NOT_SPECIFIED,
@@ -230,6 +245,7 @@ class PhysicalAccessor(Accessor[T]):
 
     aslist: type[element.ElementList] | None
     class_: type[T]
+    list_extra_args: cabc.Mapping[str, t.Any]
     xtypes: cabc.Set[str]
 
     def __init__(
@@ -243,7 +259,7 @@ class PhysicalAccessor(Accessor[T]):
         ) = None,
         *,
         aslist: type[element.ElementList[T]] | None = None,
-        list_extra_args: dict[str, t.Any] | None = None,
+        list_extra_args: cabc.Mapping[str, t.Any] | None = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -293,6 +309,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     __slots__ = ("follow_abstract", "rootelem")
 
     aslist: type[ElementListCouplingMixin] | None
+    class_: type[T]
     single_attr: str | None
 
     def __init__(
@@ -401,17 +418,6 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             )
         return roots
 
-    def _make_list(self, parent_obj, elements):
-        if self.aslist is None:
-            return no_list(self, parent_obj._model, elements, self.class_)
-        return self.aslist(
-            parent_obj._model,
-            elements,
-            self.class_,
-            parent=parent_obj,
-            **self.list_extra_args,
-        )
-
     def create(
         self,
         elmlist: ElementListCouplingMixin,
@@ -488,6 +494,8 @@ class ReferencingProxyAccessor(DirectProxyAccessor[T]):
     """Creates proxy objects via UUID-referenced elements."""
 
     __slots__ = ("follow",)
+
+    class_: type[T]
 
     def __init__(
         self,
