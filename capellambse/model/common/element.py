@@ -547,19 +547,19 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         if self._model is not other._model:
             raise ValueError("Cannot add ElementLists from different models")
 
-        return ElementList(
-            self._model,
-            (
-                self._elements + other._elements
-                if not reflected
-                else other._elements + self._elements
-            ),
-            (
-                self._elemclass
-                if self._elemclass is other._elemclass
-                else GenericElement
-            ),
-        )
+        if self._elemclass is other._elemclass is not GenericElement:
+            listclass: type[ElementList] = ElementList
+            elemclass: type[ModelObject] = self._elemclass
+        else:
+            listclass = MixedElementList
+            elemclass = GenericElement
+
+        if not reflected:
+            elements = self._elements + other._elements
+        else:
+            elements = other._elements + self._elements
+
+        return listclass(self._model, elements, elemclass)
 
     def __add__(self, other: object) -> ElementList[T]:
         return self.__add(other)

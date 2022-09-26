@@ -84,26 +84,6 @@ basedir = pathlib.Path(__file__).parent.resolve()
 logger = logging.getLogger("capellambse.repl")
 
 
-def _enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
-    """Enumerate the models that are found in the ``repl_models`` folder.
-
-    In order to make a custom model known, place a JSON file in the
-    ``repl_models`` folder below the  installed ``capellambse`` package.
-    It should contain a dictionary with the keyword arguments to
-    :class:`capellambse.MelodyModel` - specifically it needs a ``path``,
-    an ``entrypoint``, and any additional arguments that the underlying
-    :class:`capellambse.loader.filehandler.FileHandler` might need to
-    gain access to the model.
-
-    The JSON may contain relative paths to files, however these will
-    always be interpreted relative to the directory that contains the
-    ``capellambse`` package.
-    """
-    for i in imr.files(capellambse).joinpath("known_models").iterdir():
-        if i.name.endswith(".json") and i.is_file():
-            yield i
-
-
 def _load_model_info(datapath: str | importlib.abc.Traversable) -> _ModelInfo:
     if isinstance(datapath, str):
         datapath = imr.files(capellambse) / "known_models" / f"{datapath}.json"
@@ -114,7 +94,7 @@ def _load_model_info(datapath: str | importlib.abc.Traversable) -> _ModelInfo:
 def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
     known_models = list(
         i.name[: -len(".json")]
-        for i in _enumerate_known_models()
+        for i in capellambse.enumerate_known_models()
         if i.name.endswith(".json")
     )
     parser = argparse.ArgumentParser("capellambse/repl.py")

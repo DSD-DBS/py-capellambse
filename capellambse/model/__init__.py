@@ -104,7 +104,7 @@ class MelodyModel:
             * A remote URL, with a protocol or prefix that indicates
               which file handler to invoke (requires ``entrypoint``).
 
-              Examples:
+              Some examples:
 
               * ``git://git.example.com/model/coffeemaker.git``
               * ``git+https://git.example.com/model/coffeemaker.git``

@@ -23,11 +23,11 @@ class LogicalFunction(fa.Function):
 
     _xmltag = "ownedLogicalFunctions"
 
-    realized_system_functions = c.ReferencingProxyAccessor(
-        ctx.SystemFunction,
+    realized_system_functions = c.LinkAccessor[ctx.SystemFunction](
+        None,  # FIXME fill in tag
         fa.FunctionRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
     @property
@@ -59,17 +59,17 @@ class LogicalComponent(cs.Component):
 
     _xmltag = "ownedLogicalComponents"
 
-    allocated_functions = c.ReferencingProxyAccessor(
-        LogicalFunction,
+    allocated_functions = c.LinkAccessor[LogicalFunction](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
-    realized_components = c.ReferencingProxyAccessor(
-        ctx.SystemComponent,
+    realized_components = c.LinkAccessor[ctx.SystemComponent](
+        None,  # FIXME fill in tag
         cs.ComponentRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
     components: c.Accessor
@@ -98,29 +98,29 @@ class CapabilityRealization(c.GenericElement):
     owned_chains = c.DirectProxyAccessor(
         fa.FunctionalChain, aslist=c.ElementList
     )
-    involved_functions = c.ReferencingProxyAccessor(
-        LogicalFunction,
+    involved_functions = c.LinkAccessor[LogicalFunction](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2ACT,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_chains = c.ReferencingProxyAccessor(
-        fa.FunctionalChain,
+    involved_chains = c.LinkAccessor[fa.FunctionalChain](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_components = c.ReferencingProxyAccessor(
-        LogicalComponent,
-        xtypes=ctx.CapabilityInvolvement,
-        follow="involved",
+    involved_components = c.LinkAccessor[LogicalComponent](
+        None,  # FIXME fill in tag
+        ctx.CapabilityInvolvement,
         aslist=c.MixedElementList,
+        attr="involved",
     )
-    realized_capabilities = c.ReferencingProxyAccessor(
-        ctx.Capability,
+    realized_capabilities = c.LinkAccessor[ctx.Capability](
+        None,  # FIXME fill in tag
         interaction.XT_CAP_REAL,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     )
 
     postcondition = c.AttrProxyAccessor(

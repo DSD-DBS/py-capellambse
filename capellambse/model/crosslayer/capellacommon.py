@@ -115,11 +115,12 @@ class GenericTrace(c.GenericElement):
 c.set_accessor(
     AbstractStateMode,
     "realized_states",
-    c.ReferencingProxyAccessor(
-        c.GenericElement,
+    # FIXME fill in tag
+    c.LinkAccessor(
+        None,
         XT_ABSTRACT_STATE_REAL,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     ),
 )
 for cls in [

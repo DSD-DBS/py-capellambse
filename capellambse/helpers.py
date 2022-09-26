@@ -18,6 +18,7 @@ import typing as t
 
 import lxml.html
 import markupsafe
+import typing_extensions as te
 from lxml import etree
 from PIL import ImageFont
 
@@ -26,9 +27,14 @@ import capellambse
 ATT_XT = f'{{{capellambse.NAMESPACES["xsi"]}}}type'
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
+RE_VALID_UUID = re.compile(
+    r"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}",
+    re.IGNORECASE,
+)
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
 
+UUIDString = t.NewType("UUIDString", str)
 _T = t.TypeVar("_T")
 
 
@@ -66,6 +72,11 @@ def _flatten_subtree(element: etree._Element) -> cabc.Iterator[str]:
 
     if element.tail:
         yield remove_whitespace(element.tail)
+
+
+def is_uuid_string(string: t.Any) -> te.TypeGuard[UUIDString]:
+    """Validate that ``string`` is a valid UUID."""
+    return isinstance(string, str) and bool(RE_VALID_UUID.fullmatch(string))
 
 
 # File name and path manipulation

@@ -8,7 +8,7 @@ __all__ = [
     "WritableAccessor",
     "DirectProxyAccessor",
     "DeepProxyAccessor",
-    "ReferencingProxyAccessor",
+    "LinkAccessor",
     "AttrProxyAccessor",
     "AlternateAccessor",
     "ParentAccessor",
@@ -71,13 +71,22 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         self.__name__ = name
 
     def __repr__(self) -> str:
-        return f"<'{self.__objclass__.__name__}.{self.__name__}' {type(self).__name__}>"
+        return f"<{self._qualname!r} {type(self).__name__}>"
+
+    @property
+    def _qualname(self) -> str:
+        """Generate the qualified name of this descriptor."""
+        if not hasattr(self, "__objclass__"):
+            return f"(unknown {type(self).__name__} - call __set_name__)"
+        return f"{self.__objclass__.__name__}.{self.__name__}"
 
 
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
     aslist: type[ElementListCouplingMixin] | None
+    class_: type[T]
+    list_extra_args: cabc.Mapping[str, t.Any]
     single_attr: str | None
 
     def __init__(
@@ -154,6 +163,19 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         """Delete the ``obj`` from the model."""
         raise NotImplementedError("Objects in this list cannot be deleted")
 
+    def _make_list(self, parent_obj, elements):
+        assert hasattr(self, "class_")
+        assert hasattr(self, "list_extra_args")
+        if self.aslist is None:
+            return no_list(self, parent_obj._model, elements, self.class_)
+        return self.aslist(
+            parent_obj._model,
+            elements,
+            self.class_,
+            parent=parent_obj,
+            **self.list_extra_args,
+        )
+
     def _match_xtype(
         self,
         type_1: str | object | None = _NOT_SPECIFIED,
@@ -223,6 +245,7 @@ class PhysicalAccessor(Accessor[T]):
 
     aslist: type[element.ElementList] | None
     class_: type[T]
+    list_extra_args: cabc.Mapping[str, t.Any]
     xtypes: cabc.Set[str]
 
     def __init__(
@@ -236,7 +259,7 @@ class PhysicalAccessor(Accessor[T]):
         ) = None,
         *,
         aslist: type[element.ElementList[T]] | None = None,
-        list_extra_args: dict[str, t.Any] | None = None,
+        list_extra_args: cabc.Mapping[str, t.Any] | None = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -286,6 +309,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     __slots__ = ("follow_abstract", "rootelem")
 
     aslist: type[ElementListCouplingMixin] | None
+    class_: type[T]
     single_attr: str | None
 
     def __init__(
@@ -394,17 +418,6 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             )
         return roots
 
-    def _make_list(self, parent_obj, elements):
-        if self.aslist is None:
-            return no_list(self, parent_obj._model, elements, self.class_)
-        return self.aslist(
-            parent_obj._model,
-            elements,
-            self.class_,
-            parent=parent_obj,
-            **self.list_extra_args,
-        )
-
     def create(
         self,
         elmlist: ElementListCouplingMixin,
@@ -449,8 +462,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             else:
                 parent_index = index
         except ValueError:
-            # FIXME: self._parent is part of ElementListCouplingMixin
-            parent_index = len(self._parent)  # type: ignore[attr-defined]
+            parent_index = len(elmlist._parent)
         elmlist._parent._element.insert(parent_index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
@@ -478,48 +490,163 @@ class DeepProxyAccessor(DirectProxyAccessor[T]):
         )
 
 
-class ReferencingProxyAccessor(DirectProxyAccessor[T]):
-    """Creates proxy objects via UUID-referenced elements."""
+class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+    """Accesses elements through reference elements."""
 
-    __slots__ = ("follow",)
+    __slots__ = ("attr", "tag")
+
+    aslist: type[ElementListCouplingMixin] | None
+    attr: str
+    class_: type[T]
+    tag: str | None
 
     def __init__(
         self,
-        class_: type[T],
-        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
+        tag: str | None,
+        xtype: str | type[element.GenericElement],
+        /,
         *,
+        attr: str,
         aslist: type[element.ElementList] | None = None,
-        follow: str,
-        follow_abstract: bool = False,
-        rootelem: (
-            str
-            | type[element.GenericElement]
-            | cabc.Sequence[str | type[element.GenericElement]]
-            | None
-        ) = None,
-        list_extra_args: dict[str, t.Any] | None = None,
     ) -> None:
-        super().__init__(
-            class_,
-            xtypes,
-            aslist=aslist,
-            follow_abstract=follow_abstract,
-            rootelem=rootelem,
-            list_extra_args=list_extra_args,
-        )
-        self.follow = follow
+        """Create a LinkAccessor.
 
-    def _resolve(
-        self, obj: element.ModelObject, elem: etree._Element
+        Parameters
+        ----------
+        tag
+            The XML tag that the reference elements will have.
+        xtype
+            The ``xsi:type`` that the reference elements will have. This
+            has no influence on the elements that are referenced.
+        attr
+            The attribute on the reference element that contains the
+            actual link.
+        aslist
+            The concrete subclass of :class:`element.ElementList` to
+            use. If not specified or None, the ``ElementList`` class
+            itself will used.
+        """
+        if not tag:
+            warnings.warn(
+                "Unspecified XML tag is deprecated", DeprecationWarning
+            )
+        elif not isinstance(tag, str):
+            raise TypeError(f"tag must be a str, not {type(tag).__name__}")
+        super().__init__(element.GenericElement, xtype, aslist=aslist)
+        if len(self.xtypes) != 1:
+            raise TypeError(f"One xtype is required, got {len(self.xtypes)}")
+        self.follow = attr
+        self.tag = tag
+
+    def __get__(self, obj, objtype=None):
+        del objtype
+        if obj is None:  # pragma: no cover
+            return self
+
+        elems = [self.__follow_ref(obj, i) for i in self.__find_refs(obj)]
+        return self._make_list(obj, elems)
+
+    def __set__(self, obj, value):
+        if self.aslist is not None:
+            self.__get__(obj)[:] = value
+            return
+
+        if self.tag is None:
+            raise NotImplementedError("Cannot set: XML tag not set")
+        if self.__get__(obj) is not None:
+            self.__delete__(obj)
+        self.__create_link(obj, value)
+
+    def __delete__(self, obj):
+        refobjs = list(self.__find_refs(obj))
+        for i in refobjs:
+            obj._model._loader.idcache_remove(i)
+            obj._element.remove(i)
+
+    def __follow_ref(
+        self, obj: element.ModelObject, refelm: etree._Element
     ) -> etree._Element:
-        if self.follow:
-            if self.follow in elem.attrib:
-                elem = obj._model._loader[elem.attrib[self.follow]]
+        link = refelm.get(self.follow)
+        if not link:
+            raise RuntimeError(
+                f"Broken XML: Reference without {self.follow!r}"
+            )
+        return obj._model._loader.follow_link(obj._element, link)
+
+    def __find_refs(
+        self, obj: element.ModelObject
+    ) -> cabc.Iterator[etree._Element]:
+        for refelm in obj._element.iterchildren(self.tag):
+            if helpers.xtype_of(refelm) in self.xtypes:
+                yield refelm
+
+    def __backref(
+        self, obj: element.ModelObject, target: element.ModelObject
+    ) -> etree._Element | None:
+        for i in self.__find_refs(obj):
+            if self.__follow_ref(obj, i) == target._element:
+                return i
+        return None
+
+    def __create_link(
+        self,
+        parent: element.ModelObject,
+        target: element.ModelObject,
+        *,
+        before: element.ModelObject | None = None,
+    ) -> etree._Element:
+        assert self.tag is not None
+        loader = parent._model._loader
+        with loader.new_uuid(parent._element) as obj_id:
+            (xtype,) = self.xtypes
+            link = loader.create_link(parent._element, target._element)
+            refobj = parent._element.makeelement(
+                self.tag,
+                {helpers.ATT_XT: xtype, "id": obj_id, self.follow: link},
+            )
+            if before is None:
+                parent._element.append(refobj)
             else:
-                return None
-        if href := elem.get("href"):
-            elem = obj._model._loader[href]
-        return super()._resolve(obj, elem)
+                before_elm = self.__backref(parent, before)
+                assert before_elm is not None
+                assert before_elm in parent._element
+                before_elm.addprevious(refobj)
+            loader.idcache_index(refobj)
+        return refobj
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        if self.aslist is None:
+            raise TypeError("Cannot insert: This is not a list (bug?)")
+        if self.tag is None:
+            raise NotImplementedError("Cannot insert: XML tag not set")
+
+        self.__create_link(
+            elmlist._parent,
+            value,
+            before=elmlist[index] if index < len(elmlist) else None,
+        )
+
+    def delete(
+        self,
+        elmlist: ElementListCouplingMixin,
+        obj: element.ModelObject,
+    ) -> None:
+        if self.aslist is None:
+            raise TypeError("Cannot delete: This is not a list (bug?)")
+
+        parent = elmlist._parent
+        for ref in self.__find_refs(parent):
+            if self.__follow_ref(parent, ref) == obj._element:
+                parent._model._loader.idcache_remove(ref)
+                parent._element.remove(ref)
+                break
+        else:
+            raise ValueError("Cannot delete: Target object not in this list")
 
 
 class AttrProxyAccessor(PhysicalAccessor):
@@ -601,8 +728,7 @@ class AttrProxyAccessor(PhysicalAccessor):
             values = (values,)
         elif self.aslist is None:
             raise TypeError(
-                f"{self.__objclass__.__name__}.{self.__name__}"
-                " requires a single item, not an iterable"
+                f"{self._qualname} requires a single item, not an iterable"
             )
 
         assert isinstance(values, cabc.Iterable)
@@ -943,9 +1069,7 @@ def no_list(
         return None
     if len(elems) > 1:  # pragma: no cover
         raise RuntimeError(
-            "Expected 1 object for {}.{}, got {}".format(
-                desc.__objclass__.__name__, desc.__name__, len(elems)
-            )
+            f"Expected 1 object for {desc._qualname}, got {len(elems)}"
         )
     return class_.from_model(model, elems[0])
 
@@ -987,7 +1111,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         del self[index]
         if isinstance(index, slice):
             assert isinstance(value, cabc.Iterable)
-            for i, elm in enumerate(value, start=index.start):
+            for i, elm in enumerate(value, start=index.start or 0):
                 self.insert(i, elm)
         else:
             assert not isinstance(value, cabc.Iterable)

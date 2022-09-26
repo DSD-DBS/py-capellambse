@@ -253,7 +253,7 @@ class ReqIFElement(c.GenericElement):
     )
     type: c.Accessor = property(lambda _: None)  # type: ignore[assignment]
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def _short_repr_(self) -> str:  # pragma: no cover
         mytype = type(self).__name__
         path = []
         parent = self._element
@@ -281,9 +281,6 @@ class ReqIFElement(c.GenericElement):
             parent = parent.getparent()
 
         return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
-
-    def _short_repr_(self) -> str:
-        return f"<{type(self).__name__} {self.long_name!r} ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
         return markupsafe.Markup(
