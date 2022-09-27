@@ -11,6 +11,7 @@ from __future__ import annotations
 __all__ = [
     "Promise",
     "UUIDReference",
+    "UnfulfilledPromisesError",
     "YDMDumper",
     "YDMLoader",
     "apply",
@@ -32,7 +33,11 @@ from capellambse import helpers
 from capellambse.model import common
 
 FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
-_FulfilledPromise = tuple["Promise", capellambse.ModelObject]
+_FutureAction = dict[str, t.Any]
+_OperatorResult = tuple[
+    "Promise",
+    t.Union[capellambse.ModelObject, _FutureAction],
+]
 
 
 def dump(instructions: cabc.Sequence[cabc.Mapping[str, t.Any]]) -> str:
@@ -78,11 +83,19 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
     reliable way to know how much of the YAML input has been consumed.
     It is therefore advised to reload or discard the model immediately
     in these cases, to avoid working with an inconsistent state.
-    """
-    instructions = load(file)
 
+    Even though the YAML layout suggests linear execution from top to
+    bottom, the actual order in which modifications are executed is
+    implementation defined. This is necessary to support promises with
+    ``!promise``, but reorderings are still possible even if no promises
+    are used in an input document.
+    """
+    instructions = collections.deque(load(file))
     promises = dict[Promise, capellambse.ModelObject]()
-    for instruction in instructions:
+    deferred = collections.defaultdict[Promise, list[_FutureAction]](list)
+
+    while instructions:
+        instruction = instructions.popleft()
         parent = instruction.pop("parent")
         if isinstance(parent, UUIDReference):
             parent = model.by_uuid(parent.uuid)
@@ -91,22 +104,28 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
                 op = instruction.pop(op_type)
             except KeyError:
                 continue
-            for promise, object in apply_op(promises, parent, op):
-                if promise in promises:
-                    raise ValueError(
-                        f"promise_id defined twice: {promise.identifier}"
-                    )
-                promises[promise] = object
+            for promise, outcome in apply_op(promises, parent, op):
+                if isinstance(outcome, dict):
+                    deferred[promise].append(outcome)
+                else:
+                    if promise in promises:
+                        raise ValueError(
+                            f"promise_id defined twice: {promise.identifier}"
+                        )
+                    promises[promise] = outcome
+                    instructions.extend(deferred.pop(promise, ()))
         if instruction:
             keys = ", ".join(instruction)
             raise ValueError(f"Unrecognized keys in instruction: {keys}")
+    if deferred:
+        raise UnfulfilledPromisesError(frozenset(deferred))
 
 
 def _operate_create(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     creations: dict[str, t.Any],
-) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in creations.items():
         if not isinstance(value, cabc.Iterable):
             raise TypeError("values below `create:*:` must be lists")
@@ -118,7 +137,7 @@ def _operate_delete(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     deletions: dict[str, t.Any],
-) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
     raise NotImplementedError("Deleting objects is not yet implemented")
 
 
@@ -126,7 +145,7 @@ def _operate_modify(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     modifications: dict[str, t.Any],
-) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
     raise NotImplementedError("Modifying objects is not yet implemented")
 
 
@@ -144,7 +163,7 @@ def _create_complex_objects(
     parent: capellambse.ModelObject,
     attr: str,
     objs: cabc.Iterable[dict[str, t.Any] | Promise],
-) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
     try:
         target = getattr(parent, attr)
     except AttributeError:
@@ -167,10 +186,9 @@ def _create_complex_objects(
             try:
                 obj = promises[child]
             except KeyError:
-                raise ValueError(
-                    f"Unfulfilled promise: {child.identifier}"
-                ) from None
-            target.append(obj)
+                yield (child, {"parent": parent, "create": {attr: [child]}})
+            else:
+                target.append(obj)
         else:
             yield from _create_complex_object(promises, target, child)
 
@@ -179,7 +197,7 @@ def _create_complex_object(
     promises: dict[Promise, capellambse.ModelObject],
     target: common.ElementListCouplingMixin,
     obj_desc: dict[str, t.Any],
-) -> cabc.Generator[_FulfilledPromise, t.Any, None]:
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
     try:
         promise: str | Promise | None = obj_desc.pop("promise_id")
     except KeyError:
@@ -211,6 +229,24 @@ class Promise:
     """References a model object that will be created later."""
 
     identifier: str
+
+
+class UnfulfilledPromisesError(RuntimeError):
+    """A promise could not be fulfilled.
+
+    This exception is raised when a promise is referenced via
+    ``!promise``, but it is never fulfilled by declaring an object with
+    the same ``promise_id``.
+    """
+
+    def __str__(self) -> str:
+        if (
+            len(self.args) == 1
+            and isinstance(self.args[0], cabc.Iterable)
+            and not isinstance(self.args[0], str)
+        ):
+            return ", ".join(i.identifier for i in self.args[0])
+        return super().__str__()
 
 
 @dataclasses.dataclass(frozen=True)
