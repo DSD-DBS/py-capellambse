@@ -231,3 +231,80 @@ class TestApplyPromises:
 
         with pytest.raises(decl.UnfulfilledPromisesError, match="^pass-test$"):
             decl.apply(model, io.StringIO(yml))
+
+
+class TestApplyModify:
+    @staticmethod
+    def test_modify_operations_change_model_objects_in_place(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        newname = "Coffee machine"
+        root_component = model.by_uuid(ROOT_COMPONENT)
+        assert root_component.name != newname
+        yml = f"""\
+            - parent: !uuid {ROOT_COMPONENT}
+              modify:
+                name: {newname}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert root_component.name == newname
+
+    @staticmethod
+    def test_modify_can_set_attributes_to_promises(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_component = model.by_uuid(ROOT_COMPONENT)
+        yml = f"""\
+            - parent: !uuid {ROOT_COMPONENT}
+              modify:
+                allocated_functions:
+                  - !promise make-coffee
+            - parent: !uuid {ROOT_FUNCTION}
+              create:
+                functions:
+                  - name: make coffee
+                    promise_id: make-coffee
+            """
+        assert "make coffee" not in root_component.allocated_functions.by_name
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert "make coffee" in root_component.allocated_functions.by_name
+
+    @staticmethod
+    def test_modify_can_set_attributes_to_uuid_references(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_component = model.by_uuid(ROOT_COMPONENT)
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        yml = f"""\
+            - parent: !uuid {ROOT_COMPONENT}
+              modify:
+                allocated_functions:
+                  - !uuid {ROOT_FUNCTION}
+            """
+        assert root_function not in root_component.allocated_functions
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert root_function in root_component.allocated_functions
+
+    @staticmethod
+    def test_modifying_to_a_list_removes_all_previous_list_members(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              modify:
+                functions:
+                  - name: survive
+            """
+        assert len(root_function.functions) > 0
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert len(root_function.functions) == 1
+        assert root_function.functions[0].name == "survive"

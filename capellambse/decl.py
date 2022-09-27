@@ -146,7 +146,38 @@ def _operate_modify(
     parent: capellambse.ModelObject,
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
-    raise NotImplementedError("Modifying objects is not yet implemented")
+    for attr, value in modifications.items():
+        if isinstance(value, (list, Promise, UUIDReference)):
+            try:
+                value = _resolve(promises, parent, value)
+            except _UnresolvablePromise as p:
+                yield p.args[0], {"parent": parent, "modify": {attr: value}}
+                continue
+        setattr(parent, attr, value)
+
+
+def _resolve(
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    value: t.Any,
+) -> t.Any:
+    if isinstance(value, Promise):
+        try:
+            return promises[value]
+        except KeyError:
+            raise _UnresolvablePromise(value) from None
+    elif isinstance(value, UUIDReference):
+        return parent._model.by_uuid(value.uuid)
+    elif isinstance(value, list):
+        for i, v in enumerate(value):
+            newv = _resolve(promises, parent, v)
+            if newv is not v:
+                value[i] = newv
+    return value
+
+
+class _UnresolvablePromise(BaseException):
+    pass
 
 
 _OPERATIONS = collections.OrderedDict(
@@ -182,11 +213,11 @@ def _create_complex_objects(
             f" {type(parent).__name__}.{attr} is not model-coupled"
         )
     for child in objs:
-        if isinstance(child, Promise):
+        if isinstance(child, (list, Promise, UUIDReference)):
             try:
-                obj = promises[child]
-            except KeyError:
-                yield (child, {"parent": parent, "create": {attr: [child]}})
+                obj = _resolve(promises, parent, child)
+            except _UnresolvablePromise as p:
+                yield p.args[0], {"parent": parent, "create": {attr: [child]}}
             else:
                 target.append(obj)
         else:
