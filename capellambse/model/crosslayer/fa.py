@@ -125,8 +125,10 @@ class Function(AbstractFunction):
     inputs = c.DirectProxyAccessor(FunctionInputPort, aslist=c.ElementList)
     outputs = c.DirectProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
 
+    exchanges: c.Accessor["FunctionalExchange"]
     functions: c.Accessor
     packages: c.Accessor
+    related_exchanges: c.Accessor["FunctionalExchange"]
 
 
 @c.xtype_handler(None)
@@ -294,6 +296,11 @@ c.set_accessor(
 c.set_accessor(
     Function,
     "exchanges",
+    c.DirectProxyAccessor(FunctionalExchange, aslist=c.ElementList),
+)
+c.set_accessor(
+    Function,
+    "related_exchanges",
     c.ReferenceSearchingAccessor(
         FunctionalExchange,
         "source.owner",
