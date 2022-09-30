@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Miscellaneous utility functions used throughout the modules."""
@@ -18,6 +18,7 @@ import typing as t
 
 import lxml.html
 import markupsafe
+import typing_extensions as te
 from lxml import etree
 from PIL import ImageFont
 
@@ -26,9 +27,14 @@ import capellambse
 ATT_XT = f'{{{capellambse.NAMESPACES["xsi"]}}}type'
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
+RE_VALID_UUID = re.compile(
+    r"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}",
+    re.IGNORECASE,
+)
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
 
+UUIDString = t.NewType("UUIDString", str)
 _T = t.TypeVar("_T")
 
 
@@ -66,6 +72,11 @@ def _flatten_subtree(element: etree._Element) -> cabc.Iterator[str]:
 
     if element.tail:
         yield remove_whitespace(element.tail)
+
+
+def is_uuid_string(string: t.Any) -> te.TypeGuard[UUIDString]:
+    """Validate that ``string`` is a valid UUID."""
+    return isinstance(string, str) and bool(RE_VALID_UUID.fullmatch(string))
 
 
 # File name and path manipulation
@@ -289,7 +300,7 @@ def word_wrap(text: str, width: float | int) -> cabc.Sequence[str]:
 
 
 # XML tree modification and navigation
-def repair_html(markup: str) -> str:
+def repair_html(markup: str) -> markupsafe.Markup:
     """Try to repair broken HTML markup to prevent parse errors.
 
     Parameters
@@ -321,7 +332,7 @@ def repair_html(markup: str) -> str:
         etree.tostring(i, encoding="utf-8") for i in nodes
     ).decode("utf-8")
 
-    return firstnode + othernodes
+    return markupsafe.Markup(firstnode + othernodes)
 
 
 def resolve_namespace(tag: str) -> str:

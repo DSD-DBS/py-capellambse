@@ -1,15 +1,33 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Global fixtures for pytest"""
 import io
+import pathlib
 import sys
 
 import pytest
 
 import capellambse
 
-from . import TEST_MODEL, TEST_ROOT
+INSTALLED_PACKAGE = pathlib.Path(capellambse.__file__).parent
+
+TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
+TEST_MODEL = "Melody Model Test.aird"
+
+
+@pytest.fixture(scope="session")
+def session_shared_model() -> capellambse.MelodyModel:
+    """Load the standard test model.
+
+    Unlike the ``model`` fixture, this fixture is shared across the
+    entire test session. As such, the test functions using this fixture
+    are expected to not modify it.
+
+    This fixture exists as a speed optimization for tests that only read
+    from the model.
+    """
+    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
 
 
 @pytest.fixture

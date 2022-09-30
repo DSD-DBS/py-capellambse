@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Tools for the System Analysis layer.
@@ -24,11 +24,11 @@ class SystemFunction(fa.Function):
 
     _xmltag = "ownedFunctions"
 
-    realized_operational_activities = c.ProxyAccessor(
-        oa.OperationalActivity,
+    realized_operational_activities = c.LinkAccessor[oa.OperationalActivity](
+        None,  # FIXME fill in tag
         fa.FunctionRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
     owner: c.Accessor
@@ -40,7 +40,7 @@ class SystemFunctionPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = c.ProxyAccessor(SystemFunction, aslist=c.ElementList)
+    functions = c.DirectProxyAccessor(SystemFunction, aslist=c.ElementList)
     packages: c.Accessor
 
 
@@ -50,17 +50,17 @@ class SystemComponent(cs.Component):
 
     _xmltag = "ownedSystemComponents"
 
-    allocated_functions = c.ProxyAccessor(
-        SystemFunction,
+    allocated_functions = c.LinkAccessor[SystemFunction](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     )
-    realized_operational_entities = c.ProxyAccessor(
-        oa.Entity,
+    realized_operational_entities = c.LinkAccessor[oa.Entity](
+        None,  # FIXME fill in tag
         cs.ComponentRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
 
@@ -70,8 +70,8 @@ class SystemComponentPkg(c.GenericElement):
 
     _xmltag = "ownedSystemComponentPkg"
 
-    components = c.ProxyAccessor(SystemComponent, aslist=c.ElementList)
-    state_machines = c.ProxyAccessor(
+    components = c.DirectProxyAccessor(SystemComponent, aslist=c.ElementList)
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
 
@@ -89,49 +89,53 @@ class Capability(c.GenericElement):
 
     _xmltag = "ownedCapabilities"
 
-    extends = c.ProxyAccessor(
+    extends = c.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=c.ElementList
     )
-    includes = c.ProxyAccessor(
+    includes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=c.ElementList
     )
-    generalizes = c.ProxyAccessor(
+    generalizes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
     )
-    owned_chains = c.ProxyAccessor(fa.FunctionalChain, aslist=c.ElementList)
-    involved_functions = c.ProxyAccessor(
-        SystemFunction,
+    owned_chains = c.DirectProxyAccessor(
+        fa.FunctionalChain, aslist=c.ElementList
+    )
+    involved_functions = c.LinkAccessor[SystemFunction](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2ACT,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_chains = c.ProxyAccessor(
-        fa.FunctionalChain,
+    involved_chains = c.LinkAccessor[fa.FunctionalChain](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_components = c.ProxyAccessor(
-        SystemComponent,
-        xtypes=CapabilityInvolvement,
-        follow="involved",
+    involved_components = c.LinkAccessor[SystemComponent](
+        None,  # FIXME fill in tag
+        CapabilityInvolvement,
         aslist=c.MixedElementList,
+        attr="involved",
     )
-    component_involvements = c.ProxyAccessor(
+    component_involvements = c.DirectProxyAccessor(
         CapabilityInvolvement, aslist=c.ElementList
     )
-    realized_capabilities = c.ProxyAccessor(
-        oa.OperationalCapability,
+    realized_capabilities = c.LinkAccessor[oa.OperationalCapability](
+        None,  # FIXME fill in tag
         interaction.XT_CAP_REAL,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     )
 
     postcondition = c.AttrProxyAccessor(
         capellacore.Constraint, "postCondition"
     )
     precondition = c.AttrProxyAccessor(capellacore.Constraint, "preCondition")
-    scenarios = c.ProxyAccessor(interaction.Scenario, aslist=c.ElementList)
+    scenarios = c.DirectProxyAccessor(
+        interaction.Scenario, aslist=c.ElementList
+    )
     states = c.AttrProxyAccessor(
         capellacommon.State, "availableInStates", aslist=c.ElementList
     )
@@ -165,14 +169,16 @@ class Mission(c.GenericElement):
 
     _xmltag = "ownedMissions"
 
-    involvements = c.ProxyAccessor(MissionInvolvement, aslist=c.ElementList)
-    exploits = c.ProxyAccessor(
-        Capability,
-        xtypes=CapabilityExploitation,
-        follow="capability",
-        aslist=c.ElementList,
+    involvements = c.DirectProxyAccessor(
+        MissionInvolvement, aslist=c.ElementList
     )
-    exploitations = c.ProxyAccessor(
+    exploits = c.LinkAccessor[Capability](
+        None,  # FIXME fill in tag
+        CapabilityExploitation,
+        aslist=c.ElementList,
+        attr="capability",
+    )
+    exploitations = c.DirectProxyAccessor(
         CapabilityExploitation, aslist=c.ElementList
     )
 
@@ -183,7 +189,7 @@ class MissionPkg(c.GenericElement):
 
     _xmltag = "ownedMissionPkg"
 
-    missions = c.ProxyAccessor(Mission, aslist=c.ElementList)
+    missions = c.DirectProxyAccessor(Mission, aslist=c.ElementList)
     packages: c.Accessor
 
 
@@ -193,7 +199,7 @@ class CapabilityPkg(c.GenericElement):
 
     _xmltag = "ownedAbstractCapabilityPkg"
 
-    capabilities = c.ProxyAccessor(Capability, aslist=c.ElementList)
+    capabilities = c.DirectProxyAccessor(Capability, aslist=c.ElementList)
 
     packages: c.Accessor
 
@@ -207,54 +213,44 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
         attributes={"is_actor": False},
         rootelem=SystemComponentPkg,
     )
-    root_function = c.ProxyAccessor(SystemFunction, rootelem=SystemFunctionPkg)
+    root_function = c.DirectProxyAccessor(
+        SystemFunction, rootelem=SystemFunctionPkg
+    )
 
-    function_package = c.ProxyAccessor(SystemFunctionPkg)
-    capability_package = c.ProxyAccessor(CapabilityPkg)
-    component_package = c.ProxyAccessor(SystemComponentPkg)
-    mission_package = c.ProxyAccessor(MissionPkg)
+    function_package = c.DirectProxyAccessor(SystemFunctionPkg)
+    capability_package = c.DirectProxyAccessor(CapabilityPkg)
+    component_package = c.DirectProxyAccessor(SystemComponentPkg)
+    mission_package = c.DirectProxyAccessor(MissionPkg)
 
-    all_functions = c.ProxyAccessor(
-        SystemFunction, deep=True, aslist=c.ElementList
-    )
-    all_capabilities = c.ProxyAccessor(
-        Capability, deep=True, aslist=c.ElementList
-    )
-    all_components = c.ProxyAccessor(
-        SystemComponent, deep=True, aslist=c.ElementList
-    )
+    all_functions = c.DeepProxyAccessor(SystemFunction, aslist=c.ElementList)
+    all_capabilities = c.DeepProxyAccessor(Capability, aslist=c.ElementList)
+    all_components = c.DeepProxyAccessor(SystemComponent, aslist=c.ElementList)
     all_actors = property(
         lambda self: self._model.search(SystemComponent).by_is_actor(True)
     )
-    all_missions = c.ProxyAccessor(Mission, deep=True, aslist=c.ElementList)
+    all_missions = c.DeepProxyAccessor(Mission, aslist=c.ElementList)
 
-    actor_exchanges = c.ProxyAccessor(
+    actor_exchanges = c.DirectProxyAccessor(
         fa.ComponentExchange,
         aslist=c.ElementList,
         rootelem=SystemComponentPkg,
     )
-    component_exchanges = c.ProxyAccessor(
+    component_exchanges = c.DeepProxyAccessor(
         fa.ComponentExchange,
         aslist=c.ElementList,
         rootelem=[SystemComponentPkg, SystemComponent],
-        deep=True,
     )
 
-    all_capability_exploitations = c.ProxyAccessor(
-        CapabilityExploitation,
-        aslist=c.ElementList,
-        deep=True,
+    all_capability_exploitations = c.DeepProxyAccessor(
+        CapabilityExploitation, aslist=c.ElementList
     )
-    all_function_exchanges = c.ProxyAccessor(
+    all_function_exchanges = c.DeepProxyAccessor(
         fa.FunctionalExchange,
         aslist=c.ElementList,
         rootelem=[SystemFunctionPkg, SystemFunction],
-        deep=True,
     )
-    all_component_exchanges = c.ProxyAccessor(
-        fa.ComponentExchange,
-        aslist=c.ElementList,
-        deep=True,
+    all_component_exchanges = c.DeepProxyAccessor(
+        fa.ComponentExchange, aslist=c.ElementList
     )
 
     diagrams = diagram.DiagramAccessor(
@@ -274,10 +270,7 @@ c.set_accessor(
 c.set_accessor(
     SystemFunction,
     "packages",
-    c.ProxyAccessor(
-        SystemFunctionPkg,
-        aslist=c.ElementList,
-    ),
+    c.DirectProxyAccessor(SystemFunctionPkg, aslist=c.ElementList),
 )
 c.set_accessor(
     oa.OperationalCapability,

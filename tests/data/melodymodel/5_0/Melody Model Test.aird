@@ -8,7 +8,7 @@
     </ownedViews>
     <ownedViews xmi:type="viewpoint:DView" uid="__FJxoKDzEeqf7Mw7EIo_Ew">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_7Ft7QKrxEeqOgqWuHJrXFA" name="[MSM] States of Functional Human Being" repPath="#_7FWu4KrxEeqOgqWuHJrXFA" changeId="fba16650-bdda-4b1d-b8a6-ca9d175a51d7">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_7Ft7QKrxEeqOgqWuHJrXFA" documentation="&lt;p>This diagram shows the states that a Functional Human Being can have, as well as how it transitions between them.&lt;/p>&#xA;" name="[MSM] States of Functional Human Being" repPath="#_7FWu4KrxEeqOgqWuHJrXFA" changeId="fba16650-bdda-4b1d-b8a6-ca9d175a51d7">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Mode%20State%20Machine']"/>
         <target xmi:type="org.polarsys.capella.core.data.capellacommon:Region" href="Melody%20Model%20Test.capella#eeeb98a7-6063-4115-8b4b-40a51cc0df49"/>
       </ownedRepresentationDescriptors>
@@ -114,6 +114,10 @@
         <target xmi:type="org.polarsys.capella.core.data.ctx:Capability" href="Melody%20Model%20Test.capella#9390b7d5-598a-42db-bef8-23677e45ba06"/>
       </ownedRepresentationDescriptors>
       <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_K-BhAIKBEeyd4IW8P6K-AQ" name="[SAB] Main" repPath="#_K9160IKBEeyd4IW8P6K-AQ" changeId="44c5661e-5abe-4985-9a8f-935cc2dc9089">
+        <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']"/>
+        <target xmi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg" href="Melody%20Model%20Test.capella#ecb687c1-c540-4de6-8b1d-024d1ed0178f"/>
+      </ownedRepresentationDescriptors>
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_0hjtgB4cEe2Jgqeci1tAhA" name="[SAB] System" repPath="#_0g-esB4cEe2Jgqeci1tAhA" changeId="217ab557-cd8c-4a05-9c02-c3abb121e9fa">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']"/>
         <target xmi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg" href="Melody%20Model%20Test.capella#ecb687c1-c540-4de6-8b1d-024d1ed0178f"/>
       </ownedRepresentationDescriptors>
@@ -15863,5 +15867,43 @@
     <activatedLayers xmi:type="description_1:AdditionalLayer" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Class%20Diagram%20Blank']/@additionalLayers[name='Communication%20Model']"/>
     <activatedLayers xmi:type="description_1:AdditionalLayer" href="platform:/plugin/org.polarsys.capella.vp.requirements.design/description/CapellaRequirements.odesign#//@ownedViewpoints[name='CapellaRequirements_ID']/@ownedRepresentationExtensions[name='CapellaViewpoints']/@layers[name='ReqVP_Requirements_Layer']"/>
     <target xmi:type="org.polarsys.capella.core.data.information:DataPkg" href="Melody%20Model%20Test.capella#d12c04b6-392f-4761-be5a-e44c688823f6"/>
+  </diagram:DSemanticDiagram>
+  <diagram:DSemanticDiagram uid="_0g-esB4cEe2Jgqeci1tAhA">
+    <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_0h5rwB4cEe2Jgqeci1tAhA" source="GMF_DIAGRAMS">
+      <data xmi:type="notation:Diagram" xmi:id="_0h5rwR4cEe2Jgqeci1tAhA" type="Sirius" element="_0g-esB4cEe2Jgqeci1tAhA" measurementUnit="Pixel">
+        <children xmi:type="notation:Node" xmi:id="_0jGloB4cEe2Jgqeci1tAhA" type="2002" element="_0iLYkB4cEe2Jgqeci1tAhA">
+          <children xmi:type="notation:Node" xmi:id="_0jKQAB4cEe2Jgqeci1tAhA" type="5006"/>
+          <children xmi:type="notation:Node" xmi:id="_0jKQAR4cEe2Jgqeci1tAhA" type="7001">
+            <styles xmi:type="notation:SortingStyle" xmi:id="_0jKQAh4cEe2Jgqeci1tAhA"/>
+            <styles xmi:type="notation:FilteringStyle" xmi:id="_0jKQAx4cEe2Jgqeci1tAhA"/>
+          </children>
+          <styles xmi:type="notation:ShapeStyle" xmi:id="_0jGloR4cEe2Jgqeci1tAhA" fontName="Fira Code" fontHeight="8"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_0jGloh4cEe2Jgqeci1tAhA"/>
+        </children>
+        <styles xmi:type="notation:DiagramStyle" xmi:id="_0h5rwh4cEe2Jgqeci1tAhA"/>
+      </data>
+    </ownedAnnotationEntries>
+    <ownedAnnotationEntries xmi:type="description:AnnotationEntry" uid="_0i_38B4cEe2Jgqeci1tAhA" source="DANNOTATION_CUSTOMIZATION_KEY">
+      <data xmi:type="diagram:ComputedStyleDescriptionRegistry" uid="_0i_38R4cEe2Jgqeci1tAhA"/>
+    </ownedAnnotationEntries>
+    <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_0iLYkB4cEe2Jgqeci1tAhA" name="System">
+      <target xmi:type="org.polarsys.capella.core.data.cs:Part" href="Melody%20Model%20Test.capella#3b9e56b1-e8b5-4605-9924-d332d79ca8c3"/>
+      <semanticElements xmi:type="org.polarsys.capella.core.data.cs:Part" href="Melody%20Model%20Test.capella#3b9e56b1-e8b5-4605-9924-d332d79ca8c3"/>
+      <semanticElements xmi:type="org.polarsys.capella.core.data.ctx:SystemComponent" href="Melody%20Model%20Test.capella#230c4621-7e0a-4d0a-9db2-d4ba5e97b3df"/>
+      <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_0iQREB4cEe2Jgqeci1tAhA" borderSize="1" borderSizeComputationExpression="1" borderColor="74,74,151" backgroundStyle="GradientTopToBottom" backgroundColor="195,230,255" foregroundColor="150,177,218">
+        <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@defaultLayer/@containerMappings[name='System%20System']/@style"/>
+      </ownedStyle>
+      <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@defaultLayer/@containerMappings[name='System%20System']"/>
+    </ownedDiagramElements>
+    <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']"/>
+    <currentConcern xmi:type="concern:ConcernDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@concerns/@ownedConcernDescriptions.0"/>
+    <activatedFilters xmi:type="filter:CompositeFilterDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@filters[name='hide.simplified.oriented.grouped.component.exchanges.filter']"/>
+    <activatedFilters xmi:type="filter:CompositeFilterDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@filters[name='hide.simplified.group.of.component.exchanges.filter']"/>
+    <activatedFilters xmi:type="filter:CompositeFilterDescription" href="platform:/plugin/org.polarsys.kitalpha.ad.integration.sirius/description/ad.odesign#//@ownedViewpoints[name='ad']/@ownedRepresentations[name='AD%20diagram']/@filters[name='ModelExtensionFilter']"/>
+    <activatedFilters xmi:type="filter:CompositeFilterDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@filters[name='hide.sequencing.information.filter']"/>
+    <filterVariableHistory xmi:type="diagram:FilterVariableHistory" uid="_0hFzcB4cEe2Jgqeci1tAhA"/>
+    <activatedLayers xmi:type="description_1:Layer" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#//@ownedViewpoints[name='System%20Analysis']/@ownedRepresentations[name='System%20Architecture%20Blank']/@defaultLayer"/>
+    <activatedLayers xmi:type="description_1:AdditionalLayer" href="platform:/plugin/org.polarsys.capella.vp.requirements.design/description/CapellaRequirements.odesign#//@ownedViewpoints[name='CapellaRequirements_ID']/@ownedRepresentationExtensions[name='CapellaViewpoints']/@layers[name='ReqVP_Requirements_Layer']"/>
+    <target xmi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg" href="Melody%20Model%20Test.capella#ecb687c1-c540-4de6-8b1d-024d1ed0178f"/>
   </diagram:DSemanticDiagram>
 </xmi:XMI>

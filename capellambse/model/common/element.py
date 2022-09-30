@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -28,7 +28,7 @@ import capellambse
 from capellambse import helpers
 from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, T, U, accessors, markuptype
+from . import XTYPE_HANDLERS, T, U, accessors
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -109,11 +109,11 @@ class GenericElement:
     name = xmltools.AttributeProperty(
         "_element", "name", optional=True, default="(Unnamed {self.xtype})"
     )
-    description = xmltools.AttributeProperty(
-        "_element", "description", optional=True, returntype=markuptype
+    description = xmltools.HTMLAttributeProperty(
+        "_element", "description", optional=True
     )
-    summary = xmltools.AttributeProperty(
-        "_element", "summary", optional=True, returntype=markuptype
+    summary = xmltools.HTMLAttributeProperty(
+        "_element", "summary", optional=True
     )
     diagrams = property(
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
@@ -214,6 +214,33 @@ class GenericElement:
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
                     )
+                elif isinstance(val, cabc.Mapping):
+                    raise NotImplementedError(
+                        "Multicreation of elements is not yet supported"
+                    )
+                elif isinstance(val, cabc.Iterable) and not isinstance(
+                    val, str
+                ):
+                    val = list(val)
+                    if all(isinstance(v, GenericElement) for v in val):
+                        setattr(self, key, val)
+                    else:
+                        target = getattr(self, key)
+                        for v in val:
+                            if isinstance(v, cabc.Mapping):
+                                v = dict(v)
+                                type_hints: t.Any = []
+                                if "_type" in v:
+                                    type_hints = v.pop("_type")
+
+                                if not isinstance(
+                                    type_hints, cabc.Iterable
+                                ) or isinstance(type_hints, str):
+                                    type_hints = [type_hints]
+
+                                target.create(*type_hints, **v)
+                            else:
+                                target.create_singleattr(v)
                 else:
                     setattr(self, key, val)
             self._model._loader.idcache_index(self._element)
@@ -520,19 +547,19 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         if self._model is not other._model:
             raise ValueError("Cannot add ElementLists from different models")
 
-        return ElementList(
-            self._model,
-            (
-                self._elements + other._elements
-                if not reflected
-                else other._elements + self._elements
-            ),
-            (
-                self._elemclass
-                if self._elemclass is other._elemclass
-                else GenericElement
-            ),
-        )
+        if self._elemclass is other._elemclass is not GenericElement:
+            listclass: type[ElementList] = ElementList
+            elemclass: type[ModelObject] = self._elemclass
+        else:
+            listclass = MixedElementList
+            elemclass = GenericElement
+
+        if not reflected:
+            elements = self._elements + other._elements
+        else:
+            elements = other._elements + self._elements
+
+        return listclass(self._model, elements, elemclass)
 
     def __add__(self, other: object) -> ElementList[T]:
         return self.__add(other)

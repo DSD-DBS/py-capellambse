@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -13,10 +13,8 @@ class Enumeration(c.GenericElement):
 
     _xmltag = "ownedDataTypes"
 
-    owned_literals = c.ProxyAccessor(
-        datavalue.EnumerationLiteral,
-        aslist=c.ElementList,
-        follow_abstract=False,
+    owned_literals = c.DirectProxyAccessor(
+        datavalue.EnumerationLiteral, aslist=c.ElementList
     )
 
     sub: c.Accessor

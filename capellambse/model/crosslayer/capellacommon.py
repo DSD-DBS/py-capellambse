@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Classes handling Mode/State-Machines and related content."""
@@ -27,7 +27,7 @@ class AbstractStateMode(c.GenericElement):
 
     _xmltag = "ownedStates"
 
-    regions = c.ProxyAccessor(Region, aslist=c.ElementList)
+    regions = c.DirectProxyAccessor(Region, aslist=c.ElementList)
 
     functions: c.Accessor
 
@@ -83,7 +83,7 @@ class StateMachine(c.GenericElement):
 
     _xmltag = "ownedStateMachines"
 
-    regions = c.ProxyAccessor(Region, aslist=c.ElementList)
+    regions = c.DirectProxyAccessor(Region, aslist=c.ElementList)
 
 
 @c.xtype_handler(None)
@@ -115,11 +115,12 @@ class GenericTrace(c.GenericElement):
 c.set_accessor(
     AbstractStateMode,
     "realized_states",
-    c.ProxyAccessor(
-        c.GenericElement,
+    # FIXME fill in tag
+    c.LinkAccessor(
+        None,
         XT_ABSTRACT_STATE_REAL,
-        follow="targetElement",
         aslist=c.ElementList,
+        attr="targetElement",
     ),
 )
 for cls in [
@@ -146,14 +147,16 @@ c.set_accessor(
     "states",
     c.RoleTagAccessor(AbstractStateMode._xmltag, aslist=c.ElementList),
 )
-c.set_accessor(Region, "modes", c.ProxyAccessor(Mode, aslist=c.ElementList))
+c.set_accessor(
+    Region, "modes", c.DirectProxyAccessor(Mode, aslist=c.ElementList)
+)
 c.set_accessor(
     Region,
     "transitions",
-    c.ProxyAccessor(StateTransition, aslist=c.ElementList),
+    c.DirectProxyAccessor(StateTransition, aslist=c.ElementList),
 )
 c.set_accessor(
     c.GenericElement,
     "traces",
-    c.ProxyAccessor(GenericTrace, aslist=c.ElementList),
+    c.DirectProxyAccessor(GenericTrace, aslist=c.ElementList),
 )

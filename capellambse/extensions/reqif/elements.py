@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -59,6 +59,7 @@ __all__ = [
 import collections.abc as cabc
 import logging
 import os
+import re
 import typing as t
 
 import markupsafe
@@ -128,7 +129,9 @@ class RequirementsRelationAccessor(
     __slots__ = ("aslist",)
 
     def __init__(self, *args, **kw) -> None:
-        super().__init__(*args, **kw, aslist=c.ElementList)
+        super().__init__(
+            *args, **kw, aslist=c.ElementList, single_attr="long_name"
+        )
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -206,7 +209,7 @@ class ElementRelationAccessor(
     __slots__ = ("aslist",)
 
     def __init__(self) -> None:
-        super().__init__(aslist=RelationsList)
+        super().__init__(aslist=RelationsList, single_attr="long_name")
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -241,7 +244,7 @@ class ReqIFElement(c.GenericElement):
     long_name = xmltools.AttributeProperty(
         "_element", "ReqIFLongName", optional=True
     )
-    description = xmltools.AttributeProperty(
+    description: str = xmltools.AttributeProperty(  # type: ignore[assignment]
         "_element", "ReqIFDescription", optional=True
     )
     name = xmltools.AttributeProperty("_element", "ReqIFName", optional=True)
@@ -250,7 +253,7 @@ class ReqIFElement(c.GenericElement):
     )
     type: c.Accessor = property(lambda _: None)  # type: ignore[assignment]
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def _short_repr_(self) -> str:  # pragma: no cover
         mytype = type(self).__name__
         path = []
         parent = self._element
@@ -308,13 +311,17 @@ class AbstractRequirementsAttribute(c.GenericElement):
 
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
+    value: xmltools.AttributeProperty | c.AttrProxyAccessor
+
     def __repr__(self) -> str:
-        mytype = self.xtype.rsplit(":", maxsplit=1)[-1]
-        try:
-            name = self.definition.long_name
-        except AttributeError:
-            name = ""
-        return f"<{mytype} [{name}] ({self.uuid})>"
+        return self._short_repr_()
+
+    def _short_repr_(self) -> str:
+        mytype = type(self).__name__
+        if self.definition is not None:
+            return f"<{mytype} {self.definition.long_name!r} ({self.uuid})>"
+        default_name = re.sub(r"(?<!^)([A-Z])", r" \1", mytype)
+        return f"<{mytype} [{default_name}] ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
@@ -324,7 +331,7 @@ class AbstractRequirementsAttribute(c.GenericElement):
         return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
-class AttributeAccessor(c.ProxyAccessor[AbstractRequirementsAttribute]):
+class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
     def __init__(self) -> None:
         super().__init__(
             c.GenericElement,  # type: ignore[arg-type]
@@ -465,8 +472,11 @@ class EnumDataTypeDefinition(ReqIFElement):
 
     _xmltag = "ownedDefinitionTypes"
 
-    values = c.ProxyAccessor(
-        EnumValue, XT_REQ_TYPE_ATTR_ENUM, aslist=c.ElementList
+    values = c.DirectProxyAccessor(
+        EnumValue,
+        XT_REQ_TYPE_ATTR_ENUM,
+        aslist=c.ElementList,
+        single_attr="long_name",
     )
 
 
@@ -474,7 +484,7 @@ class EnumDataTypeDefinition(ReqIFElement):
 class AttributeDefinitionEnumeration(ReqIFElement):
     """An enumeration attribute definition for requirement types"""
 
-    _xmltag = "enumeration"
+    _xmltag = "ownedAttributes"
 
     data_type = c.AttrProxyAccessor(EnumDataTypeDefinition, "definitionType")
     multi_valued = xmltools.BooleanAttributeProperty(
@@ -506,7 +516,7 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
 @c.attr_equal("long_name")
 class AbstractType(ReqIFElement):
     owner = c.ParentAccessor(c.GenericElement)
-    attribute_definitions = c.ProxyAccessor(
+    attribute_definitions = c.DirectProxyAccessor(
         c.GenericElement,
         (XT_REQ_TYPE_ATTR_DEF, XT_REQ_TYPE_ENUM_DEF),
         aslist=c.MixedElementList,
@@ -548,8 +558,8 @@ class Requirement(ReqIFElement):
     foreign_id = xmltools.AttributeProperty(
         "_element", "ReqIFForeignID", optional=True, returntype=int
     )
-    text = xmltools.AttributeProperty(
-        "_element", "ReqIFText", optional=True, returntype=c.markuptype
+    text = xmltools.HTMLAttributeProperty(
+        "_element", "ReqIFText", optional=True
     )
     attributes = AttributeAccessor()
     relations = RequirementsRelationAccessor()
@@ -564,7 +574,7 @@ class RequirementsFolder(Requirement):
     _xmltag = "ownedRequirements"
 
     folders: c.Accessor
-    requirements = c.ProxyAccessor(
+    requirements = c.DirectProxyAccessor(
         Requirement, XT_REQUIREMENT, aslist=c.ElementList
     )
 
@@ -575,10 +585,10 @@ class RequirementsModule(ReqIFElement):
 
     _xmltag = "ownedExtensions"
 
-    folders = c.ProxyAccessor(
+    folders = c.DirectProxyAccessor(
         RequirementsFolder, XT_FOLDER, aslist=c.ElementList
     )
-    requirements = c.ProxyAccessor(
+    requirements = c.DirectProxyAccessor(
         Requirement, XT_REQUIREMENT, aslist=c.ElementList
     )
     type = c.AttrProxyAccessor(ModuleType, "moduleType")
@@ -660,18 +670,18 @@ class RequirementsIntRelation(AbstractRequirementsRelation):
 class RequirementsTypesFolder(ReqIFElement):
     _xmltag = "ownedExtensions"
 
-    data_type_definitions = c.ProxyAccessor(
+    data_type_definitions = c.DirectProxyAccessor(
         c.GenericElement,
         (XT_REQ_TYPES_DATA_DEF, XT_REQ_TYPE_ENUM),
         aslist=c.MixedElementList,
     )
-    module_types = c.ProxyAccessor(
+    module_types = c.DirectProxyAccessor(
         ModuleType, XT_MODULE_TYPE, aslist=c.ElementList
     )
-    relation_types = c.ProxyAccessor(
+    relation_types = c.DirectProxyAccessor(
         RelationType, XT_RELATION_TYPE, aslist=c.ElementList
     )
-    requirement_types = c.ProxyAccessor(
+    requirement_types = c.DirectProxyAccessor(
         RequirementType, XT_REQ_TYPE, aslist=c.ElementList
     )
 
@@ -680,29 +690,41 @@ def init() -> None:
     c.set_accessor(
         RequirementsFolder,
         "folders",
-        c.ProxyAccessor(RequirementsFolder, XT_FOLDER, aslist=c.ElementList),
+        c.DirectProxyAccessor(
+            RequirementsFolder, XT_FOLDER, aslist=c.ElementList
+        ),
     )
     c.set_accessor(c.GenericElement, "requirements", ElementRelationAccessor())
     c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "requirement_modules",
-        c.ProxyAccessor(RequirementsModule, XT_MODULE, aslist=c.ElementList),
+        c.DirectProxyAccessor(
+            RequirementsModule, XT_MODULE, aslist=c.ElementList
+        ),
     )
     c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "all_requirements",
-        c.ProxyAccessor(
+        c.DeepProxyAccessor(
             Requirement,
             XT_REQUIREMENT,
             aslist=c.ElementList,
             rootelem=XT_MODULE,
-            deep=True,
         ),
     )
     c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "requirement_types_folders",
-        c.ProxyAccessor(
+        c.DirectProxyAccessor(
+            RequirementsTypesFolder,
+            XT_REQ_TYPES_F,
+            aslist=c.ElementList,
+        ),
+    )
+    c.set_accessor(
+        RequirementsModule,
+        "requirement_types_folders",
+        c.DirectProxyAccessor(
             RequirementsTypesFolder,
             XT_REQ_TYPES_F,
             aslist=c.ElementList,
@@ -711,34 +733,31 @@ def init() -> None:
     c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "all_requirement_types",
-        c.ProxyAccessor(
+        c.DeepProxyAccessor(
             RequirementType,
             XT_REQ_TYPE,
             aslist=c.ElementList,
             rootelem=XT_REQ_TYPES_F,
-            deep=True,
         ),
     )
     c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "all_module_types",
-        c.ProxyAccessor(
+        c.DeepProxyAccessor(
             ModuleType,
             XT_MODULE_TYPE,
             aslist=c.ElementList,
             rootelem=XT_REQ_TYPES_F,
-            deep=True,
         ),
     )
     c.set_accessor(
         crosslayer.BaseArchitectureLayer,
         "all_relation_types",
-        c.ProxyAccessor(
+        c.DeepProxyAccessor(
             RelationType,
             XT_RELATION_TYPE,
             aslist=c.ElementList,
             rootelem=XT_REQ_TYPES_F,
-            deep=True,
         ),
     )
 
@@ -756,7 +775,12 @@ _attr_type_hints = {
     "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
-    "boolvalueattribute": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "boolean": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
+    "booleanvalueattribute": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
     "enum": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
-    "enumvalueattribute": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+    "enumeration": (EnumerationValueAttribute, XT_REQ_ATTR_ENUMVALUE),
+    "enumerationvalueattribute": (
+        EnumerationValueAttribute,
+        XT_REQ_ATTR_ENUMVALUE,
+    ),
 }

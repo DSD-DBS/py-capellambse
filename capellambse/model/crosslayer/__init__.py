@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Utility classes that are used across all layers.
@@ -14,27 +14,18 @@ class BaseArchitectureLayer(c.GenericElement):
 
     _xmltag = "ownedArchitectures"
 
-    data_package = c.ProxyAccessor(information.DataPkg)
-    interface_package = c.ProxyAccessor(cs.InterfacePkg)
+    data_package = c.DirectProxyAccessor(information.DataPkg)
+    interface_package = c.DirectProxyAccessor(cs.InterfacePkg)
 
-    all_classes = c.ProxyAccessor(
-        information.Class, deep=True, aslist=c.ElementList
+    all_classes = c.DeepProxyAccessor(information.Class, aslist=c.ElementList)
+    all_collections = c.DeepProxyAccessor(
+        information.Collection, aslist=c.ElementList
     )
-    all_collections = c.ProxyAccessor(
-        information.Collection, deep=True, aslist=c.ElementList
+    all_unions = c.DeepProxyAccessor(information.Union, aslist=c.ElementList)
+    all_enumerations = c.DeepProxyAccessor(
+        information.datatype.Enumeration, aslist=c.ElementList
     )
-    all_unions = c.ProxyAccessor(
-        information.Union, deep=True, aslist=c.ElementList
+    all_complex_values = c.DeepProxyAccessor(
+        information.datavalue.ComplexValue, aslist=c.ElementList
     )
-    all_enumerations = c.ProxyAccessor(
-        information.datatype.Enumeration, deep=True, aslist=c.ElementList
-    )
-    all_complex_values = c.ProxyAccessor(
-        information.datavalue.ComplexValue,
-        deep=True,
-        aslist=c.ElementList,
-        follow_abstract=False,
-    )
-    all_interfaces = c.ProxyAccessor(
-        cs.Interface, deep=True, aslist=c.ElementList
-    )
+    all_interfaces = c.DeepProxyAccessor(cs.Interface, aslist=c.ElementList)

@@ -1,6 +1,7 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
+# pylint: disable=redefined-outer-name
 import pathlib
 import shutil
 import tempfile
@@ -131,7 +132,7 @@ class TestAppliedPropertyValueGroup:
         assert elem_pv["Plugs per side"] == 1
         assert elem_pv["Price"] == 14.99
         with pytest.raises(KeyError):
-            elem_pv["price"]
+            elem_pv["price"]  # pylint: disable=pointless-statement
 
     def test___setitem___modify(self, model, pvext):
         elem = model[self.elem_uuid]
@@ -216,7 +217,7 @@ class TestAppliedPropertyValueGroupXML:
         def mock_generate_uuid(*__, **_):
             nonlocal call_count
             call_count += 1
-            return "01234567-89ab-4def-8123-456789abcdef"
+            return f"00000000-0000-0000-0000-{call_count:012x}"
 
         monkeypatch.setattr(
             "capellambse.loader.MelodyLoader.generate_uuid",

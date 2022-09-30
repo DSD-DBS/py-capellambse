@@ -1,14 +1,16 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
 import math
+import operator
 import typing as t
 
 import markupsafe
 import pytest
 
 import capellambse
+import capellambse.model.common as c
 from capellambse.model import MelodyModel, modeltypes
 from capellambse.model.crosslayer.capellacommon import (
     Region,
@@ -23,7 +25,8 @@ from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
 from capellambse.model.layers.oa import OperationalCapability
 
-from . import TEST_MODEL, TEST_ROOT
+# pylint: disable-next=relative-beyond-top-level
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
 
 
 def test_model_info_contains_capella_version(model: MelodyModel):
@@ -116,7 +119,7 @@ def test_GenericElement_has_pvmt(model: MelodyModel):
         RuntimeError,
         match="^Cannot access PVMT: extension is not loaded$",
     ):
-        elm.pvmt
+        elm.pvmt  # pylint: disable=pointless-statement
 
 
 def test_GenericElement_has_progress_status(model: MelodyModel):
@@ -361,13 +364,13 @@ class TestStateMachines:
     def test_stm_state_has_functions(self, model: MelodyModel):
         state = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
         assert len(state.functions) == 4  # leaf functions only
-        fnc = state.functions.by_name("teach Care of Magical Creatures")
+        assert "teach Care of Magical Creatures" in state.functions.by_name
 
 
 def test_exchange_items_of_a_function_port(model: MelodyModel):
     port = model.by_uuid("db64f0c9-ea1c-4962-b043-1774547c36f7")
-    exchange_item_1 = port.exchange_items.by_name("good advise")
-    exchange_item_2 = port.exchange_items.by_name("not so good advise")
+    assert "good advise" in port.exchange_items.by_name
+    assert "not so good advise" in port.exchange_items.by_name
     assert len(port.exchange_items) == 2
 
 
@@ -449,7 +452,7 @@ def test_constraint_specification_has_linked_object_name_in_body(
 def test_function_is_available_in_state(model: MelodyModel) -> None:
     function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
     states = function.available_in_states
-    state = states.by_name("Open")
+    assert "Open" in states.by_name
     assert len(states) == 1
 
 
@@ -479,7 +482,7 @@ def test_constraint_without_specification_raises_AttributeError(
     assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
 
     with pytest.raises(AttributeError, match="^No specification found$"):
-        con.specification
+        con.specification  # pylint: disable=pointless-statement
 
 
 @pytest.mark.parametrize(
@@ -487,7 +490,7 @@ def test_constraint_without_specification_raises_AttributeError(
     [Class, "org.polarsys.capella.core.data.information:Class", "Class"],
 )
 def test_model_search_finds_elements(
-    model: capellambse.MelodyModel, searchkey
+    session_shared_model: capellambse.MelodyModel, searchkey
 ):
     expected = {
         "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
@@ -507,25 +510,40 @@ def test_model_search_finds_elements(
         "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
     }
 
-    found = model.search(searchkey)
+    found = session_shared_model.search(searchkey)
     actual = {i.uuid for i in found}
 
     assert actual == expected
 
 
 def test_model_search_below_filters_elements_by_ancestor(
-    model: capellambse.MelodyModel,
+    session_shared_model: capellambse.MelodyModel,
 ):
-    parent = model.by_uuid("6583b560-6d2f-4190-baa2-94eef179c8ea")
+    parent = session_shared_model.by_uuid(
+        "6583b560-6d2f-4190-baa2-94eef179c8ea"
+    )
     expected = {
         "3bdd4fa2-5646-44a1-9fa6-80c68433ddb7",
         "a58821df-c5b4-4958-9455-0d30755be6b1",
     }
 
-    nested = model.search("LogicalComponent", below=parent)
+    nested = session_shared_model.search("LogicalComponent", below=parent)
 
     actual = {i.uuid for i in nested}
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "xtype",
+    {i for map in c.XTYPE_HANDLERS.values() for i in map.values()},
+)
+def test_model_search_does_not_contain_duplicates(
+    session_shared_model: capellambse.MelodyModel, xtype: type[t.Any]
+) -> None:
+    results = session_shared_model.search(xtype)
+    uuids = [i.uuid for i in results]
+
+    assert len(uuids) == len(set(uuids))
 
 
 def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
@@ -957,3 +975,91 @@ def test_literal_numeric_value_infinity_is_star(
     max_card.value = value
 
     assert max_card._element.get("value") == expected_xml
+
+
+@pytest.mark.parametrize(
+    ["attr", "value"],
+    [
+        ("name", "[MSM] States of Functional Human Being"),
+        (
+            "description",
+            "<p>This diagram shows the states that a Functional Human Being"
+            " can have, as well as how it transitions between them.</p>\n",
+        ),
+        ("filters", {"ModelExtensionFilter"}),
+        ("target.uuid", "eeeb98a7-6063-4115-8b4b-40a51cc0df49"),
+        ("type", "MSM"),
+        ("type", capellambse.model.modeltypes.DiagramType.MSM),
+        ("viewpoint", "Common"),
+        ("xtype", "viewpoint:DRepresentationDescriptor"),
+    ],
+)
+def test_diagram_attributes(
+    model: capellambse.MelodyModel, attr: str, value: t.Any
+) -> None:
+    diagram = model.diagrams.by_uuid("_7FWu4KrxEeqOgqWuHJrXFA")
+    get_attribute_under_test = operator.attrgetter(attr)
+
+    actual = get_attribute_under_test(diagram)
+
+    assert actual == value
+
+
+def test_diagram_without_documentation_has_None_description(
+    model: capellambse.MelodyModel,
+) -> None:
+    diagram = model.diagrams.by_uuid("_KK2wcKyJEeqCdMaqCWkrKg")
+    expected = None
+
+    actual = diagram.description
+
+    assert actual == expected
+
+
+def test_lists_of_links_appear_to_contain_target_objects(
+    model: capellambse.MelodyModel,
+):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    expected = [
+        "0e71a0d3-0a18-4671-bba0-71b5f88f95dd",
+        "264fb47d-67b7-4bdc-8d06-8a0e5139edbf",
+    ]
+
+    actual = [i.uuid for i in hogwarts.allocated_functions]
+
+    assert actual == expected
+
+
+def test_lists_of_links_cannot_create_objects(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+
+    with pytest.raises(TypeError, match="create"):
+        hogwarts.allocated_functions.create(name="fall to the Death Eaters")
+
+
+def test_lists_of_links_can_be_appended_to(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
+
+    hogwarts.allocated_functions.append(defend_the_stone)
+
+    assert hogwarts.allocated_functions[-1] == defend_the_stone
+
+
+def test_lists_of_links_can_be_inserted_into(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
+
+    hogwarts.allocated_functions.insert(0, defend_the_stone)
+
+    assert hogwarts.allocated_functions[0] == defend_the_stone
+
+
+def test_lists_of_links_can_be_removed_from(model: capellambse.MelodyModel):
+    hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    protect_students = model.by_uuid("264fb47d-67b7-4bdc-8d06-8a0e5139edbf")
+    assert protect_students in hogwarts.allocated_functions
+
+    hogwarts.allocated_functions.remove(protect_students)
+
+    assert protect_students not in hogwarts.allocated_functions

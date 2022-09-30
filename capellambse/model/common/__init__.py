@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Common classes used by all MelodyModel functions.
@@ -13,7 +13,6 @@ import typing as t
 
 import markupsafe
 
-from capellambse import helpers
 from capellambse.loader import xmltools
 
 S = t.TypeVar("S", bound=t.Optional[str])
@@ -71,10 +70,6 @@ def enumliteral(
     ).name
 
 
-def markuptype(markup: str, *args: t.Any, **kw: t.Any) -> markupsafe.Markup:
-    return markupsafe.Markup(helpers.repair_html(markup), *args, **kw)
-
-
 def set_accessor(
     cls: type[GenericElement],
     attr: str,
@@ -86,7 +81,7 @@ def set_accessor(
 
 def set_self_references(*args: tuple[type[GenericElement], str]) -> None:
     for cls, attr in args:
-        set_accessor(cls, attr, ProxyAccessor(cls, aslist=ElementList))
+        set_accessor(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
 
 
 def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570

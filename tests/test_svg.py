@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -35,6 +35,7 @@ TEST_DIAGS = [
     "[OCB] Operational Capabilities",
     "[OPD] Obtain food via hunting",
     "[MSM] States of Functional Human Being",
+    "[SAB] System",
     "[OEBD] Operational Context",
     "[PAB] Physical System",
     "[LDFB] Test flow",
@@ -115,6 +116,7 @@ class TestSVG:
         assert cp_in_exists
         assert cp_out_exists
         assert cp_inout_exists
+        assert cp_unset_exists
         assert cp_reference_exists
 
     @pytest.fixture

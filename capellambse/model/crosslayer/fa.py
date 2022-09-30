@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Implementation of objects and relations for Functional Analysis.
@@ -31,12 +31,6 @@ XT_COMP_EX_ALLOC = (
     "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
 )
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
-XT_FCI: cabc.Set[str] = frozenset(
-    {
-        "org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction",
-        "org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink",
-    }
-)
 
 
 @c.xtype_handler(None)
@@ -96,7 +90,7 @@ class FunctionPort(c.GenericElement):
 
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
-    state_machines = c.ProxyAccessor(
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
 
@@ -128,8 +122,8 @@ class Function(AbstractFunction):
 
     is_leaf = property(lambda self: not self.functions)
 
-    inputs = c.ProxyAccessor(FunctionInputPort, aslist=c.ElementList)
-    outputs = c.ProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
+    inputs = c.DirectProxyAccessor(FunctionInputPort, aslist=c.ElementList)
+    outputs = c.DirectProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
 
     functions: c.Accessor
     packages: c.Accessor
@@ -179,12 +173,27 @@ class FunctionalChain(c.GenericElement):
 
     _xmltag = "ownedFunctionalChains"
 
-    involved = c.ProxyAccessor(
-        c.GenericElement, XT_FCI, aslist=c.MixedElementList, follow="involved"
+    involvements = c.DirectProxyAccessor(
+        c.GenericElement,
+        (FunctionalChainInvolvementFunction, FunctionalChainInvolvementLink),
+        aslist=c.ElementList,
     )
-    involvements = c.ProxyAccessor(
-        c.GenericElement, XT_FCI, aslist=c.ElementList
+    involved_functions = c.LinkAccessor[AbstractFunction](
+        None,  # FIXME fill in tag
+        FunctionalChainInvolvementFunction,
+        aslist=c.MixedElementList,
+        attr="involved",
     )
+    involved_links = c.LinkAccessor[AbstractExchange](
+        None,  # FIXME fill in tag
+        FunctionalChainInvolvementLink,
+        aslist=c.MixedElementList,
+        attr="involved",
+    )
+
+    @property
+    def involved(self) -> c.MixedElementList:
+        return self.involved_functions + self.involved_links
 
 
 @c.xtype_handler(None)
@@ -206,11 +215,11 @@ class ComponentExchange(AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_functional_exchanges = c.ProxyAccessor(
-        FunctionalExchange,
+    allocated_functional_exchanges = c.LinkAccessor[FunctionalExchange](
+        None,  # FIXME fill in tag
         XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
     allocated_exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem,

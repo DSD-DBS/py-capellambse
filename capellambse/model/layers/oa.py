@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Tools for the Operational Analysis layer.
@@ -74,43 +74,47 @@ class OperationalCapability(c.GenericElement):
 
     _xmltag = "ownedOperationalCapabilities"
 
-    extends = c.ProxyAccessor(
+    extends = c.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=c.ElementList
     )
-    includes = c.ProxyAccessor(
+    includes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=c.ElementList
     )
-    generalizes = c.ProxyAccessor(
+    generalizes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
     )
-    involved_activities = c.ProxyAccessor(
-        OperationalActivity,
+    involved_activities = c.LinkAccessor[OperationalActivity](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2ACT,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    involved_entities = c.ProxyAccessor(
-        c.GenericElement,
+    involved_entities = c.LinkAccessor[c.GenericElement](
+        None,  # FIXME fill in tag
         XT_EOCI,
-        follow="involved",
         aslist=c.MixedElementList,
+        attr="involved",
     )
-    entity_involvements = c.ProxyAccessor(
+    entity_involvements = c.DirectProxyAccessor(
         EntityOperationalCapabilityInvolvement, aslist=c.ElementList
     )
-    involved_processes = c.ProxyAccessor(
-        OperationalProcess,
+    involved_processes = c.LinkAccessor[OperationalProcess](
+        None,  # FIXME fill in tag
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
-        follow="involved",
+        attr="involved",
     )
-    owned_processes = c.ProxyAccessor(OperationalProcess, aslist=c.ElementList)
+    owned_processes = c.DirectProxyAccessor(
+        OperationalProcess, aslist=c.ElementList
+    )
 
     postcondition = c.AttrProxyAccessor(
         capellacore.Constraint, "postCondition"
     )
     precondition = c.AttrProxyAccessor(capellacore.Constraint, "preCondition")
-    scenarios = c.ProxyAccessor(interaction.Scenario, aslist=c.ElementList)
+    scenarios = c.DirectProxyAccessor(
+        interaction.Scenario, aslist=c.ElementList
+    )
     states = c.AttrProxyAccessor(
         capellacommon.State, "availableInStates", aslist=c.ElementList
     )
@@ -124,7 +128,9 @@ class OperationalCapabilityPkg(c.GenericElement):
 
     _xmltag = "ownedAbstractCapabilityPkg"
 
-    capabilities = c.ProxyAccessor(OperationalCapability, aslist=c.ElementList)
+    capabilities = c.DirectProxyAccessor(
+        OperationalCapability, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
@@ -132,11 +138,11 @@ class OperationalCapabilityPkg(c.GenericElement):
 class AbstractEntity(cs.Component):
     """Common code for Entities."""
 
-    activities = c.ProxyAccessor(
-        OperationalActivity,
+    activities = c.LinkAccessor[OperationalActivity](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
     capabilities = c.CustomAccessor(
         OperationalCapability,
@@ -169,7 +175,9 @@ class OperationalActivityPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    activities = c.ProxyAccessor(OperationalActivity, aslist=c.ElementList)
+    activities = c.DirectProxyAccessor(
+        OperationalActivity, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
@@ -180,11 +188,11 @@ class CommunicationMean(fa.AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_interactions = c.ProxyAccessor(
-        fa.FunctionalExchange,
+    allocated_interactions = c.LinkAccessor[fa.FunctionalExchange](
+        None,  # FIXME fill in tag
         fa.XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
     allocated_exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem,
@@ -201,8 +209,8 @@ class EntityPkg(c.GenericElement):
 
     _xmltag = "ownedEntityPkg"
 
-    entities = c.ProxyAccessor(Entity, aslist=c.ElementList)
-    state_machines = c.ProxyAccessor(
+    entities = c.DirectProxyAccessor(Entity, aslist=c.ElementList)
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
 
@@ -213,49 +221,43 @@ class EntityPkg(c.GenericElement):
 class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
     """Provides access to the OperationalAnalysis layer of the model."""
 
-    root_entity = c.ProxyAccessor(Entity, rootelem=EntityPkg)
-    root_activity = c.ProxyAccessor(
+    root_entity = c.DirectProxyAccessor(Entity, rootelem=EntityPkg)
+    root_activity = c.DirectProxyAccessor(
         OperationalActivity, rootelem=OperationalActivityPkg
     )
 
-    activity_package = c.ProxyAccessor(OperationalActivityPkg)
-    capability_package = c.ProxyAccessor(OperationalCapabilityPkg)
-    entity_package = c.ProxyAccessor(EntityPkg)
+    activity_package = c.DirectProxyAccessor(OperationalActivityPkg)
+    capability_package = c.DirectProxyAccessor(OperationalCapabilityPkg)
+    entity_package = c.DirectProxyAccessor(EntityPkg)
 
-    all_activities = c.ProxyAccessor(
+    all_activities = c.DeepProxyAccessor(
         OperationalActivity,
         aslist=c.ElementList,
-        deep=True,
     )
-    all_processes = c.ProxyAccessor(
+    all_processes = c.DeepProxyAccessor(
         OperationalProcess,
         aslist=c.ElementList,
-        deep=True,
     )
-    all_capabilities = c.ProxyAccessor(
+    all_capabilities = c.DeepProxyAccessor(
         OperationalCapability,
         aslist=c.ElementList,
-        deep=True,
     )
     all_actors = property(
         lambda self: self._model.search(Entity).by_is_actor(True)
     )
-    all_entities = c.ProxyAccessor(
+    all_entities = c.DeepProxyAccessor(
         Entity,
         aslist=c.ElementList,
-        deep=True,
     )
 
-    all_activity_exchanges = c.ProxyAccessor(
+    all_activity_exchanges = c.DeepProxyAccessor(
         fa.FunctionalExchange,
         aslist=c.ElementList,
         rootelem=[OperationalActivityPkg, OperationalActivity],
-        deep=True,
     )
-    all_entity_exchanges = c.ProxyAccessor(
+    all_entity_exchanges = c.DeepProxyAccessor(
         CommunicationMean,
         aslist=c.ElementList,
-        deep=True,
     )
 
     diagrams = diagram.DiagramAccessor(
@@ -266,10 +268,7 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
 c.set_accessor(
     OperationalActivity,
     "packages",
-    c.ProxyAccessor(
-        OperationalActivityPkg,
-        aslist=c.ElementList,
-    ),
+    c.DirectProxyAccessor(OperationalActivityPkg, aslist=c.ElementList),
 )
 c.set_accessor(
     Entity,

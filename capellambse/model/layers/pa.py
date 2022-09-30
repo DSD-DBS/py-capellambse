@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Tools for the Physical Architecture layer.
@@ -32,13 +32,13 @@ class PhysicalFunction(fa.Function):
     owner = c.CustomAccessor(
         c.GenericElement,
         operator.attrgetter("_model.pa.all_components"),
-        matchtransform=operator.attrgetter("functions"),
+        matchtransform=operator.attrgetter("allocated_functions"),
     )
-    realized_logical_functions = c.ProxyAccessor(
-        la.LogicalFunction,
+    realized_logical_functions = c.LinkAccessor[la.LogicalFunction](
+        None,  # FIXME fill in tag
         fa.FunctionRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
 
@@ -48,7 +48,7 @@ class PhysicalFunctionPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    components = c.ProxyAccessor(PhysicalFunction, aslist=c.ElementList)
+    functions = c.DirectProxyAccessor(PhysicalFunction, aslist=c.ElementList)
 
     packages: c.Accessor
 
@@ -66,17 +66,17 @@ class PhysicalComponent(cs.Component):
         "_element", "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
     )
 
-    functions = c.ProxyAccessor(
-        PhysicalFunction,
+    allocated_functions = c.LinkAccessor[PhysicalFunction](
+        "ownedFunctionalAllocation",
         fa.XT_FCALLOC,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
-    realized_logical_components = c.ProxyAccessor(
-        la.LogicalComponent,
+    realized_logical_components = c.LinkAccessor[la.LogicalComponent](
+        None,  # FIXME fill in tag
         cs.ComponentRealization,
         aslist=c.ElementList,
-        follow="targetElement",
+        attr="targetElement",
     )
 
     owned_components: c.Accessor
@@ -104,8 +104,8 @@ class PhysicalComponentPkg(c.GenericElement):
 
     _xmltag = "ownedPhysicalComponentPkg"
 
-    components = c.ProxyAccessor(PhysicalComponent, aslist=c.ElementList)
-    state_machines = c.ProxyAccessor(
+    components = c.DirectProxyAccessor(PhysicalComponent, aslist=c.ElementList)
+    state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
 
@@ -121,57 +121,52 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
         attributes={"is_actor": False},
         rootelem=PhysicalComponentPkg,
     )
-    root_function = c.ProxyAccessor(
-        PhysicalComponent, rootelem=PhysicalFunctionPkg
+    root_function = c.DirectProxyAccessor(
+        PhysicalFunction, rootelem=PhysicalFunctionPkg
     )
 
-    function_package = c.ProxyAccessor(PhysicalFunctionPkg)
-    component_package = c.ProxyAccessor(PhysicalComponentPkg)
-    capability_package = c.ProxyAccessor(la.CapabilityRealizationPkg)
+    function_package = c.DirectProxyAccessor(PhysicalFunctionPkg)
+    component_package = c.DirectProxyAccessor(PhysicalComponentPkg)
+    capability_package = c.DirectProxyAccessor(la.CapabilityRealizationPkg)
 
-    all_functions = c.ProxyAccessor(
+    all_functions = c.DeepProxyAccessor(
         PhysicalFunction,
         aslist=c.ElementList,
         rootelem=PhysicalFunctionPkg,
-        deep=True,
     )
-    all_capabilities = c.ProxyAccessor(
-        la.CapabilityRealization, deep=True, aslist=c.ElementList
+    all_capabilities = c.DeepProxyAccessor(
+        la.CapabilityRealization, aslist=c.ElementList
     )
-    all_components = c.ProxyAccessor(
-        PhysicalComponent, aslist=c.ElementList, deep=True
+    all_components = c.DeepProxyAccessor(
+        PhysicalComponent, aslist=c.ElementList
     )
     all_actors = property(
         lambda self: self._model.search(PhysicalComponent).by_is_actor(True)
     )
 
-    all_function_exchanges = c.ProxyAccessor(
+    all_function_exchanges = c.DeepProxyAccessor(
         fa.FunctionalExchange,
         aslist=c.ElementList,
         rootelem=[PhysicalFunctionPkg, PhysicalFunction],
-        deep=True,
     )
-    all_physical_paths = c.ProxyAccessor(
+    all_physical_paths = c.DeepProxyAccessor(
         cs.PhysicalPath,
         aslist=c.ElementList,
         rootelem=PhysicalComponentPkg,
-        deep=True,
     )
-    all_component_exchanges = c.ProxyAccessor(
+    all_component_exchanges = c.DeepProxyAccessor(
         fa.ComponentExchange,
         aslist=c.ElementList,
         rootelem=PhysicalComponentPkg,
-        deep=True,
     )
 
-    all_physical_exchanges = c.ProxyAccessor(
+    all_physical_exchanges = c.DeepProxyAccessor(
         fa.FunctionalExchange,
         aslist=c.ElementList,
         rootelem=[PhysicalFunctionPkg, PhysicalFunction],
-        deep=True,
     )
-    all_physical_links = c.ProxyAccessor(
-        cs.PhysicalLink, aslist=c.ElementList, deep=True
+    all_physical_links = c.DeepProxyAccessor(
+        cs.PhysicalLink, aslist=c.ElementList
     )
 
     diagrams = diagram.DiagramAccessor(
@@ -212,10 +207,7 @@ c.set_accessor(
 c.set_accessor(
     PhysicalFunction,
     "packages",
-    c.ProxyAccessor(
-        PhysicalFunctionPkg,
-        aslist=c.ElementList,
-    ),
+    c.DirectProxyAccessor(PhysicalFunctionPkg, aslist=c.ElementList),
 )
 c.set_self_references(
     (PhysicalComponent, "owned_components"),

@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Useful helpers for making object-oriented XML proxy classes."""
@@ -12,9 +12,11 @@ import math
 import sys
 import typing as t
 
+import markupsafe
 from lxml import etree
 
 import capellambse.loader
+from capellambse import helpers
 
 
 class AttributeProperty:
@@ -80,6 +82,13 @@ class AttributeProperty:
         self.__objclass__: type[t.Any] | None = None
         self.__doc__ = __doc__
 
+    @property
+    def _qualname(self) -> str:
+        """Generate the qualified name of this descriptor."""
+        if self.__objclass__ is None:
+            return f"(unknown {type(self).__name__} - call __set_name__)"
+        return f"{self.__objclass__.__name__}.{self.__name__}"
+
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty:
         ...
@@ -116,8 +125,7 @@ class AttributeProperty:
             )
 
         if value == self.default:
-            self.__delete__(obj)
-            return
+            return self.__delete__(obj)
 
         stringified = str(value)
 
@@ -132,7 +140,7 @@ class AttributeProperty:
         if roundtripped != value:
             raise TypeError(
                 "Value is not round-trip safe:"
-                f"{value} would be read back as {roundtripped}"
+                f" {value!r} would be read back as {roundtripped!r}"
             )
 
         xml_element.attrib[self.attribute] = stringified
@@ -147,13 +155,43 @@ class AttributeProperty:
         try:
             del xml_element.attrib[self.attribute]
         except KeyError:
-            raise AttributeError(
-                f"{obj!r} does not have {self.__name__} set"
-            ) from None
+            pass
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__name__ = name
         self.__objclass__ = owner
+
+
+class HTMLAttributeProperty(AttributeProperty):
+    """An AttributeProperty that gracefully handles HTML-in-XML."""
+
+    def __init__(
+        self,
+        xmlattr: str,
+        attribute: str,
+        *,
+        optional: bool = False,
+        writable: bool = True,
+        __doc__: str | None = None,
+    ) -> None:
+        super().__init__(
+            xmlattr,
+            attribute,
+            default=None,
+            returntype=markupsafe.Markup,
+            optional=optional,
+            writable=writable,
+            __doc__=__doc__,
+        )
+
+    def __set__(self, obj: t.Any, value: str) -> None:
+        if not isinstance(value, str):
+            raise TypeError(
+                f"Cannot set {self._qualname} on {obj!r}:"
+                f" Expected str, got {type(value).__name__}"
+            )
+        value = helpers.repair_html(value)
+        super().__set__(obj, value)
 
 
 class NumericAttributeProperty(AttributeProperty):
@@ -307,6 +345,8 @@ class DatetimeAttributeProperty(AttributeProperty):
         if value is None:
             self.__delete__(obj)
         elif isinstance(value, datetime.datetime):
+            if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+                value = value.astimezone()
             super().__set__(obj, value.strftime(self.format))
         else:
             raise TypeError(f"Expected datetime, not {type(value).__name__}")
@@ -389,29 +429,21 @@ class EnumAttributeProperty(AttributeProperty):
             return None
         return self.enumcls[rawvalue]
 
-    def __set__(self, obj: t.Any, value: t.Any) -> None:
+    def __set__(self, obj: t.Any, value: str | enum.Enum) -> None:
         assert self.__objclass__ is not None
         if isinstance(value, str):
             try:
                 value = self.enumcls[value]
             except KeyError:
                 raise ValueError(
-                    "{!r} is not a valid value for {}.{}".format(
-                        value, self.__objclass__.__name__, self.__name__
-                    )
+                    f"{value!r} is not a valid value for {self._qualname}"
                 ) from None
         elif not isinstance(value, self.enumcls):
             raise TypeError(
-                "Expected str or member of {}, not {!r}".format(
-                    self.enumcls, value
-                )
+                f"Expected str or member of {self.enumcls}, not {value!r}"
             )
 
-        return super().__set__(obj, value.value)
-
-    def __set_name__(self, owner: type[t.Any], name: str) -> None:
-        self.__name__ = name
-        self.__objclass__ = owner
+        return super().__set__(obj, value.name)
 
 
 class XMLDictProxy(cabc.MutableMapping):

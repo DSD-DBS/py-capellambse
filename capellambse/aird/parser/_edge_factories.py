@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Factory functions for Edges inside a diagram."""
@@ -115,6 +115,8 @@ def extract_bendpoints(
             ).attrib["id"]
         except (StopIteration, KeyError):
             sourceanchor = "(0.5, 0.5)"
+        if sourceanchor.endswith(" custom"):
+            sourceanchor = sourceanchor[: -len(" custom")]
         sourceanchor = helpers.ssvparse(
             sourceanchor, float, parens="()", num=2
         )

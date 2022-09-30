@@ -1,7 +1,6 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=no-self-use
 import typing as t
 
 import pytest
@@ -16,33 +15,13 @@ FLOAT_TYPE_UUID = "d65e426c-7df0-43df-aaa4-417ae193176a"
 
 
 @pytest.mark.parametrize(
-    "name,super_name,expected_type",
+    ["name", "super_name", "expected_type"],
     [
-        pytest.param(
-            "SpecialTwist",
-            "Twist",
-            "Class",
-        ),
-        pytest.param(
-            "1st Specialization of SuperClass",
-            "SuperClass",
-            "Class",
-        ),
-        pytest.param(
-            "SpecialUnion1",
-            "SuperUnion",
-            "Union",
-        ),
-        pytest.param(
-            "StatusEnum",
-            "CmdEnum",
-            "Enumeration",
-        ),
-        pytest.param(
-            "SpecialCollection1",
-            "SuperCollection",
-            "Collection",
-        ),
+        ("SpecialTwist", "Twist", "Class"),
+        ("1st Specialization of SuperClass", "SuperClass", "Class"),
+        ("SpecialUnion1", "SuperUnion", "Union"),
+        ("StatusEnum", "CmdEnum", "Enumeration"),
+        ("SpecialCollection1", "SuperCollection", "Collection"),
     ],
 )
 def test_generalizations(

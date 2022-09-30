@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -843,13 +843,60 @@ def requirement_symbol(id_: str = "RequirementSymbol") -> container.Symbol:
 
 
 @decorations.deco_factories
+def system_component_symbol(
+    id_: str = "SystemComponentSymbol",
+) -> container.Symbol:
+    symb = container.Symbol(id=id_, viewBox="0 12 79 55")
+    grp = container.Group(
+        transform="matrix(0.25509703,0,0,0.25509703,-19.119473,-26.4767)"
+    )
+    box_grp = container.Group(
+        transform="matrix(0.92548165,0,0,0.92249056,-32.422011,-1.2909536)",
+        style="fill:#e3ebf8;stroke-width:1.33145",
+    )
+    box_grp.add(
+        path.Path(
+            d="m 160.03785,180.47519 h 280.8845 v 200.68502 h -280.8845 z",
+            style="stroke:#000000;stroke-width:7;",
+        )
+    )
+    grp.add(box_grp)
+    grp.add(
+        path.Path(
+            d="m 81.854696,210.17533 h 66.250264 v 35.37025 H 81.854696 Z",
+            style="fill:#e7efff;stroke:#000000;stroke-width:7;",
+        )
+    )
+    grp.add(
+        path.Path(
+            d="m 83.588316,268.94271 h 66.250254 v 35.37024 H 83.588316 Z",
+            style="fill:#e7efff;stroke:#000000;stroke-width:7;",
+        )
+    )
+
+    # Black connected boxes
+    params = {
+        "size": (5, 5),
+        "style": "fill:#000000;stroke:#000000;stroke-width:54.1038;",
+    }
+    grp.add(shapes.Rect(insert=(214.8075, 236.39), **params))
+    grp.add(shapes.Rect(insert=(297.44, 298.36), **params))
+    grp.add(shapes.Rect(insert=(297.44, 215.73), **params))
+    grp.add(
+        path.Path(
+            d="m 219.70896,218.22099 h 79.0257 v 85.9132 h -80.34135 z",
+            style="fill:none;stroke:#000000;stroke-width:4.29901px;",
+        )
+    )
+    symb.add(grp)
+    return symb
+
+
+@decorations.deco_factories
 def system_actor_symbol(
     id_: str = "SystemActorSymbol",
 ) -> container.Symbol:
-    symb = container.Symbol(
-        id=id_,
-        viewBox="0 0 79 79",
-    )
+    symb = container.Symbol(id=id_, viewBox="0 0 79 79")
     grp = container.Group(
         transform="matrix(1.4376083,0,0,1.3022512,-15.958775,-15.416201)"
     )

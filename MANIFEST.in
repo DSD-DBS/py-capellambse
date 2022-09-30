@@ -1,2 +1,0 @@
-include versioneer.py
-include capellambse/_version.py

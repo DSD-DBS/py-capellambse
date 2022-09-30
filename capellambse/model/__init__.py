@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 """Implements a high-level interface to Capella projects."""
@@ -6,6 +6,7 @@ from __future__ import annotations
 
 __all__ = ["MelodyModel"]
 
+import collections.abc as cabc
 import logging
 import os
 import pathlib
@@ -39,10 +40,12 @@ class MelodyModel:
     aspects.
     """
 
-    oa = common.ProxyAccessor(oa.OperationalAnalysis, rootelem=XT_SYSENG)
-    sa = common.ProxyAccessor(ctx.SystemAnalysis, rootelem=XT_SYSENG)
-    la = common.ProxyAccessor(la.LogicalArchitecture, rootelem=XT_SYSENG)
-    pa = common.ProxyAccessor(pa.PhysicalArchitecture, rootelem=XT_SYSENG)
+    oa = common.DirectProxyAccessor(oa.OperationalAnalysis, rootelem=XT_SYSENG)
+    sa = common.DirectProxyAccessor(ctx.SystemAnalysis, rootelem=XT_SYSENG)
+    la = common.DirectProxyAccessor(la.LogicalArchitecture, rootelem=XT_SYSENG)
+    pa = common.DirectProxyAccessor(
+        pa.PhysicalArchitecture, rootelem=XT_SYSENG
+    )
     diagrams = diagram.DiagramAccessor(
         None, cacheattr="_MelodyModel__diagram_cache"
     )
@@ -64,7 +67,9 @@ class MelodyModel:
         self,
         path: str | os.PathLike,
         *,
-        diagram_cache: str | os.PathLike | None = None,
+        diagram_cache: (
+            str | os.PathLike | loader.FileHandler | dict[str, t.Any] | None
+        ) = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         jupyter_untrusted: bool = False,
         **kwargs: t.Any,
@@ -99,7 +104,7 @@ class MelodyModel:
             * A remote URL, with a protocol or prefix that indicates
               which file handler to invoke (requires ``entrypoint``).
 
-              Examples:
+              Some examples:
 
               * ``git://git.example.com/model/coffeemaker.git``
               * ``git+https://git.example.com/model/coffeemaker.git``
@@ -190,6 +195,10 @@ class MelodyModel:
         if diagram_cache:
             if diagram_cache == path:
                 self._diagram_cache = self._loader.filehandler
+            elif isinstance(diagram_cache, loader.FileHandler):
+                self._diagram_cache = diagram_cache
+            elif isinstance(diagram_cache, cabc.Mapping):
+                self._diagram_cache = loader.get_filehandler(**diagram_cache)
             else:
                 self._diagram_cache = loader.get_filehandler(diagram_cache)
             self._diagram_cache_subdir = pathlib.PurePosixPath(

@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -66,6 +66,20 @@ def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
 
 
 class FileHandler(metaclass=abc.ABCMeta):
+    """Abstract super class for file handler implementations.
+
+    Parameters
+    ----------
+    path
+        The location of the remote. The exact accepted forms are
+        determined by the specific file handler implementation, for
+        example the ``LocalFileHandler`` accepts only local paths, and
+        the ``GitFileHandler`` accepts everything that Git accepts.
+    subdir
+        Consider all paths relative to this subdirectory, instead of the
+        root of the file handler's hierarchy.
+    """
+
     path: str | os.PathLike
 
     def __init__(

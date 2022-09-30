@@ -1,4 +1,4 @@
-# Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
 # pylint: disable=abstract-method, useless-suppression
@@ -34,6 +34,8 @@ from .. import modelinfo
 from . import FileHandler, TransactionClosedError
 
 LOGGER = logging.getLogger(__name__)
+
+_git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
 
 
 class _TreeEntry(t.NamedTuple):
@@ -252,7 +254,7 @@ class _GitTransaction:
         if targetref == "HEAD":
             targetref = self.__resolve_head() or targetref
 
-        if re.search("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$", targetref):
+        if _git_object_name.search(targetref):
             raise ValueError(
                 f"Target ref looks like a git object, use a different remote_branch: {targetref}"
             )
@@ -443,13 +445,59 @@ class _GitTransaction:
 
 
 class GitFileHandler(FileHandler):
-    """File handler for ``git://`` and related protocols."""
+    """File handler for ``git://`` and related protocols.
+
+    Parameters
+    ----------
+    revision
+        The Git revision to check out. Either a branch or tag name, a
+        full ref name, or the object name (i.e. hash) of a commit-ish.
+    username
+        The user name for authentication with the Git remote.
+    password
+        The password for authentication with the Git remote.
+    identity_file
+        Authenticate against the remote with the private key in this
+        file. Defaults to using SSH's algorithm for determining a
+        suitable key. (SSH only, ignored otherwise)
+    known_hosts_file
+        An OpenSSH-style ``known_hosts`` file containing the public key
+        of the remote server. (SSH only, ignored otherwise)
+    disable_cache
+        Wipe the local cache and create a fresh, new clone.
+    update_cache
+        Contact the remote and make sure that the local cache is up to
+        date. Note that setting this to ``False`` does not necessarily
+        inhibit all attempts to contact the remote; it just disables the
+        initial "fetch" operation. Later operations may still require to
+        access the server, for example to download Git-LFS files.
+    shallow
+        Make a shallow clone. This can drastically reduce network and
+        disk usage when cloning large models, by only downloading the
+        latest ``revision`` and not downloading the history that leads
+        up to it.
+
+        Note that, when this is set to ``True`` (the default), existing
+        non-shallow caches will be made shallow. However, when it is set
+        to ``False``, shallow caches will not be unshallowed.
+
+    Attributes
+    ----------
+    cache_dir
+        The path to the temporary work tree created by instances of this
+        file handler.
+
+    See Also
+    --------
+    FileHandler : Documentation of common parameters.
+    """
 
     username: str
     password: str
     identity_file: str
     known_hosts_file: str
     cache_dir: pathlib.Path
+    shallow: bool
 
     __fnz: object
     __has_lfs: bool
@@ -468,15 +516,19 @@ class GitFileHandler(FileHandler):
         update_cache: bool = True,
         *,
         subdir: str | pathlib.PurePosixPath = "/",
+        shallow: bool = True,
     ) -> None:
         super().__init__(path, subdir=subdir)
-        self.revision = revision
         self.disable_cache = disable_cache
         self.username = username
         self.password = password
         self.identity_file = identity_file
         self.known_hosts_file = known_hosts_file
         self.update_cache = update_cache
+        self.shallow = shallow
+
+        self.cache_dir = None  # type: ignore[assignment]
+        self.__hash, self.revision = self.__resolve_remote_ref(revision)
 
         self.__init_cache_dir()
         self.__init_worktree()
@@ -641,13 +693,45 @@ class GitFileHandler(FileHandler):
         if self.cache_dir.exists() and self.disable_cache:
             shutil.rmtree(str(self.cache_dir))
 
+        update_cache = self.update_cache
         if not (self.cache_dir / "config").exists():
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-            LOGGER.debug("Cloning %r to %s", self.path, self.cache_dir)
-            self._git("clone", self.path, ".", "--bare", "--mirror")
-        elif self.update_cache:
+            LOGGER.debug("Creating a new git repo in %s", self.cache_dir)
+            self._git("-c", "init.defaultBranch=master", "init", "--bare")
+            self._git("remote", "add", "--mirror=fetch", "origin", self.path)
+            update_cache = True
+
+        if update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            self._git("fetch")
+            shallow_opts: tuple[str, ...] = ()
+            if self.shallow:
+                fetchspec = f"+{self.revision}"
+                if not _git_object_name.search(self.revision):
+                    fetchspec += f":{self.revision}"
+                shallow_opts = ("--depth=1", fetchspec)
+            self._git("fetch", self.path, *shallow_opts)
+
+    def __resolve_remote_ref(self, ref: str) -> tuple[str, str]:
+        """Resolve the given ``ref`` on the remote."""
+        LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
+        listing = self._git("ls-remote", self.path, ref, encoding="utf-8")
+        if not listing:
+            if not _git_object_name.search(ref):
+                raise ValueError(f"Ref does not exist on remote: {ref}")
+            LOGGER.debug("Ref %r not found, assuming object name", ref)
+            return ref, ref
+        refs = [i.split("\t") for i in listing.strip().split("\n")]
+        if len(refs) > 1:
+            raise ValueError(
+                f"Ambiguous ref name {ref}, found {len(refs)}:"
+                f" {', '.join(i[1] for i in refs)}"
+            )
+
+        hash, refname = refs[0]
+        LOGGER.debug(
+            "Resolved ref %r as remote ref %r (%s)", ref, refname, hash
+        )
+        return hash, refname
 
     def __init_worktree(self) -> None:
         worktree = pathlib.Path(
@@ -661,7 +745,7 @@ class GitFileHandler(FileHandler):
                 "--detach",
                 "--no-checkout",
                 worktree,
-                self.revision,
+                self.__hash,
                 silent=True,
             )
         except:
@@ -770,6 +854,9 @@ class GitFileHandler(FileHandler):
                 ret_level = logging.DEBUG
 
             if stderr:
-                for line in stderr.decode("utf-8").splitlines():
+                if isinstance(stderr, bytes):
+                    stderr = stderr.decode("utf-8")
+
+                for line in stderr.splitlines():
                     LOGGER.getChild("git").log(err_level, "%s", line)
             LOGGER.log(ret_level, "Exit status: %d", returncode)
