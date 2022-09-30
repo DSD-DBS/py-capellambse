@@ -36,7 +36,7 @@ class PropertyValueProxy:
         cls, model: capellambse.MelodyModel, element: etree._Element
     ) -> PropertyValueProxy:
         """Create a PropertyValueProxy for an element."""
-        if not hasattr(model, "pvext") or model.pvext is None:
+        if not hasattr(model, "_pvext") or model._pvext is None:
             raise RuntimeError("Cannot access PVMT: extension is not loaded")
 
         self = cls.__new__(cls)
@@ -83,7 +83,7 @@ class _PVMTDomain:
             raise ValueError("Provide a name as `group` or `group.prop`")
 
         try:
-            pvgroup = self._model.pvext.get_element_pv(
+            pvgroup = self._model._pvext.get_element_pv(
                 self._element, f"{self._domain}.{path[0]}", create=False
             )
         except pvexc.GroupNotAppliedError:

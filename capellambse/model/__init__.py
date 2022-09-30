@@ -184,13 +184,13 @@ class MelodyModel:
         self.jupyter_untrusted = jupyter_untrusted
 
         try:
-            self.pvext = capellambse.pvmt.load_pvmt_from_model(self._loader)
+            self._pvext = capellambse.pvmt.load_pvmt_from_model(self._loader)
         except ValueError as err:
             LOGGER.warning(
                 "Cannot load PVMT extension: %s: %s", type(err).__name__, err
             )
             LOGGER.warning("Property values are not available in this model")
-            self.pvext = None
+            self._pvext = None
 
         if diagram_cache:
             if diagram_cache == path:
