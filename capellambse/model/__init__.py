@@ -20,7 +20,11 @@ import capellambse.pvmt
 from capellambse import loader
 from capellambse.loader import xmltools
 
+# Cross Layers
+from .crosslayer import capellacore
+
 from . import common, diagram  # isort:skip
+
 
 # Architectural Layers
 from .layers import oa, ctx, la, pa  # isort:skip
@@ -45,6 +49,16 @@ class MelodyModel:
     la = common.DirectProxyAccessor(la.LogicalArchitecture, rootelem=XT_SYSENG)
     pa = common.DirectProxyAccessor(
         pa.PhysicalArchitecture, rootelem=XT_SYSENG
+    )
+    enumeration_property_types = common.DirectProxyAccessor(
+        capellacore.EnumerationPropertyType,
+        aslist=common.ElementList,
+        rootelem=XT_PROJECT,
+    )
+    property_value_packages = common.DirectProxyAccessor(
+        capellacore.PropertyValuePkg,
+        aslist=common.ElementList,
+        rootelem=XT_PROJECT,
     )
     diagrams = diagram.DiagramAccessor(
         None, cacheattr="_MelodyModel__diagram_cache"

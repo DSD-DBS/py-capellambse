@@ -410,6 +410,12 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def _findroots(self, obj: element.ModelObject) -> list[etree._Element]:
         roots = [obj._element]
+        if self.rootelem:
+            xt_end = self.rootelem[-1].split(":")
+            xt_match = obj._element.tag.endswith(xt_end[-1])
+            if xt_match and not obj._element.getparent():
+                return roots
+
         for xtype in self.rootelem:
             roots = list(
                 itertools.chain.from_iterable(
@@ -1091,7 +1097,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
     ) -> None:
         assert type(self)._accessor
-        assert isinstance(parent, element.GenericElement)
+        assert isinstance(
+            parent, (element.GenericElement, capellambse.MelodyModel)
+        )
 
         super().__init__(*args, **kw)
         self._parent = parent
