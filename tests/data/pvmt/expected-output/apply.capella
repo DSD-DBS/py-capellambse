@@ -86,7 +86,7 @@
       </ownedEnumerationPropertyTypes>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="5ceb6bc1-c5a5-42bf-8a81-f215a250eff2" sid="_d_5fAHpGEeqI9oT9FAqF8w"
-          name="Components" description="[CLASS]http://www.polarsys.org/capella/core/pa/1.3.0/PhysicalComponent[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
+          name="Components" description="[CLASS]http://www.polarsys.org/capella/core/pa/5.0.0/PhysicalComponent[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
         <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
             id="7c6de438-a2dc-4735-bf55-669a7fe566b0" sid="_xwiX8HpGEeqI9oT9FAqF8w"
             name="ComponentType" description="" type="#ae279311-6a75-40b7-9bf3-a19c136d0573"
@@ -94,7 +94,7 @@
       </ownedPropertyValueGroups>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702" sid="_FK6tAHpHEeqI9oT9FAqF8w"
-          name="Cables" description="[CLASS]http://www.polarsys.org/capella/core/cs/1.3.0/PhysicalLink[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
+          name="Cables" description="[CLASS]http://www.polarsys.org/capella/core/cs/5.0.0/PhysicalLink[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
         <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
             id="f3f9b7ec-f00d-4b2f-8a48-900a22c43853" sid="_Jc5fkHpHEeqI9oT9FAqF8w"
             name="CableType" description="" type="#03e5e5ae-0a61-473d-a792-e003ce601ff4"
@@ -139,9 +139,6 @@
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="5b9f28d1-e3a0-4b40-b9b7-db9f25a4b25b" sid="_T2FQ0JnLEeq7krH_m0FJcQ"
           name="Architecture" description="[ARCHITECTURE]LOGICAL[/ARCHITECTURE]"/>
-      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-          id="4ff5a8e0-774f-4e2f-a94c-2bc8cc37efc8" sid="_UV4yQJnLEeq7krH_m0FJcQ"
-          name="EClass" description="[CLASS]http://www.polarsys.org/capella/core/la/1.3.0/LogicalFunction[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="e983f337-b706-4010-861c-1341c3d9fa4a" sid="_r0IOAJp-EeqLxLOMJbthfA"
           name="Property (Bool, not equal)" description="[PROPERTY]Computer.Physical Cables.In Stock!true[/PROPERTY]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
@@ -207,9 +204,6 @@
         id="ae15f861-2f15-40d2-a1b9-57dfdf7fabae" sid="_qGqicJqFEeqLxLOMJbthfA" name="In scope">
       <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
           id="df48c7e8-b419-43f1-ab28-af8d74b5cb0a" name="version" value="1.0.0"/>
-      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-          id="ecc7fd63-5661-4315-b807-7523ab753139" sid="_jAD2sJqGEeqLxLOMJbthfA"
-          name="EClass" description="[CLASS]http://www.polarsys.org/capella/core/cs/1.3.0/PhysicalLink[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="dbf55057-6f7c-4225-a378-bf953a5f1e35" sid="_zgh7MJqNEeqLxLOMJbthfA"
           name="Property (Bool, equal)" description="[PROPERTY]Computer.Physical Cables.In Stock=true[/PROPERTY]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
@@ -478,7 +472,7 @@
                 id="00000000-0000-0000-0000-000000000001" name="External Data.Object IDs"
                 appliedPropertyValueGroups="#00fd06dd-cedc-403a-9742-261510c70b76">
               <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
-                  id="00000000-0000-0000-0000-000000000002" name="Object ID" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
+                  name="Object ID" id="00000000-0000-0000-0000-000000000002" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
                   value="CABLE-0001"/>
             </ownedPropertyValueGroups>
           </ownedPhysicalLinks>

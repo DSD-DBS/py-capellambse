@@ -204,11 +204,13 @@ class TestAppliedPropertyValueGroupXML:
     elem_uuid = "d32caffc-b9a1-448e-8e96-65a36ba06292"
 
     def compare_xml(self, model, expected_file):
+        pvmt_model_path = (TEST_ROOT / MODEL_FILE).with_suffix(".capella")
+        expected_model_path = self.expect_root / expected_file
+
         model.save()
-        actual = (
-            (TEST_ROOT / MODEL_FILE).with_suffix(".melodymodeller").read_text()
-        )
-        expected = (TEST_ROOT / "expected-output" / expected_file).read_text()
+        actual = pvmt_model_path.read_text(encoding="utf-8")
+        expected = expected_model_path.read_text(encoding="utf-8")
+
         assert actual == expected
 
     def test_apply(self, model, pvext, monkeypatch):
@@ -234,4 +236,4 @@ class TestAppliedPropertyValueGroupXML:
         assert call_count == 2
 
         obj_ids["Object ID"] = "CABLE-0001"
-        self.compare_xml(model, "apply.melodymodeller")
+        self.compare_xml(model, "apply.capella")
