@@ -109,6 +109,10 @@ class MelodyModel:
               * ``git://git.example.com/model/coffeemaker.git``
               * ``git+https://git.example.com/model/coffeemaker.git``
               * ``git+ssh://git@git.example.com/model/coffeemaker.git``
+
+              .. note :: Usage of :meth:`save` needs an updated cache
+                if path is a remote URL. Make sure to not set
+                ``update_cache`` to ``False``.
         entrypoint
             Entrypoint from path to the main ``.aird`` file.
         revision
@@ -221,6 +225,13 @@ class MelodyModel:
 
     def save(self, **kw: t.Any) -> None:
         """Save the model back to where it was loaded from.
+
+        .. note:: Write transactions to the model need an updated cache.
+            If the :class:`~capellambse.loader.filehandler.FileHandler`
+            is of type
+            :class:`~capellambse.loader.filehandler.gitfilehandler.GitFileHandler`
+            make sure that you loaded the model with the
+            ``update_cache`` paremeter set to ``True``.
 
         Parameters
         ----------

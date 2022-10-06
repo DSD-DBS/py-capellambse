@@ -382,6 +382,11 @@ class MelodyLoader:
     def save(self, **kw: t.Any) -> None:
         """Save all model files back to their original locations.
 
+        .. note:: Write transactions to the model needs an updated
+            cache. If :attr:`filehandler` is of type ``GitFileHandler``
+            make sure that you loaded the model with the
+            ``update_cache`` paremeter set to ``True``.
+
         Parameters
         ----------
         kw
