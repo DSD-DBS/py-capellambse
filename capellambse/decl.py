@@ -229,7 +229,7 @@ def _create_complex_objects(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     attr: str,
-    objs: cabc.Iterable[dict[str, t.Any] | Promise],
+    objs: cabc.Iterable[dict[str, t.Any] | Promise | str],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     try:
         target = getattr(parent, attr)
@@ -256,6 +256,8 @@ def _create_complex_objects(
                 yield p.args[0], {"parent": parent, "create": {attr: [child]}}
             else:
                 target.append(obj)
+        elif isinstance(child, str):
+            target.create_singleattr(child)
         else:
             yield from _create_complex_object(
                 promises, parent, attr, target, child

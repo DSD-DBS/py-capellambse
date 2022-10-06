@@ -173,6 +173,24 @@ class TestApplyCreate:
         newdef = attrdefs.by_long_name("New attribute", single=True)
         assert newdef.xtype.endswith(f":{type}")
 
+    @staticmethod
+    def test_decl_can_create_simple_objects_by_passing_plain_strings(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        attrdef_id = "637caf95-3229-4607-99a0-7d7b990bc97f"
+        attrdef = model.by_uuid(attrdef_id)
+        yml = f"""\
+            - parent: !uuid {attrdef_id}
+              create:
+                values:
+                  - NewGame++
+            """
+        assert "NewGame++" not in attrdef.values
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert "NewGame++" in attrdef.values
+
 
 class TestApplyPromises:
     @staticmethod
