@@ -137,8 +137,44 @@ def _operate_delete(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     deletions: dict[str, t.Any],
-) -> cabc.Generator[_OperatorResult, t.Any, None]:
-    raise NotImplementedError("Deleting objects is not yet implemented")
+) -> cabc.Iterable[_OperatorResult]:
+    del promises
+
+    for attr, objs in deletions.items():
+        try:
+            target = getattr(parent, attr)
+        except AttributeError:
+            raise TypeError(
+                "Cannot delete object:"
+                f" {type(parent).__name__} has no attribute {attr!r}"
+            ) from None
+        if not isinstance(target, common.ElementList) or not isinstance(
+            objs, list
+        ):
+            delattr(parent, attr)
+            continue
+        if not isinstance(target, common.ElementListCouplingMixin):
+            raise TypeError(
+                "Cannot delete object:"
+                f" {type(parent).__name__}.{attr} is not model-coupled"
+            )
+        uuids = list(t.cast(cabc.Iterable[str], target.by_uuid))
+        for obj in objs:
+            if isinstance(obj, UUIDReference):
+                obj = obj.uuid
+            if not isinstance(obj, str):
+                raise TypeError("Values in `delete:*:` must be UUIDs")
+            try:
+                idx = uuids.index(obj)
+            except IndexError:
+                puuid = getattr(parent, "uuid", None)
+                raise ValueError(
+                    f"No object with UUID {obj!r} in {attr!r} of {puuid!r}"
+                ) from None
+            del uuids[idx]
+            del target[idx]
+
+    return ()
 
 
 def _operate_modify(

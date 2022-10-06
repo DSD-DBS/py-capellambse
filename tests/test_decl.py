@@ -349,3 +349,44 @@ class TestApplyModify:
 
         assert len(root_function.functions) == 1
         assert root_function.functions[0].name == "survive"
+
+
+class TestApplyDelete:
+    @staticmethod
+    def test_delete_operations_remove_child_objects_from_the_model(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        assert len(root_function.functions) > 0
+        subfunc: str = root_function.functions[0].uuid
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              delete:
+                functions:
+                  - !uuid {subfunc}
+            """
+        assert subfunc in root_function.functions.by_uuid
+        expected_len = len(root_function.functions) - 1
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert len(root_function.functions) == expected_len
+        assert subfunc not in root_function.functions.by_uuid
+        with pytest.raises(KeyError, match=subfunc):
+            model.by_uuid(subfunc)
+
+    @staticmethod
+    def test_delete_operations_delete_attributes_if_no_list_of_uuids_was_given(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        assert len(root_function.functions) > 0
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              delete:
+                functions:
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert len(root_function.functions) == 0
