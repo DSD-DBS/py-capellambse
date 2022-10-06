@@ -221,11 +221,15 @@ def _create_complex_objects(
             else:
                 target.append(obj)
         else:
-            yield from _create_complex_object(promises, target, child)
+            yield from _create_complex_object(
+                promises, parent, attr, target, child
+            )
 
 
 def _create_complex_object(
     promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    attr: str,
     target: common.ElementListCouplingMixin,
     obj_desc: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
@@ -234,14 +238,17 @@ def _create_complex_object(
     except KeyError:
         promise = None
 
-    complex_attrs = {
-        k: v
-        for k, v in obj_desc.items()
-        if isinstance(v, cabc.Iterable) and not isinstance(v, str)
-    }
-    simple_attrs = {
-        k: v for k, v in obj_desc.items() if k not in complex_attrs
-    }
+    complex_attrs = dict[str, t.Any]()
+    simple_attrs = dict[str, t.Any]()
+    try:
+        for k, v in obj_desc.items():
+            if isinstance(v, cabc.Iterable) and not isinstance(v, str):
+                complex_attrs[k] = v
+            else:
+                simple_attrs[k] = _resolve(promises, parent, v)
+    except _UnresolvablePromise as p:
+        yield (p.args[0], {"parent": parent, "create": {attr: [obj_desc]}})
+        return
     assert isinstance(target, common.ElementListCouplingMixin)
     obj = target.create(**simple_attrs)
     if promise is not None:

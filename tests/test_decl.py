@@ -202,6 +202,47 @@ class TestApplyPromises:
         assert "pass the unit test" in root_comp.allocated_functions.by_name
 
     @staticmethod
+    @pytest.mark.parametrize(
+        "order",
+        [
+            pytest.param((0, 1), id="backward"),
+            pytest.param((1, 0), id="forward"),
+        ],
+    )
+    def test_promises_on_simple_attributes_can_reference_objects(
+        model: capellambse.MelodyModel, order
+    ) -> None:
+        root_func = model.by_uuid(ROOT_FUNCTION)
+        snippets = (
+            f"""
+            - parent: !uuid {ROOT_FUNCTION}
+              create:
+                inputs:
+                  - name: My input
+                    promise_id: inport
+                outputs:
+                  - name: My output
+                    promise_id: outport
+            """,
+            f"""
+            - parent: !uuid {ROOT_FUNCTION}
+              create:
+                exchanges:
+                  - name: Test exchange
+                    source: !promise outport
+                    target: !promise inport
+            """,
+        )
+        yml = snippets[order[0]] + snippets[order[1]]
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert "Test exchange" in root_func.exchanges.by_name
+        exc = root_func.exchanges.by_name("Test exchange")
+        assert exc.source == root_func.outputs.by_name("My output")
+        assert exc.target == root_func.inputs.by_name("My input")
+
+    @staticmethod
     def test_reused_promise_ids_cause_an_exception(
         model: capellambse.MelodyModel,
     ) -> None:
