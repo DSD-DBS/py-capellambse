@@ -16,23 +16,47 @@ class Version:
     """Capella xml-element/plugin version info about name and version."""
 
     plugin: str
-    version: str | None = None
+    version: str | tuple[str, str] | None = None
 
     @property
     def values(self) -> cabc.Iterator[str | None]:
         yield self.plugin
-        yield self.version
+        if isinstance(self.version, tuple):
+            min_supported_version, max_supported_version = self.version
+            yield min_supported_version
+            yield max_supported_version
+        else:
+            yield self.version
 
-    def __le__(self, other: float | int | str | Version) -> t.Any:
+    @property
+    def is_versionless(self) -> bool:
+        return self.version is None
+
+    def __le__(self, other: Version) -> t.Any:
         if self.version is None:
             return False
 
-        if isinstance(other, str):
-            other = _tofloat(other)
-        return other <= _tofloat(self.version)
+        if isinstance(other.version, tuple):
+            assert all((isinstance(o, str) for o in other.version))
+            vmin, vmax = tuple(map(_tofloat, other.version))
+            if isinstance(self.version, tuple):
+                vsmin, vsmax = tuple(map(_tofloat, self.version))
+                return vsmin <= vmin <= vmax <= vsmax
+            else:
+                return vmin <= _tofloat(self.version) <= vmax
+        elif isinstance(other.version, str):
+            oversion = _tofloat(other.version)
+            if isinstance(self.version, tuple):
+                vsmin, vsmax = tuple(map(_tofloat, self.version))
+                return vsmin <= oversion <= vsmax
+            else:
+                return oversion <= _tofloat(self.version)
 
     def __str__(self) -> str:
-        return self.plugin + (self.version or "")
+        suffix = ""
+        if self.version is not None:
+            suffix = str(self.version)
+        return self.plugin + suffix
 
 
 def _tofloat(other: str) -> float:
@@ -76,7 +100,7 @@ def check_plugin_version(plugin: str, version: Version) -> bool:
     if plugin not in NAMESPACES:
         return False
 
-    if version.version is None:  # Versionless plugin
+    if version.is_versionless:
         return True
 
     return version <= NAMESPACES.get_version(plugin)
@@ -93,7 +117,7 @@ class Namespace(dict):
 
     def items(self) -> cabc.ItemsView[str, str]:  # type: ignore[override]
         """Get original dictionary itemsview."""
-        return {k: self.__getitem__(k) for k in super().keys()}.items()
+        return {k: self[k] for k in super().keys()}.items()
 
     def get_items(self) -> cabc.ItemsView[str, Version]:
         """Get dictionary itemsview of name and version."""
@@ -138,7 +162,8 @@ NAMESPACES = Namespace(
             "1.1.0",
         ),
         "libraries": Version(
-            "http://www.polarsys.org/capella/common/libraries/", "5.0.0"
+            "http://www.polarsys.org/capella/common/libraries/",
+            ("5.0.0", "6.0.0"),
         ),
         "metadata": Version(
             "http://www.polarsys.org/kitalpha/ad/metadata/", "1.0.0"
@@ -147,48 +172,51 @@ NAMESPACES = Namespace(
             "http://www.eclipse.org/gmf/runtime/1.0.2/notation"
         ),
         "org.polarsys.capella.core.data.capellacommon": Version(
-            "http://www.polarsys.org/capella/core/common/", "5.0.0"
+            "http://www.polarsys.org/capella/core/common/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.capellacore": Version(
-            "http://www.polarsys.org/capella/core/core/", "5.0.0"
+            "http://www.polarsys.org/capella/core/core/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.capellamodeller": Version(
-            "http://www.polarsys.org/capella/core/modeller/", "5.0.0"
+            "http://www.polarsys.org/capella/core/modeller/",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.cs": Version(
-            "http://www.polarsys.org/capella/core/cs/", "5.0.0"
+            "http://www.polarsys.org/capella/core/cs/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.ctx": Version(
-            "http://www.polarsys.org/capella/core/ctx/", "5.0.0"
+            "http://www.polarsys.org/capella/core/ctx/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.epbs": Version(
-            "http://www.polarsys.org/capella/core/epbs/", "5.0.0"
+            "http://www.polarsys.org/capella/core/epbs/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.fa": Version(
-            "http://www.polarsys.org/capella/core/fa/", "5.0.0"
+            "http://www.polarsys.org/capella/core/fa/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.information": Version(
-            "http://www.polarsys.org/capella/core/information/", "5.0.0"
+            "http://www.polarsys.org/capella/core/information/",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.information.datatype": Version(
             "http://www.polarsys.org/capella/core/information/datatype/",
-            "5.0.0",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.information.datavalue": Version(
             "http://www.polarsys.org/capella/core/information/datavalue/",
-            "5.0.0",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.interaction": Version(
-            "http://www.polarsys.org/capella/core/interaction/", "5.0.0"
+            "http://www.polarsys.org/capella/core/interaction/",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.la": Version(
-            "http://www.polarsys.org/capella/core/la/", "5.0.0"
+            "http://www.polarsys.org/capella/core/la/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.oa": Version(
-            "http://www.polarsys.org/capella/core/oa/", "5.0.0"
+            "http://www.polarsys.org/capella/core/oa/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.pa": Version(
-            "http://www.polarsys.org/capella/core/pa/", "5.0.0"
+            "http://www.polarsys.org/capella/core/pa/", ("5.0.0", "6.0.0")
         ),
         "re": Version("http://www.polarsys.org/capella/common/re/", "1.3.0"),
         "sequence": Version(
