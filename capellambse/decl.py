@@ -276,9 +276,12 @@ def _create_complex_object(
 
     complex_attrs = dict[str, t.Any]()
     simple_attrs = dict[str, t.Any]()
+    type_hint = tuple[str, ...]()
     try:
         for k, v in obj_desc.items():
-            if isinstance(v, cabc.Iterable) and not isinstance(v, str):
+            if k == "_type":
+                type_hint = (v,)
+            elif isinstance(v, cabc.Iterable) and not isinstance(v, str):
                 complex_attrs[k] = v
             else:
                 simple_attrs[k] = _resolve(promises, parent, v)
@@ -286,7 +289,7 @@ def _create_complex_object(
         yield (p.args[0], {"parent": parent, "create": {attr: [obj_desc]}})
         return
     assert isinstance(target, common.ElementListCouplingMixin)
-    obj = target.create(**simple_attrs)
+    obj = target.create(*type_hint, **simple_attrs)
     if promise is not None:
         if isinstance(promise, str):
             promise = Promise(promise)

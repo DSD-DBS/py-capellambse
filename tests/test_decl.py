@@ -147,6 +147,32 @@ class TestApplyCreate:
         assert "run the test function" in parent.functions.by_name
         assert "make assertions" in parent.functions.by_name
 
+    @staticmethod
+    @pytest.mark.parametrize(
+        "type",
+        ["AttributeDefinition", "AttributeDefinitionEnumeration"],
+    )
+    def test_decl_can_disambiguate_creations_with_type_hints(
+        model: capellambse.MelodyModel, type: str
+    ) -> None:
+        module_id = "db47fca9-ddb6-4397-8d4b-e397e53d277e"
+        module = model.by_uuid(module_id)
+        yml = f"""\
+            - parent: !uuid {module_id}
+              create:
+                attribute_definitions:
+                  - long_name: New attribute
+                    _type: {type}
+            """
+        assert "New attribute" not in module.attribute_definitions.by_long_name
+
+        decl.apply(model, io.StringIO(yml))
+
+        attrdefs = module.attribute_definitions
+        assert "New attribute" in attrdefs.by_long_name
+        newdef = attrdefs.by_long_name("New attribute", single=True)
+        assert newdef.xtype.endswith(f":{type}")
+
 
 class TestApplyPromises:
     @staticmethod
