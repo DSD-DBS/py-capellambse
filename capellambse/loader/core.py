@@ -394,6 +394,15 @@ class MelodyLoader:
             Accepted ``**kw`` when using local directories
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
+
+        Notes
+        -----
+        With a :attr:`filehandler` that contacts a remote location (such
+        as the :class:`filehandler.gitfilehandler.GitFileHandler` with
+        non-local repositories), saving might fail if the local state
+        has gone out of sync with the remote state. To avoid this,
+        always leave the ``update_cache`` parameter at its default value
+        of ``True`` if you intend to save changes.
         """
         self.check_duplicate_uuids()
         LOGGER.debug("Saving model %r", self.get_model_info().title)

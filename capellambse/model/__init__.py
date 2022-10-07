@@ -109,6 +109,10 @@ class MelodyModel:
               * ``git://git.example.com/model/coffeemaker.git``
               * ``git+https://git.example.com/model/coffeemaker.git``
               * ``git+ssh://git@git.example.com/model/coffeemaker.git``
+
+              .. note:: Depending on the exact file handler, saving back
+                 to a remote location might fail with ``update_cache``
+                 set to ``False``. See :meth:`save` for more details.
         entrypoint
             Entrypoint from path to the main ``.aird`` file.
         revision
@@ -234,6 +238,15 @@ class MelodyModel:
             Accepted ``**kw`` when using local directories
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
+
+        Notes
+        -----
+        With a file handler that contacts a remote location (such as the
+        :class:`~capellambse.loader.filehandler.gitfilehandler.GitFileHandler`
+        with non-local repositories), saving might fail if the local
+        state has gone out of sync with the remote state. To avoid this,
+        always leave the ``update_cache`` parameter at its default value
+        of ``True`` if you intend to save changes.
         """
         self._loader.save(**kw)
 
