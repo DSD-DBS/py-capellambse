@@ -5,6 +5,9 @@
 
 A YAML-based approach to describing how to create and modify
 ``capellambse`` compatible models.
+
+For an in-depth explanation, please refer to the :ref:`full
+documentation about declarative modelling <declarative-modelling>`.
 """
 from __future__ import annotations
 
@@ -76,6 +79,10 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
     file
         An open file-like object to read YAML instructions from, or a
         path to such a file. Files will be read with UTF-8 encoding.
+
+        The full format of these files is documented in the
+        :ref:`section about declarative modelling
+        <declarative-modelling>`.
 
     Notes
     -----

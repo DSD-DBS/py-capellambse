@@ -29,6 +29,10 @@ using Polarsys' Capella_ with Python. Common usage for this API:
 Additionally and as a core idea it provides an interface for the underlying
 database of the Capella model.
 
+Since v0.5, it also supports a simple, but powerful :ref:`declarative modelling
+language <declarative-modelling>`, which is based on the API for the semantic
+model.
+
 If you want a quickstart at how to use this package, head right into the
 tutorial section.
 
@@ -42,6 +46,7 @@ tutorial section.
    start/intro-to-api
    start/how-to-explore-capella-mm
    start/developing-docs
+   start/declarative
 
 .. toctree::
    :caption: Tutorials
