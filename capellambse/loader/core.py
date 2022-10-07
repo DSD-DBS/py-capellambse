@@ -382,11 +382,6 @@ class MelodyLoader:
     def save(self, **kw: t.Any) -> None:
         """Save all model files back to their original locations.
 
-        .. note:: Write transactions to the model needs an updated
-            cache. If :attr:`filehandler` is of type ``GitFileHandler``
-            make sure that you loaded the model with the
-            ``update_cache`` paremeter set to ``True``.
-
         Parameters
         ----------
         kw
@@ -399,6 +394,15 @@ class MelodyLoader:
             Accepted ``**kw`` when using local directories
         capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
+
+        Notes
+        -----
+        With a :attr:`filehandler` that contacts a remote location (such
+        as the :class:`filehandler.gitfilehandler.GitFileHandler` with
+        non-local repositories), saving might fail if the local state
+        has gone out of sync with the remote state. To avoid this,
+        always leave the ``update_cache`` parameter at its default value
+        of ``True`` if you intend to save changes.
         """
         self.check_duplicate_uuids()
         LOGGER.debug("Saving model %r", self.get_model_info().title)
