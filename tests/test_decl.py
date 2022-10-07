@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import io
+import pathlib
 
 import pytest
 
 import capellambse
 from capellambse import decl, helpers
+
+DATAPATH = pathlib.Path(__file__).parent / "data" / "decl"
 
 ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
@@ -434,3 +437,8 @@ class TestApplyDelete:
         decl.apply(model, io.StringIO(yml))
 
         assert len(root_function.functions) == 0
+
+
+@pytest.mark.parametrize("filename", ["coffee-machine.yml"])
+def test_full_example(model: capellambse.MelodyModel, filename: str):
+    decl.apply(model, DATAPATH / filename)
