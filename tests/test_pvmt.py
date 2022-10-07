@@ -2,13 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # pylint: disable=redefined-outer-name
+from __future__ import annotations
+
 import pathlib
 import shutil
 import tempfile
 
 import pytest
 
+import capellambse
 from capellambse import loader, pvmt
+from capellambse.model import crosslayer as cl
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "pvmt"
 MODEL_FILE = "PVMTTest.aird"
@@ -235,3 +239,27 @@ class TestAppliedPropertyValueGroupXML:
 
         obj_ids["Object ID"] = "CABLE-0001"
         self.compare_xml(model, "apply.melodymodeller")
+
+
+@pytest.mark.parametrize(
+    "uuid,expected_scope",
+    [
+        pytest.param(
+            "1e241678-282c-46f3-abbd-e0cf34e743ee",
+            ["LOGICAL", "SYSTEM"],
+            id="Power",
+        ),
+        pytest.param(
+            "a0cb5a23-955e-43d6-a633-2c4e66991364", "LOGICAL", id="Power Level"
+        ),
+    ],
+)
+def test_PropertyValueGroup_scope(
+    model_5_2: capellambse.MelodyModel,
+    uuid: str,
+    expected_scope: str | list[str],
+) -> None:
+    pvgroup = model_5_2.by_uuid(uuid)
+
+    assert isinstance(pvgroup, cl.capellacore.PropertyValueGroup)
+    assert pvgroup.scope == expected_scope
