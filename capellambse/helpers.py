@@ -558,7 +558,10 @@ def xtype_of(
 
     plugin_name, plugin_version = symbolic_ns[0][0], symbolic_ns[0][1]
     if not capellambse.check_plugin_version(plugin_name, plugin_version):
-        raise ValueError(f"Not handled version {ns!r}")
+        raise capellambse.UnsupportedVersionError(
+            f"Plugin '{plugin_name}' with unsupported version: "
+            f"'{plugin_version.version}'"
+        )
 
     return f"{plugin_name}:{tag}"
 

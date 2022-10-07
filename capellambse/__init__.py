@@ -50,6 +50,7 @@ del metadata
 
 from ._namespaces import (
     NAMESPACES,
+    UnsupportedVersionError,
     check_plugin_version,
     yield_key_and_version_from_namespaces_by_plugin,
 )

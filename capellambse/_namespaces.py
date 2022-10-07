@@ -11,6 +11,10 @@ import typing as t
 PLUGIN_PATTERN = re.compile(r"(.*?)(\d\.\d\.\d)?$")
 
 
+class UnsupportedVersionError(ValueError):
+    """Raised when plugin version is outside of ["5.0.0", "6.0.0"]."""
+
+
 @dataclasses.dataclass
 class Version:
     """Capella xml-element/plugin version info about name and version."""
