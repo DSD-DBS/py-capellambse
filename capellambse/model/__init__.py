@@ -110,9 +110,9 @@ class MelodyModel:
               * ``git+https://git.example.com/model/coffeemaker.git``
               * ``git+ssh://git@git.example.com/model/coffeemaker.git``
 
-              .. note :: Usage of :meth:`save` needs an updated cache
-                if path is a remote URL. Make sure to not set
-                ``update_cache`` to ``False``.
+              .. note:: Depending on the exact file handler, saving back
+                 to a remote location might fail with ``update_cache``
+                 set to ``False``. See :meth:`save` for more details.
         entrypoint
             Entrypoint from path to the main ``.aird`` file.
         revision
