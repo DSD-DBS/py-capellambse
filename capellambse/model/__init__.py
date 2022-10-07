@@ -144,7 +144,23 @@ class MelodyModel:
             back, i.e. to use it effectively, the cache has to be
             pre-populated.
 
-            This argument accepts the same formats as ``path``.
+            This argument accepts the following values:
+
+            - ``None``, in which case all diagrams will be rendered
+              internally the first time they are used.
+            - A path to a local directory.
+            - A URL just like for the ``path`` argument.
+            - A dictionary with the arguments to a
+              :py:class:`~capellambse.FileHandler`. The dict's ``path``
+              key will be analyzed to determine the correct FileHandler
+              class.
+            - An instance of :py:class:`~capellambse.FileHandler`, which
+              will be used directly.
+
+            .. warning:: When using the diagram cache, always make sure
+               that the cached diagrams actually match the model version
+               that is being used. There is no way to check this
+               automatically.
 
             The file names looked up in the cache built in the format
             ``uuid.ext``, where ``uuid`` is the UUID of the diagram (as
