@@ -2,10 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Validation functions for PVMT."""
+from __future__ import annotations
 
+import collections.abc as cabc
 import logging
 import operator
 import re
+import typing as t
 
 import capellambse
 from capellambse import (
@@ -44,25 +47,32 @@ SCOPE_PROP_RE = re.compile(
 )
 
 
-def validate_group_scope(pvmt_ext, groupdef, xml_element):
-    """Verify that the ``groupdef``'s scope applies to the given element."""
-    for scopeline in groupdef.scope.splitlines():
+def yield_group_scope(
+    description: str,
+) -> cabc.Iterator[tuple[str | t.Any, str | t.Any]]:
+    for scopeline in description.splitlines():
         scope = SCOPE_RE.match(scopeline)
         if scope is None:
             LOGGER.warning("Malformed scope description: %r", scopeline)
             continue
 
+        yield scope.group(1), scope.group(2)
+
+
+def validate_group_scope(pvmt_ext, groupdef, xml_element):
+    """Verify that the ``groupdef``'s scope applies to the given element."""
+    for scope_type, scope_value in yield_group_scope(groupdef.scope):
         try:
-            func = VALIDATION_FUNCTIONS[scope.group(1)]
+            func = VALIDATION_FUNCTIONS[scope_type]
         except KeyError:
-            LOGGER.warning("Unknown scope tag %r", scope.group(1))
+            LOGGER.warning("Unknown scope tag %r", scope_type)
             continue
 
         try:
-            inscope = func(pvmt_ext, scope.group(2), xml_element)
+            inscope = func(pvmt_ext, scope_value, xml_element)
         except AssertionError:
             LOGGER.warning(
-                "Failed to parse [%s] scope %r", scope.group(1), scope.group(2)
+                "Failed to parse [%s] scope %r", scope_type, scope_value
             )
             continue
 

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+from ... import pvmt
 from .. import common as c
 from .. import xmltools
 
@@ -107,7 +108,7 @@ class PropertyValueGroup(c.GenericElement):
 
     _xmltag = "ownedPropertyValueGroups"
 
-    values = c.DirectProxyAccessor(
+    properties = c.DirectProxyAccessor(
         c.GenericElement,
         (
             StringPropertyValue,
@@ -119,10 +120,21 @@ class PropertyValueGroup(c.GenericElement):
         aslist=c.ElementList,
     )
 
+    @property
+    def scope(self) -> str | list[str] | None:
+        """Valid architecture layer(s) for this ``PropertyValueGroup``."""
+        if self.description is not None:
+            group_scopes = pvmt.validation.yield_group_scope(self.description)
+            for scope_type, scope in group_scopes:
+                if scope_type == "ARCHITECTURE":
+                    return scope.split(";") if ";" in scope else scope
+
+        return self.description
+
 
 @c.xtype_handler(None)
 class PropertyValuePkg(c.GenericElement):
-    """A Package for PropertyValues."""
+    """A Package for PropertyValues also called ``Domain``."""
 
     _xmltag = "ownedPropertyValuePkgs"
 
@@ -130,7 +142,7 @@ class PropertyValuePkg(c.GenericElement):
         EnumerationPropertyType, aslist=c.ElementList
     )
     groups = c.DirectProxyAccessor(PropertyValueGroup, aslist=c.ElementList)
-    values = c.DirectProxyAccessor(
+    properties = c.DirectProxyAccessor(
         c.GenericElement,
         (
             StringPropertyValue,
