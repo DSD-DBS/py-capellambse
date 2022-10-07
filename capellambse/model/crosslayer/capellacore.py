@@ -121,15 +121,14 @@ class PropertyValueGroup(c.GenericElement):
     )
 
     @property
-    def scope(self) -> str | list[str] | None:
+    def scope(self) -> list[str]:
         """Valid architecture layer(s) for this ``PropertyValueGroup``."""
         if self.description is not None:
             group_scopes = pvmt.validation.yield_group_scope(self.description)
             for scope_type, scope in group_scopes:
                 if scope_type == "ARCHITECTURE":
-                    return scope.split(";") if ";" in scope else scope
-
-        return self.description
+                    return scope.split(";")
+        return []
 
 
 @c.xtype_handler(None)

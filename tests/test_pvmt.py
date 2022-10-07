@@ -250,7 +250,9 @@ class TestAppliedPropertyValueGroupXML:
             id="Power",
         ),
         pytest.param(
-            "a0cb5a23-955e-43d6-a633-2c4e66991364", "LOGICAL", id="Power Level"
+            "a0cb5a23-955e-43d6-a633-2c4e66991364",
+            ["LOGICAL"],
+            id="Power Level",
         ),
     ],
 )
