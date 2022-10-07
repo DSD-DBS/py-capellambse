@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import base64
 import pathlib
+import re
+import shutil
 from importlib import metadata
 
 import pytest
@@ -213,3 +215,31 @@ def test_http_file_handlers_passed_through_custom_headers(
     file_handler.open("test.svg", "rb").close()
 
     assert endpoint.called_once
+
+
+@pytest.fixture
+def model_db_path_with_patched_version(
+    request, tmp_path: pathlib.Path
+) -> pathlib.Path:
+    """Indirect model database path fixture."""
+    tmp_dest = tmp_path / TEST_MODEL_5_0.parent.name
+    ignored = shutil.ignore_patterns("*.license")
+    shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
+    model_db_file = (tmp_dest / TEST_MODEL_5_0.name).with_suffix(".capella")
+    patched_db = re.sub(
+        "5.0.0", request.param, model_db_file.read_text(encoding="utf-8")
+    )
+    model_db_file.write_text(patched_db, encoding="utf-8")
+    return model_db_file
+
+
+@pytest.mark.parametrize(
+    "model_db_path_with_patched_version",
+    ["1.3.0", "1.4.2", "6.1.0"],
+    indirect=True,
+)
+def test_loading_model_with_unsupported_version_fails(
+    model_db_path_with_patched_version: pathlib.Path,
+) -> None:
+    with pytest.raises(capellambse.UnsupportedVersionError):
+        capellambse.MelodyModel(model_db_path_with_patched_version)
