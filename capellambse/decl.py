@@ -24,6 +24,7 @@ import collections.abc as cabc
 import contextlib
 import dataclasses
 import os
+import sys
 import typing as t
 
 import yaml
@@ -377,3 +378,27 @@ class YDMLoader(yaml.SafeLoader):
 
 YDMLoader.add_constructor("!promise", YDMLoader.construct_promise)
 YDMLoader.add_constructor("!uuid", YDMLoader.construct_uuidref)
+
+
+try:
+    import click
+except ImportError:
+
+    def _main() -> None:
+        """Display a dependency error."""
+        print("Error: Please install 'click' and retry", file=sys.stderr)
+        raise SystemExit(1)
+
+else:
+
+    @click.command()
+    @click.option("-m", "--model", type=capellambse.ModelCLI(), required=True)
+    @click.argument("file", type=click.File("r"))
+    def _main(model: capellambse.MelodyModel, file: t.IO[str]) -> None:
+        """Apply a declarative modelling YAML file to a model."""
+        apply(model, file)
+        model.save()
+
+
+if __name__ == "__main__":
+    _main()

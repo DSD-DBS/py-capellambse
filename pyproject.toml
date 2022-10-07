@@ -60,6 +60,10 @@ test = [
   "requests-mock",
 ]
 
+cli = [
+  "click",
+]
+
 decl = [
   "pyyaml>=6.0",
 ]

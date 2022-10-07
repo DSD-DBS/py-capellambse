@@ -2,15 +2,27 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import hashlib
 import io
 import pathlib
+import shutil
+import subprocess
+import sys
 
 import pytest
 
 import capellambse
 from capellambse import decl, helpers
 
+# pylint: disable-next=relative-beyond-top-level
+from .conftest import (  # type: ignore[import]
+    INSTALLED_PACKAGE,
+    TEST_MODEL,
+    TEST_ROOT,
+)
+
 DATAPATH = pathlib.Path(__file__).parent / "data" / "decl"
+MODELPATH = pathlib.Path(TEST_ROOT / "5_0")
 
 ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
@@ -442,3 +454,21 @@ class TestApplyDelete:
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])
 def test_full_example(model: capellambse.MelodyModel, filename: str):
     decl.apply(model, DATAPATH / filename)
+
+
+def test_cli_applies_a_yaml_and_saves_the_model_back(tmp_path: pathlib.Path):
+    shutil.copytree(MODELPATH, tmp_path / "model")
+    model = tmp_path / "model" / TEST_MODEL
+    semmodel = model.with_suffix(".capella")
+    oldhash = hashlib.sha256(semmodel.read_bytes()).hexdigest()
+    declfile = DATAPATH / "coffee-machine.yml"
+
+    cli = subprocess.run(
+        [sys.executable, "-mcapellambse.decl", f"--model={model}", declfile],
+        cwd=INSTALLED_PACKAGE.parent,
+        check=False,
+    )
+
+    assert cli.returncode == 0, "CLI process exited unsuccessfully"
+    newhash = hashlib.sha256(semmodel.read_bytes()).hexdigest()
+    assert newhash != oldhash, "Files on disk didn't change"
