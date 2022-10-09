@@ -3,6 +3,15 @@
 
 from __future__ import annotations
 
+__all__ = [
+    "NAMESPACES",
+    "Plugin",
+    "UnsupportedPluginError",
+    "UnsupportedPluginVersionError",
+    "check_plugin",
+    "yield_key_and_plugin_from_namespaces_by_url",
+]
+
 import collections.abc as cabc
 import dataclasses
 import re

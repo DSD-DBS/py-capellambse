@@ -48,12 +48,7 @@ except metadata.PackageNotFoundError:
 del metadata
 
 
-from ._namespaces import (
-    NAMESPACES,
-    UnsupportedVersionError,
-    check_plugin_version,
-    yield_key_and_version_from_namespaces_by_plugin,
-)
+from ._namespaces import *
 from .auditing import AttributeAuditor
 from .cli_helpers import *
 from .loader.filehandler import FileHandler, get_filehandler
