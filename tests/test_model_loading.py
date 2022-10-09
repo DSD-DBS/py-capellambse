@@ -218,7 +218,7 @@ def test_http_file_handlers_passed_through_custom_headers(
 
 
 @pytest.fixture
-def model_path_with_patched_version_db(
+def model_path_with_patched_version(
     request: pytest.FixtureRequest, tmp_path: pathlib.Path
 ) -> pathlib.Path:
     """Indirect parametrized fixture for version patched model database.
@@ -239,23 +239,37 @@ def model_path_with_patched_version_db(
     tmp_dest = tmp_path / "model"
     ignored = shutil.ignore_patterns("*.license")
     shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
-    model_db_file = (tmp_dest / TEST_MODEL).with_suffix(".capella")
-    patched_db = re.sub(
-        "5.0.0",
-        request.param,  # type: ignore[attr-defined]
-        model_db_file.read_text(encoding="utf-8"),
-    )
-    model_db_file.write_text(patched_db, encoding="utf-8")
-    return model_db_file.with_suffix(".aird")
+    for suffix in (".aird", ".capella"):
+        model_file = (tmp_dest / TEST_MODEL).with_suffix(suffix)
+        re_params = ("5.0.0", request.param)  # type: ignore[attr-defined]
+        if isinstance(request.param, tuple):  # type: ignore[attr-defined]
+            re_params = request.param  # type: ignore[assignment,attr-defined]
+
+        patched = re.sub(*re_params, model_file.read_text(encoding="utf-8"))
+        model_file.write_text(patched, encoding="utf-8")
+    return model_file.with_suffix(".aird")
 
 
 @pytest.mark.parametrize(
-    "model_path_with_patched_version_db",
+    "model_path_with_patched_version",
     ["1.3.0", "1.4.2", "6.1.0"],
     indirect=True,
 )
 def test_loading_model_with_unsupported_version_fails(
-    model_path_with_patched_version_db: pathlib.Path,
+    model_path_with_patched_version: pathlib.Path,
 ) -> None:
     with pytest.raises(capellambse.UnsupportedPluginVersionError):
-        capellambse.MelodyModel(model_path_with_patched_version_db)
+        capellambse.MelodyModel(model_path_with_patched_version)
+
+
+@pytest.mark.parametrize(
+    "model_path_with_patched_version",
+    [("http://www.eclipse.org/sirius/1.1.0", "Unknown")],
+    indirect=True,
+)
+def test_loading_model_with_unsupported_plugin_fails(
+    model_path_with_patched_version: pathlib.Path,
+) -> None:
+    with pytest.raises(capellambse.UnsupportedPluginError):
+        model = capellambse.MelodyModel(model_path_with_patched_version)
+        model.by_uuid("11a2e07a-41f7-4eee-a94e-f3e33738c487")
