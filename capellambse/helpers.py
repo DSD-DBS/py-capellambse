@@ -531,6 +531,13 @@ def xtype_of(
         The :class:`lxml.etree._Element` object to return the
         ``xsi:type`` for.
 
+    Raises
+    ------
+    UnsupportedPluginError
+        If the plugin is unknown and therefore not supported.
+    UnsupportedPluginVersionError
+        If the plugin's version is not supported.
+
     Returns
     -------
     xtype
@@ -548,7 +555,7 @@ def xtype_of(
     if not ns:
         return None
     symbolic_ns = list(
-        capellambse.yield_key_and_version_from_namespaces_by_plugin(ns)
+        capellambse.yield_key_and_plugin_from_namespaces_by_url(ns)
     )
     if not symbolic_ns:
         raise ValueError(f"Unknown namespace {ns!r}")
@@ -556,14 +563,9 @@ def xtype_of(
     if len(symbolic_ns) > 1:
         raise ValueError(f"Ambiguous namespace {ns!r}: {symbolic_ns}")
 
-    plugin_name, plugin_version = symbolic_ns[0][0], symbolic_ns[0][1]
-    if not capellambse.check_plugin_version(plugin_name, plugin_version):
-        raise capellambse.UnsupportedVersionError(
-            f"Plugin '{plugin_name}' with unsupported version: "
-            f"'{plugin_version.version}'"
-        )
-
-    return f"{plugin_name}:{tag}"
+    nskey, plugin = symbolic_ns[0][0], symbolic_ns[0][1]
+    capellambse.check_plugin(nskey, plugin)
+    return f"{nskey}:{tag}"
 
 
 # More iteration tools

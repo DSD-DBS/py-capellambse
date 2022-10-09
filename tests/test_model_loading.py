@@ -257,5 +257,5 @@ def model_path_with_patched_version_db(
 def test_loading_model_with_unsupported_version_fails(
     model_path_with_patched_version_db: pathlib.Path,
 ) -> None:
-    with pytest.raises(capellambse.UnsupportedVersionError):
+    with pytest.raises(capellambse.UnsupportedPluginVersionError):
         capellambse.MelodyModel(model_path_with_patched_version_db)
