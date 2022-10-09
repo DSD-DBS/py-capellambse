@@ -218,7 +218,7 @@ def test_http_file_handlers_passed_through_custom_headers(
 
 
 @pytest.fixture
-def model_db_path_with_patched_version(
+def model_path_with_patched_version_db(
     request: pytest.FixtureRequest, tmp_path: pathlib.Path
 ) -> pathlib.Path:
     """Indirect parametrized fixture for version patched model database.
@@ -236,26 +236,26 @@ def model_db_path_with_patched_version(
     aird_path
         Path to Capella ``.aird`` file.
     """
-    tmp_dest = tmp_path / TEST_MODEL_5_0.parent.name
+    tmp_dest = tmp_path / "model"
     ignored = shutil.ignore_patterns("*.license")
     shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
-    model_db_file = (tmp_dest / TEST_MODEL_5_0.name).with_suffix(".capella")
+    model_db_file = (tmp_dest / TEST_MODEL).with_suffix(".capella")
     patched_db = re.sub(
         "5.0.0",
         request.param,  # type: ignore[attr-defined]
         model_db_file.read_text(encoding="utf-8"),
     )
     model_db_file.write_text(patched_db, encoding="utf-8")
-    return model_db_file
+    return model_db_file.with_suffix(".aird")
 
 
 @pytest.mark.parametrize(
-    "model_db_path_with_patched_version",
+    "model_path_with_patched_version_db",
     ["1.3.0", "1.4.2", "6.1.0"],
     indirect=True,
 )
 def test_loading_model_with_unsupported_version_fails(
-    model_db_path_with_patched_version: pathlib.Path,
+    model_path_with_patched_version_db: pathlib.Path,
 ) -> None:
     with pytest.raises(capellambse.UnsupportedVersionError):
-        capellambse.MelodyModel(model_db_path_with_patched_version)
+        capellambse.MelodyModel(model_path_with_patched_version_db)
