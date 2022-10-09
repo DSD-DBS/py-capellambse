@@ -8,7 +8,7 @@ import operator
 import re
 
 import capellambse
-from capellambse import helpers, yield_key_and_plugin_from_namespaces_by_url
+from capellambse import get_keys_and_plugins_from_namespaces_by_url, helpers
 
 from . import exceptions
 
@@ -85,10 +85,9 @@ def _validate_group_scope_class(pvmt_ext, scopedesc, xml_element):
     match = SCOPE_CLASS_RE.match(scopedesc)
     assert match is not None
 
-    nskey, plugin = next(
-        yield_key_and_plugin_from_namespaces_by_url(match.group(1))
-    )
-    capellambse.check_plugin(match.group(1), plugin)
+    ns = match.group(1)
+    nskey, plugin = get_keys_and_plugins_from_namespaces_by_url(ns)
+    capellambse.check_plugin(nskey, plugin)
     return (
         xml_element.get(f'{{{capellambse.NAMESPACES["xsi"]}}}type', "")
         == f"{nskey}:{match.group(2)}"

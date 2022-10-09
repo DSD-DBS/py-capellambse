@@ -554,16 +554,8 @@ def xtype_of(
     tag = tagmatch.group("tag")
     if not ns:
         return None
-    symbolic_ns = list(
-        capellambse.yield_key_and_plugin_from_namespaces_by_url(ns)
-    )
-    if not symbolic_ns:
-        raise ValueError(f"Unknown namespace {ns!r}")
 
-    if len(symbolic_ns) > 1:
-        raise ValueError(f"Ambiguous namespace {ns!r}: {symbolic_ns}")
-
-    nskey, plugin = symbolic_ns[0][0], symbolic_ns[0][1]
+    nskey, plugin = capellambse.get_keys_and_plugins_from_namespaces_by_url(ns)
     capellambse.check_plugin(nskey, plugin)
     return f"{nskey}:{tag}"
 

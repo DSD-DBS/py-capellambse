@@ -9,7 +9,7 @@ __all__ = [
     "UnsupportedPluginError",
     "UnsupportedPluginVersionError",
     "check_plugin",
-    "yield_key_and_plugin_from_namespaces_by_url",
+    "get_keys_and_plugins_from_namespaces_by_url",
 ]
 
 import collections.abc as cabc
@@ -118,20 +118,28 @@ def _tofloat(other: str) -> float:
     return float(".".join(version))
 
 
-def yield_key_and_plugin_from_namespaces_by_url(
+def get_keys_and_plugins_from_namespaces_by_url(
     url: str,
-) -> cabc.Iterator[tuple[str, Plugin]]:
-    """Yield namespace key and either :class:`Plugin` or plugin string.
+) -> tuple[str, Plugin]:
+    """Return key and :class:`Plugin` pair matching from ``NAMESPACES``.
 
     Parameters
     ----------
     url
         An ``xsi:type``-ish string of an xml-element/plugin
 
-    Yields
+    Raises
     ------
-    tuple
-        If plugin in namespace values yields key and Plugin
+    UnsupportedPluginError
+        If requested ``url`` is not found in :class:`NAMESPACES`.
+    ValueError
+        If a namespace key, plugin-name pair is found more than once
+        in :class:`NAMESPACES`.
+
+    Returns
+    -------
+    nskey, plugin
+        A namespace-key string and a Plugin
     """
     match = PLUGIN_PATTERN.match(url)
     version = None
@@ -140,9 +148,17 @@ def yield_key_and_plugin_from_namespaces_by_url(
         if match.group(2) is not None:
             version = match.group(2)
 
-    for nskey, nsplugin in NAMESPACES.get_items():
-        if plugin_name == nsplugin.name:
-            yield nskey, Plugin(plugin_name, version)
+    matched_plugins = [
+        (nskey, Plugin(plugin_name, version))
+        for nskey, nsplugin in NAMESPACES.get_items()
+        if plugin_name == nsplugin.name
+    ]
+    if not matched_plugins:
+        plugin = Plugin(plugin_name, version)
+        raise UnsupportedPluginError(plugin)
+    elif len(matched_plugins) > 1:
+        raise ValueError(f"Ambiguous namespace {url!r}: {matched_plugins}")
+    return matched_plugins[0]
 
 
 def check_plugin(name: str, plugin: Plugin) -> None:
