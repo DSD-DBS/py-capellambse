@@ -219,15 +219,31 @@ def test_http_file_handlers_passed_through_custom_headers(
 
 @pytest.fixture
 def model_db_path_with_patched_version(
-    request, tmp_path: pathlib.Path
+    request: pytest.FixtureRequest, tmp_path: pathlib.Path
 ) -> pathlib.Path:
-    """Indirect model database path fixture."""
+    """Indirect parametrized fixture for version patched model database.
+
+    Parameters
+    ----------
+    request
+        Special pytest fixture for access to test context, exposing the
+        ``param`` attribute on indirect parametrization.
+    tmp_path
+        Pytest fixture giving a temporary path.
+
+    Returns
+    -------
+    aird_path
+        Path to Capella ``.aird`` file.
+    """
     tmp_dest = tmp_path / TEST_MODEL_5_0.parent.name
     ignored = shutil.ignore_patterns("*.license")
     shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
     model_db_file = (tmp_dest / TEST_MODEL_5_0.name).with_suffix(".capella")
     patched_db = re.sub(
-        "5.0.0", request.param, model_db_file.read_text(encoding="utf-8")
+        "5.0.0",
+        request.param,  # type: ignore[attr-defined]
+        model_db_file.read_text(encoding="utf-8"),
     )
     model_db_file.write_text(patched_db, encoding="utf-8")
     return model_db_file
