@@ -514,9 +514,7 @@ def xpath_fetch_unique(
     return result[0] if result else None
 
 
-def xtype_of(
-    elem: etree._Element,
-) -> str | None:
+def xtype_of(elem: etree._Element) -> str | None:
     """Return the ``xsi:type`` of the element.
 
     If the element has an ``xsi:type`` attribute, its value is returned.
