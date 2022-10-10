@@ -239,11 +239,13 @@ def model_path_with_patched_version(
     tmp_dest = tmp_path / "model"
     ignored = shutil.ignore_patterns("*.license")
     shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
+    request_param: str | tuple[str, str] = request.param  # type: ignore
     for suffix in (".aird", ".capella"):
         model_file = (tmp_dest / TEST_MODEL).with_suffix(suffix)
-        re_params = ("5.0.0", request.param)  # type: ignore[attr-defined]
-        if isinstance(request.param, tuple):  # type: ignore[attr-defined]
-            re_params = request.param  # type: ignore[assignment,attr-defined]
+        if isinstance(request_param, tuple):
+            re_params = request_param
+        else:
+            re_params = ("5.0.0", request_param)
 
         patched = re.sub(*re_params, model_file.read_text(encoding="utf-8"))
         model_file.write_text(patched, encoding="utf-8")
@@ -271,5 +273,4 @@ def test_loading_model_with_unsupported_plugin_fails(
     model_path_with_patched_version: pathlib.Path,
 ) -> None:
     with pytest.raises(capellambse.UnsupportedPluginError):
-        model = capellambse.MelodyModel(model_path_with_patched_version)
-        model.by_uuid("11a2e07a-41f7-4eee-a94e-f3e33738c487")
+        capellambse.MelodyModel(model_path_with_patched_version)
