@@ -44,9 +44,9 @@ tutorial section.
    start/prerequisites
    start/installation
    start/intro-to-api
+   start/declarative
    start/how-to-explore-capella-mm
    start/developing-docs
-   start/declarative
 
 .. toctree::
    :caption: Tutorials
