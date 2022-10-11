@@ -8,7 +8,7 @@
 Declarative modelling
 *********************
 
-capellambse supports declarative modelling with the ``capellambse.decl``
+capellambse supports declarative modelling with the :py:mod:`capellambse.decl`
 module. This requires the optional dependency ``capellambse[decl]`` to be
 installed.
 
@@ -31,6 +31,9 @@ couple of functions, and functional exchanges between them:
    :lineno-start: 1
    :linenos:
 
+CLI usage
+---------
+
 If the additional optional dependency ``capellambse[decl,cli]`` is installed,
 this file can be applied from the command line. Assuming it is saved as
 ``coffee-machine.yml``, it can then be applied to a locally stored Capella
@@ -42,6 +45,9 @@ model like this:
 
 Refer to the :py:func:`capellambse.cli_helpers.loadcli` documentation to find
 out the supported argument format for ``--model``.
+
+API usage
+---------
 
 Declarative YAML can also be applied programmatically, by calling the
 :py:func:`capellambse.decl.apply` function. It takes a (loaded) CapellaMBSE
@@ -64,8 +70,11 @@ Format description
 
 The expected YAML follows a simple format, where a parent object (i.e. an
 object that already exists in the model) is selected, and one or more of three
-different operations is applied to it: ``create``-ing new child objects,
-``modify``-ing the object itself, or ``delete``-ing one or more children.
+different operations is applied to it:
+
+- ``create``-ing new child objects,
+- ``modify``-ing the object itself, or
+- ``delete``-ing one or more children.
 
 Parents can be selected by their universally unique ID (UUID), using the
 ``!uuid`` YAML tag. The following query selects the root logical function in
@@ -78,10 +87,12 @@ our test model:
 Creating objects
 ----------------
 
-``LogicalFunction`` objects have several different attributes which can be
-modified from a declarative YAML file. For example, it is possible to create
-new sub-``functions``. This snippet creates a function with the name "brew
-coffee" directly below the root function:
+:py:class:`~capellambse.model.layers.la.LogicalFunction` objects have several
+different attributes which can be modified from a declarative YAML file. For
+example, it is possible to create new
+sub-:py:attr:`~capellambse.model.layers.la.LogicalFunction.functions`. This
+snippet creates a function with the name "brew coffee" directly below the root
+function:
 
 .. code-block:: yaml
    :emphasize-lines: 2
@@ -149,8 +160,9 @@ After selecting a parent, it is also possible to directly change its properties
 without introducing new objects into the model. This happens by specifying the
 attributes in the ``modify:`` key.
 
-The following example would change the ``name`` of the root Logical Component
-to "Coffee Machine" (notice how we use a different UUID than before):
+The following example would change the ``name`` of the root
+:py:class:`~capellambse.model.layers.la.LogicalComponent` to "Coffee Machine"
+(notice how we use a different UUID than before):
 
 .. code-block:: yaml
    :emphasize-lines: 2
@@ -161,8 +173,8 @@ to "Coffee Machine" (notice how we use a different UUID than before):
 
 This is not limited to string attributes; it is just as well possible to change
 e.g. numeric properties. This example changes the ``min_card`` property of an
-exchange item element to ``0`` and the ``max_card`` to infinity, effectively
-removing both limitations:
+:py:class:`~capellambse.model.crosslayer.information.ExchangeItemElement` to
+``0`` and the ``max_card`` to infinity, effectively removing both limitations:
 
 .. code-block:: yaml
    :emphasize-lines: 3-
