@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Implementation of objects and relations for Information capture and data modelling
+"""Objects and relations for information capture and data modelling.
 
 Information objects inheritance tree (taxonomy):
 
@@ -50,7 +50,7 @@ def _search_all_exchanges(
 
 @c.xtype_handler(None)
 class Unit(c.GenericElement):
-    """Unit"""
+    """Unit."""
 
     _xmltag = "ownedUnits"
 

@@ -174,7 +174,7 @@ class Kind(_StringyEnumMixin, _enum.Enum):
 
 
 class VisibilityKind(_StringyEnumMixin, _enum.Enum):
-    """Visibility kind"""
+    """Visibility kind."""
 
     UNSET = _enum.auto()
     PUBLIC = _enum.auto()

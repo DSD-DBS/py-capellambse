@@ -116,6 +116,8 @@ def write(
         The file encoding to use when opening a file.
     errors
         Set the encoding error handling behavior of newly opened files.
+    line_length
+        The number of characters after which to force a line break.
     """
     ctx: t.ContextManager[_HasWrite]
     if isinstance(file, _HasWrite):
@@ -148,6 +150,12 @@ def serialize(
     ----------
     tree
         The XML tree to serialize.
+    encoding
+        The encoding to use when generating XML.
+    errors
+        The encoding error handling behavior.
+    line_length
+        The number of characters after which to force a line break.
 
     Returns
     -------

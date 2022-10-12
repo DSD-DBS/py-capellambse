@@ -184,7 +184,7 @@ class OperationalActivityPkg(c.GenericElement):
 
 @c.xtype_handler(XT_ARCH)
 class CommunicationMean(fa.AbstractExchange):
-    """An operational entity exchange"""
+    """An operational entity exchange."""
 
     _xmltag = "ownedComponentExchanges"
 

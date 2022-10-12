@@ -968,7 +968,7 @@ def capability_symbol(id_: str = "CapabilitySymbol") -> container.Symbol:
 
 
 def _brown_oval(id_: str) -> container.Symbol:
-    """Create the base symbol of missions and capabilities"""
+    """Create the base symbol of missions and capabilities."""
     symb = container.Symbol(id=id_, viewBox="0 0 50 37")
     symb.add(
         _make_rgradient(

@@ -158,6 +158,8 @@ def parse_diagram(
 
     Parameters
     ----------
+    model
+        A loaded model.
     descriptor
         A DiagramDescriptor as obtained from :func:`enumerate_diagrams`.
     """

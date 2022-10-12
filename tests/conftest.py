@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Global fixtures for pytest"""
+"""Global fixtures for pytest."""
 import io
 import pathlib
 import sys
@@ -32,13 +32,13 @@ def session_shared_model() -> capellambse.MelodyModel:
 
 @pytest.fixture
 def model(monkeypatch) -> capellambse.MelodyModel:
-    """Return the Capella 5.0 test model"""
+    """Return the Capella 5.0 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
     return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
 
 
 @pytest.fixture
 def model_5_2(monkeypatch) -> capellambse.MelodyModel:
-    """Return the Capella 5.2 test model"""
+    """Return the Capella 5.2 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
     return capellambse.MelodyModel(TEST_ROOT / "5_2" / TEST_MODEL)

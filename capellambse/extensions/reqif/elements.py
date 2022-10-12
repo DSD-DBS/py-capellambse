@@ -292,14 +292,14 @@ class ReqIFElement(c.GenericElement):
 
 @c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
 class DataTypeDefinition(ReqIFElement):
-    """A data type definition for requirement types"""
+    """A data type definition for requirement types."""
 
     _xmltag = "ownedDefinitionTypes"
 
 
 @c.xtype_handler(None, XT_REQ_TYPE_ATTR_DEF)
 class AttributeDefinition(ReqIFElement):
-    """An attribute definition for requirement types"""
+    """An attribute definition for requirement types."""
 
     _xmltag = "ownedAttributes"
 
@@ -458,7 +458,7 @@ class StringValueAttribute(AbstractRequirementsAttribute):
 @c.xtype_handler(None, XT_REQ_TYPE_ATTR_ENUM)
 @c.attr_equal("long_name")
 class EnumValue(ReqIFElement):
-    """An enumeration value for :class:`EnumDataTypeDefinition`"""
+    """An enumeration value for :class:`EnumDataTypeDefinition`."""
 
     _xmltag = "specifiedValues"
 
@@ -468,7 +468,7 @@ class EnumValue(ReqIFElement):
 
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM)
 class EnumDataTypeDefinition(ReqIFElement):
-    """An enumeration data type definition for requirement types"""
+    """An enumeration data type definition for requirement types."""
 
     _xmltag = "ownedDefinitionTypes"
 
@@ -482,7 +482,7 @@ class EnumDataTypeDefinition(ReqIFElement):
 
 @c.xtype_handler(None, XT_REQ_TYPE_ENUM_DEF)
 class AttributeDefinitionEnumeration(ReqIFElement):
-    """An enumeration attribute definition for requirement types"""
+    """An enumeration attribute definition for requirement types."""
 
     _xmltag = "ownedAttributes"
 
@@ -525,21 +525,21 @@ class AbstractType(ReqIFElement):
 
 @c.xtype_handler(None, XT_MODULE_TYPE)
 class ModuleType(AbstractType):
-    """A requirement-module type"""
+    """A requirement-module type."""
 
     _xmltag = "ownedTypes"
 
 
 @c.xtype_handler(None, XT_RELATION_TYPE)
 class RelationType(AbstractType):
-    """A requirement-relation type"""
+    """A requirement-relation type."""
 
     _xmltag = "ownedTypes"
 
 
 @c.xtype_handler(None, XT_REQ_TYPE)
 class RequirementType(AbstractType):
-    """A requirement type"""
+    """A requirement type."""
 
     _xmltag = "ownedTypes"
 
@@ -617,7 +617,7 @@ class RequirementsModule(ReqIFElement):
 
         Parameters
         ----------
-        target
+        to
             Where to export to. Can be the name of a file, or a file-like
             object opened in binary mode.
         metadata

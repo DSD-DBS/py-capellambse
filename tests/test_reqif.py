@@ -600,7 +600,6 @@ class TestReqIFModification:
         model: capellambse.MelodyModel,
         default_value: t.Any,
     ):
-        """Accessed value is there but on xml element there is no written value."""
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         definition = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         assert isinstance(req, reqif.Requirement)

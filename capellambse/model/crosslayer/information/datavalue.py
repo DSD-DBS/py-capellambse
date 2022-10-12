@@ -28,7 +28,7 @@ class LiteralNumericValue(LiteralValue):
 
 @c.xtype_handler(None)
 class LiteralStringValue(LiteralValue):
-    """A Literal String Value"""
+    """A Literal String Value."""
 
 
 @c.xtype_handler(None)

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Implementation of objects and relations for Functional Analysis
+"""Implementation of objects and relations for Functional Analysis.
 
 Composite Structure objects inheritance tree (taxonomy):
 
@@ -27,7 +27,7 @@ XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 
 @c.xtype_handler(None)
 class Part(c.GenericElement):
-    """A representation of a physical component"""
+    """A representation of a physical component."""
 
     _xmltag = "ownedParts"
 

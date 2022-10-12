@@ -70,7 +70,10 @@ if t.TYPE_CHECKING:
 
 
 def setup(app: sphinx.application.Sphinx) -> dict[str, t.Any]:
-    """Called by Sphinx to set up the extension."""
+    """Set up the extensions.
+
+    Called by Sphinx if the extension is configured in ``conf.py``.
+    """
     app.add_config_value(
         "capellambse_model", "../model/Documentation.aird", "html"
     )
@@ -112,7 +115,7 @@ def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
 
 
 class DiagramDirective(sphinx.util.docutils.SphinxDirective):
-    """The "``.. diagram::``" reST directive."""
+    """The ``diagram`` reST directive."""
 
     has_content = ...
     required_arguments = 1
