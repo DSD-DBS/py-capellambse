@@ -8,4 +8,6 @@
 
 *.{sh,py} text eol=lf
 
+*.rst conflict-marker-size=40
+
 .git_archival.txt  export-subst

@@ -105,6 +105,9 @@ class PhysicalComponentPkg(c.GenericElement):
     _xmltag = "ownedPhysicalComponentPkg"
 
     components = c.DirectProxyAccessor(PhysicalComponent, aslist=c.ElementList)
+    exchanges = c.DirectProxyAccessor(
+        fa.ComponentExchange, aslist=c.ElementList
+    )
     state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )

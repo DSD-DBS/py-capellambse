@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: Apache-2.0
+
+- parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440  # root logical component
+  create:
+    components:
+      - name: Coffee Machine
+        allocated_functions:
+          - !promise brew coffee
+- parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d  # root logical function
+  create:
+    functions:
+      - name: brew coffee
+        promise_id: brew coffee
+        inputs:
+          - name: Portafilter port
+          - name: Steam port
+            promise_id: steam input
+        outputs:
+          - name: Fluid port
+          - name: Waste port
+            promise_id: waste output
+      - name: produce steam
+        inputs:
+          - name: Water port
+          - name: Power port
+          - name: User command
+        outputs:
+          - name: Steam port
+            promise_id: steam output
+      - name: collect process waste
+        inputs:
+          - name: Waste port
+            promise_id: waste input
+    exchanges:
+      - name: Steam
+        source: !promise steam output
+        target: !promise steam input
+      - name: Waste
+        source: !promise waste output
+        target: !promise waste input

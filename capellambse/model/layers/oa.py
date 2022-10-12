@@ -215,6 +215,7 @@ class EntityPkg(c.GenericElement):
     )
 
     packages: c.Accessor
+    exchanges = c.DirectProxyAccessor(CommunicationMean, aslist=c.ElementList)
 
 
 @c.xtype_handler(None)
@@ -273,6 +274,11 @@ c.set_accessor(
 c.set_accessor(
     Entity,
     "exchanges",
+    c.DirectProxyAccessor(CommunicationMean, aslist=c.ElementList),
+)
+c.set_accessor(
+    Entity,
+    "related_exchanges",
     c.ReferenceSearchingAccessor(
         CommunicationMean, "source", "target", aslist=c.ElementList
     ),

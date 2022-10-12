@@ -390,6 +390,33 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         ]
         return self._make_list(obj, elems)
 
+    def __set__(
+        self, obj: element.ModelObject, value: str | T | cabc.Iterable[str | T]
+    ) -> None:
+        if self.aslist:
+            if isinstance(value, str) or not isinstance(value, cabc.Iterable):
+                raise TypeError("Can only set list attribute to an iterable")
+            list = self.__get__(obj)
+            list[:] = []
+            for v in value:
+                if isinstance(v, str):
+                    list.create_singleattr(v)
+                else:
+                    list.create(**v)
+        else:
+            if isinstance(value, cabc.Iterable) and not isinstance(value, str):
+                raise TypeError("Cannot set non-list attribute to an iterable")
+            raise NotImplementedError(
+                "Moving model objects is not supported yet"
+            )
+
+    def __delete__(self, obj: element.ModelObject) -> None:
+        if self.aslist is not None:
+            list = self.__get__(obj)
+            list[:] = []
+        else:
+            raise TypeError(f"Cannot delete {self._qualname}")
+
     def _resolve(
         self, obj: element.ModelObject, elem: etree._Element
     ) -> etree._Element:

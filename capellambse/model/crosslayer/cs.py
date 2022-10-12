@@ -118,7 +118,11 @@ class Component(c.GenericElement):
     parts = c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList)
     physical_paths = c.DirectProxyAccessor(PhysicalPath, aslist=c.ElementList)
     physical_links = c.DirectProxyAccessor(PhysicalLink, aslist=c.ElementList)
-    exchanges = c.ReferenceSearchingAccessor(
+    exchanges = c.DirectProxyAccessor(
+        fa.ComponentExchange, aslist=c.ElementList
+    )
+
+    related_exchanges = c.ReferenceSearchingAccessor(
         fa.ComponentExchange,
         "source.owner",
         "target.owner",

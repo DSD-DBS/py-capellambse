@@ -85,6 +85,9 @@ class LogicalComponentPkg(c.GenericElement):
     state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
     )
+    exchanges = c.DirectProxyAccessor(
+        fa.ComponentExchange, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 

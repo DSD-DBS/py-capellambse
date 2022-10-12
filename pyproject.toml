@@ -56,7 +56,16 @@ test = [
   "cssutils",
   "pytest",
   "pytest-cov",
+  "pyyaml>=6.0",
   "requests-mock",
+]
+
+cli = [
+  "click",
+]
+
+decl = [
+  "pyyaml>=6.0",
 ]
 
 httpfiles = [

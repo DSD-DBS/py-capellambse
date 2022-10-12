@@ -214,33 +214,6 @@ class GenericElement:
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
                     )
-                elif isinstance(val, cabc.Mapping):
-                    raise NotImplementedError(
-                        "Multicreation of elements is not yet supported"
-                    )
-                elif isinstance(val, cabc.Iterable) and not isinstance(
-                    val, str
-                ):
-                    val = list(val)
-                    if all(isinstance(v, GenericElement) for v in val):
-                        setattr(self, key, val)
-                    else:
-                        target = getattr(self, key)
-                        for v in val:
-                            if isinstance(v, cabc.Mapping):
-                                v = dict(v)
-                                type_hints: t.Any = []
-                                if "_type" in v:
-                                    type_hints = v.pop("_type")
-
-                                if not isinstance(
-                                    type_hints, cabc.Iterable
-                                ) or isinstance(type_hints, str):
-                                    type_hints = [type_hints]
-
-                                target.create(*type_hints, **v)
-                            else:
-                                target.create_singleattr(v)
                 else:
                     setattr(self, key, val)
             self._model._loader.idcache_index(self._element)
