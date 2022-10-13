@@ -7,11 +7,8 @@ import logging
 import operator
 import re
 
-import capellambse
-from capellambse import (
-    helpers,
-    yield_key_and_version_from_namespaces_by_plugin,
-)
+import capellambse._namespaces as _n
+from capellambse import helpers
 
 from . import exceptions
 
@@ -88,13 +85,11 @@ def _validate_group_scope_class(pvmt_ext, scopedesc, xml_element):
     match = SCOPE_CLASS_RE.match(scopedesc)
     assert match is not None
 
-    nskey, version = next(
-        yield_key_and_version_from_namespaces_by_plugin(match.group(1))
-    )
-    assert version <= capellambse.NAMESPACES.get_version(nskey)
-
+    ns = match.group(1)
+    nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
+    _n.check_plugin(nskey, plugin)
     return (
-        xml_element.get(f'{{{capellambse.NAMESPACES["xsi"]}}}type', "")
+        xml_element.get(f"{{{_n.NAMESPACES['xsi']}}}type", "")
         == f"{nskey}:{match.group(2)}"
     )
 

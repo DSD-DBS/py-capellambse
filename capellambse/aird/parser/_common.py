@@ -16,14 +16,15 @@ import typing as t
 
 from lxml import builder, etree
 
+import capellambse._namespaces as _n
 import capellambse.loader
-from capellambse import NAMESPACES, aird, helpers
+from capellambse import aird, helpers
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
-ATT_XMID = f"{{{NAMESPACES['xmi']}}}id"
-ATT_XMT = f"{{{NAMESPACES['xmi']}}}type"
-ATT_XST = f"{{{NAMESPACES['xsi']}}}type"
+ATT_XMID = f"{{{_n.NAMESPACES['xmi']}}}id"
+ATT_XMT = f"{{{_n.NAMESPACES['xmi']}}}type"
+ATT_XST = f"{{{_n.NAMESPACES['xsi']}}}type"
 
 # Force ports to always have this size.
 PORT_SIZE = aird.Vector2D(10, 10)
@@ -35,18 +36,18 @@ RE_VIEWPOINT = re.compile(r"/@ownedViewpoints\[name='(.*?)'\]$")
 XP_ANNOTATION_ENTRIES = etree.XPath(
     "./ownedAnnotationEntries[@source='GMF_DIAGRAMS']"
     "/data[@xmi:type='notation:Diagram']",
-    namespaces=NAMESPACES,
+    namespaces=_n.NAMESPACES,
 )
 XP_DESCRIPTORS = etree.XPath(
     "./ownedRepresentationDescriptors"
     "[@xmi:type='viewpoint:DRepresentationDescriptor']",
-    namespaces=NAMESPACES,
+    namespaces=_n.NAMESPACES,
 )
 XP_VIEWS = etree.XPath(
     "/xmi:XMI/viewpoint:DAnalysis/ownedViews[viewpoint]",
-    namespaces=NAMESPACES,
+    namespaces=_n.NAMESPACES,
 )
-ELEMENT = builder.ElementMaker(nsmap={"xmi": str(NAMESPACES["xmi"])})
+ELEMENT = builder.ElementMaker(nsmap={"xmi": str(_n.NAMESPACES["xmi"])})
 
 
 @dataclasses.dataclass

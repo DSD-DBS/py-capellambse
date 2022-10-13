@@ -23,8 +23,9 @@ from lxml import etree
 from PIL import ImageFont
 
 import capellambse
+import capellambse._namespaces as _n
 
-ATT_XT = f'{{{capellambse.NAMESPACES["xsi"]}}}type'
+ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
 RE_VALID_UUID = re.compile(
@@ -350,7 +351,7 @@ def resolve_namespace(tag: str) -> str:
     """
     if ":" in tag:
         namespace, tag = tag.split(":")
-        return f"{{{capellambse.NAMESPACES[namespace]}}}{tag}"
+        return f"{{{_n.NAMESPACES[namespace]}}}{tag}"
     return tag
 
 
@@ -496,7 +497,7 @@ def xpath_fetch_unique(
     """
     if isinstance(xpath, str):
         xpath = etree.XPath(
-            xpath, namespaces=capellambse.NAMESPACES, smart_strings=False
+            xpath, namespaces=_n.NAMESPACES, smart_strings=False
         )
 
     result = xpath(tree)
@@ -514,9 +515,7 @@ def xpath_fetch_unique(
     return result[0] if result else None
 
 
-def xtype_of(
-    elem: etree._Element,
-) -> str | None:
+def xtype_of(elem: etree._Element) -> str | None:
     """Return the ``xsi:type`` of the element.
 
     If the element has an ``xsi:type`` attribute, its value is returned.
@@ -530,6 +529,13 @@ def xtype_of(
     elem
         The :class:`lxml.etree._Element` object to return the
         ``xsi:type`` for.
+
+    Raises
+    ------
+    UnsupportedPluginError
+        If the plugin is unknown and therefore not supported.
+    UnsupportedPluginVersionError
+        If the plugin's version is not supported.
 
     Returns
     -------
@@ -547,20 +553,10 @@ def xtype_of(
     tag = tagmatch.group("tag")
     if not ns:
         return None
-    symbolic_ns = list(
-        capellambse.yield_key_and_version_from_namespaces_by_plugin(ns)
-    )
-    if not symbolic_ns:
-        raise ValueError(f"Unknown namespace {ns!r}")
 
-    if len(symbolic_ns) > 1:
-        raise ValueError(f"Ambiguous namespace {ns!r}: {symbolic_ns}")
-
-    plugin_name, plugin_version = symbolic_ns[0][0], symbolic_ns[0][1]
-    if not capellambse.check_plugin_version(plugin_name, plugin_version):
-        raise ValueError(f"Not handled version {ns!r}")
-
-    return f"{plugin_name}:{tag}"
+    nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
+    _n.check_plugin(nskey, plugin)
+    return f"{nskey}:{tag}"
 
 
 # More iteration tools

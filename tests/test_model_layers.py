@@ -36,9 +36,9 @@ def test_model_info_contains_capella_version(model: MelodyModel):
 @pytest.mark.parametrize(
     "folder,aird",
     [
+        ("6_0", TEST_MODEL),
         ("5_2", TEST_MODEL),
         ("5_0", TEST_MODEL),
-        ("1_3", TEST_MODEL.replace(" ", "")),
     ],
 )
 def test_model_compatibility(folder: str, aird: str) -> None:

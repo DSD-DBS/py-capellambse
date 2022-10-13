@@ -27,6 +27,7 @@ import uuid
 from lxml import etree
 
 import capellambse
+import capellambse._namespaces as _n
 from capellambse import helpers
 from capellambse.loader import exs, filehandler
 from capellambse.loader.filehandler import localfilehandler
@@ -592,7 +593,7 @@ class MelodyLoader:
             Defaults to all tree roots.
         """
         if namespaces is None:
-            namespaces = capellambse.NAMESPACES
+            namespaces = _n.NAMESPACES
 
         def follow_href(
             tree: pathlib.PurePosixPath, match: etree._Element

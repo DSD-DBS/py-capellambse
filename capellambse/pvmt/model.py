@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from capellambse import NAMESPACES
+import capellambse._namespaces as _n
 
 from . import exceptions
 from .core import AttributeProperty, XMLDictProxy
@@ -178,7 +178,7 @@ def load_pvmt_from_model(model):
     during intialization.
     """
     pkgs = model.xpath(
-        XPTH_FIND_BY_XTYPE.format(X_PVMT), namespaces=NAMESPACES
+        XPTH_FIND_BY_XTYPE.format(X_PVMT), namespaces=_n.NAMESPACES
     )
     if not pkgs:
         raise ValueError("Provided model does not have a PropertyValuePkg")

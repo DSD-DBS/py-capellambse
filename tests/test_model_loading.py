@@ -6,6 +6,8 @@ from __future__ import annotations
 
 import base64
 import pathlib
+import re
+import shutil
 from importlib import metadata
 
 import pytest
@@ -213,3 +215,62 @@ def test_http_file_handlers_passed_through_custom_headers(
     file_handler.open("test.svg", "rb").close()
 
     assert endpoint.called_once
+
+
+@pytest.fixture
+def model_path_with_patched_version(
+    request: pytest.FixtureRequest, tmp_path: pathlib.Path
+) -> pathlib.Path:
+    """Indirect parametrized fixture for version patched model.
+
+    Parameters
+    ----------
+    request
+        Special pytest fixture for access to test context, exposing the
+        ``param`` attribute on indirect parametrization.
+    tmp_path
+        Pytest fixture giving a temporary path.
+
+    Returns
+    -------
+    aird_path
+        Path to Capella ``.aird`` file.
+    """
+    tmp_dest = tmp_path / "model"
+    ignored = shutil.ignore_patterns("*.license")
+    shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
+    request_param: str | tuple[str, str] = request.param  # type: ignore
+    for suffix in (".aird", ".capella"):
+        model_file = (tmp_dest / TEST_MODEL).with_suffix(suffix)
+        if isinstance(request_param, tuple):
+            re_params = request_param
+        else:
+            re_params = (r"5\.0\.0", request_param)
+
+        patched = re.sub(*re_params, model_file.read_text(encoding="utf-8"))
+        model_file.write_text(patched, encoding="utf-8")
+    return model_file.with_suffix(".aird")
+
+
+@pytest.mark.parametrize(
+    "model_path_with_patched_version",
+    ["1.3.0", "1.4.2", "6.1.0"],
+    indirect=True,
+)
+def test_loading_model_with_unsupported_version_fails(
+    model_path_with_patched_version: pathlib.Path,
+) -> None:
+    with pytest.raises(capellambse.UnsupportedPluginVersionError):
+        capellambse.MelodyModel(model_path_with_patched_version)
+
+
+@pytest.mark.parametrize(
+    "model_path_with_patched_version",
+    [("http://www.eclipse.org/sirius/1.1.0", "Unknown")],
+    indirect=True,
+)
+def test_loading_model_with_unsupported_plugin_fails(
+    model_path_with_patched_version: pathlib.Path,
+) -> None:
+    with pytest.raises(capellambse.UnsupportedPluginError):
+        capellambse.MelodyModel(model_path_with_patched_version)

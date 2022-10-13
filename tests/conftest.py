@@ -32,20 +32,13 @@ def session_shared_model() -> capellambse.MelodyModel:
 
 @pytest.fixture
 def model(monkeypatch) -> capellambse.MelodyModel:
-    """Return test model"""
+    """Return the Capella 5.0 test model"""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
     return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
 
 
 @pytest.fixture
-def model_5_1(monkeypatch) -> capellambse.MelodyModel:
-    """Return test model"""
-    monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_1" / TEST_MODEL)
-
-
-@pytest.fixture
 def model_5_2(monkeypatch) -> capellambse.MelodyModel:
-    """Return test model"""
+    """Return the Capella 5.2 test model"""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
     return capellambse.MelodyModel(TEST_ROOT / "5_2" / TEST_MODEL)

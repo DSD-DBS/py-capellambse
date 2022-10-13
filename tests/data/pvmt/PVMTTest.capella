@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--Capella_Version_1.3.1-->
+<!--Capella_Version_5.0.0-->
 <org.polarsys.capella.core.data.capellamodeller:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:libraries="http://www.polarsys.org/capella/common/libraries/1.3.0"
-    xmlns:org.polarsys.capella.core.data.capellacommon="http://www.polarsys.org/capella/core/common/1.3.0"
-    xmlns:org.polarsys.capella.core.data.capellacore="http://www.polarsys.org/capella/core/core/1.3.0"
-    xmlns:org.polarsys.capella.core.data.capellamodeller="http://www.polarsys.org/capella/core/modeller/1.3.0"
-    xmlns:org.polarsys.capella.core.data.cs="http://www.polarsys.org/capella/core/cs/1.3.0"
-    xmlns:org.polarsys.capella.core.data.ctx="http://www.polarsys.org/capella/core/ctx/1.3.0"
-    xmlns:org.polarsys.capella.core.data.epbs="http://www.polarsys.org/capella/core/epbs/1.3.0"
-    xmlns:org.polarsys.capella.core.data.fa="http://www.polarsys.org/capella/core/fa/1.3.0"
-    xmlns:org.polarsys.capella.core.data.information="http://www.polarsys.org/capella/core/information/1.3.0"
-    xmlns:org.polarsys.capella.core.data.information.datatype="http://www.polarsys.org/capella/core/information/datatype/1.3.0"
-    xmlns:org.polarsys.capella.core.data.information.datavalue="http://www.polarsys.org/capella/core/information/datavalue/1.3.0"
-    xmlns:org.polarsys.capella.core.data.la="http://www.polarsys.org/capella/core/la/1.3.0"
-    xmlns:org.polarsys.capella.core.data.oa="http://www.polarsys.org/capella/core/oa/1.3.0"
-    xmlns:org.polarsys.capella.core.data.pa="http://www.polarsys.org/capella/core/pa/1.3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:libraries="http://www.polarsys.org/capella/common/libraries/5.0.0"
+    xmlns:org.polarsys.capella.core.data.capellacommon="http://www.polarsys.org/capella/core/common/5.0.0"
+    xmlns:org.polarsys.capella.core.data.capellacore="http://www.polarsys.org/capella/core/core/5.0.0"
+    xmlns:org.polarsys.capella.core.data.capellamodeller="http://www.polarsys.org/capella/core/modeller/5.0.0"
+    xmlns:org.polarsys.capella.core.data.cs="http://www.polarsys.org/capella/core/cs/5.0.0"
+    xmlns:org.polarsys.capella.core.data.ctx="http://www.polarsys.org/capella/core/ctx/5.0.0"
+    xmlns:org.polarsys.capella.core.data.epbs="http://www.polarsys.org/capella/core/epbs/5.0.0"
+    xmlns:org.polarsys.capella.core.data.fa="http://www.polarsys.org/capella/core/fa/5.0.0"
+    xmlns:org.polarsys.capella.core.data.information="http://www.polarsys.org/capella/core/information/5.0.0"
+    xmlns:org.polarsys.capella.core.data.information.datatype="http://www.polarsys.org/capella/core/information/datatype/5.0.0"
+    xmlns:org.polarsys.capella.core.data.information.datavalue="http://www.polarsys.org/capella/core/information/datavalue/5.0.0"
+    xmlns:org.polarsys.capella.core.data.la="http://www.polarsys.org/capella/core/la/5.0.0"
+    xmlns:org.polarsys.capella.core.data.oa="http://www.polarsys.org/capella/core/oa/5.0.0"
+    xmlns:org.polarsys.capella.core.data.pa="http://www.polarsys.org/capella/core/pa/5.0.0"
     id="5b72d2da-79d3-481f-a9e9-da3e9ca3a2dc"
     name="PVMTTest">
   <ownedExtensions xsi:type="libraries:ModelInformation" id="61370f71-54f8-4f00-87aa-f473ed7cf8ec"/>
@@ -86,7 +86,7 @@
       </ownedEnumerationPropertyTypes>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="5ceb6bc1-c5a5-42bf-8a81-f215a250eff2" sid="_d_5fAHpGEeqI9oT9FAqF8w"
-          name="Components" description="[CLASS]http://www.polarsys.org/capella/core/pa/1.3.0/PhysicalComponent[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
+          name="Components" description="[CLASS]http://www.polarsys.org/capella/core/pa/5.0.0/PhysicalComponent[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
         <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
             id="7c6de438-a2dc-4735-bf55-669a7fe566b0" sid="_xwiX8HpGEeqI9oT9FAqF8w"
             name="ComponentType" description="" type="#ae279311-6a75-40b7-9bf3-a19c136d0573"
@@ -94,7 +94,7 @@
       </ownedPropertyValueGroups>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702" sid="_FK6tAHpHEeqI9oT9FAqF8w"
-          name="Cables" description="[CLASS]http://www.polarsys.org/capella/core/cs/1.3.0/PhysicalLink[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
+          name="Cables" description="[CLASS]http://www.polarsys.org/capella/core/cs/5.0.0/PhysicalLink[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]">
         <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
             id="f3f9b7ec-f00d-4b2f-8a48-900a22c43853" sid="_Jc5fkHpHEeqI9oT9FAqF8w"
             name="CableType" description="" type="#03e5e5ae-0a61-473d-a792-e003ce601ff4"
@@ -139,9 +139,6 @@
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="5b9f28d1-e3a0-4b40-b9b7-db9f25a4b25b" sid="_T2FQ0JnLEeq7krH_m0FJcQ"
           name="Architecture" description="[ARCHITECTURE]LOGICAL[/ARCHITECTURE]"/>
-      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-          id="4ff5a8e0-774f-4e2f-a94c-2bc8cc37efc8" sid="_UV4yQJnLEeq7krH_m0FJcQ"
-          name="EClass" description="[CLASS]http://www.polarsys.org/capella/core/la/1.3.0/LogicalFunction[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="e983f337-b706-4010-861c-1341c3d9fa4a" sid="_r0IOAJp-EeqLxLOMJbthfA"
           name="Property (Bool, not equal)" description="[PROPERTY]Computer.Physical Cables.In Stock!true[/PROPERTY]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
@@ -208,9 +205,6 @@
       <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
           id="df48c7e8-b419-43f1-ab28-af8d74b5cb0a" name="version" value="1.0.0"/>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-          id="ecc7fd63-5661-4315-b807-7523ab753139" sid="_jAD2sJqGEeqLxLOMJbthfA"
-          name="EClass" description="[CLASS]http://www.polarsys.org/capella/core/cs/1.3.0/PhysicalLink[/CLASS]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
-      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
           id="dbf55057-6f7c-4225-a378-bf953a5f1e35" sid="_zgh7MJqNEeqLxLOMJbthfA"
           name="Property (Bool, equal)" description="[PROPERTY]Computer.Physical Cables.In Stock=true[/PROPERTY]&#xA;[ARCHITECTURE]PHYSICAL[/ARCHITECTURE]"/>
       <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
@@ -235,11 +229,9 @@
           id="a836aaf3-9aef-433e-bed5-1dfa27110b27" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="784a956a-247b-4b6d-ab0e-18d42ba5aedd" name="Data"/>
-      <ownedOperationalContext xsi:type="org.polarsys.capella.core.data.oa:OperationalContext"
-          id="197dbb99-f109-4452-8589-89ef0ea1fdf2" name="Operational Context"/>
       <ownedRolePkg xsi:type="org.polarsys.capella.core.data.oa:RolePkg" id="df7f8b8c-07af-4600-ab6f-a46248f20e52"
           name="Roles"/>
-      <ownedEntityPkg xsi:type="org.polarsys.capella.core.data.oa:EntityPkg" id="408dcb0b-c2b8-40df-b27f-5426d816fc03"
+      <ownedEntityPkg xsi:type="org.polarsys.capella.core.data.oa:EntityPkg" id="197dbb99-f109-4452-8589-89ef0ea1fdf2"
           name="Operational Entities"/>
     </ownedArchitectures>
     <ownedArchitectures xsi:type="org.polarsys.capella.core.data.ctx:SystemAnalysis"
@@ -352,21 +344,19 @@
           </ownedDataTypes>
         </ownedDataPkgs>
       </ownedDataPkg>
-      <ownedSystemContext xsi:type="org.polarsys.capella.core.data.ctx:SystemContext"
-          id="c910e58d-84f5-4ba1-b907-b43846f47da4" name="System Context">
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="f0173973-5820-4eb6-8307-62a3e2d38bfd"
+      <ownedSystemComponentPkg xsi:type="org.polarsys.capella.core.data.ctx:SystemComponentPkg"
+          id="c910e58d-84f5-4ba1-b907-b43846f47da4" name="Structure">
+        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="f0173973-5820-4eb6-8307-62a3e2d38bfd"
             name="System" abstractType="#e080e245-4c7a-493c-9b18-25a1269d3fce"/>
-      </ownedSystemContext>
-      <ownedSystem xsi:type="org.polarsys.capella.core.data.ctx:System" id="e080e245-4c7a-493c-9b18-25a1269d3fce"
-          name="System">
-        <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
-            id="f262dd4c-a6cd-4588-9fbb-ae7270450ad2" name="System State Machine">
-          <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
-              id="23d2226b-a960-470c-ad8a-020b51e85489" name="Default Region"/>
-        </ownedStateMachines>
-      </ownedSystem>
-      <ownedActorPkg xsi:type="org.polarsys.capella.core.data.ctx:ActorPkg" id="3356c592-46dd-476a-adf6-ff3a936fea16"
-          name="Actors"/>
+        <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
+            id="e080e245-4c7a-493c-9b18-25a1269d3fce" name="System">
+          <ownedStateMachines xsi:type="org.polarsys.capella.core.data.capellacommon:StateMachine"
+              id="f262dd4c-a6cd-4588-9fbb-ae7270450ad2" name="System State Machine">
+            <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
+                id="23d2226b-a960-470c-ad8a-020b51e85489" name="Default Region"/>
+          </ownedStateMachines>
+        </ownedSystemComponents>
+      </ownedSystemComponentPkg>
       <ownedMissionPkg xsi:type="org.polarsys.capella.core.data.ctx:MissionPkg" id="d3753e66-736f-432c-9e00-68511e065dac"
           name="Missions"/>
       <ownedOperationalAnalysisRealizations xsi:type="org.polarsys.capella.core.data.ctx:OperationalAnalysisRealization"
@@ -392,19 +382,17 @@
           id="d947dc2a-2720-4f91-9eea-2c52945221c8" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="7fcd5c60-4861-482b-a610-98abf59c767a" name="Data"/>
-      <ownedLogicalContext xsi:type="org.polarsys.capella.core.data.la:LogicalContext"
-          id="38b2e46e-f2e5-4336-be22-73fcc76a8a46" name="Logical Context">
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="1b864977-ffc1-43fa-b9c9-7f54ea185a1f"
+      <ownedLogicalComponentPkg xsi:type="org.polarsys.capella.core.data.la:LogicalComponentPkg"
+          id="38b2e46e-f2e5-4336-be22-73fcc76a8a46" name="Structure">
+        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="1b864977-ffc1-43fa-b9c9-7f54ea185a1f"
             name="Logical System" abstractType="#af388362-bb6f-43bf-805f-a360f0a1bd81"/>
-      </ownedLogicalContext>
-      <ownedLogicalComponent xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
-          id="af388362-bb6f-43bf-805f-a360f0a1bd81" name="Logical System">
-        <ownedSystemRealizations xsi:type="org.polarsys.capella.core.data.la:SystemRealization"
-            id="604b3565-e2f8-4776-a84f-1726a5b315d5" targetElement="#e080e245-4c7a-493c-9b18-25a1269d3fce"
-            sourceElement="#af388362-bb6f-43bf-805f-a360f0a1bd81"/>
-      </ownedLogicalComponent>
-      <ownedLogicalActorPkg xsi:type="org.polarsys.capella.core.data.la:LogicalActorPkg"
-          id="09ecd627-173d-475f-a3f3-c75487e77191" name="Logical Actors"/>
+        <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
+            id="af388362-bb6f-43bf-805f-a360f0a1bd81" name="Logical System">
+          <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
+              id="604b3565-e2f8-4776-a84f-1726a5b315d5" targetElement="#e080e245-4c7a-493c-9b18-25a1269d3fce"
+              sourceElement="#af388362-bb6f-43bf-805f-a360f0a1bd81"/>
+        </ownedLogicalComponents>
+      </ownedLogicalComponentPkg>
       <ownedSystemAnalysisRealizations xsi:type="org.polarsys.capella.core.data.la:SystemAnalysisRealization"
           id="20e8517a-0db3-4f9a-a3ea-93f316354bce" targetElement="#a5bcf572-ff27-451c-bb60-95e26583431c"
           sourceElement="#af4f54ca-5fb3-44e6-80c9-ec484f7e4e39"/>
@@ -432,115 +420,108 @@
           id="dbc41e31-9671-44c9-9e12-b26e96c9f662" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="af67bb3b-be48-465d-8ee1-76a889ee6523" name="Data"/>
-      <ownedPhysicalContext xsi:type="org.polarsys.capella.core.data.pa:PhysicalContext"
-          id="7a595223-9f53-42dd-ab4b-53967dfd5687" name="Physical Context">
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="350824b2-1b0b-4263-b16b-bb986b177c95"
+      <ownedPhysicalComponentPkg xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponentPkg"
+          id="7a595223-9f53-42dd-ab4b-53967dfd5687" name="Structure">
+        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="350824b2-1b0b-4263-b16b-bb986b177c95"
             name="Physical System" abstractType="#81ea3e64-9412-4775-86d4-3230dfebe6c3"/>
-      </ownedPhysicalContext>
-      <ownedPhysicalComponent xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-          id="81ea3e64-9412-4775-86d4-3230dfebe6c3" name="Physical System" appliedPropertyValueGroups="#6f4a8915-2836-470f-a3c8-bb880ad0e464">
-        <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-            id="6f4a8915-2836-470f-a3c8-bb880ad0e464" name="Computer.Components" appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
-          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
-              id="d2c82a10-0a23-4ca0-bf1e-c9010a611068" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
-              type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#efb0c048-7d45-490e-a66a-7f01f796539a"/>
-        </ownedPropertyValueGroups>
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="972bb3d6-2975-4082-bf8d-940b4d43f6c7"
-            name="CPU" abstractType="#f547f324-67c5-4b93-bd20-6fa880f68e44"/>
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="7fa65dbb-ba1f-4109-b582-842973b24cb2"
-            name="GPU" abstractType="#2e35cfb3-1828-4a14-9c68-023c00e3065c"/>
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="279e414d-3b5a-460b-b88c-e8c1ad0e53cb"
-            name="Display" abstractType="#37df87be-bc83-4007-84d6-9027946d9fb8"/>
-        <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
-            id="d32caffc-b9a1-448e-8e96-65a36ba06292" name="DP-1" appliedPropertyValueGroups="#65db4b2e-4e14-47e8-af67-e5fc59fdd01a #5b1390f5-f7ac-4afd-bef0-8567f19f34a3 #00000000-0000-0000-0000-000000000001"
-            linkEnds="#d7737b9b-02da-4c7d-af45-d5274c89ffe6 #8c8e9fdd-ace7-4322-9c6d-b6ec2ed2c0b3">
-          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="65db4b2e-4e14-47e8-af67-e5fc59fdd01a" name="Computer.Cables" appliedPropertyValueGroups="#0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702">
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
-                id="b75c9de5-ebff-4e51-86c2-28075fcf28cd" name="CableType" appliedPropertyValues="#f3f9b7ec-f00d-4b2f-8a48-900a22c43853"
-                type="#03e5e5ae-0a61-473d-a792-e003ce601ff4" value="#8f5d7d4d-57f3-4329-8322-0a831a3462fe"/>
-          </ownedPropertyValueGroups>
-          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="5b1390f5-f7ac-4afd-bef0-8567f19f34a3" name="Computer.Physical Cables"
-              appliedPropertyValueGroups="#cdc24b8b-3c4c-4513-9aad-99c0f7d884dc">
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
-                id="22cd6ffe-8927-43b5-a464-24e768f24360" name="Price" appliedPropertyValues="#7130121b-0242-49b7-885c-44b868c4d7b7"
-                value="14.99"/>
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:BooleanPropertyValue"
-                id="f7b55272-ec7a-410b-9e23-1e748a775cd1" name="In Stock" appliedPropertyValues="#8a64b356-a9c1-4100-a814-d57fcf181786"
-                value="true"/>
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
-                id="31b688f3-5420-4736-86ff-15ce75f9afcb" name="Label" appliedPropertyValues="#46412252-7bab-41bc-bc9d-d1a11d9cb59f"
-                value="DisplayPort_1"/>
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
-                id="6947c50a-96ad-4872-a2b0-4ee91c741e13" name="Plugs per side" appliedPropertyValues="#8ef4a68a-a50f-453d-b63a-351546488782"
-                value="1"/>
-          </ownedPropertyValueGroups>
-          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="00000000-0000-0000-0000-000000000001" name="External Data.Object IDs"
-              appliedPropertyValueGroups="#00fd06dd-cedc-403a-9742-261510c70b76">
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
-                name="Object ID" id="00000000-0000-0000-0000-000000000002" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
-                value="CABLE-0001"/>
-          </ownedPropertyValueGroups>
-        </ownedPhysicalLinks>
-        <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
-            id="4e993dca-e6b3-4c72-911c-10a3f43c8519" name="PCIe" appliedPropertyValueGroups="#221a426f-16ed-41cb-98a5-27ebfbef0cd2"
-            linkEnds="#0e325e1b-18fc-4d73-9a9b-db92261bd66e #53556d81-55a1-440f-a5bc-a6d4dc034468">
-          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="221a426f-16ed-41cb-98a5-27ebfbef0cd2" name="Computer.Cables" appliedPropertyValueGroups="#0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702">
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
-                id="2d836529-d2ed-43c8-81e7-2665e4db8251" name="CableType" appliedPropertyValues="#f3f9b7ec-f00d-4b2f-8a48-900a22c43853"
-                type="#03e5e5ae-0a61-473d-a792-e003ce601ff4" value="#daf01968-ebed-4b62-9575-fc9ada99c681"/>
-          </ownedPropertyValueGroups>
-        </ownedPhysicalLinks>
         <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-            id="f547f324-67c5-4b93-bd20-6fa880f68e44" name="CPU" appliedPropertyValueGroups="#acadc131-fa27-4dab-95e5-ff987a20c55e"
-            nature="NODE">
+            id="81ea3e64-9412-4775-86d4-3230dfebe6c3" appliedPropertyValueGroups="#6f4a8915-2836-470f-a3c8-bb880ad0e464"
+            name="Physical System">
           <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="acadc131-fa27-4dab-95e5-ff987a20c55e" name="Computer.Components"
+              id="6f4a8915-2836-470f-a3c8-bb880ad0e464" name="Computer.Components"
               appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
             <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
-                id="a23a8ab5-0f87-43d3-a31f-a46ba04b58d5" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
-                type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#6eecdcb4-c4d0-4d47-a5da-062a5b7870b5"/>
+                id="d2c82a10-0a23-4ca0-bf1e-c9010a611068" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
+                type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#efb0c048-7d45-490e-a66a-7f01f796539a"/>
           </ownedPropertyValueGroups>
-          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
-              id="0e325e1b-18fc-4d73-9a9b-db92261bd66e" name="PP 1"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="972bb3d6-2975-4082-bf8d-940b4d43f6c7"
+              name="CPU" abstractType="#f547f324-67c5-4b93-bd20-6fa880f68e44"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="7fa65dbb-ba1f-4109-b582-842973b24cb2"
+              name="GPU" abstractType="#2e35cfb3-1828-4a14-9c68-023c00e3065c"/>
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="279e414d-3b5a-460b-b88c-e8c1ad0e53cb"
+              name="Display" abstractType="#37df87be-bc83-4007-84d6-9027946d9fb8"/>
+          <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
+              id="fb9456b9-72fe-40b1-add2-ef131e675652" targetElement="#af388362-bb6f-43bf-805f-a360f0a1bd81"
+              sourceElement="#81ea3e64-9412-4775-86d4-3230dfebe6c3"/>
+          <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+              id="d32caffc-b9a1-448e-8e96-65a36ba06292" name="DP-1" appliedPropertyValueGroups="#65db4b2e-4e14-47e8-af67-e5fc59fdd01a #5b1390f5-f7ac-4afd-bef0-8567f19f34a3"
+              linkEnds="#d7737b9b-02da-4c7d-af45-d5274c89ffe6 #8c8e9fdd-ace7-4322-9c6d-b6ec2ed2c0b3">
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="65db4b2e-4e14-47e8-af67-e5fc59fdd01a" name="Computer.Cables" appliedPropertyValueGroups="#0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                  id="b75c9de5-ebff-4e51-86c2-28075fcf28cd" name="CableType" appliedPropertyValues="#f3f9b7ec-f00d-4b2f-8a48-900a22c43853"
+                  type="#03e5e5ae-0a61-473d-a792-e003ce601ff4" value="#8f5d7d4d-57f3-4329-8322-0a831a3462fe"/>
+            </ownedPropertyValueGroups>
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="5b1390f5-f7ac-4afd-bef0-8567f19f34a3" name="Computer.Physical Cables"
+                appliedPropertyValueGroups="#cdc24b8b-3c4c-4513-9aad-99c0f7d884dc">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                  id="22cd6ffe-8927-43b5-a464-24e768f24360" name="Price" appliedPropertyValues="#7130121b-0242-49b7-885c-44b868c4d7b7"
+                  value="14.99"/>
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:BooleanPropertyValue"
+                  id="f7b55272-ec7a-410b-9e23-1e748a775cd1" name="In Stock" appliedPropertyValues="#8a64b356-a9c1-4100-a814-d57fcf181786"
+                  value="true"/>
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+                  id="31b688f3-5420-4736-86ff-15ce75f9afcb" name="Label" appliedPropertyValues="#46412252-7bab-41bc-bc9d-d1a11d9cb59f"
+                  value="DisplayPort_1"/>
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                  id="6947c50a-96ad-4872-a2b0-4ee91c741e13" name="Plugs per side"
+                  appliedPropertyValues="#8ef4a68a-a50f-453d-b63a-351546488782" value="1"/>
+            </ownedPropertyValueGroups>
+          </ownedPhysicalLinks>
+          <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+              id="4e993dca-e6b3-4c72-911c-10a3f43c8519" name="PCIe" appliedPropertyValueGroups="#221a426f-16ed-41cb-98a5-27ebfbef0cd2"
+              linkEnds="#0e325e1b-18fc-4d73-9a9b-db92261bd66e #53556d81-55a1-440f-a5bc-a6d4dc034468">
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="221a426f-16ed-41cb-98a5-27ebfbef0cd2" name="Computer.Cables" appliedPropertyValueGroups="#0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                  id="2d836529-d2ed-43c8-81e7-2665e4db8251" name="CableType" appliedPropertyValues="#f3f9b7ec-f00d-4b2f-8a48-900a22c43853"
+                  type="#03e5e5ae-0a61-473d-a792-e003ce601ff4" value="#daf01968-ebed-4b62-9575-fc9ada99c681"/>
+            </ownedPropertyValueGroups>
+          </ownedPhysicalLinks>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="f547f324-67c5-4b93-bd20-6fa880f68e44" appliedPropertyValueGroups="#acadc131-fa27-4dab-95e5-ff987a20c55e"
+              name="CPU" nature="NODE">
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="acadc131-fa27-4dab-95e5-ff987a20c55e" name="Computer.Components"
+                appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                  id="a23a8ab5-0f87-43d3-a31f-a46ba04b58d5" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
+                  type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#6eecdcb4-c4d0-4d47-a5da-062a5b7870b5"/>
+            </ownedPropertyValueGroups>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                id="0e325e1b-18fc-4d73-9a9b-db92261bd66e" name="PP 1"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="2e35cfb3-1828-4a14-9c68-023c00e3065c" appliedPropertyValueGroups="#c21d59b1-381d-44ea-8c28-6c76f75584e9"
+              name="GPU" nature="NODE">
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="c21d59b1-381d-44ea-8c28-6c76f75584e9" name="Computer.Components"
+                appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                  id="519cc0f1-1198-4d39-98f9-7869733a24cb" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
+                  type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#6eecdcb4-c4d0-4d47-a5da-062a5b7870b5"/>
+            </ownedPropertyValueGroups>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                id="d7737b9b-02da-4c7d-af45-d5274c89ffe6" name="PP 1"/>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                id="53556d81-55a1-440f-a5bc-a6d4dc034468" name="PP 2"/>
+          </ownedPhysicalComponents>
+          <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+              id="37df87be-bc83-4007-84d6-9027946d9fb8" appliedPropertyValueGroups="#9027f616-9f4b-4bc6-8bd4-2b753700dfc3"
+              name="Display" nature="NODE">
+            <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                id="9027f616-9f4b-4bc6-8bd4-2b753700dfc3" name="Computer.Components"
+                appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                  id="59fa92fe-0cc5-42a1-84e1-b75491984757" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
+                  type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#beaa3c19-ac74-4e19-a803-4d767587c9a7"/>
+            </ownedPropertyValueGroups>
+            <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                id="8c8e9fdd-ace7-4322-9c6d-b6ec2ed2c0b3" name="PP 1"/>
+          </ownedPhysicalComponents>
         </ownedPhysicalComponents>
-        <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-            id="2e35cfb3-1828-4a14-9c68-023c00e3065c" name="GPU" appliedPropertyValueGroups="#c21d59b1-381d-44ea-8c28-6c76f75584e9"
-            nature="NODE">
-          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="c21d59b1-381d-44ea-8c28-6c76f75584e9" name="Computer.Components"
-              appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
-                id="519cc0f1-1198-4d39-98f9-7869733a24cb" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
-                type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#6eecdcb4-c4d0-4d47-a5da-062a5b7870b5"/>
-          </ownedPropertyValueGroups>
-          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
-              id="d7737b9b-02da-4c7d-af45-d5274c89ffe6" name="PP 1"/>
-          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
-              id="53556d81-55a1-440f-a5bc-a6d4dc034468" name="PP 2"/>
-        </ownedPhysicalComponents>
-        <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
-            id="37df87be-bc83-4007-84d6-9027946d9fb8" name="Display" appliedPropertyValueGroups="#9027f616-9f4b-4bc6-8bd4-2b753700dfc3"
-            nature="NODE">
-          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-              id="9027f616-9f4b-4bc6-8bd4-2b753700dfc3" name="Computer.Components"
-              appliedPropertyValueGroups="#5ceb6bc1-c5a5-42bf-8a81-f215a250eff2">
-            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
-                id="59fa92fe-0cc5-42a1-84e1-b75491984757" name="ComponentType" appliedPropertyValues="#7c6de438-a2dc-4735-bf55-669a7fe566b0"
-                type="#ae279311-6a75-40b7-9bf3-a19c136d0573" value="#beaa3c19-ac74-4e19-a803-4d767587c9a7"/>
-          </ownedPropertyValueGroups>
-          <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
-              id="8c8e9fdd-ace7-4322-9c6d-b6ec2ed2c0b3" name="PP 1"/>
-        </ownedPhysicalComponents>
-        <ownedLogicalComponentRealizations xsi:type="org.polarsys.capella.core.data.pa:LogicalComponentRealization"
-            id="fb9456b9-72fe-40b1-add2-ef131e675652" targetElement="#af388362-bb6f-43bf-805f-a360f0a1bd81"
-            sourceElement="#81ea3e64-9412-4775-86d4-3230dfebe6c3"/>
-      </ownedPhysicalComponent>
-      <ownedPhysicalActorPkg xsi:type="org.polarsys.capella.core.data.pa:PhysicalActorPkg"
-          id="314f30f3-fa51-41ae-836c-f6b886ee370e" name="Physical Actors"/>
+      </ownedPhysicalComponentPkg>
       <ownedLogicalArchitectureRealizations xsi:type="org.polarsys.capella.core.data.pa:LogicalArchitectureRealization"
           id="706cf892-6e5a-4b34-81ca-ed974a9d6638" targetElement="#af4f54ca-5fb3-44e6-80c9-ec484f7e4e39"
           sourceElement="#773e2884-2831-449d-8ea0-e7451faaa586"/>
@@ -549,17 +530,17 @@
         id="7620597d-d54a-49ca-9f93-c1ab1d36b02b" name="EPBS Architecture">
       <ownedAbstractCapabilityPkg xsi:type="org.polarsys.capella.core.data.la:CapabilityRealizationPkg"
           id="e28aec47-d300-4ed6-a893-8d1850088e4a" name="Capabilities"/>
-      <ownedEPBSContext xsi:type="org.polarsys.capella.core.data.epbs:EPBSContext"
-          id="7df459bc-17f2-4f15-b62a-75fe8d322769" name="EPBS Context">
-        <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="cab8900a-859f-4a73-bef4-523961add60b"
+      <ownedConfigurationItemPkg xsi:type="org.polarsys.capella.core.data.epbs:ConfigurationItemPkg"
+          id="7df459bc-17f2-4f15-b62a-75fe8d322769" name="Structure">
+        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="cab8900a-859f-4a73-bef4-523961add60b"
             name="System" abstractType="#ea6b4a7c-ef7a-43d5-a6b9-722bbbbaa86b"/>
-      </ownedEPBSContext>
-      <ownedConfigurationItem xsi:type="org.polarsys.capella.core.data.epbs:ConfigurationItem"
-          id="ea6b4a7c-ef7a-43d5-a6b9-722bbbbaa86b" name="System" kind="SystemCI">
-        <ownedPhysicalArtifactRealizations xsi:type="org.polarsys.capella.core.data.epbs:PhysicalArtifactRealization"
-            id="3c589743-3d8b-41c5-9fb5-9c54973d3ade" targetElement="#81ea3e64-9412-4775-86d4-3230dfebe6c3"
-            sourceElement="#ea6b4a7c-ef7a-43d5-a6b9-722bbbbaa86b"/>
-      </ownedConfigurationItem>
+        <ownedConfigurationItems xsi:type="org.polarsys.capella.core.data.epbs:ConfigurationItem"
+            id="ea6b4a7c-ef7a-43d5-a6b9-722bbbbaa86b" name="System" kind="SystemCI">
+          <ownedPhysicalArtifactRealizations xsi:type="org.polarsys.capella.core.data.epbs:PhysicalArtifactRealization"
+              id="3c589743-3d8b-41c5-9fb5-9c54973d3ade" targetElement="#81ea3e64-9412-4775-86d4-3230dfebe6c3"
+              sourceElement="#ea6b4a7c-ef7a-43d5-a6b9-722bbbbaa86b"/>
+        </ownedConfigurationItems>
+      </ownedConfigurationItemPkg>
       <ownedPhysicalArchitectureRealizations xsi:type="org.polarsys.capella.core.data.epbs:PhysicalArchitectureRealization"
           id="50918787-7da1-4d4c-8176-1e7b3918272c" targetElement="#773e2884-2831-449d-8ea0-e7451faaa586"
           sourceElement="#7620597d-d54a-49ca-9f93-c1ab1d36b02b"/>

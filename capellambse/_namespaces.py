@@ -3,36 +3,90 @@
 
 from __future__ import annotations
 
+__all__ = ["UnsupportedPluginError", "UnsupportedPluginVersionError"]
+
 import collections.abc as cabc
 import dataclasses
 import re
+import types
 import typing as t
 
 PLUGIN_PATTERN = re.compile(r"(.*?)(\d\.\d\.\d)?$")
 
 
-@dataclasses.dataclass
-class Version:
-    """Capella xml-element/plugin version info about name and version."""
+class UnsupportedPluginError(ValueError):
+    """Raised when a plugin is unknown."""
 
-    plugin: str
-    version: str | None = None
 
-    @property
-    def values(self) -> cabc.Iterator[str | None]:
-        yield self.plugin
-        yield self.version
-
-    def __le__(self, other: float | int | str | Version) -> t.Any:
-        if self.version is None:
-            return False
-
-        if isinstance(other, str):
-            other = _tofloat(other)
-        return other <= _tofloat(self.version)
+class UnsupportedPluginVersionError(ValueError):
+    """Raised when the plugin's version is unsupported."""
 
     def __str__(self) -> str:
-        return self.plugin + (self.version or "")
+        plugin, ns_plugin = self.args
+        assert isinstance(plugin, Plugin) and isinstance(ns_plugin, Plugin)
+        return (
+            f"Plugin '{plugin.name}' with unsupported version encountered: "
+            f"{plugin.version!r} does not match {ns_plugin.version!r}."
+        )
+
+
+@dataclasses.dataclass(frozen=True)
+class Plugin:
+    """Capella xml-element/plugin with info about name and version."""
+
+    name: str
+    version: str | tuple[str, str] | None = None
+
+    @property
+    def _values(self) -> cabc.Iterator[str | None]:
+        yield self.name
+        if isinstance(self.version, tuple):
+            min_supported_version, max_supported_version = self.version
+            yield min_supported_version
+            yield max_supported_version
+        else:
+            yield self.version
+
+    @property
+    def has_version(self) -> bool:
+        return self.version is not None
+
+    def __le__(self, other: Plugin) -> bool:
+        if self.version is None:
+            raise AttributeError(f"Plugin '{self.name}' has no version")
+
+        if isinstance(other.version, tuple):
+            assert all((isinstance(o, str) for o in other.version))
+            vmin, vmax = tuple(map(_tofloat, other.version))
+            if isinstance(self.version, tuple):
+                vsmin, vsmax = tuple(map(_tofloat, self.version))
+                return vsmin <= vmin <= vmax <= vsmax
+            else:
+                return vmin <= _tofloat(self.version) <= vmax
+
+        assert other.version is not None
+        oversion = _tofloat(other.version)
+        if isinstance(self.version, tuple):
+            vsmin, vsmax = tuple(map(_tofloat, self.version))
+            return vsmin <= oversion <= vsmax
+
+        return oversion <= _tofloat(self.version)
+
+    def __str__(self) -> str:
+        if isinstance(suffix := list(self._values)[1], str):
+            return self.name + suffix
+        return self.name
+
+    def __repr__(self) -> str:
+        if len(_values := list(self._values)) > 2:
+            name, minv, maxv = _values
+            values = [name, f"[{minv}|{maxv}]"]
+        else:
+            name, version = _values
+            values = [name]
+            if version is not None:
+                values.append(version)
+        return "".join(values)  # type: ignore[arg-type]
 
 
 def _tofloat(other: str) -> float:
@@ -44,162 +98,193 @@ def _tofloat(other: str) -> float:
     return float(".".join(version))
 
 
-def yield_key_and_version_from_namespaces_by_plugin(
-    plugin: str,
-) -> cabc.Iterator[tuple[str, Version]]:
-    """Yield namespace key and :class:`Version` tuple for plugin str.
+def get_keys_and_plugins_from_namespaces_by_url(
+    url: str,
+) -> tuple[str, Plugin]:
+    """Return key and :class:`Plugin` pair matching from ``NAMESPACES``.
 
     Parameters
     ----------
-    plugin
-        ``xsi:type`` string of xml-element/plugin
+    url
+        An ``xsi:type``-ish string of an xml-element/plugin
 
-    Yields
+    Raises
     ------
-    tuple
-        If plugin in namespace values yield key value and Version
+    UnsupportedPluginError
+        If requested ``url`` is not found in :class:`NAMESPACES`.
+
+    Returns
+    -------
+    nskey, plugin
+        A namespace-key string and a Plugin
     """
-    match = PLUGIN_PATTERN.match(plugin)
+    match = PLUGIN_PATTERN.match(url)
     version = None
     if match is not None:
-        plugin = match.group(1)
+        plugin_name = match.group(1)
         if match.group(2) is not None:
             version = match.group(2)
 
-    for k, v in NAMESPACES.get_items():
-        if v.plugin == plugin:
-            yield k, Version(plugin, version)
+    matched_plugins = [
+        (nskey, Plugin(plugin_name, version))
+        for nskey, nsplugin in NAMESPACES_PLUGINS.items()
+        if plugin_name == nsplugin.name
+    ]
+    if not matched_plugins:
+        plugin = Plugin(plugin_name, version)
+        raise UnsupportedPluginError(f"{plugin}")
+    assert (
+        len(matched_plugins) == 1
+    ), f"Ambiguous namespace {url!r}: {matched_plugins}"
+    return matched_plugins[0]
 
 
-def check_plugin_version(plugin: str, version: Version) -> bool:
-    """Check if the plugin with given version is supported."""
-    if plugin not in NAMESPACES:
-        return False
+def check_plugin(nskey: str, plugin: Plugin) -> None:
+    """Check if the given ``plugin`` is supported.
 
-    if version.version is None:  # Versionless plugin
-        return True
+    It is assumed that ``plugin`` is known by
+    :class:`NAMESPACES_PLUGINS` from the ``nskey``. This can be ensured
+    by a previous execution of
+    :func:`get_keys_and_plugins_from_namespaces_by_url`.
 
-    return version <= NAMESPACES.get_version(plugin)
+    Parameters
+    ----------
+    nskey
+        A key corresponding to given ``plugin`` to find a similiar
+        plugin in :class:`NAMESPACES_PLUGINS`
+    plugin
+        A plugin for which a similiar plugin can be found in
+        :class:`NAMESPACES_PLUGINS` from the given ``nskey``
 
+    Raises
+    ------
+    UnsupportedPluginError
+        If given ``plugin`` is unknown. This is the case when either:
+          * It is not in :class:`NAMESPACES_PLUGINS`'s ``values`` or
+          * an unknown ``nskey`` requested a plugin, i.e. ``nskey`` is
+            not in :class:`NAMESPACES_PLUGINS`'s keys.
+    UnsupportedPluginVersionError
+        If given plugin is versioned and one of the following conditions
+        is met:
+          * If given ``plugin``'s version is singular and exceeds plugin
+            version from :class:`NAMESPACES_PLUGINS` or
+          * if ``plugin``s version is a range and is not contained in
+            plugin version range from :class:`NAMESPACES_PLUGINS`.
+    """
+    try:
+        my_plugin = NAMESPACES_PLUGINS[nskey]
+    except KeyError as err:
+        raise UnsupportedPluginError(str(plugin)) from err
 
-class Namespace(dict):
-    """Namespace dictionary to hold xml-element namespace data and versions."""
-
-    def __getitem__(self, key: str) -> str:
-        version = super().__getitem__(key)
-        return "".join(
-            attr for attr in version.values if isinstance(attr, str)
-        )
-
-    def items(self) -> cabc.ItemsView[str, str]:  # type: ignore[override]
-        """Get original dictionary itemsview."""
-        return {k: self.__getitem__(k) for k in super().keys()}.items()
-
-    def get_items(self) -> cabc.ItemsView[str, Version]:
-        """Get dictionary itemsview of name and version."""
-        return super().items()
-
-    def get_version(self, key: str) -> Version:
-        """Get original namespace value."""
-        return super().__getitem__(key)
+    if plugin.has_version and not plugin <= my_plugin:
+        raise UnsupportedPluginVersionError(plugin, my_plugin)
 
 
 #: These XML namespaces are defined in every ``.aird`` document
-NAMESPACES = Namespace(
+NAMESPACES_PLUGINS: t.Final[
+    cabc.Mapping[str, Plugin]
+] = types.MappingProxyType(
     {
-        "CapellaRequirements": Version(
+        "CapellaRequirements": Plugin(
             "http://www.polarsys.org/capella/requirements"
         ),
-        "Requirements": Version(
+        "Requirements": Plugin(
             "http://www.polarsys.org/kitalpha/requirements"
         ),
-        "concern": Version(
+        "concern": Plugin(
             "http://www.eclipse.org/sirius/diagram/description/concern/",
             "1.1.0",
         ),
-        "description": Version(
+        "description": Plugin(
             "http://www.eclipse.org/sirius/description/", "1.1.0"
         ),
-        "description_1": Version(
+        "description_1": Plugin(
             "http://www.eclipse.org/sirius/diagram/description/", "1.1.0"
         ),
-        "description_2": Version(
+        "description_2": Plugin(
             "http://www.eclipse.org/sirius/table/description/", "1.1.0"
         ),
-        "description_3": Version(
+        "description_3": Plugin(
             "http://www.eclipse.org/sirius/diagram/sequence/description/",
             "2.0.0",
         ),
-        "diagram": Version("http://www.eclipse.org/sirius/diagram/", "1.1.0"),
-        "diagramstyler": Version("http://thalesgroup.com/mde/melody/ordering"),
-        "ecore": Version("http://www.eclipse.org/emf/2002/Ecore"),
-        "filter": Version(
+        "diagram": Plugin("http://www.eclipse.org/sirius/diagram/", "1.1.0"),
+        "diagramstyler": Plugin("http://thalesgroup.com/mde/melody/ordering"),
+        "ecore": Plugin("http://www.eclipse.org/emf/2002/Ecore"),
+        "filter": Plugin(
             "http://www.eclipse.org/sirius/diagram/description/filter/",
             "1.1.0",
         ),
-        "libraries": Version(
-            "http://www.polarsys.org/capella/common/libraries/", "5.0.0"
+        "libraries": Plugin(
+            "http://www.polarsys.org/capella/common/libraries/",
+            ("5.0.0", "6.0.0"),
         ),
-        "metadata": Version(
+        "metadata": Plugin(
             "http://www.polarsys.org/kitalpha/ad/metadata/", "1.0.0"
         ),
-        "notation": Version(
+        "notation": Plugin(
             "http://www.eclipse.org/gmf/runtime/1.0.2/notation"
         ),
-        "org.polarsys.capella.core.data.capellacommon": Version(
-            "http://www.polarsys.org/capella/core/common/", "5.0.0"
+        "org.polarsys.capella.core.data.capellacommon": Plugin(
+            "http://www.polarsys.org/capella/core/common/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.capellacore": Version(
-            "http://www.polarsys.org/capella/core/core/", "5.0.0"
+        "org.polarsys.capella.core.data.capellacore": Plugin(
+            "http://www.polarsys.org/capella/core/core/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.capellamodeller": Version(
-            "http://www.polarsys.org/capella/core/modeller/", "5.0.0"
+        "org.polarsys.capella.core.data.capellamodeller": Plugin(
+            "http://www.polarsys.org/capella/core/modeller/",
+            ("5.0.0", "6.0.0"),
         ),
-        "org.polarsys.capella.core.data.cs": Version(
-            "http://www.polarsys.org/capella/core/cs/", "5.0.0"
+        "org.polarsys.capella.core.data.cs": Plugin(
+            "http://www.polarsys.org/capella/core/cs/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.ctx": Version(
-            "http://www.polarsys.org/capella/core/ctx/", "5.0.0"
+        "org.polarsys.capella.core.data.ctx": Plugin(
+            "http://www.polarsys.org/capella/core/ctx/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.epbs": Version(
-            "http://www.polarsys.org/capella/core/epbs/", "5.0.0"
+        "org.polarsys.capella.core.data.epbs": Plugin(
+            "http://www.polarsys.org/capella/core/epbs/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.fa": Version(
-            "http://www.polarsys.org/capella/core/fa/", "5.0.0"
+        "org.polarsys.capella.core.data.fa": Plugin(
+            "http://www.polarsys.org/capella/core/fa/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.information": Version(
-            "http://www.polarsys.org/capella/core/information/", "5.0.0"
+        "org.polarsys.capella.core.data.information": Plugin(
+            "http://www.polarsys.org/capella/core/information/",
+            ("5.0.0", "6.0.0"),
         ),
-        "org.polarsys.capella.core.data.information.datatype": Version(
+        "org.polarsys.capella.core.data.information.datatype": Plugin(
             "http://www.polarsys.org/capella/core/information/datatype/",
-            "5.0.0",
+            ("5.0.0", "6.0.0"),
         ),
-        "org.polarsys.capella.core.data.information.datavalue": Version(
+        "org.polarsys.capella.core.data.information.datavalue": Plugin(
             "http://www.polarsys.org/capella/core/information/datavalue/",
-            "5.0.0",
+            ("5.0.0", "6.0.0"),
         ),
-        "org.polarsys.capella.core.data.interaction": Version(
-            "http://www.polarsys.org/capella/core/interaction/", "5.0.0"
+        "org.polarsys.capella.core.data.interaction": Plugin(
+            "http://www.polarsys.org/capella/core/interaction/",
+            ("5.0.0", "6.0.0"),
         ),
-        "org.polarsys.capella.core.data.la": Version(
-            "http://www.polarsys.org/capella/core/la/", "5.0.0"
+        "org.polarsys.capella.core.data.la": Plugin(
+            "http://www.polarsys.org/capella/core/la/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.oa": Version(
-            "http://www.polarsys.org/capella/core/oa/", "5.0.0"
+        "org.polarsys.capella.core.data.oa": Plugin(
+            "http://www.polarsys.org/capella/core/oa/", ("5.0.0", "6.0.0")
         ),
-        "org.polarsys.capella.core.data.pa": Version(
-            "http://www.polarsys.org/capella/core/pa/", "5.0.0"
+        "org.polarsys.capella.core.data.pa": Plugin(
+            "http://www.polarsys.org/capella/core/pa/", ("5.0.0", "6.0.0")
         ),
-        "re": Version("http://www.polarsys.org/capella/common/re/", "1.3.0"),
-        "sequence": Version(
+        "re": Plugin("http://www.polarsys.org/capella/common/re/", "1.3.0"),
+        "sequence": Plugin(
             "http://www.eclipse.org/sirius/diagram/sequence/", "2.0.0"
         ),
-        "style": Version(
+        "style": Plugin(
             "http://www.eclipse.org/sirius/diagram/description/style/", "1.1.0"
         ),
-        "table": Version("http://www.eclipse.org/sirius/table/", "1.1.0"),
-        "viewpoint": Version("http://www.eclipse.org/sirius/", "1.1.0"),
-        "xmi": Version("http://www.omg.org/XMI"),
-        "xsi": Version("http://www.w3.org/2001/XMLSchema-instance"),
+        "table": Plugin("http://www.eclipse.org/sirius/table/", "1.1.0"),
+        "viewpoint": Plugin("http://www.eclipse.org/sirius/", "1.1.0"),
+        "xmi": Plugin("http://www.omg.org/XMI"),
+        "xsi": Plugin("http://www.w3.org/2001/XMLSchema-instance"),
     }
 )
+NAMESPACES: t.Final[cabc.Mapping[str, str]] = {
+    nskey: str(plugin) for nskey, plugin in NAMESPACES_PLUGINS.items()
+}
