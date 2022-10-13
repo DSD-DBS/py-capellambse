@@ -178,7 +178,7 @@ def check_plugin(nskey: str, plugin: Plugin) -> None:
     try:
         my_plugin = NAMESPACES_PLUGINS[nskey]
     except KeyError as err:
-        raise UnsupportedPluginError(f"{plugin}") from err
+        raise UnsupportedPluginError(str(plugin)) from err
 
     if plugin.has_version and not plugin <= my_plugin:
         raise UnsupportedPluginVersionError(plugin, my_plugin)

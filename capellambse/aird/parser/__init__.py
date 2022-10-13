@@ -20,7 +20,7 @@ import urllib.parse
 from lxml import etree
 
 import capellambse
-from capellambse import _namespaces as _n
+import capellambse._namespaces as _n
 from capellambse import aird, helpers, loader
 
 from . import _common as C

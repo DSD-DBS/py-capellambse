@@ -23,9 +23,9 @@ from lxml import etree
 from PIL import ImageFont
 
 import capellambse
-from capellambse import _namespaces as _n
+import capellambse._namespaces as _n
 
-ATT_XT = f'{{{_n.NAMESPACES["xsi"]}}}type'
+ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
 RE_VALID_UUID = re.compile(

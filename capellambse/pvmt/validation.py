@@ -9,7 +9,7 @@ import re
 
 from capellambse import helpers
 
-from .. import _namespaces as _n
+import capellambse._namespaces as _n
 from . import exceptions
 
 LOGGER = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ def _validate_group_scope_class(pvmt_ext, scopedesc, xml_element):
     nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
     _n.check_plugin(nskey, plugin)
     return (
-        xml_element.get(f'{{{_n.NAMESPACES["xsi"]}}}type', "")
+        xml_element.get(f"{{{_n.NAMESPACES['xsi']}}}type", "")
         == f"{nskey}:{match.group(2)}"
     )
 

@@ -27,7 +27,7 @@ import uuid
 from lxml import etree
 
 import capellambse
-from capellambse import _namespaces as _n
+import capellambse._namespaces as _n
 from capellambse import helpers
 from capellambse.loader import exs, filehandler
 from capellambse.loader.filehandler import localfilehandler

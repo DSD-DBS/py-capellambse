@@ -8,7 +8,7 @@ from __future__ import annotations
 import abc
 import collections.abc as cabc
 
-from capellambse import _namespaces as _n
+import capellambse._namespaces as _n
 
 from . import model, validation
 from .core import AttributeProperty, Generic, XMLDictProxy
@@ -22,7 +22,7 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
 
     description = AttributeProperty("xml_element", "description")
     xtype = AttributeProperty(
-        "xml_element", f'{{{_n.NAMESPACES["xsi"]}}}type', writable=False
+        "xml_element", f"{{{_n.NAMESPACES['xsi']}}}type", writable=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -45,7 +45,7 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
         targetelem
             The new ``ownedPropertyValues`` element.
         """
-        for attr in (f'{{{_n.NAMESPACES["xsi"]}}}type', "name", "value"):
+        for attr in (f"{{{_n.NAMESPACES['xsi']}}}type", "name", "value"):
             try:
                 targetelem.attrib[attr] = defelem.attrib[attr]
             except KeyError:
@@ -350,7 +350,7 @@ class AppliedPropertyValueGroup(XMLDictProxy):
         groupelem = xml_element.makeelement(
             "ownedPropertyValueGroups",
             attrib={
-                f'{{{_n.NAMESPACES["xsi"]}}}type': (
+                f"{{{_n.NAMESPACES['xsi']}}}type": (
                     NAMESPACED_PV.format("PropertyValueGroup")
                 ),
                 "id": pvmt_ext.model.generate_uuid(xml_element),
@@ -369,7 +369,7 @@ class AppliedPropertyValueGroup(XMLDictProxy):
         ):
             propelem = groupelem.makeelement("ownedPropertyValues")
             PROPERTY_LOADER[
-                defelem.get(f'{{{_n.NAMESPACES["xsi"]}}}type').split(":")[-1]
+                defelem.get(f"{{{_n.NAMESPACES['xsi']}}}type").split(":")[-1]
             ].applyto(pvmt_ext, defelem, xml_element, propelem)
             groupelem.append(propelem)
 

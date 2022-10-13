@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from .. import _namespaces as _n
+import capellambse._namespaces as _n
 from . import exceptions
 from .core import AttributeProperty, XMLDictProxy
 from .types import (
