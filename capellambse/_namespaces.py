@@ -22,23 +22,15 @@ class UnsupportedPluginError(ValueError):
     """Raised when a plugin is unknown."""
 
 
-class UnsupportedPluginVersionError(UnsupportedPluginError):
+class UnsupportedPluginVersionError(ValueError):
     """Raised when the plugin's version is unsupported."""
 
-    plugin: Plugin
-    ns_plugin: Plugin
-
-    def __init__(
-        self, plugin: Plugin, ns_plugin: Plugin, *args: object
-    ) -> None:
-        super().__init__(*args)
-        self.plugin = plugin
-        self.ns_plugin = ns_plugin
-
     def __str__(self) -> str:
+        plugin, ns_plugin = self.args
+        assert isinstance(plugin, Plugin) and isinstance(ns_plugin, Plugin)
         return (
-            f"Plugin with unsupported version encountered: "
-            f"'{self.plugin!r}' does not match '{self.ns_plugin!r}'."
+            f"Plugin '{plugin.name}' with unsupported version encountered: "
+            f"{plugin.version!r} does not match {ns_plugin.version!r}."
         )
 
 
