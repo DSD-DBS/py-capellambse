@@ -160,8 +160,7 @@ def check_plugin(nskey: str, plugin: Plugin) -> None:
     ------
     UnsupportedPluginError
         If given ``plugin`` is unknown. This is the case when either:
-          * It is not in :class:`NAMESPACES_PLUGINS`'s
-          ``values`` or
+          * It is not in :class:`NAMESPACES_PLUGINS`'s ``values`` or
           * an unknown ``nskey`` requested a plugin, i.e. ``nskey`` is
             not in :class:`NAMESPACES_PLUGINS`'s keys.
     UnsupportedPluginVersionError
