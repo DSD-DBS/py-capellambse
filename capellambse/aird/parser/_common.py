@@ -16,8 +16,8 @@ import typing as t
 
 from lxml import builder, etree
 
-import capellambse.loader
 import capellambse._namespaces as _n
+import capellambse.loader
 from capellambse import aird, helpers
 
 LOGGER: logging.Logger = logging.getLogger(__name__)

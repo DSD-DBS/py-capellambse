@@ -7,9 +7,9 @@ import logging
 import operator
 import re
 
+import capellambse._namespaces as _n
 from capellambse import helpers
 
-import capellambse._namespaces as _n
 from . import exceptions
 
 LOGGER = logging.getLogger(__name__)
