@@ -221,7 +221,7 @@ def test_http_file_handlers_passed_through_custom_headers(
 def model_path_with_patched_version(
     request: pytest.FixtureRequest, tmp_path: pathlib.Path
 ) -> pathlib.Path:
-    """Indirect parametrized fixture for version patched model database.
+    """Indirect parametrized fixture for version patched model.
 
     Parameters
     ----------
