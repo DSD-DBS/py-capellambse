@@ -112,9 +112,6 @@ def get_keys_and_plugins_from_namespaces_by_url(
     ------
     UnsupportedPluginError
         If requested ``url`` is not found in :class:`NAMESPACES`.
-    AssertionError
-        If a plugin is registered multiple times
-        (with different namespace-keys) in :class:`NAMESPACES`.
 
     Returns
     -------
