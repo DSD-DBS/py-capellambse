@@ -57,7 +57,7 @@ class Plugin:
 
     def __le__(self, other: Plugin) -> bool:
         if self.version is None:
-            raise AttributeError(f"Plugin '{self.name}' has no version.")
+            raise AttributeError(f"Plugin '{self.name}' has no version")
 
         if isinstance(other.version, tuple):
             assert all((isinstance(o, str) for o in other.version))
