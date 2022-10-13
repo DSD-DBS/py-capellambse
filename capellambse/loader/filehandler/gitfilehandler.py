@@ -489,7 +489,8 @@ class GitFileHandler(FileHandler):
 
     See Also
     --------
-    FileHandler : Documentation of common parameters.
+    capellambse.loader.filehandler.FileHandler :
+        Documentation of common parameters.
     """
 
     username: str

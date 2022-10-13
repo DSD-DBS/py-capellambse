@@ -328,16 +328,16 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         ) = None,
         single_attr: str | None = None,
     ):
-        """Create a DirectProxyAccessor.
+        r"""Create a DirectProxyAccessor.
 
         Parameters
         ----------
         class_
             The proxy class.
         xtypes
-            The ``xsi:type``(s) of the child element(s).  If None, then
-            the constructed proxy will be passed the original element
-            instead of a child.
+            The ``xsi:type``\ (s) of the child element(s).  If None,
+            then the constructed proxy will be passed the original
+            element instead of a child.
         aslist
             If None, only a single element must match, which will be
             returned directly. If not None, must be a subclass of
@@ -352,7 +352,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             Extra arguments to pass to the :class:`~element.ElementList`
             constructor.
         rootelem
-            A ``/``-separated list of ``xsi:type``s that defines the
+            A ``/``-separated list of ``xsi:type``\ s that defines the
             path from the current object's element to the search root.
             If None, the current element will be used directly.
         single_attr
