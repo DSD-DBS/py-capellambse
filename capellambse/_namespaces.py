@@ -142,27 +142,41 @@ def get_keys_and_plugins_from_namespaces_by_url(
     return matched_plugins[0]
 
 
-def check_plugin(name: str, plugin: Plugin) -> None:
+def check_plugin(nskey: str, plugin: Plugin) -> None:
     """Check if the given ``plugin`` is supported.
+
+    It is assumed that ``plugin`` is known by
+    :class:`NAMESPACES_PLUGINS` from the ``nskey``. This can be ensured
+    by a previous execution of
+    :func:`get_keys_and_plugins_from_namespaces_by_url`.
+
+    Parameters
+    ----------
+    nskey
+        A key corresponding to given ``plugin`` to find a similiar
+        plugin in :class:`NAMESPACES_PLUGINS`
+    plugin
+        A plugin for which a similiar plugin can be found in
+        :class:`NAMESPACES_PLUGINS` from the given ``nskey``
 
     Raises
     ------
     UnsupportedPluginError
         If given ``plugin`` is unknown. This is the case when either:
-          * It is not in :class:``capellambse.NAMESPACES``'s ``values``
-            or
-          * an unknown ``name`` requested a plugin, i.e. ``name`` is not
-            in :class:``capellambse.NAMESPACES``'s keys.
+          * It is not in :class:`NAMESPACES_PLUGINS`'s
+          ``values`` or
+          * an unknown ``nskey`` requested a plugin, i.e. ``nskey`` is
+            not in :class:`NAMESPACES_PLUGINS`'s keys.
     UnsupportedPluginVersionError
         If given plugin is versioned and one of the following conditions
         is met:
           * If given ``plugin``'s version is singular and exceeds plugin
-            version from :class:``capellambse.NAMESPACES`` or
+            version from :class:`NAMESPACES_PLUGINS` or
           * if ``plugin``s version is a range and is not contained in
-            plugin version range from :class:``capellambse.NAMESPACES``.
+            plugin version range from :class:`NAMESPACES_PLUGINS`.
     """
     try:
-        my_plugin = NAMESPACES_PLUGINS[name]
+        my_plugin = NAMESPACES_PLUGINS[nskey]
     except KeyError as err:
         raise UnsupportedPluginError(f"{plugin}") from err
 
@@ -171,7 +185,9 @@ def check_plugin(name: str, plugin: Plugin) -> None:
 
 
 #: These XML namespaces are defined in every ``.aird`` document
-NAMESPACES_PLUGINS: t.Final[t.Mapping[str, Plugin]] = types.MappingProxyType(
+NAMESPACES_PLUGINS: t.Final[
+    cabc.Mapping[str, Plugin]
+] = types.MappingProxyType(
     {
         "CapellaRequirements": Plugin(
             "http://www.polarsys.org/capella/requirements"
