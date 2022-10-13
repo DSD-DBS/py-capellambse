@@ -19,27 +19,20 @@ PLUGIN_PATTERN = re.compile(r"(.*?)(\d\.\d\.\d)?$")
 
 
 class UnsupportedPluginError(ValueError):
-    """Raised when :attr:`plugin` is unknown."""
-
-    plugin: Plugin
-
-    def __init__(self, plugin: Plugin, *args: object) -> None:
-        super().__init__(*args)
-        self.plugin = plugin
-
-    def __str__(self) -> str:
-        return f"Unknown plugin '{self.plugin!r}' is not supported."
+    """Raised when a plugin is unknown."""
 
 
 class UnsupportedPluginVersionError(UnsupportedPluginError):
-    """Raised when plugin version is unsupported."""
+    """Raised when the plugin's version is unsupported."""
 
+    plugin: Plugin
     ns_plugin: Plugin
 
     def __init__(
         self, plugin: Plugin, ns_plugin: Plugin, *args: object
     ) -> None:
-        super().__init__(plugin, *args)
+        super().__init__(*args)
+        self.plugin = plugin
         self.ns_plugin = ns_plugin
 
     def __str__(self) -> str:
@@ -154,7 +147,7 @@ def get_keys_and_plugins_from_namespaces_by_url(
     ]
     if not matched_plugins:
         plugin = Plugin(plugin_name, version)
-        raise UnsupportedPluginError(plugin)
+        raise UnsupportedPluginError(f"{plugin}")
     elif len(matched_plugins) > 1:
         raise ValueError(f"Ambiguous namespace {url!r}: {matched_plugins}")
     return matched_plugins[0]
@@ -182,7 +175,7 @@ def check_plugin(name: str, plugin: Plugin) -> None:
     try:
         my_plugin = NAMESPACES.get_plugin(name)  # type: ignore[attr-defined]
     except KeyError as err:
-        raise UnsupportedPluginError(plugin) from err
+        raise UnsupportedPluginError(f"{plugin}") from err
 
     if plugin.has_version and not plugin <= my_plugin:
         raise UnsupportedPluginVersionError(plugin, my_plugin)
