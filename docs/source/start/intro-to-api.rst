@@ -35,32 +35,29 @@ Layer-specific packages
 
 The following packages enable working with model layers:
 
-* :ref:`capellambse.model.layers.oa module` - covers Operational Analysis
-  layer.
-* :ref:`capellambse.model.layers.ctx module` - covers System Analysis layer.
-* :ref:`capellambse.model.layers.la module` - covers Logical Architecture
-  layer.
-* :ref:`capellambse.model.layers.pa module` - covers Physical Architecture
-  layer.
+* :mod:`capellambse.model.layers.oa` - covers Operational Analysis layer.
+* :mod:`capellambse.model.layers.ctx` - covers System Analysis layer.
+* :mod:`capellambse.model.layers.la` - covers Logical Architecture layer.
+* :mod:`capellambse.model.layers.pa` - covers Physical Architecture layer.
 
 Cross-layer packages
 ====================
 
 The following packages enable all (almost) of the layer packages:
 
-* :ref:`capellambse.model.crosslayer.fa module` - covers Functional Analysis
-  concerns, defines things like AbstractFunction or FunctionalExchange
-* :ref:`capellambse.model.crosslayer.cs module` - covers Composite Structure
-  concerns, defines things like Component
-* :ref:`capellambse.model.crosslayer.capellacommon module` - covers common
-  concerns, defines things like StateMachine, State
-* :ref:`capellambse.model.crosslayer.information module` - covers Information
+* :mod:`capellambse.model.crosslayer.fa` - covers Functional Analysis concerns,
+  defines things like AbstractFunction or FunctionalExchange
+* :mod:`capellambse.model.crosslayer.cs` - covers Composite Structure concerns,
+  defines things like Component
+* :mod:`capellambse.model.crosslayer.capellacommon` - covers common concerns,
+  defines things like StateMachine, State
+* :mod:`capellambse.model.crosslayer.information` - covers Information
   concerns, defines things like Class, DataPkg, ExchangeItem
 
 Extension packages
 ==================
 
-* :ref:`capellambse.extensions.reqif module` - provides means for working with
-  ReqIF Requirements within Capella model.
-* :ref:`capellambse.extensions.pvmt module` - provides means for working with
-  object attributes created with PVMT package.
+* :mod:`capellambse.extensions.reqif` - provides means for working with ReqIF
+  Requirements within Capella model.
+* :mod:`capellambse.extensions.pvmt` - provides means for working with object
+  attributes created with PVMT package.
