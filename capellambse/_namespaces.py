@@ -124,9 +124,9 @@ def get_keys_and_plugins_from_namespaces_by_url(
     ------
     UnsupportedPluginError
         If requested ``url`` is not found in :class:`NAMESPACES`.
-    ValueError
-        If a namespace key, plugin-name pair is found more than once
-        in :class:`NAMESPACES`.
+    AssertionError
+        If a plugin is registered multiple times
+        (with different namespace-keys) in :class:`NAMESPACES`.
 
     Returns
     -------
@@ -148,8 +148,9 @@ def get_keys_and_plugins_from_namespaces_by_url(
     if not matched_plugins:
         plugin = Plugin(plugin_name, version)
         raise UnsupportedPluginError(f"{plugin}")
-    elif len(matched_plugins) > 1:
-        raise ValueError(f"Ambiguous namespace {url!r}: {matched_plugins}")
+    assert (
+        len(matched_plugins) > 1
+    ), f"Ambiguous namespace {url!r}: {matched_plugins}"
     return matched_plugins[0]
 
 
