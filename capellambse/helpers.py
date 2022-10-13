@@ -555,7 +555,7 @@ def xtype_of(elem: etree._Element) -> str | None:
         return None
 
     nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
-    capellambse.check_plugin(nskey, plugin)
+    _n.check_plugin(nskey, plugin)
     return f"{nskey}:{tag}"
 
 

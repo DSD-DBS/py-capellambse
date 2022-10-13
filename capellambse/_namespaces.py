@@ -3,16 +3,12 @@
 
 from __future__ import annotations
 
-__all__ = [
-    "Plugin",
-    "UnsupportedPluginError",
-    "UnsupportedPluginVersionError",
-    "check_plugin",
-]
+__all__ = ["UnsupportedPluginError", "UnsupportedPluginVersionError"]
 
 import collections.abc as cabc
 import dataclasses
 import re
+import types
 import typing as t
 
 PLUGIN_PATTERN = re.compile(r"(.*?)(\d\.\d\.\d)?$")
@@ -34,7 +30,7 @@ class UnsupportedPluginVersionError(ValueError):
         )
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Plugin:
     """Capella xml-element/plugin with info about name and version."""
 
@@ -134,14 +130,14 @@ def get_keys_and_plugins_from_namespaces_by_url(
 
     matched_plugins = [
         (nskey, Plugin(plugin_name, version))
-        for nskey, nsplugin in NAMESPACES.get_items()  # type: ignore[attr-defined]
+        for nskey, nsplugin in NAMESPACES_PLUGINS.items()
         if plugin_name == nsplugin.name
     ]
     if not matched_plugins:
         plugin = Plugin(plugin_name, version)
         raise UnsupportedPluginError(f"{plugin}")
     assert (
-        len(matched_plugins) > 1
+        len(matched_plugins) == 1
     ), f"Ambiguous namespace {url!r}: {matched_plugins}"
     return matched_plugins[0]
 
@@ -166,7 +162,7 @@ def check_plugin(name: str, plugin: Plugin) -> None:
             plugin version range from :class:``capellambse.NAMESPACES``.
     """
     try:
-        my_plugin = NAMESPACES.get_plugin(name)  # type: ignore[attr-defined]
+        my_plugin = NAMESPACES_PLUGINS[name]
     except KeyError as err:
         raise UnsupportedPluginError(f"{plugin}") from err
 
@@ -174,33 +170,8 @@ def check_plugin(name: str, plugin: Plugin) -> None:
         raise UnsupportedPluginVersionError(plugin, my_plugin)
 
 
-class Namespace(dict):
-    """Dictionary to hold xml-element namespace data and versions."""
-
-    def __getitem__(self, key: str) -> str:
-        plugin = super().__getitem__(key)
-        if isinstance(plugin, Plugin) and plugin.version is not None:
-            version = plugin.version
-            if isinstance(version, tuple):
-                version = plugin.version[0]
-            return plugin.name + version
-        return plugin.name
-
-    def items(self) -> cabc.ItemsView[str, str]:  # type: ignore[override]
-        """Get original dictionary itemsview."""
-        return {k: self[k] for k in super().keys()}.items()
-
-    def get_items(self) -> cabc.ItemsView[str, Plugin]:
-        """Get dictionary itemsview of name and version."""
-        return super().items()
-
-    def get_plugin(self, key: str) -> Plugin:
-        """Get original namespace value."""
-        return super().__getitem__(key)
-
-
 #: These XML namespaces are defined in every ``.aird`` document
-NAMESPACES: t.Final[cabc.Mapping[str, Plugin]] = Namespace(
+NAMESPACES_PLUGINS: t.Final[t.Mapping[str, Plugin]] = types.MappingProxyType(
     {
         "CapellaRequirements": Plugin(
             "http://www.polarsys.org/capella/requirements"
@@ -302,3 +273,6 @@ NAMESPACES: t.Final[cabc.Mapping[str, Plugin]] = Namespace(
         "xsi": Plugin("http://www.w3.org/2001/XMLSchema-instance"),
     }
 )
+NAMESPACES: t.Final[cabc.Mapping[str, str]] = {
+    nskey: str(plugin) for nskey, plugin in NAMESPACES_PLUGINS.items()
+}

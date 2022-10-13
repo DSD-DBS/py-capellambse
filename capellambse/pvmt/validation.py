@@ -88,7 +88,7 @@ def _validate_group_scope_class(pvmt_ext, scopedesc, xml_element):
 
     ns = match.group(1)
     nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
-    capellambse.check_plugin(nskey, plugin)
+    _n.check_plugin(nskey, plugin)
     return (
         xml_element.get(f'{{{_n.NAMESPACES["xsi"]}}}type', "")
         == f"{nskey}:{match.group(2)}"

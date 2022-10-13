@@ -537,7 +537,7 @@ class MelodyLoader:
         self,
         query: str | etree.XPath,
         *,
-        namespaces: cabc.Mapping[str, capellambse.Plugin] | None = None,
+        namespaces: cabc.Mapping[str, str] | None = None,
         roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[etree._Element]:
         """Run an XPath query on all fragments.
@@ -564,7 +564,7 @@ class MelodyLoader:
         self,
         query: str | etree.XPath,
         *,
-        namespaces: cabc.Mapping[str, capellambse.Plugin] | None = None,
+        namespaces: cabc.Mapping[str, str] | None = None,
         roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[tuple[pathlib.PurePosixPath, etree._Element]]:
         """Run an XPath query and return the fragments and elements.

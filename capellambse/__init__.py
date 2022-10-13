@@ -47,7 +47,6 @@ except metadata.PackageNotFoundError:
     __version__ = "0.0.0+unknown"
 del metadata
 
-
 from ._namespaces import *
 from .auditing import AttributeAuditor
 from .cli_helpers import *
