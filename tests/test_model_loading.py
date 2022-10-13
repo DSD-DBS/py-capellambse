@@ -245,7 +245,7 @@ def model_path_with_patched_version(
         if isinstance(request_param, tuple):
             re_params = request_param
         else:
-            re_params = ("5.0.0", request_param)
+            re_params = (r"5\.0\.0", request_param)
 
         patched = re.sub(*re_params, model_file.read_text(encoding="utf-8"))
         model_file.write_text(patched, encoding="utf-8")
