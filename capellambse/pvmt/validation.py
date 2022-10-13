@@ -7,7 +7,6 @@ import logging
 import operator
 import re
 
-import capellambse
 from capellambse import helpers
 
 from .. import _namespaces as _n
