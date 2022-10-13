@@ -20,6 +20,7 @@ import urllib.parse
 from lxml import etree
 
 import capellambse
+from capellambse import _namespaces as _n
 from capellambse import aird, helpers, loader
 
 from . import _common as C
@@ -27,8 +28,8 @@ from . import _filters, _semantic, _visual
 from ._filters import ActiveFilters
 
 DIAGRAM_ROOTS = {
-    f"{{{capellambse.NAMESPACES['sequence']}}}SequenceDDiagram",
-    f"{{{capellambse.NAMESPACES['diagram']}}}DSemanticDiagram",
+    f"{{{_n.NAMESPACES['sequence']}}}SequenceDDiagram",
+    f"{{{_n.NAMESPACES['diagram']}}}DSemanticDiagram",
 }
 """Representations whose root element has one of these tags are diagrams.
 

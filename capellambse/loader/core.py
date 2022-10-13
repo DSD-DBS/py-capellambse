@@ -27,6 +27,7 @@ import uuid
 from lxml import etree
 
 import capellambse
+from capellambse import _namespaces as _n
 from capellambse import helpers
 from capellambse.loader import exs, filehandler
 from capellambse.loader.filehandler import localfilehandler
@@ -536,7 +537,7 @@ class MelodyLoader:
         self,
         query: str | etree.XPath,
         *,
-        namespaces: cabc.Mapping[str, str] | None = None,
+        namespaces: cabc.Mapping[str, capellambse.Plugin] | None = None,
         roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[etree._Element]:
         """Run an XPath query on all fragments.
@@ -563,7 +564,7 @@ class MelodyLoader:
         self,
         query: str | etree.XPath,
         *,
-        namespaces: cabc.Mapping[str, str] | None = None,
+        namespaces: cabc.Mapping[str, capellambse.Plugin] | None = None,
         roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[tuple[pathlib.PurePosixPath, etree._Element]]:
         """Run an XPath query and return the fragments and elements.
@@ -583,7 +584,7 @@ class MelodyLoader:
             Defaults to all tree roots.
         """
         if namespaces is None:
-            namespaces = capellambse.NAMESPACES
+            namespaces = _n.NAMESPACES
 
         def follow_href(
             tree: pathlib.PurePosixPath, match: etree._Element

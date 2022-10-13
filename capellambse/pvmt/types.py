@@ -8,13 +8,13 @@ from __future__ import annotations
 import abc
 import collections.abc as cabc
 
-from capellambse import NAMESPACES
+from capellambse import _namespaces as _n
 
 from . import model, validation
 from .core import AttributeProperty, Generic, XMLDictProxy
 
 NAMESPACED_PV = "org.polarsys.capella.core.data.capellacore:{}"
-XTYPE_KEY = "{{{}}}type".format(NAMESPACES["xsi"])
+XTYPE_KEY = f"{{{_n.NAMESPACES['xsi']}}}type"
 
 
 class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
@@ -22,7 +22,7 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
 
     description = AttributeProperty("xml_element", "description")
     xtype = AttributeProperty(
-        "xml_element", f'{{{NAMESPACES["xsi"]}}}type', writable=False
+        "xml_element", f'{{{_n.NAMESPACES["xsi"]}}}type', writable=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -45,7 +45,7 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
         targetelem
             The new ``ownedPropertyValues`` element.
         """
-        for attr in (f'{{{NAMESPACES["xsi"]}}}type', "name", "value"):
+        for attr in (f'{{{_n.NAMESPACES["xsi"]}}}type', "name", "value"):
             try:
                 targetelem.attrib[attr] = defelem.attrib[attr]
             except KeyError:
@@ -98,10 +98,10 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
         del element
 
         if not isinstance(self.cast, type):
+            type_name = type(self).__name__
             raise TypeError(
-                "{0}.cast is not a simple type; please implement {0}.serialize".format(
-                    type(self).__name__
-                )
+                f"{type_name}.cast is not a simple type;"
+                f"please implement {type_name}.serialize"
             )
         # pylint: disable=isinstance-second-argument-not-valid-type
         if isinstance(value, self.cast):
@@ -271,7 +271,7 @@ def select_property_loader(element):
     """Execute the appropriate loader for the PV definition element."""
     xtype = str(element.attrib[XTYPE_KEY]).rsplit(":", maxsplit=1)[-1]
     if xtype not in PROPERTY_LOADER:
-        raise Exception("XSI type {} is not yet supported".format(xtype))
+        raise Exception(f"XSI type {xtype} is not yet supported")
     return PROPERTY_LOADER[xtype](element)
 
 
@@ -350,7 +350,7 @@ class AppliedPropertyValueGroup(XMLDictProxy):
         groupelem = xml_element.makeelement(
             "ownedPropertyValueGroups",
             attrib={
-                f'{{{NAMESPACES["xsi"]}}}type': (
+                f'{{{_n.NAMESPACES["xsi"]}}}type': (
                     NAMESPACED_PV.format("PropertyValueGroup")
                 ),
                 "id": pvmt_ext.model.generate_uuid(xml_element),
@@ -369,7 +369,7 @@ class AppliedPropertyValueGroup(XMLDictProxy):
         ):
             propelem = groupelem.makeelement("ownedPropertyValues")
             PROPERTY_LOADER[
-                defelem.get(f'{{{NAMESPACES["xsi"]}}}type').split(":")[-1]
+                defelem.get(f'{{{_n.NAMESPACES["xsi"]}}}type').split(":")[-1]
             ].applyto(pvmt_ext, defelem, xml_element, propelem)
             groupelem.append(propelem)
 

@@ -4,17 +4,16 @@
 from __future__ import annotations
 
 __all__ = [
-    "NAMESPACES",
     "Plugin",
     "UnsupportedPluginError",
     "UnsupportedPluginVersionError",
     "check_plugin",
-    "get_keys_and_plugins_from_namespaces_by_url",
 ]
 
 import collections.abc as cabc
 import dataclasses
 import re
+import typing as t
 
 PLUGIN_PATTERN = re.compile(r"(.*?)(\d\.\d\.\d)?$")
 
@@ -150,7 +149,7 @@ def get_keys_and_plugins_from_namespaces_by_url(
 
     matched_plugins = [
         (nskey, Plugin(plugin_name, version))
-        for nskey, nsplugin in NAMESPACES.get_items()
+        for nskey, nsplugin in NAMESPACES.get_items()  # type: ignore[attr-defined]
         if plugin_name == nsplugin.name
     ]
     if not matched_plugins:
@@ -181,7 +180,7 @@ def check_plugin(name: str, plugin: Plugin) -> None:
             plugin version range from :class:``capellambse.NAMESPACES``.
     """
     try:
-        my_plugin = NAMESPACES.get_plugin(name)
+        my_plugin = NAMESPACES.get_plugin(name)  # type: ignore[attr-defined]
     except KeyError as err:
         raise UnsupportedPluginError(plugin) from err
 
@@ -215,7 +214,7 @@ class Namespace(dict):
 
 
 #: These XML namespaces are defined in every ``.aird`` document
-NAMESPACES = Namespace(
+NAMESPACES: t.Final[cabc.Mapping[str, Plugin]] = Namespace(
     {
         "CapellaRequirements": Plugin(
             "http://www.polarsys.org/capella/requirements"

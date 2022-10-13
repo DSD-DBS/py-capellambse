@@ -23,8 +23,9 @@ from lxml import etree
 from PIL import ImageFont
 
 import capellambse
+from capellambse import _namespaces as _n
 
-ATT_XT = f'{{{capellambse.NAMESPACES["xsi"]}}}type'
+ATT_XT = f'{{{_n.NAMESPACES["xsi"]}}}type'
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
 RE_VALID_UUID = re.compile(
@@ -350,7 +351,7 @@ def resolve_namespace(tag: str) -> str:
     """
     if ":" in tag:
         namespace, tag = tag.split(":")
-        return f"{{{capellambse.NAMESPACES[namespace]}}}{tag}"
+        return f"{{{_n.NAMESPACES[namespace]}}}{tag}"
     return tag
 
 
@@ -496,7 +497,7 @@ def xpath_fetch_unique(
     """
     if isinstance(xpath, str):
         xpath = etree.XPath(
-            xpath, namespaces=capellambse.NAMESPACES, smart_strings=False
+            xpath, namespaces=_n.NAMESPACES, smart_strings=False
         )
 
     result = xpath(tree)
@@ -553,7 +554,7 @@ def xtype_of(elem: etree._Element) -> str | None:
     if not ns:
         return None
 
-    nskey, plugin = capellambse.get_keys_and_plugins_from_namespaces_by_url(ns)
+    nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
     capellambse.check_plugin(nskey, plugin)
     return f"{nskey}:{tag}"
 
