@@ -44,6 +44,7 @@ sys.path.append(os.path.abspath("./_ext"))
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
+    "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
     "jinja_in_rst",
     "capellambse.sphinx",
@@ -76,6 +77,12 @@ rst_epilog = """
 
 # -- Options for auto-doc ----------------------------------------------------
 autoclass_content = "both"
+
+
+# -- Options for napoleon ----------------------------------------------------
+napoleon_custom_sections = ["Transaction arguments", "Well-known arguments"]
+napoleon_google_docstring = False
+napoleon_include_init_with_doc = True
 
 
 # -- Options for HTML output -------------------------------------------------

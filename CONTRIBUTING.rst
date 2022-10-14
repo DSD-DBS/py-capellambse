@@ -79,7 +79,10 @@ __ https://google.github.io/styleguide/pyguide.html
 
 - **Docstrings**: The `Numpy style guide`__ applies here.
 
-  __ https://numpydoc.readthedocs.io/en/latest/format.html
+  __ https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard
+
+  When writing docstrings for functions, use the imperative style, as per
+  `PEP-257`_. For example, write "Do X and Y" instead of "Does X and Y".
 
 - **Overridden methods**: If the documentation did not change from the base
   class (i.e. the base class' method's docstring still applies without
@@ -153,3 +156,5 @@ __ https://google.github.io/styleguide/pyguide.html
 - Prefer ``t.NamedTuple`` over ``collections.namedtuple``, because the former
   uses a more convenient ``class ...:`` syntax and also supports type
   annotations.
+
+.. _PEP-257: https://peps.python.org/pep-0257/
