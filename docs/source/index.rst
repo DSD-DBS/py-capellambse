@@ -45,8 +45,6 @@ tutorial section.
    start/installation
    start/intro-to-api
    start/declarative
-   start/how-to-explore-capella-mm
-   start/developing-docs
 
 .. toctree::
    :caption: Tutorials
@@ -63,5 +61,13 @@ tutorial section.
    :maxdepth: 2
 
    tools/sphinx-extension.rst
+
+.. toctree::
+   :caption: Development
+   :maxdepth: 2
+
+   development/how-to-explore-capella-mm
+   development/developing-docs
+   development/repl
 
 .. _Capella: https://www.eclipse.org/capella/

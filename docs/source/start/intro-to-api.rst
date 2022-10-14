@@ -18,7 +18,7 @@ model element. We are simplifying that by "flattening" the lower layers.
 
 You may see an example of how that works in the figure below:
 
-.. image:: img/crosslayer_intro.jpg
+.. image:: ../_static/img/crosslayer_intro.jpg
 
 In the example above we see that `LogicalFunction` is a subtype of
 `AbstractFunction`, just like `SystemFunction` or `OperationalActivity`.

@@ -47,6 +47,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
+    "sphinx_argparse_cli",
     "sphinx_rtd_theme",
 ]
 
@@ -67,12 +68,10 @@ templates_path = ["_templates"]
 
 # The full version, including alpha/beta/rc tags.
 version = capellambse.__version__
-rst_epilog = """
+rst_epilog = f"""
 .. |Project| replace:: {project}
 .. |Version| replace:: {version}
-""".format(
-    project=project, version=version
-)
+"""
 
 # -- Options for auto-doc ----------------------------------------------------
 autoclass_content = "both"
