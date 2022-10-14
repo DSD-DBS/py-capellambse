@@ -10,7 +10,7 @@ The following command derives docs out of code:
 
 .. code:: bash
 
-    sphinx-apidoc --output-dir docs/source/code --force .
+    make -C docs apidoc
 
 The following command builds the docs:
 
