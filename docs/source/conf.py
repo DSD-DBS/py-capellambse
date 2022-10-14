@@ -37,7 +37,6 @@ python_requirement = _metadata["requires-python"]
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-import sphinx_rtd_theme
 
 sys.path.append(os.path.abspath("./_ext"))
 
@@ -49,7 +48,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx_argparse_cli",
-    "sphinx_rtd_theme",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -77,6 +75,8 @@ rst_epilog = f"""
 
 # -- Options for auto-doc ----------------------------------------------------
 autoclass_content = "both"
+autodoc_class_signature = "separated"
+autodoc_typehints = "description"
 
 
 # -- Options for napoleon ----------------------------------------------------
@@ -96,10 +96,16 @@ intersphinx_mapping = {
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_theme_options = {
-    "logo_only": False,
-    "collapse_navigation": True,
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/DSD-DBS/py-capellambse",
+            "html": '<img src="/_static/img/github-logo.svg"/>',
+            "class": "",
+        },
+    ],
 }
 html_short_title = "py-capellambse"
 html_show_sourcelink = False
@@ -107,6 +113,11 @@ html_context = {
     "dependencies": install_requirements,
     "py_req": python_requirement,
 }
+
+# -- Extra options for Furo theme --------------------------------------------
+
+pygments_style = "tango"
+pygments_dark_style = "monokai"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
