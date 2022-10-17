@@ -46,6 +46,7 @@ Documentation = "https://dsd-dbs.github.io/py-capellambse"
 [project.optional-dependencies]
 docs = [
   "jinja2",
+  "pyyaml>=6.0",
   "sphinx",
   "sphinx-rtd-theme",
   "tomli; python_version<'3.11'",
