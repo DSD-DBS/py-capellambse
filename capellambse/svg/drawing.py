@@ -818,6 +818,8 @@ class Drawing(drawing.Drawing):
 
 @dataclasses.dataclass
 class LabelBuilder:
+    """Helper data-class for building labels."""
+
     label: LabelDict
     group: container.Group
     labelstyle: style.Styling
@@ -829,6 +831,8 @@ class LabelBuilder:
 
 
 class LinesData(t.NamedTuple):
+    """Helper data-tuple for rendering text-lines from labels."""
+
     lines: list[str]
     line_height: float
     text_height: float
