@@ -26,8 +26,7 @@ try:
 
         Examples
         --------
-        .. code-block::
-           :language: python
+        .. code-block:: python
 
            @click.command()
            @click.option("-m", "--model", type=capellambse.ModelCLI())

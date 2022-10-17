@@ -639,8 +639,8 @@ def get_transformation(
     The Scaling factor .725, translation constants (6, 5) are arbitrarily
     chosen to fit. Currently only ChoicePseudoState is tranformed.
 
-    Parameteres
-    -----------
+    Parameters
+    ----------
     class_
         Classtype string
     pos
