@@ -303,10 +303,10 @@ class ActiveFilters(t.MutableSet[str]):
         """Add an activated filter to the diagram.
 
         Writes a new ``<activatedFilters>`` XML element to the
-        ``<diagram:DSemanticDiagram>`` XML element. If the ``value`` is not
-        apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it can
-        not be applied when rendering. It should still be visible in the
-        GUI.
+        ``<diagram:DSemanticDiagram>`` XML element. If the ``value`` is
+        not apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it
+        can not be applied when rendering. It should still be visible in
+        the GUI.
         """
         if value in self:
             return

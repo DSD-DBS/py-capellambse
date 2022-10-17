@@ -376,6 +376,8 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             parent
                 Reference to the :class:`ElementList` this filter should
                 operate on
+            attr
+                The attribute on list members to filter on
             extract_key
                 Callable that extracts the key from an element
             positive
@@ -776,8 +778,15 @@ class CachedElementList(ElementList[T], t.Generic[T]):
 
         Parameters
         ----------
+        model
+            The model that all elements are a part of.
+        elements
+            The members of this list.
+        elemclass
+            The :class:`GenericElement` subclass to use for
+            reconstructing elements.
         cacheattr
-            The attribute on the ``model`` to use as cache
+            The attribute on the ``model`` to use as cache.
         """
         super().__init__(model, elements, elemclass, **kw)
         self.cacheattr = cacheattr
@@ -817,6 +826,10 @@ class MixedElementList(ElementList[GenericElement]):
 
         Parameters
         ----------
+        model
+            The model that all elements are a part of.
+        elements
+            The members of this list.
         elemclass
             Ignored; provided for drop-in compatibility.
         """

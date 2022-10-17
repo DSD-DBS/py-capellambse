@@ -340,22 +340,25 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             instead of a child.
         aslist
             If None, only a single element must match, which will be
-            returned directly.  If not None, must be a subclass of
-            :class:`elements.DecoupledElementList`.  It will be used to return a
-            list of all matched objects.  Incompatible with ``xtypes =
-            None``.
+            returned directly. If not None, must be a subclass of
+            :class:`~elements.DecoupledElementList`. It will be used to
+            return a list of all matched objects. Incompatible with
+            ``xtypes = None``.
         follow_abstract
-            If True the element(s) found via the :class:`loader.MelodyLoader`
-            by passing the href behind ``abstractType`` is(are) taken instead.
+            Follow the link in the ``abstractType`` XML attribute of
+            each list member and instantiate that object instead. The
+            default is to instantiate the child elements directly.
         list_extra_args
-            Pass key and value pair for mapping in :class:`elements.ElementList``
+            Extra arguments to pass to the :class:`~element.ElementList`
+            constructor.
         rootelem
             A ``/``-separated list of ``xsi:type``s that defines the
             path from the current object's element to the search root.
             If None, the current element will be used directly.
         single_attr
             The name of the only attribute needed for creation. Passing
-            a string enables convenient creation via `create_singleattr`.
+            a string enables convenient creation via
+            `create_singleattr`.
         """
         super().__init__(
             class_,
@@ -839,6 +842,12 @@ class CustomAccessor(PhysicalAccessor[T]):
         elmfinders
             Functions that are called on the current element.  Each
             returns an iterable of possible targets.
+        aslist
+            If None, only a single element must match, which will be
+            returned directly.  If not None, must be a subclass of
+            :class:`elements.DecoupledElementList`.  It will be used to
+            return a list of all matched objects.  Incompatible with
+            ``xtypes = None``.
         elmmatcher
             Function that is called with the transformed target element
             and the current element to determine if the untransformed
@@ -987,7 +996,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
     def from_model(
         cls, _1: capellambse.MelodyModel, _2: t.Any
     ) -> element.ModelObject:
-        """Specifications can not be instantiated"""
+        """Specifications can not be instantiated."""
         raise RuntimeError("Can not create a specification from a model")
 
 

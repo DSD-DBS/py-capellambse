@@ -267,6 +267,8 @@ def snaptarget(
         The Edge target (either a Box or another Edge)
     movetarget
         Allow to move the target under certain conditions
+    routingstyle
+        The routing style of the edge that caused this call
     """
     del movetarget
 
@@ -554,7 +556,7 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
 
 
 def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
-    """Factory for Capella[Incoming/Outgoing]Relation"""
+    """Create a Capella Incoming or Outgoing Relation."""
     label = seb.melodyobjs[0].attrib.get("name", "")
     if not label:
         try:
@@ -573,14 +575,14 @@ def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
 
 
 def include_extend_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
-    """Factory for AbstractCapability[Includes/Extends]"""
+    """Create an AbstractCapabilityIncludes or -Extends edge."""
     if seb.melodyobjs[0].get("name") is None:
         seb.melodyobjs[0].attrib["name"] = seb.diag_element.get("name", "")
     return generic_factory(seb)
 
 
 def association_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
-    """Factory for Associations"""
+    """Create an Association."""
     edge = generic_factory(seb)
     assert len(edge.labels) == 3
 

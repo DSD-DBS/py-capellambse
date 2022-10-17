@@ -26,8 +26,13 @@ if errorlevel 9009 (
 )
 
 if "%1" == "" goto help
+if "%1" == "apidoc" goto apidoc
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+goto end
+
+:apidoc
+sphinx-apidoc --output-dir source/code ..
 goto end
 
 :help

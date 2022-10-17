@@ -46,6 +46,7 @@ Documentation = "https://dsd-dbs.github.io/py-capellambse"
 [project.optional-dependencies]
 docs = [
   "jinja2",
+  "pyyaml>=6.0",
   "sphinx",
   "sphinx-rtd-theme",
   "tomli; python_version<'3.11'",
@@ -99,6 +100,10 @@ reqif = "capellambse.extensions.reqif:init"
 [tool.black]
 line-length = 79
 target-version = ["py39"]
+
+[tool.docformatter]
+wrap-descriptions = 72
+wrap-summaries = 79
 
 [tool.isort]
 profile = 'black'

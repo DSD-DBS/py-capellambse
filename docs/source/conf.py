@@ -42,13 +42,12 @@ import sphinx_rtd_theme
 sys.path.append(os.path.abspath("./_ext"))
 
 extensions = [
+    "capellambse.sphinx",
+    "jinja_in_rst",
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
-    "jinja_in_rst",
-    "capellambse.sphinx",
-    "sphinx.ext.autosectionlabel",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

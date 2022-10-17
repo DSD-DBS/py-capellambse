@@ -21,7 +21,7 @@ class Constraint(c.GenericElement):
 
 @c.xtype_handler(None)
 class Generalization(c.GenericElement):
-    """A Generalization"""
+    """A Generalization."""
 
     _xmltag = "ownedGeneralizations"
 

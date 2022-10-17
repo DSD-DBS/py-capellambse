@@ -58,7 +58,7 @@ FREE_SYMBOLS = {
 def tmp_json_fixture(
     model: capellambse.MelodyModel, tmp_path: pathlib.Path
 ) -> pathlib.Path:
-    """Return tmp path of diagram json file"""
+    """Return tmp path of diagram json file."""
     dest = tmp_path / (TEST_LAB + ".json")
     diagram_json: str = model.diagrams.by_name(TEST_LAB).render("json_pretty")
     dest.write_text(diagram_json)
@@ -389,7 +389,7 @@ class TestSVG:
     def test_diagram_decorations(
         self, model: capellambse.MelodyModel, diagram_name: str
     ):
-        """Test diagrams get rendered successfully"""
+        """Test diagrams get rendered successfully."""
         diag = model.diagrams.by_name(diagram_name)
         diag.render("svg")
 
@@ -405,14 +405,18 @@ class TestSVG:
     def test_box_contains_label_and_symbol_and_icons_dont_overlap_with_text(
         self, diagram_type: str, label: str, width: int, height: int
     ) -> None:
-        """For all registered Diagramtypes with decorations test label and icon
-        containment for boxes exclusively, i.e. exclude the following:
+        """Paint the CI red.
+
+        For all registered Diagramtypes with decorations test label and
+        icon containment for boxes exclusively, i.e. exclude the
+        following:
+
             * Ports
             * Exchanges
             * Markers
 
-        If the label check fails the diagram gets saved to root directory for
-        convinient investigation.
+        If the label check fails the diagram gets saved to root
+        directory for convenient investigation.
         """
         decos = [
             symbol
@@ -468,8 +472,10 @@ class TestSVG:
     def test_edge_contains_label_and_symbol_and_icons_dont_overlap_with_text(
         self, diagram_type: str, label: str, width: int, height: int
     ) -> None:
-        """For all registered Diagramtypes with decorations test edge-symbols on
-        not overlapping/overflowing into label text.
+        """Paint the CI red.
+
+        For all registered Diagramtypes with decorations test edge-
+        symbols on not overlapping/overflowing into label text.
         """
         decos = [
             symbol

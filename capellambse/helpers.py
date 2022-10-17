@@ -634,14 +634,13 @@ def get_transformation(
     pos: tuple[float, float],
     size: tuple[float, float],
 ) -> dict[str, str]:
-    """
-    Calculate transformation for class.
+    """Calculate transformation for class.
 
     The Scaling factor .725, translation constants (6, 5) are arbitrarily
     chosen to fit. Currently only ChoicePseudoState is tranformed.
 
-    Parameteres
-    -----------
+    Parameters
+    ----------
     class_
         Classtype string
     pos

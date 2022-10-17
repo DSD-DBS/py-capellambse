@@ -262,7 +262,7 @@ class ModelFile:
             )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
-        """ "Unfollow" a fragment link and return the placeholder element.
+        """Unfollow a fragment link and return the placeholder element.
 
         If the given UUID is not linked to from this file, None is
         returned.
@@ -466,6 +466,8 @@ class MelodyLoader:
 
         Parameters
         ----------
+        parent
+            The parent element below which the new UUID will be used.
         want
             Try this UUID first, and use it if it satisfies all other
             constraints. If it does not satisfy all constraints (e.g. it
@@ -521,6 +523,9 @@ class MelodyLoader:
         ----------
         parent
             The parent element below which the new UUID will be used.
+        want
+            Request this UUID. The request may or may not be fulfilled;
+            always use the actual UUID returned by the context manager.
         """
         _, tree = self._find_fragment(parent)
         new_uuid = self.generate_uuid(parent, want=want)

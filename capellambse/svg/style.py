@@ -155,9 +155,10 @@ def get_symbol_styleclass(style: str | None, dstyle: str | None) -> str | None:
 class Styling:
     """Container for style attributes of svg objects.
 
-    .. note::
-        Attributes containing '-' are only referenceable via getattr()
-        or subscripting syntax, due to Python identifier naming rules.
+    Notes
+    -----
+    Attributes containing '-' are only referenceable via getattr() or
+    subscripting syntax, due to Python identifier naming rules.
     """
 
     _marker: bool = False

@@ -225,7 +225,7 @@ class Drawing(drawing.Drawing):
         )
 
     def _draw_box_label(self, builder: LabelBuilder) -> container.Group:
-        """Draw label text on given object and return calculated label position."""
+        """Draw label text on given object and return label position."""
         x, text_height, _, y_margin = self._draw_label(builder)
 
         if DEBUG:

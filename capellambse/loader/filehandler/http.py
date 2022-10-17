@@ -139,6 +139,8 @@ class HTTPFileHandler(FileHandler):
             The username for HTTP Basic Auth.
         password
             The password for HTTP Basic Auth.
+        headers
+            Additional HTTP headers to send to the server.
         subdir
             Prepend this path to all requested files. It is subject to
             the same file name escaping rules explained above.

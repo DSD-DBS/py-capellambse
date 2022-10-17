@@ -34,7 +34,7 @@ def pvext(model):
 
 
 class TestPVMTBase:
-    """Tests for basic PVMT functionality"""
+    """Tests for basic PVMT functionality."""
 
     domain_uuid = "02e0c435-f085-471f-9f6e-e12fe5f27687"
     domain_name = "Computer"
@@ -197,7 +197,7 @@ class TestAppliedPropertyValueGroup:
 
 
 class TestAppliedPropertyValueGroupXML:
-    """Tests that rely on writing back and comparing the output XML"""
+    """Tests that rely on writing back and comparing the output XML."""
 
     expect_root = TEST_ROOT / "expected-output"
 

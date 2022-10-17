@@ -39,7 +39,10 @@ class RoutingStyle(enum.Enum):
 
 
 class Box:
-    """A Box.  Some may call it rectangle."""
+    """A Box.
+
+    Some may call it rectangle.
+    """
 
     # The number of pixels that a port hangs over its parent's border
     PORT_OVERHANG = 2
@@ -348,6 +351,8 @@ class Box:
 
         Parameters
         ----------
+        offset
+            The offset to move the box by.
         children
             Recursively move children as well.  If False, the positions
             of children need to be adjusted separately.
@@ -461,12 +466,12 @@ class Box:
 
     @property
     def center(self) -> aird.Vector2D:
-        """The center point of this Box."""
+        """Return the center point of this Box."""
         return self.pos + self.size / 2
 
     @property
     def parent(self) -> Box | None:
-        """The parent element of this Box."""
+        """Return the parent element of this Box."""
         return self._parent
 
     @parent.setter
@@ -908,6 +913,11 @@ class Diagram:
         extend_viewport
             True to automatically extend the diagram viewport so that
             the added element is fully visible.
+        force
+            Normally an exception will be raised if another element with
+            the same UUID as the new one already exists in the diagram.
+            If this is set to True, the old element will be overwritten
+            instead.
         """
         if element.uuid is not None:
             if element.uuid in self:

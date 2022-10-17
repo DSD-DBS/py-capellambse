@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Tests for aird-filters applied after rendering a diagram"""
+"""Tests for aird-filters applied after rendering a diagram."""
 import pytest
 
 import capellambse

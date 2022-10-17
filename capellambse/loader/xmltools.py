@@ -387,6 +387,11 @@ class EnumAttributeProperty(AttributeProperty):
 
         Parameters
         ----------
+        xmlattr
+            The owning type's instance attribute pointing to the XML
+            element.
+        attribute
+            The attribute on the XML element to handle.
         enumcls
             The :class:`enum.Enum` subclass to use.  The class' members'
             values are used as the possible values for the XML
