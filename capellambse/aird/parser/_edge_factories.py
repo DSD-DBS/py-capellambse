@@ -584,15 +584,8 @@ def include_extend_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
 def association_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     """Create an Association."""
     edge = generic_factory(seb)
-    assert len(edge.labels) == 3
-
-    links = seb.melodyobjs[0].attrib["navigableMembers"]
-    navigable = set(seb.melodyloader.follow_links(seb.data_element, links))
-    if not navigable:
-        navigable = set(seb.melodyobjs[1:])
-
-    for prop, label in zip(seb.melodyobjs, edge.labels):
-        label.label = prop.get("name", "")
-        label.hidden = prop not in navigable
-
+    for member in seb.melodyobjs[0].iterchildren("ownedMembers"):
+        kind = member.get("aggregationKind", "ASSOCIATION").capitalize()
+        if kind != "Association":
+            edge.styleclass = kind
     return edge
