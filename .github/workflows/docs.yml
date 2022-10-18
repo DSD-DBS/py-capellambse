@@ -23,6 +23,7 @@ jobs:
           python -m pip install -U pip
       - name: Install dependencies
         run: |
+          sudo apt-get install -y pandoc
           python -m pip install '.[docs]'
       - name: Auto-generate APIDOC sources
         run: |-

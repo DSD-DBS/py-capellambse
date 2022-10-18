@@ -34,14 +34,13 @@ language <declarative-modelling>`, which is based on the API for the semantic
 model.
 
 If you want a quickstart at how to use this package, head right into the
-tutorial section.
+:ref:`how-tos section <howtos>`.
 
 .. toctree::
    :caption: Start
    :maxdepth: 1
    :titlesonly:
 
-   start/prerequisites
    start/installation
    start/intro-to-api
    start/declarative
@@ -49,6 +48,8 @@ tutorial section.
 .. toctree::
    :caption: Tutorials
    :titlesonly:
+
+   howtos/howtos
 
 .. toctree::
    :caption: API reference

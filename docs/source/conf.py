@@ -37,12 +37,9 @@ python_requirement = _metadata["requires-python"]
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-
-sys.path.append(os.path.abspath("./_ext"))
-
 extensions = [
     "capellambse.sphinx",
-    "jinja_in_rst",
+    "nbsphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
     "sphinx.ext.intersphinx",
@@ -51,7 +48,7 @@ extensions = [
 ]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["_templates"]
+# templates_path = []
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

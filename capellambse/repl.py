@@ -12,7 +12,7 @@ this script uses a separate readline history. It is located in
 ``capellambse`` cache directory on others.
 
 Normally this script is run with something like ``python -Xdev -m
-capellambse.repl test-5.0`. However, as that can become quite unwieldy,
+capellambse.repl test-5.0``. However, as that can become quite unwieldy,
 it is also possible to run it as ``./capellambse/repl.py 5.0`` from the
 source tree – on Unix-like operating systems, this will automatically
 enable ``-Xdev`` on the Python interpreter. Requirement is a
