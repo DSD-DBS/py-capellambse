@@ -31,7 +31,7 @@ def generic_factory(
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
-    boxtype: type[aird.Box] | functools.partial[aird.Box],
+    boxtype: type[_T] | functools.partial[_T],
     minsize: aird.Vector2D = ...,
 ) -> _T:
     ...
@@ -40,9 +40,9 @@ def generic_factory(
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
-    boxtype: type[aird.Box] | functools.partial[aird.Box] = aird.Box,
+    boxtype: type[aird.Box] | type[_T] | functools.partial[_T] = aird.Box,
     minsize: aird.Vector2D = aird.Vector2D(148, 69),
-) -> aird.Box:
+) -> _T:
     """Construct a Box from the diagram XML."""
     if seb.diag_element.getparent() is not seb.diagram_tree:
         parent_uid = seb.diag_element.getparent().attrib.get("uid")
@@ -124,7 +124,7 @@ def generic_factory(
         box.minsize = (30, 30)
     _filters.setfilters(seb, box)
     box.parent = parent
-    return box
+    return t.cast(_T, box)
 
 
 def generic_stacked_factory(seb: C.SemanticElementBuilder) -> C.StackingBox:
@@ -152,7 +152,7 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     if seb.melodyobjs[0].attrib.get("abstract", "false") == "true":
         box.styleoverrides["text_font-style"] = "italic"
 
-    features = collections.defaultdict(list)
+    features = collections.defaultdict[str, list[str]](list)
     for feature in seb.melodyobjs[0].iterchildren("ownedFeatures"):
         feat_name = feature.attrib["name"]
         feat_type = feature.attrib[C.ATT_XST].split(":")[-1]
@@ -212,7 +212,7 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
             C.LOGGER.warning("Unknown feature type %r", feat_type)
         features[feat_type].append(feat_name)
 
-    box.features = sum(features.values(), [])
+    box.features = sum(features.values(), list[str]())
     return box
 
 

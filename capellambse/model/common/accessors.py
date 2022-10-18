@@ -39,6 +39,8 @@ from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
+_C = t.TypeVar("_C", bound="ElementListCouplingMixin")
+
 
 class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     """Super class for all Accessor types."""
@@ -1163,7 +1165,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             accessor.delete(self, obj)
         super().__delitem__(index)
 
-    def _newlist_type(self) -> type[element.ElementList[T]]:
+    def _newlist_type(self: _C) -> type[_C]:
         assert len(type(self).__bases__) == 2
         assert type(self).__bases__[0] is ElementListCouplingMixin
         return type(self).__bases__[1]
