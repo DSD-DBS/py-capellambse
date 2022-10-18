@@ -13,7 +13,7 @@ from . import FilterArguments, composite, global_filter
 
 XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
 EXCHANGES_WITH_ROLES = frozenset(
-    ("Association", "Aggregation", "Composition", "Generalization")
+    {"Aggregation", "Association", "Composition", "Generalization"}
 )
 
 
@@ -26,10 +26,8 @@ def hide_association_labels(
 
     classes = EXCHANGES_WITH_ROLES
     for obj in args.target_diagram:
-        if not (isinstance(obj, aird.Edge) or obj.styleclass in classes):
+        if not isinstance(obj, aird.Edge) or obj.styleclass not in classes:
             continue
-
-        assert isinstance(obj, aird.Edge)
         for label in obj.labels:
             label.hidden = True
 
