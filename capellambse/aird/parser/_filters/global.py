@@ -17,10 +17,28 @@ EXCHANGES_WITH_ROLES = frozenset(
 )
 
 
+@global_filter("hide.association.labels.filter")
+def hide_association_labels(
+    args: FilterArguments, flt: lxml.etree._Element
+) -> None:
+    """Hide names of roles on an exchange."""
+    del flt
+
+    classes = EXCHANGES_WITH_ROLES
+    for obj in args.target_diagram:
+        if not (isinstance(obj, aird.Edge) or obj.styleclass in classes):
+            continue
+
+        assert isinstance(obj, aird.Edge)
+        for label in obj.labels:
+            label.hidden = True
+
+
 @global_filter("hide.role.names.filter")
 def hide_role_names(args: FilterArguments, flt: lxml.etree._Element) -> None:
     """Hide names of roles on an exchange."""
     del flt
+
     classes = EXCHANGES_WITH_ROLES
     for obj in args.target_diagram:
         if not isinstance(obj, aird.Edge):
