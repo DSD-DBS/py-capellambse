@@ -46,6 +46,7 @@ extensions = [
     "jinja_in_rst",
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
+    "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx_argparse_cli",
     "sphinx_rtd_theme",
@@ -73,6 +74,7 @@ rst_epilog = f"""
 .. |Version| replace:: {version}
 """
 
+
 # -- Options for auto-doc ----------------------------------------------------
 autoclass_content = "both"
 
@@ -81,6 +83,12 @@ autoclass_content = "both"
 napoleon_custom_sections = ["Transaction arguments", "Well-known arguments"]
 napoleon_google_docstring = False
 napoleon_include_init_with_doc = True
+
+
+# -- Options for Intersphinx output ------------------------------------------
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+}
 
 
 # -- Options for HTML output -------------------------------------------------

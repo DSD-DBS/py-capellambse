@@ -52,7 +52,7 @@ API usage
 Declarative YAML can also be applied programmatically, by calling the
 :py:func:`capellambse.decl.apply` function. It takes a (loaded) CapellaMBSE
 model, and either a path to a file or a file-like object. To pass in a string
-containing YAML, wrap it in ``io.StringIO``:
+containing YAML, wrap it in :external:class:`io.StringIO`:
 
 .. code-block:: python
    :emphasize-lines: 5
