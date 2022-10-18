@@ -71,7 +71,7 @@ rst_epilog = f"""
 
 
 # -- Options for auto-doc ----------------------------------------------------
-autoclass_content = "both"
+autoclass_content = "class"
 autodoc_class_signature = "separated"
 autodoc_typehints = "description"
 
