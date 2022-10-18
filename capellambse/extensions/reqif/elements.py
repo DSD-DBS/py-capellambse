@@ -365,11 +365,13 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         self._source = source
 
     @t.overload
-    def __getitem__(self, idx: int | str) -> c.T:
+    def __getitem__(self, idx: int | str) -> AbstractRequirementsRelation:
         ...
 
     @t.overload
-    def __getitem__(self, idx: slice) -> c.ElementList[c.T]:
+    def __getitem__(
+        self, idx: slice
+    ) -> c.ElementList[AbstractRequirementsRelation]:
         ...
 
     def __getitem__(self, idx):

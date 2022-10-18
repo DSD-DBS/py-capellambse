@@ -8,6 +8,7 @@ import base64
 import pathlib
 import re
 import shutil
+import sys
 from importlib import metadata
 
 import pytest
@@ -66,12 +67,25 @@ class FakeEntrypoint:
 
         return filehandler
 
-    @classmethod
-    def patch(cls, monkeypatch, expected_name, expected_url):
-        fake_entrypoints = {
-            "capellambse.filehandler": (cls(expected_name, expected_url),)
-        }
-        monkeypatch.setattr(metadata, "entry_points", lambda: fake_entrypoints)
+    if sys.version_info < (3, 10):
+
+        @classmethod
+        def patch(cls, monkeypatch, expected_name, expected_url):
+            eps = {
+                "capellambse.filehandler": (cls(expected_name, expected_url),)
+            }
+            monkeypatch.setattr(metadata, "entry_points", lambda: eps)
+
+    else:
+
+        @classmethod
+        def patch(cls, monkeypatch, expected_name, expected_url):
+            def entry_points(group, name):
+                assert group == "capellambse.filehandler"
+                assert name == expected_name
+                return (cls(expected_name, expected_url),)
+
+            monkeypatch.setattr(metadata, "entry_points", entry_points)
 
 
 def test_a_single_protocol_is_not_swallowed_by_get_filehandler(

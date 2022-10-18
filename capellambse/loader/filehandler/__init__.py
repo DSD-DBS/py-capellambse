@@ -9,6 +9,7 @@ import logging
 import os
 import pathlib
 import re
+import sys
 import typing as t
 from importlib import metadata
 
@@ -46,16 +47,28 @@ def split_protocol(uri: str | os.PathLike) -> tuple[str, str | os.PathLike]:
     return (handler_name, uri)
 
 
-def load_entrypoint(handler_name: str) -> type[FileHandler]:
-    try:
-        ep = next(
-            i
-            for i in metadata.entry_points()["capellambse.filehandler"]
-            if i.name == handler_name
+if sys.version_info < (3, 10):
+
+    def load_entrypoint(handler_name: str) -> type[FileHandler]:
+        try:
+            ep = next(
+                i
+                for i in metadata.entry_points()["capellambse.filehandler"]
+                if i.name == handler_name
+            )
+        except StopIteration:
+            raise ValueError(f"Unknown file handler {handler_name}") from None
+        return ep.load()
+
+else:
+
+    def load_entrypoint(handler_name: str) -> type[FileHandler]:
+        eps = metadata.entry_points(
+            group="capellambse.filehandler", name=handler_name
         )
-    except StopIteration:
-        raise ValueError(f"Unknown file handler {handler_name}") from None
-    return ep.load()
+        if not eps:
+            raise ValueError(f"Unknown file handler {handler_name}")
+        return eps[0].load()
 
 
 def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:
