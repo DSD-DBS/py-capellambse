@@ -5,6 +5,10 @@
 Python-Capellambse
 ==================
 
+.. image:: https://img.shields.io/pypi/pyversions/capellambse
+   :target: https://pypi.org/project/capellambse/
+   :alt: PyPI - Python Version
+
 .. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
   :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
 
@@ -68,29 +72,30 @@ trusted environment!
 __ https://github.com/alan-turing-institute/the-turing-way/blob/b36c3ac1c78acbbe18441beaa89514544ed12021/workshops/boost-research-reproducibility-binder/workshop-presentations/zero-to-binder-python.md#private-files
 __ #installation
 
-The ``examples`` directory contains several hands-on example notebooks that you
-can immediately run and start experimenting with. Below is a short summary of
-each notebook's goal. If you are in the JupyterLab environment, you can click
-the notebook names to directly open them in a new lab tab. On Github, you will
-be shown a statically rendered preview of the notebook.
+The ``docs/source/examples`` directory contains several hands-on example
+notebooks that you can immediately run and start experimenting with. Below is a
+short summary of each notebook's goal. If you are in the JupyterLab
+environment, you can click the notebook names to directly open them in a new
+lab tab. On Github, you will be shown a statically rendered preview of the
+notebook.
 
 - `01 Introduction.ipynb`__ provides a high-level overview of the library
   features. It visualizes examples like a Component - Function allocation table
   by leveraging Jupyter's and IPython's rich display functionality.
 
-  __ examples/01%20Introduction.ipynb
+  __ docs/source/examples/01%20Introduction.ipynb
 
 - `02 Intro to Physical Architecture.ipynb`__ explores some more advanced
   concepts on the example of the Physical Architecture Layer. It shows how to
   derive tabular data, like a Bill of Materials or a Software to Hardware
   allocation table, by using ``pandas`` dataframes.
 
-  __ examples/02%20Intro%20to%20Physical%20Architecture%20API.ipynb
+  __ docs/source/examples/02%20Intro%20to%20Physical%20Architecture%20API.ipynb
 
 - `03 Data Values.ipynb`__ shows how the API can be used to explore classes,
   class instances and other objects related to data modeling.
 
-  __ examples/03%20Data%20Values.ipynb
+  __ docs/source/examples/03%20Data%20Values.ipynb
 
 - `04 Intro to Jinja templating.ipynb`__ demonstrates how to effectively
   combine ``capellambse`` with the powerful Jinja__ templating engine. This
@@ -98,7 +103,7 @@ be shown a statically rendered preview of the notebook.
   including interactive web pages, PDF documents and any other textual
   representations of your models.
 
-  __ examples/04%20Intro%20to%20Jinja%20templating.ipynb
+  __ docs/source/examples/04%20Intro%20to%20Jinja%20templating.ipynb
   __ https://palletsprojects.com/p/jinja/
 
 - `05 Introduction to Libraries.ipynb`__ shows how to use Capella Library
@@ -106,7 +111,7 @@ be shown a statically rendered preview of the notebook.
   used to open a project that is based on a library and find objects in both
   models.
 
-  __ examples/05%20Introduction%20to%20Libraries.ipynb
+  __ docs/source/examples/05%20Introduction%20to%20Libraries.ipynb
 
 - `06 Introduction to Requirement access and management.ipynb`__ shows how the
   API can be used to work with requirements objects, introduced by the Capella
@@ -114,7 +119,7 @@ be shown a statically rendered preview of the notebook.
   requirements in the model, see which objects requirements are linked / traced
   to and even export requirements to Excel or ReqIF formats.
 
-  __ examples/06%20Introduction%20to%20Requirement%20access%20and%20management.ipynb
+  __ docs/source/examples/06%20Introduction%20to%20Requirement%20access%20and%20management.ipynb
   __ https://www.eclipse.org/capella/addons.html
 
 - `07 Code Generation.ipynb`__ shows how to generate code from class diagrams.
@@ -123,7 +128,7 @@ be shown a statically rendered preview of the notebook.
   also show how simple Python stubs could be generated given a ``Class``
   object.
 
-  __ examples/07%20Code%20Generation.ipynb
+  __ docs/source/examples/07%20Code%20Generation.ipynb
   __ https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html
   __ https://developers.google.com/protocol-buffers
 

@@ -45,10 +45,13 @@ Documentation = "https://dsd-dbs.github.io/py-capellambse"
 
 [project.optional-dependencies]
 docs = [
+  "furo",
+  "ipython",
   "jinja2",
+  "nbsphinx",
   "pyyaml>=6.0",
   "sphinx",
-  "sphinx-rtd-theme",
+  "sphinx-argparse-cli",
   "tomli; python_version<'3.11'",
 ]
 

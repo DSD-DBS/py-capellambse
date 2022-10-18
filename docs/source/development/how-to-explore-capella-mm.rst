@@ -52,8 +52,8 @@ all the extras that help you visualize / review the meta-model.
 
 __ https://www.eclipse.org/capella/download.html
 
-.. image:: img/2021-05-09_10-32.jpg
-.. image:: img/2021-05-09_10-36.jpg
+.. image:: ../_static/img/2021-05-09_10-32.jpg
+.. image:: ../_static/img/2021-05-09_10-36.jpg
 
 After import Eclipse may highlight some projects with error or warning sign -
 that's fine, we'll let it go for now.
@@ -64,7 +64,7 @@ project. There you'll find the definitions of the "Capella Layers" and the
 enabling "EnginereengConcerns" components. For example, the ``SystemAnalysis``
 is provided by ``ContextArchitecture.ecore``.
 
-.. image:: img/2021-05-09_10-50.jpg
+.. image:: ../_static/img/2021-05-09_10-50.jpg
 
 Even though the default tree-view (triggered by double-click on a ``.core``) is
 already giving us something there are much better ways to review the models.
@@ -95,7 +95,7 @@ look like what we have below:
 __ #create-new-representations-file
 __ #package-dependency-overview
 
-.. image:: img/2021-05-09_17-38.jpg
+.. image:: ../_static/img/2021-05-09_17-38.jpg
 
 And even though there are not too many packages in the meta-model, when we
 visualize the inter-package dependency it may be a bit difficult to understand.
@@ -110,7 +110,7 @@ really. We could change perspective and look for the dependencies of an
 end-user exposed package, such as Operational Analysis (oa). I'll use Papyrus
 to visualize that:
 
-.. image:: img/2021-05-09_17-44.jpg
+.. image:: ../_static/img/2021-05-09_17-44.jpg
 
 When we add all the Capella layers to that picture things get a bit more
 interesting. I added some artificial grouping on top of the existing packages
@@ -119,7 +119,7 @@ packages that cover the layers we used to see in the tool; ``CrossLayer`` -
 packages that define ontology and patterns that we see in almost every layer;
 ``Enablers`` - the low level ontology that enables every element.
 
-.. image:: img/2021-05-09_21-21.jpg
+.. image:: ../_static/img/2021-05-09_21-21.jpg
 
 To make a further point on ``CrossLayer``, lets have a closer look at a
 Function. We know that Functions are quite similar in how they look and feel
@@ -134,7 +134,7 @@ visualize the way the functions are made.
 __ https://www.eclipse.org/ecoretools/overview.html
 __ #
 
-.. image:: img/2021-05-09_22-09.jpg
+.. image:: ../_static/img/2021-05-09_22-09.jpg
 
 Just to be on a safe side I've done the above exercise for
 ``OperationalActivity``, ``SystemFunction``, ``LogicalFunction`` and
@@ -144,7 +144,7 @@ this gives a feeling for what the ``CrossLayer`` is about - to me that's the
 place where most of the magic happens. And this is how the relationship between
 the ``CapellaLayers`` and ``CrossLayer`` looks like when we de-noise it a bit:
 
-.. image:: img/2021-05-09_22-39.jpg
+.. image:: ../_static/img/2021-05-09_22-39.jpg
 
 It's been a lengthy chain of thought and to finish on a hopefully useful
 visualization - lets have a look at the Class contexts of some things that we
@@ -159,20 +159,20 @@ elements, grouped by CrossLayer package
 Functional Analysis
 *******************
 
-.. image:: img/2021-05-10_22-35.jpg
+.. image:: ../_static/img/2021-05-10_22-35.jpg
 
-.. image:: img/2021-05-17_11-50.jpg
+.. image:: ../_static/img/2021-05-17_11-50.jpg
 
-.. image:: img/2021-05-10_22-59.jpg
+.. image:: ../_static/img/2021-05-10_22-59.jpg
 
-.. image:: img/2021-05-12_21-03.jpg
+.. image:: ../_static/img/2021-05-12_21-03.jpg
 
 State Machines
 **************
 
-.. image:: img/2021-05-12_18-18.jpg
+.. image:: ../_static/img/2021-05-12_18-18.jpg
 
-.. image:: img/2021-05-13_20-46.jpg
+.. image:: ../_static/img/2021-05-13_20-46.jpg
 
 The figure above is somewhat a "treasure map" to everything related to state
 machines. It is made in a semi-automatic way with the help of ECore Tools and
@@ -181,16 +181,16 @@ ELK
 Composite Structure
 *******************
 
-.. image:: img/2021-05-12_20-10.jpg
+.. image:: ../_static/img/2021-05-12_20-10.jpg
 
-.. image:: img/2021-05-12_18-51.jpg
+.. image:: ../_static/img/2021-05-12_18-51.jpg
 
 You may also want to have a look at the Block context below as it defines some
 other useful things that a Component (or LogicalComponent) can do.
 
-.. image:: img/2021-05-12_20-06.jpg
+.. image:: ../_static/img/2021-05-12_20-06.jpg
 
-.. image:: img/2021-05-12_19-12.jpg
+.. image:: ../_static/img/2021-05-12_19-12.jpg
 
 Appendix: Visualizing ECores
 ############################
@@ -205,7 +205,7 @@ To start playing with visualizations we need a new representations file
 (.aird). It is pretty easy to get there but just in case, there is figure below
 to guide you through that.
 
-.. image:: img/2021-05-09_17-36.jpg
+.. image:: ../_static/img/2021-05-09_17-36.jpg
 
 Package dependency overview
 ***************************
@@ -213,7 +213,7 @@ Package dependency overview
 To create a package dependency overview for all packages you may follow the
 guidance in the figure below:
 
-.. image:: img/2021-05-09_17-57.jpg
+.. image:: ../_static/img/2021-05-09_17-57.jpg
 
 Visualizing class inheritance
 *****************************
@@ -222,4 +222,4 @@ There is a very nice feature that allows given a class to show all of its
 super-classes (generalizations) and specializations. The figure below gives you
 some hints for how to use it:
 
-.. image:: img/2021-05-09_21-46.jpg
+.. image:: ../_static/img/2021-05-09_21-46.jpg

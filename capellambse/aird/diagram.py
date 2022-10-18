@@ -552,7 +552,7 @@ class Edge(aird.Vec2List):
         styleoverrides: _StyleOverrides | None = None,
         hidden: bool = False,
     ):
-        """Construct an Edge.
+        r"""Construct an Edge.
 
         Parameters
         ----------
@@ -566,8 +566,8 @@ class Edge(aird.Vec2List):
             Boxes are not supported. The ``hidden`` flag is honored
             during rendering calculations.
         points
-            A list of ``Vector2D``s with the (absolute) points this edge
-            follows.
+            A list of ``Vector2D``\ s with the (absolute) points this
+            edge follows.
         uuid
             UUID of the semantic element this Edge represents.
         styleclass
@@ -817,7 +817,7 @@ class Circle:
         source: aird.Vec2ish,
         style: RoutingStyle = RoutingStyle.OBLIQUE,
     ) -> aird.Vector2D:
-        """Snap the ``vector`` onto this Circle, preferably in `direction`."""
+        """Snap the vector onto this Circle, preferably in direction."""
         del style
         # TODO implement different routing styles than OBLIQUE
 

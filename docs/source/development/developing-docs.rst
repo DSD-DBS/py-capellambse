@@ -6,7 +6,8 @@
 Documentation development
 *************************
 
-The following command derives docs out of code:
+The following command deletes previous built documentation and derives
+docs out of code:
 
 .. code:: bash
 

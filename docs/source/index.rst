@@ -34,23 +34,22 @@ language <declarative-modelling>`, which is based on the API for the semantic
 model.
 
 If you want a quickstart at how to use this package, head right into the
-tutorial section.
+:ref:`how-tos section <howtos>`.
 
 .. toctree::
    :caption: Start
    :maxdepth: 1
    :titlesonly:
 
-   start/prerequisites
    start/installation
    start/intro-to-api
    start/declarative
-   start/how-to-explore-capella-mm
-   start/developing-docs
 
 .. toctree::
    :caption: Tutorials
    :titlesonly:
+
+   howtos/howtos
 
 .. toctree::
    :caption: API reference
@@ -63,5 +62,13 @@ tutorial section.
    :maxdepth: 2
 
    tools/sphinx-extension.rst
+
+.. toctree::
+   :caption: Development
+   :maxdepth: 2
+
+   development/how-to-explore-capella-mm
+   development/developing-docs
+   development/repl
 
 .. _Capella: https://www.eclipse.org/capella/

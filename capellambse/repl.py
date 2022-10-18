@@ -12,12 +12,22 @@ this script uses a separate readline history. It is located in
 ``capellambse`` cache directory on others.
 
 Normally this script is run with something like ``python -Xdev -m
-capellambse.repl test-5.0`. However, as that can become quite unwieldy,
+capellambse.repl test-5.0``. However, as that can become quite unwieldy,
 it is also possible to run it as ``./capellambse/repl.py 5.0`` from the
 source tree – on Unix-like operating systems, this will automatically
 enable ``-Xdev`` on the Python interpreter. Requirement is a
 sufficiently recent version of ``env``, which by now even Debian should
 have.
+
+In order to add custom models for the :ref:`model <repl.py-model>`
+argument, add a JSON file to the ``capellambse/known_models`` directory.
+This file defines the instantiation parameters for the
+:class:`capellambse.model.MelodyModel`:
+
+.. literalinclude:: ../../../capellambse/known_models/test-lib.json
+   :language: json
+   :lineno-start: 1
+   :linenos:
 """
 from __future__ import annotations
 
@@ -104,8 +114,8 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
         nargs=1,
         help=(
             "A model name from repl_models, an AIRD file, or a JSON file"
-            " describing the model. The following repl_models are known:"
-            f" {', '.join(i for i in known_models)}"
+            " describing the model. The following repl_models are known: "
+            + ", ".join(f"``{i}``" for i in known_models)
         ),
     )
     parser.add_argument(

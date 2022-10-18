@@ -140,7 +140,7 @@ def get_keys_and_plugins_from_namespaces_by_url(
 
 
 def check_plugin(nskey: str, plugin: Plugin) -> None:
-    """Check if the given ``plugin`` is supported.
+    r"""Check if the given ``plugin`` is supported.
 
     It is assumed that ``plugin`` is known by
     :class:`NAMESPACES_PLUGINS` from the ``nskey``. This can be ensured
@@ -168,7 +168,7 @@ def check_plugin(nskey: str, plugin: Plugin) -> None:
         is met:
           * If given ``plugin``'s version is singular and exceeds plugin
             version from :class:`NAMESPACES_PLUGINS` or
-          * if ``plugin``s version is a range and is not contained in
+          * if ``plugin``\ s version is a range and is not contained in
             plugin version range from :class:`NAMESPACES_PLUGINS`.
     """
     try:

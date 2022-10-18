@@ -35,7 +35,7 @@ class MelodyModel:
     """Provides high-level access to a model.
 
     This class builds upon the lower-level
-    :class:`capellambse.loader.core.MelodyLoader` to provide an
+    :class:`~capellambse.loader.core.MelodyLoader` to provide an
     abstract, high-level interface for easy access to various model
     aspects.
     """
@@ -113,30 +113,30 @@ class MelodyModel:
               .. note:: Depending on the exact file handler, saving back
                  to a remote location might fail with ``update_cache``
                  set to ``False``. See :meth:`save` for more details.
-        entrypoint
+        entrypoint: str
             Entrypoint from path to the main ``.aird`` file.
-        revision
+        revision: str
             The revision to use, if loading a model from a version
             control system like git. Defaults to the current HEAD. If
             the used VCS does not have a notion of "current HEAD", this
             argument is mandatory.
-        disable_cache
+        disable_cache: bool
             Disable local caching of remote content.
-        update_cache
+        update_cache: bool
             Update the local cache. Defaults to ``True``, but can be
             disabled to reuse the last cached state.
-        identity_file
+        identity_file: str | pathlib.Path
             The identity file (private key) to use when connecting via
             SSH.
-        known_hosts_file
+        known_hosts_file: str | pathlib.Path
             The ``known_hosts`` file to pass to SSH for verifying the
             server's host key.
-        username
+        username: str
             The username to log in as remotely.
-        password
+        password: str
             The password to use for logging in. Will be ignored when
             ``identity_file`` is passed as well.
-        diagram_cache
+        diagram_cache: str | pathlib.Path | ~capellambse.loader.filehandler.FileHandler | dict[str, ~typing.Any]
             An optional place where to find pre-rendered, cached
             diagrams. When a diagram is found in this cache, it will be
             loaded from there instead of being rendered on access. Note
@@ -172,12 +172,12 @@ class MelodyModel:
             - Cache file name: ``_7FWu4KrxEeqOgqWuHJrXFA.svg``
 
             *This argument is **not** passed to the file handler.*
-        diagram_cache_subdir
+        diagram_cache_subdir: str
             A sub-directory prefix to prepend to diagram UUIDs before
             looking them up in the ``diagram_cache``.
 
             *This argument is **not** passed to the file handler.*
-        jupyter_untrusted
+        jupyter_untrusted: bool
             If set to True, restricts or disables some features that are
             unavailable in an untrusted Jupyter environment. Currently
             this only disables the SVG format as rich display option for
