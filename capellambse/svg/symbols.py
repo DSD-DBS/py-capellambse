@@ -1053,10 +1053,11 @@ def arrow_mark(
     )
 
 
-@decorations.deco_factories
-def diamond_mark(
-    id_: str = "Diamond", *, style: style_.Styling, **kw
+def _make_diamond_marker(
+    id_: str, *, style: style_.Styling, fill: str, **kw
 ) -> container.Marker:
+    if not hasattr(style, "fill"):
+        style.fill = fill
     return _make_marker(
         (0, 3),
         (11, 6),
@@ -1065,6 +1066,20 @@ def diamond_mark(
         style=style,
         **kw,
     )
+
+
+@decorations.deco_factories
+def diamond_mark(
+    id_: str = "Diamond", *, style: style_.Styling, **kw
+) -> container.Marker:
+    return _make_diamond_marker(id_, style=style, fill="white", **kw)
+
+
+@decorations.deco_factories
+def filled_diamond_mark(
+    id_: str = "FilledDiamond", *, style: style_.Styling, **kw
+) -> container.Marker:
+    return _make_diamond_marker(id_, style=style, fill="black", **kw)
 
 
 @decorations.deco_factories

@@ -12,6 +12,38 @@ from capellambse import aird, helpers, model
 from . import FilterArguments, composite, global_filter
 
 XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
+EXCHANGES_WITH_ROLES = frozenset(
+    {"Aggregation", "Association", "Composition", "Generalization"}
+)
+
+
+@global_filter("hide.association.labels.filter")
+def hide_association_labels(
+    args: FilterArguments, flt: lxml.etree._Element
+) -> None:
+    """Hide names of roles on an exchange."""
+    del flt
+
+    classes = EXCHANGES_WITH_ROLES
+    for obj in args.target_diagram:
+        if not isinstance(obj, aird.Edge) or obj.styleclass not in classes:
+            continue
+        for label in obj.labels:
+            label.hidden = True
+
+
+@global_filter("hide.role.names.filter")
+def hide_role_names(args: FilterArguments, flt: lxml.etree._Element) -> None:
+    """Hide names of roles on an exchange."""
+    del flt
+
+    classes = EXCHANGES_WITH_ROLES
+    for obj in args.target_diagram:
+        if not isinstance(obj, aird.Edge):
+            continue
+
+        if len(obj.labels) > 1 and obj.styleclass in classes:
+            obj.labels = obj.labels[:1]
 
 
 @global_filter("show.functional.exchanges.exchange.items.filter")

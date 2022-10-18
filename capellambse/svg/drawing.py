@@ -504,7 +504,6 @@ class Drawing(drawing.Drawing):
                             self.diagram_class,
                             styling._class,
                             _prefix=styling._prefix,
-                            fill=stroke,
                             stroke=stroke,
                             stroke_width=stroke_width,
                         ),
