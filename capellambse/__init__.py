@@ -70,16 +70,20 @@ def load_model_extensions() -> None:
     # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
     import importlib.metadata as imm  # pylint: disable=reimported
     import logging
+    import sys
 
     global _has_loaded_extensions
     if _has_loaded_extensions:
         return
     _has_loaded_extensions = True
 
-    try:
-        entrypoints = imm.entry_points()["capellambse.model_extensions"]
-    except KeyError:
-        return
+    if sys.version_info < (3, 10):
+        try:
+            entrypoints = imm.entry_points()["capellambse.model_extensions"]
+        except KeyError:
+            return
+    else:
+        entrypoints = imm.entry_points(group="capellambse.model_extensions")
 
     for entrypoint in entrypoints:
         try:
