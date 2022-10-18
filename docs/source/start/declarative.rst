@@ -8,16 +8,16 @@
 Declarative modelling
 *********************
 
-capellambse supports declarative modelling with the :py:mod:`capellambse.decl`
+.. versionadded:: 0.5.0
+   Introduced the declarative modelling module.
+
+|project| supports declarative modelling with the :py:mod:`capellambse.decl`
 module. This requires the optional dependency ``capellambse[decl]`` to be
 installed.
 
 The YAML-based declarative modelling engine combines a few simple concepts into
 a powerful, but easy to use file format. These files can then be applied to any
-model supported by py-capellambse.
-
-.. versionadded:: 0.5.0
-   Introduced the declarative modelling module.
+model supported by |project|.
 
 Example
 =======
@@ -50,7 +50,7 @@ API usage
 ---------
 
 Declarative YAML can also be applied programmatically, by calling the
-:py:func:`capellambse.decl.apply` function. It takes a (loaded) CapellaMBSE
+:py:func:`capellambse.decl.apply` function. It takes a (loaded) |project|
 model, and either a path to a file or a file-like object. To pass in a string
 containing YAML, wrap it in :external:class:`io.StringIO`:
 
