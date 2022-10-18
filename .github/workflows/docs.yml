@@ -12,32 +12,30 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
+          cache: pip
+          cache-dependency-path: pyproject.toml
           python-version: "3.9"
       - name: Upgrade pip
-        run: |
-          python -m pip install -U pip
+        run: python -m pip install -U pip
       - name: Install dependencies
-        run: |
-          python -m pip install '.[docs]'
+        run: python -m pip install '.[docs]'
       - name: Auto-generate APIDOC sources
-        run: |-
-          make -C docs apidoc
+        run: make -C docs apidoc
       - name: Create docs
-        run: |
-          make -C docs html
+        run: make -C docs html
       - name: Archive the docs
         # https://github.com/actions/upload-artifact#too-many-uploads-resulting-in-429-responses
         run: (cd docs/build/html && zip -Xr ../html.zip .)
       - name: Upload built docs as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Documentation
-          path: 'docs/build/html.zip'
+          path: docs/build/html.zip
           if-no-files-found: error
           retention-days: 5
       - name: Deploy
