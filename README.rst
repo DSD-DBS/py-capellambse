@@ -5,6 +5,10 @@
 Python-Capellambse
 ==================
 
+.. image:: https://img.shields.io/pypi/pyversions/capellambse
+   :target: https://pypi.org/project/capellambse/
+   :alt: PyPI - Python Version
+
 .. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
   :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
 

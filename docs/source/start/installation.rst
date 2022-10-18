@@ -6,6 +6,10 @@
 Installation
 ************
 
+.. image:: https://img.shields.io/pypi/pyversions/capellambse
+   :target: https://pypi.org/project/capellambse/
+   :alt: PyPI - Python Version
+
 This guide helps you to get |project| installed. There are a few ways to get it
 done:
 
