@@ -349,6 +349,14 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Association_Color"],
             "marker-end": "FineArrowMark",
         },
+        "Edge.Aggregation": {
+            "stroke": COLORS["_CAP_Association_Color"],
+            "marker-start": "DiamondMark",
+        },
+        "Edge.Composition": {
+            "stroke": COLORS["_CAP_Association_Color"],
+            "marker-start": "FilledDiamondMark",
+        },
         "Edge.ExchangeItemElement": {  # DT_ExchangeItemElement
             "stroke": COLORS["black"],
             "stroke-dasharray": "5",
