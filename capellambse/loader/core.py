@@ -320,6 +320,8 @@ class MelodyLoader:
             else:
                 self.resources[resname] = reshdl
         self.entrypoint = self.__derive_entrypoint(entrypoint)
+        if self.entrypoint.suffix != ".aird":
+            raise ValueError("Invalid entrypoint, specify the ``.aird`` file")
 
         self.trees: dict[pathlib.PurePosixPath, ModelFile] = {}
         self.__load_referenced_files(
