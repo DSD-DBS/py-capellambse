@@ -92,11 +92,22 @@ class Capability(c.GenericElement):
     extends = c.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=c.ElementList
     )
+    extended_by = c.ReferenceSearchingAccessor(
+        interaction.AbstractCapabilityExtend, "target", aslist=c.ElementList
+    )
     includes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=c.ElementList
     )
+    included_by = c.ReferenceSearchingAccessor(
+        interaction.AbstractCapabilityInclude, "target", aslist=c.ElementList
+    )
     generalizes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
+    )
+    generalized_by = c.ReferenceSearchingAccessor(
+        interaction.AbstractCapabilityGeneralization,
+        "target",
+        aslist=c.ElementList,
     )
     owned_chains = c.DirectProxyAccessor(
         fa.FunctionalChain, aslist=c.ElementList
@@ -171,6 +182,9 @@ class Mission(c.GenericElement):
 
     involvements = c.DirectProxyAccessor(
         MissionInvolvement, aslist=c.ElementList
+    )
+    incoming_involvements = c.ReferenceSearchingAccessor(
+        MissionInvolvement, "target", aslist=c.ElementList
     )
     exploits = c.LinkAccessor[Capability](
         None,  # FIXME fill in tag

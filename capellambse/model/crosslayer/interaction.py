@@ -27,6 +27,7 @@ class AbstractCapabilityExtend(Exchange):
 
     _xmltag = "extends"
 
+    source = c.ParentAccessor(c.GenericElement)
     target = c.AttrProxyAccessor(c.GenericElement, "extended")
 
 
@@ -36,6 +37,7 @@ class AbstractCapabilityInclude(Exchange):
 
     _xmltag = "includes"
 
+    source = c.ParentAccessor(c.GenericElement)
     target = c.AttrProxyAccessor(c.GenericElement, "included")
 
 
@@ -45,11 +47,15 @@ class AbstractCapabilityGeneralization(Exchange):
 
     _xmltag = "superGeneralizations"
 
+    source = c.ParentAccessor(c.GenericElement)
     target = c.AttrProxyAccessor(c.GenericElement, "super")
 
 
 class AbstractInvolvement(c.GenericElement):
     """An abstract Involvement."""
+
+    source = c.ParentAccessor(c.GenericElement)
+    target = c.AttrProxyAccessor(c.GenericElement, "involved")
 
     involved = c.AttrProxyAccessor(c.GenericElement, "involved")
 

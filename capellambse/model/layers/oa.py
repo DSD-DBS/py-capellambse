@@ -77,11 +77,22 @@ class OperationalCapability(c.GenericElement):
     extends = c.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=c.ElementList
     )
+    extended_by = c.ReferenceSearchingAccessor(
+        interaction.AbstractCapabilityExtend, "target", aslist=c.ElementList
+    )
     includes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=c.ElementList
     )
+    included_by = c.ReferenceSearchingAccessor(
+        interaction.AbstractCapabilityInclude, "target", aslist=c.ElementList
+    )
     generalizes = c.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=c.ElementList
+    )
+    generalized_by = c.DirectProxyAccessor(
+        interaction.AbstractCapabilityGeneralization,
+        "target",
+        aslist=c.ElementList,
     )
     involved_activities = c.LinkAccessor[OperationalActivity](
         None,  # FIXME fill in tag
