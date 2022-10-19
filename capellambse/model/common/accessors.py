@@ -711,14 +711,17 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             raise ValueError("Cannot delete: Target object not in this list")
 
 
-class AttrProxyAccessor(PhysicalAccessor):
+class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Provides access to elements that are linked in an attribute."""
 
     __slots__ = ("attr",)
 
+    aslist: type[ElementListCouplingMixin] | None
+    class_: type[T]
+
     def __init__(
         self,
-        class_: type | None,
+        class_: type[T] | None,
         attr: str,
         *,
         aslist: type[element.ElementList] | None = None,
@@ -728,7 +731,7 @@ class AttrProxyAccessor(PhysicalAccessor):
         Parameters
         ----------
         class_
-            The proxy class.
+            The proxy class. Currently only used for type hints.
         attr
             The element attribute to handle.
         aslist
@@ -739,43 +742,18 @@ class AttrProxyAccessor(PhysicalAccessor):
             list of all matched objects.  Incompatible with ``xtypes =
             None``.
         """
+        del class_
         super().__init__(element.GenericElement, aslist=aslist)
         self.attr = attr
-
-        if class_ not in (None, element.GenericElement):
-            warnings.warn(
-                "Class argument to AttrProxyAccessor is deprecated.",
-                DeprecationWarning,
-            )
 
     def __get__(self, obj, objtype=None):
         del objtype
         if obj is None:  # pragma: no cover
             return self
 
-        elems = []
-        next_xtype: str | None = None
-        for elemref in obj._element.get(self.attr, "").split():
-            if "#" in elemref:
-                elem = obj._model._loader[elemref]
-                if next_xtype is not None:
-                    this_xtype = helpers.xtype_of(elem)
-                    if this_xtype != next_xtype:  # pragma: no cover
-                        raise RuntimeError(
-                            "Broken XML: Expected xsi:type {!r}, got {!r}".format(
-                                next_xtype, this_xtype
-                            )
-                        )
-                elems.append(elem)
-                next_xtype = None
-            elif next_xtype is not None:  # pragma: no cover
-                raise RuntimeError(
-                    "Broken XML: Expected element reference, got xsi:type {!r}".format(
-                        elemref
-                    )
-                )
-            else:
-                next_xtype = elemref
+        elems = obj._model._loader.follow_links(
+            obj._element, obj._element.get(self.attr, "")
+        )
 
         rv = self._make_list(obj, elems)
         sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
@@ -794,10 +772,36 @@ class AttrProxyAccessor(PhysicalAccessor):
             )
 
         assert isinstance(values, cabc.Iterable)
+        self.__set_links(obj, values)
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        assert self.aslist is not None
+        if value._model is not elmlist._parent._model:
+            raise ValueError("Cannot insert elements from different models")
+        objs = [*elmlist[:index], value, *elmlist[index:]]
+        self.__set_links(elmlist._parent, objs)
+
+    def delete(
+        self, elmlist: ElementListCouplingMixin, obj: element.ModelObject
+    ) -> None:
+        assert self.aslist is not None
+        objs = [i for i in elmlist if i != obj]
+        self.__set_links(elmlist._parent, objs)
+
+    def __set_links(
+        self, obj: element.ModelObject, values: cabc.Iterable[T]
+    ) -> None:
         parts: list[str] = []
         for value in values:
-            if not value._model is obj._model:
-                raise ValueError("Cannot set elements from different models")
+            if value._model is not obj._model:
+                raise ValueError(
+                    "Cannot insert elements from different models"
+                )
             link = obj._model._loader.create_link(obj._element, value._element)
             parts.append(link)
         obj._element.set(self.attr, " ".join(parts))

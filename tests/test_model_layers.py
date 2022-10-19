@@ -449,11 +449,30 @@ def test_constraint_specification_has_linked_object_name_in_body(
     )
 
 
-def test_function_is_available_in_state(model: MelodyModel) -> None:
-    function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
-    states = function.available_in_states
-    assert "Open" in states.by_name
-    assert len(states) == 1
+class TestAttrProxyAccessor:
+    @staticmethod
+    def test_function_is_available_in_state(model: capellambse.MelodyModel):
+        function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
+
+        states = function.available_in_states
+
+        assert "Open" in states.by_name
+        assert len(states) == 1
+
+    @staticmethod
+    def test_available_in_states_can_be_modified(
+        model: capellambse.MelodyModel,
+    ):
+        function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
+        new_state = model.by_uuid("53cab5f0-fe2f-4553-8223-fbe5ea9e4d42")
+        assert len(function.available_in_states) == 1
+
+        old_state = function.available_in_states.pop()
+        function.available_in_states.append(new_state)
+
+        assert len(function.available_in_states) == 1
+        assert new_state in function.available_in_states
+        assert old_state not in function.available_in_states
 
 
 def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
