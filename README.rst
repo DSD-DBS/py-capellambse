@@ -62,7 +62,7 @@ button below to launch a `Jupyter notebook server`_ on the public myBinder
 service, and get started in seconds:
 
 .. image:: https://mybinder.org/badge_logo.svg
-   :target: https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=examples%2F01%20Introduction.ipynb
+   :target: https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=docs%2Fsource%2Fexamples%2F01%20Introduction.ipynb
 
 *Warning:* `Do not enter confidential information`__, such as passwords for
 non-public models, into a notebook hosted on myBinder. If you want to try out
@@ -83,19 +83,19 @@ notebook.
   features. It visualizes examples like a Component - Function allocation table
   by leveraging Jupyter's and IPython's rich display functionality.
 
-  __ docs/source/examples/01%20Introduction.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/01%20Introduction.html
 
 - `02 Intro to Physical Architecture.ipynb`__ explores some more advanced
   concepts on the example of the Physical Architecture Layer. It shows how to
   derive tabular data, like a Bill of Materials or a Software to Hardware
   allocation table, by using ``pandas`` dataframes.
 
-  __ docs/source/examples/02%20Intro%20to%20Physical%20Architecture%20API.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/02%20Intro%20to%20Physical%20Architecture%20API.html
 
 - `03 Data Values.ipynb`__ shows how the API can be used to explore classes,
   class instances and other objects related to data modeling.
 
-  __ docs/source/examples/03%20Data%20Values.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/03%20Data%20Values.html
 
 - `04 Intro to Jinja templating.ipynb`__ demonstrates how to effectively
   combine ``capellambse`` with the powerful Jinja__ templating engine. This
@@ -103,7 +103,7 @@ notebook.
   including interactive web pages, PDF documents and any other textual
   representations of your models.
 
-  __ docs/source/examples/04%20Intro%20to%20Jinja%20templating.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/04%20Intro%20to%20Jinja%20templating.html
   __ https://palletsprojects.com/p/jinja/
 
 - `05 Introduction to Libraries.ipynb`__ shows how to use Capella Library
@@ -111,7 +111,7 @@ notebook.
   used to open a project that is based on a library and find objects in both
   models.
 
-  __ docs/source/examples/05%20Introduction%20to%20Libraries.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/05%20Introduction%20to%20Libraries.html
 
 - `06 Introduction to Requirement access and management.ipynb`__ shows how the
   API can be used to work with requirements objects, introduced by the Capella
@@ -119,7 +119,7 @@ notebook.
   requirements in the model, see which objects requirements are linked / traced
   to and even export requirements to Excel or ReqIF formats.
 
-  __ docs/source/examples/06%20Introduction%20to%20Requirement%20access%20and%20management.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html
   __ https://www.eclipse.org/capella/addons.html
 
 - `07 Code Generation.ipynb`__ shows how to generate code from class diagrams.
@@ -128,7 +128,7 @@ notebook.
   also show how simple Python stubs could be generated given a ``Class``
   object.
 
-  __ docs/source/examples/07%20Code%20Generation.ipynb
+  __ https://dsd-dbs.github.io/py-capellambse/examples/07%20Code%20Generation.html
   __ https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html
   __ https://developers.google.com/protocol-buffers
 
@@ -173,7 +173,7 @@ following additional commands:
 .. code::
 
      pip install jupyter capellambse
-     cd examples
+     cd docs/source/examples
      jupyter-notebook
 
 If your browser did not open automatically, follow the instructions in the
@@ -182,7 +182,7 @@ terminal to start it manually.
 Once in the browser, simply click on the `01 Introduction.ipynb`__ notebook to
 start!
 
-__ examples/01%20Introduction.ipynb
+__ docs/source/examples/01%20Introduction.ipynb
 
 Current limitations
 -------------------
