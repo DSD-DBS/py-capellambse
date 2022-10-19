@@ -33,6 +33,12 @@ def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
     capellambse.MelodyModel(path)
 
 
+@pytest.mark.parametrize("suffix", [".capella", ".melodymodel"])
+def test_model_loading_with_invalid_entrypoint_fails(suffix: str):
+    with pytest.raises(ValueError, match="(?i)invalid entrypoint"):
+        capellambse.MelodyModel(TEST_MODEL_5_0.with_suffix(suffix))
+
+
 def test_model_loading_via_GitFileHandler():
     path = "git+" + pathlib.Path.cwd().as_uri()
     capellambse.MelodyModel(
@@ -41,7 +47,7 @@ def test_model_loading_via_GitFileHandler():
 
 
 def test_model_loading_from_badpath_raises_FileNotFoundError():
-    badpath = TEST_ROOT / "TestFile.airdfragment"
+    badpath = TEST_ROOT / "Missing.aird"
     with pytest.raises(FileNotFoundError):
         capellambse.MelodyModel(badpath)
 
