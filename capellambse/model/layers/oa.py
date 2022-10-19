@@ -38,6 +38,9 @@ class OperationalActivity(fa.AbstractFunction):
         operator.attrgetter("_model.oa.all_entities"),
         matchtransform=operator.attrgetter("activities"),
     )
+    exchanges = c.DirectProxyAccessor(
+        fa.FunctionalExchange, aslist=c.ElementList
+    )
 
     @property
     def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
@@ -48,7 +51,7 @@ class OperationalActivity(fa.AbstractFunction):
         return self._model.oa.all_activity_exchanges.by_source(self)
 
     @property
-    def exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
+    def related_exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
         seen: set[str] = set()
         exchanges = []
         for fex in self.inputs + self.outputs:
