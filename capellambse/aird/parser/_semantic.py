@@ -77,8 +77,11 @@ def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
                 "Referenced semantic element %r does not exist", sem_href
             )
         melodyobjs.append(sem_obj)
-    assert melodyobjs, "No valid semantic element references could be found"
-    if melodyobjs[0] is None:
+    if not melodyobjs:
+        melodyobjs = [
+            ebd.melodyloader.follow_link(target, target.attrib["href"])
+        ]
+    elif melodyobjs[0] is None:
         raise c.SkipObject()
 
     seb = c.SemanticElementBuilder(
