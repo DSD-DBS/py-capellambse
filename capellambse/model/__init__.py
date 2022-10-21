@@ -518,3 +518,8 @@ class MelodyModel:
         from capellambse.extensions import metrics
 
         return metrics.get_summary_badge(self)
+
+    if t.TYPE_CHECKING:
+
+        def __getattr__(self, attr: str) -> t.Any:
+            """Account for extension attributes in static type checks."""
