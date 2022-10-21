@@ -1151,7 +1151,9 @@ class MelodyLoader:
         self,
         from_element: etree._Element | None,
         links: str,
-    ) -> list[etree._Element | None]:
+        *,
+        ignore_broken: bool = False,
+    ) -> list[etree._Element]:
         """Follow multiple links and return all results as list.
 
         The format for an individual link is the same as accepted by
@@ -1168,9 +1170,14 @@ class MelodyLoader:
         links
             A string containing space-separated links as described in
             :meth:`follow_link`.
+        ignore_broken
+            Ignore broken references instead of raising a KeyError.
 
         Raises
         ------
+        KeyError
+            If any link points to a non-existing target. Can be
+            suppressed with ``ignore_broken``.
         ValueError
             If any link is malformed.
         RuntimeError
@@ -1191,7 +1198,8 @@ class MelodyLoader:
             try:
                 targets.append(self.follow_link(from_element, part))
             except KeyError:
-                targets.append(None)
+                if not ignore_broken:
+                    raise
         return targets
 
     def _find_fragment(
