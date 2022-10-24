@@ -159,6 +159,13 @@ c.set_accessor(
     ),
 )
 c.set_accessor(
+    PhysicalPort,
+    "exchanges",
+    c.ReferenceSearchingAccessor(
+        PhysicalLink, "link_ends", aslist=c.ElementList
+    ),
+)
+c.set_accessor(
     PhysicalLink,
     "physical_paths",
     c.CustomAccessor(
