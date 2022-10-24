@@ -204,7 +204,7 @@ STYLECLASS_LOOKUP = {
             _box_factories.generic_factory, _edge_factories.labelless_factory
         ),
     ),
-    "Part": (None, _box_factories.part_factory),
+    "Part": (None, _box_factories.physical_part_factory),
     "Region": ("Region", _box_factories.region_factory),
     "PortAllocation": (
         "PortAllocation",
@@ -214,6 +214,7 @@ STYLECLASS_LOOKUP = {
     "Service": (None, c.SkipObject.raise_),  # Handled as part of `Class`
     "SequenceLink": ("SequenceLink", _edge_factories.sequence_link_factory),
     "PhysicalPort": ("PP", _GENERIC_FACTORIES),
+    "PhysicalComponent": ("PhysicalComponent", _box_factories.part_factory),
     "Requirement": ("Requirement", _box_factories.requirements_box_factory),
     # FunctionalChains
     "FunctionalChainInvolvementFunction": (

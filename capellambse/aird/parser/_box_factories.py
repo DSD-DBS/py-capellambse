@@ -306,6 +306,27 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     raise C.SkipObject()
 
 
+def physical_part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+    """Resolve a physical ``Part`` meta-styleclass and create its Box."""
+    part = part_factory(seb)
+    data_obj = seb.melodyobjs[-1]
+    if data_obj.attrib[C.ATT_XST].endswith("PhysicalComponent"):
+        nature = data_obj.get("nature", "BEHAVIOR")
+        assert part.styleclass is not None
+        suffix = "Component"
+        if part.styleclass.endswith("Actor"):
+            suffix = "Actor"
+
+        part.styleclass = "".join(
+            (
+                part.styleclass[: -len(suffix)],
+                ["Behavior", "Node"][(nature == "NODE")],
+                suffix,
+            )
+        )
+    return part
+
+
 def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     """Create a Requirement.
 

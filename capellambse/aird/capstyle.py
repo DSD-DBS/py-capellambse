@@ -744,14 +744,43 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_PhysicalPort_Yellow"],
             "stroke": COLORS["_CAP_Class_Border_Brown"],
         },
-        "Box.PhysicalComponent": {
-            "fill": [
-                COLORS["_CAP_Node_Yellow_min"],
-                COLORS["_CAP_Node_Yellow"],
-            ],
-            "stroke": COLORS["_CAP_Node_Yellow_Border"],
-            "text_fill": COLORS["_CAP_Node_Yellow_Label"],
-        },
+        "Box.PhysicalBehaviorComponent": (  # type: ignore[dict-item]
+            PHYS_BEHAVIOR := {
+                "fill": [
+                    COLORS["_CAP_Component_Blue_min"],
+                    COLORS["_CAP_Component_Blue"],
+                ],
+                "stroke": COLORS["_CAP_Actor_Border_Blue"],
+                "text_fill": COLORS["_CAP_Actor_Blue_label"],
+                "text_font-style": "italic",
+            }
+        ),
+        "Box.PhysicalBehaviorActor": (  # type: ignore[dict-item]
+            PHYS_ACTOR := {
+                "fill": [
+                    COLORS["_CAP_Actor_Blue_min"],
+                    COLORS["_CAP_Actor_Blue"],
+                ],
+                "stroke": COLORS["_CAP_Actor_Border_Blue"],
+                "text_fill": COLORS["_CAP_Actor_Blue_label"],
+                "text_font-style": "italic",
+            }
+        ),
+        "Box.PhysicalHumanBehaviorComponent": PHYS_BEHAVIOR,  # type: ignore[dict-item]
+        "Box.PhysicalHumanNodeComponent": (  # type: ignore[dict-item]
+            PHYS_NODE := {
+                "fill": [
+                    COLORS["_CAP_Node_Yellow_min"],
+                    COLORS["_CAP_Node_Yellow"],
+                ],
+                "stroke": COLORS["_CAP_Node_Yellow_Border"],
+                "text_fill": COLORS["_CAP_Node_Yellow_Label"],
+            }
+        ),
+        "Box.PhysicalHumanBehaviorActor": PHYS_ACTOR,  # type: ignore[dict-item]
+        "Box.PhysicalHumanNodeActor": PHYS_ACTOR,  # type: ignore[dict-item]
+        "Box.PhysicalNodeComponent": PHYS_NODE,  # type: ignore[dict-item]
+        "Box.PhysicalNodeActor": PHYS_ACTOR,  # type: ignore[dict-item]
         "Box.PhysicalFunction": {
             "fill": COLORS["_CAP_xAB_Function_Green"],
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
