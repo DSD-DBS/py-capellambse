@@ -1,10 +1,12 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: CC0-1.0
 
-*	@DSD-DBS/se-toolchain
+*	@Wuestengecko @vik378
 
 /capellambse/loader/	@Wuestengecko
 /capellambse/model/	@Wuestengecko
 /capellambse/repl.py	@Wuestengecko
 
 /capellambse/svg/	@ewuerger
+
+# vim:set ts=32 sw=0 noet:
