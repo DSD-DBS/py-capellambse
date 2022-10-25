@@ -6,6 +6,7 @@ from __future__ import annotations
 
 __all__ = ["COLORS", "CSSdef", "STYLES", "RGB", "get_style"]
 
+import collections.abc as cabc
 import logging
 import typing as t
 
@@ -163,6 +164,7 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
     return retval
 
 
+CSSdef = t.Union[int, str, RGB, cabc.Sequence[RGB], None]
 #: This dict maps the color names used by Capella to RGB tuples.
 COLORS: dict[str, RGB] = {
     # System palette
@@ -239,6 +241,30 @@ COLORS: dict[str, RGB] = {
 }
 
 
+_PHYS_ACTOR: dict[str, CSSdef] = {
+    "fill": [
+        COLORS["_CAP_Actor_Blue_min"],
+        COLORS["_CAP_Actor_Blue"],
+    ],
+    "stroke": COLORS["_CAP_Actor_Border_Blue"],
+    "text_fill": COLORS["_CAP_Actor_Blue_label"],
+    "text_font-style": "italic",
+}
+_PHYS_BEHAVIOR = _PHYS_ACTOR | {
+    "fill": [
+        COLORS["_CAP_Component_Blue_min"],
+        COLORS["_CAP_Component_Blue"],
+    ]
+}
+_PHYS_NODE: dict[str, CSSdef] = {
+    "fill": [
+        COLORS["_CAP_Node_Yellow_min"],
+        COLORS["_CAP_Node_Yellow"],
+    ],
+    "stroke": COLORS["_CAP_Node_Yellow_Border"],
+    "text_fill": COLORS["_CAP_Node_Yellow_Label"],
+}
+
 #: This dict contains the default styles that Capella applies, grouped
 #: by the diagram class they belong to.
 #:
@@ -264,8 +290,7 @@ COLORS: dict[str, RGB] = {
 #: 2. __GLOBAL__, element type and class
 #: 3. Diagram class specific, only element type
 #: 4. __GLOBAL__, only element type
-CSSdef = t.Union[int, str, RGB, t.List[RGB], None]
-STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
+STYLES: t.Final[cabc.Mapping[str, dict[str, dict[str, CSSdef]]]] = {
     "__GLOBAL__": {  # Global defaults
         "Box": {
             "fill": "transparent",
@@ -744,43 +769,14 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_PhysicalPort_Yellow"],
             "stroke": COLORS["_CAP_Class_Border_Brown"],
         },
-        "Box.PhysicalBehaviorComponent": (  # type: ignore[dict-item]
-            PHYS_BEHAVIOR := {
-                "fill": [
-                    COLORS["_CAP_Component_Blue_min"],
-                    COLORS["_CAP_Component_Blue"],
-                ],
-                "stroke": COLORS["_CAP_Actor_Border_Blue"],
-                "text_fill": COLORS["_CAP_Actor_Blue_label"],
-                "text_font-style": "italic",
-            }
-        ),
-        "Box.PhysicalBehaviorActor": (  # type: ignore[dict-item]
-            PHYS_ACTOR := {
-                "fill": [
-                    COLORS["_CAP_Actor_Blue_min"],
-                    COLORS["_CAP_Actor_Blue"],
-                ],
-                "stroke": COLORS["_CAP_Actor_Border_Blue"],
-                "text_fill": COLORS["_CAP_Actor_Blue_label"],
-                "text_font-style": "italic",
-            }
-        ),
-        "Box.PhysicalHumanBehaviorComponent": PHYS_BEHAVIOR,  # type: ignore[dict-item]
-        "Box.PhysicalHumanNodeComponent": (  # type: ignore[dict-item]
-            PHYS_NODE := {
-                "fill": [
-                    COLORS["_CAP_Node_Yellow_min"],
-                    COLORS["_CAP_Node_Yellow"],
-                ],
-                "stroke": COLORS["_CAP_Node_Yellow_Border"],
-                "text_fill": COLORS["_CAP_Node_Yellow_Label"],
-            }
-        ),
-        "Box.PhysicalHumanBehaviorActor": PHYS_ACTOR,  # type: ignore[dict-item]
-        "Box.PhysicalHumanNodeActor": PHYS_ACTOR,  # type: ignore[dict-item]
-        "Box.PhysicalNodeComponent": PHYS_NODE,  # type: ignore[dict-item]
-        "Box.PhysicalNodeActor": PHYS_ACTOR,  # type: ignore[dict-item]
+        "Box.PhysicalBehaviorActor": _PHYS_ACTOR,
+        "Box.PhysicalBehaviorComponent": _PHYS_BEHAVIOR,
+        "Box.PhysicalHumanBehaviorComponent": _PHYS_BEHAVIOR,
+        "Box.PhysicalHumanNodeComponent": _PHYS_NODE,
+        "Box.PhysicalHumanBehaviorActor": _PHYS_ACTOR,
+        "Box.PhysicalHumanNodeActor": _PHYS_ACTOR,
+        "Box.PhysicalNodeComponent": _PHYS_NODE,
+        "Box.PhysicalNodeActor": _PHYS_ACTOR,
         "Box.PhysicalFunction": {
             "fill": COLORS["_CAP_xAB_Function_Green"],
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
