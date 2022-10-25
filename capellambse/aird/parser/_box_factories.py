@@ -320,7 +320,7 @@ def physical_part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         part.styleclass = "".join(
             (
                 part.styleclass[: -len(suffix)],
-                ["Behavior", "Node"][(nature == "NODE")],
+                ("Behavior", "Node")[nature == "NODE"],
                 suffix,
             )
         )
