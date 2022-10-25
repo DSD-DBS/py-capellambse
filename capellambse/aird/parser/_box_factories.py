@@ -290,10 +290,12 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         seb.styleclass = abstract_obj.attrib[C.ATT_XST].split(":")[-1]
         assert seb.styleclass is not None
         if seb.styleclass.endswith("Component"):
+            nature = ("Behavior", "Node")[abstract_obj.get("nature") == "NODE"]
             seb.styleclass = "".join(
                 (
                     seb.styleclass[: -len("Component")],
                     "Human" * (abstract_obj.get("human") == "true"),
+                    nature * (bool(abstract_obj.get("nature"))),
                     ("Component", "Actor")[
                         abstract_obj.get("actor") == "true"
                     ],
@@ -304,27 +306,6 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
     C.LOGGER.error("Unhandled Part type: %r; skipping", dgel_type)
     raise C.SkipObject()
-
-
-def physical_part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
-    """Resolve a physical ``Part`` meta-styleclass and create its Box."""
-    part = part_factory(seb)
-    data_obj = seb.melodyobjs[-1]
-    if data_obj.attrib[C.ATT_XST].endswith("PhysicalComponent"):
-        nature = data_obj.get("nature", "BEHAVIOR")
-        assert part.styleclass is not None
-        suffix = "Component"
-        if part.styleclass.endswith("Actor"):
-            suffix = "Actor"
-
-        part.styleclass = "".join(
-            (
-                part.styleclass[: -len(suffix)],
-                ("Behavior", "Node")[nature == "NODE"],
-                suffix,
-            )
-        )
-    return part
 
 
 def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:

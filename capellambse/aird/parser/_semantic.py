@@ -204,7 +204,7 @@ STYLECLASS_LOOKUP = {
             _box_factories.generic_factory, _edge_factories.labelless_factory
         ),
     ),
-    "Part": (None, _box_factories.physical_part_factory),
+    "Part": (None, _box_factories.part_factory),
     "Region": ("Region", _box_factories.region_factory),
     "PortAllocation": (
         "PortAllocation",
