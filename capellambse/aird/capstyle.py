@@ -155,7 +155,9 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
             "No default style for %r in %r", objectclass, diagramclass
         )
     try:
-        retval = STYLES["__GLOBAL__"][objectclass].copy()
+        global_styles = STYLES["__GLOBAL__"][objectclass]
+        assert isinstance(global_styles, dict)
+        retval = global_styles.copy()
     except KeyError:
         retval = {}
 
@@ -166,7 +168,7 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
 
 CSSdef = t.Union[int, str, RGB, cabc.Sequence[RGB], None]
 #: This dict maps the color names used by Capella to RGB tuples.
-COLORS: dict[str, RGB] = {
+COLORS: cabc.Mapping[str, RGB] = {
     # System palette
     "black": RGB(0, 0, 0),
     "dark_gray": RGB(69, 69, 69),
@@ -290,7 +292,9 @@ _PHYS_NODE: dict[str, CSSdef] = {
 #: 2. __GLOBAL__, element type and class
 #: 3. Diagram class specific, only element type
 #: 4. __GLOBAL__, only element type
-STYLES: t.Final[cabc.Mapping[str, dict[str, dict[str, CSSdef]]]] = {
+STYLES: t.Final[
+    cabc.Mapping[str, cabc.Mapping[str, cabc.Mapping[str, CSSdef]]]
+] = {
     "__GLOBAL__": {  # Global defaults
         "Box": {
             "fill": "transparent",
