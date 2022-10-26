@@ -5,6 +5,7 @@ from __future__ import annotations
 
 __all__ = [
     "Accessor",
+    "DeprecatedAccessor",
     "WritableAccessor",
     "DirectProxyAccessor",
     "DeepProxyAccessor",
@@ -81,6 +82,35 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         if not hasattr(self, "__objclass__"):
             return f"(unknown {type(self).__name__} - call __set_name__)"
         return f"{self.__objclass__.__name__}.{self.__name__}"
+
+
+class DeprecatedAccessor(Accessor[T]):
+    """Provides a deprecated alias to another attribute."""
+
+    __slots__ = ("alternative",)
+
+    def __init__(self, alternative: str, /) -> None:
+        self.alternative = alternative
+
+    @t.overload
+    def __get__(self, obj: None, objtype=None) -> Accessor:
+        ...
+
+    @t.overload
+    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+        ...
+
+    def __get__(self, obj, objtype=None):
+        self.__warn()
+        return getattr(obj, self.alternative)
+
+    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
+        self.__warn()
+        setattr(obj, self.alternative, value)
+
+    def __warn(self) -> None:
+        msg = f"{self._qualname} is deprecated, use {self.alternative} instead"
+        warnings.warn(msg, FutureWarning, stacklevel=3)
 
 
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):

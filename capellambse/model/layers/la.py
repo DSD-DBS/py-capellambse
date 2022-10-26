@@ -7,7 +7,6 @@
 """
 from __future__ import annotations
 
-import collections.abc as cabc
 import operator
 
 from .. import common as c
@@ -74,30 +73,7 @@ class LogicalComponent(cs.Component):
     )
 
     components: c.Accessor
-
-    @property
-    def functions(self) -> c.ElementList[LogicalFunction]:
-        import warnings
-
-        warnings.warn(
-            "LogicalComponent.functions is deprecated,"
-            " use allocated_functions instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.allocated_functions
-
-    @functions.setter
-    def functions(self, value: cabc.Iterable[LogicalFunction]) -> None:
-        import warnings
-
-        warnings.warn(
-            "LogicalComponent.functions is deprecated,"
-            " use allocated_functions instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        self.allocated_functions = value
+    functions = c.DeprecatedAccessor[LogicalFunction]("allocated_functions")
 
 
 @c.xtype_handler(XT_ARCH)

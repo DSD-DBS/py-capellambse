@@ -46,27 +46,8 @@ class AbstractExchange(c.GenericElement):
     source = c.AttrProxyAccessor(c.GenericElement, "source")
     target = c.AttrProxyAccessor(c.GenericElement, "target")
 
-    @property
-    def source_port(self) -> c.GenericElement:
-        import warnings
-
-        warnings.warn(
-            "source_port is deprecated, use source instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.source
-
-    @property
-    def target_port(self) -> c.GenericElement:
-        import warnings
-
-        warnings.warn(
-            "target_port is deprecated, use target instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.target
+    source_port = c.DeprecatedAccessor[c.GenericElement]("source")
+    target_port = c.DeprecatedAccessor[c.GenericElement]("target")
 
     def __dir__(self) -> list[str]:
         attrs = list(super().__dir__())

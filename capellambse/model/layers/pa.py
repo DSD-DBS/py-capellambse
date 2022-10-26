@@ -7,7 +7,6 @@
 """
 from __future__ import annotations
 
-import collections.abc as cabc
 import operator
 
 from capellambse.loader import xmltools
@@ -98,29 +97,7 @@ class PhysicalComponent(cs.Component):
     def components(self) -> c.ElementList[PhysicalComponent]:
         return self.deployed_components + self.owned_components
 
-    @property
-    def functions(self) -> c.ElementList[PhysicalFunction]:
-        import warnings
-
-        warnings.warn(
-            "LogicalComponent.functions is deprecated,"
-            " use allocated_functions instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.allocated_functions
-
-    @functions.setter
-    def functions(self, value: cabc.Iterable[PhysicalFunction]) -> None:
-        import warnings
-
-        warnings.warn(
-            "LogicalComponent.functions is deprecated,"
-            " use allocated_functions instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        self.allocated_functions = value
+    functions = c.DeprecatedAccessor[PhysicalFunction]("allocated_functions")
 
 
 @c.xtype_handler(XT_ARCH)
