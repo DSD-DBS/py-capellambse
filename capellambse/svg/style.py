@@ -390,7 +390,9 @@ class StyleBuilder:
         self.styles = self._make_styles()
 
     def _make_styles(self) -> dict[str, dict[str, aird.CSSdef]]:
-        styles = aird.STYLES["__GLOBAL__"].copy()
+        global_styles = aird.STYLES["__GLOBAL__"]
+        assert isinstance(global_styles, dict)
+        styles = global_styles.copy()
         try:
             deep_update_dict(styles, aird.STYLES[self.class_])  # type: ignore[index]
         except KeyError:

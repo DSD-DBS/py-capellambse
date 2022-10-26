@@ -290,12 +290,12 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
         seb.styleclass = abstract_obj.attrib[C.ATT_XST].split(":")[-1]
         assert seb.styleclass is not None
         if seb.styleclass.endswith("Component"):
-            nature = ("Behavior", "Node")[abstract_obj.get("nature") == "NODE"]
+            nature = abstract_obj.get("nature", "")
             seb.styleclass = "".join(
                 (
                     seb.styleclass[: -len("Component")],
                     "Human" * (abstract_obj.get("human") == "true"),
-                    nature * (bool(abstract_obj.get("nature"))),
+                    nature.capitalize() * bool(nature),
                     ("Component", "Actor")[
                         abstract_obj.get("actor") == "true"
                     ],
