@@ -74,6 +74,7 @@ rst_epilog = f"""
 autoclass_content = "class"
 autodoc_class_signature = "separated"
 autodoc_typehints = "description"
+autodoc_typehints_format = "short"
 
 
 # -- Options for napoleon ----------------------------------------------------
