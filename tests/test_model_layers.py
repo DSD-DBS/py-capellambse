@@ -333,6 +333,10 @@ class TestStateMachines:
         assert transition.triggers is not None
         assert len(transition.triggers) == 1
 
+        assert hasattr(transition, "effects")
+        assert transition.effects is not None
+        assert list(transition.effects.by_name) == ["good advise", "Make Food"]
+
     def test_stm_transition_multiple_guards(self, model: MelodyModel):
         transition: StateTransition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")  # type: ignore[assignment]
 

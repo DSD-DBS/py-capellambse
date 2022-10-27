@@ -1008,7 +1008,8 @@ The predator is far away</bodies>
                 <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
                     id="a78cf778-0476-4e08-a3a3-c115dca55dd1" triggerDescription=""
                     guard="#2df2bf1b-7359-41f2-a542-db4886725f4d" source="#757c825f-f522-4d90-b3af-071a4cec3f06"
-                    target="#6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" triggers="#55b90f9a-c5af-47fc-9c1c-48090414d1f1">
+                    target="#6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" effect="#e3ccf45c-d714-40cd-9261-21f5b79f1a77 #0e0164c3-076e-42c1-8f82-7a43ab84385c"
+                    triggers="#55b90f9a-c5af-47fc-9c1c-48090414d1f1">
                   <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
                       id="2df2bf1b-7359-41f2-a542-db4886725f4d" name="">
                     <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
