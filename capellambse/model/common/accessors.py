@@ -1212,11 +1212,11 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
     def __delitem__(self, index: int | slice) -> None:
         assert self._parent is not None
+        accessor = type(self)._accessor
+        assert isinstance(accessor, WritableAccessor)
         if not isinstance(index, slice):
-            index = slice(index, index + 1)
+            index = slice(index, index + 1 or None)
         for obj in self[index]:
-            accessor = type(self)._accessor
-            assert isinstance(accessor, WritableAccessor)
             accessor.delete(self, obj)
         super().__delitem__(index)
 
