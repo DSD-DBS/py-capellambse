@@ -152,21 +152,23 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         Parameters
         ----------
         elmlist
-            The (coupled) ``ElementList`` to insert the new object into.
-        xtype
-            The ``xsi:type`` of the new object.
-        elmclass
-            The concrete ``GenericElement`` subclass to instantiate.
+            The (coupled)
+            :py:class:`~capellambse.model.common.element.ElementList` to
+            insert the new object into.
+        type_hints
+            Hints for finding the correct type of element to create. Can
+            either be a full or shortened ``xsi:type`` string, or an
+            abbreviation defined by the specific Accessor instance.
         kw
-            Additional keyword arguments that are passed to the
-            ``elmclass`` constructor.
+            Initialize the properties of the new object. Depending on
+            the object's type, some attributes may be required.
         """
         raise TypeError("Cannot create objects")
 
     def create_singleattr(
         self, elmlist: ElementListCouplingMixin, arg: t.Any, /
     ) -> T:
-        """Create and return a new single attribute element."""
+        """Create an element that only has a single attribute of interest."""
         if self.single_attr is None:
             raise TypeError(
                 "Cannot create object from string, a dictionary is required"
@@ -182,7 +184,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         """Insert the ``value`` object into the model.
 
         The object must be inserted at an appropriate place, so that, if
-        ``elmlist`` were to be created afresh, ``value`` would show at
+        ``elmlist`` were to be created afresh, ``value`` would show up
         at index ``index``.
         """
         raise NotImplementedError("Objects cannot be inserted into this list")
@@ -373,24 +375,24 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         aslist
             If None, only a single element must match, which will be
             returned directly. If not None, must be a subclass of
-            :class:`~elements.DecoupledElementList`. It will be used to
-            return a list of all matched objects. Incompatible with
-            ``xtypes = None``.
+            :class:`~capellambse.model.common.element.ElementList`,
+            which will be used to return a list of all matched objects.
         follow_abstract
             Follow the link in the ``abstractType`` XML attribute of
             each list member and instantiate that object instead. The
             default is to instantiate the child elements directly.
         list_extra_args
-            Extra arguments to pass to the :class:`~element.ElementList`
+            Extra arguments to pass to the
+            :class:`~capellambse.model.common.element.ElementList`
             constructor.
         rootelem
-            A ``/``-separated list of ``xsi:type``\ s that defines the
-            path from the current object's element to the search root.
-            If None, the current element will be used directly.
+            A class or ``xsi:type`` (or list thereof) that defines the
+            path from the current object's XML element to the search
+            root. If None, the current element will be used directly.
         single_attr
-            The name of the only attribute needed for creation. Passing
-            a string enables convenient creation via
-            `create_singleattr`.
+            If objects can be created with only a single attribute
+            specified, this argument is the name of that attribute. This
+            allows using :meth:`create_singleattr`.
         """
         super().__init__(
             class_,
@@ -584,9 +586,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             The attribute on the reference element that contains the
             actual link.
         aslist
-            The concrete subclass of :class:`element.ElementList` to
-            use. If not specified or None, the ``ElementList`` class
-            itself will used.
+            Optionally specify a different subclass of
+            :class:`~capellambse.model.common.element.ElementList`.
         """
         if not tag:
             warnings.warn(
@@ -733,14 +734,13 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         class_
             The proxy class. Currently only used for type hints.
         attr
-            The element attribute to handle.
+            The XML attribute to handle.
         aslist
             If None, the attribute contains at most one element
             reference, and either None or the constructed proxy will be
-            returned.  If not None, must be a subclass of
-            :class:`elements.DecoupledElementList`.  It will be used to return a
-            list of all matched objects.  Incompatible with ``xtypes =
-            None``.
+            returned. If not None, must be a subclass of
+            :class:`~capellambse.model.common.element.ElementList`. It
+            will be used to return a list of all matched objects.
         """
         del class_
         super().__init__(element.GenericElement, aslist=aslist)
@@ -849,7 +849,13 @@ class ParentAccessor(PhysicalAccessor[T]):
 
 
 class CustomAccessor(PhysicalAccessor[T]):
-    """Customizable alternative to the DirectProxyAccessor."""
+    """Customizable alternative to the DirectProxyAccessor.
+
+    .. deprecated:: 0.5.4
+
+       Deprecated due to overcomplexity and (ironically) a lack of
+       flexibility.
+    """
 
     __slots__ = (
         "elmfinders",
@@ -880,10 +886,9 @@ class CustomAccessor(PhysicalAccessor[T]):
             returns an iterable of possible targets.
         aslist
             If None, only a single element must match, which will be
-            returned directly.  If not None, must be a subclass of
-            :class:`elements.DecoupledElementList`.  It will be used to
-            return a list of all matched objects.  Incompatible with
-            ``xtypes = None``.
+            returned directly. If not None, must be a subclass of
+            :class:`~capellambse.model.common.element.ElementList`,
+            which will be used to return a list of all matched objects.
         elmmatcher
             Function that is called with the transformed target element
             and the current element to determine if the untransformed
@@ -1055,6 +1060,8 @@ class SpecificationAccessor(Accessor[_Specification]):
 
 
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
+    """Searches for references to the current element elsewhere."""
+
     __slots__ = ("attrs",)
 
     attrs: tuple[operator.attrgetter, ...]
@@ -1065,6 +1072,20 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         *attrs: str,
         aslist: type[element.ElementList] | None = None,
     ) -> None:
+        """Create a ReferenceSearchingAccessor.
+
+        Parameters
+        ----------
+        class_
+            The type of class to search for references on.
+        attrs
+            The attributes of the target classes to search through.
+        aslist
+            If None, only a single element must match, which will be
+            returned directly. If not None, must be a subclass of
+            :class:`~capellambse.model.common.element.ElementList`,
+            which will be used to return a list of all matched objects.
+        """
         super().__init__(class_, aslist=aslist)
         self.attrs = tuple(operator.attrgetter(i) for i in attrs)
 
@@ -1151,9 +1172,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
     This class is meant to be subclassed further, where the subclass has
     both this class and the originally intended one as base classes (but
-    no other ones, i.e. there must be exactly two bases).  The Accessor
+    no other ones, i.e. there must be exactly two bases). The Accessor
     then inserts itself as the ``_accessor`` class variable on the new
-    subclass.  This allows the mixed-in methods to delegate actual model
+    subclass. This allows the mixed-in methods to delegate actual model
     modifications to the Accessor.
     """
 
@@ -1204,7 +1225,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert type(self).__bases__[0] is ElementListCouplingMixin
         return type(self).__bases__[1]
 
-    def create(self, *args: str | None, **kw: t.Any) -> T:
+    def create(self, *type_hints: str | None, **kw: t.Any) -> T:
         """Make a new model object (instance of GenericElement).
 
         Instead of specifying the full ``xsi:type`` including the
@@ -1221,16 +1242,18 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         Parameters
         ----------
-        layertype
-            The ``xsi:type`` of the architectural layer on which this
-            element will eventually live (see above).
-        objtype
-            The ``xsi:type`` of the object to create.
+        type_hints
+            Hints for finding the correct type of element to create. Can
+            either be a full or shortened ``xsi:type`` string, or an
+            abbreviation defined by the specific Accessor instance.
+        kw
+            Initialize the properties of the new object. Depending on
+            the object, some attributes may be required.
         """
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
-        newobj = acc.create(self, *args, **kw)
+        newobj = acc.create(self, *type_hints, **kw)
         self._newlist_type().insert(self, len(self), newobj)
         return newobj
 
@@ -1241,7 +1264,11 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         See Also
         --------
-        create : :meth:`ElementList.create` for additional explanation.
+        capellambse.model.common.accessor.ElementListCouplingMixin.create :
+            More details on how elements are created.
+        capellambse.model.common.accessor.WritableAccessor.create_singleattr :
+            The method to override in Accessors in order to implement
+            this operation.
         """
         assert self._parent is not None
         acc = type(self)._accessor
