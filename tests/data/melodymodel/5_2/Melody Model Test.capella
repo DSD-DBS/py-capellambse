@@ -880,7 +880,8 @@ The predator is far away</bodies>
                   </ownedRegions>
                 </ownedStates>
                 <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                    id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7">
+                    id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" entry="#0e0164c3-076e-42c1-8f82-7a43ab84385c"
+                    doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7" exit="#ab016025-d456-4c2d-8359-d50cf9de3825 #f33bd79c-fa90-4c09-942b-581dc7f07d84 #04babdbf-6cf6-4846-a207-bf27cfc8eb32">
                   <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
                       id="08a31ad3-2acf-4b0f-a415-d40d610bee4a" name="region"/>
                 </ownedStates>
