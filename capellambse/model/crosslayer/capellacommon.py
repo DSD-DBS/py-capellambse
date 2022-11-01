@@ -36,6 +36,16 @@ class AbstractStateMode(c.GenericElement):
 class State(AbstractStateMode):
     """A state."""
 
+    entries = c.AttrProxyAccessor(
+        c.GenericElement, "entry", aslist=c.MixedElementList
+    )
+    do_activity = c.AttrProxyAccessor(
+        c.GenericElement, "doActivity", aslist=c.MixedElementList
+    )
+    exits = c.AttrProxyAccessor(
+        c.GenericElement, "exit", aslist=c.MixedElementList
+    )
+
 
 @c.xtype_handler(None)
 class Mode(AbstractStateMode):
