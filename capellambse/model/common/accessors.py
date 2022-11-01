@@ -456,12 +456,13 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
                 raise TypeError("Can only set list attribute to an iterable")
             list = self.__get__(obj)
-            list[:] = []
-            for v in value:
+            for v in list:
+                self.delete(list, v)
+            for i, v in enumerate(value):
                 if isinstance(v, str):
-                    list.create_singleattr(v)
+                    self.create_singleattr(list, v)
                 else:
-                    list.create(**v)
+                    self.insert(list, i, v)
         else:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError("Cannot set non-list attribute to an iterable")
@@ -641,15 +642,18 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return self._make_list(obj, elems)
 
     def __set__(self, obj, value):
-        if self.aslist is not None:
-            self.__get__(obj)[:] = value
-            return
-
+        if self.aslist is None:
+            if isinstance(value, cabc.Iterable) and not isinstance(value, str):
+                raise TypeError(f"{self._qualname} expects a single element")
+            value = (value,)
+        elif isinstance(value, str) or not isinstance(value, cabc.Iterable):
+            raise TypeError(f"{self._qualname} expects an iterable")
         if self.tag is None:
             raise NotImplementedError("Cannot set: XML tag not set")
-        if self.__get__(obj) is not None:
-            self.__delete__(obj)
-        self.__create_link(obj, value)
+
+        self.__delete__(obj)
+        for v in value:
+            self.__create_link(obj, v)
 
     def __delete__(self, obj):
         refobjs = list(self.__find_refs(obj))
@@ -1238,14 +1242,13 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         self, index: int | slice, value: T | cabc.Iterable[T]
     ) -> None:
         assert self._parent is not None
-        del self[index]
-        if isinstance(index, slice):
-            assert isinstance(value, cabc.Iterable)
-            for i, elm in enumerate(value, start=index.start or 0):
-                self.insert(i, elm)
-        else:
-            assert not isinstance(value, cabc.Iterable)
-            self.insert(index, value)
+        accessor = type(self)._accessor
+        assert isinstance(accessor, WritableAccessor)
+
+        new_objs = list(self)
+        new_objs[index] = value  # type: ignore[index]
+
+        accessor.__set__(self._parent, new_objs)
 
     def __delitem__(self, index: int | slice) -> None:
         assert self._parent is not None
