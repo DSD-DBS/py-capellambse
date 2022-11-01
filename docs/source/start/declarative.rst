@@ -72,7 +72,7 @@ The expected YAML follows a simple format, where a parent object (i.e. an
 object that already exists in the model) is selected, and one or more of three
 different operations is applied to it:
 
-- ``create``-ing new child objects,
+- ``extend``-ing the object on list attributes,
 - ``modify``-ing the object itself, or
 - ``delete``-ing one or more children.
 
@@ -84,8 +84,8 @@ our test model:
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
 
-Creating objects
-----------------
+Extending objects
+-----------------
 
 :py:class:`~capellambse.model.layers.la.LogicalFunction` objects have several
 different attributes which can be modified from a declarative YAML file. For
@@ -98,7 +98,7 @@ function:
    :emphasize-lines: 2
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
-     create:
+     extend:
        functions:
          - name: brew coffee
 
@@ -110,7 +110,7 @@ could further receive nested child functions, each providing an output port:
    :emphasize-lines: 4-5
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
-     create:
+     extend:
        functions:
          - name: brew coffee
            functions:
@@ -135,7 +135,7 @@ functions, which communicate through a functional exchange:
    :emphasize-lines: 7,11,14-15
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
-     create:
+     extend:
        functions:
          - name: brew coffee
            inputs:
