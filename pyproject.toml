@@ -50,7 +50,7 @@ docs = [
   "jinja2",
   "nbsphinx",
   "pyyaml>=6.0",
-  "sphinx",
+  "sphinx>=5",
   "sphinx-argparse-cli",
   "tomli; python_version<'3.11'",
 ]
