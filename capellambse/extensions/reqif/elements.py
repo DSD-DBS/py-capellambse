@@ -501,7 +501,7 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
     """An enumeration attribute."""
 
     definition = c.AttrProxyAccessor(
-        AttributeDefinitionEnumeration, "definition"
+        AttributeDefinitionEnumeration, "definition"  # type: ignore[arg-type]
     )
     values = c.AttrProxyAccessor(EnumValue, "values", aslist=c.ElementList)
 
