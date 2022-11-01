@@ -120,6 +120,9 @@ class DeprecatedAccessor(Accessor[T]):
 
     def __get__(self, obj, objtype=None):
         self.__warn()
+        if obj is None:
+            return self
+
         return getattr(obj, self.alternative)
 
     def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
