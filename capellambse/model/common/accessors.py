@@ -12,6 +12,8 @@ __all__ = [
     "DeepProxyAccessor",
     "LinkAccessor",
     "AttrProxyAccessor",
+    "PhysicalLinkEndsAccessor",
+    "IndexAccessor",
     "AlternateAccessor",
     "ParentAccessor",
     "CustomAccessor",
@@ -848,6 +850,67 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         obj._element.set(self.attr, " ".join(parts))
 
 
+class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
+    def __init__(
+        self,
+        class_: type[T],
+        attr: str,
+        *,
+        aslist: type[element.ElementList],
+    ) -> None:
+        super().__init__(class_, attr, aslist=aslist)
+        assert self.aslist is not None
+        self.aslist.fixed_length = 2
+
+
+class IndexAccessor(Accessor[T]):
+    """Access a specific index in an ElementList of a fixed size."""
+
+    __slots__ = ("index", "wrapped")
+
+    def __init__(self, wrapped: str, index: int) -> None:
+        super().__init__()
+        self.index = index
+        self.wrapped = wrapped
+
+    @t.overload
+    def __get__(self, obj: None, objtype=None) -> Accessor:
+        ...
+
+    @t.overload
+    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+        ...
+
+    def __get__(self, obj, objtype=None):
+        if obj is None:
+            return self
+        container = getattr(obj, self.wrapped)
+        if not isinstance(container, element.ElementList):
+            raise RuntimeError(
+                f"Cannot get {self._qualname}: {self.wrapped} is not a list"
+            )
+        if len(container) <= self.index:
+            raise RuntimeError(
+                f"Broken XML: Expected at least {self.index + 1} elements,"
+                f" found {len(container)}"
+            )
+        return container[self.index]
+
+    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
+        container = getattr(obj, self.wrapped)
+        if not isinstance(container, ElementListCouplingMixin):
+            raise TypeError(
+                f"Cannot set {self._qualname}:"
+                f" {self.wrapped} is not a coupled list"
+            )
+        if len(container) < self.index:
+            raise RuntimeError(
+                f"Broken XML: Expected at least {self.index+1} elements,"
+                f" found {len(container)}"
+            )
+        container[self.index] = value
+
+
 class AlternateAccessor(Accessor[T]):
     """Provides access to an "alternate" form of the object."""
 
@@ -1220,6 +1283,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     """
 
     _accessor: WritableAccessor[T]
+    fixed_length: t.ClassVar[int] = 0
 
     def __init__(
         self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
@@ -1248,9 +1312,17 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         new_objs = list(self)
         new_objs[index] = value  # type: ignore[index]
 
+        if self.fixed_length and len(new_objs) != self.fixed_length:
+            raise TypeError(
+                f"Cannot set: List must stay at length {self.fixed_length}"
+            )
+
         accessor.__set__(self._parent, new_objs)
 
     def __delitem__(self, index: int | slice) -> None:
+        if self.fixed_length and len(self) <= self.fixed_length:
+            raise TypeError("Cannot delete from a fixed-length list")
+
         assert self._parent is not None
         accessor = type(self)._accessor
         assert isinstance(accessor, WritableAccessor)
@@ -1290,6 +1362,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             Initialize the properties of the new object. Depending on
             the object, some attributes may be required.
         """
+        if self.fixed_length and len(self) >= self.fixed_length:
+            raise TypeError("Cannot create elements in a fixed-length list")
+
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
@@ -1310,6 +1385,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             The method to override in Accessors in order to implement
             this operation.
         """
+        if self.fixed_length and len(self) >= self.fixed_length:
+            raise TypeError("Cannot create elements in a fixed-length list")
+
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
@@ -1328,6 +1406,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             del self[index]
 
     def insert(self, index: int, value: T) -> None:
+        if self.fixed_length and len(self) >= self.fixed_length:
+            raise TypeError("Cannot insert into a fixed-length list")
+
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
