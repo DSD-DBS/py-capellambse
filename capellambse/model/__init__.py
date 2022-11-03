@@ -15,6 +15,8 @@ import collections.abc as cabc
 import logging
 import os
 import pathlib
+import re
+import shutil
 import typing as t
 
 from lxml import etree
@@ -22,7 +24,7 @@ from lxml import etree
 import capellambse
 import capellambse.helpers
 import capellambse.pvmt
-from capellambse import filehandler, loader
+from capellambse import _diagram_cache, filehandler, loader
 from capellambse.loader import xmltools
 
 from . import common, diagram  # isort:skip
@@ -214,7 +216,6 @@ class MelodyModel:
         capellambse.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
-        # pylint: enable=line-too-long
         capellambse.load_model_extensions()
 
         self._loader = loader.MelodyLoader(path, **kwargs)
@@ -287,7 +288,6 @@ class MelodyModel:
         always leave the ``update_cache`` parameter at its default value
         of ``True`` if you intend to save changes.
         """
-        # pylint: enable=line-too-long
         self._loader.save(**kw)
 
     def search(
@@ -348,3 +348,156 @@ class MelodyModel:
     def by_uuid(self, uuid: str) -> common.GenericElement:
         """Search the entire model for an element with the given UUID."""
         return common.GenericElement.from_model(self, self._loader[uuid])
+
+    def update_diagram_cache(
+        self,
+        capella_cli: str,
+        image_format: t.Literal["bmp", "gif", "jpg", "png", "svg"] = "svg",
+        *,
+        create_index: bool = False,
+        force: t.Literal["docker", "exe"] | None = None,
+    ) -> None:
+        r"""Update the diagram cache if one has been specified.
+
+        If a ``diagram_cache`` has been specified while loading a
+        Capella model it will be updated when this function is called.
+
+        The diagram cache will be populated by executing the Capella
+        function "Export representations as images" which is normally
+        accessible via the context menu of an ``.aird`` node in
+        Capella's project explorer. The export of diagrams happens with
+        the help of Capella's command line interface (CLI).
+
+        The CLI of Capella must be specified by the caller. It is
+        possible to work with a local installation or a Docker image of
+        an individual Capella bundle.
+
+        At the moment it is supported to run a Docker image using the
+        container system Docker and the ``docker`` executable must be in
+        the ``PATH`` environment variable.
+
+        Parameters
+        ----------
+        capella_cli
+            The Capella CLI to use when exporting diagrams from the
+            given Capella model. The provided string can come with a
+            ``"{VERSION}"`` placeholder. If specified, this placeholder
+            will be replaced by the x.y.z formatted version of Capella
+            that has been used when the given Capella model was last
+            saved. After consideration of the optional placeholder this
+            function will first check if the value of ``capella_cli``
+            points to a local Capella executable (that can be an
+            absolute path or an executable/ symbolic link that has been
+            made available via the environment variable ``PATH``). If no
+            executable can be found it is expected that ``capella_cli``
+            represents a Docker image name for an image that behaves
+            like the Capella CLI. For the case of passing a Docker image
+            name through ``capella_cli`` this means it is assumed that
+            something like the following
+
+            .. code-block:: bash
+
+                docker run --rm -it <capella_cli> -nosplash \
+                    -consolelog -app APP -appid APPID
+
+            will work.
+            The parameter ``force`` can be set to change the described
+            behaviour and force the function to treat the
+            ``capella_cli`` as a local executable or a Docker image
+            only.
+        image_format
+            Format of the image file(s) for the exported diagram(s).
+            This can be set to any value out of ``"bmp"``, ``"gif"``,
+            ``"jpg"``, ``"png"``, or ``"svg"``.
+        create_index
+            If ``True``, two index files ``index.json`` and
+            ``index.html`` will be created. The JSON file consists of a
+            list of dictionaries, each representing a diagram in the
+            model. The dictionaries come with the keys
+
+            - name: Name of the diagram as it has been set in Capella
+            - uuid: The UUID of the diagram
+            - success: A boolean stating if a diagram has been exported
+              from Capella
+
+            The HTML file shows a numbered list of diagram names which
+            are hyperlinked to the diagram image file. Right beside a
+            diagram's name one can also see the diagram's UUID in a
+            discreet light gray and tiny font size. The HTML index also
+            provides some meta data like a timestamp for the
+            update of diagrams.
+        force
+            If the value of ``capella_cli`` is ambiguous and can match
+            both a local executable and a Docker image, this parameter
+            can be used to bypass the auto-detection and force the
+            choice. A value of ``"exe"`` always interprets
+            ``capella_cli`` as local executable, ``"docker"`` always
+            interprets it as a docker image name. ``None`` (the default)
+            enables automatic detection.
+
+        Raises
+        ------
+        TypeError
+            If no ``diagram_cache`` was specified while loading the
+            model.
+        RuntimeError
+            If an error occurs while diagrams are being exported from
+            the Capella model.
+
+        Examples
+        --------
+        **Running a local installation of Capella**
+
+        All the following examples call the method
+        :meth:`update_diagram_cache` on a model
+        for which a diagram cache has been specified, example:
+
+        >>> import capellambse
+        >>> model = capellambse.MelodyModel(
+        ...    "/path/to/model.aird",
+        ...    diagram_cache="/path/to/diagram_cache",
+        ... )
+
+        Passing an executable/ symlink named ``capella`` that is in the
+        ``PATH`` environment variable:
+
+        >>> model.update_diagram_cache(
+        ...     "capella", "png", True
+        ... )
+
+        Passing an absolute path to a local installation of Capella that
+        contains the Capella version:
+
+        >>> model.update_diagram_cache(
+        ...     "/Applications/Capella_{VERSION}.app/Contents/MacOS/capella"
+        ... )
+
+        **Running a Capella CLI container**
+
+        >>> model.update_diagram_cache(
+        ...     "capella/cli:{VERSION}-latest"
+        ... )
+        """
+        if not hasattr(self, "_diagram_cache"):
+            raise TypeError(
+                "Cannot update: No diagram_cache was specified for this model"
+            )
+        diag_cache_dir = pathlib.Path(self._diagram_cache.path)
+        if diag_cache_dir.exists():
+            shutil.rmtree(diag_cache_dir)
+            diag_cache_dir.mkdir(parents=True)
+        capella_version = self.info.capella_version
+        assert capella_version is not None
+        assert re.fullmatch(r"\d+\.\d+\.\d+", capella_version)
+        assert self.info.title is not None
+        diagram_cache = _diagram_cache.DiagramCache(
+            capella_cli.replace("{VERSION}", str(self.info.capella_version)),
+            image_format,
+            create_index,
+            force,
+            self.info.title,
+            diag_cache_dir,
+            list(self.diagrams),
+        )
+        with self._loader.write_tmp_project_dir() as tmp_project_dir:
+            diagram_cache.export_diagrams(tmp_project_dir)
