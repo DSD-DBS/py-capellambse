@@ -150,6 +150,16 @@ class Class(c.GenericElement):
 
 
 @c.xtype_handler(None)
+class InformationRealization(c.GenericElement):
+    """A realization for a Class."""
+
+    _xmltag = "ownedInformationRealizations"
+
+    source = c.AttrProxyAccessor(Class, "sourceElement")
+    target = c.AttrProxyAccessor(Class, "targetElement")
+
+
+@c.xtype_handler(None)
 class Union(Class):
     """A Union."""
 
@@ -244,3 +254,25 @@ c.set_accessor(
     DataPkg, "packages", c.DirectProxyAccessor(DataPkg, aslist=c.ElementList)
 )
 c.set_accessor(ExchangeItemElement, "owner", c.ParentAccessor(ExchangeItem))
+c.set_accessor(
+    Class,
+    "realized_classes",
+    c.LinkAccessor[Class](
+        None,  # FIXME fill in tag
+        InformationRealization,
+        aslist=c.ElementList,
+        attr="targetElement",
+    ),
+)
+c.set_accessor(
+    Class,
+    "realizations",
+    c.DirectProxyAccessor(InformationRealization, aslist=c.ElementList),
+)
+c.set_accessor(
+    Class,
+    "realized_by",
+    c.ReferenceSearchingAccessor(
+        Class, "realized_classes", aslist=c.ElementList
+    ),
+)
