@@ -99,6 +99,12 @@ class Property(c.GenericElement):
     visibility = xmltools.EnumAttributeProperty(
         "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
+    kind = xmltools.EnumAttributeProperty(
+        "_element",
+        "aggregationKind",
+        modeltypes.AggregationKind,
+        default="UNSET",
+    )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     default_value = c.RoleTagAccessor("ownedDefaultValue")
     min = c.RoleTagAccessor("ownedMinValue")

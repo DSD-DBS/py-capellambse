@@ -191,3 +191,12 @@ class CollectionKind(_StringyEnumMixin, _enum.Enum):
 class UnionKind(_StringyEnumMixin, _enum.Enum):
     UNION = _enum.auto()
     VARIANT = _enum.auto()
+
+
+class AggregationKind(_StringyEnumMixin, _enum.Enum):
+    """Aggregation kind."""
+
+    UNSET = _enum.auto()
+    ASSOCIATION = _enum.auto()
+    AGGREGATION = _enum.auto()
+    COMPOSITION = _enum.auto()
