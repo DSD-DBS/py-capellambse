@@ -1252,7 +1252,8 @@ The predator is far away</bodies>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="814464a3-3278-48eb-b66c-e255ed11afa8" name="Data">
         <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
-            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" name="DataAssociation1" navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
+            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" name="waypoint association"
+            navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
           <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
               id="c0e5b34c-297e-4b3c-8957-58bbe4d36199" name="trajectory" abstractType="#c3c96805-d6f6-4092-b9f4-df7970651cdc"
               aggregationKind="ASSOCIATION">
@@ -2317,7 +2318,7 @@ The predator is far away</bodies>
                   abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419" referencedValue="#492fd9ca-88cb-4e9d-b92e-df14a1c1543b"/>
             </ownedParts>
             <ownedParts xsi:type="org.polarsys.capella.core.data.information.datavalue:ValuePart"
-                id="a10de770-c6de-43fc-8d9f-868efe5cd29f" referencedProperty="#df884a71-e774-49e1-8aee-0a675179c647">
+                id="a10de770-c6de-43fc-8d9f-868efe5cd29f" referencedProperty="#87f356eb-c79e-4155-b297-8d733685621c">
               <ownedValue xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationReference"
                   id="9645687f-9485-45f0-a10b-01f8b9d24914" name="EnumerationReference"
                   abstractType="#60314ce6-bc96-4b57-8965-7187241148ae" referencedValue="#bfd550cb-7038-48db-9d7b-57cd0ca29d03"/>
@@ -2326,6 +2327,9 @@ The predator is far away</bodies>
         </ownedDataPkgs>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="c710f1c2-ede6-444e-9e2b-0ff30d7fd040" name="Wand">
+          <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+              id="7b66d8fb-3960-40c7-85c6-1738aee234e5" super="#2b34c799-769c-42f2-8a1b-4533dba209a0"
+              sub="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
               id="9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51" name="owner" abstractType="#b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81">
             <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
@@ -2340,16 +2344,19 @@ The predator is far away</bodies>
             <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="b123b4d7-576d-45a8-b1d3-598187cccfd8" value="1"/>
           </ownedFeatures>
-          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
-              id="df884a71-e774-49e1-8aee-0a675179c647" name="wood" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae">
-            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
-                id="9c9ba595-8d91-46dd-9d45-7bb00baa380b" value="1"/>
-            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
-                id="f25067de-2b40-4cae-a2c2-5f38e266d4d8" value="1"/>
-          </ownedFeatures>
         </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="1adf8097-18f9-474e-b136-6c845fc6d9e9" name="Class 2"/>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="2b34c799-769c-42f2-8a1b-4533dba209a0" name="Branch">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="87f356eb-c79e-4155-b297-8d733685621c" name="wood" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="49d3520e-4ec1-4bb7-9c30-21b83b4cb432" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="d7e13df8-4574-4fd1-8137-74a7d64215ad" value="1"/>
+          </ownedFeatures>
+        </ownedClasses>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
             id="546cd75a-c7ac-4e07-9d2d-8a1f93d82419" name="Wand Core">
           <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
