@@ -56,6 +56,25 @@ class Unit(c.GenericElement):
 
 
 @c.xtype_handler(None)
+class Association(c.GenericElement):
+    """An Association."""
+
+    _xmltag = "ownedAssociations"
+
+    navigable_members: c.Accessor
+    source_role: c.Accessor
+
+    @property
+    def roles(self) -> c.ElementList[Property]:
+        roles = []
+        if self.source_role:
+            roles.append(self.source_role._element)
+
+        roles.extend((prop._element for prop in self.navigable_members))
+        return self.navigable_members._newlist(roles)
+
+
+@c.xtype_handler(None)
 class Property(c.GenericElement):
     """A Property of a Class."""
 
@@ -112,6 +131,7 @@ class Property(c.GenericElement):
     null_value = c.RoleTagAccessor("ownedNullValue")
     min_card = c.RoleTagAccessor("ownedMinCard")
     max_card = c.RoleTagAccessor("ownedMaxCard")
+    association = c.ReferenceSearchingAccessor(Association, "roles")
 
 
 @c.xtype_handler(None)
@@ -250,3 +270,9 @@ c.set_accessor(
     DataPkg, "packages", c.DirectProxyAccessor(DataPkg, aslist=c.ElementList)
 )
 c.set_accessor(ExchangeItemElement, "owner", c.ParentAccessor(ExchangeItem))
+c.set_accessor(
+    Association,
+    "navigable_members",
+    c.AttrProxyAccessor(Property, "navigableMembers", aslist=c.ElementList),
+)
+c.set_accessor(Association, "source_role", c.DirectProxyAccessor(Property))
