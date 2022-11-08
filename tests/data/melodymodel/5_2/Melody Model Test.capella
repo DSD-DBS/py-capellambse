@@ -1252,8 +1252,8 @@ The predator is far away</bodies>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="814464a3-3278-48eb-b66c-e255ed11afa8" name="Data">
         <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
-            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" name="waypoint association"
-            navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
+            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" summary="Find waypoints and you will finish consistently."
+            name="waypoint association" navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
           <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
               id="c0e5b34c-297e-4b3c-8957-58bbe4d36199" name="trajectory" abstractType="#c3c96805-d6f6-4092-b9f4-df7970651cdc"
               aggregationKind="ASSOCIATION">
