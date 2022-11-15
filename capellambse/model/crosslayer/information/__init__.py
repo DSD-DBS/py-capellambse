@@ -235,8 +235,8 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
         "super",
-        c.LinkAccessor(  # FIXME fill in tag
-            None, capellacore.Generalization, attr="super"
+        c.LinkAccessor(
+            "ownedGeneralizations", capellacore.Generalization, attr="super"
         ),
     )
     c.set_accessor(
@@ -258,7 +258,7 @@ c.set_accessor(
     Class,
     "realized_classes",
     c.LinkAccessor[Class](
-        None,  # FIXME fill in tag
+        "ownedInformationRealizations",
         InformationRealization,
         aslist=c.ElementList,
         attr="targetElement",
