@@ -2347,6 +2347,9 @@ The predator is far away</bodies>
             <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="f25067de-2b40-4cae-a2c2-5f38e266d4d8" value="1"/>
           </ownedFeatures>
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="793520e1-acbf-4f93-a219-587840aa5a3b" targetElement="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"
+              sourceElement="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040"/>
         </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="1adf8097-18f9-474e-b136-6c845fc6d9e9" name="Class 2"/>
@@ -2753,7 +2756,20 @@ The predator is far away</bodies>
       <ownedInterfacePkg xsi:type="org.polarsys.capella.core.data.cs:InterfacePkg"
           id="2cb789be-39ff-401f-a5fb-e2d60f02bc13" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
-          id="cb4095f2-cc0b-42be-ba46-59950836eee2" name="Data"/>
+          id="cb4095f2-cc0b-42be-ba46-59950836eee2" name="Data">
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="7a3bdb81-b58f-46c7-a639-18298acc1a53" name="Alone">
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="294012cc-52c6-47ae-b65e-b41d3f48fa44" targetElement="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"
+              sourceElement="#7a3bdb81-b58f-46c7-a639-18298acc1a53"/>
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="95836499-eae4-434e-a353-af29c96c3561" targetElement="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040"
+              sourceElement="#7a3bdb81-b58f-46c7-a639-18298acc1a53"/>
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="cead920c-0250-4b82-be37-6b65a05580f8" targetElement="#8164ae8b-36d5-4502-a184-5ec064db4ec3"
+              sourceElement="#7a3bdb81-b58f-46c7-a639-18298acc1a53"/>
+        </ownedClasses>
+      </ownedDataPkg>
       <ownedPhysicalComponentPkg xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponentPkg"
           id="f7e20d0e-d219-4867-a287-5a56e2d9a63c" name="Structure">
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="508deb8c-4d10-48f3-903e-40e482b1999a"
