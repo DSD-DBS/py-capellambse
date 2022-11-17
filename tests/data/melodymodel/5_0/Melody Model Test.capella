@@ -2432,6 +2432,11 @@ The predator is far away</bodies>
           <ownedFunctionalExchanges xsi:type="org.polarsys.capella.core.data.fa:FunctionalExchange"
               id="0fe9e999-3bd8-4590-9dc2-f51d2c1af173" name="FunctionalExchange 11"
               target="#494979bd-d301-419b-8a91-fd1c28dec21c" source="#aaf1f13c-270f-4d67-bc65-37a1c9afb17a"/>
+          <ownedLogicalFunctionPkgs xsi:type="org.polarsys.capella.core.data.la:LogicalFunctionPkg"
+              id="fffbf2bb-4a82-498b-adcb-578141463fd7" name="Subfunctions">
+            <ownedLogicalFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
+                id="8833d2dc-b862-4a50-b26c-6f7e0f17faef" name="Subfunc"/>
+          </ownedLogicalFunctionPkgs>
         </ownedLogicalFunctions>
       </ownedFunctionPkg>
       <ownedAbstractCapabilityPkg xsi:type="org.polarsys.capella.core.data.la:CapabilityRealizationPkg"

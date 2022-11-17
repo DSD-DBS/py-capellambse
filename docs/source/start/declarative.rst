@@ -72,7 +72,7 @@ The expected YAML follows a simple format, where a parent object (i.e. an
 object that already exists in the model) is selected, and one or more of three
 different operations is applied to it:
 
-- ``create``-ing new child objects,
+- ``extend``-ing the object on list attributes,
 - ``modify``-ing the object itself, or
 - ``delete``-ing one or more children.
 
@@ -84,8 +84,18 @@ our test model:
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
 
-Creating objects
-----------------
+Extending objects
+-----------------
+
+The following subsections show how to create completely new objects, or
+reference and move already existing ones, using examples of declarative YAML
+files on
+:py:class:`~capellambse.model.common.accessors.ElementListCouplingMixin`-ish
+attributes. The extension of one-to-one attributes works in the same way,
+adhering to the YAML syntax.
+
+Creating new objects
+^^^^^^^^^^^^^^^^^^^^
 
 :py:class:`~capellambse.model.layers.la.LogicalFunction` objects have several
 different attributes which can be modified from a declarative YAML file. For
@@ -98,7 +108,7 @@ function:
    :emphasize-lines: 2
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
-     create:
+     extend:
        functions:
          - name: brew coffee
 
@@ -110,7 +120,7 @@ could further receive nested child functions, each providing an output port:
    :emphasize-lines: 4-5
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
-     create:
+     extend:
        functions:
          - name: brew coffee
            functions:
@@ -135,7 +145,7 @@ functions, which communicate through a functional exchange:
    :emphasize-lines: 7,11,14-15
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
-     create:
+     extend:
        functions:
          - name: brew coffee
            inputs:
@@ -152,6 +162,61 @@ functions, which communicate through a functional exchange:
 
 The ``!promise`` tag (and the ``!uuid`` tag as well) can be used anywhere where
 a model object is expected.
+
+Creating new references
+^^^^^^^^^^^^^^^^^^^^^^^
+
+It is important to understand when new model objects are created and when only
+references are added. The following example would create a reference in the
+``.allocated_functions`` attribute of the
+:py:class:`~capellambse.model.layers.la.LogicalComponent` which is also the
+logical ``root_component`` (parent) to the logical ``root_function``:
+
+.. code-block:: yaml
+   :emphasize-lines: 2
+
+   - parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440
+     extend:
+       allocated_functions:
+         - !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
+
+This is caused by the type of relationship (non-
+:py:class:`~capellambse.model.common.accessors.DirectProxyAccessor`) between
+the parent and its ``allocated_functions``.
+
+It is also possible to create references to promised objects, but extra caution
+for declaring ``promise_id``\ s for resolving these promises successfully:
+
+.. code-block:: yaml
+   :emphasize-lines: 5,9
+
+   - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
+     extend:
+       functions:
+         - name: The promised one
+           promise_id: promised-fnc
+   - parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440
+     extend:
+       functions:
+         - !promise promised-fnc
+
+The ``promise_id`` declaration can also happen after referencing it.
+
+Moving objects
+^^^^^^^^^^^^^^
+
+The following example would move a logical function from underneath a
+:py:class:`~capellambse.model.layers.la.LogicalFunctionPkg` (accessible via
+``functions``) into ``functions`` of the logical ``root_function`` (parent)
+since the ``functions`` attribute has a parent/children relationship (i.e. the
+:py:class:`~capellambse.model.common.accessors.DirectProxyAccessor` is used).
+
+.. code-block:: yaml
+
+   - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
+     extend:
+       functions:
+         - !uuid 8833d2dc-b862-4a50-b26c-6f7e0f17faef
 
 Modifying objects
 -----------------
