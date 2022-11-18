@@ -120,7 +120,7 @@ class GenericElement:
     )
 
     constraints: accessors.Accessor
-    parent: accessors.Accessor
+    parent: accessors.ParentAccessor
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
