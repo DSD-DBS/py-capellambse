@@ -14,6 +14,8 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
+from lxml import etree
+
 from capellambse.loader import xmltools
 
 from ... import common as c
@@ -61,17 +63,19 @@ class Association(c.GenericElement):
 
     _xmltag = "ownedAssociations"
 
-    navigable_members: c.Accessor
-    source_role: c.Accessor
+    navigable_members: c.Accessor[Property]
+    source_role: c.Accessor[Property]
 
     @property
     def roles(self) -> c.ElementList[Property]:
         roles = []
         if self.source_role:
+            assert isinstance(self.source_role, c.GenericElement)
             roles.append(self.source_role._element)
 
-        roles.extend((prop._element for prop in self.navigable_members))
-        return self.navigable_members._newlist(roles)
+        assert isinstance(self.navigable_members, c.ElementList)
+        roles.extend(prop._element for prop in self.navigable_members)
+        return c.ElementList(self._model, roles, Property)
 
 
 @c.xtype_handler(None)
