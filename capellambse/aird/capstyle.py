@@ -150,7 +150,7 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
         and diagramclass
         and objectclass not in STYLES.get(diagramclass, {})
     ):
-        LOGGER.warning(
+        LOGGER.debug(
             "No default style for %r in %r", objectclass, diagramclass
         )
     try:
