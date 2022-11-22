@@ -1274,20 +1274,6 @@ The predator is far away</bodies>
           id="1fded3ea-675d-4b0d-b018-3502a77a5b67" name="Capabilities hehe">
         <ownedCapabilities xsi:type="org.polarsys.capella.core.data.ctx:Capability"
             id="9390b7d5-598a-42db-bef8-23677e45ba06" name="Capability">
-          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
-              id="afdaa095-e2cd-4230-b5d3-6cb771a90f51" name="Scenario" kind="FUNCTIONAL">
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="cde1edc9-ff81-4ee0-bf69-a0e6c99010bc" name="Root System Function"
-                representedInstance="#1eee3b81-41ef-4b56-8018-b8e421a5a2bc"/>
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="8f4da370-eee2-41aa-b38c-2a12a58c7033" name="Important Function"
-                representedInstance="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
-          </ownedScenarios>
-          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
-              id="140943be-c865-4505-8459-67dd626ef0d4" name="Scenario" kind="INTERFACE">
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="f91992cb-a463-4d88-8b3a-da70206eb017" name="System" representedInstance="#3b9e56b1-e8b5-4605-9924-d332d79ca8c3"/>
-          </ownedScenarios>
           <extends xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityExtend"
               id="992c4ba5-0165-470d-b2d0-f117e00a645c" extended="#562c5128-5acd-45cc-8b49-1d8d686f450a"/>
           <superGeneralizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityGeneralization"
@@ -2443,11 +2429,6 @@ The predator is far away</bodies>
           id="a724c16e-fbd2-4100-94b6-99af0bf270ab" name="Capabilities">
         <ownedCapabilityRealizations xsi:type="org.polarsys.capella.core.data.la:CapabilityRealization"
             id="b80b3141-a7fc-48c7-84b2-1467dcef5fce" name="Capability Realization">
-          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
-              id="b5283e83-f9db-4cb2-b3e6-44c768d11f99" name="Scenario" kind="DATA_FLOW">
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="c658abe1-d87b-4a03-a6f4-1ff477739bbe" name="Whomping Willow" representedInstance="#1188fc31-789b-424f-a2d4-06791873a351"/>
-          </ownedScenarios>
           <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
               id="3e22f774-d699-4183-8436-da1da9900d1c" targetElement="#562c5128-5acd-45cc-8b49-1d8d686f450a"
               sourceElement="#b80b3141-a7fc-48c7-84b2-1467dcef5fce"/>
