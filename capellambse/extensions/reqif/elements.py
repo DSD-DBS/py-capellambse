@@ -257,16 +257,7 @@ class ReqIFElement(c.GenericElement):
         mytype = type(self).__name__
         path = []
         parent = self._element
-        if isinstance(
-            self,
-            (
-                RequirementsOutRelation,
-                RequirementsIncRelation,
-                RequirementsIntRelation,
-            ),
-        ):
-            return f"<{mytype} from {self.source!r} to {self.target!r} ({self.uuid})>"
-        elif self.xtype in XT_REQ_TYPES:
+        if self.xtype in XT_REQ_TYPES:
             return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
         while parent is not None:
             path.append(
@@ -642,6 +633,12 @@ class AbstractRequirementsRelation(ReqIFElement):
     type = c.AttrProxyAccessor(RelationType, "relationType")
     source = c.AttrProxyAccessor(Requirement, "source")
     target = c.AttrProxyAccessor(c.GenericElement, "target")
+
+    def _short_repr_(self) -> str:
+        return (
+            f"<{type(self).__name__} from {self.source._short_repr_()}"
+            f" to {self.target._short_repr_()} ({self.uuid})>"
+        )
 
 
 @c.xtype_handler(None, XT_OUT_RELATION)
