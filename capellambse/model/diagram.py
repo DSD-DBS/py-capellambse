@@ -304,6 +304,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             with cache_handler.open(cachedir / (self.uuid + ext)) as f:
                 cache = f.read()
         except FileNotFoundError:
+            LOGGER.debug("Diagram not in cache: %s (%s)", self.uuid, self.name)
             raise KeyError(self.uuid) from None
 
         return converter.from_cache(cache)
