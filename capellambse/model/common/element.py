@@ -110,7 +110,7 @@ class GenericElement:
     uuid = xmltools.AttributeProperty("_element", "id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name = xmltools.AttributeProperty(
-        "_element", "name", optional=True, default="(Unnamed {self.xtype})"
+        "_element", "name", optional=True, default=""
     )
     description = xmltools.HTMLAttributeProperty(
         "_element", "description", optional=True
@@ -277,7 +277,11 @@ class GenericElement:
             mytype = f"Model element ({self.xtype})"
         else:
             mytype = type(self).__name__
-        return f"<{mytype} {self.name!r} ({self.uuid})>"
+        if self.name:
+            name = f" {self.name!r}"
+        else:
+            name = ""
+        return f"<{mytype}{name} ({self.uuid})>"
 
     def __html__(self) -> markupsafe.Markup:
         fragments: list[str] = []
