@@ -67,7 +67,6 @@ from lxml import etree
 
 import capellambse.model
 import capellambse.model.common as c
-from capellambse import helpers
 from capellambse.loader import xmltools
 from capellambse.model import crosslayer
 
@@ -255,30 +254,21 @@ class ReqIFElement(c.GenericElement):
 
     def _short_repr_(self) -> str:  # pragma: no cover
         mytype = type(self).__name__
-        path = []
         parent = self._element
         if self.xtype in XT_REQ_TYPES:
             return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
-        while parent is not None:
-            path.append(
-                parent.get("ReqIFText")
-                or parent.get("ReqIFName")
-                or parent.get("ReqIFChapterName")
-                or parent.get("ReqIFLongName")
-                or "..."
-            )
-            if helpers.xtype_of(parent) == XT_MODULE:
-                break
-            parent = parent.getparent()
 
-        return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
+        name = (
+            parent.get("ReqIFName")
+            or parent.get("ReqIFChapterName")
+            or parent.get("ReqIFLongName")
+            or ""
+        )
+        return f"<{mytype} {name!r} ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
-        return markupsafe.Markup(
-            self._wrap_short_html(
-                f" &quot;{markupsafe.Markup.escape(self.name or self.long_name)}&quot;"
-            )
-        )
+        name = markupsafe.Markup.escape(self.name or self.long_name)
+        return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
 @c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
@@ -635,9 +625,14 @@ class AbstractRequirementsRelation(ReqIFElement):
     target = c.AttrProxyAccessor(c.GenericElement, "target")
 
     def _short_repr_(self) -> str:
+        direction = ""
+        if self.source is not None:
+            direction += f" from {self.source._short_repr_()}"
+        if self.target is not None:
+            direction += f" to {self.target._short_repr_()}"
         return (
-            f"<{type(self).__name__} from {self.source._short_repr_()}"
-            f" to {self.target._short_repr_()} ({self.uuid})>"
+            f"<{type(self).__name__} {self.long_name!r}{direction} "
+            f"({self.uuid})>"
         )
 
 

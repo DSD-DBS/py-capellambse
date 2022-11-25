@@ -11,6 +11,7 @@ import typing as t
 import pytest
 
 import capellambse
+from capellambse import helpers
 from capellambse.extensions import reqif
 
 long_req_text = textwrap.dedent(
@@ -30,6 +31,66 @@ long_req_text = textwrap.dedent(
     </ol>
     """
 )
+
+
+@pytest.mark.parametrize(
+    "expected",
+    [
+        pytest.param(
+            (
+                "<RequirementsFolder 'Folder' "
+                "(e16f5cc1-3299-43d0-b1a0-82d31a137111)>"
+            ),
+            id="ReqIFName",
+        ),
+        pytest.param(
+            "<Requirement 'TestReq1' (3c2d312c-37c9-41b5-8c32-67578fa52dc3)>",
+            id="ReqIFChapterName",
+        ),
+        pytest.param(
+            "<Requirement 'TypedReq2' (0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc)>",
+            id="ReqIFLongName",
+        ),
+        pytest.param(
+            (
+                "<RequirementsTypesFolder 'Types'"
+                " (67bba9cf-953c-4f0b-9986-41991c68d241)>"
+            ),
+            id="Only ReqIFLongName",
+        ),
+        pytest.param(
+            "<Requirement '' (79291c33-5147-4543-9398-9077d582576d)>",
+            id="Empty name",
+        ),
+        pytest.param(
+            (
+                "<DateValueAttribute 'AttrDef'"
+                " (b97c09b5-948a-46e8-a656-69d764ddce7d)>"
+            ),
+            id="Definition ReqIFLongName",
+        ),
+        pytest.param(
+            (
+                "<RequirementsIncRelation 'Controlling the weather' from"
+                " <Requirement 'TestReq1'"
+                " (3c2d312c-37c9-41b5-8c32-67578fa52dc3)>"
+                " to <Entity 'Weather' (4bf0356c-89dd-45e9-b8a6-e0332c026d33)>"
+                " (078b2c69-4352-4cf9-9ea5-6573b75e5eec)>"
+            ),
+            id="IncRelation",
+        ),
+    ],
+)
+def test_ReqIFElement_short_repr_(
+    model_5_2: capellambse.MelodyModel, expected: str
+) -> None:
+    r"""Test display of ``ReqIFElement``\ s appearance."""
+    matches = helpers.RE_VALID_UUID.findall(expected)
+    assert matches is not None
+    uuid = matches[-1]
+    obj = model_5_2.by_uuid(uuid)
+
+    assert repr(obj).startswith(expected)
 
 
 def test_extension_was_loaded():
