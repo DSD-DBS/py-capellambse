@@ -419,6 +419,7 @@ class MelodyLoader:
             self.__load_referenced_files(ref_name)
 
     def save(self, **kw: t.Any) -> None:
+        # pylint: disable=line-too-long
         """Save all model files back to their original locations.
 
         Parameters
@@ -443,6 +444,7 @@ class MelodyLoader:
         always leave the ``update_cache`` parameter at its default value
         of ``True`` if you intend to save changes.
         """
+        # pylint: enable=line-too-long
         self.check_duplicate_uuids()
 
         overwrite_corrupt = kw.pop("i_have_a_recent_backup", False)
@@ -665,7 +667,8 @@ class MelodyLoader:
             roots = [(self._find_fragment(r)[0], r) for r in roots]
         else:
             raise TypeError(
-                f"`roots` must be an XML element or a list thereof, not {type(roots).__name__}"
+                "`roots` must be an XML element or a list thereof,"
+                f" not {type(roots).__name__}"
             )
 
         ret = []
@@ -1098,7 +1101,9 @@ class MelodyLoader:
 
         try:
             comment = semantic_tree.tree.xpath("/comment()")
-            info.capella_version = CAP_VERSION.match(comment[0].text).group(1)  # type: ignore[union-attr]
+            vers_match = CAP_VERSION.match(comment[0].text)
+            assert vers_match
+            info.capella_version = vers_match.group(1)
         except (AttributeError, IndexError):
             LOGGER.warning(
                 "Cannot find Capella version: No version comment found"

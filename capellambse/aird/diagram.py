@@ -190,7 +190,8 @@ class Box:
 
         if not isinstance(self.parent, Box):
             raise TypeError(
-                f"Can only snap to parent Boxes, not {type(self.parent).__name__}"
+                "Can only snap to parent Boxes,"
+                f" not {type(self.parent).__name__}"
             )
 
         if self.port:
@@ -501,6 +502,7 @@ class Box:
         )
 
     def __repr__(self) -> str:
+        context = ", ".join(repr(c) for c in sorted(self.context))
         return "".join(
             [
                 f"{type(self).__name__}({self.pos!r}, {self.size!r}",
@@ -511,11 +513,7 @@ class Box:
                     if self.parent is not None
                     else ""
                 ),
-                (
-                    f", context={{{', '.join(repr(c) for c in sorted(self.context))}}}"
-                    if self.context
-                    else ""
-                ),
+                f", context={{{context}}}" if context else "",
                 f", features={self.features!r}" if self.features else "",
                 f", styleclass={self.styleclass!r}" if self.styleclass else "",
                 ", hidelabel=True" if self.hidelabel else "",

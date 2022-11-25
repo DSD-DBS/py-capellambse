@@ -98,8 +98,10 @@ def load_model(
     if app.confdir is None:
         raise ValueError("Cannot load model: No confdir defined for Sphinx")
 
-    env.capellambse_loaded_model = capellambse.MelodyModel(  # type: ignore[attr-defined]
-        pathlib.Path(app.confdir, app.config.capellambse_model)
+    env.capellambse_loaded_model = (  # type: ignore[attr-defined]
+        capellambse.MelodyModel(
+            pathlib.Path(app.confdir, app.config.capellambse_model)
+        )
     )
 
 
@@ -124,8 +126,10 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
         "alt": rst.directives.unchanged,  # type: ignore[attr-defined]
         "height": rst.directives.nonnegative_int,  # type: ignore[attr-defined]
         "width": rst.directives.nonnegative_int,  # type: ignore[attr-defined]
-        "align": lambda arg: rst.directives.choice(  # type: ignore[attr-defined]
-            arg, ("left", "center", "right")
+        "align": (
+            lambda arg: rst.directives.choice(  # type: ignore[attr-defined]
+                arg, ("left", "center", "right")
+            )
         ),
     }
 

@@ -229,7 +229,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
                 if (
                     xtp is i is None
                     or i is not None
-                    and xtp in (i, i.split(":")[-1])  # type: ignore[union-attr]
+                    and xtp == i
+                    or xtp == i.split(":")[-1]  # type: ignore[union-attr]
                 ):
                     matches.append(i)
             if not matches:

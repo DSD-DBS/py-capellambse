@@ -97,7 +97,9 @@ def test_object_has_type(
 
 class TestClasses:
     def test_class_owns_stm(self, model: MelodyModel):
-        elm: Class = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")  # type: ignore[assignment]
+        elm: Class = model.by_uuid(
+            "959b5222-7717-4ee9-bd3a-f8a209899464"
+        )  # type: ignore[assignment]
 
         assert elm.xtype.endswith("Class")
         assert hasattr(elm, "state_machines")

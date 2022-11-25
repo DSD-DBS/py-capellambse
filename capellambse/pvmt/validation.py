@@ -65,9 +65,8 @@ def validate_group_scope(pvmt_ext, groupdef, xml_element):
 
         if not inscope:
             raise exceptions.ScopeError(
-                "Element {!r} is out of scope for PV group {}.{}".format(
-                    xml_element, groupdef.parent.name, groupdef.name
-                )
+                f"Element {xml_element!r} is out of scope for PV group "
+                f"{groupdef.parent.name}.{groupdef.name}"
             )
 
 
@@ -111,7 +110,7 @@ def _validate_group_scope_prop(pvmt_ext, scopedesc, xml_element):
         compare = SCOPE_PROP_OPERATORS[match.group("op")]
     except KeyError:
         raise NotImplementedError(
-            "Comparison operator {!r} is not implemented".format(proptype)
+            f"Comparison operator {proptype!r} is not implemented"
         ) from None
 
     return compare(

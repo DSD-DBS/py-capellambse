@@ -230,7 +230,7 @@ def _escape_char(
     char = match.group(0)
     assert len(char) == 1
     if ord_low <= ord(char) <= ord_high:
-        return "&{};".format(html.entities.codepoint2name[ord(char)])
+        return f"&{html.entities.codepoint2name[ord(char)]};"
     return f"&#x{ord(char):X};"
 
 

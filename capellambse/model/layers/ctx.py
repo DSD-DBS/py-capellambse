@@ -170,8 +170,13 @@ class CapabilityExploitation(c.GenericElement):
     capability = c.AttrProxyAccessor(Capability, "capability")
 
     @property
-    def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.capability.name} ({self.capability.uuid})"
+    def name(self) -> str:  # type: ignore[override]
+        """Return the name."""
+        direction = ""
+        if self.capability is not None:
+            direction = f" to {self.capability.name} ({self.capability.uuid})"
+
+        return f"[{self.__class__.__name__}]{direction}"
 
 
 @c.xtype_handler(XT_ARCH)

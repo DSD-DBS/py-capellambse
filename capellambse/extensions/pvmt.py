@@ -14,6 +14,7 @@ import capellambse.pvmt.exceptions as pvexc
 
 
 class PropertyValueProxy:
+    # pylint: disable=line-too-long
     """Provides access to an element's property values.
 
     Example for accessing property values on any object that has pvmt::
@@ -27,6 +28,7 @@ class PropertyValueProxy:
         Access is only given if the PVMT Extension is successfully
         loaded on loading the model with the :class:`MelodyModel`.
     """
+    # pylint: enable=line-too-long
 
     _model: capellambse.MelodyModel
     _element: etree._Element
@@ -56,7 +58,8 @@ class PropertyValueProxy:
         path = key.split(".")
         if len(path) < 1 or len(path) > 3:
             raise ValueError(
-                "Provide a name as `domain`, `domain.group` or `domain.group.prop`"
+                "Provide a name as `domain`, `domain.group` or"
+                " `domain.group.prop`"
             )
 
         domain = _PVMTDomain(self._model, self._element, path[0])

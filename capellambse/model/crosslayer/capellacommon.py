@@ -121,8 +121,13 @@ class GenericTrace(c.GenericElement):
     target = c.AttrProxyAccessor(c.GenericElement, attr="targetElement")
 
     @property
-    def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.target.name} ({self.target.uuid})"
+    def name(self) -> str:  # type: ignore[override]
+        """Return the name."""
+        direction = ""
+        if self.target is not None:
+            direction = f" to {self.target.name} ({self.target.uuid})"
+
+        return f"[{type(self).__name__}]{direction}"
 
 
 c.set_accessor(

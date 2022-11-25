@@ -19,7 +19,7 @@ from svgwrite import base, gradients
 from capellambse import aird
 
 if t.TYPE_CHECKING:
-    from .drawing import Drawing  # pylint: disable=unused-import
+    from .drawing import Drawing
 
 logger = logging.getLogger(__name__)
 RE_ELMCLASS = re.compile(r"^([A-Z][a-z_]*)(\.[A-Za-z][A-Za-z0-9_]*)?(:.+)?$")
@@ -291,7 +291,8 @@ class SVGStylesheet:
     def __init__(self, class_: str):
         if not isinstance(class_, str):
             raise TypeError(
-                f"Invalid type for class_ '{type(class_).__name__}'. This needs to be a str."
+                f"Invalid type for class_ '{type(class_).__name__}'. This"
+                " needs to be a str."
             )
 
         self.drawing_class = class_
@@ -392,7 +393,9 @@ class StyleBuilder:
     def _make_styles(self) -> dict[str, dict[str, aird.CSSdef]]:
         styles = aird.STYLES["__GLOBAL__"].copy()
         try:
-            deep_update_dict(styles, aird.STYLES[self.class_])  # type: ignore[index]
+            deep_update_dict(
+                styles, aird.STYLES[self.class_]  # type: ignore[index]
+            )
         except KeyError:
             logger.error(
                 "No styling defined for diagram class %s", self.class_
@@ -491,7 +494,9 @@ class StyleBuilder:
     ) -> str:
         if key in {"marker-start", "marker-end"}:
             diagram_class = self.class_
-            mystyle = aird.get_style(diagram_class, f"Edge{class_}")  # type: ignore[arg-type]
+            mystyle = aird.get_style(
+                diagram_class, f"Edge{class_}"
+            )  # type: ignore[arg-type]
             if "stroke" not in mystyle:
                 mystyle["stroke"] = "#f00"
 

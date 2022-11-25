@@ -111,7 +111,8 @@ class AttributeProperty:
                     self.default.format(self=obj, xml=xml_element)
                 )
             raise TypeError(
-                f"Mandatory XML attribute {self.attribute!r} not found on {xml_element!r}"
+                f"Mandatory XML attribute {self.attribute!r} not found on"
+                f" {xml_element!r}"
             ) from None
 
         sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
@@ -121,7 +122,8 @@ class AttributeProperty:
         xml_element = getattr(obj, self.xmlattr)
         if not self.writable and xml_element.get(self.attribute) is not None:
             raise TypeError(
-                f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
+                f"Cannot set attribute {self.__name__!r} on"
+                f" {type(obj).__name__!r} objects"
             )
 
         if value == self.default:
@@ -148,7 +150,8 @@ class AttributeProperty:
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
             raise TypeError(
-                f"Cannot delete attribute {self.__name__!r} on {type(obj).__name__!r} objects"
+                f"Cannot delete attribute {self.__name__!r} on"
+                f" {type(obj).__name__!r} objects"
             )
 
         xml_element = getattr(obj, self.xmlattr)
@@ -403,7 +406,7 @@ class EnumAttributeProperty(AttributeProperty):
         """
         if not (isinstance(enumcls, type) and issubclass(enumcls, enum.Enum)):
             raise TypeError(
-                "enumcls must be an Enum subclass, not {!r}".format(enumcls)
+                f"enumcls must be an Enum subclass, not {enumcls!r}"
             )
 
         if default is None or isinstance(default, enumcls):
@@ -412,7 +415,8 @@ class EnumAttributeProperty(AttributeProperty):
             default = enumcls[default]
         else:
             raise TypeError(
-                f"default must be a member (or its name) of {enumcls!r}, not {default!r}"
+                f"default must be a member (or its name) of {enumcls!r},"
+                f" not {default!r}"
             )
         super().__init__(
             xmlattr, attribute, *args, optional=True, default=default, **kw

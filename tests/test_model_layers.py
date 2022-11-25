@@ -162,7 +162,8 @@ def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
     expected = (
         "The actor lives in a world where predators exist\r\n"
         "AND\r\n"
-        'A <a href="hlink://e6e4d30c-4d80-4899-8d8d-1350239c15a7">Predator</a> is near the actor'
+        'A <a href="hlink://e6e4d30c-4d80-4899-8d8d-1350239c15a7">Predator</a>'
+        " is near the actor"
     )
 
     assert markupsafe.escape(elm.precondition.specification) == expected
@@ -338,7 +339,9 @@ class TestStateMachines:
         assert list(transition.effects.by_name) == ["good advise", "Make Food"]
 
     def test_stm_transition_multiple_guards(self, model: MelodyModel):
-        transition: StateTransition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")  # type: ignore[assignment]
+        transition: StateTransition = model.by_uuid(
+            "6781fb18-6dd1-4b01-95f7-2f896316e46c"
+        )  # type: ignore[assignment]
 
         assert transition.guard is not None
         assert (
@@ -351,9 +354,9 @@ class TestStateMachines:
         default_region: Region = model.by_uuid(  # type: ignore[assignment]
             "eeeb98a7-6063-4115-8b4b-40a51cc0df49"
         )
-        state: State = default_region.states.by_uuid(  # type: ignore[assignment]
+        state: State = default_region.states.by_uuid(
             "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
-        )
+        )  # type: ignore[assignment]
         sleep_region = state.regions[0]
 
         assert default_region.diagrams
@@ -444,13 +447,12 @@ def test_constraint_links_to_constrained_elements(model: MelodyModel) -> None:
 def test_constraint_specification_has_linked_object_name_in_body(
     model: MelodyModel,
 ) -> None:
+    uuid = "dd2d0dab-a35f-4104-91e5-b412f35cba15"
     con = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
+    expected_linked_text = f'<a href="hlink://{uuid}">Hunted animal</a>'
 
     assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
-    assert (
-        con.specification["LinkedText"]
-        == '<a href="hlink://dd2d0dab-a35f-4104-91e5-b412f35cba15">Hunted animal</a>'
-    )
+    assert con.specification["LinkedText"] == expected_linked_text
 
 
 class TestAttrProxyAccessor:
@@ -479,11 +481,15 @@ class TestAttrProxyAccessor:
         assert old_state not in function.available_in_states
 
 
-def test_setting_specification_linked_text_transforms_the_value_to_internal_linkedText(
+def test_specification_linkedText_to_internal_linkedText_transformation(
     model: MelodyModel,
 ) -> None:
-    c1: Constraint = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")  # type: ignore[assignment]
-    c2: Constraint = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")  # type: ignore[assignment]
+    c1: Constraint = model.by_uuid(
+        "039b1462-8dd0-4bfd-a52d-0c6f1484aa6e"
+    )  # type: ignore[assignment]
+    c2: Constraint = model.by_uuid(
+        "0b546f8b-408c-4520-9f6a-f77efe97640b"
+    )  # type: ignore[assignment]
 
     c2.specification["LinkedText"] = c1.specification["LinkedText"]
 
@@ -496,7 +502,11 @@ def test_setting_specification_linked_text_transforms_the_value_to_internal_link
 
 
 @pytest.mark.skip(
-    reason="AttributeError is raised, but the text gets overwritten by the stub in `GenericElement`. Solution: Create the relevant XML structures and return a real Specification object instead of raising."
+    reason=(
+        "AttributeError is raised, but the text gets overwritten by the stub "
+        "in `GenericElement`. Solution: Create the relevant XML structures and"
+        " return a real Specification object instead of raising."
+    )
 )
 def test_constraint_without_specification_raises_AttributeError(
     model: MelodyModel,
@@ -599,7 +609,7 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
         ),
     ],
 )
-def test_FunctionalChainInvolvementLink_has_exchanged_items_and_exchange_context(
+def test_FunctionalChainInvolvementLink_has_items_and_context(
     model_5_2: capellambse.MelodyModel,
     chain_uuid: str,
     link_uuid: str,
@@ -627,7 +637,8 @@ def test_FunctionalChainInvolvementLink_has_exchanged_items_and_exchange_context
     [
         pytest.param(
             "9f84f273-1af4-49c2-a9f1-143e94ab816b",
-            "[GenericTrace] to Class TraceTarget (ed272baf-43f2-4fa1-ad50-49c00563258b)",
+            "[GenericTrace] to Class TraceTarget"
+            " (ed272baf-43f2-4fa1-ad50-49c00563258b)",
         ),
         pytest.param(
             "0880af85-4f96-4a77-b588-2e7a0385629d",

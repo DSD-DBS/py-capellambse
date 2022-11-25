@@ -35,9 +35,8 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
         ostyle = next(seb.diag_element.iterchildren("ownedStyle"))
     except StopIteration:
         raise ValueError(
-            "Cannot find style definition for edge {}".format(
-                seb.data_element.attrib["element"]
-            )
+            f"Cannot find style definition for edge"
+            f" {seb.data_element.attrib['element']}"
         ) from None
     routingstyle = ostyle.attrib.get("routingStyle")
 
@@ -59,6 +58,7 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
 
     _filters.setfilters(seb, edge)
     # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
+    # pylint: disable-next=line-too-long
     edge.styleoverrides = _styling.apply_style_overrides(  # type: ignore[assignment]
         seb.target_diagram.styleclass, f"Edge.{seb.styleclass}", ostyle
     )

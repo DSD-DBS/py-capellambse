@@ -30,7 +30,10 @@ GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 
-PLUGIN_PATH = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
+PLUGIN_PATH = (
+    "/plugin/org.polarsys.capella.core.sirius.analysis"
+    "/description/context.odesign#/"
+)
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
