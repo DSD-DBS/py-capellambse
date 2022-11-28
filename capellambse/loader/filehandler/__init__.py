@@ -68,7 +68,7 @@ else:
         )
         if not eps:
             raise ValueError(f"Unknown file handler {handler_name}")
-        return eps[0].load()
+        return next(iter(eps)).load()
 
 
 def get_filehandler(path: str | os.PathLike, **kwargs: t.Any) -> FileHandler:

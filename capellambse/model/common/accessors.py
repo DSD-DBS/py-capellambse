@@ -591,7 +591,9 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         """
         if not tag:
             warnings.warn(
-                "Unspecified XML tag is deprecated", DeprecationWarning
+                "Unspecified XML tag is deprecated",
+                DeprecationWarning,
+                stacklevel=2,
             )
         elif not isinstance(tag, str):
             raise TypeError(f"tag must be a str, not {type(tag).__name__}")

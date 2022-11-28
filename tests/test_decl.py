@@ -70,7 +70,7 @@ class TestDumpLoad:
         assert actual == expected
 
 
-class TestApplyCreate:
+class TestApplyExtend:
     @staticmethod
     def test_decl_errors_on_unknown_operations(
         model: capellambse.MelodyModel,
@@ -100,7 +100,7 @@ class TestApplyCreate:
         funcname = "pass the unit test"
         yml = f"""\
             - parent: {parent_str}
-              create:
+              extend:
                 functions:
                   - name: {funcname!r}
             """
@@ -120,7 +120,7 @@ class TestApplyCreate:
         parent_obj = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 functions:
                   - name: pass the first test
                   - name: pass the second test
@@ -144,7 +144,7 @@ class TestApplyCreate:
         root = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 functions:
                   - name: pass the unit test
                     functions:
@@ -174,7 +174,7 @@ class TestApplyCreate:
         module = model.by_uuid(module_id)
         yml = f"""\
             - parent: !uuid {module_id}
-              create:
+              extend:
                 attribute_definitions:
                   - long_name: New attribute
                     _type: {type}
@@ -196,7 +196,7 @@ class TestApplyCreate:
         attrdef = model.by_uuid(attrdef_id)
         yml = f"""\
             - parent: !uuid {attrdef_id}
-              create:
+              extend:
                 values:
                   - NewGame++
             """
@@ -205,6 +205,65 @@ class TestApplyCreate:
         decl.apply(model, io.StringIO(yml))
 
         assert "NewGame++" in attrdef.values
+
+    @staticmethod
+    def test_extend_operations_change_model_objects_in_place(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        fnc = model.by_uuid("8833d2dc-b862-4a50-b26c-6f7e0f17faef")
+        old_parent = fnc.parent
+        assert old_parent != root_function
+        assert fnc not in root_function.functions
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              extend:
+                functions:
+                  - !uuid {fnc.uuid}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert fnc in root_function.functions
+        assert root_function == fnc.parent
+
+    @staticmethod
+    def test_extend_operations_with_promises_change_model_objects_in_place(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_component = model.by_uuid(ROOT_COMPONENT)
+        fnc_name = "The promised one"
+        assert fnc_name not in root_component.functions.by_name
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              extend:
+                functions:
+                  - name: {fnc_name}
+                    promise_id: promised-fnc
+            - parent: !uuid {ROOT_COMPONENT}
+              extend:
+                functions:
+                  - !promise promised-fnc
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert fnc_name in root_component.functions.by_name
+
+    @staticmethod
+    def test_extend_operations_on_faulty_attribute_cause_an_exception(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        non_existing_attr = "Thought up"
+        yml = f"""\
+            - parent: !uuid {ROOT_COMPONENT}
+              extend:
+                {non_existing_attr}:
+                  - !uuid {ROOT_FUNCTION}
+            """
+
+        with pytest.raises(TypeError, match=non_existing_attr):
+            decl.apply(model, io.StringIO(yml))
 
 
 class TestApplyPromises:
@@ -216,12 +275,12 @@ class TestApplyPromises:
         root_comp = model.by_uuid(ROOT_COMPONENT)
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 functions:
                   - name: pass the unit test
                     promise_id: pass-test
             - parent: !uuid {ROOT_COMPONENT}
-              create:
+              extend:
                 allocated_functions:
                   - !promise pass-test
             """
@@ -242,11 +301,11 @@ class TestApplyPromises:
         root_comp = model.by_uuid(ROOT_COMPONENT)
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
-              create:
+              extend:
                 allocated_functions:
                   - !promise pass-test
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 functions:
                   - name: pass the unit test
                     promise_id: pass-test
@@ -275,7 +334,7 @@ class TestApplyPromises:
         snippets = (
             f"""
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 inputs:
                   - name: My input
                     promise_id: inport
@@ -285,7 +344,7 @@ class TestApplyPromises:
             """,
             f"""
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 exchanges:
                   - name: Test exchange
                     source: !promise outport
@@ -307,7 +366,7 @@ class TestApplyPromises:
     ) -> None:
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 functions:
                   - name: pass the first unit test
                     promise_id: colliding-promise-id
@@ -324,7 +383,7 @@ class TestApplyPromises:
     ) -> None:
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
-              create:
+              extend:
                 allocated_functions:
                   - !promise pass-test
             """
@@ -362,7 +421,7 @@ class TestApplyModify:
                 allocated_functions:
                   - !promise make-coffee
             - parent: !uuid {ROOT_FUNCTION}
-              create:
+              extend:
                 functions:
                   - name: make coffee
                     promise_id: make-coffee

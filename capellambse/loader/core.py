@@ -148,10 +148,15 @@ class ModelFile:
             return FragmentType.OTHER
 
     def __init__(
-        self, filename: pathlib.PurePosixPath, handler: filehandler.FileHandler
+        self,
+        filename: pathlib.PurePosixPath,
+        handler: filehandler.FileHandler,
+        *,
+        ignore_uuid_dups: bool,
     ) -> None:
         self.filename = filename
         self.filehandler = handler
+        self.__ignore_uuid_dups = ignore_uuid_dups
         _verify_extension(filename)
 
         with handler.open(filename) as f:
@@ -183,10 +188,14 @@ class ModelFile:
                     continue
                 existing = self.__idcache.get(elm_id)
                 if existing is not None and existing is not elm:
-                    raise CorruptModelError(
+                    msg = (
                         f"Duplicate UUID {elm_id!r}"
                         f" within fragment {self.filename!s}"
                     )
+                    if self.__ignore_uuid_dups:
+                        LOGGER.warning(msg)
+                    else:
+                        raise CorruptModelError(msg)
                 self.__idcache[elm_id] = elm
 
             href = elm.get("href")
@@ -301,7 +310,32 @@ class MelodyLoader:
         kwargs
             Additional arguments to the primary file handler, if
             necessary.
+
+        Raises
+        ------
+        CorruptModelError
+            If the model is corrupt.
+
+            Currently the only kind of corruption that is detected is
+            duplicated UUIDs (either within a fragment or across
+            multiple fragments).
+
+            It is possible to ignore this error and load the model
+            anyways by setting the keyword-only argument
+            :kw:`ignore_duplicate_uuids_and_void_all_warranties` to
+            ``True``. However, this *will* lead to strange behavior like
+            random exceptions when searching or filtering, or
+            accidentally working with the wrong object. If you try to
+            make changes to the model, always make sure that you have an
+            up to date backup ready. In order to prevent accidental
+            overwrites with an even corrupter model, you must therefore
+            also set the :kw:`i_have_a_recent_backup` keyword argument
+            to ``True`` when calling :meth:`save`.
         """
+        self.__ignore_uuid_dups: bool = kwargs.pop(
+            "ignore_duplicate_uuids_and_void_all_warranties", False
+        )
+
         if isinstance(path, filehandler.FileHandler):
             handler = path
         else:
@@ -346,7 +380,7 @@ class MelodyLoader:
                     duplicates,
                 )
                 has_dups = True
-        if has_dups:
+        if has_dups and not self.__ignore_uuid_dups:
             raise CorruptModelError(
                 "Model has duplicated UUIDs across fragments"
                 " - check the 'resources' for duplicate models"
@@ -374,7 +408,9 @@ class MelodyLoader:
 
         handler = self.resources[resource_path.parts[0]]
         filename = pathlib.PurePosixPath(*resource_path.parts[1:])
-        frag = ModelFile(filename, handler)
+        frag = ModelFile(
+            filename, handler, ignore_uuid_dups=self.__ignore_uuid_dups
+        )
         self.trees[resource_path] = frag
         for ref in _find_refs(frag.root):
             ref_name = helpers.normalize_pure_path(
@@ -408,6 +444,14 @@ class MelodyLoader:
         of ``True`` if you intend to save changes.
         """
         self.check_duplicate_uuids()
+
+        overwrite_corrupt = kw.pop("i_have_a_recent_backup", False)
+        if self.__ignore_uuid_dups and not overwrite_corrupt:
+            raise CorruptModelError(
+                "Refusing to save a corrupt model without having a backup"
+                " (hint: pass i_have_a_recent_backup=True)"
+            )
+
         LOGGER.debug("Saving model %r", self.get_model_info().title)
         with self.filehandler.write_transaction(**kw) as unsupported_kws:
             if unsupported_kws:

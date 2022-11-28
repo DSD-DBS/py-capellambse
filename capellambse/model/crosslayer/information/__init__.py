@@ -180,6 +180,16 @@ class Class(c.GenericElement):
 
 
 @c.xtype_handler(None)
+class InformationRealization(c.GenericElement):
+    """A realization for a Class."""
+
+    _xmltag = "ownedInformationRealizations"
+
+    source = c.AttrProxyAccessor(Class, "sourceElement")
+    target = c.AttrProxyAccessor(Class, "targetElement")
+
+
+@c.xtype_handler(None)
 class Union(Class):
     """A Union."""
 
@@ -255,8 +265,8 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
         "super",
-        c.LinkAccessor(  # FIXME fill in tag
-            None, capellacore.Generalization, attr="super"
+        c.LinkAccessor(
+            "ownedGeneralizations", capellacore.Generalization, attr="super"
         ),
     )
     c.set_accessor(
@@ -280,3 +290,25 @@ c.set_accessor(
     c.AttrProxyAccessor(Property, "navigableMembers", aslist=c.ElementList),
 )
 c.set_accessor(Association, "source_role", c.DirectProxyAccessor(Property))
+c.set_accessor(
+    Class,
+    "realized_classes",
+    c.LinkAccessor[Class](
+        "ownedInformationRealizations",
+        InformationRealization,
+        aslist=c.ElementList,
+        attr="targetElement",
+    ),
+)
+c.set_accessor(
+    Class,
+    "realizations",
+    c.DirectProxyAccessor(InformationRealization, aslist=c.ElementList),
+)
+c.set_accessor(
+    Class,
+    "realized_by",
+    c.ReferenceSearchingAccessor(
+        Class, "realized_classes", aslist=c.ElementList
+    ),
+)

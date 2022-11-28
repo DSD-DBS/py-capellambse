@@ -46,7 +46,10 @@ import sys
 import textwrap
 import typing as t
 
+from lxml import etree
+
 import capellambse
+from capellambse.loader import exs
 
 try:
     import readline
@@ -119,6 +122,11 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
         ),
     )
     parser.add_argument(
+        "--disable-diagram-cache",
+        action="store_true",
+        help="Disable the diagram cache, if one was defined for the model",
+    )
+    parser.add_argument(
         "--dump",
         action="store_true",
         help="Dump model info as JSON to stdout and exit",
@@ -157,6 +165,9 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
         modelinfo["update_cache"] = False
     if pargs.wipe:
         modelinfo["disable_cache"] = True
+
+    if pargs.disable_diagram_cache and "diagram_cache" in modelinfo:
+        del modelinfo["diagram_cache"]
 
     if pargs.dump:
         print(json.dumps(modelinfo, indent=2))
@@ -245,6 +256,14 @@ def suppress(
             logging.info("Exception suppressed", exc_info=True)
 
 
+def showxml(obj: capellambse.ModelObject | etree._Element) -> None:
+    if isinstance(obj, etree._Element):
+        elm = obj
+    else:
+        elm = obj._element
+    print(exs.to_string(elm), end="")
+
+
 def main() -> None:
     """Launch a simple Python REPL with a Capella model."""
     os.chdir(pathlib.Path(capellambse.__file__).parents[1])
@@ -256,12 +275,14 @@ def main() -> None:
     interactive_locals = {
         "__doc__": None,
         "__name__": "__console__",
+        "etree": etree,
         "im": importlib,
         "imm": importlib.import_module("importlib.metadata"),
         "imr": importlib.import_module("importlib.resources"),
         "logtee": logtee,
         "model": model,
         "pprint": importlib.import_module("pprint").pprint,
+        "showxml": showxml,
         "suppress": suppress,
     }
 
