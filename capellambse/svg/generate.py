@@ -106,19 +106,21 @@ class SVGDiagram:
         return cls.from_json(conf)
 
     def draw_object(self, obj: ContentsDict) -> None:
+        """Draw the given ``obj`` on the underlaying ``Drawing``."""
         self.drawing.draw_object(obj)
 
     def save_drawing(
-        self, pretty: bool = False, indent: int = 2, filename: str = ""
+        self,
+        filename: str | None = None,
+        pretty: bool = False,
+        indent: int = 2,
     ) -> None:
-        self.drawing.saveas(
-            filename=filename or self.drawing.filename,
-            pretty=pretty,
-            indent=indent,
-        )
+        """Write the underlying ``Drawing`` to an SVG file."""
+        self.drawing.save_as(filename=filename, pretty=pretty, indent=indent)
 
     def to_string(self) -> str:
-        return self.drawing.tostring()
+        """Return a string representation of the underlying ``Drawing``."""
+        return self.drawing.to_string()
 
 
 DiagramMetadataDict = t.TypedDict(
@@ -144,6 +146,12 @@ class DiagramMetadata:
     e.g. ``LogicalArchitectureBlank``.
     """
 
+    pos: tuple[float, float]
+    size: tuple[float, float]
+    viewbox: str
+    name: str
+    class_: str | None
+
     def __init__(
         self,
         pos: tuple[float, float],
@@ -153,8 +161,18 @@ class DiagramMetadata:
         **_kw: t.Any,
     ) -> None:
         # Add padding to viewbox to account for drawn borders
-        self.pos: tuple[float, float] = tuple(i - 10 for i in pos)  # type: ignore[assignment]
-        self.size: tuple[float, float] = tuple(i + 20 for i in size)  # type: ignore[assignment]
+        if len(pos) != 2:
+            raise ValueError(
+                f"Invalid position: '{pos}'. Needs to be of format (x, y)."
+            )
+
+        self.pos = (pos[0] - 10, pos[1] - 10)
+        if len(size) != 2:
+            raise ValueError(
+                f"Invalid size: '{pos}'. Needs to be of format (x, y)."
+            )
+
+        self.size = (size[0] + 20, size[1] + 20)
         self.viewbox = " ".join(map(str, self.pos + self.size))
         self.class_ = class_
         self.name = name

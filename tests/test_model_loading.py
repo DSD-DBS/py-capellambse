@@ -17,7 +17,7 @@ import requests_mock
 import capellambse
 
 # pylint: disable-next=relative-beyond-top-level
-from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
+from .conftest import TEST_MODEL, TEST_ROOT
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 
@@ -259,7 +259,7 @@ def model_path_with_patched_version(
     tmp_dest = tmp_path / "model"
     ignored = shutil.ignore_patterns("*.license")
     shutil.copytree(TEST_MODEL_5_0.parent, tmp_dest, ignore=ignored)
-    request_param: str | tuple[str, str] = request.param  # type: ignore
+    request_param: str | tuple[str, str] = request.param
     for suffix in (".aird", ".capella"):
         model_file = (tmp_dest / TEST_MODEL).with_suffix(suffix)
         if isinstance(request_param, tuple):

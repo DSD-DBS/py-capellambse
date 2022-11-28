@@ -209,19 +209,21 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
-    def render(self, fmt: None, **params) -> aird.Diagram:
+    def render(self, fmt: None, /, **params) -> aird.Diagram:
         ...
 
     @t.overload
-    def render(self, fmt: str, **params) -> t.Any:
+    def render(self, fmt: str, /, **params) -> t.Any:
         ...
 
-    def render(self, fmt: str | None, **params) -> t.Any:
+    def render(self, fmt: str | None, /, **params) -> t.Any:
         """Render the diagram in the given format."""
         if fmt is not None:
             conv = _find_format_converter(fmt)
         else:
-            conv = lambda i: i
+
+            def conv(i: aird.Diagram) -> aird.Diagram:
+                return i
 
         try:
             return self.__load_cache(conv)
@@ -339,11 +341,19 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 class Diagram(AbstractDiagram):
     """Provides access to a single diagram."""
 
-    uuid: str = property(operator.attrgetter("_element.uid"))  # type: ignore[assignment]
+    uuid: str = property(
+        operator.attrgetter("_element.uid")
+    )  # type: ignore[assignment]
     xtype = "viewpoint:DRepresentationDescriptor"
-    name: str = property(operator.attrgetter("_element.name"))  # type: ignore[assignment]
-    viewpoint: str = property(operator.attrgetter("_element.viewpoint"))  # type: ignore[assignment]
-    target_uuid: str = property(lambda self: self.target.uuid)  # type: ignore[assignment]
+    name: str = property(
+        operator.attrgetter("_element.name")
+    )  # type: ignore[assignment]
+    viewpoint: str = property(
+        operator.attrgetter("_element.viewpoint")
+    )  # type: ignore[assignment]
+    target_uuid: str = property(
+        lambda self: self.target.uuid
+    )  # type: ignore[assignment]
     """Obsolete."""
 
     _element: aird.DiagramDescriptor
@@ -389,8 +399,8 @@ class Diagram(AbstractDiagram):
             LOGGER.warning("Unknown diagram type %r", sc)
             return modeltypes.DiagramType.UNKNOWN
 
-    @property  # type: ignore[override]
-    def filters(self) -> cabc.MutableSet[str]:  # type: ignore[override]
+    @property
+    def filters(self) -> cabc.MutableSet[str]:
         """Return a set of currently activated filters on this diagram."""
         return aird.ActiveFilters(self._model, self)
 
@@ -511,7 +521,7 @@ class SVGDataURIFormat:
     @classmethod
     def convert(cls, diagram: aird.Diagram) -> str:
         payload = SVGFormat.convert(diagram)
-        b64 = base64.standard_b64encode(payload.encode("utf-8"))  # type: ignore[attr-defined]
+        b64 = base64.standard_b64encode(payload.encode("utf-8"))
         return "".join((cls.preamble, b64.decode("ascii")))
 
     @classmethod

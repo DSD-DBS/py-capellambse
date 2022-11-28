@@ -74,6 +74,7 @@ class MelodyModel:
         jupyter_untrusted: bool = False,
         **kwargs: t.Any,
     ) -> None:
+        # pylint: disable=line-too-long
         """Load a project.
 
         For complete information on which exact ``kwargs`` are
@@ -197,6 +198,7 @@ class MelodyModel:
         capellambse.loader.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
+        # pylint: enable=line-too-long
         capellambse.load_model_extensions()
 
         self._loader = loader.MelodyLoader(path, **kwargs)
@@ -240,6 +242,7 @@ class MelodyModel:
         return self
 
     def save(self, **kw: t.Any) -> None:
+        # pylint: disable=line-too-long
         """Save the model back to where it was loaded from.
 
         Parameters
@@ -264,6 +267,7 @@ class MelodyModel:
         always leave the ``update_cache`` parameter at its default value
         of ``True`` if you intend to save changes.
         """
+        # pylint: enable=line-too-long
         self._loader.save(**kw)
 
     def search(

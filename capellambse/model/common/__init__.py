@@ -115,7 +115,7 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
     """
     if arch is not None and not isinstance(arch, str):  # pragma: no cover
         raise TypeError(
-            "'arch' must be a str or None, not {}".format(type(arch).__name__)
+            f"'arch' must be a str or None, not {type(arch).__name__}"
         )
 
     # Compile a list of all xtype strings
@@ -125,9 +125,7 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
             xtype_strs.append(xtype)
         else:  # pragma: no cover
             raise ValueError(
-                "All `xtype`s must be str, not {!r}".format(
-                    type(xtype).__name__
-                )
+                f"All `xtype`s must be str, not {type(xtype).__name__!r}"
             )
 
     def register_xtype_handler(cls: type[T]) -> type[T]:

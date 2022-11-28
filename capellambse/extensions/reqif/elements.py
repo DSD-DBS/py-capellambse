@@ -324,7 +324,9 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
             },
         )
 
-    def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
+    def _match_xtype(  # type: ignore[override]
+        self, type_: str
+    ) -> tuple[type, str]:
         type_ = type_.lower()
         try:
             return _attr_type_hints[type_]
@@ -342,7 +344,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         source: c.ModelObject,
     ) -> None:
         del elemclass
-        super().__init__(model, elements, c.GenericElement)  # type: ignore[arg-type]
+        super().__init__(model, elements, AbstractRequirementsRelation)
         self._source = source
 
     @t.overload
@@ -473,7 +475,10 @@ class AttributeDefinitionEnumeration(ReqIFElement):
     multi_valued = xmltools.BooleanAttributeProperty(
         "_element",
         "multiValued",
-        __doc__="Boolean flag for setting multiple enumeration values on the attribute",
+        __doc__=(
+            "Boolean flag for setting multiple enumeration values on"
+            " the attribute"
+        ),
     )
 
 

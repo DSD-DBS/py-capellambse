@@ -41,6 +41,7 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
 
         @functools.wraps(orig_eq)
         def new_eq(self, other: object) -> bool:
+            # pylint: disable=unnecessary-dunder-call
             try:
                 cmpkey = getattr(self, attr)
             except AttributeError:
@@ -191,11 +192,8 @@ class GenericElement:
             )
         missing_attrs = all_required_attrs - frozenset(kw)
         if missing_attrs:
-            raise TypeError(
-                "Missing required keyword arguments: {}".format(
-                    ", ".join(sorted(missing_attrs))
-                )
-            )
+            mattrs = ", ".join(sorted(missing_attrs))
+            raise TypeError(f"Missing required keyword arguments: {mattrs}")
 
         super().__init__()
         if self._xmltag is None:
@@ -439,11 +437,8 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             if not single:
                 return self._parent._newlist(elements)
             if len(elements) > 1:
-                raise KeyError(
-                    "Multiple matches for {!r}".format(
-                        values[0] if len(values) == 1 else values
-                    )
-                )
+                value = values[0] if len(values) == 1 else values
+                raise KeyError(f"Multiple matches for {value!r}")
             if len(elements) == 0:
                 raise KeyError(values[0] if len(values) == 1 else values)
             return self._parent[indices[0]]  # Ensure proper construction
@@ -764,7 +759,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = self._parent.cacheattr  # type: ignore[assignment]
+            newlist.cacheattr = t.cast(t.Optional[str], self._parent.cacheattr)
             return newlist
 
     def __init__(

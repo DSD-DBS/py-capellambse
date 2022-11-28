@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import datetime
 import operator
-import textwrap
 import typing as t
 
 import pytest
@@ -14,23 +13,22 @@ import capellambse
 from capellambse import helpers
 from capellambse.extensions import reqif
 
-long_req_text = textwrap.dedent(
-    """\
-    <p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>
+long_req_text = """\
+<p>Test requirement 1 really l o n g text that is&nbsp;way too long to \
+display here as that</p>
 
-    <p>&lt; &gt; &quot; &#39;</p>
+<p>&lt; &gt; &quot; &#39;</p>
 
-    <ul>
-    \t<li>This&nbsp;is a list</li>
-    \t<li>an unordered one</li>
-    </ul>
+<ul>
+\t<li>This&nbsp;is a list</li>
+\t<li>an unordered one</li>
+</ul>
 
-    <ol>
-    \t<li>Ordered list</li>
-    \t<li>Ok</li>
-    </ol>
-    """
-)
+<ol>
+\t<li>Ordered list</li>
+\t<li>Ok</li>
+</ol>
+"""
 
 
 @pytest.mark.parametrize(
@@ -191,7 +189,7 @@ class TestRequirementAttributes:
             else:
                 assert operator.attrgetter(attr_name)(obj) == value
 
-    def test_well_defined_on_modules(
+    def test_well_defined_on_RequirementsModules(
         self, model: capellambse.MelodyModel
     ) -> None:
         module = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
@@ -208,7 +206,7 @@ class TestRequirementAttributes:
         assert attr.values[0].long_name == "enum_val2"
         assert attr.values[0] == attr.value
 
-    def test_well_defined_on_requirements(
+    def test_well_defined_on_Requirements(
         self, model: capellambse.MelodyModel
     ) -> None:
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -243,7 +241,7 @@ class TestRequirementRelations:
         assert isinstance(rel.type, reqif.RelationType)
         assert rel.type.long_name == "RelationType"
 
-    def test_well_defined_on_requirements(
+    def test_well_defined_on_Requirements(
         self, model: capellambse.MelodyModel
     ) -> None:
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -251,7 +249,7 @@ class TestRequirementRelations:
 
         assert len(req.relations) == 4
 
-    def test_well_defined_on_generic_elements(
+    def test_well_defined_on_GenericElements(
         self, model: capellambse.MelodyModel
     ) -> None:
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
@@ -283,7 +281,7 @@ class TestRequirementRelations:
             ),
         ],
     )
-    def test_requirement_relations(
+    def test_RequirementRelations(
         self, model: capellambse.MelodyModel, obj_uuid, target_uuids
     ):
         obj = model.by_uuid(obj_uuid)
@@ -299,7 +297,9 @@ class TestRequirementRelations:
 
 
 class TestReqIFAccess:
-    def test_module_attributes(self, model: capellambse.MelodyModel):
+    def test_RequirementsModule_attributes(
+        self, model: capellambse.MelodyModel
+    ):
         mod = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
         assert isinstance(mod, reqif.RequirementsModule)
 
@@ -315,7 +315,9 @@ class TestReqIFAccess:
         }.items():
             assert getattr(mod, attr) == expected
 
-    def test_folder_attributes(self, model: capellambse.MelodyModel):
+    def test_RequirementFolder_attributes(
+        self, model: capellambse.MelodyModel
+    ):
         folder = model.by_uuid("e16f5cc1-3299-43d0-b1a0-82d31a137111")
         assert isinstance(folder, reqif.RequirementsFolder)
 
@@ -334,7 +336,7 @@ class TestReqIFAccess:
         }.items():
             assert getattr(folder, attr) == expected
 
-    def test_requirement_attributes(self, model: capellambse.MelodyModel):
+    def test_Requirement_attributes(self, model: capellambse.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
         assert req.type.long_name == "ReqType"
@@ -351,7 +353,7 @@ class TestReqIFAccess:
         }.items():
             assert getattr(req, attr) == expected
 
-    def test_relations(self, model: capellambse.MelodyModel):
+    def test_Relations(self, model: capellambse.MelodyModel):
         req_with_relations = model.by_uuid(
             "3c2d312c-37c9-41b5-8c32-67578fa52dc3"
         )
@@ -360,7 +362,7 @@ class TestReqIFAccess:
         relations = req_with_relations.relations
         assert len(relations) == 4
 
-    def test_requirement_without_relations(
+    def test_Requirement_without_Relations(
         self, model: capellambse.MelodyModel
     ):
         req_without_relations = model.by_uuid(
@@ -369,14 +371,14 @@ class TestReqIFAccess:
         assert isinstance(req_without_relations, reqif.Requirement)
         assert len(req_without_relations.relations) == 0
 
-    def test_outgoing_and_internal_relations(
+    def test_outgoing_and_internal_Relations(
         self, model: capellambse.MelodyModel
     ):
         req_with_oir = model.by_uuid("85d41db2-9e17-438b-95cf-49342452ddf3")
         assert isinstance(req_with_oir, reqif.Requirement)
         assert len(req_with_oir.relations) == 2
 
-    def test_requirement_types_attribute_definitions(
+    def test_RequirementTypes_AttributeDefinitions(
         self, model: capellambse.MelodyModel
     ):
         reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
@@ -388,7 +390,7 @@ class TestReqIFAccess:
 
 
 class TestReqIFModification:
-    def test_created_requirements_can_be_found_in_the_model(
+    def test_created_Requirements_can_be_found_in_the_model(
         self, model: capellambse.MelodyModel
     ):
         mod = model.oa.requirement_modules[0]
@@ -397,7 +399,7 @@ class TestReqIFModification:
         assert model.by_uuid(new_req.uuid) == new_req
         assert new_req in mod.requirements
 
-    def test_deleted_requirements_vanish_from_model(
+    def test_deleted_Requirements_vanish_from_model(
         self, model: capellambse.MelodyModel
     ):
         mod = model.oa.requirement_modules[0]
@@ -417,7 +419,7 @@ class TestReqIFModification:
             pytest.param("InternalRelation", id="IntRelation"),
         ],
     )
-    def test_creating_requirements_raises_TypeError(
+    def test_creating_Requirements_raises_TypeError(
         self, model: capellambse.MelodyModel, relcls: str
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -434,7 +436,7 @@ class TestReqIFModification:
         with pytest.raises(TypeError):
             req.relations.create(relcls, target=req.attributes[0].definition)
 
-    def test_created_requirements_are_found_from_both_sides(
+    def test_created_Requirements_are_found_from_both_sides(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -465,7 +467,7 @@ class TestReqIFModification:
             pytest.param("Bool", False),
         ],
     )
-    def test_create_requirements_attributes_with_default_values(
+    def test_create_ValueAttributes_with_default_values(
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
@@ -509,7 +511,7 @@ class TestReqIFModification:
             pytest.param("Bool", True, "true"),
         ],
     )
-    def test_create_requirements_attributes_with_non_default_values(
+    def test_create_ValueAttributes_with_non_default_values(
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
@@ -529,7 +531,7 @@ class TestReqIFModification:
         assert value_attr.value == value
         assert value_attr._element.get("value") == xml
 
-    def test_create_value_attribute_on_requirements_without_definition(
+    def test_create_ValueAttribute_on_Requirements_without_definition(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
@@ -562,7 +564,7 @@ class TestReqIFModification:
             pytest.param("Booleanvalueattribute", "Boolean"),
         ],
     )
-    def test_requirements_attribute_value_default_reprs(
+    def test_Requirements_ValueAttribute_default_reprs(
         self,
         model: capellambse.MelodyModel,
         type_hint: str,
@@ -576,7 +578,7 @@ class TestReqIFModification:
 
         assert f"[{expected_type} Value Attribute]" in repr(attr)
 
-    def test_create_enum_value_attribute_on_requirements(
+    def test_create_EnumValueAttribute_on_Requirements(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
@@ -591,7 +593,7 @@ class TestReqIFModification:
         assert attr.definition == definition
         assert isinstance(attr, reqif.EnumerationValueAttribute)
 
-    def test_create_enum_value_attribute_with_passing_values(
+    def test_create_EnumValueAttribute_with_passing_values(
         self, model: capellambse.MelodyModel
     ):
         req = model.oa.all_requirements[0]
@@ -606,7 +608,7 @@ class TestReqIFModification:
         assert attr in req.attributes
         assert attr.values == dtdef.values
 
-    def test_create_requirement_attribute_with_wrong_type_hint_raises_ValueError(
+    def test_create_ValueAttribute_with_wrong_type_hint_raises_ValueError(
         self, model: capellambse.MelodyModel
     ):
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
@@ -631,7 +633,7 @@ class TestReqIFModification:
             pytest.param("Test1", id="String Attribute"),
         ],
     )
-    def test_setting_attribute_values_on_requirement(
+    def test_setting_ValueAttributes_on_Requirement(
         self, model: capellambse.MelodyModel, value: t.Any
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -656,7 +658,7 @@ class TestReqIFModification:
             pytest.param("", id="String Attribute"),
         ],
     )
-    def test_setting_default_attribute_values_removes_value_on_xml_element(
+    def test_setting_default_value_removes_value_on_xml_element(
         self,
         model: capellambse.MelodyModel,
         default_value: t.Any,
@@ -687,14 +689,14 @@ class TestReqIFModification:
             pytest.param("b97c09b5-948a-46e8-a656-69d764ddce7d", 1, id="Int"),
         ],
     )
-    def test_setting_attribute_value_with_wrong_value_type_fails_with_TypeError(
+    def test_setting_ValueAttribute_with_wrong_type_fails_with_TypeError(
         self, model: capellambse.MelodyModel, uuid: str, value: t.Any
     ):
         attr = model.by_uuid(uuid)
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
         with pytest.raises(TypeError):
-            attr.value = value  # type: ignore[arg-type]
+            attr.value = value
 
     def test_create_RequirementType_AttributeDefinition_creation(
         self, model: capellambse.MelodyModel
@@ -713,7 +715,7 @@ class TestReqIFModification:
         assert attr_def in reqtype.attribute_definitions
         assert enum_def in reqtype.attribute_definitions
 
-    def test_create_RequirementTypesFolder_EnumDataTypeDefinition_setting_EnumValues(
+    def test_create_EnumDataTypeDefinition_setting_EnumValues(
         self, model: capellambse.MelodyModel
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
@@ -732,7 +734,7 @@ class TestReqIFModification:
         assert edt_def in reqtypesfolder.data_type_definitions
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
-    def test_create_RequirementTypesFolder_EnumDataTypeDefinition_creating_EnumValues(
+    def test_create_EnumDataTypeDefinition_creating_EnumValues(
         self,
         model: capellambse.MelodyModel,
     ):
@@ -788,7 +790,7 @@ class TestRequirementsFiltering:
         uuids = {r.uuid for r in rtype_reqs}
         assert uuids & expected_uuids == expected_uuids
 
-    def test_filtering_by_requirement_type(
+    def test_filtering_by_RequirementType(
         self, model: capellambse.MelodyModel
     ):
         requirements = model.search(reqif.XT_REQUIREMENT)
@@ -905,23 +907,21 @@ class TestRequirementsFiltering:
         assert len(related_objs[:]) == 4
         assert related_objs is not related_objs[:]
 
-    def test_requirement_is_hashable(self, model: capellambse.MelodyModel):
+    def test_Requirement_is_hashable(self, model: capellambse.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
 
         assert isinstance(req, reqif.Requirement)
         assert isinstance(req, t.Hashable)
         assert hash(req)
 
-    def test_requirement_type_is_hashable(
-        self, model: capellambse.MelodyModel
-    ):
+    def test_RequirementType_is_hashable(self, model: capellambse.MelodyModel):
         req_type = model.by_uuid(self.reqtype_uuid)
 
         assert isinstance(req_type, reqif.RequirementType)
         assert isinstance(req_type, t.Hashable)
         assert hash(req_type)
 
-    def test_enum_value_is_hashable(self, model: capellambse.MelodyModel):
+    def test_EnumValue_is_hashable(self, model: capellambse.MelodyModel):
         enum_value = model.by_uuid("efd6e108-3461-43c6-ad86-24168339ed3c")
 
         assert isinstance(enum_value, reqif.EnumValue)

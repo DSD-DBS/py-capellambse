@@ -335,11 +335,8 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     box = generic_factory(seb, minsize=aird.Vector2D(0, 0))
     box.features = [f"- {i}" for i in text if i is not None]
     if not (box.label or box.features):
-        raise ValueError(
-            "Requirements text is empty for {!r}".format(
-                seb.data_element.attrib["element"]
-            )
-        )
+        sdata_element = seb.data_element.attrib["element"]
+        raise ValueError(f"Requirements text is empty for {sdata_element!r}")
     return box
 
 

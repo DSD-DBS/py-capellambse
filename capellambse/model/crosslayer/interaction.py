@@ -3,10 +3,17 @@
 
 from .. import common as c
 
-XT_CAP2PROC = "org.polarsys.capella.core.data.interaction:FunctionalChainAbstractCapabilityInvolvement"
-XT_CAP2ACT = "org.polarsys.capella.core.data.interaction:AbstractFunctionAbstractCapabilityInvolvement"
+XT_CAP2PROC = (
+    "org.polarsys.capella.core.data.interaction"
+    ":FunctionalChainAbstractCapabilityInvolvement"
+)
+XT_CAP2ACT = (
+    "org.polarsys.capella.core.data.interaction"
+    ":AbstractFunctionAbstractCapabilityInvolvement"
+)
 XT_CAP_REAL = (
-    "org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
+    "org.polarsys.capella.core.data.interaction"
+    ":AbstractCapabilityRealization"
 )
 
 
@@ -60,8 +67,13 @@ class AbstractInvolvement(c.GenericElement):
     involved = c.AttrProxyAccessor(c.GenericElement, "involved")
 
     @property
-    def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.involved.name} ({self.involved.uuid})"
+    def name(self) -> str:  # type: ignore[override]
+        """Return the name."""
+        direction = ""
+        if self.involved is not None:
+            direction = f" to {self.involved.name} ({self.involved.uuid})"
+
+        return f"[{self.__class__.__name__}]{direction}"
 
 
 @c.xtype_handler(None)

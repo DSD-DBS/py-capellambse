@@ -176,7 +176,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
 
     diagrams = diagram.DiagramAccessor(
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
-    )  # type: ignore[assignment]
+    )
 
 
 c.set_accessor(
