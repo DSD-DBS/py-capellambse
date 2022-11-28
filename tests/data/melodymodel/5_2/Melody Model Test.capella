@@ -55,8 +55,8 @@
             requirementTypeProxy="prox">
           <ownedRequirements xsi:type="Requirements:Requirement" id="3c2d312c-37c9-41b5-8c32-67578fa52dc3"
               ReqIFIdentifier="REQTYPE-1" ReqIFDescription="This is a test requirement of kind 1."
-              ReqIFLongName="1" ReqIFName="TestReq1" ReqIFPrefix="3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
-              ReqIFChapterName="2" ReqIFForeignID="1" ReqIFText="&lt;p>Test requirement 1 really l o n g text that is&amp;nbsp;way too long to display here as that&lt;/p>&#xA;&#xA;&lt;p>&amp;lt; &amp;gt; &amp;quot; &amp;#39;&lt;/p>&#xA;&#xA;&lt;ul>&#xA;&#x9;&lt;li>This&amp;nbsp;is a list&lt;/li>&#xA;&#x9;&lt;li>an unordered one&lt;/li>&#xA;&lt;/ul>&#xA;&#xA;&lt;ol>&#xA;&#x9;&lt;li>Ordered list&lt;/li>&#xA;&#x9;&lt;li>Ok&lt;/li>&#xA;&lt;/ol>&#xA;"
+              ReqIFLongName="1" ReqIFName="" ReqIFPrefix="3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
+              ReqIFChapterName="TestReq1" ReqIFForeignID="1" ReqIFText="&lt;p>Test requirement 1 really l o n g text that is&amp;nbsp;way too long to display here as that&lt;/p>&#xA;&#xA;&lt;p>&amp;lt; &amp;gt; &amp;quot; &amp;#39;&lt;/p>&#xA;&#xA;&lt;ul>&#xA;&#x9;&lt;li>This&amp;nbsp;is a list&lt;/li>&#xA;&#x9;&lt;li>an unordered one&lt;/li>&#xA;&lt;/ul>&#xA;&#xA;&lt;ol>&#xA;&#x9;&lt;li>Ordered list&lt;/li>&#xA;&#x9;&lt;li>Ok&lt;/li>&#xA;&lt;/ol>&#xA;"
               requirementTypeProxy="7">
             <ownedAttributes xsi:type="Requirements:BooleanValueAttribute" id="9c692405-b8aa-4caa-b988-51d27db5cd1b"
                 definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="true"/>
@@ -82,7 +82,7 @@
                 source="#3c2d312c-37c9-41b5-8c32-67578fa52dc3" target="#00e7b925-cf4c-4cb0-929e-5409a1cd872b"/>
           </ownedRequirements>
           <ownedRequirements xsi:type="Requirements:Requirement" id="0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc"
-              ReqIFName="TypedReq2" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+              ReqIFLongName="TypedReq2" ReqIFName="" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
             <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="148bdf2f-6dc2-4a83-833b-596886ce5b07"
                 definition="#f31d4dd3-99f7-41d1-b1ce-f07b20d26eac" values="#efd6e108-3461-43c6-ad86-24168339ed3c #3c2390a4-ce9c-472c-9982-d0b825931978"/>
             <ownedAttributes xsi:type="Requirements:DateValueAttribute" id="7351093e-2c1c-4b1a-bb47-43443f530e8d"
@@ -91,7 +91,7 @@
           <ownedRequirements xsi:type="Requirements:Folder" id="e179d6ff-5301-42a6-bf6f-4fec79b18827"
               ReqIFName="Subfolder" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
             <ownedRequirements xsi:type="Requirements:Requirement" id="79291c33-5147-4543-9398-9077d582576d"
-                ReqIFName="TestReq3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
+                ReqIFName="" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
                 requirementTypeProxy="">
               <ownedRelations xsi:type="CapellaRequirements:CapellaIncomingRelation"
                   id="41e1b786-a6a1-46cb-9b9c-b302d9278c1c" ReqIFLongName="this one"
