@@ -28,7 +28,7 @@ def test_generalizations(
     model: MelodyModel, name: str, super_name: str, expected_type: str
 ):
     objects_of_type = model.search(expected_type)
-    obj = objects_of_type.by_name(name)  # type: ignore[assignment]
+    obj = objects_of_type.by_name(name)
     super_obj = objects_of_type.by_name(super_name)
 
     obj_type: str = obj.xtype  # type: ignore[assignment]

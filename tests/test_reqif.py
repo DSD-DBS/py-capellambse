@@ -635,7 +635,7 @@ class TestReqIFModification:
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
         with pytest.raises(TypeError):
-            attr.value = value  # type: ignore[arg-type]
+            attr.value = value
 
     def test_create_RequirementType_AttributeDefinition_creation(
         self, model: capellambse.MelodyModel

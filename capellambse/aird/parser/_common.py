@@ -165,7 +165,7 @@ class StackingBox(aird.Box):
                 ) from None
 
     @property  # type: ignore[override]
-    def features(self) -> cabc.Sequence[str] | None:  # type: ignore[override]
+    def features(self) -> cabc.Sequence[str] | None:
         """Return the list of Box' features."""
         return self.__features
 
@@ -348,7 +348,7 @@ class CenterAnchoredBox(aird.Box):
         self.center = center
 
     @property  # type: ignore[override]
-    def pos(self) -> aird.Vector2D:  # type: ignore[override]
+    def pos(self) -> aird.Vector2D:
         """Return the top left corner position of this Box."""
         return self.center - self.size / 2
 

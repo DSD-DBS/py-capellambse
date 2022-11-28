@@ -398,8 +398,8 @@ class Diagram(AbstractDiagram):
             LOGGER.warning("Unknown diagram type %r", sc)
             return modeltypes.DiagramType.UNKNOWN
 
-    @property  # type: ignore[override]
-    def filters(self) -> cabc.MutableSet[str]:  # type: ignore[override]
+    @property
+    def filters(self) -> cabc.MutableSet[str]:
         """Return a set of currently activated filters on this diagram."""
         return aird.ActiveFilters(self._model, self)
 

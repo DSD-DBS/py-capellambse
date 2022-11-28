@@ -101,7 +101,7 @@ class FileHandler(metaclass=abc.ABCMeta):
         subdir: str | pathlib.PurePosixPath = "/",
         **kw: t.Any,
     ) -> None:
-        super().__init__(**kw)  # type: ignore[call-arg]
+        super().__init__(**kw)
         self.path = path
         self.subdir = subdir
 

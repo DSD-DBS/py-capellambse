@@ -21,7 +21,7 @@ class Generic:
     sid = AttributeProperty("xml_element", "sid", optional=True)
 
     def __init__(self, xml_element, *args, **kwargs):
-        super().__init__(*args, **kwargs)  # type: ignore[call-arg]
+        super().__init__(*args, **kwargs)
         self.xml_element = xml_element
 
     def __repr__(self) -> str:

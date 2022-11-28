@@ -113,7 +113,7 @@ def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
     processing the source files.
     """
     if hasattr(env, "capellambse_loaded_model"):
-        del env.capellambse_loaded_model  # type: ignore[attr-defined]
+        del env.capellambse_loaded_model
 
 
 class DiagramDirective(sphinx.util.docutils.SphinxDirective):
@@ -123,13 +123,11 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
     required_arguments = 1
     final_argument_whitespace = True
     option_spec = {
-        "alt": rst.directives.unchanged,  # type: ignore[attr-defined]
-        "height": rst.directives.nonnegative_int,  # type: ignore[attr-defined]
-        "width": rst.directives.nonnegative_int,  # type: ignore[attr-defined]
+        "alt": rst.directives.unchanged,
+        "height": rst.directives.nonnegative_int,
+        "width": rst.directives.nonnegative_int,
         "align": (
-            lambda arg: rst.directives.choice(  # type: ignore[attr-defined]
-                arg, ("left", "center", "right")
-            )
+            lambda arg: rst.directives.choice(arg, ("left", "center", "right"))
         ),
     }
 
@@ -140,7 +138,7 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
                 f"Cannot show diagram {name!r}: No model configured"
             )
 
-        model = self.env.capellambse_loaded_model  # type: ignore[attr-defined]
+        model = self.env.capellambse_loaded_model
         try:
             diagram = model.diagrams.by_name(name)
         except KeyError as error:

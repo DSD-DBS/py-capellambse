@@ -494,9 +494,7 @@ class StyleBuilder:
     ) -> str:
         if key in {"marker-start", "marker-end"}:
             diagram_class = self.class_
-            mystyle = aird.get_style(
-                diagram_class, f"Edge{class_}"
-            )  # type: ignore[arg-type]
+            mystyle = aird.get_style(diagram_class, f"Edge{class_}")
             if "stroke" not in mystyle:
                 mystyle["stroke"] = "#f00"
 

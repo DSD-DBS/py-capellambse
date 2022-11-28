@@ -128,17 +128,17 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         single_attr: str | None = None,
         **kw: t.Any,
     ) -> None:
-        super().__init__(*args, **kw)  # type: ignore[call-arg]
+        super().__init__(*args, **kw)
         self.single_attr = single_attr
         if aslist is not None:
-            self.aslist = type(  # type: ignore[misc]
+            self.aslist = type(
                 "Coupled" + aslist.__name__,
                 (ElementListCouplingMixin, aslist),
                 {"_accessor": self},
             )
             self.aslist.__module__ = __name__
         else:
-            self.aslist = None  # type: ignore[misc]
+            self.aslist = None
 
     def create(
         self,
@@ -937,7 +937,7 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
         super().__init__(
             class_, xtypes, aslist=element.MixedElementList, **kwargs
         )
-        self.__aslist = aslist  # type: ignore[misc]
+        self.__aslist = aslist
         self.attributes = attributes
 
     def __get__(self, obj, objtype=None):
