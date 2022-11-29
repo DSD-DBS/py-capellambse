@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import datetime
 import hashlib
 import io
 import pathlib
@@ -13,6 +14,7 @@ import pytest
 
 import capellambse
 from capellambse import decl, helpers
+from capellambse.extensions.reqif import elements
 
 # pylint: disable-next=relative-beyond-top-level
 from .conftest import (  # type: ignore[import]
@@ -467,6 +469,38 @@ class TestApplyModify:
 
         assert len(root_function.functions) == 1
         assert root_function.functions[0].name == "survive"
+
+    @staticmethod
+    def test_modifying_to_a_mapping_only_changes_matched_objects(
+        model_5_2: capellambse.MelodyModel,
+    ) -> None:
+        req = model_5_2.by_uuid("0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc")
+        date = datetime.datetime.strptime(
+            "2022-06-30T15:07:18.664000+00:00", elements.DATE_VALUE_FORMAT
+        )
+        yml = f"""\
+            - parent: !uuid 637caf95-3229-4607-99a0-7d7b990bc97f
+              extend:
+                values:
+                  - long_name: New
+                    promise_id: EnumValue New
+            - parent: !uuid 0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc
+              modify:
+                attributes:
+                  AttrDef: {date}
+                  MultiEnum:
+                    - !promise EnumValue New
+            """
+        actual_attributes = req.attributes.by_definition.long_name
+        assert set(actual_attributes) == {"AttrDef", "MultiEnum", "version"}
+        assert len(list(actual_attributes)) == 3
+
+        decl.apply(model_5_2, io.StringIO(yml))
+
+        assert len(req.attributes) == 3
+        assert req.attributes[0].value == date
+        assert req.attributes[1].values[0].long_name == "New"
+        assert req.attributes[2].value == "Dummy"
 
 
 class TestApplyDelete:

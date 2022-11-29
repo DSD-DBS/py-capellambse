@@ -87,6 +87,8 @@
                 definition="#f31d4dd3-99f7-41d1-b1ce-f07b20d26eac" values="#efd6e108-3461-43c6-ad86-24168339ed3c #3c2390a4-ce9c-472c-9982-d0b825931978"/>
             <ownedAttributes xsi:type="Requirements:DateValueAttribute" id="7351093e-2c1c-4b1a-bb47-43443f530e8d"
                 definition="#682bd51d-5451-4930-a97e-8bfca6c3a127"/>
+            <ownedAttributes xsi:type="Requirements:StringValueAttribute" id="9ea92288-12f1-482d-8b90-f29b339155cc"
+                definition="#0bd40628-10a5-451e-86da-187c93bc3b10" value="Dummy"/>
           </ownedRequirements>
           <ownedRequirements xsi:type="Requirements:Folder" id="e179d6ff-5301-42a6-bf6f-4fec79b18827"
               ReqIFName="Subfolder" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">

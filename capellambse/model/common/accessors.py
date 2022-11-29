@@ -428,14 +428,28 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return self._make_list(obj, elems)
 
     def __set__(
-        self, obj: element.ModelObject, value: str | T | cabc.Iterable[str | T]
+        self,
+        obj: element.ModelObject,
+        value: str | T | cabc.Iterable[str | T] | cabc.Mapping[str, T],
     ) -> None:
         if self.aslist:
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
                 raise TypeError("Can only set list attribute to an iterable")
             list = self.__get__(obj)
-            list[:] = []
-            for v in value:
+
+            values: cabc.Iterable[
+                dict[t.Any | str, t.Any | T]
+            ] | cabc.Iterable[str | T]
+            if isinstance(value, cabc.Mapping):
+                values = [{k: v} for k, v in value.items()]
+                # TODO only delete elements in list that can't be matched with
+                # k in values... but this logic is specific to the .create
+                # method down below
+            else:
+                list[:] = []  # Only wipe when non-mapping given
+                values = value
+
+            for v in values:
                 if isinstance(v, str):
                     list.create_singleattr(v)
                 else:

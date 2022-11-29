@@ -341,6 +341,46 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
         except KeyError:
             raise ValueError(f"Invalid type hint given: {type_!r}") from None
 
+    def create(
+        self,
+        elmlist: c.ElementListCouplingMixin,
+        /,
+        *type_hints: str | None,
+        **kw: t.Any,
+    ) -> AbstractRequirementsAttribute:
+        if {"value", "definition"} & set(kw):
+            return super().create(elmlist, *type_hints, **kw)
+
+        # Create ValueAttribute from {definition.long_name: value}
+        del type_hints
+
+        keys = [k for k in kw if not k.startswith("_")]
+        if len(keys) != 1:
+            raise KeyError(
+                "Only one key allowed for AttributeDefinition matching"
+            )
+
+        def_name = keys[0]
+        try:
+            attr_defs = elmlist._parent.type.attribute_definitions
+            definition = attr_defs.by_long_name(def_name, single=True)
+        except KeyError as error:
+            raise KeyError(
+                f"No AttributeDefinition with long_name {def_name!r} found"
+            ) from error
+
+        type_hint: str | None = kw.get("_type")
+        new_kw = {"definition": definition}
+        if type_hint is None:
+            if isinstance(definition, AttributeDefinition):
+                type_hint = type(kw[def_name]).__name__
+                new_kw["value"] = kw[def_name]
+            else:
+                type_hint = "enum"
+                new_kw["values"] = kw[def_name]
+
+        return super().create(elmlist, type_hint, **new_kw)
+
 
 class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
     def __init__(
@@ -772,6 +812,7 @@ _attr_type_hints = {
     "real": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
     "realvalueattribute": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
     "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "datetime": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
     "boolean": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),

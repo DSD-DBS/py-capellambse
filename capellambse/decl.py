@@ -201,7 +201,7 @@ def _operate_modify(
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in modifications.items():
-        if isinstance(value, (list, Promise, UUIDReference)):
+        if isinstance(value, (dict, list, Promise, UUIDReference)):
             try:
                 value = _resolve(promises, parent, value)
             except _UnresolvablePromise as p:
@@ -227,6 +227,11 @@ def _resolve(
             newv = _resolve(promises, parent, v)
             if newv is not v:
                 value[i] = newv
+    elif isinstance(value, dict):
+        for key, v in value.items():
+            newv = _resolve(promises, parent, v)
+            if newv is not v:
+                value[key] = newv
     return value
 
 
