@@ -225,6 +225,9 @@ After selecting a parent, it is also possible to directly change its properties
 without introducing new objects into the model. This happens by specifying the
 attributes in the ``modify:`` key.
 
+Simple attributes
+^^^^^^^^^^^^^^^^^
+
 The following example would change the ``name`` of the root
 :py:class:`~capellambse.model.layers.la.LogicalComponent` to "Coffee Machine"
 (notice how we use a different UUID than before):
@@ -248,6 +251,56 @@ e.g. numeric properties. This example changes the ``min_card`` property of an
      modify:
        min_card: 0
        max_card: .inf
+
+ElementList attributes
+^^^^^^^^^^^^^^^^^^^^^^
+
+There are two scenarios for modifying attributes exposed by an
+:py:class:`~capellambse.model.common.element.ElementList`: Overwriting
+
+- all objects or
+- only specific objects
+
+by creating new ones in the attributes list. The former can be achieved by
+passing a list of wanted new values and the latter by passing a mapping:
+
+.. code-block:: yaml
+   :emphasize-lines: 4-5
+
+   - parent: !uuid 0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc
+     modify:
+       attributes:
+         - !uuid
+         - EnumerationAttributeDefinition:
+           - enum 1
+           - enum 2
+
+will set the ``.attributes`` of the
+:py:class:`~capellambse.extensions.reqif.Requirement`
+(`0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc`) to the declared ones:
+- one
+:py:class:`~capellambse.extensions.reqif.elements.StringValueAttribute` with
+the definition with ``.long_name == StringAttributeDefinition`` and
+``.value == Example``
+- and one
+:py:class:`~capellambse.extensions.reqif.elements.EnumerationValueAttribute`
+with the definition with ``.long_name == EnumerationAttributeDefinition`` and
+``.values == [enum 1, enum 2]`` (i.e.
+:py:class:`~capellambse.extensions.reqif.elements.EnumValue` \s with
+``.long_name`` matching ``enum 1`` and ``enum 2``).
+
+Instead precisive modification can be achieved with:
+
+.. code-block:: yaml
+   :emphasize-lines: 4-5
+
+   - parent: !uuid 0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc
+     modify:
+       attributes:
+         StringAttributeDefinition: Example
+         EnumerationAttributeDefinition:
+           - enum 1
+           - enum 2
 
 Deleting objects
 ----------------
