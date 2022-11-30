@@ -692,6 +692,13 @@ class MelodyLoader:
             A list of XML elements to use as roots for the query.
             Defaults to all tree roots.
         """
+        import warnings
+
+        warnings.warn(
+            "find_by_xsi_type is deprecated, use `iterall_xt` instead",
+            DeprecationWarning,
+        )
+
         if roots is None:
             return list(self.iterall_xt(*xsi_types))
         elif isinstance(roots, etree._Element):
