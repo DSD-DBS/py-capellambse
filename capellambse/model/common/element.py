@@ -659,9 +659,6 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         attrs.extend(filterable_attrs())
         return attrs
 
-    def __str__(self) -> str:  # pragma: no cover
-        return "\n".join(f"* {e!s}" for e in self)
-
     def __repr__(self) -> str:  # pragma: no cover
         if not self:
             return "[]"
