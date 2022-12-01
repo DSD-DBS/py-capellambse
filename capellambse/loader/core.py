@@ -474,6 +474,11 @@ class MelodyLoader:
 
         This method must be called after adding ``subtree`` to the XML
         tree.
+
+        Parameters
+        ----------
+        subtree
+            The new element that was just inserted.
         """
         try:
             _, tree = self._find_fragment(subtree)
@@ -489,6 +494,11 @@ class MelodyLoader:
 
         This method must be called before actually removing ``subtree``
         from the XML tree.
+
+        Parameters
+        ----------
+        subtree
+            The element that is about to be removed.
         """
         try:
             _, tree = self._find_fragment(subtree)
@@ -521,6 +531,11 @@ class MelodyLoader:
             constraints. If it does not satisfy all constraints (e.g. it
             would be non-unique), a random UUID will be generated as
             normal.
+
+        Returns
+        -------
+        str
+            The new UUID.
         """
 
         def idstream() -> t.Iterator[str]:
@@ -547,11 +562,11 @@ class MelodyLoader:
 
         This context manager yields a newly generated model-wide unique
         UUID that can be inserted into a new element during the ``with``
-        block.  It tries to keep the ID cache consistent in some harder
-        to manage edge cases, like exceptions being thrown.
-        Additionally it checks that the generated UUID was actually used
-        in the tree; not using it before the ``with`` block ends is an
-        error and provokes an Exception.
+        block. It tries to keep the ID cache consistent in some harder
+        to manage edge cases, like exceptions being thrown. Additionally
+        it checks that the generated UUID was actually used in the tree;
+        not using it before the ``with`` block ends is an error and
+        provokes an Exception.
 
         .. note:: You still need to call :meth:`idcache_index()` on the
             newly inserted element!
@@ -604,6 +619,9 @@ class MelodyLoader:
     ) -> list[etree._Element]:
         """Run an XPath query on all fragments.
 
+        Note that, unlike the ``iter_*`` methods, placeholder elements
+        are not followed into their respective fragment.
+
         Parameters
         ----------
         query
@@ -614,6 +632,11 @@ class MelodyLoader:
         roots
             A list of XML elements to use as roots for the query.
             Defaults to all tree roots.
+
+        Returns
+        -------
+        list[etree._Element]
+            A list of all matching elements.
         """
         return list(
             map(
@@ -631,6 +654,9 @@ class MelodyLoader:
     ) -> list[tuple[pathlib.PurePosixPath, etree._Element]]:
         """Run an XPath query and return the fragments and elements.
 
+        Note that, unlike the ``iter_*`` methods, placeholder elements
+        are not followed into their respective fragment.
+
         The tuples have the fragment where the match was found as first
         element, and the LXML element as second one.
 
@@ -644,6 +670,14 @@ class MelodyLoader:
         roots
             A list of XML elements to use as roots for the query.
             Defaults to all tree roots.
+
+        Returns
+        -------
+        list[tuple[pathlib.PurePosixPath, etree._Element]]
+            A list of 2-tuples, containing:
+
+            1. The fragment name where the match was found.
+            2. The matching element.
         """
         if namespaces is None:
             namespaces = _n.NAMESPACES
@@ -764,7 +798,8 @@ class MelodyLoader:
         root_elm
             The root element of the tree
         tags
-            Element tags to filter for
+            Only yield elements with a matching XML tag. If none are
+            given, all elements are yielded.
         """
         tagset = self._nonempty_hashset(tags)
         it_stack = [root_elm.iterdescendants()]
@@ -802,9 +837,8 @@ class MelodyLoader:
         element
             The root element of the tree
         xtypes
-            Elements that have any of these ``xsi:type``\ s will be
-            yielded.  If nothing is given here, all elements will be
-            yielded.
+            Only yield elements whose ``xsi:type`` matches one of those
+            given here. If no types are given, all elements are yielded.
         """
         xtset = self._nonempty_hashset(xtypes)
         return (
@@ -821,6 +855,13 @@ class MelodyLoader:
         """Iterate over the ancestors of ``element``.
 
         This method will follow fragment links back to the origin point.
+
+        Parameters
+        ----------
+        element
+            The element to start at.
+        tags
+            Only yield elements that have the given XML tag.
         """
         tagset = self._nonempty_hashset(tags)
         visited_elements = []  # Basic protection against reference loops
@@ -852,8 +893,16 @@ class MelodyLoader:
     ) -> cabc.Iterator[etree._Element]:
         r"""Iterate over the children of ``element``.
 
-        If ``xsi:type``\ s are given in ``xtypes``, restrict yielded
-        elements to the ones with matching type.
+        This method will follow links into different fragment files and
+        yield those elements as if they were direct children.
+
+        Parameters
+        ----------
+        element
+            The parent element under which to search for children.
+        xtypes
+            Only yield elements whose ``xsi:type`` matches one of those
+            given here. If no types are given, all elements are yielded.
         """
         xtset = self._nonempty_hashset(xtypes)
         for child in element.iterchildren():
@@ -868,22 +917,19 @@ class MelodyLoader:
     ) -> str:
         """Create a link to ``to_element`` from ``from_element``.
 
-        The resulting link is valid for insertion into ``from_element``
-        or any of its children, and will reference ``to_element`` either
-        in the same or a different fragment.  It has one of the
-        following three formats:
-
-        1.  Within the same fragment: ``#UUID``
-        2.  Across different fragments: ``target_xsitype relpath#UUID``
-        3.  Across different fragments, if the target does not have an
-            ``xsi:type``: ``relpath#UUID``
-
         Parameters
         ----------
         from_element
             The source element of the link.
         to_element
             The target element of the link.
+
+        Returns
+        -------
+        str
+            A link in one of the formats described by :meth:`follow_link`.
+            Which format is used depends on whether ``from_element`` and
+            ``to_element`` live in the the same fragment.
         """
         to_uuids = set(to_element.keys()) & IDTYPES_RESOLVED
         try:
@@ -918,23 +964,29 @@ class MelodyLoader:
     ) -> etree._Element:
         """Follow a single link and return the target element.
 
-        The link is considered relative to the ``from_element``, if
-        given. The accepted formats are as follows::
+        Valid links have one of the following two formats:
 
-            xtype fragment#UUID
-            fragment#UUID
-            #UUID
-            UUID
+        - Within the same fragment, a reference is the target's UUID
+          prepended with a ``#``, for example
+          ``#7a5b8b30-f596-43d9-b810-45ab02f4a81c``.
 
-        Where:
+        - A reference to a different fragment contains the target's
+          ``xsi:type`` and the path of the fragment, relative to the
+          current one. For example, to link from ``main.capella`` into
+          ``frag/logical.capellafragment``, the reference could be:
+          ``org.polarsys.capella.core.data.capellacore:Constraint
+          frag/logical.capellafragment#7a5b8b30-f596-43d9-b810-45ab02f4a81c``.
+          To link back to the project root from there, it could look
+          like: ``org.polarsys.capella.core.data.pa:PhysicalArchitecture
+          ../main.capella#26e187b6-72e7-4872-8d8d-70b96243c96c``.
 
-        *   ``xtype`` is the target element's ``xsi:type``.  If given
-            and it does not match, an exception is raised.
-        *   ``fragment`` is the fragment file in which to find the
-            target element.  If not given, first the source fragment
-            will be searched, and if unsuccessful, the search will be
-            extended to all fragments.
-        *   ``UUID`` is the unique ``id`` of the target element.
+        Parameters
+        ----------
+        from_element
+            The element at the start of the link. This is needed to verify
+            cross-fragment links.
+        link
+            A string containing a valid link to another model element.
 
         Raises
         ------
@@ -1019,11 +1071,19 @@ class MelodyLoader:
         """Follow multiple links and return all results as list.
 
         The format for an individual link is the same as accepted by
-        :meth:`follow_link`.  Multiple links must be given as a single
-        space-separated string.
+        :meth:`follow_link`. Multiple links are separated by a single space.
 
         If any target cannot be found, ``None`` will be inserted at that
         point in the returned list.
+
+        Parameters
+        ----------
+        from_element
+            The element at the start of the link. This is needed to verify
+            cross-fragment links.
+        links
+            A string containing space-separated links as described in
+            :meth:`follow_link`.
 
         Raises
         ------
