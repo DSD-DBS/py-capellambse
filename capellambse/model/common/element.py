@@ -483,7 +483,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         self,
         model: capellambse.MelodyModel,
         elements: list[etree._Element],
-        elemclass: type[T],
+        elemclass: type[T] | None = None,
         *,
         mapkey: str | None = None,
         mapvalue: str | None = None,
@@ -491,7 +491,10 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         # pylint: disable=assigning-non-slot # false-positive
         self._model = model
         self._elements = elements
-        self._elemclass = elemclass
+        if elemclass is not None:
+            self._elemclass = elemclass
+        else:
+            self._elemclass = GenericElement  # type: ignore[assignment]
 
         if bool(mapkey) != bool(mapvalue):
             raise TypeError(
@@ -655,9 +658,6 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         attrs = list(super().__dir__())
         attrs.extend(filterable_attrs())
         return attrs
-
-    def __str__(self) -> str:  # pragma: no cover
-        return "\n".join(f"* {e!s}" for e in self)
 
     def __repr__(self) -> str:  # pragma: no cover
         if not self:
