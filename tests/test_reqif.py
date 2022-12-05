@@ -91,6 +91,30 @@ def test_ReqIFElement_short_repr_(
     assert repr(obj).startswith(expected)
 
 
+@pytest.mark.parametrize(
+    "uuid",
+    [
+        pytest.param("e3ecc8b4-3535-414d-b14a-affad1942e93", id="Outgoing"),
+        pytest.param("2a59d2a4-f460-4fcd-a907-57b6b4ea42ae", id="Incoming"),
+    ],
+)
+def test_broken_RequirementRelation_short_html_works(
+    model_5_2: capellambse.MelodyModel, uuid: str
+) -> None:
+    """Test display of requirements with broken relations.
+
+    When the target of the relation is deleted, Capella misses on
+    deleting the invalid relation.
+    """
+    relation = model_5_2.by_uuid(uuid)
+    if isinstance(relation, reqif.RequirementsIncRelation):
+        req = relation.source
+    else:
+        req = relation.target
+
+    assert req._short_html_()
+
+
 def test_extension_was_loaded():
     capellambse.load_model_extensions()
 

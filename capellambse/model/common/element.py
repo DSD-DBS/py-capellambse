@@ -686,7 +686,8 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
         fragments = ['<ol start="0" style="text-align: left;">']
         for i in self:
-            fragments.append(f"<li>{i._short_html_()}</li>")
+            rep = i._short_html_() if hasattr(i, "_short_html_") else repr(i)
+            fragments.append(f"<li>{rep}</li>")
         fragments.append("</ol>")
         return markupsafe.Markup("".join(fragments))
 
