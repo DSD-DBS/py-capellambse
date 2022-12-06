@@ -772,6 +772,7 @@ _attr_type_hints = {
     "real": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
     "realvalueattribute": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
     "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "datetime": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
     "boolean": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
