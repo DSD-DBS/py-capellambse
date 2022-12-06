@@ -9,6 +9,7 @@ import collections.abc as cabc
 import datetime
 import enum
 import math
+import re
 import sys
 import typing as t
 
@@ -298,20 +299,21 @@ class BooleanAttributeProperty(AttributeProperty):
 class DatetimeAttributeProperty(AttributeProperty):
     """An AttributeProperty that stores a datetime.
 
-    The value stored in the XML will be formatted according to the
-    ``format`` given to the constructor. When loading a value, it must
-    strictly be parsable with the same format, otherwise an exception
-    will be raised.
+    The value stored in the XML will be formatted as required by
+    Capella. This format is the ISO8601 format with millisecond
+    precision, but no ``:`` in the time zone specification.
     """
 
     __slots__ = ("format",)
+
+    re_set = re.compile(r"(?<=[+-]\d\d):(?=\d\d$)")
+    re_get = re.compile(r"(?<=[+-]\d\d)(?=\d\d$)")
 
     def __init__(
         self,
         xmlattr: str,
         attribute: str,
         *,
-        format: str,
         optional: bool = True,
         writable: bool = True,
         __doc__: str | None = None,
@@ -323,7 +325,6 @@ class DatetimeAttributeProperty(AttributeProperty):
             writable=writable,
             __doc__=__doc__,
         )
-        self.format = format
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> DatetimeAttributeProperty:
@@ -342,7 +343,8 @@ class DatetimeAttributeProperty(AttributeProperty):
         formatted = super().__get__(obj, objtype)
         if formatted is None:
             return None
-        return datetime.datetime.strptime(formatted, self.format)
+        formatted = self.re_get.sub(":", formatted)
+        return datetime.datetime.fromisoformat(formatted)
 
     def __set__(self, obj, value) -> None:
         if value is None:
@@ -350,7 +352,10 @@ class DatetimeAttributeProperty(AttributeProperty):
         elif isinstance(value, datetime.datetime):
             if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
                 value = value.astimezone()
-            super().__set__(obj, value.strftime(self.format))
+
+            formatted = value.isoformat("T", "milliseconds")
+            formatted = self.re_set.sub("", formatted)
+            super().__set__(obj, formatted)
         else:
             raise TypeError(f"Expected datetime, not {type(value).__name__}")
 
