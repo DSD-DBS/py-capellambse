@@ -1274,20 +1274,6 @@ The predator is far away</bodies>
           id="1fded3ea-675d-4b0d-b018-3502a77a5b67" name="Capabilities hehe">
         <ownedCapabilities xsi:type="org.polarsys.capella.core.data.ctx:Capability"
             id="9390b7d5-598a-42db-bef8-23677e45ba06" name="Capability">
-          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
-              id="afdaa095-e2cd-4230-b5d3-6cb771a90f51" name="Scenario" kind="FUNCTIONAL">
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="cde1edc9-ff81-4ee0-bf69-a0e6c99010bc" name="Root System Function"
-                representedInstance="#1eee3b81-41ef-4b56-8018-b8e421a5a2bc"/>
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="8f4da370-eee2-41aa-b38c-2a12a58c7033" name="Important Function"
-                representedInstance="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
-          </ownedScenarios>
-          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
-              id="140943be-c865-4505-8459-67dd626ef0d4" name="Scenario" kind="INTERFACE">
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="f91992cb-a463-4d88-8b3a-da70206eb017" name="System" representedInstance="#3b9e56b1-e8b5-4605-9924-d332d79ca8c3"/>
-          </ownedScenarios>
           <extends xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityExtend"
               id="992c4ba5-0165-470d-b2d0-f117e00a645c" extended="#562c5128-5acd-45cc-8b49-1d8d686f450a"/>
           <superGeneralizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityGeneralization"
@@ -2443,11 +2429,6 @@ The predator is far away</bodies>
           id="a724c16e-fbd2-4100-94b6-99af0bf270ab" name="Capabilities">
         <ownedCapabilityRealizations xsi:type="org.polarsys.capella.core.data.la:CapabilityRealization"
             id="b80b3141-a7fc-48c7-84b2-1467dcef5fce" name="Capability Realization">
-          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
-              id="b5283e83-f9db-4cb2-b3e6-44c768d11f99" name="Scenario" kind="DATA_FLOW">
-            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="c658abe1-d87b-4a03-a6f4-1ff477739bbe" name="Whomping Willow" representedInstance="#1188fc31-789b-424f-a2d4-06791873a351"/>
-          </ownedScenarios>
           <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
               id="3e22f774-d699-4183-8436-da1da9900d1c" targetElement="#562c5128-5acd-45cc-8b49-1d8d686f450a"
               sourceElement="#b80b3141-a7fc-48c7-84b2-1467dcef5fce"/>
@@ -2456,9 +2437,198 @@ The predator is far away</bodies>
           <ownedCapabilityRealizationInvolvements xsi:type="org.polarsys.capella.core.data.capellacommon:CapabilityRealizationInvolvement"
               id="21f22a2f-5fd0-4ae6-a577-9e9b61e6ca0b" involved="#3bdd4fa2-5646-44a1-9fa6-80c68433ddb7"/>
         </ownedCapabilityRealizations>
+        <ownedCapabilityRealizations xsi:type="org.polarsys.capella.core.data.la:CapabilityRealization"
+            id="bd8f76a9-a4ae-47e8-990e-197e0aac1803" name="Punish naughty students">
+          <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
+              id="d32922dc-2686-4434-a5f5-9374c124b88c" name="[IS] Punish naughty students"
+              kind="INTERFACE">
+            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
+                id="028045ed-5e22-4cb0-8f7f-1db73f223fa1" name="Harry J. Potter" representedInstance="#26543596-7646-4d81-8f15-c4e01ec930a7"/>
+            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
+                id="21312bef-5377-43f7-9f36-852bff81e1af" name="R. Weasley" representedInstance="#4d31caaf-210e-4bdf-982e-cdecbc80c947"/>
+            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
+                id="a70a957c-99a8-439e-8ea9-b85c0abde4c7" name="Whomping Willow" representedInstance="#1188fc31-789b-424f-a2d4-06791873a351"/>
+            <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
+                id="a3975361-119f-49cf-987a-bc03aad71286" name="Prof. S. Snape" representedInstance="#ccbad61a-39dc-4af8-8199-3fee30de2f1d"/>
+            <ownedMessages xsi:type="org.polarsys.capella.core.data.interaction:SequenceMessage"
+                id="965bd292-91ed-4e64-bd7a-c0432784e519" name="" kind="ASYNCHRONOUS_CALL"
+                sendingEnd="#fd9005a2-4e96-4c5d-8183-a7d7d712fdc7" receivingEnd="#3f650b5c-d515-4c0f-9b80-a890d33db456"/>
+            <ownedMessages xsi:type="org.polarsys.capella.core.data.interaction:SequenceMessage"
+                id="2e3e714b-6f98-485c-8ff0-da9e43619152" name="" kind="ASYNCHRONOUS_CALL"
+                sendingEnd="#836c6519-f8f3-4831-84c5-36d6fe3c0d22" receivingEnd="#1d310328-6e18-4478-9416-a1fc8f0bfd42"/>
+            <ownedMessages xsi:type="org.polarsys.capella.core.data.interaction:SequenceMessage"
+                id="96b03bb4-3ca9-4170-a365-53f5eba834af" name="" kind="ASYNCHRONOUS_CALL"
+                sendingEnd="#d8b69103-e855-4b3d-8eb6-9426ef5787e7" receivingEnd="#25e6342e-88f7-42d3-b06e-466c0cb54175"/>
+            <ownedMessages xsi:type="org.polarsys.capella.core.data.interaction:SequenceMessage"
+                id="a1bf4466-27bd-4db4-9988-9cc61c8c4641" name="" kind="ASYNCHRONOUS_CALL"
+                sendingEnd="#fa90e85e-ecab-4124-aa82-aa3122f65b88" receivingEnd="#970ea978-1c62-4a8f-944b-570747757b10"/>
+            <ownedMessages xsi:type="org.polarsys.capella.core.data.interaction:SequenceMessage"
+                id="8765b2c6-ca3d-4786-96d5-d76f5ab5c5b3" name="" kind="SYNCHRONOUS_CALL"
+                sendingEnd="#67ed1bfa-fb09-4ad0-ba4c-4472c8d193ad" receivingEnd="#678452c2-ea25-4059-8a31-f0ec024231ef"/>
+            <ownedMessages xsi:type="org.polarsys.capella.core.data.interaction:SequenceMessage"
+                id="3f85f40c-e78f-4a44-9a04-a51200498330" name="" kind="REPLY" sendingEnd="#b0a61810-c067-4fb4-93dd-59d808074172"
+                receivingEnd="#15b8d6c5-48a6-46ce-af07-893ec6a29c12"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:FragmentEnd"
+                id="a909ee33-6e80-4114-8cb3-30ab9e4400f8" name="start" coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionOperand"
+                id="03c290b4-03f6-4d98-ba7e-8f8f73a8d503" name="operand 1" coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="fd9005a2-4e96-4c5d-8183-a7d7d712fdc7" name="sndMsgEnd_grow_up_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#7c8b315d-c355-4de1-a177-a7d2d0a22bcb"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="3f650b5c-d515-4c0f-9b80-a890d33db456" name="rcvMsgEnd_grow_up_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#3899716e-ff99-46d6-ac69-b1fcd79db915"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEnd"
+                id="b37a3ef6-81cf-4218-9af7-5fc2ce683093" name="endExec" coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7"
+                event="#9b984642-da59-4cc8-a504-2f233041f4a3"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:FragmentEnd"
+                id="daa25fd3-2eb6-4447-89fe-25d8b324806c" name="end" coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="836c6519-f8f3-4831-84c5-36d6fe3c0d22" name="sndMsgEnd_Crash land_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#21312bef-5377-43f7-9f36-852bff81e1af" event="#7afaf20c-397a-4dcb-a649-22295f224f15"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="1d310328-6e18-4478-9416-a1fc8f0bfd42" name="rcvMsgEnd_Crash land_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#ac78ac56-8f22-407c-ab3a-898cf1259afa"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="d8b69103-e855-4b3d-8eb6-9426ef5787e7" name="sndMsgEnd_punch_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#1ba7316d-13ab-4b25-a10e-2b172fad6ed6"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="25e6342e-88f7-42d3-b06e-466c0cb54175" name="rcvMsgEnd_punch_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#21312bef-5377-43f7-9f36-852bff81e1af" event="#fed2f172-8808-4484-8396-97fa2b75257b"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="fa90e85e-ecab-4124-aa82-aa3122f65b88" name="sndMsgEnd_broken_branches_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#00d1a4a5-b129-40df-8a32-0e61497bd8e8"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="970ea978-1c62-4a8f-944b-570747757b10" name="rcvMsgEnd_broken_branches_ASYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a3975361-119f-49cf-987a-bc03aad71286" event="#775d4ff8-6560-41ce-a0fc-f481f49b3026"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEnd"
+                id="e5d1e645-922b-48ea-a957-1165c6485fad" name="endExec" coveredInstanceRoles="#21312bef-5377-43f7-9f36-852bff81e1af"
+                event="#cea7ee63-3f32-463e-b4a5-f73a3a9b20d9"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEnd"
+                id="bf8c1ccc-6619-4540-a53e-4ac1b32a619e" name="endExec" coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7"
+                event="#92d9f9dd-d4db-4d76-8994-f9a89681e850"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="67ed1bfa-fb09-4ad0-ba4c-4472c8d193ad" name="sndMsgEnd_nurse_back_to_health_SYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a3975361-119f-49cf-987a-bc03aad71286" event="#0c7d6972-2718-4553-bff5-a652ff1abaa3"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="678452c2-ea25-4059-8a31-f0ec024231ef" name="rcvMsgEnd_nurse_back_to_health_SYNCHRONOUS_CALL"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#d72911e2-5176-46d1-a0aa-51026073a8a3"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="b0a61810-c067-4fb4-93dd-59d808074172" name="sndMsgEnd_nurse_back_to_health_REPLY"
+                coveredInstanceRoles="#a70a957c-99a8-439e-8ea9-b85c0abde4c7" event="#44d20573-aca1-4d11-873d-8453970f5d28"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
+                id="15b8d6c5-48a6-46ce-af07-893ec6a29c12" name="rcvMsgEnd_nurse_back_to_health_REPLY"
+                coveredInstanceRoles="#a3975361-119f-49cf-987a-bc03aad71286" event="#ec28a40c-dd15-4473-bda2-5b7020ddd1e0"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEnd"
+                id="72fa8920-4317-481f-8db9-bbd9ccd5bed5" name="endExec" coveredInstanceRoles="#a3975361-119f-49cf-987a-bc03aad71286"
+                event="#fa746280-0a6a-4e76-a081-a58d828d0eed"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:Execution"
+                id="7ddf4f2e-4dcf-430a-bd93-d9e1eb42cac5" start="#1d310328-6e18-4478-9416-a1fc8f0bfd42"
+                finish="#bf8c1ccc-6619-4540-a53e-4ac1b32a619e"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:CombinedFragment"
+                id="916eb2d0-1028-445a-8bfb-f89dda463d10" name="combined fragment"
+                start="#a909ee33-6e80-4114-8cb3-30ab9e4400f8" finish="#daa25fd3-2eb6-4447-89fe-25d8b324806c"
+                operator="CRITICAL" referencedOperands="#03c290b4-03f6-4d98-ba7e-8f8f73a8d503"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:Execution"
+                id="4e8c75c4-2bbf-4c46-85b3-8404bba8558c" start="#3f650b5c-d515-4c0f-9b80-a890d33db456"
+                finish="#b37a3ef6-81cf-4218-9af7-5fc2ce683093"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:Execution"
+                id="bbfb6469-9bd4-4d34-bee1-f4b58d16859d" start="#970ea978-1c62-4a8f-944b-570747757b10"
+                finish="#72fa8920-4317-481f-8db9-bbd9ccd5bed5"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:Execution"
+                id="20bfdbd1-984f-4993-b5e9-0b07158ff325" start="#678452c2-ea25-4059-8a31-f0ec024231ef"
+                finish="#b0a61810-c067-4fb4-93dd-59d808074172"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:Execution"
+                id="0cbeca8f-527e-4314-828a-9fb75b08c9da" start="#25e6342e-88f7-42d3-b06e-466c0cb54175"
+                finish="#e5d1e645-922b-48ea-a957-1165c6485fad"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
+                id="7afaf20c-397a-4dcb-a649-22295f224f15" name="sndOp_ExchangeItemAllocation 1_ASYNCHRONOUS_CALL"
+                operation="#817902b9-62bb-45c5-a60a-d985f8f6bdcb"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
+                id="ac78ac56-8f22-407c-ab3a-898cf1259afa" name="rcvOp_Crash land_ASYNCHRONOUS_CALL"
+                operation="#817902b9-62bb-45c5-a60a-d985f8f6bdcb"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEvent"
+                id="92d9f9dd-d4db-4d76-8994-f9a89681e850"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
+                id="7c8b315d-c355-4de1-a177-a7d2d0a22bcb" name="sndOp_ExchangeItemAllocation 1_ASYNCHRONOUS_CALL"
+                operation="#543c4318-0b8d-49ef-b105-b3c47a5045ac"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
+                id="3899716e-ff99-46d6-ac69-b1fcd79db915" name="rcvOp_grow_up_ASYNCHRONOUS_CALL"
+                operation="#543c4318-0b8d-49ef-b105-b3c47a5045ac"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEvent"
+                id="9b984642-da59-4cc8-a504-2f233041f4a3"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
+                id="00d1a4a5-b129-40df-8a32-0e61497bd8e8" name="sndOp_ExchangeItemAllocation 2_ASYNCHRONOUS_CALL"
+                operation="#b3a88d5d-5790-4993-8f81-44ac38669910"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
+                id="775d4ff8-6560-41ce-a0fc-f481f49b3026" name="rcvOp_broken_branches_ASYNCHRONOUS_CALL"
+                operation="#b3a88d5d-5790-4993-8f81-44ac38669910"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEvent"
+                id="fa746280-0a6a-4e76-a081-a58d828d0eed"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
+                id="0c7d6972-2718-4553-bff5-a652ff1abaa3" name="sndOp_ExchangeItemAllocation 3_SYNCHRONOUS_CALL"
+                operation="#fc33a3c6-e5b3-4545-998e-1dc9c96be96b"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
+                id="d72911e2-5176-46d1-a0aa-51026073a8a3" name="rcvOp_nurse_back_to_health_SYNCHRONOUS_CALL"
+                operation="#fc33a3c6-e5b3-4545-998e-1dc9c96be96b"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
+                id="44d20573-aca1-4d11-873d-8453970f5d28" name="sndOp_nurse_back_to_health_REPLY"
+                operation="#fc33a3c6-e5b3-4545-998e-1dc9c96be96b"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
+                id="ec28a40c-dd15-4473-bda2-5b7020ddd1e0" name="rcvOp_nurse_back_to_health_REPLY"
+                operation="#fc33a3c6-e5b3-4545-998e-1dc9c96be96b"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
+                id="1ba7316d-13ab-4b25-a10e-2b172fad6ed6" name="sndOp_ExchangeItemAllocation 3_ASYNCHRONOUS_CALL"
+                operation="#e519d880-a40d-4fbb-8004-8c5552335800"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
+                id="fed2f172-8808-4484-8396-97fa2b75257b" name="rcvOp_punch_ASYNCHRONOUS_CALL"
+                operation="#e519d880-a40d-4fbb-8004-8c5552335800"/>
+            <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEvent"
+                id="cea7ee63-3f32-463e-b4a5-f73a3a9b20d9"/>
+          </ownedScenarios>
+          <ownedCapabilityRealizationInvolvements xsi:type="org.polarsys.capella.core.data.capellacommon:CapabilityRealizationInvolvement"
+              id="0d68d62b-c130-4881-b9f5-c0145657bf4c" involved="#3bdd4fa2-5646-44a1-9fa6-80c68433ddb7"/>
+          <ownedCapabilityRealizationInvolvements xsi:type="org.polarsys.capella.core.data.capellacommon:CapabilityRealizationInvolvement"
+              id="b334c614-9679-4e75-b5f4-49a9c041e61e" involved="#ff7b8672-84db-4b93-9fea-22a410907fb1"/>
+          <ownedCapabilityRealizationInvolvements xsi:type="org.polarsys.capella.core.data.capellacommon:CapabilityRealizationInvolvement"
+              id="00febbf0-c9fa-42bb-bda4-5030c61bd8e9" involved="#a8c46457-a702-41c4-a971-c815c4c5a674"/>
+        </ownedCapabilityRealizations>
       </ownedAbstractCapabilityPkg>
       <ownedInterfacePkg xsi:type="org.polarsys.capella.core.data.cs:InterfacePkg"
-          id="cb544a1b-7d2a-441d-a104-255b4bdd0704" name="Interfaces"/>
+          id="cb544a1b-7d2a-441d-a104-255b4bdd0704" name="Interfaces">
+        <ownedExchangeItems xsi:type="org.polarsys.capella.core.data.information:ExchangeItem"
+            id="e795c4a0-d13c-4b97-a8f3-0df56115ca3f" name="crashland" exchangeMechanism="EVENT"/>
+        <ownedExchangeItems xsi:type="org.polarsys.capella.core.data.information:ExchangeItem"
+            id="0529c721-bb39-4671-8f8e-bac283246ac6" name="plant_sapling" exchangeMechanism="SHARED_DATA"/>
+        <ownedExchangeItems xsi:type="org.polarsys.capella.core.data.information:ExchangeItem"
+            id="c9c9e26c-c65e-4353-a703-ae83ce1958c8" name="broken_branches" exchangeMechanism="EVENT"/>
+        <ownedExchangeItems xsi:type="org.polarsys.capella.core.data.information:ExchangeItem"
+            id="9a631474-f1fa-4573-8dfa-141b683290c6" name="nurse_back_to_health"
+            exchangeMechanism="OPERATION"/>
+        <ownedExchangeItems xsi:type="org.polarsys.capella.core.data.information:ExchangeItem"
+            id="d9201101-b52b-4de8-8823-35c3cd775519" name="punch" exchangeMechanism="FLOW"/>
+        <ownedInterfaces xsi:type="org.polarsys.capella.core.data.cs:Interface" id="f8a88d70-81d2-44e5-8338-da3248fa7a49"
+            name="R. Weasley vs. Whomping Willow">
+          <ownedExchangeItemAllocations xsi:type="org.polarsys.capella.core.data.cs:ExchangeItemAllocation"
+              id="817902b9-62bb-45c5-a60a-d985f8f6bdcb" name="ExchangeItemAllocation 1"
+              sendProtocol="UNICAST" allocatedItem="#e795c4a0-d13c-4b97-a8f3-0df56115ca3f"/>
+          <ownedExchangeItemAllocations xsi:type="org.polarsys.capella.core.data.cs:ExchangeItemAllocation"
+              id="e519d880-a40d-4fbb-8004-8c5552335800" name="ExchangeItemAllocation 3"
+              allocatedItem="#d9201101-b52b-4de8-8823-35c3cd775519"/>
+        </ownedInterfaces>
+        <ownedInterfaces xsi:type="org.polarsys.capella.core.data.cs:Interface" id="53ec6898-5c1c-4f4c-bcd7-46e2e9adff30"
+            name="Prof. S. Snape &lt;3 Whomping Willow">
+          <ownedExchangeItemAllocations xsi:type="org.polarsys.capella.core.data.cs:ExchangeItemAllocation"
+              id="fcf7a505-068d-4dd2-bfd4-14bb204807db" name="ExchangeItemAllocation 1"
+              receiveProtocol="ACCEPT" allocatedItem="#0529c721-bb39-4671-8f8e-bac283246ac6"/>
+          <ownedExchangeItemAllocations xsi:type="org.polarsys.capella.core.data.cs:ExchangeItemAllocation"
+              id="b3a88d5d-5790-4993-8f81-44ac38669910" name="ExchangeItemAllocation 2"
+              sendProtocol="UNICAST" allocatedItem="#c9c9e26c-c65e-4353-a703-ae83ce1958c8"/>
+          <ownedExchangeItemAllocations xsi:type="org.polarsys.capella.core.data.cs:ExchangeItemAllocation"
+              id="fc33a3c6-e5b3-4545-998e-1dc9c96be96b" name="ExchangeItemAllocation 3"
+              sendProtocol="SYNCHRONOUS" allocatedItem="#9a631474-f1fa-4573-8dfa-141b683290c6"/>
+        </ownedInterfaces>
+      </ownedInterfacePkg>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="39e99d4a-a32c-4b70-b4b6-d03fec612e17" name="Data">
         <ownedDataPkgs xsi:type="org.polarsys.capella.core.data.information:DataPkg"
@@ -2667,6 +2837,17 @@ The predator is far away</bodies>
                 id="c31491db-817d-44b3-a27c-67e9cc1e06a2" name="Care" convoyedInformations="#1ca7b206-be29-4315-a036-0b532b26a191"
                 source="#639341a3-1b08-44d9-bac2-cd847ccb45a4" target="#44e0f08d-2d38-46bb-b681-c11d2a3c4fe2"
                 kind="ASSEMBLY"/>
+            <ownedInterfacePkg xsi:type="org.polarsys.capella.core.data.cs:InterfacePkg"
+                id="c8f33066-2801-4970-8aea-6aadc189b9f3" name="Interfaces">
+              <ownedExchangeItems xsi:type="org.polarsys.capella.core.data.information:ExchangeItem"
+                  id="7428fc94-7e7d-4643-94a3-3b4629d96926" name="grow_up" exchangeMechanism="OPERATION"/>
+              <ownedInterfaces xsi:type="org.polarsys.capella.core.data.cs:Interface"
+                  id="c0ef9a78-9eec-4d13-9322-38239e68ce3e" name="Whomping Willow_to_Whomping Willow">
+                <ownedExchangeItemAllocations xsi:type="org.polarsys.capella.core.data.cs:ExchangeItemAllocation"
+                    id="543c4318-0b8d-49ef-b105-b3c47a5045ac" name="ExchangeItemAllocation 1"
+                    sendProtocol="ASYNCHRONOUS" allocatedItem="#7428fc94-7e7d-4643-94a3-3b4629d96926"/>
+              </ownedInterfaces>
+            </ownedInterfacePkg>
             <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="1188fc31-789b-424f-a2d4-06791873a351"
                 name="Whomping Willow" abstractType="#3bdd4fa2-5646-44a1-9fa6-80c68433ddb7"/>
             <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:Part" id="018a8ae9-8e8e-4aea-8191-4abf844a79e3"
@@ -2694,6 +2875,18 @@ The predator is far away</bodies>
               <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
                   id="44e0f08d-2d38-46bb-b681-c11d2a3c4fe2" name="CP 3" orientation="IN"
                   kind="FLOW"/>
+              <ownedInterfaceUses xsi:type="org.polarsys.capella.core.data.cs:InterfaceUse"
+                  id="a63bd65d-8734-46c1-a822-8f667c517edf" usedInterface="#c0ef9a78-9eec-4d13-9322-38239e68ce3e"/>
+              <ownedInterfaceUses xsi:type="org.polarsys.capella.core.data.cs:InterfaceUse"
+                  id="7c35a8d7-161c-488e-a6a4-5b6d860d6598" usedInterface="#f8a88d70-81d2-44e5-8338-da3248fa7a49"/>
+              <ownedInterfaceUses xsi:type="org.polarsys.capella.core.data.cs:InterfaceUse"
+                  id="aa174845-8dbd-4856-8c7b-5700e552f70a" usedInterface="#53ec6898-5c1c-4f4c-bcd7-46e2e9adff30"/>
+              <ownedInterfaceImplementations xsi:type="org.polarsys.capella.core.data.cs:InterfaceImplementation"
+                  id="39e5525d-0ae3-4424-adaa-19e087d42c76" implementedInterface="#f8a88d70-81d2-44e5-8338-da3248fa7a49"/>
+              <ownedInterfaceImplementations xsi:type="org.polarsys.capella.core.data.cs:InterfaceImplementation"
+                  id="484b133e-dfb2-478b-9a97-5f77d5fd66c5" implementedInterface="#c0ef9a78-9eec-4d13-9322-38239e68ce3e"/>
+              <ownedInterfaceImplementations xsi:type="org.polarsys.capella.core.data.cs:InterfaceImplementation"
+                  id="69c9a507-4d20-477a-986e-7a2c0c5e0263" implementedInterface="#53ec6898-5c1c-4f4c-bcd7-46e2e9adff30"/>
             </ownedLogicalComponents>
             <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
                 id="a58821df-c5b4-4958-9455-0d30755be6b1" name="School">
@@ -2867,6 +3060,10 @@ The predator is far away</bodies>
                 id="74bd0ab3-6a28-4025-822e-90201445a56e" targetElement="#3612f112-f0c7-42ec-b0e9-f53afc1ef486"
                 sourceElement="#b4e39757-b0fd-41ff-a7b8-c9fc36de2ca9"/>
           </ownedFeatures>
+          <ownedInterfaceUses xsi:type="org.polarsys.capella.core.data.cs:InterfaceUse"
+              id="43e7fe5c-9fa6-4498-9cc3-9f8f4058db3c" usedInterface="#53ec6898-5c1c-4f4c-bcd7-46e2e9adff30"/>
+          <ownedInterfaceImplementations xsi:type="org.polarsys.capella.core.data.cs:InterfaceImplementation"
+              id="cd38f870-39fe-44a3-90c9-1527b11b0b60" implementedInterface="#53ec6898-5c1c-4f4c-bcd7-46e2e9adff30"/>
         </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
             id="a8c46457-a702-41c4-a971-c815c4c5a674" name="Harry J. Potter" actor="true">
@@ -2921,6 +3118,10 @@ The predator is far away</bodies>
                 id="0f6e1aa0-942a-40a9-930f-c7df34b9d8eb" targetElement="#65be1aca-b5da-480c-b16b-3d127ab29346"
                 sourceElement="#7c61d723-3658-47ff-9b0c-7b016ac4cb76"/>
           </ownedFeatures>
+          <ownedInterfaceUses xsi:type="org.polarsys.capella.core.data.cs:InterfaceUse"
+              id="3aabccb0-a126-4111-b094-27197f111b7b" usedInterface="#f8a88d70-81d2-44e5-8338-da3248fa7a49"/>
+          <ownedInterfaceImplementations xsi:type="org.polarsys.capella.core.data.cs:InterfaceImplementation"
+              id="90a0595b-6a06-4fe8-8247-d47cdf543b51" implementedInterface="#f8a88d70-81d2-44e5-8338-da3248fa7a49"/>
         </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
             id="3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5" name="LogicalActor 5" actor="true"

@@ -37,8 +37,17 @@ class Part(c.GenericElement):
 
 
 @c.xtype_handler(None)
+class ExchangeItemAllocation(c.GenericElement):
+    """An allocation of an ExchangeItem to an Interface."""
+
+    item = c.AttrProxyAccessor(information.ExchangeItem, "allocatedItem")
+
+
+@c.xtype_handler(None)
 class Interface(c.GenericElement):
     """An interface."""
+
+    exchange_item_allocations = c.DirectProxyAccessor(ExchangeItemAllocation)
 
 
 @c.xtype_handler(None)
