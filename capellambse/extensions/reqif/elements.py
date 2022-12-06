@@ -113,7 +113,6 @@ XT_REQ_TYPES = {
     XT_REQ_TYPE_ATTR_DEF,
     XT_REQ_TYPE_ENUM_DEF,
 }
-DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
 
@@ -411,7 +410,7 @@ class DateValueAttribute(AbstractRequirementsAttribute):
     """A value attribute that stores a date and time."""
 
     value = xmltools.DatetimeAttributeProperty(
-        "_element", "value", format=DATE_VALUE_FORMAT, optional=True
+        "_element", "value", optional=True
     )
 
 

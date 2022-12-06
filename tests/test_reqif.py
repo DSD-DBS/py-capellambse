@@ -500,12 +500,12 @@ class TestReqIFModification:
             pytest.param(
                 "Date",
                 TEST_DATETIME,
-                f"1987-07-27T00:00:00.000000{TEST_TZ_OFFSET}",
+                f"1987-07-27T00:00:00.000{TEST_TZ_OFFSET}",
             ),
             pytest.param(
                 "Date",
                 datetime.datetime(1987, 7, 27, tzinfo=datetime.timezone.utc),
-                "1987-07-27T00:00:00.000000+0000",
+                "1987-07-27T00:00:00.000+0000",
             ),
             pytest.param("Bool", False, None),
             pytest.param("Bool", True, "true"),
