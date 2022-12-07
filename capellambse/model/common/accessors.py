@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 __all__ = [
+    "NonUniqueMemberError",
     "Accessor",
     "DeprecatedAccessor",
     "WritableAccessor",
@@ -41,6 +42,23 @@ _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
 _C = t.TypeVar("_C", bound="ElementListCouplingMixin")
+
+
+class NonUniqueMemberError(ValueError):
+    """Raised when a duplicate member is inserted into a list."""
+
+    parent = property(lambda self: self.args[0])
+    attr = property(lambda self: self.args[1])
+    target = property(lambda self: self.args[2])
+
+    def __str__(self) -> str:
+        if len(self.args) != 3:
+            return super().__str__()
+
+        return (
+            f"Cannot insert: {self.attr!r} of {self.parent._short_repr_()}"
+            f" already contains a reference to {self.target._short_repr_()}"
+        )
 
 
 class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
@@ -558,7 +576,7 @@ class DeepProxyAccessor(DirectProxyAccessor[T]):
 class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Accesses elements through reference elements."""
 
-    __slots__ = ("attr", "tag")
+    __slots__ = ("attr", "tag", "unique")
 
     aslist: type[ElementListCouplingMixin] | None
     attr: str
@@ -573,6 +591,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         *,
         attr: str,
         aslist: type[element.ElementList] | None = None,
+        unique: bool = True,
     ) -> None:
         """Create a LinkAccessor.
 
@@ -589,6 +608,11 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         aslist
             Optionally specify a different subclass of
             :class:`~capellambse.model.common.element.ElementList`.
+        unique
+            Enforce that each element may only appear once in the list.
+            If a duplicate is attempted to be added, an exception will
+            be raised. Note that this does not have an effect on lists
+            already existing within the loaded model.
         """
         if not tag:
             warnings.warn(
@@ -603,6 +627,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             raise TypeError(f"One xtype is required, got {len(self.xtypes)}")
         self.follow = attr
         self.tag = tag
+        self.unique = unique
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -663,6 +688,12 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     ) -> etree._Element:
         assert self.tag is not None
         loader = parent._model._loader
+
+        if self.unique:
+            for i in self.__find_refs(parent):
+                if self.__follow_ref(parent, i) is target._element:
+                    raise NonUniqueMemberError(parent, self.__name__, target)
+
         with loader.new_uuid(parent._element) as obj_id:
             (xtype,) = self.xtypes
             link = loader.create_link(parent._element, target._element)

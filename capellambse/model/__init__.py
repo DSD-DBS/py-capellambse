@@ -4,7 +4,12 @@
 """Implements a high-level interface to Capella projects."""
 from __future__ import annotations
 
-__all__ = ["ElementList", "GenericElement", "MelodyModel"]
+__all__ = [
+    "ElementList",
+    "GenericElement",
+    "NonUniqueMemberError",
+    "MelodyModel",
+]
 
 import collections.abc as cabc
 import logging
@@ -26,7 +31,11 @@ from . import common, diagram  # isort:skip
 from .layers import oa, ctx, la, pa  # isort:skip
 
 # Exports
-from .common import ElementList, GenericElement  # isort:skip
+from .common import (  # isort:skip
+    ElementList,
+    GenericElement,
+    NonUniqueMemberError,
+)
 
 LOGGER = logging.getLogger(__name__)
 XT_PROJECT = "org.polarsys.capella.core.data.capellamodeller:Project"
