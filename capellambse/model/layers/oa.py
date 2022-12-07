@@ -98,14 +98,14 @@ class OperationalCapability(c.GenericElement):
         aslist=c.ElementList,
     )
     involved_activities = c.LinkAccessor[OperationalActivity](
-        None,  # FIXME fill in tag
-        interaction.XT_CAP2ACT,
+        "ownedAbstractFunctionAbstractCapabilityInvolvements",
+        interaction.AbstractFunctionAbstractCapabilityInvolvement,
         aslist=c.ElementList,
         attr="involved",
     )
     involved_entities = c.LinkAccessor[c.GenericElement](
-        None,  # FIXME fill in tag
-        XT_EOCI,
+        "ownedEntityOperationalCapabilityInvolvements",
+        EntityOperationalCapabilityInvolvement,
         aslist=c.MixedElementList,
         attr="involved",
     )
@@ -113,7 +113,7 @@ class OperationalCapability(c.GenericElement):
         EntityOperationalCapabilityInvolvement, aslist=c.ElementList
     )
     involved_processes = c.LinkAccessor[OperationalProcess](
-        None,  # FIXME fill in tag
+        "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
         attr="involved",
