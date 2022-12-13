@@ -17,7 +17,7 @@ from lxml import etree
 import capellambse
 import capellambse.helpers
 import capellambse.pvmt
-from capellambse import loader
+from capellambse import filehandler, loader
 from capellambse.loader import xmltools
 
 from . import common, diagram  # isort:skip
@@ -63,7 +63,7 @@ class MelodyModel:
         "_element", "name", __doc__="The name of this model."
     )
 
-    _diagram_cache: loader.FileHandler
+    _diagram_cache: filehandler.FileHandler
     _diagram_cache_subdir: pathlib.PurePosixPath
 
     def __init__(
@@ -71,7 +71,11 @@ class MelodyModel:
         path: str | os.PathLike,
         *,
         diagram_cache: (
-            str | os.PathLike | loader.FileHandler | dict[str, t.Any] | None
+            str
+            | os.PathLike
+            | filehandler.FileHandler
+            | dict[str, t.Any]
+            | None
         ) = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         jupyter_untrusted: bool = False,
@@ -140,7 +144,7 @@ class MelodyModel:
         password: str
             The password to use for logging in. Will be ignored when
             ``identity_file`` is passed as well.
-        diagram_cache: str | pathlib.Path | ~capellambse.loader.filehandler.FileHandler | dict[str, ~typing.Any]
+        diagram_cache: str | pathlib.Path | ~capellambse.filehandler.FileHandler | dict[str, ~typing.Any]
             An optional place where to find pre-rendered, cached
             diagrams. When a diagram is found in this cache, it will be
             loaded from there instead of being rendered on access. Note
@@ -190,15 +194,15 @@ class MelodyModel:
 
         See Also
         --------
-        capellambse.loader.filehandler.FileHandler :
+        capellambse.filehandler.FileHandler :
             Abstract super class for file handlers. Contains information
             needed for implementing custom handlers.
-        capellambse.loader.filehandler.localfilehandler.LocalFileHandler :
+        capellambse.filehandler.localfilehandler.LocalFileHandler :
             The file handler responsible for local files and
             directories.
-        capellambse.loader.filehandler.gitfilehandler.GitFileHandler :
+        capellambse.filehandler.gitfilehandler.GitFileHandler :
             The file handler implementing the ``git://`` protocol.
-        capellambse.loader.filehandler.http.HTTPFileHandler :
+        capellambse.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
         # pylint: enable=line-too-long
@@ -220,12 +224,16 @@ class MelodyModel:
         if diagram_cache:
             if diagram_cache == path:
                 self._diagram_cache = self._loader.filehandler
-            elif isinstance(diagram_cache, loader.FileHandler):
+            elif isinstance(diagram_cache, filehandler.FileHandler):
                 self._diagram_cache = diagram_cache
             elif isinstance(diagram_cache, cabc.Mapping):
-                self._diagram_cache = loader.get_filehandler(**diagram_cache)
+                self._diagram_cache = filehandler.get_filehandler(
+                    **diagram_cache
+                )
             else:
-                self._diagram_cache = loader.get_filehandler(diagram_cache)
+                self._diagram_cache = filehandler.get_filehandler(
+                    diagram_cache
+                )
             self._diagram_cache_subdir = pathlib.PurePosixPath(
                 diagram_cache_subdir or "/"
             )
@@ -256,15 +264,15 @@ class MelodyModel:
 
         See Also
         --------
-        capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :
+        capellambse.filehandler.localfilehandler.LocalFileHandler.write_transaction :
             Accepted ``**kw`` when using local directories
-        capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+        capellambse.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
 
         Notes
         -----
         With a file handler that contacts a remote location (such as the
-        :class:`~capellambse.loader.filehandler.gitfilehandler.GitFileHandler`
+        :class:`~capellambse.filehandler.gitfilehandler.GitFileHandler`
         with non-local repositories), saving might fail if the local
         state has gone out of sync with the remote state. To avoid this,
         always leave the ``update_cache`` parameter at its default value

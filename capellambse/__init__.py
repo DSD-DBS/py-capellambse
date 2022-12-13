@@ -16,6 +16,7 @@ def migrate_cache_dir():
     that use it will use the new name with migrated data.
     """
     # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
+    # pylint: disable=redefined-outer-name  # false-positive
     import pathlib
     import sys
 
@@ -50,7 +51,7 @@ del metadata
 from ._namespaces import *
 from .auditing import AttributeAuditor
 from .cli_helpers import *
-from .loader.filehandler import FileHandler, get_filehandler
+from .filehandler import *
 from .model import MelodyModel
 from .model.common import ModelObject
 
@@ -69,6 +70,8 @@ def load_model_extensions() -> None:
     """
     # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
     import importlib.metadata as imm  # pylint: disable=reimported
+
+    # pylint: disable=redefined-outer-name  # false-positive
     import logging
     import sys
 

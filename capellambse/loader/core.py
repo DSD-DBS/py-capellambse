@@ -28,9 +28,9 @@ from lxml import etree
 
 import capellambse
 import capellambse._namespaces as _n
-from capellambse import helpers
-from capellambse.loader import exs, filehandler
-from capellambse.loader.filehandler import localfilehandler
+from capellambse import filehandler, helpers
+from capellambse.filehandler import local
+from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
@@ -392,7 +392,7 @@ class MelodyLoader:
         if entrypoint:
             return helpers.normalize_pure_path(entrypoint)
 
-        if isinstance(self.filehandler, localfilehandler.LocalFileHandler):
+        if isinstance(self.filehandler, local.LocalFileHandler):
             basedir = self.filehandler.path
             assert isinstance(basedir, pathlib.Path)
             self.filehandler.path = basedir.parent
@@ -430,9 +430,9 @@ class MelodyLoader:
 
         See Also
         --------
-        capellambse.loader.filehandler.localfilehandler.LocalFileHandler.write_transaction :
+        capellambse.filehandler.localfilehandler.LocalFileHandler.write_transaction :
             Accepted ``**kw`` when using local directories
-        capellambse.loader.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+        capellambse.filehandler.gitfilehandler.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
 
         Notes
