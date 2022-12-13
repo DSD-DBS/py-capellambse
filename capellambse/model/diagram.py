@@ -17,8 +17,8 @@ import uuid
 import markupsafe
 
 import capellambse
+from capellambse import aird, diagram, helpers, svg
 
-from .. import aird, helpers, svg
 from . import common as c
 from . import modeltypes
 
@@ -28,7 +28,7 @@ class DiagramFormat(t.Protocol):
     filename_extension: str
 
     @classmethod
-    def convert(cls, diagram: aird.Diagram) -> t.Any:
+    def convert(cls, dg: diagram.Diagram) -> t.Any:
         ...
 
     @classmethod
@@ -37,7 +37,7 @@ class DiagramFormat(t.Protocol):
 
 
 DiagramConverter = t.Union[
-    t.Callable[[aird.Diagram], t.Any],
+    t.Callable[[diagram.Diagram], t.Any],
     DiagramFormat,
 ]
 
@@ -69,7 +69,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     """The filters that are activated for this diagram."""
 
     _model: capellambse.MelodyModel
-    _render: aird.Diagram
+    _render: diagram.Diagram
     _error: BaseException
     _last_render_params: dict[str, t.Any] = {}
     """
@@ -209,7 +209,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
-    def render(self, fmt: None, /, **params) -> aird.Diagram:
+    def render(self, fmt: None, /, **params) -> diagram.Diagram:
         ...
 
     @t.overload
@@ -222,7 +222,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             conv = _find_format_converter(fmt)
         else:
 
-            def conv(i: aird.Diagram) -> aird.Diagram:
+            def conv(i: diagram.Diagram) -> diagram.Diagram:
                 return i
 
         try:
@@ -237,7 +237,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             return conv(render)
 
     @abc.abstractmethod
-    def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
+    def _create_diagram(self, params: dict[str, t.Any]) -> diagram.Diagram:
         """Perform the actual rendering of the diagram.
 
         This method should only be called by the public :meth:`render`
@@ -246,7 +246,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __create_error_image(
         self, stage: str, error: Exception
-    ) -> aird.Diagram:
+    ) -> diagram.Diagram:
         err_name = (
             "An error occured while rendering diagram\n"
             f"{self.name!r}\n"
@@ -260,20 +260,20 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             traceback.format_exception(None, error, error.__traceback__)
         )
 
-        diag = aird.Diagram("An error occured! :(")
-        err_box = aird.Box(
+        diag = diagram.Diagram("An error occured! :(")
+        err_box = diagram.Box(
             (200, 0),
             (350, 0),
             label=err_name,
             uuid="error",
             styleclass="Note",
             styleoverrides={
-                "fill": aird.RGB(255, 0, 0),
-                "text_fill": aird.RGB(255, 255, 255),
+                "fill": diagram.RGB(255, 0, 0),
+                "text_fill": diagram.RGB(255, 255, 255),
             },
         )
         diag.add_element(err_box, extend_viewport=False)
-        info_box = aird.Box(
+        info_box = diagram.Box(
             (200, err_box.pos.y + err_box.size.y + 10),
             (350, 0),
             label=err_msg,
@@ -281,7 +281,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             styleclass="Note",
         )
         diag.add_element(info_box, extend_viewport=False)
-        trace_box = aird.Box(
+        trace_box = diagram.Box(
             (0, info_box.pos.y + info_box.size.y + 10),
             (750, 0),
             label=err_trace,
@@ -311,7 +311,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
         return converter.from_cache(cache)
 
-    def __render_fresh(self, params: dict[str, t.Any]) -> aird.Diagram:
+    def __render_fresh(self, params: dict[str, t.Any]) -> diagram.Diagram:
         # pylint: disable=broad-except
         if not hasattr(self, "_render") or self._last_render_params != params:
             self.invalidate_cache()
@@ -410,7 +410,7 @@ class Diagram(AbstractDiagram):
         for filter in filters:
             self.filters.add(filter)
 
-    def _create_diagram(self, params: dict[str, t.Any]) -> aird.Diagram:
+    def _create_diagram(self, params: dict[str, t.Any]) -> diagram.Diagram:
         return aird.parse_diagram(self._model._loader, self._element, **params)
 
 
@@ -455,8 +455,8 @@ class SVGFormat:
     mimetype = "image/svg+xml"
 
     @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
-        return convert_svgdiagram(diagram).to_string()
+    def convert(dg: diagram.Diagram) -> str:
+        return convert_svgdiagram(dg).to_string()
 
     @staticmethod
     def from_cache(cache: bytes) -> str:
@@ -470,7 +470,7 @@ class PNGFormat:
     mimetype = "image/png"
 
     @staticmethod
-    def convert(diagram: aird.Diagram) -> bytes:
+    def convert(dg: diagram.Diagram) -> bytes:
         try:
             import cairosvg
         except OSError as error:
@@ -479,7 +479,7 @@ class PNGFormat:
                 " Please see the README for instructions."
             ) from error
 
-        return cairosvg.svg2png(SVGFormat.convert(diagram))
+        return cairosvg.svg2png(SVGFormat.convert(dg))
 
     @staticmethod
     def from_cache(cache: bytes) -> bytes:
@@ -487,10 +487,10 @@ class PNGFormat:
 
 
 def convert_svgdiagram(
-    diagram: aird.Diagram,
+    dg: diagram.Diagram,
 ) -> svg.generate.SVGDiagram:
     """Convert the diagram to a SVGDiagram."""
-    jsondata = aird.DiagramJSONEncoder().encode(diagram)
+    jsondata = diagram.DiagramJSONEncoder().encode(dg)
     return svg.generate.SVGDiagram.from_json(jsondata)
 
 
@@ -506,8 +506,8 @@ class ConfluenceSVGFormat:
     postfix = "]]></ac:plain-text-body></ac:structured-macro>"
 
     @classmethod
-    def convert(cls, diagram: aird.Diagram) -> str:
-        return "".join((cls.prefix, SVGFormat.convert(diagram), cls.postfix))
+    def convert(cls, dg: diagram.Diagram) -> str:
+        return "".join((cls.prefix, SVGFormat.convert(dg), cls.postfix))
 
     @classmethod
     def from_cache(cls, cache: bytes) -> str:
@@ -519,8 +519,8 @@ class SVGDataURIFormat:
     preamble = "data:image/svg+xml;base64,"
 
     @classmethod
-    def convert(cls, diagram: aird.Diagram) -> str:
-        payload = SVGFormat.convert(diagram)
+    def convert(cls, dg: diagram.Diagram) -> str:
+        payload = SVGFormat.convert(dg)
         b64 = base64.standard_b64encode(payload.encode("utf-8"))
         return "".join((cls.preamble, b64.decode("ascii")))
 
@@ -535,8 +535,8 @@ class SVGInHTMLIMGFormat:
     mimetype = "text/html"
 
     @staticmethod
-    def convert(diagram: aird.Diagram) -> markupsafe.Markup:
-        payload = SVGDataURIFormat.convert(diagram)
+    def convert(dg: diagram.Diagram) -> markupsafe.Markup:
+        payload = SVGDataURIFormat.convert(dg)
         return markupsafe.Markup(f'<img src="{payload}"/>')
 
     @staticmethod
@@ -549,8 +549,8 @@ class JSONFormat:
     filename_extension = ".json"
 
     @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
-        return aird.DiagramJSONEncoder().encode(diagram)
+    def convert(dg: diagram.Diagram) -> str:
+        return diagram.DiagramJSONEncoder().encode(dg)
 
     @staticmethod
     def from_cache(cache: bytes) -> str:
@@ -562,8 +562,8 @@ class PrettyJSONFormat:
     mimetype = "application/json"
 
     @staticmethod
-    def convert(diagram: aird.Diagram) -> str:
-        return aird.DiagramJSONEncoder(indent=4).encode(diagram)
+    def convert(dg: diagram.Diagram) -> str:
+        return diagram.DiagramJSONEncoder(indent=4).encode(dg)
 
     @staticmethod
     def from_cache(cache: bytes) -> str:

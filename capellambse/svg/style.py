@@ -16,7 +16,7 @@ import typing as t
 from lxml import etree
 from svgwrite import base, gradients
 
-from capellambse import aird
+from capellambse import diagram
 
 if t.TYPE_CHECKING:
     from .drawing import Drawing
@@ -180,7 +180,7 @@ class Styling:
 
     def __getattribute__(self, attr: str) -> str:
         if attr in {"marker-start", "marker-end"}:
-            defaultstyles = aird.get_style(self._diagram_class, self._class)
+            defaultstyles = diagram.get_style(self._diagram_class, self._class)
             try:
                 value = super().__getattribute__(attr)
             except AttributeError as err:
@@ -194,7 +194,7 @@ class Styling:
                 stroke = (
                     defaultstyles.get(self._style_name("stroke")) or "#000"
                 )
-            return f'url("#{value}_{aird.RGB.fromcss(stroke).tohex()}")'
+            return f'url("#{value}_{diagram.RGB.fromcss(stroke).tohex()}")'
 
         return super().__getattribute__(attr)
 
@@ -206,7 +206,7 @@ class Styling:
         return True
 
     def __iter__(self) -> cabc.Iterator[str]:
-        defaultstyles = aird.get_style(self._diagram_class, self._class)
+        defaultstyles = diagram.get_style(self._diagram_class, self._class)
         for attr in ("marker-start", "marker-end"):
             if (
                 not self._marker
@@ -229,25 +229,27 @@ class Styling:
 
     @classmethod
     def _to_css(
-        cls, value: float | int | str | aird.RGB | cabc.Iterable | None
+        cls, value: float | int | str | diagram.RGB | cabc.Iterable | None
     ) -> float | int | str:
         if isinstance(value, (str, int, float)):
             return value
         elif value is None:
             return "none"
-        elif isinstance(value, aird.RGB):
+        elif isinstance(value, diagram.RGB):
             return f"#{value.tohex()}"
         elif isinstance(value, cabc.Iterable):
             return f'url("#{cls._generate_id("CustomGradient", value)}")'
         raise ValueError(f"Invalid styling value: {value!r}")
 
     @staticmethod
-    def _generate_id(name: str, value: cabc.Iterable[str | aird.RGB]) -> str:
+    def _generate_id(
+        name: str, value: cabc.Iterable[str | diagram.RGB]
+    ) -> str:
         """Return unqiue identifier for given css-value."""
         return "_".join(
             itertools.chain(
                 (name,),
-                (aird.RGB.fromcss(v).tohex() for v in value),
+                (diagram.RGB.fromcss(v).tohex() for v in value),
             ),
         )
 
@@ -338,16 +340,16 @@ class StyleBuilder:
         """
     )
     _highlight_on_hover = {
-        "ComponentExchange": aird.RGB(8, 138, 189),
-        "ExchangeItemElement": aird.RGB(0, 0, 0),
-        "FIPAllocation": aird.RGB(255, 0, 0),
-        "FOPAllocation": aird.RGB(255, 0, 0),
-        "FunctionalExchange": aird.RGB(0, 0, 255),
-        "PhysicalLink": aird.RGB(239, 41, 41),
+        "ComponentExchange": diagram.RGB(8, 138, 189),
+        "ExchangeItemElement": diagram.RGB(0, 0, 0),
+        "FIPAllocation": diagram.RGB(255, 0, 0),
+        "FOPAllocation": diagram.RGB(255, 0, 0),
+        "FunctionalExchange": diagram.RGB(0, 0, 255),
+        "PhysicalLink": diagram.RGB(239, 41, 41),
     }
 
     sheet: io.StringIO
-    styles: dict[str, dict[str, aird.CSSdef]]
+    styles: dict[str, dict[str, diagram.CSSdef]]
 
     def __init__(self, class_: str | None):
         self.class_ = class_
@@ -390,11 +392,11 @@ class StyleBuilder:
         self.sheet.seek(0, io.SEEK_END)
         self.styles = self._make_styles()
 
-    def _make_styles(self) -> dict[str, dict[str, aird.CSSdef]]:
-        styles = aird.STYLES["__GLOBAL__"].copy()
+    def _make_styles(self) -> dict[str, dict[str, diagram.CSSdef]]:
+        styles = diagram.STYLES["__GLOBAL__"].copy()
         try:
             deep_update_dict(
-                styles, aird.STYLES[self.class_]  # type: ignore[index]
+                styles, diagram.STYLES[self.class_]  # type: ignore[index]
             )
         except KeyError:
             logger.error(
@@ -407,7 +409,7 @@ class StyleBuilder:
         self,
         elmclass: str,
         pseudo: str,
-        styles: dict[str, aird.CSSdef],
+        styles: dict[str, diagram.CSSdef],
     ) -> None:
         selectors = [
             f"g.Box{elmclass}{pseudo} > {tag}" for tag in ("rect", "use")
@@ -425,7 +427,7 @@ class StyleBuilder:
         self,
         elmclass: str,
         pseudo: str,
-        styles: dict[str, aird.CSSdef],
+        styles: dict[str, diagram.CSSdef],
     ) -> None:
         selector = f"g.Edge{elmclass}{pseudo} > path"
         selector_text = f"g.Edge{elmclass}{pseudo} > text"
@@ -437,7 +439,10 @@ class StyleBuilder:
         self._write_styledict(
             elmclass,
             f"g.Circle{elmclass}{pseudo} > circle",
-            {"fill": styles.get("stroke", aird.RGB(0, 0, 0)), "stroke": None},
+            {
+                "fill": styles.get("stroke", diagram.RGB(0, 0, 0)),
+                "stroke": None,
+            },
         )
 
         if not pseudo and elmclass in self._highlight_on_hover:
@@ -461,7 +466,7 @@ class StyleBuilder:
         elmclass: str,
         sel_obj: str | list[str],
         sel_text: str,
-        allstyles: dict[str, aird.CSSdef],
+        allstyles: dict[str, diagram.CSSdef],
     ) -> None:
         for selector, styles in zip(
             [sel_obj, sel_text], _splitstyles(allstyles)
@@ -473,7 +478,7 @@ class StyleBuilder:
         self,
         elmclass: str,
         selector: str | list[str],
-        styles: dict[str, aird.CSSdef],
+        styles: dict[str, diagram.CSSdef],
     ) -> None:
         if isinstance(selector, str):
             selector = f".{self.sheetclass} {selector}"
@@ -490,11 +495,11 @@ class StyleBuilder:
         self.sheet.write(" }\n")
 
     def _serialize_value(
-        self, key: str, value: aird.CSSdef, class_: str
+        self, key: str, value: diagram.CSSdef, class_: str
     ) -> str:
         if key in {"marker-start", "marker-end"}:
             diagram_class = self.class_
-            mystyle = aird.get_style(diagram_class, f"Edge{class_}")
+            mystyle = diagram.get_style(diagram_class, f"Edge{class_}")
             if "stroke" not in mystyle:
                 mystyle["stroke"] = "#f00"
 
@@ -505,7 +510,7 @@ class StyleBuilder:
             value = f"url(#{marker_id})"
         elif value is None:
             value = "none"
-        elif isinstance(value, aird.RGB):
+        elif isinstance(value, diagram.RGB):
             value = str(value)
         elif isinstance(value, cabc.Sequence) and len(value) == 2:
             gradname = f"{class_}{key.capitalize()}Gradient"
@@ -521,10 +526,10 @@ class StyleBuilder:
 
 
 def _splitstyles(
-    styles: dict[str, aird.CSSdef]
-) -> tuple[dict[str, aird.CSSdef], dict[str, aird.CSSdef]]:
-    objstyles: dict[str, aird.CSSdef] = {}
-    textstyles: dict[str, aird.CSSdef] = {}
+    styles: dict[str, diagram.CSSdef]
+) -> tuple[dict[str, diagram.CSSdef], dict[str, diagram.CSSdef]]:
+    objstyles: dict[str, diagram.CSSdef] = {}
+    textstyles: dict[str, diagram.CSSdef] = {}
     for key, value in styles.items():
         if key.startswith("text_"):
             textstyles[key[len("text_") :]] = value

@@ -18,7 +18,7 @@ from lxml import builder, etree
 
 import capellambse._namespaces as _n
 import capellambse.loader
-from capellambse import aird, helpers
+from capellambse import diagram, helpers
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ ATT_XMT = f"{{{_n.NAMESPACES['xmi']}}}type"
 ATT_XST = f"{{{_n.NAMESPACES['xsi']}}}type"
 
 # Force ports to always have this size.
-PORT_SIZE = aird.Vector2D(10, 10)
+PORT_SIZE = diagram.Vector2D(10, 10)
 
 RE_COMPOSITE_FILTER = re.compile(r"/@filters\[name='(.*?)'\]$")
 RE_STYLECLASS = re.compile(r"/@ownedRepresentations\[name='(.*?)'\]$")
@@ -52,7 +52,7 @@ ELEMENT = builder.ElementMaker(nsmap={"xmi": str(_n.NAMESPACES["xmi"])})
 
 @dataclasses.dataclass
 class ElementBuilder:
-    target_diagram: aird.Diagram
+    target_diagram: diagram.Diagram
     diagram_tree: etree._Element
     data_element: etree._Element
     melodyloader: capellambse.loader.MelodyLoader
@@ -66,7 +66,7 @@ class SemanticElementBuilder(ElementBuilder):
     melodyobjs: cabc.MutableSequence[etree._Element]
 
 
-class StackingBox(aird.Box):
+class StackingBox(diagram.Box):
     """A Box with special child-stacking behavior."""
 
     CHILD_MARGIN = 0
@@ -76,19 +76,19 @@ class StackingBox(aird.Box):
 
     def __init__(
         self,
-        pos: aird.Vector2D,
-        size: aird.Vector2D | None = None,
+        pos: diagram.Vector2D,
+        size: diagram.Vector2D | None = None,
         *,
         stacking_mode: StackingBox._StackingChildren.StackingMode,
-        minsize: aird.Vec2ish = (0, 0),
-        maxsize: aird.Vec2ish = (math.inf, math.inf),
+        minsize: diagram.Vec2ish = (0, 0),
+        maxsize: diagram.Vec2ish = (math.inf, math.inf),
         **kw: t.Any,
     ) -> None:
         del size
 
         super().__init__(
             pos,
-            aird.Vector2D(0, 0),
+            diagram.Vector2D(0, 0),
             minsize=minsize,
             maxsize=maxsize,
             **kw,
@@ -96,7 +96,7 @@ class StackingBox(aird.Box):
         self.children = self._StackingChildren(self)
         self.stacking_mode = stacking_mode
 
-    def _topsection_size(self) -> aird.Vector2D:
+    def _topsection_size(self) -> diagram.Vector2D:
         """Calculate the size of the top section (this Box' own label).
 
         Parameters
@@ -125,10 +125,10 @@ class StackingBox(aird.Box):
         else:
             features_height = 0
         height = label_extent[1] + features_height + pad_y
-        return aird.Vector2D(width, height)
+        return diagram.Vector2D(width, height)
 
     @property
-    def size(self) -> aird.Vector2D:
+    def size(self) -> diagram.Vector2D:
         pwidth, pheight = self._topsection_size()
         child_bounds = [i.bounds for i in self.children if not i.hidden]
         try:
@@ -136,10 +136,10 @@ class StackingBox(aird.Box):
         except ValueError:
             width = pwidth
         cheight = sum(i.size.y for i in child_bounds)
-        return aird.Vector2D(width, cheight + pheight)
+        return diagram.Vector2D(width, cheight + pheight)
 
     @size.setter
-    def size(self, new_size: aird.Vec2ish) -> None:
+    def size(self, new_size: diagram.Vec2ish) -> None:
         if any(i != 0 for i in new_size):
             raise TypeError("The size of this Box cannot be changed directly")
 
@@ -240,7 +240,7 @@ class StackingBox(aird.Box):
         def __repr__(self) -> str:
             return repr(self.__list)
 
-    class _StackingChildren(t.MutableSequence[aird.DiagramElement]):
+    class _StackingChildren(t.MutableSequence[diagram.DiagramElement]):
         class StackingMode(enum.Enum):
             """The possible modes for stacking child boxes."""
 
@@ -252,40 +252,43 @@ class StackingBox(aird.Box):
             parent: StackingBox,
             stacking_mode: StackingMode = StackingMode.VERTICAL,
         ):
-            self.__list: list[aird.DiagramElement] = []
+            self.__list: list[diagram.DiagramElement] = []
             self.__parent = parent
             self.stacking_mode = stacking_mode
 
-        def __iter__(self) -> cabc.Iterator[aird.DiagramElement]:
+        def __iter__(self) -> cabc.Iterator[diagram.DiagramElement]:
             return iter(self.__list)
 
         @t.overload
-        def __getitem__(self, index: int) -> aird.DiagramElement:
+        def __getitem__(self, index: int) -> diagram.DiagramElement:
             ...
 
         @t.overload
-        def __getitem__(self, index: slice) -> list[aird.DiagramElement]:
+        def __getitem__(self, index: slice) -> list[diagram.DiagramElement]:
             ...
 
         def __getitem__(
             self, index: int | slice
-        ) -> aird.DiagramElement | list[aird.DiagramElement]:
+        ) -> diagram.DiagramElement | list[diagram.DiagramElement]:
             return self.__list[index]
 
         @t.overload
-        def __setitem__(self, index: int, value: aird.DiagramElement) -> None:
+        def __setitem__(
+            self, index: int, value: diagram.DiagramElement
+        ) -> None:
             ...
 
         @t.overload
         def __setitem__(
-            self, index: slice, value: cabc.Iterable[aird.DiagramElement]
+            self, index: slice, value: cabc.Iterable[diagram.DiagramElement]
         ) -> None:
             ...
 
         def __setitem__(
             self,
             index: int | slice,
-            value: aird.DiagramElement | cabc.Iterable[aird.DiagramElement],
+            value: diagram.DiagramElement
+            | cabc.Iterable[diagram.DiagramElement],
         ) -> None:
             self.__list[index] = value  # type: ignore[index, assignment]
             self._restack()
@@ -297,7 +300,7 @@ class StackingBox(aird.Box):
         def __len__(self) -> int:
             return len(self.__list)
 
-        def insert(self, index: int, value: aird.DiagramElement) -> None:
+        def insert(self, index: int, value: diagram.DiagramElement) -> None:
             self.__list.insert(index, value)
             self._restack()
 
@@ -310,7 +313,7 @@ class StackingBox(aird.Box):
                 ypos += self.__parent._topsection_size()[1]
                 for obj in self.__list:
                     obj_bounds = obj.bounds
-                    offset = aird.Vector2D(xpos, ypos) - obj_bounds.pos
+                    offset = diagram.Vector2D(xpos, ypos) - obj_bounds.pos
                     obj.move(offset)
                     ypos += obj_bounds.size.y
             elif (
@@ -324,13 +327,13 @@ class StackingBox(aird.Box):
                 )
 
 
-class CenterAnchoredBox(aird.Box):
+class CenterAnchoredBox(diagram.Box):
     """A special Box subclass that uses its center as reference point."""
 
-    center: aird.Vec2Property = aird.Vec2Property()  # type: ignore[assignment]
+    center: diagram.Vec2Property = diagram.Vec2Property()  # type: ignore[assignment]
 
     def __init__(
-        self, center: aird.Vec2ish, size: aird.Vec2ish, **kwargs: t.Any
+        self, center: diagram.Vec2ish, size: diagram.Vec2ish, **kwargs: t.Any
     ) -> None:
         """Create a CenterAnchoredBox.
 
@@ -348,15 +351,15 @@ class CenterAnchoredBox(aird.Box):
         self.center = center
 
     @property  # type: ignore[override]
-    def pos(self) -> aird.Vector2D:
+    def pos(self) -> diagram.Vector2D:
         """Return the top left corner position of this Box."""
         return self.center - self.size / 2
 
     @pos.setter
-    def pos(self, new_pos: aird.Vec2ish) -> None:
-        if new_pos == aird.Vector2D(math.inf, math.inf):
+    def pos(self, new_pos: diagram.Vec2ish) -> None:
+        if new_pos == diagram.Vector2D(math.inf, math.inf):
             return
-        self.center = aird.Vector2D(*new_pos) + self.size / 2
+        self.center = diagram.Vector2D(*new_pos) + self.size / 2
 
     def __repr__(self) -> str:
         return super().__repr__().replace(repr(self.pos), repr(self.center), 1)

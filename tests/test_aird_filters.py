@@ -5,7 +5,7 @@
 import pytest
 
 import capellambse
-from capellambse import aird
+from capellambse import diagram
 from capellambse import model as model_
 
 COMP_PORT_FILTER_DIAG = "[LAB] Test Component Port Filter"
@@ -74,11 +74,11 @@ def test_component_ports_filter_is_applied(
         COMP_PORT_FILTER_DIAG
     )
 
-    diagram = diag.render(None)
+    rendered = diag.render(None)
 
     assert all(
         d.hidden
-        for d in diagram
+        for d in rendered
         if d.port and d.styleclass and d.styleclass.startswith("CP_")
     )
 
@@ -91,12 +91,12 @@ def test_fex_exchangeitems_filter_is_applied(
     )
 
     diag.filters.add(EX_ITEMS_FILTER)
-    diagram = diag.render(None, sorted_exchangedItems=False)
+    rendered = diag.render(None, sorted_exchangedItems=False)
     fex_edge = next(
-        ex for ex in diagram if ex.styleclass == "FunctionalExchange"
+        ex for ex in rendered if ex.styleclass == "FunctionalExchange"
     )
 
-    assert isinstance(fex_edge, aird.Edge)
+    assert isinstance(fex_edge, diagram.Edge)
     assert len(fex_edge.labels) == 1
     assert fex_edge.labels[0].label == "[ExchangeItem 1, Example]"
 
@@ -124,9 +124,9 @@ def test_fex_exchangeitems_filter_with_name_is_applied(
     )
 
     diag.filters.add(NAME_AND_EX_ITEMS_FILTER)
-    diagram = diag.render(None, sorted_exchangedItems=sort)
-    fex_edge = diagram["_yovTvM-ZEeytxdoVf3xHjA"]
+    rendered = diag.render(None, sorted_exchangedItems=sort)
+    fex_edge = rendered["_yovTvM-ZEeytxdoVf3xHjA"]
 
-    assert isinstance(fex_edge, aird.Edge)
+    assert isinstance(fex_edge, diagram.Edge)
     assert len(fex_edge.labels) == 1
     assert fex_edge.labels[0].label == expected_label

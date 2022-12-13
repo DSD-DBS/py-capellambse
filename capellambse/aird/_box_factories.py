@@ -12,18 +12,18 @@ import typing as t
 
 import markupsafe
 
-from capellambse import aird, helpers
+from capellambse import diagram, helpers
 
 from . import _common as C
 from . import _filters, _styling
 
-_T = t.TypeVar("_T", bound=aird.Box)
+_T = t.TypeVar("_T", bound=diagram.Box)
 
 
 @t.overload
 def generic_factory(
-    seb: C.SemanticElementBuilder, *, minsize: aird.Vector2D = ...
-) -> aird.Box:
+    seb: C.SemanticElementBuilder, *, minsize: diagram.Vector2D = ...
+) -> diagram.Box:
     ...
 
 
@@ -32,7 +32,7 @@ def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
     boxtype: type[_T] | functools.partial[_T],
-    minsize: aird.Vector2D = ...,
+    minsize: diagram.Vector2D = ...,
 ) -> _T:
     ...
 
@@ -40,8 +40,10 @@ def generic_factory(
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
-    boxtype: type[aird.Box] | type[_T] | functools.partial[_T] = aird.Box,
-    minsize: aird.Vector2D = aird.Vector2D(148, 69),
+    boxtype: type[diagram.Box]
+    | type[_T]
+    | functools.partial[_T] = diagram.Box,
+    minsize: diagram.Vector2D = diagram.Vector2D(148, 69),
 ) -> _T:
     """Construct a Box from the diagram XML."""
     if seb.diag_element.getparent() is not seb.diagram_tree:
@@ -51,7 +53,7 @@ def generic_factory(
 
     if parent_uid is None:
         parent = None
-        refpos = aird.Vector2D(0, 0)
+        refpos = diagram.Vector2D(0, 0)
     else:
         try:
             # reference position (top left of parent box)
@@ -63,7 +65,7 @@ def generic_factory(
                 seb.data_element.attrib["element"],
             )
             raise C.SkipObject() from None
-    assert parent is None or isinstance(parent, aird.Box)
+    assert parent is None or isinstance(parent, diagram.Box)
 
     try:
         layout = next(seb.data_element.iterchildren("layoutConstraint")).attrib
@@ -82,7 +84,7 @@ def generic_factory(
     if box_is_port:
         size = C.PORT_SIZE
     else:
-        size = aird.Vector2D(
+        size = diagram.Vector2D(
             int(layout.get("width", 0)), int(layout.get("height", 0))
         )
         style_type = ostyle.attrib[C.ATT_XMT].split(":")[-1]
@@ -140,14 +142,14 @@ def generic_stacked_factory(seb: C.SemanticElementBuilder) -> C.StackingBox:
     )
 
 
-def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def class_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a Class.
 
     Classes contain multiple `Property` sub-elements.  These aren't
     actual boxes, but should instead be shown as part of the Class'
     regular label text.
     """
-    box = generic_factory(seb, minsize=aird.Vector2D(93, 43))
+    box = generic_factory(seb, minsize=diagram.Vector2D(93, 43))
 
     if seb.melodyobjs[0].attrib.get("abstract", "false") == "true":
         box.styleoverrides["text_font-style"] = "italic"
@@ -216,7 +218,7 @@ def class_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return box
 
 
-def component_port_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def component_port_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     box = generic_factory(seb)
     try:
         box.styleclass = "CP_" + (seb.melodyobjs[0].attrib["orientation"])
@@ -226,7 +228,7 @@ def component_port_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return box
 
 
-def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def constraint_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create the box for a Constraint.
 
     Constraints are comprised of two parts: A Box and some Edges.  The
@@ -235,7 +237,7 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
     See Also
     --------
-    capellambse.aird.parser._edge_factories.constraint_factory :
+    capellambse.aird._edge_factories.constraint_factory :
         The accompanying edge factory.
     """
     box = generic_factory(seb)
@@ -247,7 +249,7 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return box
 
 
-def control_node_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def control_node_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     r"""Differentiate ``ControlNode``\ s based on their KIND."""
     assert seb.styleclass is not None
     kind = seb.melodyobjs[0].get("kind", "OR")
@@ -255,7 +257,7 @@ def control_node_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return generic_factory(seb)
 
 
-def enumeration_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def enumeration_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create an Enumeration.
 
     These work similar to Classes, but use different element tags.
@@ -275,7 +277,7 @@ def enumeration_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return box
 
 
-def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def part_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Resolve the ``Part`` meta-styleclass and creates its Box."""
     dgel_type = seb.diag_element.attrib[C.ATT_XMT]
     if dgel_type in {"diagram:DNodeContainer", "diagram:DNode"}:
@@ -306,7 +308,7 @@ def part_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     raise C.SkipObject()
 
 
-def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def requirements_box_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a Requirement.
 
     Requirements' text is split in two parts, which have to be joined
@@ -332,7 +334,7 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     if "ReqIFText" in seb.melodyobjs[0].attrib:
         text.append(helpers.repair_html(seb.melodyobjs[0].attrib["ReqIFText"]))
 
-    box = generic_factory(seb, minsize=aird.Vector2D(0, 0))
+    box = generic_factory(seb, minsize=diagram.Vector2D(0, 0))
     box.features = [f"- {i}" for i in text if i is not None]
     if not (box.label or box.features):
         sdata_element = seb.data_element.attrib["element"]
@@ -340,7 +342,7 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return box
 
 
-def region_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def region_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     r"""Perform special handling for ``Region``\ s.
 
     *   Adjust the styleclass of Regions to ``StateRegion`` or
@@ -364,11 +366,11 @@ def region_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     else:
         box.label.label = f"[{box.label.label}]"
     box.minsize = (27, 21)
-    box.size = aird.Vector2D(box._size.x or 55, box._size.y or 41)
+    box.size = diagram.Vector2D(box._size.x or 55, box._size.y or 41)
     return box
 
 
-def statemode_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def statemode_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a State or Mode.
 
     Unlike other elements, these have their immediate children rendered
@@ -387,7 +389,7 @@ def statemode_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     raise C.SkipObject()
 
 
-def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def statemode_activities_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Attach the activities to a State or Mode as features."""
     parent_id = seb.diag_element.getparent().attrib["uid"]
     try:
@@ -395,7 +397,7 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     except KeyError:
         C.LOGGER.error("Cannot find a box with UID %r in diagram", parent_id)
         raise C.SkipObject() from None
-    assert isinstance(parent, aird.Box)
+    assert isinstance(parent, diagram.Box)
 
     entry: list[str] = []
     do: list[str] = []
@@ -437,7 +439,7 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     raise C.SkipObject()
 
 
-def fcif_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def fcif_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a FunctionalChainInvolvementFunction.
 
     These are special boxes that point to another element via their
@@ -457,7 +459,7 @@ def fcif_factory(seb: C.SemanticElementBuilder) -> aird.Box:
     return generic_factory(seb)
 
 
-def pseudo_symbol_factory(seb: C.SemanticElementBuilder) -> aird.Box:
+def pseudo_symbol_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a [Fork|Choice]PseudoState.
 
     These are boxes that behave like symbols. Capella doesn't store the
@@ -472,11 +474,11 @@ def pseudo_symbol_factory(seb: C.SemanticElementBuilder) -> aird.Box:
 
 
 def _make_portlabel(
-    ppos: aird.Vector2D,
-    psize: aird.Vector2D,
+    ppos: diagram.Vector2D,
+    psize: diagram.Vector2D,
     text: str,
     seb: C.SemanticElementBuilder,
-) -> aird.Box:
+) -> diagram.Box:
     snapsides = {"5001": (1, 0), "5010": (0, 1)}
     try:
         child_elm = next(
@@ -490,27 +492,27 @@ def _make_portlabel(
             if i.get(C.ATT_XMT) == "notation:Location"
         )
     except StopIteration:
-        snapside = aird.Vector2D(1, 0)
+        snapside = diagram.Vector2D(1, 0)
     else:
         snapside = (
-            aird.Vector2D(
+            diagram.Vector2D(
                 int(loc_elm.get("x", "0")), int(loc_elm.get("y", "0"))
             )
             @ snapsides[child_elm.get("type")]
         )
         if snapside == (0, 0):
-            snapside = aird.Vector2D(1, 0)
+            snapside = diagram.Vector2D(1, 0)
         else:
             snapside //= snapside.length
     return _make_snapped_floating_label(ppos, psize, text, snapside)
 
 
 def _make_free_floating_label(
-    ppos: aird.Vector2D,
-    psize: aird.Vector2D,
+    ppos: diagram.Vector2D,
+    psize: diagram.Vector2D,
     text: str,
     seb: C.SemanticElementBuilder,
-) -> aird.Box:
+) -> diagram.Box:
     """Try to construct the label from the real location found in aird file."""
     try:
         child_elm = next(
@@ -525,18 +527,18 @@ def _make_free_floating_label(
         )
     except StopIteration:
         return _make_snapped_floating_label(
-            ppos, psize, text, aird.Vector2D(0, -1)
+            ppos, psize, text, diagram.Vector2D(0, -1)
         )
     pos = ppos + (float(loc_elm.get("x", "0")), float(loc_elm.get("y", "0")))
-    return aird.Box(pos, (0, 0), label=text, styleclass="BoxAnnotation")
+    return diagram.Box(pos, (0, 0), label=text, styleclass="BoxAnnotation")
 
 
 def _make_snapped_floating_label(
-    ppos: aird.Vector2D,
-    psize: aird.Vector2D,
+    ppos: diagram.Vector2D,
+    psize: diagram.Vector2D,
     text: str,
-    snapside: aird.Vector2D,
-) -> aird.Box:
+    snapside: diagram.Vector2D,
+) -> diagram.Box:
     if not isinstance(snapside.x, int) or not isinstance(snapside.y, int):
         raise TypeError("snapside must be an int-vector")
     if not (-1 <= snapside.x <= 1 and -1 <= snapside.y <= 1):
@@ -545,18 +547,20 @@ def _make_snapped_floating_label(
         raise ValueError("snapside can only have one non-zero value")
     if snapside.x == snapside.y == 0:
         raise ValueError("snapside must have one non-zero value")
-    labelbox = aird.Box((0, 0), (0, 0), label=text, styleclass="BoxAnnotation")
+    labelbox = diagram.Box(
+        (0, 0), (0, 0), label=text, styleclass="BoxAnnotation"
+    )
     lsize = labelbox.size
     labelbox.pos = (
         (
             (lambda: ppos.x - (lsize.x - psize.x) / 2),
-            (lambda: ppos.x + psize.x + aird.Box.PORT_OVERHANG),
-            (lambda: ppos.x - lsize.x - aird.Box.PORT_OVERHANG),
+            (lambda: ppos.x + psize.x + diagram.Box.PORT_OVERHANG),
+            (lambda: ppos.x - lsize.x - diagram.Box.PORT_OVERHANG),
         )[snapside.x](),
         (
             (lambda: ppos.y - (lsize.y - psize.y) / 2),
-            (lambda: ppos.y + psize.y + aird.Box.PORT_OVERHANG),
-            (lambda: ppos.y - lsize.y - aird.Box.PORT_OVERHANG),
+            (lambda: ppos.y + psize.y + diagram.Box.PORT_OVERHANG),
+            (lambda: ppos.y - lsize.y - diagram.Box.PORT_OVERHANG),
         )[snapside.y](),
     )
     return labelbox

@@ -8,7 +8,7 @@ import sys
 import pytest
 
 import capellambse
-from capellambse import aird, loader
+from capellambse import aird, diagram, loader
 
 
 class TestAIRDBasicFunctionality:
@@ -49,7 +49,10 @@ class TestAIRDBasicFunctionality:
     ):
         del caplog
         expected = self.test_json.read_text().strip()
-        actual = aird.DiagramJSONEncoder(indent=4).encode(diagram_under_test)
+        encoder = diagram.DiagramJSONEncoder(indent=4)
+
+        actual = encoder.encode(diagram_under_test)
+
         assert actual == expected
 
     @pytest.mark.xfail(
@@ -85,7 +88,7 @@ def test_airdparser_msm_produces_valid_json_without_error(
     diag_name = "[MSM] States of Functional Human Being"
     all_diagrams = aird.enumerate_diagrams(model._loader)
     descriptor = next(i for i in all_diagrams if i.name == diag_name)
-    diagram = aird.parse_diagram(model._loader, descriptor)
+    parsed = aird.parse_diagram(model._loader, descriptor)
 
-    generated_json = aird.DiagramJSONEncoder(indent=4).encode(diagram)
+    generated_json = diagram.DiagramJSONEncoder(indent=4).encode(parsed)
     json.loads(generated_json)
