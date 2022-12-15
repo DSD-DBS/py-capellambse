@@ -275,7 +275,7 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
         aslist=c.ElementList,
     )
 
-    diagrams = diagram.DiagramAccessor(  # type: ignore[assignment]
+    diagrams = diagram.DiagramAccessor(
         "Operational Analysis", cacheattr="_MelodyModel__diagram_cache"
     )
 

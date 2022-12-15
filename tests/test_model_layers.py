@@ -360,6 +360,7 @@ class TestStateMachines:
         sleep_region = state.regions[0]
 
         assert default_region.diagrams
+        assert isinstance(default_region.diagrams, c.ElementList)
         assert (
             default_region.diagrams[0].name
             == "[MSM] States of Functional Human Being"

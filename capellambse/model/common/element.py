@@ -118,7 +118,8 @@ class GenericElement:
     summary = xmltools.HTMLAttributeProperty(
         "_element", "summary", optional=True
     )
-    diagrams = property(
+    diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
+    diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
     )
 
