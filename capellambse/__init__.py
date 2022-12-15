@@ -4,41 +4,8 @@
 """The capellambse package."""
 import platformdirs
 
-
-def migrate_cache_dir():
-    """Migrate the cache directory from the old name to the new, shorter one.
-
-    After some period of time to allow all active installations to
-    migrate, this functionality should be removed again.
-
-    Note that this function must be the first thing that happens in the
-    top-level ``__init__.py``, so that submodules and external modules
-    that use it will use the new name with migrated data.
-    """
-    # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
-    # pylint: disable=redefined-outer-name  # false-positive
-    import pathlib
-    import sys
-
-    olddirs = platformdirs.PlatformDirs("python-capella-mbse")
-    oldcachedir = pathlib.Path(olddirs.user_cache_dir)
-    newcachedir = pathlib.Path(dirs.user_cache_dir)
-    if not newcachedir.exists() and oldcachedir.exists():
-        try:
-            oldcachedir.rename(newcachedir)
-        except OSError as err:
-            print(
-                f"Warning: Cannot migrate cache directory to {newcachedir}:",
-                f"Exception occurred: {type(err).__name__}: {err}",
-                f"Please delete the old directory manually: {oldcachedir}",
-                file=sys.stderr,
-                sep="\n",
-            )
-
-
 dirs = platformdirs.PlatformDirs("capellambse")
-migrate_cache_dir()
-del platformdirs, migrate_cache_dir
+del platformdirs
 
 from importlib import metadata
 
