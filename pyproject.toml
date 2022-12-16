@@ -81,6 +81,10 @@ png = [
   "cairosvg>=2.5.2",
 ]
 
+termgraphics = [
+  "capellambse[png]",
+]
+
 [project.entry-points."capellambse.diagram.formats"]
 datauri_svg = "capellambse.model.diagram:SVGDataURIFormat"
 html_img = "capellambse.model.diagram:SVGInHTMLIMGFormat"
@@ -90,6 +94,7 @@ png = "capellambse.model.diagram:PNGFormat"
 svg = "capellambse.model.diagram:SVGFormat"
 svg_confluence = "capellambse.model.diagram:ConfluenceSVGFormat"
 svgdiagram = "capellambse.model.diagram:convert_svgdiagram"
+termgraphics = "capellambse.model.diagram:TerminalGraphicsFormat"
 
 [project.entry-points."capellambse.filehandler"]
 file = "capellambse.filehandler.local:LocalFileHandler"

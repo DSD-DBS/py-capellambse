@@ -10,6 +10,7 @@ import collections.abc as cabc
 import importlib.metadata as imm
 import logging
 import operator
+import os
 import traceback
 import typing as t
 import uuid
@@ -42,6 +43,7 @@ DiagramConverter = t.Union[
 ]
 
 LOGGER = logging.getLogger(__name__)
+REPR_DRAW: bool | None = None
 
 
 class UnknownOutputFormat(ValueError):
@@ -117,6 +119,22 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return getattr(super(), attr)
 
     def __repr__(self) -> str:
+        global REPR_DRAW
+        if REPR_DRAW is None:
+            REPR_DRAW = TerminalGraphicsFormat.is_supported()
+
+        if not REPR_DRAW:
+            return self._short_repr_()
+
+        try:
+            escapes = self.render("termgraphics")
+        except Exception:
+            LOGGER.exception("Cannot render diagram as PNG for display")
+            return self._short_repr_()
+
+        return self._short_repr_() + "\n" + escapes.decode("ascii")
+
+    def _short_repr_(self) -> str:
         return f"<Diagram {self.name!r}>"
 
     def __html__(self) -> markupsafe.Markup:
@@ -568,6 +586,50 @@ class PrettyJSONFormat:
     @staticmethod
     def from_cache(cache: bytes) -> str:
         return cache.decode("utf-8")
+
+
+class TerminalGraphicsFormat:
+    """The kitty terminal graphics protocol diagram format.
+
+    This graphics format generates terminal escape codes that transfer
+    PNG data to a TTY using the `kitty graphics protocol`__.
+
+    __ https://sw.kovidgoyal.net/kitty/graphics-protocol/
+    """
+
+    filename_extension = ".png"
+
+    @classmethod
+    def convert(cls, dg: diagram.Diagram) -> bytes:
+        data: bytes = PNGFormat.convert(dg)
+        return cls.from_cache(data)
+
+    @staticmethod
+    def from_cache(cache: bytes) -> bytes:
+        container = b"\x1B_Ga=T,q=2,f=100,m=%d;%b\x1B\\"
+
+        chunks: list[bytes] = []
+        png_b64 = base64.standard_b64encode(cache)
+        while png_b64:
+            chunk, png_b64 = png_b64[:4096], png_b64[4096:]
+            m = (0, 1)[bool(png_b64)]
+            chunks.append(container % (m, chunk))
+
+        return b"".join(chunks)
+
+    @staticmethod
+    def is_supported() -> bool:
+        """Return whether the used terminal supports graphics.
+
+        This implementation checks whether stdin, stdout and stderr are
+        connected to a terminal, and whether the ``$TERM`` environment
+        variable is set to a know-supportive value. Currently the only
+        recognized value is ``xterm-kitty``.
+        """
+        return (
+            all(os.isatty(i) for i in range(3))
+            and os.getenv("TERM") == "xterm-kitty"
+        )
 
 
 def _find_format_converter(fmt: str) -> DiagramConverter:
