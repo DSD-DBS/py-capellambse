@@ -12,6 +12,7 @@ __all__ = [
     "Edge",
     "RoutingStyle",
     "SNAPPING",
+    "StyleOverrides",
 ]
 
 import collections.abc as cabc
@@ -28,7 +29,7 @@ LOGGER = logging.getLogger(__name__)
 SNAPPING = "AIRD_NOSNAP" not in os.environ
 
 DiagramElement = t.Union["Box", "Edge", "Circle"]
-_StyleOverrides = t.MutableMapping[
+StyleOverrides = t.MutableMapping[
     str,
     t.Union[str, diagram.RGB, t.MutableSequence[t.Union[str, diagram.RGB]]],
 ]
@@ -71,7 +72,7 @@ class Box:
         port: bool = False,
         features: cabc.MutableSequence[str] | None = None,
         styleclass: str | None = None,
-        styleoverrides: _StyleOverrides | None = None,
+        styleoverrides: StyleOverrides | None = None,
         hidelabel: bool = False,
         hidden: bool = False,
     ) -> None:
@@ -128,7 +129,7 @@ class Box:
         self.features: cabc.MutableSequence[str] | None = features
 
         self.styleclass: str | None = styleclass
-        self.styleoverrides: _StyleOverrides = styleoverrides or {}
+        self.styleoverrides: StyleOverrides = styleoverrides or {}
         self.hidelabel: bool = hidelabel
         self.hidden = hidden
 
@@ -551,7 +552,7 @@ class Edge(diagram.Vec2List):
         source: DiagramElement | None = None,
         target: DiagramElement | None = None,
         styleclass: str | None = None,
-        styleoverrides: _StyleOverrides | None = None,
+        styleoverrides: StyleOverrides | None = None,
         hidden: bool = False,
     ):
         r"""Construct an Edge.
@@ -766,7 +767,7 @@ class Circle:
         *,
         uuid: str | None = None,
         styleclass: str | None = None,
-        styleoverrides: _StyleOverrides | None = None,
+        styleoverrides: StyleOverrides | None = None,
         hidden: bool = False,
     ):
         """Construct a Circle.
