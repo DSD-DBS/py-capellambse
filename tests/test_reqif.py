@@ -112,7 +112,7 @@ def test_broken_RequirementRelation_short_html_works(
     else:
         req = relation.target
 
-    assert req._short_html_()
+    assert req.__html__()
 
 
 def test_extension_was_loaded():
