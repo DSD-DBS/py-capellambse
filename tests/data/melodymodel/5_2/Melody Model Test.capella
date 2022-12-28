@@ -55,8 +55,8 @@
             requirementTypeProxy="prox">
           <ownedRequirements xsi:type="Requirements:Requirement" id="3c2d312c-37c9-41b5-8c32-67578fa52dc3"
               ReqIFIdentifier="REQTYPE-1" ReqIFDescription="This is a test requirement of kind 1."
-              ReqIFLongName="1" ReqIFName="TestReq1" ReqIFPrefix="3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
-              ReqIFChapterName="2" ReqIFForeignID="1" ReqIFText="&lt;p>Test requirement 1 really l o n g text that is&amp;nbsp;way too long to display here as that&lt;/p>&#xA;&#xA;&lt;p>&amp;lt; &amp;gt; &amp;quot; &amp;#39;&lt;/p>&#xA;&#xA;&lt;ul>&#xA;&#x9;&lt;li>This&amp;nbsp;is a list&lt;/li>&#xA;&#x9;&lt;li>an unordered one&lt;/li>&#xA;&lt;/ul>&#xA;&#xA;&lt;ol>&#xA;&#x9;&lt;li>Ordered list&lt;/li>&#xA;&#x9;&lt;li>Ok&lt;/li>&#xA;&lt;/ol>&#xA;"
+              ReqIFLongName="1" ReqIFName="" ReqIFPrefix="3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
+              ReqIFChapterName="TestReq1" ReqIFForeignID="1" ReqIFText="&lt;p>Test requirement 1 really l o n g text that is&amp;nbsp;way too long to display here as that&lt;/p>&#xA;&#xA;&lt;p>&amp;lt; &amp;gt; &amp;quot; &amp;#39;&lt;/p>&#xA;&#xA;&lt;ul>&#xA;&#x9;&lt;li>This&amp;nbsp;is a list&lt;/li>&#xA;&#x9;&lt;li>an unordered one&lt;/li>&#xA;&lt;/ul>&#xA;&#xA;&lt;ol>&#xA;&#x9;&lt;li>Ordered list&lt;/li>&#xA;&#x9;&lt;li>Ok&lt;/li>&#xA;&lt;/ol>&#xA;"
               requirementTypeProxy="7">
             <ownedAttributes xsi:type="Requirements:BooleanValueAttribute" id="9c692405-b8aa-4caa-b988-51d27db5cd1b"
                 definition="#682bd51d-5451-4930-a97e-8bfca6c3a127" value="true"/>
@@ -82,7 +82,7 @@
                 source="#3c2d312c-37c9-41b5-8c32-67578fa52dc3" target="#00e7b925-cf4c-4cb0-929e-5409a1cd872b"/>
           </ownedRequirements>
           <ownedRequirements xsi:type="Requirements:Requirement" id="0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc"
-              ReqIFName="TypedReq2" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
+              ReqIFLongName="TypedReq2" ReqIFName="" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
             <ownedAttributes xsi:type="Requirements:EnumerationValueAttribute" id="148bdf2f-6dc2-4a83-833b-596886ce5b07"
                 definition="#f31d4dd3-99f7-41d1-b1ce-f07b20d26eac" values="#efd6e108-3461-43c6-ad86-24168339ed3c #3c2390a4-ce9c-472c-9982-d0b825931978"/>
             <ownedAttributes xsi:type="Requirements:DateValueAttribute" id="7351093e-2c1c-4b1a-bb47-43443f530e8d"
@@ -91,7 +91,7 @@
           <ownedRequirements xsi:type="Requirements:Folder" id="e179d6ff-5301-42a6-bf6f-4fec79b18827"
               ReqIFName="Subfolder" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e">
             <ownedRequirements xsi:type="Requirements:Requirement" id="79291c33-5147-4543-9398-9077d582576d"
-                ReqIFName="TestReq3" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
+                ReqIFName="" requirementType="#db47fca9-ddb6-4397-8d4b-e397e53d277e"
                 requirementTypeProxy="">
               <ownedRelations xsi:type="CapellaRequirements:CapellaIncomingRelation"
                   id="41e1b786-a6a1-46cb-9b9c-b302d9278c1c" ReqIFLongName="this one"
@@ -880,7 +880,8 @@ The predator is far away</bodies>
                   </ownedRegions>
                 </ownedStates>
                 <ownedStates xsi:type="org.polarsys.capella.core.data.capellacommon:State"
-                    id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7">
+                    id="6c48b9c5-0d43-4a43-9e9d-9559cb52c83e" name="Eating" entry="#0e0164c3-076e-42c1-8f82-7a43ab84385c"
+                    doActivity="#8bcb11e6-443b-4b92-bec2-ff1d87a224e7" exit="#ab016025-d456-4c2d-8359-d50cf9de3825 #f33bd79c-fa90-4c09-942b-581dc7f07d84 #04babdbf-6cf6-4846-a207-bf27cfc8eb32">
                   <ownedRegions xsi:type="org.polarsys.capella.core.data.capellacommon:Region"
                       id="08a31ad3-2acf-4b0f-a415-d40d610bee4a" name="region"/>
                 </ownedStates>
@@ -1251,7 +1252,8 @@ The predator is far away</bodies>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
           id="814464a3-3278-48eb-b66c-e255ed11afa8" name="Data">
         <ownedAssociations xsi:type="org.polarsys.capella.core.data.information:Association"
-            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" name="DataAssociation1" navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
+            id="3d738685-83e8-45f9-ade2-d5bcc6de1a0c" summary="Find waypoints and you will finish consistently."
+            name="waypoint association" navigableMembers="#424efd65-eaa9-4220-b61b-fb3340dbc19a">
           <ownedMembers xsi:type="org.polarsys.capella.core.data.information:Property"
               id="c0e5b34c-297e-4b3c-8957-58bbe4d36199" name="trajectory" abstractType="#c3c96805-d6f6-4092-b9f4-df7970651cdc"
               aggregationKind="ASSOCIATION">
@@ -2316,7 +2318,7 @@ The predator is far away</bodies>
                   abstractType="#546cd75a-c7ac-4e07-9d2d-8a1f93d82419" referencedValue="#492fd9ca-88cb-4e9d-b92e-df14a1c1543b"/>
             </ownedParts>
             <ownedParts xsi:type="org.polarsys.capella.core.data.information.datavalue:ValuePart"
-                id="a10de770-c6de-43fc-8d9f-868efe5cd29f" referencedProperty="#df884a71-e774-49e1-8aee-0a675179c647">
+                id="a10de770-c6de-43fc-8d9f-868efe5cd29f" referencedProperty="#87f356eb-c79e-4155-b297-8d733685621c">
               <ownedValue xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationReference"
                   id="9645687f-9485-45f0-a10b-01f8b9d24914" name="EnumerationReference"
                   abstractType="#60314ce6-bc96-4b57-8965-7187241148ae" referencedValue="#bfd550cb-7038-48db-9d7b-57cd0ca29d03"/>
@@ -2325,6 +2327,9 @@ The predator is far away</bodies>
         </ownedDataPkgs>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="c710f1c2-ede6-444e-9e2b-0ff30d7fd040" name="Wand">
+          <ownedGeneralizations xsi:type="org.polarsys.capella.core.data.capellacore:Generalization"
+              id="7b66d8fb-3960-40c7-85c6-1738aee234e5" super="#2b34c799-769c-42f2-8a1b-4533dba209a0"
+              sub="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040"/>
           <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
               id="9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51" name="owner" abstractType="#b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81">
             <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
@@ -2346,9 +2351,22 @@ The predator is far away</bodies>
             <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
                 id="f25067de-2b40-4cae-a2c2-5f38e266d4d8" value="1"/>
           </ownedFeatures>
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="793520e1-acbf-4f93-a219-587840aa5a3b" targetElement="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"
+              sourceElement="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040"/>
         </ownedClasses>
         <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
             id="1adf8097-18f9-474e-b136-6c845fc6d9e9" name="Class 2"/>
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="2b34c799-769c-42f2-8a1b-4533dba209a0" name="Branch">
+          <ownedFeatures xsi:type="org.polarsys.capella.core.data.information:Property"
+              id="87f356eb-c79e-4155-b297-8d733685621c" name="wood" abstractType="#60314ce6-bc96-4b57-8965-7187241148ae">
+            <ownedMinCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="49d3520e-4ec1-4bb7-9c30-21b83b4cb432" value="1"/>
+            <ownedMaxCard xsi:type="org.polarsys.capella.core.data.information.datavalue:LiteralNumericValue"
+                id="d7e13df8-4574-4fd1-8137-74a7d64215ad" value="1"/>
+          </ownedFeatures>
+        </ownedClasses>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:Enumeration"
             id="546cd75a-c7ac-4e07-9d2d-8a1f93d82419" name="Wand Core">
           <ownedLiterals xsi:type="org.polarsys.capella.core.data.information.datavalue:EnumerationLiteral"
@@ -2752,7 +2770,20 @@ The predator is far away</bodies>
       <ownedInterfacePkg xsi:type="org.polarsys.capella.core.data.cs:InterfacePkg"
           id="2cb789be-39ff-401f-a5fb-e2d60f02bc13" name="Interfaces"/>
       <ownedDataPkg xsi:type="org.polarsys.capella.core.data.information:DataPkg"
-          id="cb4095f2-cc0b-42be-ba46-59950836eee2" name="Data"/>
+          id="cb4095f2-cc0b-42be-ba46-59950836eee2" name="Data">
+        <ownedClasses xsi:type="org.polarsys.capella.core.data.information:Class"
+            id="7a3bdb81-b58f-46c7-a639-18298acc1a53" name="Alone">
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="294012cc-52c6-47ae-b65e-b41d3f48fa44" targetElement="#0fef2887-04ce-4406-b1a1-a1b35e1ce0f3"
+              sourceElement="#7a3bdb81-b58f-46c7-a639-18298acc1a53"/>
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="95836499-eae4-434e-a353-af29c96c3561" targetElement="#c710f1c2-ede6-444e-9e2b-0ff30d7fd040"
+              sourceElement="#7a3bdb81-b58f-46c7-a639-18298acc1a53"/>
+          <ownedInformationRealizations xsi:type="org.polarsys.capella.core.data.information:InformationRealization"
+              id="cead920c-0250-4b82-be37-6b65a05580f8" targetElement="#8164ae8b-36d5-4502-a184-5ec064db4ec3"
+              sourceElement="#7a3bdb81-b58f-46c7-a639-18298acc1a53"/>
+        </ownedClasses>
+      </ownedDataPkg>
       <ownedPhysicalComponentPkg xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponentPkg"
           id="f7e20d0e-d219-4867-a287-5a56e2d9a63c" name="Structure">
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="508deb8c-4d10-48f3-903e-40e482b1999a"

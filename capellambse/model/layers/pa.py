@@ -97,6 +97,8 @@ class PhysicalComponent(cs.Component):
     def components(self) -> c.ElementList[PhysicalComponent]:
         return self.deployed_components + self.owned_components
 
+    functions = c.DeprecatedAccessor[PhysicalFunction]("allocated_functions")
+
 
 @c.xtype_handler(XT_ARCH)
 class PhysicalComponentPkg(c.GenericElement):
@@ -174,7 +176,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
 
     diagrams = diagram.DiagramAccessor(
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
-    )  # type: ignore[assignment]
+    )
 
 
 c.set_accessor(

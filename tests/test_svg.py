@@ -3,18 +3,13 @@
 
 from __future__ import annotations
 
-import collections.abc as cabc
 import json
 import logging
-import math
 import pathlib
-import random
-import string
 
 import cssutils
 import pytest
 from lxml import etree
-from svgwrite import container, shapes, text
 
 import capellambse
 from capellambse.svg import (
@@ -92,8 +87,8 @@ class TestSVG:
         cp_reference_exists: bool = False
 
         for item in tree.iter():
-            # The class CP should not exist anymore as it has been replaced with
-            # CP_IN, CP_OUT, CP_UNSET or CP_INOUT
+            # The class CP should not exist anymore as it has been replaced
+            # with CP_IN, CP_OUT, CP_UNSET or CP_INOUT
             assert item.get("class") != "Box CP"
 
             # Check that the classes CP_IN, CP_OUT, CP_UNSET and CP_INOUT exist
@@ -133,27 +128,31 @@ class TestSVG:
         tmp_svg.save_drawing()
         assert pathlib.Path(tmp_svg.drawing.filename).is_file()
 
-    # FIXME: change this to a parametrized test, do not use if- or for-statements in a unit test
+    # FIXME: change this to a parametrized test, do not use if- or
+    # for-statements in a unit test
     def test_css_colors(self, tmp_json: pathlib.Path) -> None:
         COLORS_TO_CHECK = {
             ".LogicalArchitectureBlank g.Box.CP_IN > line": {
                 "stroke": "#000000"
             },
-            ".LogicalArchitectureBlank g.Box.CP_IN > rect, .LogicalArchitectureBlank g.Box.CP_IN > use": {
+            ".LogicalArchitectureBlank g.Box.CP_IN > rect,"
+            " .LogicalArchitectureBlank g.Box.CP_IN > use": {
                 "fill": "#FFFFFF",
                 "stroke": "#000000",
             },
             ".LogicalArchitectureBlank g.Box.CP_OUT > line": {
                 "stroke": "#000000"
             },
-            ".LogicalArchitectureBlank g.Box.CP_OUT > rect, .LogicalArchitectureBlank g.Box.CP_OUT > use": {
+            ".LogicalArchitectureBlank g.Box.CP_OUT > rect,"
+            " .LogicalArchitectureBlank g.Box.CP_OUT > use": {
                 "fill": "#FFFFFF",
                 "stroke": "#000000",
             },
             ".LogicalArchitectureBlank g.Box.CP_INOUT > line": {
                 "stroke": "#000000,"
             },
-            ".LogicalArchitectureBlank g.Box.CP_INOUT > rect, .LogicalArchitectureBlank g.Box.CP_INOUT > use": {
+            ".LogicalArchitectureBlank g.Box.CP_INOUT > rect,"
+            " .LogicalArchitectureBlank g.Box.CP_INOUT > use": {
                 "fill": "#FFFFFF",
                 "stroke": "#000000",
             },
@@ -162,21 +161,24 @@ class TestSVG:
                 "stroke": "rgb(0, 0, 0)",
             },
             ".LogicalArchitectureBlank g.Box > line": {"stroke": "#000000"},
-            ".LogicalArchitectureBlank g.Box > rect, .LogicalArchitectureBlank g.Box > use": {
+            ".LogicalArchitectureBlank g.Box > rect,"
+            " .LogicalArchitectureBlank g.Box > use": {
                 "fill": "transparent",
                 "stroke": "#000000",
             },
             ".LogicalArchitectureBlank g.Box.Annotation > line": {
                 "stroke": "none",
             },
-            ".LogicalArchitectureBlank g.Box.Annotation > rect, .LogicalArchitectureBlank g.Box.Annotation > use": {
+            ".LogicalArchitectureBlank g.Box.Annotation > rect,"
+            " .LogicalArchitectureBlank g.Box.Annotation > use": {
                 "fill": "none",
                 "stroke": "none",
             },
             ".LogicalArchitectureBlank g.Box.Constraint > line": {
                 "stroke": "#888888",
             },
-            ".LogicalArchitectureBlank g.Box.Constraint > rect, .LogicalArchitectureBlank g.Box.Constraint > use": {
+            ".LogicalArchitectureBlank g.Box.Constraint > rect,"
+            " .LogicalArchitectureBlank g.Box.Constraint > use": {
                 "fill": "#FFF5B5",
                 "stroke": "#888888",
             },
@@ -186,7 +188,8 @@ class TestSVG:
             ".LogicalArchitectureBlank g.Box.Note > line": {
                 "stroke": "#FFCC66"
             },
-            ".LogicalArchitectureBlank g.Box.Note > rect, .LogicalArchitectureBlank g.Box.Note > use": {
+            ".LogicalArchitectureBlank g.Box.Note > rect,"
+            " .LogicalArchitectureBlank g.Box.Note > use": {
                 "fill": " #FFFFCB",
                 "stroke": " #FFCC66",
             },
@@ -196,7 +199,8 @@ class TestSVG:
             ".LogicalArchitectureBlank g.Box.Requirement > line": {
                 "stroke": "#72496E",
             },
-            ".LogicalArchitectureBlank g.Box.Requirement > rect, .LogicalArchitectureBlank g.Box.Requirement > use": {
+            ".LogicalArchitectureBlank g.Box.Requirement > rect,"
+            " .LogicalArchitectureBlank g.Box.Requirement > use": {
                 "fill": "#D9C4D7",
                 "stroke": "#72496E",
             },
@@ -206,7 +210,8 @@ class TestSVG:
             ".LogicalArchitectureBlank g.Box.Text > line": {
                 "stroke": "transparent",
             },
-            ".LogicalArchitectureBlank g.Box.Text > rect, .LogicalArchitectureBlank g.Box.Text > use": {
+            ".LogicalArchitectureBlank g.Box.Text > rect,"
+            " .LogicalArchitectureBlank g.Box.Text > use": {
                 "stroke": "transparent",
             },
             ".LogicalArchitectureBlank g.Edge > rect": {
@@ -254,7 +259,8 @@ class TestSVG:
                 "fill": "none",
                 "stroke": "none",
             },
-            ".LogicalArchitectureBlank g.Circle.RequirementRelation > circle": {
+            ".LogicalArchitectureBlank g.Circle.RequirementRelation"
+            " > circle": {
                 "fill": "#72496E",
                 "stroke": "none",
             },
@@ -267,14 +273,17 @@ class TestSVG:
             ".LogicalArchitectureBlank g.Box.CP > line": {
                 "stroke": "#000000",
             },
-            ".LogicalArchitectureBlank g.Box.CP > rect, .LogicalArchitectureBlank g.Box.CP > use": {
+            ".LogicalArchitectureBlank g.Box.CP > rect,"
+            " .LogicalArchitectureBlank g.Box.CP > use": {
                 "fill": "#FFFFFF",
                 "stroke": "#000000",
             },
-            ".LogicalArchitectureBlank g.Box.FIP > rect, .LogicalArchitectureBlank g.Box.FIP > use": {
+            ".LogicalArchitectureBlank g.Box.FIP > rect,"
+            " .LogicalArchitectureBlank g.Box.FIP > use": {
                 "fill": "#E08503",
             },
-            ".LogicalArchitectureBlank g.Box.FOP > rect, .LogicalArchitectureBlank g.Box.FOP > use": {
+            ".LogicalArchitectureBlank g.Box.FOP > rect,"
+            " .LogicalArchitectureBlank g.Box.FOP > use": {
                 "fill": "#095C2E",
             },
             ".LogicalArchitectureBlank g.Box.LogicalActor > line": {
@@ -292,7 +301,8 @@ class TestSVG:
             ".LogicalArchitectureBlank g.Box.LogicalFunction > line": {
                 "stroke": "#095C2E",
             },
-            ".LogicalArchitectureBlank g.Box.LogicalFunction > rect, .LogicalArchitectureBlank g.Box.LogicalFunction > use": {
+            ".LogicalArchitectureBlank g.Box.LogicalFunction > rect,"
+            " .LogicalArchitectureBlank g.Box.LogicalFunction > use": {
                 "fill": "#C5FFA6",
                 "stroke": "#095C2E",
             },
@@ -372,7 +382,8 @@ class TestSVG:
                                 key
                             ).propertyValue.value
                         except AttributeError:
-                            # FIXME: rules are duplicated with different values -> should be merged first
+                            # FIXME: rules are duplicated with different
+                            # values -> should be merged first
                             print(f"Missing attribute {key}")
                             continue
                         if val == "none":
@@ -393,185 +404,6 @@ class TestSVG:
         diag = model.diagrams.by_name(diagram_name)
         diag.render("svg")
 
-    @pytest.mark.parametrize("diagram_type", TEST_DECO)
-    @pytest.mark.parametrize(
-        "label",
-        ["short test label", " ".join(string.ascii_letters)],
-    )
-    @pytest.mark.parametrize(
-        "width,height", [(200, 150), (100, 300), (50, 300), (50, 50)]
-    )
-    @pytest.mark.skip("Currently broken")
-    def test_box_contains_label_and_symbol_and_icons_dont_overlap_with_text(
-        self, diagram_type: str, label: str, width: int, height: int
-    ) -> None:
-        """Paint the CI red.
-
-        For all registered Diagramtypes with decorations test label and
-        icon containment for boxes exclusively, i.e. exclude the
-        following:
-
-            * Ports
-            * Exchanges
-            * Markers
-
-        If the label check fails the diagram gets saved to root
-        directory for convenient investigation.
-        """
-        decos = [
-            symbol
-            for symbol in style.STATIC_DECORATIONS[diagram_type]
-            if not "Port" in symbol
-            and not "Mark" in symbol
-            and not ("Exchange" in symbol or "Link" in symbol)
-            and symbol not in FREE_SYMBOLS
-        ]
-        contents: cabc.Sequence[generate.ContentsDict] = [
-            {
-                "type": "box",
-                "id": str(i),
-                "class": symbol.split("Symbol")[0],
-                "x": 10 + i * (width + 10),
-                "y": 10,
-                "width": width,
-                "height": height,
-                "label": label,
-            }
-            for i, symbol in enumerate(decos)
-        ]
-        meta = generate.DiagramMetadata.from_dict(
-            {
-                "name": f"SVGBoxLabelTest-{diagram_type}-{width}x{height}-{label}",
-                "class": diagram_type,
-                "x": 0,
-                "y": 0,
-                "width": len(contents) * (width + 10),
-                "height": height + 50,
-                "contents": contents,
-            }
-        )
-        diagram = SVGDiagram(meta, contents)
-        assert len(diagram.drawing.elements) == len(contents) + 2
-        for elt in diagram.drawing.elements[2:]:
-            assert isinstance(elt, container.Group)
-            try:
-                self.check_label_for_containment_and_overlap(*elt.elements)
-            except AssertionError as error:
-                diagram.save_drawing(True)
-                raise error
-
-    @pytest.mark.parametrize("diagram_type", TEST_DECO)
-    @pytest.mark.parametrize(
-        "label",
-        ["short test label", " ".join(string.ascii_letters)],
-    )
-    @pytest.mark.parametrize(
-        "width,height", [(50, 20), (100, 20), (20, 50), (20, 20)]
-    )
-    @pytest.mark.skip("Currently broken")
-    def test_edge_contains_label_and_symbol_and_icons_dont_overlap_with_text(
-        self, diagram_type: str, label: str, width: int, height: int
-    ) -> None:
-        """Paint the CI red.
-
-        For all registered Diagramtypes with decorations test edge-
-        symbols on not overlapping/overflowing into label text.
-        """
-        decos = [
-            symbol
-            for symbol in style.STATIC_DECORATIONS[diagram_type]
-            if "Exchange" in symbol or "Link" in symbol
-        ]
-        contents: cabc.Sequence[generate.ContentsDict] = [
-            {
-                "type": "edge",
-                "id": str(i),
-                "class": symbol.split("Symbol")[0],
-                "points": [
-                    [random.randint(0, 300), random.randint(0, 300)],
-                    [random.randint(0, 300), random.randint(0, 300)],
-                ],
-                "label": {
-                    "x": 10 + i * (width + 20),
-                    "y": 10,
-                    "width": width,
-                    "height": height,
-                    "text": label,
-                },
-            }
-            for i, symbol in enumerate(decos)
-        ]
-        meta = generate.DiagramMetadata.from_dict(
-            {
-                "name": f"SVGEdgeLabelTest-{diagram_type}-{width}x{height}-{label}",
-                "class": diagram_type,
-                "x": 0,
-                "y": 0,
-                "width": len(contents) * (width + 20),
-                "height": 300,
-                "contents": contents,
-            }
-        )
-        diagram = SVGDiagram(meta, contents)
-        assert len(diagram.drawing.elements) == len(contents) + 2
-        for elt in diagram.drawing.elements[2:]:
-            assert isinstance(elt, container.Group)
-            _, bb, txt, symbol = elt.elements
-            try:
-                bb.attribs["width"] += (
-                    symbol.attribs["width"] - 1 * decorations.icon_padding
-                )
-                bb.attribs["x"] -= (
-                    symbol.attribs["width"] - 1 * decorations.icon_padding
-                )
-                self.check_label_for_containment_and_overlap(bb, txt, symbol)
-            except AssertionError as error:
-                diagram.save_drawing(True)
-                raise error
-
-    def check_label_for_containment_and_overlap(
-        self, rect: shapes.Rect, txt: text.Text, symbol: container.Symbol
-    ) -> None:
-        right_bound = rect.attribs["x"] + rect.attribs["width"]
-        lower_bound = rect.attribs["y"] + rect.attribs["height"]
-        symbol_right_bound = symbol.attribs["x"] + symbol.attribs["width"]
-        factor = 1.0
-        text_anchor = txt.attribs.get("text-anchor", "start")
-        if text_anchor == "middle":
-            factor = 0.5
-
-        # Check text is contained in box
-        for tspan in txt.elements:
-            # Check for horizontal overflow
-            assert (
-                rect.attribs["x"] <= float(tspan.attribs["x"]) <= right_bound
-            )
-            assert (
-                float(tspan.attribs["x"])
-                + factor * capellambse.helpers.extent_func(tspan.text)[0]
-                <= right_bound + 2
-            )
-            # Check for vertical overflow
-            assert (
-                rect.attribs["y"] <= float(tspan.attribs["y"]) <= lower_bound
-            )
-            # Check that symbol doesn't overlap text
-            if text_anchor == "middle":
-                assert symbol_right_bound - 5.5 <= float(
-                    tspan.attribs["x"]
-                ) - 0.5 * math.floor(
-                    capellambse.helpers.extent_func(tspan.text)[0]
-                )
-            else:
-                assert symbol_right_bound <= float(tspan.attribs["x"])
-
-        # Check symbol is contained in box
-        # The leftest x-pos for symbol is rect.x - 2.5
-        assert rect.attribs["x"] - 2.5 <= symbol.attribs["x"] <= right_bound
-        assert symbol_right_bound <= right_bound
-        assert rect.attribs["y"] - 5 <= symbol.attribs["y"] <= lower_bound
-        assert symbol.attribs["y"] + symbol.attribs["height"] <= lower_bound
-
 
 class TestSVGStyling:
     LAB = "Logical Architecture Blank"
@@ -588,13 +420,14 @@ class TestSVGStyling:
                 assert line.startswith(".LogicalArchitectureBlank")
 
         def test_svg_stylesheet_builder_fails_when_no_class_was_given(self):
+            expected_error_msg = (
+                "Invalid type for class_ 'NoneType'. This needs to be a str."
+            )
+
             with pytest.raises(TypeError) as error:
                 style.SVGStylesheet(None)  # type: ignore[arg-type]
 
-            assert (
-                error.value.args[0]
-                == "Invalid type for class_ 'NoneType'. This needs to be a str."
-            )
+            assert error.value.args[0] == expected_error_msg
 
     @pytest.mark.parametrize(
         "style_,diagstyle,expected",

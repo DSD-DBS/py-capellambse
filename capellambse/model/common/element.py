@@ -41,6 +41,7 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
 
         @functools.wraps(orig_eq)
         def new_eq(self, other: object) -> bool:
+            # pylint: disable=unnecessary-dunder-call
             try:
                 cmpkey = getattr(self, attr)
             except AttributeError:
@@ -60,9 +61,11 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
 
             # <https://github.com/DSD-DBS/py-capellambse/issues/52>
             warnings.warn(
-                "Hashing of this type is broken and will likely be removed in the future."
-                f" Consider using the `.uuid` or `.{attr}` directly instead.",
+                "Hashing of this type is broken and will likely be removed in"
+                f" the future. Please use the `.uuid` or `.{attr}` directly"
+                " instead.",
                 category=FutureWarning,
+                stacklevel=2,
             )
 
             return orig_hash(self)
@@ -107,7 +110,7 @@ class GenericElement:
     uuid = xmltools.AttributeProperty("_element", "id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name = xmltools.AttributeProperty(
-        "_element", "name", optional=True, default="(Unnamed {self.xtype})"
+        "_element", "name", optional=True, default=""
     )
     description = xmltools.HTMLAttributeProperty(
         "_element", "description", optional=True
@@ -120,7 +123,7 @@ class GenericElement:
     )
 
     constraints: accessors.Accessor
-    parent: accessors.Accessor
+    parent: accessors.ParentAccessor
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
@@ -189,11 +192,8 @@ class GenericElement:
             )
         missing_attrs = all_required_attrs - frozenset(kw)
         if missing_attrs:
-            raise TypeError(
-                "Missing required keyword arguments: {}".format(
-                    ", ".join(sorted(missing_attrs))
-                )
-            )
+            mattrs = ", ".join(sorted(missing_attrs))
+            raise TypeError(f"Missing required keyword arguments: {mattrs}")
 
         super().__init__()
         if self._xmltag is None:
@@ -277,7 +277,11 @@ class GenericElement:
             mytype = f"Model element ({self.xtype})"
         else:
             mytype = type(self).__name__
-        return f"<{mytype} {self.name!r} ({self.uuid})>"
+        if self.name:
+            name = f" {self.name!r}"
+        else:
+            name = ""
+        return f"<{mytype}{name} ({self.uuid})>"
 
     def __html__(self) -> markupsafe.Markup:
         fragments: list[str] = []
@@ -437,11 +441,8 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             if not single:
                 return self._parent._newlist(elements)
             if len(elements) > 1:
-                raise KeyError(
-                    "Multiple matches for {!r}".format(
-                        values[0] if len(values) == 1 else values
-                    )
-                )
+                value = values[0] if len(values) == 1 else values
+                raise KeyError(f"Multiple matches for {value!r}")
             if len(elements) == 0:
                 raise KeyError(values[0] if len(values) == 1 else values)
             return self._parent[indices[0]]  # Ensure proper construction
@@ -486,7 +487,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         self,
         model: capellambse.MelodyModel,
         elements: list[etree._Element],
-        elemclass: type[T],
+        elemclass: type[T] | None = None,
         *,
         mapkey: str | None = None,
         mapvalue: str | None = None,
@@ -494,7 +495,10 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         # pylint: disable=assigning-non-slot # false-positive
         self._model = model
         self._elements = elements
-        self._elemclass = elemclass
+        if elemclass is not None:
+            self._elemclass = elemclass
+        else:
+            self._elemclass = GenericElement  # type: ignore[assignment]
 
         if bool(mapkey) != bool(mapvalue):
             raise TypeError(
@@ -659,9 +663,6 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         attrs.extend(filterable_attrs())
         return attrs
 
-    def __str__(self) -> str:  # pragma: no cover
-        return "\n".join(f"* {e!s}" for e in self)
-
     def __repr__(self) -> str:  # pragma: no cover
         if not self:
             return "[]"
@@ -762,7 +763,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
                 return newlist
 
             assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = self._parent.cacheattr  # type: ignore[assignment]
+            newlist.cacheattr = t.cast(t.Optional[str], self._parent.cacheattr)
             return newlist
 
     def __init__(

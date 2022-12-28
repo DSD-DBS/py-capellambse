@@ -67,7 +67,6 @@ from lxml import etree
 
 import capellambse.model
 import capellambse.model.common as c
-from capellambse import helpers
 from capellambse.loader import xmltools
 from capellambse.model import crosslayer
 
@@ -114,7 +113,6 @@ XT_REQ_TYPES = {
     XT_REQ_TYPE_ATTR_DEF,
     XT_REQ_TYPE_ENUM_DEF,
 }
-DATE_VALUE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 logger = logging.getLogger("reqif")
 
@@ -255,39 +253,21 @@ class ReqIFElement(c.GenericElement):
 
     def _short_repr_(self) -> str:  # pragma: no cover
         mytype = type(self).__name__
-        path = []
         parent = self._element
-        if isinstance(
-            self,
-            (
-                RequirementsOutRelation,
-                RequirementsIncRelation,
-                RequirementsIntRelation,
-            ),
-        ):
-            return f"<{mytype} from {self.source!r} to {self.target!r} ({self.uuid})>"
-        elif self.xtype in XT_REQ_TYPES:
+        if self.xtype in XT_REQ_TYPES:
             return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
-        while parent is not None:
-            path.append(
-                parent.get("ReqIFText")
-                or parent.get("ReqIFName")
-                or parent.get("ReqIFChapterName")
-                or parent.get("ReqIFLongName")
-                or "..."
-            )
-            if helpers.xtype_of(parent) == XT_MODULE:
-                break
-            parent = parent.getparent()
 
-        return f'<{mytype} {"/".join(reversed(path))!r} ({self.uuid})>'
+        name = (
+            parent.get("ReqIFName")
+            or parent.get("ReqIFChapterName")
+            or parent.get("ReqIFLongName")
+            or ""
+        )
+        return f"<{mytype} {name!r} ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
-        return markupsafe.Markup(
-            self._wrap_short_html(
-                f" &quot;{markupsafe.Markup.escape(self.name or self.long_name)}&quot;"
-            )
-        )
+        name = markupsafe.Markup.escape(self.name or self.long_name)
+        return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
 
 
 @c.xtype_handler(None, XT_REQ_TYPES_DATA_DEF)
@@ -343,7 +323,9 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
             },
         )
 
-    def _match_xtype(self, type_: str) -> tuple[type, str]:  # type: ignore[override]
+    def _match_xtype(  # type: ignore[override]
+        self, type_: str
+    ) -> tuple[type, str]:
         type_ = type_.lower()
         try:
             return _attr_type_hints[type_]
@@ -361,7 +343,7 @@ class RelationsList(c.ElementList["AbstractRequirementsRelation"]):
         source: c.ModelObject,
     ) -> None:
         del elemclass
-        super().__init__(model, elements, c.GenericElement)  # type: ignore[arg-type]
+        super().__init__(model, elements, AbstractRequirementsRelation)
         self._source = source
 
     @t.overload
@@ -428,7 +410,7 @@ class DateValueAttribute(AbstractRequirementsAttribute):
     """A value attribute that stores a date and time."""
 
     value = xmltools.DatetimeAttributeProperty(
-        "_element", "value", format=DATE_VALUE_FORMAT, optional=True
+        "_element", "value", optional=True
     )
 
 
@@ -492,7 +474,10 @@ class AttributeDefinitionEnumeration(ReqIFElement):
     multi_valued = xmltools.BooleanAttributeProperty(
         "_element",
         "multiValued",
-        __doc__="Boolean flag for setting multiple enumeration values on the attribute",
+        __doc__=(
+            "Boolean flag for setting multiple enumeration values on"
+            " the attribute"
+        ),
     )
 
 
@@ -501,7 +486,7 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
     """An enumeration attribute."""
 
     definition = c.AttrProxyAccessor(
-        AttributeDefinitionEnumeration, "definition"
+        AttributeDefinitionEnumeration, "definition"  # type: ignore[arg-type]
     )
     values = c.AttrProxyAccessor(EnumValue, "values", aslist=c.ElementList)
 
@@ -643,6 +628,17 @@ class AbstractRequirementsRelation(ReqIFElement):
     source = c.AttrProxyAccessor(Requirement, "source")
     target = c.AttrProxyAccessor(c.GenericElement, "target")
 
+    def _short_repr_(self) -> str:
+        direction = ""
+        if self.source is not None:
+            direction += f" from {self.source._short_repr_()}"
+        if self.target is not None:
+            direction += f" to {self.target._short_repr_()}"
+        return (
+            f"<{type(self).__name__} {self.long_name!r}{direction} "
+            f"({self.uuid})>"
+        )
+
 
 @c.xtype_handler(None, XT_OUT_RELATION)
 class RequirementsOutRelation(AbstractRequirementsRelation):
@@ -775,6 +771,7 @@ _attr_type_hints = {
     "real": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
     "realvalueattribute": (RealValueAttribute, XT_REQ_ATTR_REALVALUE),
     "date": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
+    "datetime": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "datevalueattribute": (DateValueAttribute, XT_REQ_ATTR_DATEVALUE),
     "bool": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),
     "boolean": (BooleanValueAttribute, XT_REQ_ATTR_BOOLEANVALUE),

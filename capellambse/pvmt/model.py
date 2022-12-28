@@ -5,6 +5,10 @@
 
 from __future__ import annotations
 
+import typing as t
+
+from lxml import etree
+
 import capellambse._namespaces as _n
 
 from . import exceptions
@@ -22,6 +26,8 @@ X_PVMT = "org.polarsys.capella.core.data.capellacore:PropertyValuePkg"
 class Group(XMLDictProxy):
     """PVMT Group."""
 
+    parent: t.Any | None
+
     scope = AttributeProperty("xml_element", "description")
 
     def __init__(self, *args, parent=None, **kwargs):
@@ -34,6 +40,11 @@ class Group(XMLDictProxy):
     def properties(self):
         """Return a list of all properties defined in this group."""
         return list(self.values())
+
+    @classmethod
+    def from_xml_element(cls, element: etree._Element) -> Group:
+        """Construct an object from the given XML element."""
+        return super().from_xml_element(element)  # type:ignore[return-value]
 
     def _extract_value(self, element):
         prop = select_property_loader(element)
@@ -87,7 +98,9 @@ class Domain(XMLDictProxy):
 
 
 class _DomainEnums(XMLDictProxy):
-    _extract_value = EnumerationPropertyType.from_xml_element  # type: ignore[assignment]
+    _extract_value = (
+        EnumerationPropertyType.from_xml_element  # type: ignore[assignment]
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -148,9 +161,8 @@ class PVMTExtension(XMLDictProxy):
         else:
             if not create:
                 raise exceptions.GroupNotAppliedError(
-                    "Property value group {} was not applied to this element".format(
-                        groupname
-                    )
+                    f"Property value group {groupname} was not "
+                    "applied to this element"
                 ) from None
             child = AppliedPropertyValueGroup.applyto(self, element, groupname)
 

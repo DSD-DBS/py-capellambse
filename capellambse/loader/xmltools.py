@@ -9,6 +9,7 @@ import collections.abc as cabc
 import datetime
 import enum
 import math
+import re
 import sys
 import typing as t
 
@@ -111,7 +112,8 @@ class AttributeProperty:
                     self.default.format(self=obj, xml=xml_element)
                 )
             raise TypeError(
-                f"Mandatory XML attribute {self.attribute!r} not found on {xml_element!r}"
+                f"Mandatory XML attribute {self.attribute!r} not found on"
+                f" {xml_element!r}"
             ) from None
 
         sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
@@ -121,7 +123,8 @@ class AttributeProperty:
         xml_element = getattr(obj, self.xmlattr)
         if not self.writable and xml_element.get(self.attribute) is not None:
             raise TypeError(
-                f"Cannot set attribute {self.__name__!r} on {type(obj).__name__!r} objects"
+                f"Cannot set attribute {self.__name__!r} on"
+                f" {type(obj).__name__!r} objects"
             )
 
         if value == self.default:
@@ -148,7 +151,8 @@ class AttributeProperty:
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
             raise TypeError(
-                f"Cannot delete attribute {self.__name__!r} on {type(obj).__name__!r} objects"
+                f"Cannot delete attribute {self.__name__!r} on"
+                f" {type(obj).__name__!r} objects"
             )
 
         xml_element = getattr(obj, self.xmlattr)
@@ -295,20 +299,21 @@ class BooleanAttributeProperty(AttributeProperty):
 class DatetimeAttributeProperty(AttributeProperty):
     """An AttributeProperty that stores a datetime.
 
-    The value stored in the XML will be formatted according to the
-    ``format`` given to the constructor. When loading a value, it must
-    strictly be parsable with the same format, otherwise an exception
-    will be raised.
+    The value stored in the XML will be formatted as required by
+    Capella. This format is the ISO8601 format with millisecond
+    precision, but no ``:`` in the time zone specification.
     """
 
     __slots__ = ("format",)
+
+    re_set = re.compile(r"(?<=[+-]\d\d):(?=\d\d$)")
+    re_get = re.compile(r"(?<=[+-]\d\d)(?=\d\d$)")
 
     def __init__(
         self,
         xmlattr: str,
         attribute: str,
         *,
-        format: str,
         optional: bool = True,
         writable: bool = True,
         __doc__: str | None = None,
@@ -320,7 +325,6 @@ class DatetimeAttributeProperty(AttributeProperty):
             writable=writable,
             __doc__=__doc__,
         )
-        self.format = format
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> DatetimeAttributeProperty:
@@ -339,7 +343,8 @@ class DatetimeAttributeProperty(AttributeProperty):
         formatted = super().__get__(obj, objtype)
         if formatted is None:
             return None
-        return datetime.datetime.strptime(formatted, self.format)
+        formatted = self.re_get.sub(":", formatted)
+        return datetime.datetime.fromisoformat(formatted)
 
     def __set__(self, obj, value) -> None:
         if value is None:
@@ -347,7 +352,10 @@ class DatetimeAttributeProperty(AttributeProperty):
         elif isinstance(value, datetime.datetime):
             if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
                 value = value.astimezone()
-            super().__set__(obj, value.strftime(self.format))
+
+            formatted = value.isoformat("T", "milliseconds")
+            formatted = self.re_set.sub("", formatted)
+            super().__set__(obj, formatted)
         else:
             raise TypeError(f"Expected datetime, not {type(value).__name__}")
 
@@ -403,7 +411,7 @@ class EnumAttributeProperty(AttributeProperty):
         """
         if not (isinstance(enumcls, type) and issubclass(enumcls, enum.Enum)):
             raise TypeError(
-                "enumcls must be an Enum subclass, not {!r}".format(enumcls)
+                f"enumcls must be an Enum subclass, not {enumcls!r}"
             )
 
         if default is None or isinstance(default, enumcls):
@@ -412,7 +420,8 @@ class EnumAttributeProperty(AttributeProperty):
             default = enumcls[default]
         else:
             raise TypeError(
-                f"default must be a member (or its name) of {enumcls!r}, not {default!r}"
+                f"default must be a member (or its name) of {enumcls!r},"
+                f" not {default!r}"
             )
         super().__init__(
             xmlattr, attribute, *args, optional=True, default=default, **kw
@@ -482,7 +491,7 @@ class XMLDictProxy(cabc.MutableMapping):
             Reference to the original MelodyLoader.  If not None, the
             loader will be informed about element creation and deletion.
         """
-        super().__init__(*args, **kwargs)  # type: ignore[call-arg]
+        super().__init__(*args, **kwargs)
         self.__childtag = childtag
         self.__keyattr = keyattr
         self.model = model

@@ -17,10 +17,10 @@ import capellambse
 
 # -- Project information -----------------------------------------------------
 
-try:
+if sys.version_info >= (3, 11):
     import tomllib
-except ImportError:
-    import tomli as tomllib  # type: ignore[no-redef]
+else:
+    import tomli as tomllib
 with open("../../pyproject.toml", "rb") as f:
     _metadata = tomllib.load(f)["project"]
 
@@ -84,6 +84,7 @@ napoleon_include_init_with_doc = True
 
 # -- Options for Intersphinx output ------------------------------------------
 intersphinx_mapping = {
+    "lxml": ("https://lxml.de/apidoc/", None),
     "python": ("https://docs.python.org/3", None),
 }
 

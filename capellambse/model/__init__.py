@@ -4,7 +4,7 @@
 """Implements a high-level interface to Capella projects."""
 from __future__ import annotations
 
-__all__ = ["MelodyModel"]
+__all__ = ["ElementList", "GenericElement", "MelodyModel"]
 
 import collections.abc as cabc
 import logging
@@ -24,6 +24,9 @@ from . import common, diagram  # isort:skip
 
 # Architectural Layers
 from .layers import oa, ctx, la, pa  # isort:skip
+
+# Exports
+from .common import ElementList, GenericElement  # isort:skip
 
 LOGGER = logging.getLogger(__name__)
 XT_PROJECT = "org.polarsys.capella.core.data.capellamodeller:Project"
@@ -74,6 +77,7 @@ class MelodyModel:
         jupyter_untrusted: bool = False,
         **kwargs: t.Any,
     ) -> None:
+        # pylint: disable=line-too-long
         """Load a project.
 
         For complete information on which exact ``kwargs`` are
@@ -197,6 +201,7 @@ class MelodyModel:
         capellambse.loader.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
+        # pylint: enable=line-too-long
         capellambse.load_model_extensions()
 
         self._loader = loader.MelodyLoader(path, **kwargs)
@@ -240,6 +245,7 @@ class MelodyModel:
         return self
 
     def save(self, **kw: t.Any) -> None:
+        # pylint: disable=line-too-long
         """Save the model back to where it was loaded from.
 
         Parameters
@@ -264,6 +270,7 @@ class MelodyModel:
         always leave the ``update_cache`` parameter at its default value
         of ``True`` if you intend to save changes.
         """
+        # pylint: enable=line-too-long
         self._loader.save(**kw)
 
     def search(

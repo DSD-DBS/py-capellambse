@@ -67,6 +67,7 @@ If you want a quickstart at how to use this package, head right into the
    :caption: Development
    :maxdepth: 2
 
+   development/low-level-api
    development/how-to-explore-capella-mm
    development/developing-docs
    development/repl

@@ -30,7 +30,10 @@ GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
 #: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
 
-PLUGIN_PATH = "/plugin/org.polarsys.capella.core.sirius.analysis/description/context.odesign#/"
+PLUGIN_PATH = (
+    "/plugin/org.polarsys.capella.core.sirius.analysis"
+    "/description/context.odesign#/"
+)
 
 _TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
 
@@ -240,7 +243,7 @@ def _set_composite_filter(
         return
     if not hasattr(dgobject, "_compfilters"):
         dgobject._compfilters = []  # type: ignore[union-attr]
-    dgobject._compfilters.append((flttype, phase2))  # type: ignore[union-attr]
+    dgobject._compfilters.append((flttype, phase2))
 
 
 def _extract_filter_type(flt_elm: etree._Element) -> str:

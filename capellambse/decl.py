@@ -29,6 +29,7 @@ import dataclasses
 import os
 import sys
 import typing as t
+import warnings
 
 import yaml
 
@@ -134,9 +135,18 @@ def _operate_create(
     parent: capellambse.ModelObject,
     creations: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
-    for attr, value in creations.items():
+    warnings.warn("Use 'extend' instead of 'create' in declarative YAML")
+    yield from _operate_extend(promises, parent, creations)
+
+
+def _operate_extend(
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    extensions: dict[str, t.Any],
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
+    for attr, value in extensions.items():
         if not isinstance(value, cabc.Iterable):
-            raise TypeError("values below `create:*:` must be lists")
+            raise TypeError("values below `extend:*:` must be lists")
 
         yield from _create_complex_objects(promises, parent, attr, value)
 
@@ -227,6 +237,7 @@ class _UnresolvablePromise(BaseException):
 _OPERATIONS = collections.OrderedDict(
     (
         ("create", _operate_create),
+        ("extend", _operate_extend),
         ("modify", _operate_modify),
         ("delete", _operate_delete),
     )
@@ -261,7 +272,7 @@ def _create_complex_objects(
             try:
                 obj = _resolve(promises, parent, child)
             except _UnresolvablePromise as p:
-                yield p.args[0], {"parent": parent, "create": {attr: [child]}}
+                yield p.args[0], {"parent": parent, "extend": {attr: [child]}}
             else:
                 target.append(obj)
         elif isinstance(child, str):
@@ -296,7 +307,7 @@ def _create_complex_object(
             else:
                 simple_attrs[k] = _resolve(promises, parent, v)
     except _UnresolvablePromise as p:
-        yield (p.args[0], {"parent": parent, "create": {attr: [obj_desc]}})
+        yield (p.args[0], {"parent": parent, "extend": {attr: [obj_desc]}})
         return
     assert isinstance(target, common.ElementListCouplingMixin)
     obj = target.create(*type_hint, **simple_attrs)

@@ -167,7 +167,7 @@ class EnumerationPropertyValue(GenericPropertyValue):
         super().__init__(*args, **kwargs)
         self.typedef = typedef
 
-    @property  # type: ignore[override]  # FIXME: what's the type?
+    @property  # FIXME: what's the type?
     def parent(self):
         """Return the parent group of this property value."""
         return self._parent

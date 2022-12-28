@@ -73,6 +73,7 @@ class LogicalComponent(cs.Component):
     )
 
     components: c.Accessor
+    functions = c.DeprecatedAccessor[LogicalFunction]("allocated_functions")
 
 
 @c.xtype_handler(XT_ARCH)
@@ -207,7 +208,7 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
 
     diagrams = diagram.DiagramAccessor(
         "Logical Architecture", cacheattr="_MelodyModel__diagram_cache"
-    )  # type: ignore[assignment]
+    )
 
 
 c.set_accessor(

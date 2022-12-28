@@ -14,6 +14,8 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
+from lxml import etree
+
 from capellambse.loader import xmltools
 
 from ... import common as c
@@ -53,6 +55,27 @@ class Unit(c.GenericElement):
     """Unit."""
 
     _xmltag = "ownedUnits"
+
+
+@c.xtype_handler(None)
+class Association(c.GenericElement):
+    """An Association."""
+
+    _xmltag = "ownedAssociations"
+
+    navigable_members: c.Accessor[Property]
+    source_role: c.Accessor[Property]
+
+    @property
+    def roles(self) -> c.ElementList[Property]:
+        roles = []
+        if self.source_role:
+            assert isinstance(self.source_role, c.GenericElement)
+            roles.append(self.source_role._element)
+
+        assert isinstance(self.navigable_members, c.ElementList)
+        roles.extend(prop._element for prop in self.navigable_members)
+        return c.ElementList(self._model, roles, Property)
 
 
 @c.xtype_handler(None)
@@ -99,6 +122,12 @@ class Property(c.GenericElement):
     visibility = xmltools.EnumAttributeProperty(
         "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
+    kind = xmltools.EnumAttributeProperty(
+        "_element",
+        "aggregationKind",
+        modeltypes.AggregationKind,
+        default="UNSET",
+    )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     default_value = c.RoleTagAccessor("ownedDefaultValue")
     min = c.RoleTagAccessor("ownedMinValue")
@@ -106,6 +135,7 @@ class Property(c.GenericElement):
     null_value = c.RoleTagAccessor("ownedNullValue")
     min_card = c.RoleTagAccessor("ownedMinCard")
     max_card = c.RoleTagAccessor("ownedMaxCard")
+    association = c.ReferenceSearchingAccessor(Association, "roles")
 
 
 @c.xtype_handler(None)
@@ -147,6 +177,16 @@ class Class(c.GenericElement):
             if self.super is not None
             else self.owned_properties
         )
+
+
+@c.xtype_handler(None)
+class InformationRealization(c.GenericElement):
+    """A realization for a Class."""
+
+    _xmltag = "ownedInformationRealizations"
+
+    source = c.AttrProxyAccessor(Class, "sourceElement")
+    target = c.AttrProxyAccessor(Class, "targetElement")
 
 
 @c.xtype_handler(None)
@@ -225,8 +265,8 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
         "super",
-        c.LinkAccessor(  # FIXME fill in tag
-            None, capellacore.Generalization, attr="super"
+        c.LinkAccessor(
+            "ownedGeneralizations", capellacore.Generalization, attr="super"
         ),
     )
     c.set_accessor(
@@ -244,3 +284,31 @@ c.set_accessor(
     DataPkg, "packages", c.DirectProxyAccessor(DataPkg, aslist=c.ElementList)
 )
 c.set_accessor(ExchangeItemElement, "owner", c.ParentAccessor(ExchangeItem))
+c.set_accessor(
+    Association,
+    "navigable_members",
+    c.AttrProxyAccessor(Property, "navigableMembers", aslist=c.ElementList),
+)
+c.set_accessor(Association, "source_role", c.DirectProxyAccessor(Property))
+c.set_accessor(
+    Class,
+    "realized_classes",
+    c.LinkAccessor[Class](
+        "ownedInformationRealizations",
+        InformationRealization,
+        aslist=c.ElementList,
+        attr="targetElement",
+    ),
+)
+c.set_accessor(
+    Class,
+    "realizations",
+    c.DirectProxyAccessor(InformationRealization, aslist=c.ElementList),
+)
+c.set_accessor(
+    Class,
+    "realized_by",
+    c.ReferenceSearchingAccessor(
+        Class, "realized_classes", aslist=c.ElementList
+    ),
+)

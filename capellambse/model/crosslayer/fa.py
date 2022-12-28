@@ -26,7 +26,10 @@ from . import capellacommon, capellacore, information, interaction
 if t.TYPE_CHECKING:
     from . import cs
 
-XT_COMP_EX_FNC_EX_ALLOC = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
+XT_COMP_EX_FNC_EX_ALLOC = (
+    "org.polarsys.capella.core.data.fa"
+    ":ComponentExchangeFunctionalExchangeAllocation"
+)
 XT_COMP_EX_ALLOC = (
     "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
 )
@@ -46,27 +49,8 @@ class AbstractExchange(c.GenericElement):
     source = c.AttrProxyAccessor(c.GenericElement, "source")
     target = c.AttrProxyAccessor(c.GenericElement, "target")
 
-    @property
-    def source_port(self) -> c.GenericElement:
-        import warnings
-
-        warnings.warn(
-            "source_port is deprecated, use source instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.source
-
-    @property
-    def target_port(self) -> c.GenericElement:
-        import warnings
-
-        warnings.warn(
-            "target_port is deprecated, use target instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.target
+    source_port = c.DeprecatedAccessor[c.GenericElement]("source")
+    target_port = c.DeprecatedAccessor[c.GenericElement]("target")
 
     def __dir__(self) -> list[str]:
         attrs = list(super().__dir__())
@@ -228,21 +212,13 @@ class ComponentExchange(AbstractExchange):
         "convoyedInformations",
         aslist=c.ElementList,
     )
+    func_exchanges = c.DeprecatedAccessor[FunctionalExchange](
+        "allocated_functional_exchanges"
+    )
 
     @property
     def owner(self) -> cs.PhysicalLink | cs.PhysicalPath | None:
         return self.allocating_physical_link or self.allocating_physical_path
-
-    @property
-    def func_exchanges(self) -> c.ElementList[FunctionalExchange]:
-        import warnings
-
-        warnings.warn(
-            "func_exchanges is deprecated, use allocated_functional_exchanges instead",
-            FutureWarning,
-            stacklevel=2,
-        )
-        return self.allocated_functional_exchanges
 
     @property
     def exchange_items(

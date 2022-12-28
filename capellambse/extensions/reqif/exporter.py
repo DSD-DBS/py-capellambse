@@ -79,7 +79,7 @@ def export_module(
     if not isinstance(target, (str, os.PathLike)):
         ctx: t.ContextManager[t.IO[bytes]] = contextlib.nullcontext(target)
     else:
-        ctx = open(target, "wb")  # pylint: disable=consider-using-with
+        ctx = open(target, "wb")
 
     with contextlib.ExitStack() as stack:
         container = stack.enter_context(ctx)

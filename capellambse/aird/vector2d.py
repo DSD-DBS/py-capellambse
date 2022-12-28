@@ -34,7 +34,7 @@ class Vector2D(t.NamedTuple):
     def __add__(self, other: Vec2ish) -> Vector2D:  # type: ignore[override]
         return self.__map2(operator.add, other)
 
-    def __radd__(self, other: Vec2ish) -> Vector2D:  # type: ignore[misc]
+    def __radd__(self, other: Vec2ish) -> Vector2D:
         return self.__map2(operator.add, other, True)
 
     def __sub__(self, other: Vec2ish) -> Vector2D:

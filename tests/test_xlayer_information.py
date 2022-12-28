@@ -28,7 +28,7 @@ def test_generalizations(
     model: MelodyModel, name: str, super_name: str, expected_type: str
 ):
     objects_of_type = model.search(expected_type)
-    obj = objects_of_type.by_name(name)  # type: ignore[assignment]
+    obj = objects_of_type.by_name(name)
     super_obj = objects_of_type.by_name(super_name)
 
     obj_type: str = obj.xtype  # type: ignore[assignment]
@@ -97,7 +97,9 @@ def test_object_has_type(
 
 class TestClasses:
     def test_class_owns_stm(self, model: MelodyModel):
-        elm: Class = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")  # type: ignore[assignment]
+        elm: Class = model.by_uuid(
+            "959b5222-7717-4ee9-bd3a-f8a209899464"
+        )  # type: ignore[assignment]
 
         assert elm.xtype.endswith("Class")
         assert hasattr(elm, "state_machines")

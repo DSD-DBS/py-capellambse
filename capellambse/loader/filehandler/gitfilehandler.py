@@ -256,7 +256,8 @@ class _GitTransaction:
 
         if _git_object_name.search(targetref):
             raise ValueError(
-                f"Target ref looks like a git object, use a different remote_branch: {targetref}"
+                "Target ref looks like a git object, use a different"
+                f" remote_branch: {targetref}"
             )
         if not targetref.startswith("refs/heads/"):
             targetref = "refs/heads/" + targetref

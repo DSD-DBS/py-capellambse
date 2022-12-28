@@ -11,7 +11,10 @@ from capellambse import aird, helpers, model
 
 from . import FilterArguments, composite, global_filter
 
-XT_CEX_FEX_ALLOCATION = "org.polarsys.capella.core.data.fa:ComponentExchangeFunctionalExchangeAllocation"
+XT_CEX_FEX_ALLOCATION = (
+    "org.polarsys.capella.core.data.fa"
+    ":ComponentExchangeFunctionalExchangeAllocation"
+)
 EXCHANGES_WITH_ROLES = frozenset(
     {"Aggregation", "Association", "Composition", "Generalization"}
 )

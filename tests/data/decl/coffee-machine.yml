@@ -1,14 +1,14 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-- parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440  # root logical component
-  create:
+- parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440 # root logical component
+  extend:
     components:
       - name: Coffee Machine
         allocated_functions:
           - !promise brew coffee
-- parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d  # root logical function
-  create:
+- parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d # root logical function
+  extend:
     functions:
       - name: brew coffee
         promise_id: brew coffee

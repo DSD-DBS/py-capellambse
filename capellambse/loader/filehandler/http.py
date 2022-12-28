@@ -147,7 +147,8 @@ class HTTPFileHandler(FileHandler):
         """
         if not isinstance(path, str):
             raise TypeError(
-                f"HTTPFileHandler requires a str path, not {type(path).__name__}"
+                "HTTPFileHandler requires a str path, not"
+                f" {type(path).__name__}"
             )
         if bool(username) != bool(password):
             raise ValueError(

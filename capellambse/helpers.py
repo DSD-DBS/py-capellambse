@@ -648,15 +648,12 @@ def get_transformation(
     size
         Size vector
     """
-    tranformation = dict(
-        ChoicePseudoState="translate({tx},{ty}) scale({s}) rotate(45,{rx},{ry})",
-    )
-    if class_ not in tranformation:
+    if class_ != "ChoicePseudoState":
         return {}
 
     s = 0.725
     tx, ty = (1 - s) * pos[0] + 6, (1 - s) * pos[1] + 5
     rx, ry = pos[0] + size[0] / 2, pos[1] + size[1] / 2
-    return dict(
-        transform=tranformation[class_].format(tx=tx, ty=ty, s=s, rx=rx, ry=ry)
-    )
+    return {
+        "transform": f"translate({tx},{ty}) scale({s}) rotate(45,{rx},{ry})"
+    }

@@ -36,6 +36,16 @@ class AbstractStateMode(c.GenericElement):
 class State(AbstractStateMode):
     """A state."""
 
+    entries = c.AttrProxyAccessor(
+        c.GenericElement, "entry", aslist=c.MixedElementList
+    )
+    do_activity = c.AttrProxyAccessor(
+        c.GenericElement, "doActivity", aslist=c.MixedElementList
+    )
+    exits = c.AttrProxyAccessor(
+        c.GenericElement, "exit", aslist=c.MixedElementList
+    )
+
 
 @c.xtype_handler(None)
 class Mode(AbstractStateMode):
@@ -97,6 +107,9 @@ class StateTransition(c.GenericElement):
     triggers = c.AttrProxyAccessor(
         c.GenericElement, "triggers", aslist=c.MixedElementList
     )
+    effects = c.AttrProxyAccessor(
+        c.GenericElement, "effect", aslist=c.MixedElementList
+    )
     guard = c.AttrProxyAccessor(capellacore.Constraint, "guard")
 
 
@@ -108,8 +121,13 @@ class GenericTrace(c.GenericElement):
     target = c.AttrProxyAccessor(c.GenericElement, attr="targetElement")
 
     @property
-    def name(self) -> str:  # type: ignore
-        return f"[{self.__class__.__name__}] to {self.target.name} ({self.target.uuid})"
+    def name(self) -> str:  # type: ignore[override]
+        """Return the name."""
+        direction = ""
+        if self.target is not None:
+            direction = f" to {self.target.name} ({self.target.uuid})"
+
+        return f"[{type(self).__name__}]{direction}"
 
 
 c.set_accessor(
