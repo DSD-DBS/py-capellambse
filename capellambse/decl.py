@@ -207,7 +207,16 @@ def _operate_modify(
             except _UnresolvablePromise as p:
                 yield p.args[0], {"parent": parent, "modify": {attr: value}}
                 continue
-        setattr(parent, attr, value)
+
+        if isinstance(value, list):
+            delattr(parent, attr)
+            yield from _create_complex_objects(promises, parent, attr, value)
+        elif isinstance(value, dict):
+            obj = getattr(parent, attr)
+            for k, v in value.items():
+                setattr(obj, k, v)
+        else:
+            setattr(parent, attr, value)
 
 
 def _resolve(
@@ -268,7 +277,9 @@ def _create_complex_objects(
             f" {type(parent).__name__}.{attr} is not model-coupled"
         )
     for child in objs:
-        if isinstance(child, (list, Promise, UUIDReference)):
+        if isinstance(
+            child, (common.GenericElement, list, Promise, UUIDReference)
+        ):
             try:
                 obj = _resolve(promises, parent, child)
             except _UnresolvablePromise as p:
