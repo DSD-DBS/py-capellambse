@@ -59,8 +59,8 @@ def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
     It should contain a dictionary with the keyword arguments to
     :class:`capellambse.MelodyModel` - specifically it needs a ``path``,
     an ``entrypoint``, and any additional arguments that the underlying
-    :class:`capellambse.loader.filehandler.FileHandler` might need to
-    gain access to the model.
+    :class:`capellambse.filehandler.FileHandler` might need to gain
+    access to the model.
 
     Be aware that relative paths in the JSON will be interpreted
     relative to the current working directory.

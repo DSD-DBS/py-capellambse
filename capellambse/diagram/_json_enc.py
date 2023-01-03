@@ -10,31 +10,31 @@ import collections.abc as cabc
 import json
 import typing as t
 
-from capellambse import aird
+from capellambse import diagram
 
-_CSSStyle = t.Union[aird.RGB, t.Iterable[t.Union[aird.RGB, str]], str]
+_CSSStyle = t.Union[diagram.RGB, t.Iterable[t.Union[diagram.RGB, str]], str]
 
 
 class DiagramJSONEncoder(json.JSONEncoder):
     """JSON encoder that knows how to handle AIRD diagrams."""
 
     def default(self, o: object) -> object:
-        if isinstance(o, aird.Diagram):
+        if isinstance(o, diagram.Diagram):
             return self.__encode_diagram(o)
-        if isinstance(o, aird.Box):
+        if isinstance(o, diagram.Box):
             return self.__encode_box(o)
-        if isinstance(o, aird.Edge):
+        if isinstance(o, diagram.Edge):
             return self.__encode_edge(o)
-        if isinstance(o, aird.Circle):
+        if isinstance(o, diagram.Circle):
             return self.__encode_circle(o)
-        if isinstance(o, aird.RGB):
+        if isinstance(o, diagram.RGB):
             return str(o)
         if isinstance(o, cabc.Sequence):
             return list(o)
         return super().default(o)
 
     @staticmethod
-    def __encode_diagram(o: aird.Diagram) -> object:
+    def __encode_diagram(o: diagram.Diagram) -> object:
         return {
             "name": o.name,
             "uuid": o.uuid,
@@ -55,11 +55,11 @@ class DiagramJSONEncoder(json.JSONEncoder):
         }
 
     @staticmethod
-    def __encode_box(o: aird.Box) -> object:
+    def __encode_box(o: diagram.Box) -> object:
         children = [
             c.uuid
             for c in o.children
-            if isinstance(c, aird.Box) and not c.port
+            if isinstance(c, diagram.Box) and not c.port
         ]
         ports = [p.uuid for p in o.children if p.port]
         jsonobj: dict[str, object] = {
@@ -88,7 +88,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
         return jsonobj
 
     @staticmethod
-    def __encode_edge(o: aird.Edge) -> object:
+    def __encode_edge(o: diagram.Edge) -> object:
         jsonobj: dict[str, object] = {
             "type": o.JSON_TYPE,
             "id": o.uuid,
@@ -102,7 +102,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
         return jsonobj
 
     @staticmethod
-    def __encode_circle(o: aird.Circle) -> object:
+    def __encode_circle(o: diagram.Circle) -> object:
         jsonobj: dict[str, object] = {
             "type": o.JSON_TYPE,
             "id": o.uuid,
@@ -115,7 +115,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
         return jsonobj
 
 
-def _encode_label(o: aird.Box | str) -> object:
+def _encode_label(o: diagram.Box | str) -> object:
     if isinstance(o, str):
         return o
     return {
@@ -138,7 +138,7 @@ def _encode_styleoverrides(
 
 
 def _encode_style(style: _CSSStyle) -> object:
-    if isinstance(style, aird.RGB):
+    if isinstance(style, diagram.RGB):
         return str(style)
     if isinstance(style, (list, tuple)):
         return [_encode_style(i) for i in style]

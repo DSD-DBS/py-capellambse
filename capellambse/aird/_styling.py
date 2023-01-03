@@ -10,7 +10,7 @@ import typing as t
 
 import lxml.etree
 
-from capellambse import aird
+from capellambse import diagram
 
 from ._common import LOGGER
 
@@ -19,7 +19,7 @@ def apply_style_overrides(
     diagram_class: str | None,
     element_class: str,
     ostyle: lxml.etree._Element,
-) -> dict[str, str | aird.RGB | list[str | aird.RGB]]:
+) -> dict[str, str | diagram.RGB | list[str | diagram.RGB]]:
     """Apply style overrides defined in the AIRD to a semantic element.
 
     Parameters
@@ -33,16 +33,18 @@ def apply_style_overrides(
         An ownedStyle element.
     """
 
-    def _to_rgb(ostyle: lxml.etree._Element, attrib: str) -> aird.RGB | None:
+    def _to_rgb(
+        ostyle: lxml.etree._Element, attrib: str
+    ) -> diagram.RGB | None:
         color = ostyle.get(attrib)
         if color is not None:
-            color = aird.RGB.fromcsv(color)
+            color = diagram.RGB.fromcsv(color)
         return color
 
     if diagram_class is None:
         return {}
 
-    styleoverrides: dict[str, aird.CSSdef] = {}
+    styleoverrides: dict[str, diagram.CSSdef] = {}
 
     # Background color
     color = _to_rgb(ostyle, "color")
@@ -51,8 +53,8 @@ def apply_style_overrides(
     if color:
         styleoverrides["fill"] = color
     elif bgcolor or fgcolor:
-        bgcolor = bgcolor or aird.RGB(255, 255, 255)
-        fgcolor = fgcolor or aird.RGB(209, 209, 209)
+        bgcolor = bgcolor or diagram.RGB(255, 255, 255)
+        fgcolor = fgcolor or diagram.RGB(209, 209, 209)
 
         if bgcolor == fgcolor:
             styleoverrides["fill"] = bgcolor
@@ -81,7 +83,7 @@ def apply_style_overrides(
 
 def apply_visualelement_styles(
     diagram_class: str, element_class: str, data_element: lxml.etree._Element
-) -> dict[str, str | aird.RGB | list[str | aird.RGB]]:
+) -> dict[str, str | diagram.RGB | list[str | diagram.RGB]]:
     """Apply style overrides defined in the AIRD to a visual element.
 
     Parameters
@@ -96,9 +98,9 @@ def apply_visualelement_styles(
     """
     styleoverrides: dict[str, t.Any] = {}
 
-    def unpack_rgb(color: str, default: int) -> aird.RGB:
+    def unpack_rgb(color: str, default: int) -> diagram.RGB:
         color_int = int(data_element.get(color, default))
-        return aird.RGB(
+        return diagram.RGB(
             *struct.unpack_from("3Bx", struct.pack("<i", color_int))
         )
 
@@ -118,7 +120,7 @@ def _filter_default_styles(
     diagram_class: str,
     element_class: str,
     styleoverrides: cabc.Mapping[str, t.Any],
-) -> dict[str, str | aird.RGB | list[str | aird.RGB]]:
+) -> dict[str, str | diagram.RGB | list[str | diagram.RGB]]:
     def style_is_default(key: str, val: t.Any) -> bool:
         for dia_lookup, elm_lookup in [
             (diagram_class, element_class),
@@ -126,7 +128,7 @@ def _filter_default_styles(
             (diagram_class, element_class.split(".")[0]),
             ("__GLOBAL__", element_class.split(".")[0]),
         ]:
-            defstyle = aird.STYLES.get(dia_lookup, {}).get(elm_lookup, {})
+            defstyle = diagram.STYLES.get(dia_lookup, {}).get(elm_lookup, {})
             try:
                 return defstyle[key] == val
             except KeyError:
