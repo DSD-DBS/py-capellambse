@@ -103,19 +103,19 @@ class CapabilityRealization(c.GenericElement):
         fa.FunctionalChain, aslist=c.ElementList
     )
     involved_functions = c.LinkAccessor[LogicalFunction](
-        None,  # FIXME fill in tag
-        interaction.XT_CAP2ACT,
+        "ownedAbstractFunctionAbstractCapabilityInvolvements",
+        interaction.AbstractFunctionAbstractCapabilityInvolvement,
         aslist=c.ElementList,
         attr="involved",
     )
     involved_chains = c.LinkAccessor[fa.FunctionalChain](
-        None,  # FIXME fill in tag
+        "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.XT_CAP2PROC,
         aslist=c.ElementList,
         attr="involved",
     )
     involved_components = c.LinkAccessor[LogicalComponent](
-        None,  # FIXME fill in tag
+        "ownedCapabilityInvolvements",
         ctx.CapabilityInvolvement,
         aslist=c.MixedElementList,
         attr="involved",
