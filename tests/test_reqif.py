@@ -59,7 +59,7 @@ display here as that</p>
         ),
         pytest.param(
             (
-                "<DateValueAttribute 'AttrDef'"
+                "<DateValueAttribute [AttrDef] 2021-07-23T15:00:00+02:00"
                 " (b97c09b5-948a-46e8-a656-69d764ddce7d)>"
             ),
             id="Definition ReqIFLongName",
@@ -222,6 +222,49 @@ class TestRequirementAttributes:
 
         actual_values = [req.long_name for req in req2.attributes[0].values]
         assert actual_values == ["enum_val1", "enum_val2"]
+
+    @pytest.mark.parametrize(
+        ["uuid", "description"],
+        [
+            (
+                "9c692405-b8aa-4caa-b988-51d27db5cd1b",
+                "BooleanValueAttribute [AttrDef] True",
+            ),
+            (
+                "b97c09b5-948a-46e8-a656-69d764ddce7d",
+                "DateValueAttribute [AttrDef] 2021-07-23T15:00:00+02:00",
+            ),
+            (
+                "85dfd42c-7f6e-4236-a181-bdd784040431",
+                "IntegerValueAttribute [AttrDef] 10",
+            ),
+            (
+                "d2231d14-854d-4625-b48b-6cf1c2554367",
+                "RealValueAttribute [AttrDef] 10.5",
+            ),
+            (
+                "ee8a69ef-61b9-4db9-9a0f-628e5d4704e1",
+                "StringValueAttribute [AttrDef] 'Test'",
+            ),
+            (
+                "dcb8614e-2d1c-4cb3-aa0c-667a297e7489",
+                "BooleanValueAttribute [Boolean Value Attribute] False",
+            ),
+            (
+                "148bdf2f-6dc2-4a83-833b-596886ce5b07",
+                (
+                    "EnumerationValueAttribute [MultiEnum]"
+                    " ['enum_val1', 'enum_val2']"
+                ),
+            ),
+        ],
+    )
+    def test_repr_shows_value(
+        self, model: capellambse.MelodyModel, uuid: str, description: str
+    ) -> None:
+        attribute = model.by_uuid(uuid)
+
+        assert repr(attribute) == f"<{description} ({uuid})>"
 
 
 class TestRequirementRelations:

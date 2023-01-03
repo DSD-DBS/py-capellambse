@@ -333,7 +333,7 @@ class DatetimeAttributeProperty(AttributeProperty):
     @t.overload
     def __get__(
         self, obj: t.Any, objtype: type | None = None
-    ) -> datetime.datetime:
+    ) -> datetime.datetime | None:
         ...
 
     def __get__(self, obj, objtype=None):

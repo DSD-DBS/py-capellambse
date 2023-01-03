@@ -115,9 +115,10 @@ class AbstractRequirementsAttribute(c.GenericElement):
     def _short_repr_(self) -> str:
         mytype = type(self).__name__
         if self.definition is not None:
-            return f"<{mytype} {self.definition.long_name!r} ({self.uuid})>"
-        default_name = re.sub(r"(?<!^)([A-Z])", r" \1", mytype)
-        return f"<{mytype} [{default_name}] ({self.uuid})>"
+            defname = self.definition.long_name
+        else:
+            defname = re.sub(r"(?<!^)([A-Z])", r" \1", mytype)
+        return f"<{mytype} [{defname}] {self._repr_value()} ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
@@ -125,6 +126,9 @@ class AbstractRequirementsAttribute(c.GenericElement):
         else:
             name = markupsafe.Markup.escape("None")
         return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
+
+    def _repr_value(self) -> str:
+        return repr(self.value)
 
 
 class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
@@ -171,6 +175,11 @@ class DateValueAttribute(AbstractRequirementsAttribute):
     value = xmltools.DatetimeAttributeProperty(
         "_element", "value", optional=True
     )
+
+    def _repr_value(self) -> str:
+        if self.value is None:
+            return "None"
+        return self.value.isoformat()
 
 
 @c.xtype_handler(None)
@@ -256,6 +265,9 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
         if len(vals) == 1:
             return vals[0]
         return None  # TODO return a default value?
+
+    def _repr_value(self) -> str:
+        return repr([i.long_name for i in self.values])
 
 
 @c.attr_equal("long_name")
