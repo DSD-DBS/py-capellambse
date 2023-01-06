@@ -458,6 +458,9 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __set__(
         self, obj: element.ModelObject, value: str | T | cabc.Iterable[str | T]
     ) -> None:
+        if getattr(obj, "_constructed", True):
+            sys.audit("capellambse.setattr", obj, self.__name__, value)
+
         if self.aslist:
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
                 raise TypeError("Can only set list attribute to an iterable")
@@ -565,6 +568,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         obj: element.ModelObject,
     ) -> None:
         assert obj._model is elmlist._model
+
         elmlist._model._loader.idcache_remove(obj._element)
         elmlist._parent._element.remove(obj._element)
 
@@ -652,6 +656,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return rv
 
     def __set__(self, obj, value):
+        if obj._constructed:
+            sys.audit("capellambse.setattr", obj, self.__name__, value)
         if self.aslist is None:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError(f"{self._qualname} expects a single element")
@@ -817,6 +823,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         obj: element.GenericElement,
         values: T | cabc.Iterable[T],
     ) -> None:
+        if obj._constructed:
+            sys.audit("capellambse.setattr", obj, self.__name__, values)
+
         if not isinstance(values, cabc.Iterable):
             values = (values,)
         elif self.aslist is None:
@@ -1357,6 +1366,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         if not isinstance(index, slice):
             index = slice(index, index + 1 or None)
         for obj in self[index]:
+            sys.audit(
+                "capellambse.delete", obj, accessor.__name__, index.start
+            )
             accessor.delete(self, obj)
         super().__delitem__(index)
 
@@ -1397,7 +1409,13 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create(self, *type_hints, **kw)
-        self._newlist_type().insert(self, len(self), newobj)
+        try:
+            sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
+            acc.insert(self, len(self), newobj)
+            self._newlist_type().insert(self, len(self), newobj)
+        except:
+            self._parent._element.remove(newobj._element)
+            raise
         return newobj
 
     def create_singleattr(self, arg: t.Any) -> T:
@@ -1420,7 +1438,13 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create_singleattr(self, arg)
-        self._newlist_type().insert(self, len(self), newobj)
+        try:
+            sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
+            acc.insert(self, len(self), newobj)
+            self._newlist_type().insert(self, len(self), newobj)
+        except:
+            self._parent._element.remove(newobj._element)
+            raise
         return newobj
 
     def delete_all(self, **kw: t.Any) -> None:
@@ -1440,5 +1464,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
+        if self._parent._constructed:
+            sys.audit(
+                "capellambse.insert", self._parent, acc.__name__, index, value
+            )
         acc.insert(self, index, value)
         self._newlist_type().insert(self, index, value)

@@ -14,8 +14,6 @@ Composite Structure object-relations map (ontology):
 
 import operator
 
-from capellambse.loader import xmltools
-
 from .. import common as c
 from . import capellacommon, fa, information
 
@@ -110,16 +108,14 @@ class PhysicalPath(c.GenericElement):
 class Component(c.GenericElement):
     """A template class for components."""
 
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "abstract",
-        __doc__="Boolean flag for an abstract Component",
+    is_abstract = c.BooleanAttributeProperty(
+        "abstract", __doc__="Boolean flag for an abstract Component"
     )
-    is_human = xmltools.BooleanAttributeProperty(
-        "_element", "human", __doc__="Boolean flag for a human Component"
+    is_human = c.BooleanAttributeProperty(
+        "human", __doc__="Boolean flag for a human Component"
     )
-    is_actor = xmltools.BooleanAttributeProperty(
-        "_element", "actor", __doc__="Boolean flag for an actor Component"
+    is_actor = c.BooleanAttributeProperty(
+        "actor", __doc__="Boolean flag for an actor Component"
     )
 
     owner = c.ParentAccessor(c.GenericElement)

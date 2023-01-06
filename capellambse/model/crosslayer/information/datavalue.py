@@ -1,27 +1,22 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-from capellambse.loader import xmltools
 
 from ... import common as c
 
 
 class LiteralValue(c.GenericElement):
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "abstract",
-        __doc__="Boolean flag, indicates if property is abstract",
+    is_abstract = c.BooleanAttributeProperty(
+        "abstract", __doc__="Indicates if property is abstract"
     )
-    value = xmltools.AttributeProperty(
-        "_element", "value", optional=True, returntype=str
-    )
+    value = c.AttributeProperty("value", optional=True, returntype=str)
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
 
 
 @c.xtype_handler(None)
 class LiteralNumericValue(LiteralValue):
-    value = xmltools.NumericAttributeProperty(
-        "_element", "value", optional=True, allow_float=False
+    value = c.NumericAttributeProperty(
+        "value", optional=True, allow_float=False
     )
     unit = c.AttrProxyAccessor(c.GenericElement, "unit")
 
@@ -60,7 +55,7 @@ class EnumerationLiteral(c.GenericElement):
 
     _xmltag = "ownedLiterals"
 
-    name = xmltools.AttributeProperty("_element", "name", returntype=str)
+    name = c.AttributeProperty("name", returntype=str)
 
     owner: c.Accessor
 
@@ -72,6 +67,6 @@ class EnumerationLiteral(c.GenericElement):
 
 @c.xtype_handler(None)
 class EnumerationReference(c.GenericElement):
-    name = xmltools.AttributeProperty("_element", "name", returntype=str)
+    name = c.AttributeProperty("name", returntype=str)
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     value = c.AttrProxyAccessor(c.GenericElement, "referencedValue")

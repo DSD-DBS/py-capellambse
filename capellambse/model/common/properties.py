@@ -1,10 +1,16 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Useful helpers for making object-oriented XML proxy classes."""
 from __future__ import annotations
 
-import abc
+__all__ = [
+    "AttributeProperty",
+    "BooleanAttributeProperty",
+    "DatetimeAttributeProperty",
+    "EnumAttributeProperty",
+    "HTMLAttributeProperty",
+    "NumericAttributeProperty",
+]
 import collections.abc as cabc
 import datetime
 import enum
@@ -14,9 +20,7 @@ import sys
 import typing as t
 
 import markupsafe
-from lxml import etree
 
-import capellambse.loader
 from capellambse import helpers
 
 
@@ -27,7 +31,6 @@ class AttributeProperty:
         "attribute",
         "default",
         "writable",
-        "xmlattr",
         "returntype",
         "__name__",
         "__objclass__",
@@ -38,7 +41,6 @@ class AttributeProperty:
 
     def __init__(
         self,
-        xmlattr: str,
         attribute: str,
         *,
         returntype: cabc.Callable[[str], t.Any] = str,
@@ -51,9 +53,6 @@ class AttributeProperty:
 
         Parameters
         ----------
-        xmlattr
-            The owning type's instance attribute pointing to the XML
-            element.
         attribute
             The attribute on the XML element to handle.
         returntype
@@ -70,24 +69,15 @@ class AttributeProperty:
         writable
             Whether to allow modifying the XML attribute.
         """
-        import warnings
-
-        warnings.warn(
-            (
-                "The AttributeProperty classes from"
-                " capellambse.loader.xmltools are deprecated, use the new ones"
-                " from capellambse.model instead"
-            ),
-            DeprecationWarning,
-        )
         self.attribute = attribute
         self.writable = writable
-        self.xmlattr = xmlattr
         self.returntype = returntype
         if optional or default is not None:
             self.default = default
         else:
             self.default = self.NOT_OPTIONAL
+
+        self._original_value: t.Any = None
 
         self.__name__ = "(unknown)"
         self.__objclass__: type[t.Any] | None = None
@@ -113,33 +103,49 @@ class AttributeProperty:
         if obj is None:
             return self
 
-        xml_element = getattr(obj, self.xmlattr)
+        rv = self._get(obj)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
+
+    def _get(self, obj):
         try:
-            rv = self.returntype(xml_element.attrib[self.attribute])
+            rv = self.returntype(obj._element.attrib[self.attribute])
         except KeyError:
             if self.default is not self.NOT_OPTIONAL:
                 return self.default and self.returntype(
-                    self.default.format(self=obj, xml=xml_element)
+                    self.default.format(self=obj, xml=obj._element)
                 )
             raise TypeError(
                 f"Mandatory XML attribute {self.attribute!r} not found on"
-                f" {xml_element!r}"
+                f" {obj._element!r}"
             ) from None
-
-        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-        sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(self, obj, value) -> None:
-        xml_element = getattr(obj, self.xmlattr)
-        if not self.writable and xml_element.get(self.attribute) is not None:
+        stringified = self._stringify(obj, value)
+        if obj._constructed:
+            sys.audit(
+                "capellambse.setattr",
+                obj,
+                self.__name__,
+                self._original_value or value,
+            )
+        if stringified is None:
+            self.__delete__(obj)
+        else:
+            obj._element.attrib[self.attribute] = stringified
+
+    def _stringify(self, obj, value) -> str | None:
+        if not self.writable and obj._element.get(self.attribute) is not None:
             raise TypeError(
                 f"Cannot set attribute {self.__name__!r} on"
                 f" {type(obj).__name__!r} objects"
             )
 
         if value == self.default:
-            return self.__delete__(obj)
+            return None
 
         stringified = str(value)
 
@@ -157,7 +163,7 @@ class AttributeProperty:
                 f" {value!r} would be read back as {roundtripped!r}"
             )
 
-        xml_element.attrib[self.attribute] = stringified
+        return stringified
 
     def __delete__(self, obj: t.Any) -> None:
         if not self.writable:
@@ -166,9 +172,8 @@ class AttributeProperty:
                 f" {type(obj).__name__!r} objects"
             )
 
-        xml_element = getattr(obj, self.xmlattr)
         try:
-            del xml_element.attrib[self.attribute]
+            del obj._element.attrib[self.attribute]
         except KeyError:
             pass
 
@@ -182,7 +187,6 @@ class HTMLAttributeProperty(AttributeProperty):
 
     def __init__(
         self,
-        xmlattr: str,
         attribute: str,
         *,
         optional: bool = False,
@@ -190,7 +194,6 @@ class HTMLAttributeProperty(AttributeProperty):
         __doc__: str | None = None,
     ) -> None:
         super().__init__(
-            xmlattr,
             attribute,
             default=None,
             returntype=markupsafe.Markup,
@@ -224,7 +227,6 @@ class NumericAttributeProperty(AttributeProperty):
 
     def __init__(
         self,
-        xmlattr: str,
         attribute: str,
         *,
         optional: bool = False,
@@ -234,7 +236,6 @@ class NumericAttributeProperty(AttributeProperty):
         __doc__: str | None = None,
     ) -> None:
         super().__init__(
-            xmlattr,
             attribute,
             optional=optional,
             default=default,
@@ -242,6 +243,8 @@ class NumericAttributeProperty(AttributeProperty):
             __doc__=__doc__,
         )
         self.number_type = float if allow_float else int
+
+        self._original_value: None | float | int = None
 
     def __get__(self, obj, objtype=None):
         value = super().__get__(obj, objtype)
@@ -262,6 +265,8 @@ class NumericAttributeProperty(AttributeProperty):
             raise ValueError("Cannot set value to negative infinity")
         else:
             strvalue = str(self.number_type(value))
+
+        self._original_value = value
         super().__set__(obj, strvalue)
 
 
@@ -270,20 +275,20 @@ class BooleanAttributeProperty(AttributeProperty):
 
     def __init__(
         self,
-        xmlattr: str,
         attribute: str,
         *,
         writable: bool = True,
         __doc__: str | None = None,
     ) -> None:
         super().__init__(
-            xmlattr,
             attribute,
             returntype=lambda x: x,
             optional=False,
             writable=writable,
             __doc__=__doc__,
         )
+
+        self._original_value: None | bool = None
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty:
@@ -297,13 +302,14 @@ class BooleanAttributeProperty(AttributeProperty):
         if obj is None:
             return self
 
-        xml_element = getattr(obj, self.xmlattr)
-        rv = xml_element.get(self.attribute, "false") == "true"
-        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-        sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        rv = obj._element.get(self.attribute, "false") == "true"
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(self, obj, value) -> None:
+        self._original_value = value
         if value:
             super().__set__(obj, "true")
         else:
@@ -325,7 +331,6 @@ class DatetimeAttributeProperty(AttributeProperty):
 
     def __init__(
         self,
-        xmlattr: str,
         attribute: str,
         *,
         optional: bool = True,
@@ -333,12 +338,13 @@ class DatetimeAttributeProperty(AttributeProperty):
         __doc__: str | None = None,
     ) -> None:
         super().__init__(
-            xmlattr,
             attribute,
             optional=optional,
             writable=writable,
             __doc__=__doc__,
         )
+
+        self._original_value: None | datetime.datetime = None
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> DatetimeAttributeProperty:
@@ -364,6 +370,7 @@ class DatetimeAttributeProperty(AttributeProperty):
         if value is None:
             self.__delete__(obj)
         elif isinstance(value, datetime.datetime):
+            self._original_value = value
             if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
                 value = value.astimezone()
 
@@ -398,7 +405,6 @@ class EnumAttributeProperty(AttributeProperty):
 
     def __init__(
         self,
-        xmlattr: str,
         attribute: str,
         enumcls: type[enum.Enum],
         *args: t.Any,
@@ -409,9 +415,6 @@ class EnumAttributeProperty(AttributeProperty):
 
         Parameters
         ----------
-        xmlattr
-            The owning type's instance attribute pointing to the XML
-            element.
         attribute
             The attribute on the XML element to handle.
         enumcls
@@ -438,7 +441,7 @@ class EnumAttributeProperty(AttributeProperty):
                 f" not {default!r}"
             )
         super().__init__(
-            xmlattr, attribute, *args, optional=True, default=default, **kw
+            attribute, *args, optional=True, default=default, **kw
         )
         self.enumcls = enumcls
 
@@ -472,102 +475,3 @@ class EnumAttributeProperty(AttributeProperty):
             )
 
         return super().__set__(obj, value.name)
-
-
-class XMLDictProxy(cabc.MutableMapping):
-    """Provides dict-like access to underlying XML structures.
-
-    Subclasses of this class behave like regular Python dictionary,
-    except that all key/value accesses are transparently forwarded to
-    the underlying XML.
-    """
-
-    def __init__(
-        self,
-        xml_element: etree._Element,
-        *args: t.Any,
-        childtag: str,
-        keyattr: str,
-        model: capellambse.loader.MelodyLoader | None = None,
-        **kwargs: t.Any,
-    ) -> None:
-        """Initialize the XMLDictProxy.
-
-        Parameters
-        ----------
-        xml_element
-            The underlying XML element.
-        childtag
-            The XML tag of handled child elements.
-        keyattr
-            The element attribute to use as dictionary key.
-        model
-            Reference to the original MelodyLoader.  If not None, the
-            loader will be informed about element creation and deletion.
-        """
-        super().__init__(*args, **kwargs)
-        self.__childtag = childtag
-        self.__keyattr = keyattr
-        self.model = model
-        self.xml_element = xml_element
-
-    def __iter__(self) -> cabc.Iterator[str]:
-        return (
-            e.attrib[self.__keyattr]
-            for e in self.xml_element.iterchildren(self.__childtag)
-        )
-
-    def __len__(self) -> int:
-        return sum(1 for i in self.xml_element.iterchildren(self.__childtag))
-
-    def __getitem__(self, key: str) -> t.Any:
-        for elem in self.xml_element.iterchildren(self.__childtag):
-            if elem.attrib[self.__keyattr] == key:
-                return self._extract_value(elem)
-        raise KeyError(key)
-
-    def __setitem__(self, key: str, value: t.Any) -> None:
-        for elem in self.xml_element.iterchildren(self.__childtag):
-            if elem.attrib[self.__keyattr] == key:
-                break
-        else:
-            # Doesn't exist in the tree yet: create a new child
-            elem = self.xml_element.makeelement(
-                self.__childtag, {self.__keyattr: key}
-            )
-            self._prepare_child(elem, key)
-            self.xml_element.append(elem)
-            if self.model is not None:
-                self.model.idcache_index(elem)
-        self._insert_value(elem, value)
-
-    def __delitem__(self, key: str) -> None:
-        for elem in self.xml_element.iterchildren(self.__childtag):
-            if elem.attrib[self.__keyattr] == key:
-                if self.model is not None:
-                    self.model.idcache_remove(elem)
-                self.xml_element.remove(elem)
-                return
-        raise KeyError(key)
-
-    def copy(self) -> dict[str, t.Any]:
-        """Make a copy of this proxy as standard Python :class:`dict`."""
-        return dict(self.items())
-
-    @abc.abstractmethod
-    def _extract_value(self, element: etree._Element) -> t.Any:
-        """Extract the dict value from the given element."""
-
-    @abc.abstractmethod
-    def _insert_value(self, element: etree._Element, value: t.Any) -> None:
-        """Insert the dict value into the given element."""
-
-    def _prepare_child(self, element: etree._Element, key: str) -> None:
-        """Prepare a freshly created element for insertion into the XML.
-
-        The key is already set on the element when this method is
-        called; the extra argument is provided for convenience.
-
-        If a subclass wants to abort inserting the element, it should
-        raise a KeyError.
-        """

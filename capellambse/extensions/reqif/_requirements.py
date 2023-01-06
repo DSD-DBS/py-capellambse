@@ -34,7 +34,6 @@ import re
 import markupsafe
 
 import capellambse.model.common as c
-from capellambse.loader import xmltools
 
 c.XTYPE_ANCHORS[__name__] = "Requirements"
 
@@ -42,19 +41,13 @@ c.XTYPE_ANCHORS[__name__] = "Requirements"
 class ReqIFElement(c.GenericElement):
     """Attributes shared by all ReqIF elements."""
 
-    identifier = xmltools.AttributeProperty(
-        "_element", "ReqIFIdentifier", optional=True
+    identifier = c.AttributeProperty("ReqIFIdentifier", optional=True)
+    long_name = c.AttributeProperty("ReqIFLongName", optional=True)
+    description: str = c.AttributeProperty(  # type: ignore[assignment]
+        "ReqIFDescription", optional=True
     )
-    long_name = xmltools.AttributeProperty(
-        "_element", "ReqIFLongName", optional=True
-    )
-    description: str = xmltools.AttributeProperty(  # type: ignore[assignment]
-        "_element", "ReqIFDescription", optional=True
-    )
-    name = xmltools.AttributeProperty("_element", "ReqIFName", optional=True)
-    prefix = xmltools.AttributeProperty(
-        "_element", "ReqIFPrefix", optional=True
-    )
+    name = c.AttributeProperty("ReqIFName", optional=True)
+    prefix = c.AttributeProperty("ReqIFPrefix", optional=True)
     type: c.Accessor = property(lambda _: None)  # type: ignore[assignment]
 
     def _short_repr_(self) -> str:  # pragma: no cover
@@ -107,7 +100,7 @@ class AbstractRequirementsAttribute(c.GenericElement):
 
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
-    value: xmltools.AttributeProperty | c.AttrProxyAccessor
+    value: c.AttributeProperty | c.AttrProxyAccessor
 
     def __repr__(self) -> str:
         return self._short_repr_()
@@ -165,16 +158,14 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
 class BooleanValueAttribute(AbstractRequirementsAttribute):
     """A string value attribute."""
 
-    value = xmltools.BooleanAttributeProperty("_element", "value")
+    value = c.BooleanAttributeProperty("value")
 
 
 @c.xtype_handler(None)
 class DateValueAttribute(AbstractRequirementsAttribute):
     """A value attribute that stores a date and time."""
 
-    value = xmltools.DatetimeAttributeProperty(
-        "_element", "value", optional=True
-    )
+    value = c.DatetimeAttributeProperty("value", optional=True)
 
     def _repr_value(self) -> str:
         if self.value is None:
@@ -186,25 +177,21 @@ class DateValueAttribute(AbstractRequirementsAttribute):
 class IntegerValueAttribute(AbstractRequirementsAttribute):
     """An integer value attribute."""
 
-    value = xmltools.AttributeProperty(
-        "_element", "value", returntype=int, default=0
-    )
+    value = c.AttributeProperty("value", returntype=int, default=0)
 
 
 @c.xtype_handler(None)
 class RealValueAttribute(AbstractRequirementsAttribute):
     """A floating-point number value attribute."""
 
-    value = xmltools.AttributeProperty(
-        "_element", "value", returntype=float, default=0.0
-    )
+    value = c.AttributeProperty("value", returntype=float, default=0.0)
 
 
 @c.xtype_handler(None)
 class StringValueAttribute(AbstractRequirementsAttribute):
     """A string value attribute."""
 
-    value = xmltools.AttributeProperty("_element", "value", default="")
+    value = c.AttributeProperty("value", default="")
 
 
 @c.xtype_handler(None)
@@ -238,8 +225,7 @@ class AttributeDefinitionEnumeration(ReqIFElement):
     data_type = c.AttrProxyAccessor(
         EnumerationDataTypeDefinition, "definitionType"
     )
-    multi_valued = xmltools.BooleanAttributeProperty(
-        "_element",
+    multi_valued = c.BooleanAttributeProperty(
         "multiValued",
         __doc__=(
             "Boolean flag for setting multiple enumeration values on"
@@ -309,15 +295,11 @@ class Requirement(ReqIFElement):
 
     owner = c.ParentAccessor(c.GenericElement)
 
-    chapter_name = xmltools.AttributeProperty(
-        "_element", "ReqIFChapterName", optional=True
+    chapter_name = c.AttributeProperty("ReqIFChapterName", optional=True)
+    foreign_id = c.AttributeProperty(
+        "ReqIFForeignID", optional=True, returntype=int
     )
-    foreign_id = xmltools.AttributeProperty(
-        "_element", "ReqIFForeignID", optional=True, returntype=int
-    )
-    text = xmltools.HTMLAttributeProperty(
-        "_element", "ReqIFText", optional=True
-    )
+    text = c.HTMLAttributeProperty("ReqIFText", optional=True)
     attributes = AttributeAccessor()
     type = c.AttrProxyAccessor(RequirementType, "requirementType")
 

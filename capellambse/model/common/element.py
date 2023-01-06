@@ -26,9 +26,8 @@ from lxml import etree
 
 import capellambse
 from capellambse import helpers
-from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, T, U, accessors
+from . import XTYPE_HANDLERS, T, U, accessors, properties
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -109,17 +108,13 @@ class GenericElement:
 
     _Self = t.TypeVar("_Self", bound="GenericElement")
 
-    uuid = xmltools.AttributeProperty("_element", "id", writable=False)
+    uuid = properties.AttributeProperty("id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
-    name = xmltools.AttributeProperty(
-        "_element", "name", optional=True, default=""
+    name = properties.AttributeProperty("name", optional=True, default="")
+    description = properties.HTMLAttributeProperty(
+        "description", optional=True
     )
-    description = xmltools.HTMLAttributeProperty(
-        "_element", "description", optional=True
-    )
-    summary = xmltools.HTMLAttributeProperty(
-        "_element", "summary", optional=True
-    )
+    summary = properties.HTMLAttributeProperty("summary", optional=True)
     diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
     diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
@@ -133,7 +128,7 @@ class GenericElement:
     _xmltag: str | None = None
 
     @property
-    def progress_status(self) -> xmltools.AttributeProperty | str:
+    def progress_status(self) -> properties.AttributeProperty | str:
         uuid = self._element.get("status")
         if uuid is None:
             return "NOT_SET"
@@ -217,7 +212,7 @@ class GenericElement:
                     self._element.set(helpers.ATT_XT, val)
                 elif not isinstance(
                     getattr(type(self), key),
-                    (accessors.Accessor, xmltools.AttributeProperty),
+                    (accessors.Accessor, properties.AttributeProperty),
                 ):
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"

@@ -14,8 +14,6 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
-from capellambse.loader import xmltools
-
 from ... import common as c
 from ... import modeltypes
 from .. import capellacommon, capellacore, modellingcore
@@ -90,49 +88,32 @@ class Property(c.GenericElement):
 
     _xmltag = "ownedFeatures"
 
-    is_ordered = xmltools.BooleanAttributeProperty(
-        "_element",
-        "ordered",
-        __doc__="Boolean flag, indicates if property is ordered",
+    is_ordered = c.BooleanAttributeProperty(
+        "ordered", __doc__="Indicates if property is ordered"
     )
-    is_unique = xmltools.BooleanAttributeProperty(
-        "_element",
-        "unique",
-        __doc__="Boolean flag, indicates if property is unique",
+    is_unique = c.BooleanAttributeProperty(
+        "unique", __doc__="Indicates if property is unique"
     )
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "isAbstract",
-        __doc__="Boolean flag, indicates if property is abstract",
+    is_abstract = c.BooleanAttributeProperty(
+        "isAbstract", __doc__="Indicates if property is abstract"
     )
-    is_static = xmltools.BooleanAttributeProperty(
-        "_element",
-        "isStatic",
-        __doc__="Boolean flag, indicates if property is static",
+    is_static = c.BooleanAttributeProperty(
+        "isStatic", __doc__="Indicates if property is static"
     )
-    is_part_of_key = xmltools.BooleanAttributeProperty(
-        "_element",
-        "isPartOfKey",
-        __doc__="Boolean flag, indicates if property is part of key",
+    is_part_of_key = c.BooleanAttributeProperty(
+        "isPartOfKey", __doc__="Indicates if property is part of key"
     )
-    is_derived = xmltools.BooleanAttributeProperty(
-        "_element",
-        "isDerived",
-        __doc__="Boolean flag, indicates if property is abstract",
+    is_derived = c.BooleanAttributeProperty(
+        "isDerived", __doc__="Indicates if property is abstract"
     )
-    is_read_only = xmltools.BooleanAttributeProperty(
-        "_element",
-        "isReadOnly",
-        __doc__="Boolean flag, indicates if property is read-only",
+    is_read_only = c.BooleanAttributeProperty(
+        "isReadOnly", __doc__="Indicates if property is read-only"
     )
-    visibility = xmltools.EnumAttributeProperty(
-        "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
+    visibility = c.EnumAttributeProperty(
+        "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
-    kind = xmltools.EnumAttributeProperty(
-        "_element",
-        "aggregationKind",
-        modeltypes.AggregationKind,
-        default="UNSET",
+    kind = c.EnumAttributeProperty(
+        "aggregationKind", modeltypes.AggregationKind, default="UNSET"
     )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     default_value = c.RoleTagAccessor("ownedDefaultValue")
@@ -152,23 +133,17 @@ class Class(c.GenericElement):
 
     sub: c.Accessor
     super: c.Accessor[Class]
-    is_abstract = xmltools.BooleanAttributeProperty(
-        "_element",
-        "abstract",
-        __doc__="Boolean flag, indicates if class is abstract",
+    is_abstract = c.BooleanAttributeProperty(
+        "abstract", __doc__="Indicates if class is abstract"
     )
-    is_final = xmltools.BooleanAttributeProperty(
-        "_element",
-        "final",
-        __doc__="Boolean flag, indicates if class is final",
+    is_final = c.BooleanAttributeProperty(
+        "final", __doc__="Indicates if class is final"
     )
-    is_primitive = xmltools.BooleanAttributeProperty(
-        "_element",
-        "isPrimitive",
-        __doc__="Boolean flag, indicates if class is primitive",
+    is_primitive = c.BooleanAttributeProperty(
+        "isPrimitive", __doc__="Indicates if class is primitive"
     )
-    visibility = xmltools.EnumAttributeProperty(
-        "_element", "visibility", modeltypes.VisibilityKind, default="UNSET"
+    visibility = c.EnumAttributeProperty(
+        "visibility", modeltypes.VisibilityKind, default="UNSET"
     )
     state_machines = c.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=c.ElementList
@@ -198,8 +173,8 @@ class Union(Class):
 
     _xmltag = "ownedClasses"
 
-    kind = xmltools.EnumAttributeProperty(
-        "_element", "kind", modeltypes.UnionKind, default="UNION"
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.UnionKind, default="UNION"
     )
 
 
@@ -209,8 +184,8 @@ class Collection(c.GenericElement):
 
     _xmltag = "ownedCollections"
 
-    kind = xmltools.EnumAttributeProperty(
-        "_element", "kind", modeltypes.CollectionKind, default="ARRAY"
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.CollectionKind, default="ARRAY"
     )
 
     sub: c.Accessor
@@ -249,11 +224,8 @@ class ExchangeItem(c.GenericElement):
 
     _xmltag = "ownedExchangeItems"
 
-    type = xmltools.EnumAttributeProperty(
-        "_element",
-        "exchangeMechanism",
-        modeltypes.ExchangeItemType,
-        default="UNSET",
+    type = c.EnumAttributeProperty(
+        "exchangeMechanism", modeltypes.ExchangeItemType, default="UNSET"
     )
     elements = c.DirectProxyAccessor(ExchangeItemElement, aslist=c.ElementList)
     exchanges = c.CustomAccessor(

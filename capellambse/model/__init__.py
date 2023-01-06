@@ -25,7 +25,6 @@ import capellambse
 import capellambse.helpers
 import capellambse.pvmt
 from capellambse import _diagram_cache, filehandler, loader
-from capellambse.loader import xmltools
 
 from . import common, diagram  # isort:skip
 
@@ -64,15 +63,12 @@ class MelodyModel:
         None, cacheattr="_MelodyModel__diagram_cache"
     )
 
-    uuid = xmltools.AttributeProperty(
-        "_element",
+    uuid = common.AttributeProperty(
         "id",
         writable=False,
         __doc__="The unique ID of the model's root element.",
     )
-    name = xmltools.AttributeProperty(
-        "_element", "name", __doc__="The name of this model."
-    )
+    name = common.AttributeProperty("name", __doc__="The name of this model.")
 
     _diagram_cache: filehandler.FileHandler
     _diagram_cache_subdir: pathlib.PurePosixPath

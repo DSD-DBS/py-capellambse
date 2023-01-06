@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import contextlib
+import datetime
 import sys
 import typing as t
 
+import markupsafe
 import pytest
 
 import capellambse
 from capellambse.extensions import reqif
-from capellambse.loader import xmltools
 from capellambse.model import common
 
 # pylint: disable=pointless-statement, redefined-outer-name
@@ -69,43 +71,60 @@ def audit_events() -> cabc.Iterator[list[tuple[t.Any, ...]]]:
         events = None
 
 
+@contextlib.contextmanager
+def prohibit_events(*events: str) -> cabc.Iterator[None]:
+    active = True
+    events = set(events)  # type: ignore
+
+    def audit(event: str, _: tuple[t.Any, ...]) -> None:
+        nonlocal active
+        if active:
+            assert event not in events
+
+    sys.addaudithook(audit)
+    try:
+        yield
+    finally:
+        active = False
+
+
 @pytest.mark.parametrize(
     ["obj_id", "attr", "accessor_type"],
     [
         pytest.param(
             "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
             "name",
-            xmltools.AttributeProperty,
+            common.AttributeProperty,
             id="AttributeProperty",
         ),
         pytest.param(
             "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
             "is_abstract",
-            xmltools.BooleanAttributeProperty,
+            common.BooleanAttributeProperty,
             id="BooleanAttributeProperty",
         ),
         pytest.param(
             "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
             "description",
-            xmltools.HTMLAttributeProperty,
+            common.HTMLAttributeProperty,
             id="HTMLAttributeProperty",
         ),
         pytest.param(
             "303c2a4d-0eff-41e6-b7e8-0e500cfa38f7",
             "value",
-            xmltools.NumericAttributeProperty,
+            common.NumericAttributeProperty,
             id="NumericAttributeProperty",
         ),
         pytest.param(
             "b97c09b5-948a-46e8-a656-69d764ddce7d",
             "value",
-            xmltools.DatetimeAttributeProperty,
+            common.DatetimeAttributeProperty,
             id="DatetimeAttributeProperty",
         ),
         pytest.param(
             "1ca7b206-be29-4315-a036-0b532b26a191",
             "type",
-            xmltools.EnumAttributeProperty,
+            common.EnumAttributeProperty,
             id="EnumAttributeProperty",
         ),
         pytest.param(
@@ -209,3 +228,162 @@ def test_attribute_access_fires_read_attribute_events(
     _, ev_obj, ev_attr, _ = event
     assert ev_obj == obj
     assert ev_attr == attr
+
+
+@pytest.mark.parametrize(
+    ["obj_id", "attr", "value_factory", "accessor_type"],
+    [
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "name",
+            lambda _: "New name",
+            common.AttributeProperty,
+            id="AttributeProperty",
+        ),
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "is_abstract",
+            lambda o: not o.is_abstract,
+            common.BooleanAttributeProperty,
+            id="BooleanAttributeProperty",
+        ),
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "description",
+            lambda _: markupsafe.Markup("<h1>Thing</h1>"),
+            common.HTMLAttributeProperty,
+            id="HTMLAttributeProperty",
+        ),
+        pytest.param(
+            "303c2a4d-0eff-41e6-b7e8-0e500cfa38f7",
+            "value",
+            lambda o: o.value + 1,
+            common.NumericAttributeProperty,
+            id="NumericAttributeProperty",
+        ),
+        pytest.param(
+            "b97c09b5-948a-46e8-a656-69d764ddce7d",
+            "value",
+            lambda _: datetime.datetime(2019, 7, 23, 17, 45, 30),
+            common.DatetimeAttributeProperty,
+            id="DatetimeAttributeProperty",
+        ),
+        pytest.param(
+            "1ca7b206-be29-4315-a036-0b532b26a191",
+            "type",
+            lambda _: "SHARED_DATA",
+            common.EnumAttributeProperty,
+            id="EnumAttributeProperty",
+        ),
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "components",
+            lambda _: [],
+            common.DirectProxyAccessor,
+            id="DirectProxyAccessor",
+        ),
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "allocated_functions",
+            lambda _: [],
+            common.LinkAccessor,
+            id="LinkAccessor",
+        ),
+        pytest.param(
+            "0ee1fd1c-db9c-4fa6-8789-197f623b96c0",
+            "type",
+            lambda o: o._model.by_uuid("bbc296e1-ed4c-40cf-b37d-c8eb8613228a"),
+            common.AttrProxyAccessor,
+            id="AttrProxyAccessor",
+        ),
+        pytest.param(
+            "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+            "relations",
+            lambda o: [],
+            reqif.RequirementsRelationAccessor,
+            id="RequirementsRelationAccessor",
+        ),
+    ],
+)
+def test_attribute_assignment_fires_exactly_one_setattr_event(
+    model: capellambse.MelodyModel,
+    audit_events: list[tuple[t.Any, ...]],
+    obj_id: str,
+    attr: str,
+    value_factory: cabc.Callable[[capellambse.ModelObject], t.Any],
+    accessor_type: type[t.Any],
+) -> None:
+    obj = model.by_uuid(obj_id)
+    descriptor = getattr(type(obj), attr, None)
+    assert descriptor is not None, f"{type(obj).__name__} has no {attr}"
+    assert isinstance(descriptor, accessor_type), "Bad descriptor type"
+    value = value_factory(obj)
+    audit_events.clear()
+
+    setattr(obj, attr, value)
+
+    events = [i for i in audit_events if i[0] == "capellambse.setattr"]
+    assert len(events) == 1
+    _, actual_obj, actual_attr, actual_value = events[0]
+    assert actual_obj is obj
+    assert actual_attr == attr
+    assert actual_value == value
+
+
+@pytest.mark.parametrize(
+    ["obj_id", "attr", "args_factory", "accessor_type"],
+    [
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "components",
+            lambda m: {
+                "name": "Unfair advantages",
+                "allocated_functions": [
+                    m.by_uuid("c1a42acc-1f53-42bb-8404-77a5c08c414b")
+                ],
+            },
+            common.DirectProxyAccessor,
+            id="DirectProxyAccessor",
+        ),
+        pytest.param(
+            "85d41db2-9e17-438b-95cf-49342452ddf3",
+            "relations",
+            lambda m: {
+                "target": m.by_uuid("4c1f2b5d-0641-42c7-911f-7a42928580b8"),
+            },
+            reqif.RequirementsRelationAccessor,
+            id="RequirementsRelationAccessor",
+        ),
+    ],
+)
+def test_creating_objects_fires_exactly_one_create_event(
+    model: capellambse.MelodyModel,
+    audit_events: list[tuple[t.Any, ...]],
+    obj_id: str,
+    attr: str,
+    args_factory: cabc.Callable[[capellambse.MelodyModel], dict[str, t.Any]],
+    accessor_type: type,
+) -> None:
+    obj = model.by_uuid(obj_id)
+    descriptor = getattr(type(obj), attr, None)
+    assert descriptor is not None, f"{type(obj).__name__} has no {attr}"
+    assert isinstance(descriptor, accessor_type), "Bad descriptor type"
+    create_args = args_factory(model)
+    target = getattr(obj, attr)
+    audit_events.clear()
+
+    with prohibit_events("capellambse.insert", "capellambse.setattr"):
+        new_obj = target.create(**create_args)
+
+    event_filter = {
+        "capellambse.create",
+        "capellambse.insert",
+        "capellambse.setattr",
+    }
+    events = [i for i in audit_events if i[0] in event_filter]
+    eventnames = [i[0] for i in events]
+    assert eventnames == ["capellambse.create"]
+    _, *ev = events[0]
+    assert ev[0] == obj
+    assert ev[1] == attr
+    assert ev[2] is new_obj
