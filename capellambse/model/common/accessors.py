@@ -452,6 +452,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         rv = self._make_list(obj, elems)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(
@@ -647,6 +648,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         rv = self._make_list(obj, elems)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(self, obj, value):
@@ -807,6 +809,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         rv = self._make_list(obj, elems)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(
@@ -937,6 +940,7 @@ class AlternateAccessor(Accessor[T]):
         rv = self.class_.from_model(obj._model, obj._element)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
 
@@ -963,6 +967,7 @@ class ParentAccessor(PhysicalAccessor[T]):
             rv = self.class_.from_model(obj._model, parent)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
 
@@ -1178,6 +1183,7 @@ class SpecificationAccessor(Accessor[_Specification]):
         rv = _Specification(obj._model, spec_elm)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
 
@@ -1261,6 +1267,7 @@ class RoleTagAccessor(PhysicalAccessor):
         rv = self._make_list(obj, elts)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
 

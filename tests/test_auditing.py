@@ -146,7 +146,7 @@ def audit_events() -> cabc.Iterator[list[tuple[t.Any, ...]]]:
         ),
     ],
 )
-def test_attribute_access_fires_exactly_one_read_attribute_event(
+def test_attribute_access_fires_exactly_one_getattr_event(
     model: capellambse.MelodyModel,
     audit_events: list[tuple[t.Any, ...]],
     obj_id: str,
@@ -161,11 +161,9 @@ def test_attribute_access_fires_exactly_one_read_attribute_event(
 
     getattr(obj, attr)
 
-    getattr_events = [
-        i for i in audit_events if i[0] == "capellambse.read_attribute"
-    ]
-    assert len(getattr_events) == 1
-    event = getattr_events[0]
+    events = [i for i in audit_events if i[0] == "capellambse.getattr"]
+    assert len(events) == 1
+    event = events[0]
     _, ev_obj, ev_attr, _ = event
     assert ev_obj == obj
     assert ev_attr == attr
@@ -205,7 +203,7 @@ def test_attribute_access_fires_read_attribute_events(
 
     getattr(obj, attr)
 
-    events = [i for i in audit_events if i[0] == "capellambse.read_attribute"]
+    events = [i for i in audit_events if i[0] == "capellambse.getattr"]
     assert len(events) > 1
     event = events[-1]
     _, ev_obj, ev_attr, _ = event

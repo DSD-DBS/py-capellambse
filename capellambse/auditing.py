@@ -61,7 +61,7 @@ class AttributeAuditor:
         self.model = None
 
     def __audit(self, event: str, args: tuple[t.Any, ...]) -> None:
-        if event == "capellambse.read_attribute":
+        if event == "capellambse.getattr":
             obj, attr_name, attr_value = args
             if not hasattr(obj, "_model") or obj._model is not self.model:
                 return

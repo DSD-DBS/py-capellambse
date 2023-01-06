@@ -156,6 +156,7 @@ class RequirementsRelationAccessor(
         rv = self._make_list(obj, rel_objs)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def _make_list(self, parent_obj, elements):
@@ -292,6 +293,7 @@ class ElementRelationAccessor(
         rv = self._make_list(obj, relations)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def _make_list(self, parent_obj, elements):
