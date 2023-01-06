@@ -76,6 +76,7 @@ class MelodyModel:
 
     _diagram_cache: filehandler.FileHandler
     _diagram_cache_subdir: pathlib.PurePosixPath
+    _constructed: bool
 
     def __init__(
         self,
@@ -218,6 +219,7 @@ class MelodyModel:
         """
         capellambse.load_model_extensions()
 
+        self._constructed = False
         self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
         self.jupyter_untrusted = jupyter_untrusted
@@ -247,6 +249,8 @@ class MelodyModel:
             self._diagram_cache_subdir = pathlib.PurePosixPath(
                 diagram_cache_subdir or "/"
             )
+
+        self._constructed = True
 
     @property
     def _element(self) -> etree._Element:

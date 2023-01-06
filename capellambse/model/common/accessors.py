@@ -449,7 +449,10 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             for e in self._getsubelems(obj)
             if e.get("id") is not None
         ]
-        return self._make_list(obj, elems)
+        rv = self._make_list(obj, elems)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def __set__(
         self, obj: element.ModelObject, value: str | T | cabc.Iterable[str | T]
@@ -641,7 +644,10 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             return self
 
         elems = [self.__follow_ref(obj, i) for i in self.__find_refs(obj)]
-        return self._make_list(obj, elems)
+        rv = self._make_list(obj, elems)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def __set__(self, obj, value):
         if self.aslist is None:
@@ -799,7 +805,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         )
 
         rv = self._make_list(obj, elems)
-        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
         return rv
 
     def __set__(
@@ -927,7 +934,10 @@ class AlternateAccessor(Accessor[T]):
         del objtype
         if obj is None:  # pragma: no cover
             return self
-        return self.class_.from_model(obj._model, obj._element)
+        rv = self.class_.from_model(obj._model, obj._element)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
 
 class ParentAccessor(PhysicalAccessor[T]):
@@ -948,8 +958,12 @@ class ParentAccessor(PhysicalAccessor[T]):
 
         parent = next(obj._model._loader.iterancestors(obj._element), None)
         if parent is None:
-            return None
-        return self.class_.from_model(obj._model, parent)
+            rv = None
+        else:
+            rv = self.class_.from_model(obj._model, parent)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
 
 class CustomAccessor(PhysicalAccessor[T]):
@@ -1071,6 +1085,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
     ) -> None:
         self._model = model
         self._element = elm
+        self._constructed = True
 
     def __delitem__(self, k: str) -> None:
         k = self._aliases.get(k, k)
@@ -1160,7 +1175,10 @@ class SpecificationAccessor(Accessor[_Specification]):
         except StopIteration:
             raise AttributeError("No specification found") from None
 
-        return _Specification(obj._model, spec_elm)
+        rv = _Specification(obj._model, spec_elm)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
 
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
@@ -1240,7 +1258,10 @@ class RoleTagAccessor(PhysicalAccessor):
             return self
 
         elts = list(obj._element.iterchildren(self.role_tag))
-        return self._make_list(obj, elts)
+        rv = self._make_list(obj, elts)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
 
 def no_list(

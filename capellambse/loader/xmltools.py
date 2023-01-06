@@ -287,7 +287,9 @@ class BooleanAttributeProperty(AttributeProperty):
             return self
 
         xml_element = getattr(obj, self.xmlattr)
-        return xml_element.get(self.attribute, "false") == "true"
+        rv = xml_element.get(self.attribute, "false") == "true"
+        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def __set__(self, obj, value) -> None:
         if value:

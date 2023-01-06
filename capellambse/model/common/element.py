@@ -107,6 +107,8 @@ class ModelObject(t.Protocol):
 class GenericElement:
     """Provides high-level access to a single model element."""
 
+    _Self = t.TypeVar("_Self", bound="GenericElement")
+
     uuid = xmltools.AttributeProperty("_element", "id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name = xmltools.AttributeProperty(
@@ -126,6 +128,7 @@ class GenericElement:
     constraints: accessors.Accessor
     parent: accessors.ParentAccessor
 
+    _constructed: bool
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
 
@@ -139,8 +142,10 @@ class GenericElement:
 
     @classmethod
     def from_model(
-        cls: type[T], model: capellambse.MelodyModel, element: etree._Element
-    ) -> T:
+        cls: type[_Self],
+        model: capellambse.MelodyModel,
+        element: etree._Element,
+    ) -> _Self:
         """Wrap an existing model object.
 
         Parameters
@@ -177,6 +182,7 @@ class GenericElement:
         self = class_.__new__(class_)
         self._model = model
         self._element = element
+        self._constructed = True
         return self
 
     def __init__(
@@ -201,6 +207,7 @@ class GenericElement:
             raise TypeError(
                 f"Cannot instantiate {type(self).__name__} directly"
             )
+        self._constructed = False
         self._model = model
         self._element: etree._Element = etree.Element(self._xmltag)
         parent.append(self._element)
@@ -221,6 +228,7 @@ class GenericElement:
         except BaseException:
             parent.remove(self._element)
             raise
+        self._constructed = True
 
     def __getattr__(self, attr: str) -> t.Any:
         raise AttributeError(f"{attr} isn't defined on {type(self).__name__}")

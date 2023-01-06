@@ -16,6 +16,7 @@ __all__ = [
 
 import collections.abc as cabc
 import os
+import sys
 import typing as t
 
 from lxml import etree
@@ -152,7 +153,10 @@ class RequirementsRelationAccessor(
             rel = rq.InternalRelation.from_model(obj._model, i)
             if obj in (rel.source, rel.target):
                 rel_objs.append(i)
-        return self._make_list(obj, rel_objs)
+        rv = self._make_list(obj, rel_objs)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
@@ -285,7 +289,10 @@ class ElementRelationAccessor(
         ):
             if obj in (relation.source, relation.target):
                 relations.append(relation._element)
-        return self._make_list(obj, relations)
+        rv = self._make_list(obj, relations)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        return rv
 
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
