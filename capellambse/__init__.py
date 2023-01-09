@@ -16,7 +16,7 @@ except metadata.PackageNotFoundError:
 del metadata
 
 from ._namespaces import *
-from .auditing import AttributeAuditor
+from .auditing import *
 from .cli_helpers import *
 from .filehandler import *
 from .model import MelodyModel

@@ -22,6 +22,10 @@ Also refer to the :py:class:`capellambse.auditing.AttributeAuditor` for an
 example class that records read access to all attributes in a model using the
 ``capellambse.getattr`` audit event.
 
+For programmatic use, a set of all events that signify changes to the model is
+available as the ``events`` class variable on the
+:py:class:`~capellambse.auditing.WriteProtector`.
+
 List of audit events fired by |project|
 =======================================
 
