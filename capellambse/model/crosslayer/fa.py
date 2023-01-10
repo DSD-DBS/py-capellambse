@@ -224,7 +224,8 @@ class ComponentExchange(AbstractExchange):
     def exchange_items(
         self,
     ) -> c.ElementList[information.ExchangeItem]:
-        items = self.allocated_exchange_items
+        items = c.ElementList(self._model, [], information.ExchangeItem)
+        items.extend(self.allocated_exchange_items)
         func_exchanges = self.allocated_functional_exchanges
         assert isinstance(func_exchanges, cabc.Iterable)
         for exchange in func_exchanges:
