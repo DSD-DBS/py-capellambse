@@ -748,7 +748,6 @@ class GitFileHandler(FileHandler):
                 "--no-checkout",
                 worktree,
                 self.__hash,
-                silent=True,
             )
         except:
             os.rmdir(worktree)
