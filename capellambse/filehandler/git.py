@@ -748,7 +748,6 @@ class GitFileHandler(FileHandler):
                 "--no-checkout",
                 worktree,
                 self.__hash,
-                silent=True,
             )
         except:
             os.rmdir(worktree)
@@ -847,18 +846,15 @@ class GitFileHandler(FileHandler):
             stderr = err.stderr
             raise
         finally:
-            if silent:
-                err_level = ret_level = logging.DEBUG
-            elif returncode != 0:
-                err_level = ret_level = logging.ERROR
+            if returncode != 0 and not silent:
+                level = logging.ERROR
             else:
-                err_level = logging.INFO
-                ret_level = logging.DEBUG
+                level = logging.DEBUG
 
             if stderr:
                 if isinstance(stderr, bytes):
                     stderr = stderr.decode("utf-8")
 
                 for line in stderr.splitlines():
-                    LOGGER.getChild("git").log(err_level, "%s", line)
-            LOGGER.log(ret_level, "Exit status: %d", returncode)
+                    LOGGER.getChild("git").log(level, "%s", line)
+            LOGGER.log(level, "Exit status: %d", returncode)

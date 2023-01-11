@@ -42,13 +42,14 @@ def split_protocol(uri: str | os.PathLike) -> tuple[str, str | os.PathLike]:
     if isinstance(uri, str) and _looks_like_scp(uri):
         return "git", uri
 
+    uri = os.fspath(uri)
     pattern = r"^(\w+)([+:])"
-    prefix_match = re.search(pattern, str(uri))
+    prefix_match = re.search(pattern, uri)
 
     if prefix_match:
         handler_name = prefix_match.group(1)
         if prefix_match.group(2) == "+":
-            uri = os.fspath(uri)[len(prefix_match.group(0)) :]
+            uri = uri[len(prefix_match.group(0)) :]
     else:
         handler_name = "file"
     return (handler_name, uri)

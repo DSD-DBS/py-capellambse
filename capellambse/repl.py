@@ -99,6 +99,10 @@ logger = logging.getLogger("capellambse.repl")
 
 def _load_model_info(datapath: str | importlib.abc.Traversable) -> _ModelInfo:
     if isinstance(datapath, str):
+        try:
+            return json.loads(datapath)
+        except json.JSONDecodeError:
+            pass
         datapath = imr.files(capellambse) / "known_models" / f"{datapath}.json"
     with datapath.open("r", encoding="utf-8") as file:
         return json.load(file)
@@ -113,12 +117,12 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
     parser = argparse.ArgumentParser("capellambse/repl.py")
     parser.add_argument(
         "model",
-        default="5.0",
+        default="test-5.0",
         nargs=1,
         help=(
-            "A model name from repl_models, an AIRD file, or a JSON file"
-            " describing the model. The following repl_models are known: "
-            + ", ".join(f"``{i}``" for i in known_models)
+            "A model name from known_models, an AIRD file, or the path to or"
+            " contents of a JSON file describing the model. The following"
+            " models are known: " + ", ".join(f"``{i}``" for i in known_models)
         ),
     )
     parser.add_argument(
