@@ -14,8 +14,6 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
-from lxml import etree
-
 from capellambse.loader import xmltools
 
 from ... import common as c
