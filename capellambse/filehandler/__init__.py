@@ -3,6 +3,12 @@
 
 from __future__ import annotations
 
+__all__ = [
+    "FileHandler",
+    "TransactionClosedError",
+    "get_filehandler",
+]
+
 import abc
 import collections.abc as cabc
 import logging
@@ -13,7 +19,8 @@ import sys
 import typing as t
 from importlib import metadata
 
-from capellambse.loader.modelinfo import ModelInfo
+if t.TYPE_CHECKING:
+    from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
 

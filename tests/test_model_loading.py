@@ -99,15 +99,13 @@ def test_a_single_protocol_is_not_swallowed_by_get_filehandler(
 ):
     FakeEntrypoint.patch(monkeypatch, "testproto", "testproto://url")
 
-    capellambse.loader.filehandler.get_filehandler("testproto://url")
+    capellambse.get_filehandler("testproto://url")
 
 
 def test_a_wrapping_protocol_separated_by_plus_is_stripped(monkeypatch):
     FakeEntrypoint.patch(monkeypatch, "realproto", "wrappedproto://url")
 
-    capellambse.loader.filehandler.get_filehandler(
-        "realproto+wrappedproto://url"
-    )
+    capellambse.get_filehandler("realproto+wrappedproto://url")
 
 
 @pytest.mark.parametrize(
@@ -123,7 +121,7 @@ def test_a_wrapping_protocol_separated_by_plus_is_stripped(monkeypatch):
 def test_plain_file_paths_are_recognized_as_file_protocol(monkeypatch, path):
     FakeEntrypoint.patch(monkeypatch, "file", path)
 
-    capellambse.loader.filehandler.get_filehandler(path)
+    capellambse.get_filehandler(path)
 
 
 @pytest.mark.parametrize(
@@ -132,7 +130,7 @@ def test_plain_file_paths_are_recognized_as_file_protocol(monkeypatch, path):
 def test_the_scp_short_form_is_recognized_as_git_protocol(monkeypatch, url):
     FakeEntrypoint.patch(monkeypatch, "git", url)
 
-    capellambse.loader.filehandler.get_filehandler(url)
+    capellambse.get_filehandler(url)
 
 
 @pytest.mark.parametrize(

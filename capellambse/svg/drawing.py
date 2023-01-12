@@ -15,7 +15,7 @@ import typing as t
 from svgwrite import base, container, drawing, shapes
 from svgwrite import text as svgtext
 
-from capellambse import aird
+from capellambse import diagram
 from capellambse import helpers as chelpers
 
 from . import decorations, generate, helpers, style, symbols
@@ -493,7 +493,7 @@ class Drawing:
         for attr in styling:
             val = getattr(styling, attr)
             if isinstance(val, cabc.Iterable) and not isinstance(
-                val, (str, aird.RGB)
+                val, (str, diagram.RGB)
             ):
                 grad_id = styling._generate_id("CustomGradient", val)
                 if grad_id not in defs_ids:
@@ -503,7 +503,7 @@ class Drawing:
                     self.__drawing.defs.add(gradient)
                     defs_ids.add(grad_id)
 
-        defaultstyles = aird.get_style(self.diagram_class, styling._class)
+        defaultstyles = diagram.get_style(self.diagram_class, styling._class)
 
         def getstyleattr(sobj: object, attr: str) -> t.Any:
             return getattr(sobj, attr, None) or defaultstyles.get(

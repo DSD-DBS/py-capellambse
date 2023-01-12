@@ -75,14 +75,18 @@ class PhysicalPort(c.GenericElement):
 class PhysicalLink(PhysicalPort):
     """A physical link."""
 
-    linkEnds = c.AttrProxyAccessor(
+    ends = c.PhysicalLinkEndsAccessor(
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
+    linkEnds = c.DeprecatedAccessor[PhysicalPort]("ends")
     exchanges = c.LinkAccessor[fa.ComponentExchange](
         None, fa.XT_COMP_EX_ALLOC, aslist=c.ElementList, attr="targetElement"
     )
 
     physical_paths: c.Accessor
+
+    source = c.IndexAccessor[PhysicalPort]("ends", 0)
+    target = c.IndexAccessor[PhysicalPort]("ends", 1)
 
 
 @c.xtype_handler(None)
@@ -156,6 +160,13 @@ c.set_accessor(
     "deployed_parts",
     c.LinkAccessor(  # FIXME fill in tag
         None, XT_DEPLOY_LINK, aslist=c.ElementList, attr="deployedElement"
+    ),
+)
+c.set_accessor(
+    PhysicalPort,
+    "exchanges",
+    c.ReferenceSearchingAccessor(
+        PhysicalLink, "link_ends", aslist=c.ElementList
     ),
 )
 c.set_accessor(

@@ -29,8 +29,8 @@ import urllib.parse
 import weakref
 
 import capellambse.helpers
+from capellambse.loader import modelinfo
 
-from .. import modelinfo
 from . import FileHandler, TransactionClosedError
 
 LOGGER = logging.getLogger(__name__)
@@ -490,7 +490,7 @@ class GitFileHandler(FileHandler):
 
     See Also
     --------
-    capellambse.loader.filehandler.FileHandler :
+    capellambse.filehandler.FileHandler :
         Documentation of common parameters.
     """
 

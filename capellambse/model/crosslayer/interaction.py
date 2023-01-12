@@ -10,10 +10,6 @@ XT_CAP2PROC = (
     "org.polarsys.capella.core.data.interaction"
     ":FunctionalChainAbstractCapabilityInvolvement"
 )
-XT_CAP2ACT = (
-    "org.polarsys.capella.core.data.interaction"
-    ":AbstractFunctionAbstractCapabilityInvolvement"
-)
 XT_CAP_REAL = (
     "org.polarsys.capella.core.data.interaction"
     ":AbstractCapabilityRealization"

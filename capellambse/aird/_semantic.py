@@ -18,7 +18,7 @@ import typing as t
 from lxml import etree
 
 import capellambse  # pylint: disable=unused-import  # used in typing
-from capellambse import aird
+from capellambse import diagram
 
 from . import _box_factories
 from . import _common as c
@@ -32,7 +32,7 @@ NO_RENDER_XMT = frozenset(
 )
 
 
-def from_xml(ebd: c.ElementBuilder) -> aird.DiagramElement:
+def from_xml(ebd: c.ElementBuilder) -> diagram.DiagramElement:
     """Deserialize a semantic element."""
     uid = ebd.data_element.attrib.get("element")
     if uid is None:
@@ -104,14 +104,18 @@ class FactorySelector:
 
     def __init__(
         self,
-        box: cabc.Callable[[c.SemanticElementBuilder], aird.Box],
-        edge: cabc.Callable[[c.SemanticElementBuilder], aird.Edge],
+        box: cabc.Callable[[c.SemanticElementBuilder], diagram.Box],
+        edge: cabc.Callable[[c.SemanticElementBuilder], diagram.Edge],
     ) -> None:
         self.box = box
         self.edge = edge
 
-    def __call__(self, seb: c.SemanticElementBuilder) -> aird.DiagramElement:
-        factory: cabc.Callable[[c.SemanticElementBuilder], aird.DiagramElement]
+    def __call__(
+        self, seb: c.SemanticElementBuilder
+    ) -> diagram.DiagramElement:
+        factory: cabc.Callable[
+            [c.SemanticElementBuilder], diagram.DiagramElement
+        ]
         if seb.data_element.tag == "children":
             factory = self.box
         elif seb.data_element.tag == "edges":
@@ -132,7 +136,7 @@ _GENERIC_FACTORIES = FactorySelector(
 #: If a key is not found in this dictionary, its value is assumed to be
 #: a tuple of its key and the ``_GENERIC_FACTORIES``.
 SemanticDeserializer = t.Callable[
-    [c.SemanticElementBuilder], "capellambse.aird.DiagramElement"
+    [c.SemanticElementBuilder], "capellambse.diagram.DiagramElement"
 ]
 STYLECLASS_LOOKUP: dict[str, tuple[str | None, SemanticDeserializer]]
 STYLECLASS_LOOKUP = {

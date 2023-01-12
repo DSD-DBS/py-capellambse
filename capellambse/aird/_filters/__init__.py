@@ -13,15 +13,16 @@ import urllib.parse
 from lxml import etree
 
 import capellambse.loader
-from capellambse import aird, model
+from capellambse import diagram, model
 
 from .. import _common as c
 
 Phase2CompositeFilter = t.Callable[
-    [c.ElementBuilder, aird.DiagramElement], None
+    [c.ElementBuilder, diagram.DiagramElement], None
 ]
 CompositeFilter = t.Callable[
-    [c.ElementBuilder, aird.DiagramElement], t.Optional[Phase2CompositeFilter]
+    [c.ElementBuilder, diagram.DiagramElement],
+    t.Optional[Phase2CompositeFilter],
 ]
 #: Maps composite filter names to phase-1 callables
 COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
@@ -35,7 +36,7 @@ PLUGIN_PATH = (
     "/description/context.odesign#/"
 )
 
-_TDiagramElement = t.TypeVar("_TDiagramElement", bound=aird.DiagramElement)
+_TDiagramElement = t.TypeVar("_TDiagramElement", bound=diagram.DiagramElement)
 
 
 def composite_filter(
@@ -74,7 +75,7 @@ def phase2_composite_filter(
     def add_comp_filter(func: Phase2CompositeFilter) -> Phase2CompositeFilter:
         def phase1dummy(
             _1: c.ElementBuilder,
-            _2: aird.DiagramElement,
+            _2: diagram.DiagramElement,
         ) -> Phase2CompositeFilter:
             return func
 
@@ -139,7 +140,7 @@ def setfilters(
 class FilterArguments:
     """Basic arguments for diagram-filters."""
 
-    target_diagram: aird.Diagram
+    target_diagram: diagram.Diagram
     diagram_root: etree._Element
     melodyloader: capellambse.loader.MelodyLoader
     params: dict[str, t.Any]
@@ -215,7 +216,7 @@ def applyfilters(args: FilterArguments) -> None:
 
 def _set_composite_filter(
     seb: c.SemanticElementBuilder,
-    dgobject: aird.DiagramElement,
+    dgobject: diagram.DiagramElement,
     flt: etree._Element,
 ) -> None:
     try:
@@ -272,7 +273,7 @@ class ActiveFilters(t.MutableSet[str]):
     def __init__(
         self,
         model: model.MelodyModel,  # pylint: disable=redefined-outer-name
-        diagram: model.diagram.Diagram,
+        diagram: model.diagram.Diagram,  # pylint: disable=redefined-outer-name
     ) -> None:
         self._model = model
         self._diagram = diagram
@@ -307,9 +308,9 @@ class ActiveFilters(t.MutableSet[str]):
 
         Writes a new ``<activatedFilters>`` XML element to the
         ``<diagram:DSemanticDiagram>`` XML element. If the ``value`` is
-        not apparent in :data:`aird.parser.GLOBAL_FILTERS` as a key it
-        can not be applied when rendering. It should still be visible in
-        the GUI.
+        not apparent in :data:`capellambse.aird.GLOBAL_FILTERS` as a key
+        it can not be applied when rendering. It should still be visible
+        in the GUI.
         """
         if value in self:
             return

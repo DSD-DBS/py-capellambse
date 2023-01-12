@@ -8,7 +8,7 @@ import collections.abc as cabc
 import functools
 import typing as t
 
-from capellambse import aird
+from capellambse import diagram
 
 from .. import _semantic
 from . import phase2_composite_filter
@@ -31,7 +31,7 @@ PORT_CL_FUNCTION = _lookup_styleclasses(
 
 def hide_empty_ports(
     ebd: t.Any | None,
-    dgobject: aird.DiagramElement,
+    dgobject: diagram.DiagramElement,
     *,
     classes: cabc.Container[str],
 ) -> None:
@@ -42,7 +42,7 @@ def hide_empty_ports(
     can only be the edge(s) that connect directly to them.
     """
     del ebd
-    assert isinstance(dgobject, aird.Box)
+    assert isinstance(dgobject, diagram.Box)
 
     for child in dgobject.children:
         if child.port and child.styleclass in classes and not child.context:

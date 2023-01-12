@@ -11,5 +11,4 @@ the `LXML Documentation`_.
 """
 
 from .core import *
-from .filehandler import FileHandler, get_filehandler
 from .modelinfo import ModelInfo

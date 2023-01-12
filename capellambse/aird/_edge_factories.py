@@ -9,8 +9,7 @@ import dataclasses
 import math
 import typing as t
 
-from capellambse import aird, helpers
-from capellambse.aird import diagram
+from capellambse import diagram, helpers
 
 from . import _common as C
 from . import _filters, _styling
@@ -27,7 +26,7 @@ PORTALLOCATION_CLASS_BLACKLIST = {
 XT_EXITEM = "org.polarsys.capella.core.data.information:ExchangeItem"
 
 
-def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def generic_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create an Edge from the diagram XML."""
     bendpoints, sourceport, targetport = extract_bendpoints(seb)
 
@@ -48,7 +47,7 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
         else:
             bendpoints = route_oblique(sourceport, targetport)
 
-    edge = aird.Edge(
+    edge = diagram.Edge(
         bendpoints,
         source=sourceport,
         target=targetport,
@@ -64,9 +63,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     )
     edge.labels.extend(_construct_labels(edge, seb))
 
-    if isinstance(targetport, aird.Box):
+    if isinstance(targetport, diagram.Box):
         snaptarget(edge, -1, -2, targetport, not edge.hidden, routingstyle)
-    if isinstance(sourceport, aird.Box):
+    if isinstance(sourceport, diagram.Box):
         snaptarget(edge, 0, 1, sourceport, not edge.hidden, routingstyle)
 
     sourceport.add_context(seb.data_element.attrib["element"])
@@ -78,7 +77,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
 
 def extract_bendpoints(
     seb: C.ElementBuilder,
-) -> tuple[list[aird.Vector2D], aird.DiagramElement, aird.DiagramElement]:
+) -> tuple[
+    list[diagram.Vector2D], diagram.DiagramElement, diagram.DiagramElement
+]:
     """Extract the bendpoints from an Edge's XML.
 
     Parameters
@@ -140,10 +141,10 @@ def extract_bendpoints(
 
 def get_end_ports(
     seb: C.ElementBuilder,
-) -> tuple[aird.DiagramElement, aird.DiagramElement]:
+) -> tuple[diagram.DiagramElement, diagram.DiagramElement]:
     """Retrieve the source and target port of an Edge in the diagram."""
 
-    def get_port_object(portside: str) -> aird.DiagramElement:
+    def get_port_object(portside: str) -> diagram.DiagramElement:
         try:
             port = seb.data_element.attrib[portside]
             try:
@@ -165,9 +166,9 @@ def get_end_ports(
 
 
 def route_manhattan(
-    source: aird.DiagramElement,
-    target: aird.DiagramElement,
-) -> list[aird.Vector2D]:
+    source: diagram.DiagramElement,
+    target: diagram.DiagramElement,
+) -> list[diagram.Vector2D]:
     """Reroute an Edge using the "Manhattan" routing style.
 
     Parameters
@@ -181,32 +182,36 @@ def route_manhattan(
     """
 
     source_point = source.vector_snap(
-        source.center, source=target.center, style=aird.RoutingStyle.MANHATTAN
+        source.center,
+        source=target.center,
+        style=diagram.RoutingStyle.MANHATTAN,
     )
     target_point = target.vector_snap(
-        target.center, source=source.center, style=aird.RoutingStyle.MANHATTAN
+        target.center,
+        source=source.center,
+        style=diagram.RoutingStyle.MANHATTAN,
     )
 
     if abs(source_point.x - target_point.x) > abs(
         source_point.y - target_point.y
     ):
-        p1 = aird.Vector2D(
+        p1 = diagram.Vector2D(
             (source_point.x + target_point.x) / 2, source_point.y
         )
-        p2 = aird.Vector2D(p1.x, target_point.y)
+        p2 = diagram.Vector2D(p1.x, target_point.y)
     else:
-        p1 = aird.Vector2D(
+        p1 = diagram.Vector2D(
             source_point.x, (source_point.y + target_point.y) / 2
         )
-        p2 = aird.Vector2D(target_point.x, p1.y)
+        p2 = diagram.Vector2D(target_point.x, p1.y)
 
     return [source_point, p1, p2, target_point]
 
 
 def route_tree(
-    source: aird.DiagramElement,
-    target: aird.DiagramElement,
-) -> list[aird.Vector2D]:
+    source: diagram.DiagramElement,
+    target: diagram.DiagramElement,
+) -> list[diagram.Vector2D]:
     """Reroute an Edge using the "Tree" routing style.
 
     Parameters
@@ -230,26 +235,26 @@ def route_tree(
     centerpoint_y = (source_y + target_y) / 2
 
     return [
-        aird.Vector2D(sourcecenter.x, source_y),
-        aird.Vector2D(sourcecenter.x, centerpoint_y),
-        aird.Vector2D(targetcenter.x, centerpoint_y),
-        aird.Vector2D(targetcenter.x, target_y),
+        diagram.Vector2D(sourcecenter.x, source_y),
+        diagram.Vector2D(sourcecenter.x, centerpoint_y),
+        diagram.Vector2D(targetcenter.x, centerpoint_y),
+        diagram.Vector2D(targetcenter.x, target_y),
     ]
 
 
 def route_oblique(
-    source: aird.DiagramElement,
-    target: aird.DiagramElement,
-) -> list[aird.Vector2D]:
+    source: diagram.DiagramElement,
+    target: diagram.DiagramElement,
+) -> list[diagram.Vector2D]:
     """Reroute an Edge using the "Oblique" routing style."""
     return [source.center, target.center]
 
 
 def snaptarget(
-    points: cabc.MutableSequence[aird.Vector2D],
+    points: cabc.MutableSequence[diagram.Vector2D],
     i: int,
     next_i: int,
-    target: aird.DiagramElement,
+    target: diagram.DiagramElement,
     movetarget: bool = False,
     routingstyle: str | None = None,
 ) -> None:
@@ -291,22 +296,22 @@ def snaptarget(
 
 
 def snap_oblique(
-    points: t.MutableSequence[aird.Vector2D],
+    points: t.MutableSequence[diagram.Vector2D],
     i: int,
     next_i: int,
-    target: aird.DiagramElement,
+    target: diagram.DiagramElement,
 ) -> None:
     """Snap ``points``' end to ``target`` in a straight line."""
     points[i] = target.vector_snap(
-        points[i], source=points[next_i], style=aird.RoutingStyle.OBLIQUE
+        points[i], source=points[next_i], style=diagram.RoutingStyle.OBLIQUE
     )
 
 
 def snap_manhattan(
-    points: t.MutableSequence[aird.Vector2D],
+    points: t.MutableSequence[diagram.Vector2D],
     i: int,
     next_i: int,
-    target: aird.DiagramElement,
+    target: diagram.DiagramElement,
 ) -> None:
     """Snap ``points``' end to ``target`` with axis-parallel lines."""
     direction = points[i] - points[next_i]
@@ -318,60 +323,60 @@ def snap_manhattan(
         points[i] = end + translate
 
     endpoint = target.vector_snap(
-        points[i], source=points[next_i], style=aird.RoutingStyle.MANHATTAN
+        points[i], source=points[next_i], style=diagram.RoutingStyle.MANHATTAN
     )
 
     if axis.x:
         if math.isclose(endpoint.y, points[i].y):
             points[i] = endpoint
         else:
-            points[i] = aird.Vector2D(endpoint.x, points[i].y)
+            points[i] = diagram.Vector2D(endpoint.x, points[i].y)
             points.insert(i + (i > next_i), endpoint)
     else:
         if math.isclose(endpoint.x, points[i].x):
             points[i] = endpoint
         else:
-            points[i] = aird.Vector2D(points[i].x, endpoint.y)
+            points[i] = diagram.Vector2D(points[i].x, endpoint.y)
             points.insert(i + (i > next_i), endpoint)
 
 
 def snap_tree(
-    points: t.MutableSequence[aird.Vector2D],
+    points: t.MutableSequence[diagram.Vector2D],
     i: int,
     next_i: int,
-    target: aird.DiagramElement,
+    target: diagram.DiagramElement,
 ) -> None:
     """Snap ``points``' end to ``target`` in tree routing style."""
     endpoint = target.vector_snap(
-        points[i], source=points[next_i], style=aird.RoutingStyle.TREE
+        points[i], source=points[next_i], style=diagram.RoutingStyle.TREE
     )
 
     if math.isclose(endpoint.x, points[i].x):
         points[i] = endpoint
     else:
-        points[i] = aird.Vector2D(endpoint.x, points[i].y)
+        points[i] = diagram.Vector2D(endpoint.x, points[i].y)
         points.insert(
-            i + (i > next_i), aird.Vector2D(endpoint.x, points[next_i].y)
+            i + (i > next_i), diagram.Vector2D(endpoint.x, points[next_i].y)
         )
 
 
 def _construct_labels(
-    edge: aird.Edge, seb: C.SemanticElementBuilder
-) -> list[aird.Box]:
+    edge: diagram.Edge, seb: C.SemanticElementBuilder
+) -> list[diagram.Box]:
     """Construct the label box for an edge."""
     refpoints = _find_refpoints(edge)
     layouts = seb.data_element.xpath("./children/layoutConstraint")
-    labels: list[aird.Box] = []
+    labels: list[diagram.Box] = []
     for (labelanchor, travel_direction), layout, melodyobj in zip(
         refpoints, layouts, seb.melodyobjs
     ):
         labeltext = melodyobj.get("name", "")
 
-        label_pos = aird.Vector2D(
+        label_pos = diagram.Vector2D(
             int(layout.get("x", "0")),
             int(layout.get("y", "0")),
         )
-        label_size = aird.Vector2D(
+        label_size = diagram.Vector2D(
             int(layout.attrib.get("width", "0")),
             int(layout.attrib.get("height", "0")),
         )
@@ -391,10 +396,10 @@ def _construct_labels(
 
 
 def _find_refpoints(
-    points: cabc.Sequence[aird.Vector2D],
-) -> list[tuple[aird.Vector2D, aird.Vector2D]]:
+    points: cabc.Sequence[diagram.Vector2D],
+) -> list[tuple[diagram.Vector2D, diagram.Vector2D]]:
     """Calculate the center point of the edge described by `points`."""
-    refpoints: list[tuple[aird.Vector2D, aird.Vector2D]] = []
+    refpoints: list[tuple[diagram.Vector2D, diagram.Vector2D]] = []
 
     lengths = [
         (points[i] - points[i + 1]).length for i in range(len(points) - 1)
@@ -420,7 +425,7 @@ def _find_refpoints(
         try:
             dir = (points[i + 1] - points[i]).normalized
         except ZeroDivisionError:  # pragma: no cover
-            dir = aird.Vector2D(1, 0)
+            dir = diagram.Vector2D(1, 0)
         pos = current_position + dir * (next_refpoint - current_length)
         refpoints.append((pos, dir))
 
@@ -428,14 +433,14 @@ def _find_refpoints(
     return refpoints
 
 
-def labelless_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def labelless_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create an edge that should never have a label."""
     edge = generic_factory(seb)
     edge.labels = []
     return edge
 
 
-def port_allocation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def port_allocation_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Specially handle ``PortAllocation`` type edges.
 
     Generic PortAllocations need to be differentiated into specific port
@@ -456,7 +461,7 @@ def port_allocation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return generic_factory(seb)
 
 
-def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def state_transition_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a StateTransition.
 
     StateTransitions (connecting two Modes or two States) do not use the
@@ -490,7 +495,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return edge
 
 
-def sequence_link_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def sequence_link_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a SequenceLink.
 
     Sequence links (in Operational Process Diagrams) use the guard
@@ -503,14 +508,14 @@ def sequence_link_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return edge
 
 
-def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def constraint_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create the edge for a Constraint.
 
     As the Box already contains the label, it is not needed on the Edge.
 
     See Also
     --------
-    capellambse.aird.parser._box_factories.constraint_factory :
+    capellambse.aird._box_factories.constraint_factory :
         The accompanying box factory.
     """
     edge = generic_factory(seb)
@@ -518,7 +523,7 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return edge
 
 
-def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def fcil_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a FunctionalChainInvolvementLinks."""
     seb.melodyobjs[0] = seb.melodyloader.follow_link(
         seb.melodyobjs[0], seb.melodyobjs[0].get("involved")
@@ -534,7 +539,7 @@ def fcil_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return edge
 
 
-def eie_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def eie_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create an exchange item element link."""
     edge = generic_factory(seb)
     edge.labels = edge.labels[:1]
@@ -555,7 +560,7 @@ def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
         )
 
 
-def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def req_relation_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a Capella Incoming or Outgoing Relation."""
     label = seb.melodyobjs[0].attrib.get("name", "")
     if not label:
@@ -574,14 +579,14 @@ def req_relation_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
     return generic_factory(seb)
 
 
-def include_extend_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def include_extend_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create an AbstractCapabilityIncludes or -Extends edge."""
     if seb.melodyobjs[0].get("name") is None:
         seb.melodyobjs[0].attrib["name"] = seb.diag_element.get("name", "")
     return generic_factory(seb)
 
 
-def association_factory(seb: C.SemanticElementBuilder) -> aird.Edge:
+def association_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create an Association."""
     edge = generic_factory(seb)
     for member in seb.melodyobjs[0].iterchildren("ownedMembers"):

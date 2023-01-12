@@ -7,7 +7,7 @@ from __future__ import annotations
 import lxml.etree
 
 import capellambse.loader
-from capellambse import aird, helpers, model
+from capellambse import diagram, helpers, model
 
 from . import FilterArguments, composite, global_filter
 
@@ -29,7 +29,7 @@ def hide_association_labels(
 
     classes = EXCHANGES_WITH_ROLES
     for obj in args.target_diagram:
-        if not isinstance(obj, aird.Edge) or obj.styleclass not in classes:
+        if not isinstance(obj, diagram.Edge) or obj.styleclass not in classes:
             continue
         for label in obj.labels:
             label.hidden = True
@@ -42,7 +42,7 @@ def hide_role_names(args: FilterArguments, flt: lxml.etree._Element) -> None:
 
     classes = EXCHANGES_WITH_ROLES
     for obj in args.target_diagram:
-        if not isinstance(obj, aird.Edge):
+        if not isinstance(obj, diagram.Edge):
             continue
 
         if len(obj.labels) > 1 and obj.styleclass in classes:
@@ -56,7 +56,7 @@ def show_name_and_exchangeitems_fex(
     """Change FEX labels to show Name and ExchangeItems."""
     del flt
     for obj in args.target_diagram:
-        if not isinstance(obj, aird.Edge):
+        if not isinstance(obj, diagram.Edge):
             continue
 
         label = _get_primary_edge_label(obj, "FunctionalExchange")
@@ -79,7 +79,7 @@ def show_exchangeitems_fex(
     """Change FEX labels to only show ExchangeItems."""
     del flt
     for obj in args.target_diagram:
-        if not isinstance(obj, aird.Edge):
+        if not isinstance(obj, diagram.Edge):
             continue
 
         label = _get_primary_edge_label(obj, "FunctionalExchange")
@@ -101,7 +101,7 @@ def show_exchangeitems_cex(
     """Change CEX labels to show ExchangeItems."""
     del flt
     for obj in args.target_diagram:
-        if not isinstance(obj, aird.Edge):
+        if not isinstance(obj, diagram.Edge):
             continue
         label = _get_primary_edge_label(obj, "ComponentExchange")
         if label is None:
@@ -135,7 +135,7 @@ def show_exchangeitems_cex_no_fex(
     """Change CEX labels to show directly allocated ExchangeItems."""
     del flt
     for obj in args.target_diagram:
-        if not isinstance(obj, aird.Edge):
+        if not isinstance(obj, diagram.Edge):
             continue
         label = _get_primary_edge_label(obj, "ComponentExchange")
         if label is None:
@@ -157,7 +157,7 @@ def hide_all_empty_ports(
     """Hide all ports that do not have edges connected."""
     del flt
     for dgobj in args.target_diagram:
-        if isinstance(dgobj, aird.Box) and dgobj.children:
+        if isinstance(dgobj, diagram.Box) and dgobj.children:
             composite.hide_empty_ports(
                 None, dgobj, classes=composite.PORT_CL_COMPONENT
             )
@@ -189,7 +189,7 @@ def hide_alloc_func_exch(
 
 
 def _stringify_exchange_items(
-    obj: aird.DiagramElement | model.common.GenericElement,
+    obj: diagram.DiagramElement | model.common.GenericElement,
     melodyloader: capellambse.loader.MelodyLoader,
     sort_items: bool = False,
 ) -> str:
@@ -238,12 +238,12 @@ def _get_allocated_exchangeitem_names(
 
 
 def _get_primary_edge_label(
-    obj: aird.Edge, edge_class: str
-) -> aird.Box | None:
+    obj: diagram.Edge, edge_class: str
+) -> diagram.Box | None:
     if obj.styleclass != edge_class:
         return None
     if not obj.labels:
         return None
     label = obj.labels[0]
-    assert isinstance(label, aird.Box)
+    assert isinstance(label, diagram.Box)
     return label
