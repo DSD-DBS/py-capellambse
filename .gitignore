@@ -160,3 +160,9 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# Mac garbage
+.DS_Store
+
+# vscode settings might be very user-specifc, lets ignore it for now
+.vscode/settings.json
