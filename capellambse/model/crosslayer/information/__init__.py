@@ -61,6 +61,7 @@ class Association(c.GenericElement):
 
     _xmltag = "ownedAssociations"
 
+    members: c.Accessor[Property]
     navigable_members: c.Accessor[Property]
     source_role: c.Accessor[Property]
 
@@ -282,6 +283,11 @@ c.set_accessor(
     DataPkg, "packages", c.DirectProxyAccessor(DataPkg, aslist=c.ElementList)
 )
 c.set_accessor(ExchangeItemElement, "owner", c.ParentAccessor(ExchangeItem))
+c.set_accessor(
+    Association,
+    "members",
+    c.DirectProxyAccessor(Property, aslist=c.ElementList),
+)
 c.set_accessor(
     Association,
     "navigable_members",
