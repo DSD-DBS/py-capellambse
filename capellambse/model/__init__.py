@@ -348,3 +348,10 @@ class MelodyModel:
     def by_uuid(self, uuid: str) -> common.GenericElement:
         """Search the entire model for an element with the given UUID."""
         return common.GenericElement.from_model(self, self._loader[uuid])
+
+    @property
+    def description_badge(self) -> str:
+        """Describe model contents distribution with an SVG badge."""
+        from capellambse.extensions import metrics
+
+        return metrics.get_summary_badge(self)
