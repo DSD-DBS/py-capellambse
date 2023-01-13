@@ -18,7 +18,7 @@ from capellambse.loader import xmltools
 
 from ... import common as c
 from ... import modeltypes
-from .. import capellacommon, capellacore
+from .. import capellacommon, capellacore, modellingcore
 from . import datatype, datavalue
 
 
@@ -75,6 +75,13 @@ class Association(c.GenericElement):
         assert isinstance(self.navigable_members, c.ElementList)
         roles.extend(prop._element for prop in self.navigable_members)
         return c.ElementList(self._model, roles, Property)
+
+
+@c.xtype_handler(None)
+class PortAllocation(modellingcore.TraceableElement):
+    """An exchange between a ComponentPort and FunctionalPort."""
+
+    _xmltag = "ownedPortAllocations"
 
 
 @c.xtype_handler(None)
@@ -179,13 +186,10 @@ class Class(c.GenericElement):
 
 
 @c.xtype_handler(None)
-class InformationRealization(c.GenericElement):
+class InformationRealization(modellingcore.TraceableElement):
     """A realization for a Class."""
 
     _xmltag = "ownedInformationRealizations"
-
-    source = c.AttrProxyAccessor(Class, "sourceElement")
-    target = c.AttrProxyAccessor(Class, "targetElement")
 
 
 @c.xtype_handler(None)

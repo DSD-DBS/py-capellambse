@@ -3,7 +3,7 @@
 
 """Classes handling Mode/State-Machines and related content."""
 from .. import common as c
-from . import capellacore
+from . import capellacore, modellingcore
 
 XT_TRAFO = "org.polarsys.capella.core.data.capellacommon:TransfoLink"
 XT_ABSTRACT_STATE_REAL = (
@@ -114,11 +114,8 @@ class StateTransition(c.GenericElement):
 
 
 @c.xtype_handler(None)
-class GenericTrace(c.GenericElement):
+class GenericTrace(modellingcore.TraceableElement):
     """A trace between two elements."""
-
-    source = c.AttrProxyAccessor(c.GenericElement, attr="sourceElement")
-    target = c.AttrProxyAccessor(c.GenericElement, attr="targetElement")
 
     @property
     def name(self) -> str:  # type: ignore[override]
