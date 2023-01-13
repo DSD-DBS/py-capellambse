@@ -37,6 +37,17 @@ XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
 
 
 @c.xtype_handler(None)
+class ControlNode(c.GenericElement):
+    """A node with a specific control-kind."""
+
+    _xmltag = "ownedSequenceNodes"
+
+    kind = xmltools.EnumAttributeProperty(
+        "_element", "kind", modeltypes.CollectionKind, writable=False
+    )
+
+
+@c.xtype_handler(None)
 class FunctionRealization(c.GenericElement):
     """A realization that links to a function."""
 

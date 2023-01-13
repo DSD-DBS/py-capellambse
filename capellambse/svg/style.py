@@ -19,7 +19,7 @@ from svgwrite import base, gradients
 from capellambse import diagram
 
 if t.TYPE_CHECKING:
-    from .drawing import Drawing
+    pass
 
 logger = logging.getLogger(__name__)
 RE_ELMCLASS = re.compile(r"^([A-Z][a-z_]*)(\.[A-Za-z][A-Za-z0-9_]*)?(:.+)?$")
@@ -393,7 +393,9 @@ class StyleBuilder:
         self.styles = self._make_styles()
 
     def _make_styles(self) -> dict[str, dict[str, diagram.CSSdef]]:
-        styles = diagram.STYLES["__GLOBAL__"].copy()
+        global_styles = diagram.STYLES["__GLOBAL__"]
+        assert isinstance(global_styles, dict)
+        styles = global_styles.copy()
         try:
             deep_update_dict(
                 styles, diagram.STYLES[self.class_]  # type: ignore[index]
