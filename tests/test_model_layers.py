@@ -692,6 +692,25 @@ def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
     )
 
 
+@pytest.mark.parametrize(
+    ["chain_uuid", "control_nodes"],
+    [
+        pytest.param(
+            "d588e41f-ec4d-4fa9-ad6d-056868c66274", 3, id="OperationalProcess"
+        ),
+        pytest.param(
+            "dfc4341d-253a-4ae9-8a30-63a9d9faca39", 9, id="FunctionalChain"
+        ),
+    ],
+)
+def test_FunctionalChainInvolvement_has_control_nodes(
+    model_5_2: capellambse.MelodyModel, chain_uuid: str, control_nodes: int
+) -> None:
+    chain = model_5_2.by_uuid(chain_uuid)
+
+    assert len(chain.control_nodes) == control_nodes
+
+
 class TestArchitectureLayers:
     @pytest.mark.parametrize(
         "layer,definitions",
