@@ -69,6 +69,21 @@ We additionally recommend that you set up your editor / IDE as follows.
   save. Language server clients are available for a wide range of editors, from
   Vim/Emacs to PyCharm/IDEA.
 
+Quality controls
+----------------
+
+We rely on pre-commit__ to perform basic quality control / self assessment.
+
+__ https://pre-commit.com/
+
+Commit message format
+---------------------
+
+Within the project core group we agreed on using `Conventional Commits`__.
+Compliance checking is automated via pre-commit.
+
+__ https://www.conventionalcommits.org/en/v1.0.0/#summary
+
 Code style
 ----------
 
