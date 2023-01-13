@@ -22,10 +22,6 @@ from ..crosslayer import (
 
 XT_ARCH = "org.polarsys.capella.core.data.oa:OperationalAnalysis"
 
-XT_EOCI = (
-    "org.polarsys.capella.core.data.oa:EntityOperationalCapabilityInvolvement"
-)
-
 
 @c.xtype_handler(XT_ARCH)
 class OperationalActivity(fa.AbstractFunction):
