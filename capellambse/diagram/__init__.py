@@ -12,3 +12,4 @@ from ._vector2d import *
 from .capstyle import *
 from ._diagram import *
 from ._json_enc import *
+from ._styleclass import *
