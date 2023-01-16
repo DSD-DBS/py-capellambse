@@ -18,7 +18,8 @@ from lxml import builder, etree, html
 
 import capellambse
 
-from . import elements
+from . import _capellareq as cr
+from . import _requirements as rq
 
 NS = "http://www.omg.org/spec/ReqIF/20110401/reqif.xsd"
 SCHEMA = "https://www.omg.org/spec/ReqIF/20110401/reqif.xsd"
@@ -42,9 +43,7 @@ E = builder.ElementMaker(namespace=NS)
 
 class _AttributeDefinition(t.NamedTuple):
     modelobj: (
-        elements.AttributeDefinition
-        | elements.AttributeDefinitionEnumeration
-        | None
+        rq.AttributeDefinition | rq.AttributeDefinitionEnumeration | None
     )
     type: str
 
@@ -55,7 +54,7 @@ class _AttributeDefinition(t.NamedTuple):
 
 
 def export_module(
-    module: elements.RequirementsModule,
+    module: cr.CapellaModule,
     target: str | os.PathLike | t.IO[bytes],
     *,
     metadata: cabc.Mapping[str, t.Any] | None = None,
@@ -79,7 +78,7 @@ def export_module(
     if not isinstance(target, (str, os.PathLike)):
         ctx: t.ContextManager[t.IO[bytes]] = contextlib.nullcontext(target)
     else:
-        ctx = open(target, "wb")
+        ctx = open(target, "wb")  # pylint: disable=consider-using-with
 
     with contextlib.ExitStack() as stack:
         container = stack.enter_context(ctx)
@@ -96,7 +95,7 @@ def export_module(
 
 
 def _build_header(
-    module: elements.RequirementsModule,
+    module: cr.CapellaModule,
     metadata: cabc.Mapping[str, t.Any] | None = None,
 ) -> tuple[etree._Element, str]:
     if metadata is None:
@@ -128,9 +127,7 @@ def _build_header(
     return wrapper, creation_time
 
 
-def _build_content(
-    module: elements.RequirementsModule, timestamp: str
-) -> etree._Element:
+def _build_content(module: cr.CapellaModule, timestamp: str) -> etree._Element:
     content = etree.Element("REQ-IF-CONTENT")
 
     datatypes = etree.Element("DATATYPES")
@@ -225,7 +222,7 @@ def _build_datatypes(
         }
         elem.attrib.update(type_attrs.get(attrtype, {}))
 
-        if isinstance(attrdef, elements.AttributeDefinitionEnumeration):
+        if isinstance(attrdef, rq.AttributeDefinitionEnumeration):
             values = etree.Element("SPECIFIED-VALUES")
             for i in attrdef.data_type.values:
                 v = etree.Element("ENUM-VALUE")
@@ -242,7 +239,7 @@ def _build_datatypes(
 
 
 def _build_specification_type(
-    module: elements.RequirementsModule, timestamp: str
+    module: cr.CapellaModule, timestamp: str
 ) -> etree._Element:
     module_type = module.type
     identifier = (
@@ -302,10 +299,10 @@ def _build_spec_object_types(
     timestamp: str,
 ) -> cabc.Iterable[etree._Element]:
     for reqtype, attr_defs in reqtypes:
-        modelobj: elements.RequirementType | None
+        modelobj: rq.RequirementType | None
         if reqtype:
             modelobj = model.by_uuid(reqtype)  # type: ignore[assignment]
-            assert isinstance(modelobj, elements.RequirementType)
+            assert isinstance(modelobj, rq.RequirementType)
             reqtype = reqtype.upper()
         else:
             modelobj = None
@@ -371,7 +368,7 @@ def _build_spec_object_types(
 
 
 def _build_spec_objects(
-    parent: elements.RequirementsModule | elements.RequirementsFolder,
+    parent: cr.CapellaModule | rq.Folder,
     timestamp: str,
 ) -> cabc.Iterable[etree._Element]:
     for req in parent.requirements:
@@ -381,9 +378,7 @@ def _build_spec_objects(
         yield from _build_spec_objects(folder, timestamp)
 
 
-def _build_spec_object(
-    req: elements.Requirement, timestamp: str
-) -> etree._Element:
+def _build_spec_object(req: rq.Requirement, timestamp: str) -> etree._Element:
     obj = etree.Element("SPEC-OBJECT")
     obj.set("IDENTIFIER", "_" + req.uuid.upper())
     obj.set("LAST-CHANGE", timestamp)
@@ -407,7 +402,7 @@ def _build_spec_object(
 
 
 def _build_standard_attribute_values(
-    req: elements.Requirement,
+    req: rq.Requirement,
 ) -> t.Iterable[etree._Element]:
     if req.type:
         reqtype_ref = req.type.uuid.upper()
@@ -449,23 +444,17 @@ def _build_standard_attribute_values(
 
 
 def _build_attribute_values(
-    req: elements.Requirement,
+    req: rq.Requirement,
 ) -> t.Iterable[etree._Element]:
-    factories = {
-        elements.XT_REQ_ATTR_BOOLEANVALUE: _build_attribute_value_simple,
-        elements.XT_REQ_ATTR_DATEVALUE: _build_attribute_value_simple,
-        elements.XT_REQ_ATTR_INTEGERVALUE: _build_attribute_value_simple,
-        elements.XT_REQ_ATTR_REALVALUE: _build_attribute_value_simple,
-        elements.XT_REQ_ATTR_STRINGVALUE: _build_attribute_value_simple,
-        elements.XT_REQ_ATTR_ENUMVALUE: _build_attribute_value_enum,
-    }
     for attr in req.attributes:
-        factory = factories[attr.xtype]
-        yield factory(attr)
+        if isinstance(attr, rq.EnumerationValueAttribute):
+            yield _build_attribute_value_enum(attr)
+        else:
+            yield _build_attribute_value_simple(attr)
 
 
 def _build_attribute_value_simple(
-    attr: elements.AbstractRequirementsAttribute,
+    attr: rq.AbstractRequirementsAttribute,
 ) -> etree._Element:
     attrtype = _attrtype2reqif(attr)
     obj = etree.Element(f"ATTRIBUTE-VALUE-{attrtype}")
@@ -501,7 +490,7 @@ def _build_attribute_value_simple(
 
 
 def _build_attribute_value_enum(
-    attribute: elements.AbstractRequirementsAttribute,
+    attribute: rq.AbstractRequirementsAttribute,
 ) -> etree._Element:
     obj = etree.Element("ATTRIBUTE-VALUE-ENUMERATION")
 
@@ -515,9 +504,9 @@ def _build_attribute_value_enum(
 
 
 def _build_specifications(
-    module: elements.RequirementsModule, timestamp: str
+    module: cr.CapellaModule, timestamp: str
 ) -> cabc.Iterable[etree._Element]:
-    def create_hierarchy_object(req: elements.Requirement) -> etree._Element:
+    def create_hierarchy_object(req: rq.Requirement) -> etree._Element:
         id = "_" + req.uuid.upper()
         id_hier = id + "--HIER"
         return E(
@@ -527,7 +516,7 @@ def _build_specifications(
         )
 
     def create_hierarchy_folder(
-        folder: elements.RequirementsModule | elements.RequirementsFolder,
+        folder: cr.CapellaModule | rq.Folder,
     ) -> cabc.Iterable[etree._Element]:
         for req in folder.requirements:
             yield create_hierarchy_object(req)
@@ -592,7 +581,7 @@ def _build_specifications(
 
 
 def _ref_attribute_definition(
-    type: str, adef: elements.AttributeDefinition | None
+    type: str, adef: rq.AttributeDefinition | None
 ) -> etree._Element:
     if adef is not None:
         reftext = f"_{adef.uuid.upper()}--{type}"
@@ -616,12 +605,12 @@ def _add_common_attributes(obj: t.Any | None, element: etree._Element) -> None:
 
 
 def _collect_objects(
-    module: elements.RequirementsModule,
+    module: cr.CapellaModule,
 ) -> dict[str | None, set[_AttributeDefinition]]:
     requirements: set[str] = set()
     req_types: dict[str | None, set[_AttributeDefinition]] = {}
 
-    def collect_requirement(i: elements.Requirement) -> None:
+    def collect_requirement(i: rq.Requirement) -> None:
         if i.uuid in requirements:
             return
         requirements.add(i.uuid)
@@ -631,7 +620,7 @@ def _collect_objects(
             attr_definitions.add(adef)
 
     def collect_folder(
-        i: elements.RequirementsFolder | elements.RequirementsModule,
+        i: rq.Folder | cr.CapellaModule,
     ) -> None:
         for req in i.requirements:
             collect_requirement(req)
@@ -643,7 +632,7 @@ def _collect_objects(
 
 
 def _attrtype2reqif(
-    attrtype: elements.AbstractRequirementsAttribute,
+    attrtype: rq.AbstractRequirementsAttribute,
 ) -> str:
     m = re.fullmatch("([A-Z][A-Za-z]*)ValueAttribute", type(attrtype).__name__)
     assert m and m.group(1)

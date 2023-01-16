@@ -35,10 +35,7 @@ display here as that</p>
     "expected",
     [
         pytest.param(
-            (
-                "<RequirementsFolder 'Folder' "
-                "(e16f5cc1-3299-43d0-b1a0-82d31a137111)>"
-            ),
+            "<Folder 'Folder' (e16f5cc1-3299-43d0-b1a0-82d31a137111)>",
             id="ReqIFName",
         ),
         pytest.param(
@@ -51,7 +48,7 @@ display here as that</p>
         ),
         pytest.param(
             (
-                "<RequirementsTypesFolder 'Types'"
+                "<CapellaTypesFolder 'Types'"
                 " (67bba9cf-953c-4f0b-9986-41991c68d241)>"
             ),
             id="Only ReqIFLongName",
@@ -69,7 +66,7 @@ display here as that</p>
         ),
         pytest.param(
             (
-                "<RequirementsIncRelation 'Controlling the weather' from"
+                "<CapellaIncomingRelation 'Controlling the weather' from"
                 " <Requirement 'TestReq1'"
                 " (3c2d312c-37c9-41b5-8c32-67578fa52dc3)>"
                 " to <Entity 'Weather' (4bf0356c-89dd-45e9-b8a6-e0332c026d33)>"
@@ -193,7 +190,7 @@ class TestRequirementAttributes:
         self, model: capellambse.MelodyModel
     ) -> None:
         module = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
-        assert isinstance(module, reqif.RequirementsModule)
+        assert isinstance(module, reqif.CapellaModule)
         attr = module.attributes[0]
 
         assert len(module.attributes) == 1
@@ -289,6 +286,7 @@ class TestRequirementRelations:
 
         relations = obj.relations
 
+        assert isinstance(relations, capellambse.model.ElementList)
         assert all(
             isinstance(i, reqif.AbstractRequirementsRelation)
             for i in relations
@@ -301,7 +299,7 @@ class TestReqIFAccess:
         self, model: capellambse.MelodyModel
     ):
         mod = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
-        assert isinstance(mod, reqif.RequirementsModule)
+        assert isinstance(mod, reqif.CapellaModule)
 
         assert len(mod.folders) == 1
         assert len(mod.requirements) == 1
@@ -319,7 +317,7 @@ class TestReqIFAccess:
         self, model: capellambse.MelodyModel
     ):
         folder = model.by_uuid("e16f5cc1-3299-43d0-b1a0-82d31a137111")
-        assert isinstance(folder, reqif.RequirementsFolder)
+        assert isinstance(folder, reqif.Folder)
 
         assert len(folder.folders) == 1
         assert len(folder.requirements) == 2
@@ -447,7 +445,9 @@ class TestReqIFModification:
         reltype = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
         new_rel = req.relations.create(target=target, type=reltype)
 
+        assert isinstance(req.relations, capellambse.model.ElementList)
         assert new_rel in req.relations
+        assert isinstance(target.relations, capellambse.model.ElementList)
         assert new_rel in target.relations
 
     TEST_DATETIME = datetime.datetime(1987, 7, 27)
@@ -768,7 +768,7 @@ class TestRequirementsFiltering:
     reqtype_uuid = "db47fca9-ddb6-4397-8d4b-e397e53d277e"
 
     def test_filtering_by_type_name(self, model: capellambse.MelodyModel):
-        requirements = model.search(reqif.XT_REQUIREMENT)
+        requirements = model.search(reqif.Requirement)
         rt = model.by_uuid(self.reqtype_uuid)
         assert isinstance(rt, reqif.RequirementType)
 
@@ -778,7 +778,7 @@ class TestRequirementsFiltering:
         assert uuids & self.uuids == self.uuids
 
     def test_filtering_by_type_names(self, model: capellambse.MelodyModel):
-        requirements = model.search(reqif.XT_REQUIREMENT)
+        requirements = model.search(reqif.Requirement)
         rt1 = model.by_uuid(self.reqtype_uuid)
         rt2 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
         assert isinstance(rt1, reqif.RequirementType)
@@ -793,14 +793,14 @@ class TestRequirementsFiltering:
     def test_filtering_by_RequirementType(
         self, model: capellambse.MelodyModel
     ):
-        requirements = model.search(reqif.XT_REQUIREMENT)
+        requirements = model.search(reqif.Requirement)
         rt = model.by_uuid(self.reqtype_uuid)
 
         uuids = {r.uuid for r in requirements.by_type(rt)}
         assert uuids & self.uuids == self.uuids
 
     def test_filtering_by_types(self, model: capellambse.MelodyModel):
-        requirements = model.search(reqif.XT_REQUIREMENT)
+        requirements = model.search(reqif.Requirement)
         rt1 = model.by_uuid(self.reqtype_uuid)
         rt2 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
         expected_uuids = self.uuids | {"db4d4c74-b913-4d9a-8905-7d93d3360560"}
@@ -809,7 +809,7 @@ class TestRequirementsFiltering:
         assert uuids & expected_uuids == expected_uuids
 
     def test_filtering_by_name_and_type(self, model: capellambse.MelodyModel):
-        requirements = model.search(reqif.XT_REQUIREMENT)
+        requirements = model.search(reqif.Requirement)
         rt1 = model.by_uuid(self.reqtype_uuid)
         rt2 = model.by_uuid("00195554-8fae-4687-86ca-77c93330893d")
         assert isinstance(rt1, reqif.RequirementType)
@@ -823,7 +823,7 @@ class TestRequirementsFiltering:
     def test_filtering_by_type_None_returns_requirements_with_undefined_type(
         self, model: capellambse.MelodyModel
     ):
-        requirements = model.search(reqif.XT_REQUIREMENT)
+        requirements = model.search(reqif.Requirement)
         undefined_type_reqs = requirements.by_type(None)
         req = undefined_type_reqs[0]
 
@@ -883,6 +883,7 @@ class TestRequirementsFiltering:
             related = obj.requirements
         filtered_related = related.by_relation_class(relation_class)
 
+        assert isinstance(filtered_related, capellambse.model.ElementList)
         assert {i.uuid for i in filtered_related} == target_uuids
 
     def test_attributes_filtering_by_definition_long_name(
@@ -903,9 +904,16 @@ class TestRequirementsFiltering:
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
         related_objs = req.related
+        assert isinstance(related_objs, capellambse.model.ElementList)
 
-        assert len(related_objs[:]) == 4
-        assert related_objs is not related_objs[:]
+        sliced = related_objs[:]
+
+        assert isinstance(sliced, capellambse.model.ElementList)
+        assert not isinstance(
+            sliced, capellambse.model.common.ElementListCouplingMixin
+        )
+        assert len(sliced) == 4
+        assert related_objs is not sliced
 
     def test_Requirement_is_hashable(self, model: capellambse.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
