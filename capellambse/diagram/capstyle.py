@@ -285,6 +285,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": RGB(255, 255, 203),
             "stroke": RGB(255, 204, 102),
             "text_fill": RGB(0, 0, 0),
+            "text_position": "always_top",
         },
         "Box.Requirement": {  # ReqVP_Requirement
             "fill": COLORS["light_purple"],
@@ -326,6 +327,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "ry": "10px",
             "stroke": COLORS["_CAP_Class_Border_Brown"],
             "text_fill": COLORS["black"],
+            "text_position": "always_top",
         },
         "Box.DataPkg": {  # DT_DataPkg
             "fill": [
@@ -339,6 +341,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_Class_Brown"],
             "stroke": COLORS["_CAP_Datatype_Border_Gray"],
             "text_fill": COLORS["black"],
+            "text_position": "always_top",
         },
         "Box.ExchangeItem": {  # DT_ExchangeItem
             "fill": COLORS["_CAP_ExchangeItem_Pinkkish"],
@@ -439,6 +442,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Box.LogicalActor": {  # Logical Actors
             "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
             "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_anchor": "start",
             "text_fill": COLORS["_CAP_Actor_Blue_label"],
         },
         "Box.LogicalComponent": {  # LAB Logical Component
@@ -447,6 +451,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 COLORS["_CAP_Component_Blue"],
             ],
             "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_anchor": "start",
             "text_fill": COLORS["_CAP_Component_Label_Blue"],
         },
         "Box.LogicalHumanActor": {  # LAB Logical Human Actor
@@ -455,6 +460,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 COLORS["_CAP_Component_Blue"],
             ],
             "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_anchor": "start",
             "text_fill": COLORS["_CAP_Component_Label_Blue"],
         },
         "Box.LogicalHumanComponent": {  # LAB Logical Human Component
@@ -463,6 +469,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 COLORS["_CAP_Component_Blue"],
             ],
             "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_anchor": "start",
             "text_fill": COLORS["_CAP_Component_Label_Blue"],
         },
         "Box.LogicalFunction": {  # LAB Logical Function
@@ -584,6 +591,8 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 COLORS["_CAP_MSM_Mode_Gray"],
             ],
             "stroke": COLORS["dark_gray"],
+            "text_align": "left",
+            "text_anchor": "start",
         },
         "Box.State": {
             "fill": COLORS["_CAP_MSM_State_Gray_min"],
@@ -595,6 +604,8 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
                 COLORS["_CAP_MSM_State_Gray"],
             ],
             "stroke": COLORS["dark_gray"],
+            "text_align": "left",
+            "text_anchor": "start",
         },
         "Edge.StateTransition": {
             "marker-end": "FineArrowMark",
@@ -653,6 +664,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_Activity_Orange"],
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
             "text_fill": COLORS["_CAP_xAB_Activity_Label_Orange"],
+            "text_position": "always_top",
         },
         "Box.OperationalActor": {
             "fill": [
@@ -695,6 +707,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Box.OperationalActivity": {
             "fill": COLORS["_CAP_Activity_Orange"],
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
+            "text_position": "always_top",
         },
         "Edge.OperationalExchange": {
             "marker-end": "FineArrowMark",
@@ -713,6 +726,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "ry": "10px",
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
             "text_fill": COLORS["_CAP_xAB_Activity_Label_Orange"],
+            "text_position": "always_top",
         },
         "Box.OperationalProcess": {
             "stroke": COLORS["black"],
@@ -751,6 +765,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             ],
             "stroke": COLORS["_CAP_Node_Yellow_Border"],
             "text_fill": COLORS["_CAP_Node_Yellow_Label"],
+            "text_position": "always_top",
         },
         "Box.PhysicalFunction": {
             "fill": COLORS["_CAP_xAB_Function_Green"],

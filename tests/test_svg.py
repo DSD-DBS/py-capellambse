@@ -494,10 +494,10 @@ class TestSVGHelpers:
     def test_check_for_horizontal_overflow_recognizes_tabs_and_breaks(
         self,
     ) -> None:
-        lines, margin, max_text_width = helpers.check_for_horizontal_overflow(
+        lines, width, max_text_width = helpers.check_for_horizontal_overflow(
             "             • item 1\n             • item 2", 100, 0, 0
         )
         assert lines == ["             • item 1", "             • item 2"]
-        assert 10 <= margin < 13
+        assert 75 <= width <= 100
         for line in lines:
             assert capellambse.helpers.extent_func(line)[0] <= max_text_width
