@@ -30,6 +30,7 @@ TEST_DIAGS = [
     "[OCB] Operational Capabilities",
     "[OPD] Obtain food via hunting",
     "[MSM] States of Functional Human Being",
+    "[MSM] Weather Modes",
     "[SAB] System",
     "[OEBD] Operational Context",
     "[PAB] Physical System",
