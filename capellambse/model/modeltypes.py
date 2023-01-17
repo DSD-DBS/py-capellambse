@@ -208,3 +208,11 @@ class ScenarioKind(_StringyEnumMixin, _enum.Enum):
     FUNCTIONAL = _enum.auto()
     INTERACTION = _enum.auto()
     INTERFACE = _enum.auto()
+
+
+class ControlNodeKind(_StringyEnumMixin, _enum.Enum):
+    """ControlNode kind."""
+
+    OR = _enum.auto()
+    AND = _enum.auto()
+    ITERATE = _enum.auto()
