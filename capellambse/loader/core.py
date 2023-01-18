@@ -731,6 +731,7 @@ class MelodyLoader:
         warnings.warn(
             "find_by_xsi_type is deprecated, use `iterall_xt` instead",
             DeprecationWarning,
+            stacklevel=2,
         )
 
         if roots is None:
