@@ -34,15 +34,17 @@ try:
                ...
         """
 
-        name = "Capella model"
+        name = "CAPELLA_MODEL"
 
         def convert(self, value: t.Any, param, ctx) -> capellambse.MelodyModel:
-            del param, ctx
-
             if isinstance(value, capellambse.MelodyModel):
                 return value
 
-            return loadcli(value)
+            try:
+                return loadcli(value)
+            except ValueError as err:
+                self.fail(err.args[0], param, ctx)
+                assert False
 
 except ImportError:
 
