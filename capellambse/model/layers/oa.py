@@ -294,6 +294,7 @@ c.set_accessor(
     ),
 )
 c.set_self_references(
+    (OperationalActivity, "activities"),
     (OperationalActivityPkg, "packages"),
     (OperationalCapabilityPkg, "packages"),
     (Entity, "entities"),

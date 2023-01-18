@@ -330,6 +330,7 @@ c.set_accessor(
 )
 c.set_self_references(
     (MissionPkg, "packages"),
+    (SystemComponent, "components"),
     (SystemComponentPkg, "packages"),
     (SystemFunction, "functions"),
     (SystemFunctionPkg, "packages"),

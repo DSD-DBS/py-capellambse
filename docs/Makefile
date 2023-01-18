@@ -28,3 +28,8 @@ apidoc:
 	sphinx-apidoc --output-dir source/code --force .. ../capellambse/sphinx.py ../capellambse/repl.py
 
 .PHONY: apidoc
+
+.PHONY: serve
+html: apidoc
+serve: html
+	cd build/html && exec python -m http.server --bind 127.0.0.1
