@@ -15,6 +15,20 @@ Python-Capellambse
 .. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
   :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
 
+.. image:: https://img.shields.io/github/license/dsd-dbs/py-capellambse
+   :target: LICENSES/Apache-2.0.txt
+   :alt: License
+
+.. image:: https://api.reuse.software/badge/github.com/DSD-DBS/py-capellambse
+   :target: https://api.reuse.software/info/github.com/DSD-DBS/py-capellambse
+   :alt: REUSE status
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
+
+.. image:: https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336
+   :target: https://pycqa.github.io/isort/
+
 *A Python 3 headless implementation of the Capella modeling tool*
 
 Intro
