@@ -764,7 +764,8 @@ The predator is far away</bodies>
           </ownedConstraints>
         </ownedStateEvents>
         <ownedStateEvents xsi:type="org.polarsys.capella.core.data.capellacommon:TimeEvent"
-            id="680f13b6-c446-4510-974f-0de9da6bd2be" name="TimeEvent 3" expression="#20925467-cfbf-47bc-bad6-ad842973f4d4">
+            id="680f13b6-c446-4510-974f-0de9da6bd2be" name="TimeEvent 3" expression="#20925467-cfbf-47bc-bad6-ad842973f4d4"
+            kind="AFTER">
           <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
               id="20925467-cfbf-47bc-bad6-ad842973f4d4" name="">
             <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"

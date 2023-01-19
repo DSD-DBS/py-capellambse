@@ -12,7 +12,7 @@
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Mode%20State%20Machine']"/>
         <target xmi:type="org.polarsys.capella.core.data.capellacommon:Region" href="Melody%20Model%20Test.capella#eeeb98a7-6063-4115-8b4b-40a51cc0df49"/>
       </ownedRepresentationDescriptors>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_KLGoEKyJEeqCdMaqCWkrKg" name="[MSM] Weather Modes" repPath="#_KK2wcKyJEeqCdMaqCWkrKg" changeId="ad7ad644-891d-4133-bfa7-a2428cafaa7a">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_KLGoEKyJEeqCdMaqCWkrKg" name="[MSM] Weather Modes" repPath="#_KK2wcKyJEeqCdMaqCWkrKg" changeId="2ecc9bed-c64f-436c-86e3-daa962188a17">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Mode%20State%20Machine']"/>
         <target xmi:type="org.polarsys.capella.core.data.capellacommon:Region" href="Melody%20Model%20Test.capella#a94806d8-71bb-4eb8-987b-bdce6ca99cb8"/>
       </ownedRepresentationDescriptors>
@@ -1905,7 +1905,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Mode%20State%20Machine']/@defaultLayer/@edgeMappings[name='MSM_Transition']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_uoAC9KyJEeqCdMaqCWkrKg" name="(AT) Night, (WHEN) Sleeping [SUN = 0] " sourceNode="_o9NqYKyJEeqCdMaqCWkrKg" targetNode="_p-qgUKyJEeqCdMaqCWkrKg">
+    <ownedDiagramElements xmi:type="diagram:DEdge" uid="_uoAC9KyJEeqCdMaqCWkrKg" name="(AFTER) Night, (WHEN) Sleeping [SUN = 0] " sourceNode="_o9NqYKyJEeqCdMaqCWkrKg" targetNode="_p-qgUKyJEeqCdMaqCWkrKg">
       <target xmi:type="org.polarsys.capella.core.data.capellacommon:StateTransition" href="Melody%20Model%20Test.capella#d0ea4afa-4231-4a3d-b1db-03655738dab8"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.capellacommon:StateTransition" href="Melody%20Model%20Test.capella#d0ea4afa-4231-4a3d-b1db-03655738dab8"/>
       <ownedStyle xmi:type="diagram:EdgeStyle" uid="_uoAC9ayJEeqCdMaqCWkrKg" strokeColor="0,0,0">
