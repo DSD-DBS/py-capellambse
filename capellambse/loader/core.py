@@ -19,12 +19,14 @@ import operator
 import os.path
 import pathlib
 import re
+import shutil
 import sys
+import tempfile
 import typing as t
 import urllib.parse
 import uuid
 
-from lxml import etree
+from lxml import builder, etree
 
 import capellambse
 import capellambse._namespaces as _n
@@ -34,6 +36,7 @@ from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
 LOGGER = logging.getLogger(__name__)
+PROJECT_NATURE = "org.polarsys.capella.project.nature"
 VISUAL_EXTS = frozenset(
     {
         ".aird",
@@ -1178,3 +1181,58 @@ class MelodyLoader:
             )
 
         return info
+
+    @contextlib.contextmanager
+    def write_tmp_project_dir(self) -> cabc.Iterator[pathlib.Path]:
+        """Write relevant Capella project files into a temp. directory.
+
+        This method writes the loaded project files (model and, if
+        given, library files) into a temporary directory. This is of
+        interest when one wants the Capella CLI to import the project
+        for instance. For the Capella model project this method ensures
+        that a ``.project`` file will be created. The model files will
+        be located in a subdirectory named `main_model` to separate them
+        from library files.
+        """
+        E = builder.ElementMaker()
+        paths = list(self.trees.keys())
+        modelfiles = [
+            p.relative_to(p.parts[0]) for p in paths if p.parts[0] == "\x00"
+        ]
+        assert modelfiles
+        libfiles = [
+            p.relative_to(p.parts[0]) for p in paths if p.parts[0] != "\x00"
+        ]
+        tmp_model_dir: pathlib.Path | str
+        with tempfile.TemporaryDirectory() as tmp_model_dir:
+            tmp_model_dir = pathlib.Path(tmp_model_dir)
+            main_model_dir = tmp_model_dir / "main_model"
+            main_model_dir.mkdir()
+
+            # write .project file
+            ele = next(self.iterall("ownedModelRoots"), None)
+            assert ele is not None
+            xml = E.projectDescription(
+                E.name(ele.attrib["name"]),
+                E.comment(),
+                E.projects(),
+                E.buildSpec(),
+                E.natures(E.nature(PROJECT_NATURE)),
+            )
+            pathlib.Path(main_model_dir / ".project").write_bytes(
+                etree.tostring(
+                    xml,
+                    xml_declaration=True,
+                    pretty_print=True,
+                    encoding="utf-8",
+                ),
+            )
+            for dst, paths in (
+                (main_model_dir, modelfiles),
+                (tmp_model_dir, libfiles),
+            ):
+                for path in paths:
+                    with self.filehandler.open(path) as fsrc:
+                        with open(dst / path.parts[-1], "wb") as fdst:
+                            shutil.copyfileobj(fsrc, fdst)
+            yield tmp_model_dir
