@@ -15,6 +15,8 @@ INSTALLED_PACKAGE = pathlib.Path(capellambse.__file__).parent
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
 TEST_MODEL = "Melody Model Test.aird"
 
+capellambse.load_model_extensions()
+
 
 @pytest.fixture(scope="session")
 def session_shared_model() -> capellambse.MelodyModel:
