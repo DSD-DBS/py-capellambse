@@ -11,10 +11,6 @@ import collections
 import collections.abc as cabc
 import typing as t
 
-import markupsafe
-
-from capellambse.loader import xmltools
-
 S = t.TypeVar("S", bound=t.Optional[str])
 T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
@@ -60,7 +56,7 @@ def build_xtype(class_: type[ModelObject]) -> str:
 
 def enumliteral(
     generic_element: GenericElement, attr: str, default: str = "NOT_SET"
-) -> xmltools.AttributeProperty | str:
+) -> AttributeProperty | str:
     uuid = generic_element._element.attrib.get(attr)
     if uuid is None:
         return default
@@ -143,5 +139,6 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
 
 from .accessors import *
 from .element import *
+from .properties import *
 
 set_accessor(GenericElement, "parent", ParentAccessor(GenericElement))

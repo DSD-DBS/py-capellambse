@@ -44,6 +44,7 @@ If you want a quickstart at how to use this package, head right into the
    start/installation
    start/intro-to-api
    start/declarative
+   start/audit-events
 
 .. toctree::
    :caption: Tutorials

@@ -25,7 +25,6 @@ import capellambse
 import capellambse.helpers
 import capellambse.pvmt
 from capellambse import _diagram_cache, filehandler, loader
-from capellambse.loader import xmltools
 
 from . import common, diagram  # isort:skip
 
@@ -64,18 +63,16 @@ class MelodyModel:
         None, cacheattr="_MelodyModel__diagram_cache"
     )
 
-    uuid = xmltools.AttributeProperty(
-        "_element",
+    uuid = common.AttributeProperty(
         "id",
         writable=False,
         __doc__="The unique ID of the model's root element.",
     )
-    name = xmltools.AttributeProperty(
-        "_element", "name", __doc__="The name of this model."
-    )
+    name = common.AttributeProperty("name", __doc__="The name of this model.")
 
     _diagram_cache: filehandler.FileHandler
     _diagram_cache_subdir: pathlib.PurePosixPath
+    _constructed: bool
 
     def __init__(
         self,
@@ -218,6 +215,7 @@ class MelodyModel:
         """
         capellambse.load_model_extensions()
 
+        self._constructed = False
         self._loader = loader.MelodyLoader(path, **kwargs)
         self.info = self._loader.get_model_info()
         self.jupyter_untrusted = jupyter_untrusted
@@ -247,6 +245,8 @@ class MelodyModel:
             self._diagram_cache_subdir = pathlib.PurePosixPath(
                 diagram_cache_subdir or "/"
             )
+
+        self._constructed = True
 
     @property
     def _element(self) -> etree._Element:

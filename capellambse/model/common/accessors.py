@@ -449,11 +449,18 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             for e in self._getsubelems(obj)
             if e.get("id") is not None
         ]
-        return self._make_list(obj, elems)
+        rv = self._make_list(obj, elems)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
     def __set__(
         self, obj: element.ModelObject, value: str | T | cabc.Iterable[str | T]
     ) -> None:
+        if getattr(obj, "_constructed", True):
+            sys.audit("capellambse.setattr", obj, self.__name__, value)
+
         if self.aslist:
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
                 raise TypeError("Can only set list attribute to an iterable")
@@ -561,6 +568,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         obj: element.ModelObject,
     ) -> None:
         assert obj._model is elmlist._model
+
         elmlist._model._loader.idcache_remove(obj._element)
         elmlist._parent._element.remove(obj._element)
 
@@ -641,9 +649,15 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             return self
 
         elems = [self.__follow_ref(obj, i) for i in self.__find_refs(obj)]
-        return self._make_list(obj, elems)
+        rv = self._make_list(obj, elems)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
     def __set__(self, obj, value):
+        if obj._constructed:
+            sys.audit("capellambse.setattr", obj, self.__name__, value)
         if self.aslist is None:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError(f"{self._qualname} expects a single element")
@@ -799,7 +813,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         )
 
         rv = self._make_list(obj, elems)
-        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(
@@ -807,6 +823,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         obj: element.GenericElement,
         values: T | cabc.Iterable[T],
     ) -> None:
+        if obj._constructed:
+            sys.audit("capellambse.setattr", obj, self.__name__, values)
+
         if not isinstance(values, cabc.Iterable):
             values = (values,)
         elif self.aslist is None:
@@ -927,7 +946,11 @@ class AlternateAccessor(Accessor[T]):
         del objtype
         if obj is None:  # pragma: no cover
             return self
-        return self.class_.from_model(obj._model, obj._element)
+        rv = self.class_.from_model(obj._model, obj._element)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
 
 class ParentAccessor(PhysicalAccessor[T]):
@@ -948,8 +971,13 @@ class ParentAccessor(PhysicalAccessor[T]):
 
         parent = next(obj._model._loader.iterancestors(obj._element), None)
         if parent is None:
-            return None
-        return self.class_.from_model(obj._model, parent)
+            rv = None
+        else:
+            rv = self.class_.from_model(obj._model, parent)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
 
 class CustomAccessor(PhysicalAccessor[T]):
@@ -1071,6 +1099,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
     ) -> None:
         self._model = model
         self._element = elm
+        self._constructed = True
 
     def __delitem__(self, k: str) -> None:
         k = self._aliases.get(k, k)
@@ -1160,7 +1189,11 @@ class SpecificationAccessor(Accessor[_Specification]):
         except StopIteration:
             raise AttributeError("No specification found") from None
 
-        return _Specification(obj._model, spec_elm)
+        rv = _Specification(obj._model, spec_elm)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
 
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
@@ -1240,7 +1273,11 @@ class RoleTagAccessor(PhysicalAccessor):
             return self
 
         elts = list(obj._element.iterchildren(self.role_tag))
-        return self._make_list(obj, elts)
+        rv = self._make_list(obj, elts)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
 
 def no_list(
@@ -1329,6 +1366,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         if not isinstance(index, slice):
             index = slice(index, index + 1 or None)
         for obj in self[index]:
+            sys.audit(
+                "capellambse.delete", obj, accessor.__name__, index.start
+            )
             accessor.delete(self, obj)
         super().__delitem__(index)
 
@@ -1369,7 +1409,13 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create(self, *type_hints, **kw)
-        self._newlist_type().insert(self, len(self), newobj)
+        try:
+            sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
+            acc.insert(self, len(self), newobj)
+            self._newlist_type().insert(self, len(self), newobj)
+        except:
+            self._parent._element.remove(newobj._element)
+            raise
         return newobj
 
     def create_singleattr(self, arg: t.Any) -> T:
@@ -1392,7 +1438,13 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create_singleattr(self, arg)
-        self._newlist_type().insert(self, len(self), newobj)
+        try:
+            sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
+            acc.insert(self, len(self), newobj)
+            self._newlist_type().insert(self, len(self), newobj)
+        except:
+            self._parent._element.remove(newobj._element)
+            raise
         return newobj
 
     def delete_all(self, **kw: t.Any) -> None:
@@ -1412,5 +1464,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
+        if self._parent._constructed:
+            sys.audit(
+                "capellambse.insert", self._parent, acc.__name__, index, value
+            )
         acc.insert(self, index, value)
         self._newlist_type().insert(self, index, value)

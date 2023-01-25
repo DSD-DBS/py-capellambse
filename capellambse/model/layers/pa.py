@@ -9,8 +9,6 @@ from __future__ import annotations
 
 import operator
 
-from capellambse.loader import xmltools
-
 from .. import common as c
 from .. import crosslayer, diagram, modeltypes
 from ..crosslayer import capellacommon, cs, fa
@@ -59,11 +57,9 @@ class PhysicalComponent(cs.Component):
 
     _xmltag = "ownedPhysicalComponents"
 
-    nature = xmltools.EnumAttributeProperty(
-        "_element", "nature", modeltypes.Nature
-    )
-    kind = xmltools.EnumAttributeProperty(
-        "_element", "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
+    nature = c.EnumAttributeProperty("nature", modeltypes.Nature)
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
     )
 
     allocated_functions = c.LinkAccessor[PhysicalFunction](

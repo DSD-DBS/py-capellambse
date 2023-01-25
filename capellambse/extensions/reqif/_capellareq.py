@@ -16,6 +16,7 @@ __all__ = [
 
 import collections.abc as cabc
 import os
+import sys
 import typing as t
 
 from lxml import etree
@@ -120,8 +121,6 @@ class RequirementsRelationAccessor(
 ):
     """Searches for requirement relations in the architecture layer."""
 
-    # pylint: disable=abstract-method  # Only partially implemented for now
-
     __slots__ = ("aslist",)
 
     def __init__(self, *args, **kw) -> None:
@@ -134,25 +133,33 @@ class RequirementsRelationAccessor(
         if obj is None:  # pragma: no cover
             return self
 
-        rel_objs = list(
-            obj._model._loader.iterchildren_xt(
-                obj._element, c.build_xtype(CapellaIncomingRelation)
-            )
+        rv = self._make_list(obj, self._find_relations(obj))
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
+
+    def __set__(self, obj, value: t.Any) -> None:
+        if not isinstance(value, cabc.Iterable):
+            value = (value,)
+
+        if CapellaOutgoingRelation in [type(i) for i in value]:
+            raise NotImplementedError("Cannot insert CapellaOutgoingRelations")
+
+        if obj._constructed:
+            sys.audit("capellambse.setattr", obj, self.__name__, value)
+
+        for i in self._find_relations(obj):
+            i.getparent().remove(i)
+        obj._element.extend(value)
+
+    def _find_relations(self, obj) -> list[etree._Element]:
+        rels = obj._model.search(
+            CapellaIncomingRelation,
+            rq.InternalRelation,
+            CapellaOutgoingRelation,
         )
-
-        for i in obj._model._loader.iterall_xt(
-            c.build_xtype(CapellaOutgoingRelation)
-        ):
-            if CapellaOutgoingRelation.from_model(obj._model, i).source == obj:
-                rel_objs.append(i)
-
-        for i in obj._model._loader.iterall_xt(
-            c.build_xtype(rq.InternalRelation)
-        ):
-            rel = rq.InternalRelation.from_model(obj._model, i)
-            if obj in (rel.source, rel.target):
-                rel_objs.append(i)
-        return self._make_list(obj, rel_objs)
+        return [i._element for i in rels if obj in (i.source, i.target)]
 
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
@@ -180,6 +187,35 @@ class RequirementsRelationAccessor(
                 uuid=uuid,
                 xtype=c.build_xtype(cls),
             )
+
+    def delete(self, elmlist, obj) -> None:
+        assert self.aslist is not None
+        relations = self._find_relations(elmlist._parent)
+        for relation in relations:
+            if relation == obj._element:
+                obj.parent._model._loader.idcache_remove(relation)
+                obj.parent._element.remove(relation)
+                break
+        else:
+            raise ValueError("Cannot delete: Target object not in this list")
+
+    def insert(
+        self,
+        elmlist: c.ElementListCouplingMixin,
+        index: int,
+        value: c.ModelObject,
+    ) -> None:
+        if isinstance(value, CapellaOutgoingRelation):
+            parent = value.target._element
+        else:
+            assert isinstance(
+                value, (CapellaIncomingRelation, rq.InternalRelation)
+            )
+            assert elmlist._parent == value.source
+            parent = elmlist._parent._element
+
+        parent.insert(index, value._element)
+        elmlist._model._loader.idcache_index(value._element)
 
     def _find_relation_type(
         self, target: c.GenericElement
@@ -285,7 +321,11 @@ class ElementRelationAccessor(
         ):
             if obj in (relation.source, relation.target):
                 relations.append(relation._element)
-        return self._make_list(obj, relations)
+        rv = self._make_list(obj, relations)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None

@@ -26,9 +26,8 @@ from lxml import etree
 
 import capellambse
 from capellambse import helpers
-from capellambse.loader import xmltools
 
-from . import XTYPE_HANDLERS, T, U, accessors
+from . import XTYPE_HANDLERS, T, U, accessors, properties
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -107,17 +106,15 @@ class ModelObject(t.Protocol):
 class GenericElement:
     """Provides high-level access to a single model element."""
 
-    uuid = xmltools.AttributeProperty("_element", "id", writable=False)
+    _Self = t.TypeVar("_Self", bound="GenericElement")
+
+    uuid = properties.AttributeProperty("id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
-    name = xmltools.AttributeProperty(
-        "_element", "name", optional=True, default=""
+    name = properties.AttributeProperty("name", optional=True, default="")
+    description = properties.HTMLAttributeProperty(
+        "description", optional=True
     )
-    description = xmltools.HTMLAttributeProperty(
-        "_element", "description", optional=True
-    )
-    summary = xmltools.HTMLAttributeProperty(
-        "_element", "summary", optional=True
-    )
+    summary = properties.HTMLAttributeProperty("summary", optional=True)
     diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
     diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
@@ -126,11 +123,12 @@ class GenericElement:
     constraints: accessors.Accessor
     parent: accessors.ParentAccessor
 
+    _constructed: bool
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
 
     @property
-    def progress_status(self) -> xmltools.AttributeProperty | str:
+    def progress_status(self) -> properties.AttributeProperty | str:
         uuid = self._element.get("status")
         if uuid is None:
             return "NOT_SET"
@@ -139,8 +137,10 @@ class GenericElement:
 
     @classmethod
     def from_model(
-        cls: type[T], model: capellambse.MelodyModel, element: etree._Element
-    ) -> T:
+        cls: type[_Self],
+        model: capellambse.MelodyModel,
+        element: etree._Element,
+    ) -> _Self:
         """Wrap an existing model object.
 
         Parameters
@@ -177,6 +177,7 @@ class GenericElement:
         self = class_.__new__(class_)
         self._model = model
         self._element = element
+        self._constructed = True
         return self
 
     def __init__(
@@ -201,6 +202,7 @@ class GenericElement:
             raise TypeError(
                 f"Cannot instantiate {type(self).__name__} directly"
             )
+        self._constructed = False
         self._model = model
         self._element: etree._Element = etree.Element(self._xmltag)
         parent.append(self._element)
@@ -210,7 +212,7 @@ class GenericElement:
                     self._element.set(helpers.ATT_XT, val)
                 elif not isinstance(
                     getattr(type(self), key),
-                    (accessors.Accessor, xmltools.AttributeProperty),
+                    (accessors.Accessor, properties.AttributeProperty),
                 ):
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
@@ -221,6 +223,7 @@ class GenericElement:
         except BaseException:
             parent.remove(self._element)
             raise
+        self._constructed = True
 
     def __getattr__(self, attr: str) -> t.Any:
         raise AttributeError(f"{attr} isn't defined on {type(self).__name__}")

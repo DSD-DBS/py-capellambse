@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-from capellambse.loader import xmltools
 
 from .. import common as c
 from . import capellacore
@@ -35,9 +34,7 @@ class StateFragment(Execution):
 class CombinedFragment(Execution):
     """A combined fragment."""
 
-    operator = xmltools.AttributeProperty(
-        "_element", "operator", optional=True
-    )
+    operator = c.AttributeProperty("operator", optional=True)
     operands = c.AttrProxyAccessor(
         c.GenericElement, "referencedOperands", aslist=c.ElementList
     )

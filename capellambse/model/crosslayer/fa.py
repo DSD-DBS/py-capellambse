@@ -17,8 +17,6 @@ from __future__ import annotations
 import collections.abc as cabc
 import typing as t
 
-from capellambse.loader import xmltools
-
 from .. import common as c
 from .. import modeltypes
 from . import capellacommon, capellacore, information, interaction
@@ -42,8 +40,8 @@ class ControlNode(c.GenericElement):
 
     _xmltag = "ownedSequenceNodes"
 
-    kind = xmltools.EnumAttributeProperty(
-        "_element", "kind", modeltypes.ControlNodeKind, writable=False
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.ControlNodeKind, writable=False
     )
 
 
@@ -200,8 +198,8 @@ class ComponentPort(c.GenericElement):
 
     _xmltag = "ownedFeatures"
 
-    direction = xmltools.EnumAttributeProperty(
-        "_element", "orientation", modeltypes.FPortDir, writable=False
+    direction = c.EnumAttributeProperty(
+        "orientation", modeltypes.FPortDir, writable=False
     )
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor

@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+__all__ = ["AttributeAuditor", "WriteProtector"]
+
 import collections.abc as cabc
 import sys
 import typing as t
@@ -61,7 +63,7 @@ class AttributeAuditor:
         self.model = None
 
     def __audit(self, event: str, args: tuple[t.Any, ...]) -> None:
-        if event == "capellambse.read_attribute":
+        if event == "capellambse.getattr":
             obj, attr_name, attr_value = args
             if not hasattr(obj, "_model") or obj._model is not self.model:
                 return
@@ -69,4 +71,48 @@ class AttributeAuditor:
             if attr_name in self.attrs:
                 self.recorded_ids.add(
                     attr_value if attr_name == "uuid" else obj.uuid
+                )
+
+
+class WriteProtector:
+    """Prevents accidental modifications to a model.
+
+    This class intentionally has very limited features. It is intended
+    as inspiration and guidance for more specific classes that make more
+    sophisticated use of audit events.
+
+    This class also contains a publicly usable set of events that signify
+    changes to the model.
+    """
+
+    events: t.Final = frozenset(
+        {
+            "capellambse.create",
+            "capellambse.delete",
+            "capellambse.insert",
+            "capellambse.setattr",
+            "capellambse.setitem",
+        }
+    )
+    """Contains all built-in audit events that may modify the model."""
+
+    def __init__(self, model: capellambse.MelodyModel) -> None:
+        self.__model: capellambse.MelodyModel | None = model
+        sys.addaudithook(self.__audit)
+
+    def __enter__(self) -> None:
+        return None
+
+    def __exit__(self, *_: t.Any) -> None:
+        self.detach()
+
+    def detach(self) -> None:
+        self.__model = None
+
+    def __audit(self, event: str, args: tuple[t.Any, ...]) -> None:
+        if self.__model is not None and event in self.events:
+            obj: capellambse.model.GenericElement = args[0]
+            if obj._model is self.__model:
+                raise RuntimeError(
+                    f"Cannot modify the model {self.__model.info}"
                 )
