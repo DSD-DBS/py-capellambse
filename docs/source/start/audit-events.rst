@@ -43,7 +43,7 @@ The following table shows all audit events that are fired by ``capellambse``.
 +================================+============================================+
 | ``capellambse.getattr``        | An attribute is accessed for reading.      |
 |                                |                                            |
-| .. versionadded:: 0.5.7        | **Arguments:**                             |
+| .. versionadded:: 0.5.11       | **Arguments:**                             |
 |                                |                                            |
 |                                | 1. ``obj``: The object that was accessed.  |
 |                                | 2. ``attr``: The attribute on that object. |
@@ -66,13 +66,13 @@ The following table shows all audit events that are fired by ``capellambse``.
 |                                | ``capellambse.getattr``.                   |
 | .. versionadded:: pre-0.5      |                                            |
 |                                |                                            |
-| .. deprecated:: 0.5.7          |                                            |
+| .. deprecated:: 0.5.11         |                                            |
 |    Use the ``getattr`` event   |                                            |
 |    instead.                    |                                            |
 +--------------------------------+--------------------------------------------+
 | ``capellambse.setattr``        | An attribute is about to be changed.       |
 |                                |                                            |
-| .. versionadded:: 0.5.7        | **Arguments:**                             |
+| .. versionadded:: 0.5.11       | **Arguments:**                             |
 |                                |                                            |
 |                                | 1. ``obj``: The object being changed.      |
 |                                | 2. ``attr``: The name of the attribute.    |
@@ -80,7 +80,7 @@ The following table shows all audit events that are fired by ``capellambse``.
 +--------------------------------+--------------------------------------------+
 | ``capellambse.delete``         | An object or a list of objects is about to |
 |                                | be deleted from the model.                 |
-| .. versionadded:: 0.5.7        |                                            |
+| .. versionadded:: 0.5.11       |                                            |
 |                                | **Arguments:**                             |
 |                                |                                            |
 |                                | 1. ``parent``: The current parent object.  |
@@ -95,7 +95,7 @@ The following table shows all audit events that are fired by ``capellambse``.
 +--------------------------------+--------------------------------------------+
 | ``capellambse.insert``         | An item is about to be inserted into a     |
 |                                | coupled ``ElementList``.                   |
-| .. versionadded:: 0.5.7        |                                            |
+| .. versionadded:: 0.5.11       |                                            |
 |                                | **Arguments:**                             |
 |                                |                                            |
 |                                | 1. ``parent``: The object being changed.   |
@@ -109,7 +109,7 @@ The following table shows all audit events that are fired by ``capellambse``.
 +--------------------------------+--------------------------------------------+
 | ``capellambse.create``         | A new object was just created, but is not  |
 |                                | yet part of the model.                     |
-| .. versionadded:: 0.5.7        |                                            |
+| .. versionadded:: 0.5.11       |                                            |
 |                                | **Arguments:**                             |
 |                                |                                            |
 |                                | 1. ``parent``: The new parent object.      |
