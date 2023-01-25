@@ -195,7 +195,7 @@ class HTMLAttributeProperty(AttributeProperty):
     ) -> None:
         super().__init__(
             attribute,
-            default=None,
+            default="",
             returntype=markupsafe.Markup,
             optional=optional,
             writable=writable,
