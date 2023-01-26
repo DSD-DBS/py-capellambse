@@ -831,11 +831,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return rv
 
     def __set__(
-        self,
-        obj: element.GenericElement,
-        values: T | cabc.Iterable[T],
+        self, obj: element.ModelObject, values: T | cabc.Iterable[T]
     ) -> None:
-        if obj._constructed:
+        if getattr(obj, "_constructed", True):
             sys.audit("capellambse.setattr", obj, self.__name__, values)
 
         if not isinstance(values, cabc.Iterable):
