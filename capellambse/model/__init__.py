@@ -501,3 +501,10 @@ class MelodyModel:
         )
         with self._loader.write_tmp_project_dir() as tmp_project_dir:
             diagram_cache.export_diagrams(tmp_project_dir)
+
+    @property
+    def description_badge(self) -> str:
+        """Describe model contents distribution with an SVG badge."""
+        from capellambse.extensions import metrics
+
+        return metrics.get_summary_badge(self)
