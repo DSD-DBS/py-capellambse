@@ -81,8 +81,8 @@ class WriteProtector:
     as inspiration and guidance for more specific classes that make more
     sophisticated use of audit events.
 
-    This class also contains a publicly usable set of events that signify
-    changes to the model.
+    This class also contains a publicly usable set of events that
+    signify changes to the model.
     """
 
     events: t.Final = frozenset(

@@ -74,8 +74,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     _render: diagram.Diagram
     _error: BaseException
     _last_render_params: dict[str, t.Any] = {}
-    """
-    Additional rendering parameters for the cached rendered diagram.
+    """Additional rendering parameters for the cached rendered diagram.
 
     Rendering options for :class:`aird.Diagram`s. Handing over
     parameters that differ to these will force a fresh rendering of the
