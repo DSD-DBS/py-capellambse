@@ -480,9 +480,18 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             )
 
     def __delete__(self, obj: element.ModelObject) -> None:
+        if self.rootelem:
+            raise TypeError("Cannot delete due to 'rootelem' being set")
+        if self.follow_abstract:
+            raise TypeError("Cannot delete when following abstract types")
+
+        if getattr(obj, "_constructed", True):
+            sys.audit("capellambse.delete", obj, self.__name__, None)
+
         if self.aslist is not None:
-            list = self.__get__(obj)
-            list[:] = []
+            for i in self._getsubelems(obj):
+                if i.get("id") is not None:
+                    obj._element.remove(i)
         else:
             raise TypeError(f"Cannot delete {self._qualname}")
 
@@ -672,6 +681,9 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             self.__create_link(obj, v)
 
     def __delete__(self, obj):
+        if getattr(obj, "_constructed", True):
+            sys.audit("capellambse.delete", obj, self.__name__, None)
+
         refobjs = list(self.__find_refs(obj))
         for i in refobjs:
             obj._model._loader.idcache_remove(i)
@@ -835,6 +847,12 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
         assert isinstance(values, cabc.Iterable)
         self.__set_links(obj, values)
+
+    def __delete__(self, obj: element.ModelObject) -> None:
+        if getattr(obj, "_constructed", True):
+            sys.audit("capellambse.delete", obj, self.__name__, None)
+
+        del obj._element.attrib[self.attr]
 
     def insert(
         self,
@@ -1367,7 +1385,10 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             index = slice(index, index + 1 or None)
         for obj in self[index]:
             sys.audit(
-                "capellambse.delete", obj, accessor.__name__, index.start
+                "capellambse.delete",
+                self._parent,
+                accessor.__name__,
+                index.start,
             )
             accessor.delete(self, obj)
         super().__delitem__(index)

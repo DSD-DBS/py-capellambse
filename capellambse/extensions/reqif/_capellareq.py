@@ -153,6 +153,16 @@ class RequirementsRelationAccessor(
             i.getparent().remove(i)
         obj._element.extend(value)
 
+    def __delete__(self, obj) -> None:
+        assert self.aslist is not None
+
+        if getattr(obj, "_constructed", True):
+            sys.audit("capellambse.delete", obj, self.__name__, None)
+        for i in self._find_relations(obj):
+            parent = i.getparent()
+            assert parent is not None
+            parent.remove(i)
+
     def _find_relations(self, obj) -> list[etree._Element]:
         rels = obj._model.search(
             CapellaIncomingRelation,
