@@ -136,7 +136,7 @@ def _filter_default_styles(
         return False
 
     return {
-        k: ([str(vx) for vx in v] if isinstance(v, list) else str(v))
+        k: [str(vx) for vx in v] if isinstance(v, list) else str(v)
         for k, v in styleoverrides.items()
         if v and not style_is_default(k, v)
     }

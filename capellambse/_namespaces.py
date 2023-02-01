@@ -226,10 +226,12 @@ NAMESPACES_PLUGINS: t.Final[
             "http://www.eclipse.org/gmf/runtime/1.0.2/notation"
         ),
         "org.polarsys.capella.core.data.capellacommon": Plugin(
-            "http://www.polarsys.org/capella/core/common/", ("5.0.0", "6.0.0")
+            "http://www.polarsys.org/capella/core/common/",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.capellacore": Plugin(
-            "http://www.polarsys.org/capella/core/core/", ("5.0.0", "6.0.0")
+            "http://www.polarsys.org/capella/core/core/",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.capellamodeller": Plugin(
             "http://www.polarsys.org/capella/core/modeller/",
@@ -242,7 +244,8 @@ NAMESPACES_PLUGINS: t.Final[
             "http://www.polarsys.org/capella/core/ctx/", ("5.0.0", "6.0.0")
         ),
         "org.polarsys.capella.core.data.epbs": Plugin(
-            "http://www.polarsys.org/capella/core/epbs/", ("5.0.0", "6.0.0")
+            "http://www.polarsys.org/capella/core/epbs/",
+            ("5.0.0", "6.0.0"),
         ),
         "org.polarsys.capella.core.data.fa": Plugin(
             "http://www.polarsys.org/capella/core/fa/", ("5.0.0", "6.0.0")
@@ -277,7 +280,8 @@ NAMESPACES_PLUGINS: t.Final[
             "http://www.eclipse.org/sirius/diagram/sequence/", "2.0.0"
         ),
         "style": Plugin(
-            "http://www.eclipse.org/sirius/diagram/description/style/", "1.1.0"
+            "http://www.eclipse.org/sirius/diagram/description/style/",
+            "1.1.0",
         ),
         "table": Plugin("http://www.eclipse.org/sirius/table/", "1.1.0"),
         "viewpoint": Plugin("http://www.eclipse.org/sirius/", "1.1.0"),

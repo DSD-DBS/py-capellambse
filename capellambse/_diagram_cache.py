@@ -171,7 +171,7 @@ class DiagramCache:
                 continue
             old_path.rename(
                 self.diagrams_dir
-                / (f"{diagram_info['uuid']}." f"{self.image_format}")
+                / f"{diagram_info['uuid']}.{self.image_format}"
             )
 
     def _build_cli_cmd_exe(

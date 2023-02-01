@@ -680,7 +680,7 @@ class GitFileHandler(FileHandler):
         self.cache_dir = path.resolve()
 
     def __init_cache_dir_remote(self) -> None:
-        slug_pattern = '[\x00-\x1F\x7F"*/:<>?\\|]+'
+        slug_pattern = '[\x00-\x1f\x7f"*/:<>?\\|]+'
         path_hash = hashlib.sha256(
             str(self.path).encode("utf-8", errors="surrogatepass")
         ).hexdigest()

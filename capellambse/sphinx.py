@@ -126,8 +126,8 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
         "alt": rst.directives.unchanged,
         "height": rst.directives.nonnegative_int,
         "width": rst.directives.nonnegative_int,
-        "align": (
-            lambda arg: rst.directives.choice(arg, ("left", "center", "right"))
+        "align": lambda arg: rst.directives.choice(
+            arg, ("left", "center", "right")
         ),
     }
 

@@ -533,9 +533,7 @@ def _build_specifications(
 
     for name, std_attr in STD_SPECIFICATION_ATTRIBUTES.items():
         attr_def_ref = (
-            "_STD-SPECIFICATION-ATTRIBUTE-"
-            f"{module_type_ref}"
-            f"-ReqIF.{name}"
+            f"_STD-SPECIFICATION-ATTRIBUTE-{module_type_ref}-ReqIF.{name}"
         )
         if (type_ := std_attr["type"]) == "XHTML":
             xml_elem = html.fromstring(

@@ -638,8 +638,10 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
     [
         pytest.param(
             "9f84f273-1af4-49c2-a9f1-143e94ab816b",
-            "[GenericTrace] to Class TraceTarget"
-            " (ed272baf-43f2-4fa1-ad50-49c00563258b)",
+            (
+                "[GenericTrace] to Class TraceTarget"
+                " (ed272baf-43f2-4fa1-ad50-49c00563258b)"
+            ),
         ),
         pytest.param(
             "0880af85-4f96-4a77-b588-2e7a0385629d",
@@ -1037,8 +1039,11 @@ def test_literal_numeric_value_infinity_is_star(
         ("name", "[MSM] States of Functional Human Being"),
         (
             "description",
-            "<p>This diagram shows the states that a Functional Human Being"
-            " can have, as well as how it transitions between them.</p>\n",
+            (
+                "<p>This diagram shows the states that a Functional Human"
+                " Being can have, as well as how it transitions between"
+                " them.</p>\n"
+            ),
         ),
         ("filters", {"ModelExtensionFilter"}),
         ("target.uuid", "eeeb98a7-6063-4115-8b4b-40a51cc0df49"),

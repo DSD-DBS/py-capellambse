@@ -108,7 +108,6 @@ reqif = "capellambse.extensions.reqif:init"
 
 [tool.black]
 line-length = 79
-target-version = ["py39"]
 
 [tool.docformatter]
 wrap-descriptions = 72

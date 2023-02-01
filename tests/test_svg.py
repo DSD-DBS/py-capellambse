@@ -371,7 +371,7 @@ class TestSVG:
 
         stylesheet = cssutils.parseString(style_.text)
         for rule in stylesheet:
-            for (element, prop) in COLORS_TO_CHECK.items():
+            for element, prop in COLORS_TO_CHECK.items():
                 if (
                     rule.type == rule.STYLE_RULE
                     and rule.selectorText == element

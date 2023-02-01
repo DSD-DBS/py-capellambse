@@ -60,9 +60,11 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
 
             # <https://github.com/DSD-DBS/py-capellambse/issues/52>
             warnings.warn(
-                "Hashing of this type is broken and will likely be removed in"
-                f" the future. Please use the `.uuid` or `.{attr}` directly"
-                " instead.",
+                (
+                    "Hashing of this type is broken and will likely be"
+                    " removed in the future. Please use the `.uuid` or"
+                    f" `.{attr}` directly instead."
+                ),
                 category=FutureWarning,
                 stacklevel=2,
             )

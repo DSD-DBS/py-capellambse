@@ -271,9 +271,11 @@ class Drawing:
                 debug_height = decorations.icon_size
 
             bbox: LabelDict = {
-                "x": x
-                if builder.text_anchor == "start"
-                else x - builder.label["width"] / 2,
+                "x": (
+                    x
+                    if builder.text_anchor == "start"
+                    else x - builder.label["width"] / 2
+                ),
                 "y": debug_y if debug_y <= debug_y1 else debug_y1,
                 "width": builder.label["width"],
                 "height": debug_height,

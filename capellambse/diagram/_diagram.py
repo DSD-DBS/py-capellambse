@@ -386,9 +386,11 @@ class Box:
 
             # Fill in missing box size fields based on label text extent
             label_extent = helpers.get_text_extent(
-                self.label + "\n" + "\n".join(self.features)
-                if self.features
-                else self.label,
+                (
+                    self.label + "\n" + "\n".join(self.features)
+                    if self.features
+                    else self.label
+                ),
                 self.maxsize.x if needwidth else width - pad_w,
             )
 
@@ -1064,16 +1066,18 @@ class Diagram:
                 f" {self.name!r}",
                 f" ({self.uuid!r})" if self.uuid else "",
                 f" [{self.viewport!s}]\n",
-                "\n".join(f"\t- {elm}" for elm in self)
-                if self
-                else "\t(empty)",
+                (
+                    "\n".join(f"\t- {elm}" for elm in self)
+                    if self
+                    else "\t(empty)"
+                ),
             ]
         )
 
     def __repr__(self) -> str:
         return "".join(
             [
-                f"{self.__class__.__name__}("
+                f"{self.__class__.__name__}(",
                 f"{self.name!r}, {self.viewport!r}, {self.__elements!r}",
                 f", uuid={self.uuid!r}" if self.uuid else "",
                 f", styleclass={self.styleclass!r}" if self.styleclass else "",

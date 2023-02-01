@@ -12,7 +12,6 @@ from ._glue import *
 from ._requirements import *
 
 if not t.TYPE_CHECKING:
-
     _deprecated_names = {
         "EnumDataTypeDefinition": EnumerationDataTypeDefinition,
         "RequirementsFolder": Folder,
@@ -27,7 +26,6 @@ if not t.TYPE_CHECKING:
         import warnings
 
         if cls := _deprecated_names.get(name):
-
             warnings.warn(
                 f"Name {name} is deprecated, use {cls.__name__} instead",
                 DeprecationWarning,
