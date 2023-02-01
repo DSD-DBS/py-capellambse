@@ -271,7 +271,7 @@ def select_property_loader(element):
     """Execute the appropriate loader for the PV definition element."""
     xtype = str(element.attrib[XTYPE_KEY]).rsplit(":", maxsplit=1)[-1]
     if xtype not in PROPERTY_LOADER:
-        raise Exception(f"XSI type {xtype} is not yet supported")
+        raise NotImplementedError(f"XSI type {xtype} is not yet supported")
     return PROPERTY_LOADER[xtype](element)
 
 

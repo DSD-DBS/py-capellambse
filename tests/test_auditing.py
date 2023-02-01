@@ -387,3 +387,108 @@ def test_creating_objects_fires_exactly_one_create_event(
     assert ev[0] == obj
     assert ev[1] == attr
     assert ev[2] is new_obj
+
+
+@pytest.mark.parametrize(
+    ["obj_id", "attr", "accessor_type"],
+    [
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "components",
+            common.DirectProxyAccessor,
+            id="DirectProxyAccessor",
+        ),
+        pytest.param(
+            "90517d41-da3e-430c-b0a9-e3badf416509",
+            "exchanges",
+            common.LinkAccessor,
+            id="LinkAccessor",
+        ),
+        pytest.param(
+            "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6",
+            "do_activity",
+            common.AttrProxyAccessor,
+            id="AttrProxyAccessor",
+        ),
+        pytest.param(
+            "85d41db2-9e17-438b-95cf-49342452ddf3",
+            "relations",
+            reqif.RequirementsRelationAccessor,
+            id="RequirementsRelationAccessor",
+        ),
+    ],
+)
+def test_deleting_an_object_from_a_list_fires_one_delete_event(
+    model: capellambse.MelodyModel,
+    audit_events: list[tuple[t.Any, ...]],
+    obj_id: str,
+    attr: str,
+    accessor_type: type,
+) -> None:
+    obj = model.by_uuid(obj_id)
+    descriptor = getattr(type(obj), attr, None)
+    assert descriptor is not None, f"{type(obj).__name__} has no {attr}"
+    assert isinstance(descriptor, accessor_type), "Bad descriptor type"
+    audit_events.clear()
+    target = getattr(obj, attr)
+
+    del target[0]
+
+    events = [i for i in audit_events if i[0] == "capellambse.delete"]
+    assert len(events) == 1
+    _, *ev = events[0]
+    assert ev[0] is obj
+    assert ev[1] == attr
+    assert ev[2] == 0
+
+
+@pytest.mark.parametrize(
+    ["obj_id", "attr", "accessor_type"],
+    [
+        pytest.param(
+            "0d2edb8f-fa34-4e73-89ec-fb9a63001440",
+            "components",
+            common.DirectProxyAccessor,
+            id="DirectProxyAccessor",
+        ),
+        pytest.param(
+            "90517d41-da3e-430c-b0a9-e3badf416509",
+            "exchanges",
+            common.LinkAccessor,
+            id="LinkAccessor",
+        ),
+        pytest.param(
+            "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6",
+            "do_activity",
+            common.AttrProxyAccessor,
+            id="AttrProxyAccessor",
+        ),
+        pytest.param(
+            "85d41db2-9e17-438b-95cf-49342452ddf3",
+            "relations",
+            reqif.RequirementsRelationAccessor,
+            id="RequirementsRelationAccessor",
+        ),
+    ],
+)
+def test_deleting_an_entire_list_attribute_fires_one_delete_event(
+    model: capellambse.MelodyModel,
+    audit_events: list[tuple[t.Any, ...]],
+    obj_id: str,
+    attr: str,
+    accessor_type: type,
+) -> None:
+    obj = model.by_uuid(obj_id)
+    descriptor = getattr(type(obj), attr, None)
+    assert descriptor is not None, f"{type(obj).__name__} has no {attr}"
+    assert isinstance(descriptor, accessor_type), "Bad descriptor type"
+    audit_events.clear()
+
+    delattr(obj, attr)
+
+    events = [i for i in audit_events if i[0] == "capellambse.delete"]
+    assert len(events) == 1
+    _, *ev = events[0]
+    assert ev[0] is obj
+    assert ev[1] == attr
+    assert ev[2] is None

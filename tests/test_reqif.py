@@ -741,6 +741,20 @@ class TestReqIFModification:
         with pytest.raises(TypeError):
             attr.value = value
 
+    def test_setting_values_on_EnumValueAttribute(
+        self, model: capellambse.MelodyModel
+    ):
+        evattr = model.by_uuid("a44b41f3-598c-4250-bca6-1329647e7a02")
+        values = [
+            model.by_uuid("efd6e108-3461-43c6-ad86-24168339ed3c"),
+            model.by_uuid("3c2390a4-ce9c-472c-9982-d0b825931978"),
+        ]
+        assert values[1] not in evattr.values, "Precondition failed"
+
+        evattr.values = values
+
+        assert evattr.values == values
+
     def test_create_RequirementType_AttributeDefinition_creation(
         self, model: capellambse.MelodyModel
     ):
