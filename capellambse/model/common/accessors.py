@@ -1342,7 +1342,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
     ) -> None:
         assert type(self)._accessor
-        assert isinstance(parent, element.GenericElement)
+        assert isinstance(
+            parent, (element.GenericElement, capellambse.MelodyModel)
+        )
 
         super().__init__(*args, **kw)
         self._parent = parent

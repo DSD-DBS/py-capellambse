@@ -37,6 +37,66 @@
     <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
         id="43a3629e-2dfb-4d45-81ea-30395037f7a3" name="REVIEWED_OK"/>
   </ownedEnumerationPropertyTypes>
+  <ownedPropertyValuePkgs xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValuePkg"
+      id="fdbeb3b8-e1e2-4c6d-aff4-bccb1b9f437f" name="EXTENSIONS">
+    <ownedPropertyValuePkgs xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValuePkg"
+        id="3763dd54-a878-446a-9330-b5d9c7121865" sid="_fGQ7sP6CEeyBb7eBLcmhOA" name="DarkMagic">
+      <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+          id="6b9fc2f4-48c4-49d1-96c2-0c082d64ec83" name="version" value="1.0.0"/>
+      <ownedEnumerationPropertyTypes xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyType"
+          id="2644e99b-72c8-42f0-9bba-5141dda592e9" sid="_haoyEP6CEeyBb7eBLcmhOA"
+          name="DarkMagicPowerEnum">
+        <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+            id="7d3ae937-94ea-4a7e-8b06-006961b5c06a" sid="_j4mCQP6CEeyBb7eBLcmhOA"
+            name="Muggle">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="6b6a788d-acf7-460c-b150-642276ca8acb" name="__LITERAL__"/>
+        </ownedLiterals>
+        <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+            id="bed32be2-ccab-42ed-9125-e184e6b0076a" sid="_kzT-EP6CEeyBb7eBLcmhOA"
+            name="Apprentice">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="81403dd5-f3d3-4a1d-acf2-231df9890a7b" name="__LITERAL__"/>
+        </ownedLiterals>
+        <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+            id="1e5efe87-d919-4bd0-af2b-7c976ef9da96" sid="_V0eVUP6EEeyBb7eBLcmhOA"
+            name="Mighty">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="5fb35ad8-b3eb-4c8a-8820-68c9a4287f2d" name="__LITERAL__"/>
+        </ownedLiterals>
+        <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+            id="4da42696-28e2-4f90-bfb6-90ba1fc52d01" sid="_l3NEAP6CEeyBb7eBLcmhOA"
+            name="TheOneWhoShallNotBeNamed">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="51fc9166-c399-40a4-98d4-f3b87165df7b" name="__LITERAL__"/>
+        </ownedLiterals>
+      </ownedEnumerationPropertyTypes>
+      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+          id="1e241678-282c-46f3-abbd-e0cf34e743ee" sid="_uEMTkP6CEeyBb7eBLcmhOA"
+          name="Power" description="[CLASS]http://www.polarsys.org/capella/core/la/5.0.0/LogicalComponent[/CLASS]&#xA;[ARCHITECTURE]LOGICAL;SYSTEM[/ARCHITECTURE]">
+        <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+            id="4c5eba40-fcc3-480f-b88f-e375dadc00e5" sid="_zpFfgP6CEeyBb7eBLcmhOA"
+            name="Min" description="Minimum/starting value for wizzardry power. Typically measured in muggles.">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="eecc76bd-5c8e-4642-879e-fe292030fbad" name="__UNIT__" value="power"/>
+        </ownedPropertyValues>
+        <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+            id="196467a2-ecee-4f35-8987-6a898cd34616" sid="_4QKYUP6CEeyBb7eBLcmhOA"
+            name="Max" description="Theoretical value of power." value="10000.0">
+          <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
+              id="bfc09efd-8a12-4129-8ce0-abea4f435f91" name="__UNIT__" value="power"/>
+        </ownedPropertyValues>
+      </ownedPropertyValueGroups>
+      <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+          id="a0cb5a23-955e-43d6-a633-2c4e66991364" sid="_JL_K0P6EEeyBb7eBLcmhOA"
+          name="Power Level" description="[PROPERTY]DarkMagic.Power.Max&lt;10000.0[/PROPERTY]&#xA;[ARCHITECTURE]LOGICAL[/ARCHITECTURE]">
+        <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+            id="7367c731-aabb-4807-9d74-7ef2c6482ec9" sid="_QpIR0P6EEeyBb7eBLcmhOA"
+            name="Skill" summary="" description="" type="#2644e99b-72c8-42f0-9bba-5141dda592e9"
+            value="#4da42696-28e2-4f90-bfb6-90ba1fc52d01"/>
+      </ownedPropertyValueGroups>
+    </ownedPropertyValuePkgs>
+  </ownedPropertyValuePkgs>
   <keyValuePairs xsi:type="org.polarsys.capella.core.data.capellacore:KeyValue" id="bf35cfae-d0c2-4438-a972-dbc0ceb180a1"
       key="projectApproach" value="SingletonComponents"/>
   <ownedModelRoots xsi:type="org.polarsys.capella.core.data.capellamodeller:SystemEngineering"
@@ -2710,6 +2770,17 @@ The predator is far away</bodies>
       </ownedDataPkg>
       <ownedLogicalComponentPkg xsi:type="org.polarsys.capella.core.data.la:LogicalComponentPkg"
           id="84c0978d-9a32-4f5b-8013-5b0b6adbfd73" name="Structure">
+        <ownedEnumerationPropertyTypes xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyType"
+            id="8b24bfca-8e23-47f3-b013-8cc4bd5a22d1" name="Order of Merlin">
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+              id="db4548e0-a61d-4e47-b826-3da24a03915f" name="First Class"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+              id="3a2e5302-1a87-4216-915a-35e5caee960d" name="Second Class"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+              id="89379970-b033-4274-a2e5-18dc05e6be33" name="Third Class"/>
+          <ownedLiterals xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyLiteral"
+              id="09023f97-88a9-4964-b4f4-cc32e7c417fe" name="Nothing"/>
+        </ownedEnumerationPropertyTypes>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="101ffa60-f8a2-4ea2-a0d8-d10910ceac06"
             name="Hogwarts" abstractType="#0d2edb8f-fa34-4e73-89ec-fb9a63001440"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="4c1f2b5d-0641-42c7-911f-7a42928580b8"
@@ -2721,7 +2792,7 @@ The predator is far away</bodies>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="4d31caaf-210e-4bdf-982e-cdecbc80c947"
             name="R. Weasley" abstractType="#ff7b8672-84db-4b93-9fea-22a410907fb1"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="249fed97-366f-4240-9e20-101cef32cda2"
-            name="LogicalActor 5" abstractType="#3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5"/>
+            name="Voldemort" abstractType="#3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="f06eeca4-0e17-45c4-9b9d-244896e32720"
             name="Multiport" abstractType="#b3888dad-a870-4b8b-97d4-0ddb83ef9251"/>
         <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
@@ -2854,7 +2925,23 @@ The predator is far away</bodies>
                 name="School" abstractType="#a58821df-c5b4-4958-9455-0d30755be6b1"/>
             <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
                 id="3bdd4fa2-5646-44a1-9fa6-80c68433ddb7" name="Whomping Willow" description="&lt;p>Nasty, gnarly tree. He punches you in the face.&lt;/p>&#xA;"
+                appliedPropertyValues="#a928fa22-cef7-4357-9b87-675a432f6591" appliedPropertyValueGroups="#81bcc3d3-24d2-411e-a296-9943029acfd9"
                 human="true">
+              <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                  id="a928fa22-cef7-4357-9b87-675a432f6591" name="cars_defeated" value="1"/>
+              <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+                  id="81bcc3d3-24d2-411e-a296-9943029acfd9" name="Stats">
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                    id="0e95950d-272f-4b50-b68d-ee8fed002c94" name="HP" value="8000"/>
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                    id="32be6f26-4b33-4861-b501-3bfce3df94cb" name="STR" value="42"/>
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                    id="addb1e4a-9ecc-411c-b7ef-b76388e5840d" name="AGI"/>
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                    id="7c8c9c21-86b9-4dba-9c7c-cd9db2f09c11" name="WIS" value="150"/>
+                <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:IntegerPropertyValue"
+                    id="647a5565-a1de-4e15-ab21-eb628eea413c" name="INT" value="12"/>
+              </ownedPropertyValueGroups>
               <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
                   id="d3329124-d59f-490d-b448-e70d818ba47a" targetElement="#7f2936ab-0b54-4e92-9f0c-85a9f0981959"
                   sourceElement="#3bdd4fa2-5646-44a1-9fa6-80c68433ddb7"/>
@@ -3023,7 +3110,30 @@ The predator is far away</bodies>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
             id="08e02248-504d-4ed8-a295-c7682a614f66" name="Prof. A. P. W. B. Dumbledore"
             description="&lt;p>Principal of Hogwarts, wearer of the elder wand and greatest mage of all time.&lt;/p>&#xA;"
+            appliedPropertyValueGroups="#704da165-d26f-4eb1-a7fd-25d9d5e77dbe #42dc9aeb-a06d-4012-8bc6-02fb06f94cdc #6cf12387-7187-4b91-9efe-8fedb8a148cb"
             actor="true" human="true">
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="704da165-d26f-4eb1-a7fd-25d9d5e77dbe" name="Order of Merlin">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                id="54087419-c593-45c0-8b04-b5d49057f4bf" name="Order" type="#8b24bfca-8e23-47f3-b013-8cc4bd5a22d1"
+                value="#db4548e0-a61d-4e47-b826-3da24a03915f"/>
+          </ownedPropertyValueGroups>
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="42dc9aeb-a06d-4012-8bc6-02fb06f94cdc" name="DarkMagic.Power" appliedPropertyValueGroups="#1e241678-282c-46f3-abbd-e0cf34e743ee">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="68b3e1b8-2d5a-432a-bf56-a8d3ad6b1742" name="Min" appliedPropertyValues="#4c5eba40-fcc3-480f-b88f-e375dadc00e5"
+                value="800.0"/>
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="defd6bbb-0209-47a6-b195-0e86f6210417" name="Max" appliedPropertyValues="#196467a2-ecee-4f35-8987-6a898cd34616"
+                value="1600.0"/>
+          </ownedPropertyValueGroups>
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="6cf12387-7187-4b91-9efe-8fedb8a148cb" name="DarkMagic.Power Level"
+              appliedPropertyValueGroups="#a0cb5a23-955e-43d6-a633-2c4e66991364">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                id="ba86dc67-296c-472e-8057-b660d5491532" name="Skill" appliedPropertyValues="#7367c731-aabb-4807-9d74-7ef2c6482ec9"
+                type="#2644e99b-72c8-42f0-9bba-5141dda592e9" value="#1e5efe87-d919-4bd0-af2b-7c976ef9da96"/>
+          </ownedPropertyValueGroups>
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
               id="fac5ccbe-00d1-4f0a-8cbc-781330113267" targetElement="#f708bc29-d69f-42a0-90cc-11fc01054cd0"
               sourceElement="#08e02248-504d-4ed8-a295-c7682a614f66"/>
@@ -3043,7 +3153,24 @@ The predator is far away</bodies>
         </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
             id="6f463eed-c77b-4568-8078-beec0536f243" name="Prof. S. Snape" description="&lt;p>Good guy and teacher of brewing arts.&lt;/p>&#xA;"
+            appliedPropertyValueGroups="#2a480409-57d1-46f8-a0ce-e574706a9a7c #b1d7453b-69ab-4d81-ab8b-1e48b5870340"
             actor="true" human="true">
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="2a480409-57d1-46f8-a0ce-e574706a9a7c" name="DarkMagic.Power" appliedPropertyValueGroups="#1e241678-282c-46f3-abbd-e0cf34e743ee">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="1eede170-1166-490c-97e1-1ad82fc388a6" name="Min" appliedPropertyValues="#4c5eba40-fcc3-480f-b88f-e375dadc00e5"
+                value="200.0"/>
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="998be66b-204a-400d-81f5-ae89820ed98f" name="Max" appliedPropertyValues="#196467a2-ecee-4f35-8987-6a898cd34616"
+                value="450.0"/>
+          </ownedPropertyValueGroups>
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="b1d7453b-69ab-4d81-ab8b-1e48b5870340" name="DarkMagic.Power Level"
+              appliedPropertyValueGroups="#a0cb5a23-955e-43d6-a633-2c4e66991364">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                id="cd4a4626-6765-4dae-9e42-6a5f01d16a86" name="Skill" appliedPropertyValues="#7367c731-aabb-4807-9d74-7ef2c6482ec9"
+                type="#2644e99b-72c8-42f0-9bba-5141dda592e9" value="#1e5efe87-d919-4bd0-af2b-7c976ef9da96"/>
+          </ownedPropertyValueGroups>
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
               id="b5090138-a5da-4ccd-a791-0226e8ba5eb7" targetElement="#a7acb298-d14b-4707-a419-fea272434541"
               sourceElement="#6f463eed-c77b-4568-8078-beec0536f243"/>
@@ -3066,7 +3193,24 @@ The predator is far away</bodies>
               id="cd38f870-39fe-44a3-90c9-1527b11b0b60" implementedInterface="#53ec6898-5c1c-4f4c-bcd7-46e2e9adff30"/>
         </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
-            id="a8c46457-a702-41c4-a971-c815c4c5a674" name="Harry J. Potter" actor="true">
+            id="a8c46457-a702-41c4-a971-c815c4c5a674" name="Harry J. Potter" appliedPropertyValueGroups="#d5463234-ca89-45ed-b380-85c5549c4627 #1069e295-8cbd-4dd6-bdfb-dd9c2830fe8e"
+            actor="true">
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="d5463234-ca89-45ed-b380-85c5549c4627" name="DarkMagic.Power" appliedPropertyValueGroups="#1e241678-282c-46f3-abbd-e0cf34e743ee">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="6206c340-efff-4b1b-8030-764924080ffd" name="Min" appliedPropertyValues="#4c5eba40-fcc3-480f-b88f-e375dadc00e5"
+                value="300.0"/>
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="2d3a1b9f-b087-4403-b5d6-d1023ca017a0" name="Max" appliedPropertyValues="#196467a2-ecee-4f35-8987-6a898cd34616"
+                value="500.0"/>
+          </ownedPropertyValueGroups>
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="1069e295-8cbd-4dd6-bdfb-dd9c2830fe8e" name="DarkMagic.Power Level"
+              appliedPropertyValueGroups="#a0cb5a23-955e-43d6-a633-2c4e66991364">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                id="e2e8b7c1-ec87-47f7-953c-746b2b621589" name="Skill" appliedPropertyValues="#7367c731-aabb-4807-9d74-7ef2c6482ec9"
+                type="#2644e99b-72c8-42f0-9bba-5141dda592e9" value="#bed32be2-ccab-42ed-9125-e184e6b0076a"/>
+          </ownedPropertyValueGroups>
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
               id="8d836bd6-bea7-44f5-af22-806ab2ac4154" targetElement="#aa9931e3-116c-461e-8215-6b9fdbdd4a1b"
               sourceElement="#a8c46457-a702-41c4-a971-c815c4c5a674"/>
@@ -3093,8 +3237,24 @@ The predator is far away</bodies>
           </ownedFeatures>
         </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
-            id="ff7b8672-84db-4b93-9fea-22a410907fb1" name="R. Weasley" actor="true"
-            human="true">
+            id="ff7b8672-84db-4b93-9fea-22a410907fb1" name="R. Weasley" appliedPropertyValueGroups="#c354b30b-f2b8-4cfd-91e2-e514b51211b3 #4d2ff7c1-5e1a-4f91-bf6a-de275b1e3898"
+            actor="true" human="true">
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="c354b30b-f2b8-4cfd-91e2-e514b51211b3" name="DarkMagic.Power" appliedPropertyValueGroups="#1e241678-282c-46f3-abbd-e0cf34e743ee">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="812cbcd0-c33c-4404-bd2e-a94dddf5ab77" name="Min" appliedPropertyValues="#4c5eba40-fcc3-480f-b88f-e375dadc00e5"
+                value="50.0"/>
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="446fd4b5-89a4-41b4-9eb8-67eafe25493b" name="Max" appliedPropertyValues="#196467a2-ecee-4f35-8987-6a898cd34616"
+                value="150.0"/>
+          </ownedPropertyValueGroups>
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="4d2ff7c1-5e1a-4f91-bf6a-de275b1e3898" name="DarkMagic.Power Level"
+              appliedPropertyValueGroups="#a0cb5a23-955e-43d6-a633-2c4e66991364">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                id="0d5509b5-21d1-4b09-b4cd-f14abcc5b2ca" name="Skill" appliedPropertyValues="#7367c731-aabb-4807-9d74-7ef2c6482ec9"
+                type="#2644e99b-72c8-42f0-9bba-5141dda592e9" value="#bed32be2-ccab-42ed-9125-e184e6b0076a"/>
+          </ownedPropertyValueGroups>
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
               id="f5877b4d-460f-43be-8164-e4187c3e2d8b" targetElement="#c1a42acc-1f53-42bb-8404-77a5c08c414b"
               sourceElement="#ff7b8672-84db-4b93-9fea-22a410907fb1"/>
@@ -3124,8 +3284,24 @@ The predator is far away</bodies>
               id="90a0595b-6a06-4fe8-8247-d47cdf543b51" implementedInterface="#f8a88d70-81d2-44e5-8338-da3248fa7a49"/>
         </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
-            id="3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5" name="LogicalActor 5" actor="true"
-            human="true"/>
+            id="3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5" name="Voldemort" appliedPropertyValues="#7367c731-aabb-4807-9d74-7ef2c6482ec9"
+            appliedPropertyValueGroups="#cf344a39-bbce-42f3-a32f-76b9358898f3" actor="true">
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="cf344a39-bbce-42f3-a32f-76b9358898f3" name="DarkMagic.Power" appliedPropertyValueGroups="#1e241678-282c-46f3-abbd-e0cf34e743ee">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="1113b416-566d-4cf2-a5a2-e7376ed0f932" name="Min" appliedPropertyValues="#4c5eba40-fcc3-480f-b88f-e375dadc00e5"/>
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:FloatPropertyValue"
+                id="50b6d131-c2f0-4f77-8b52-b32b9bd57689" name="Max" appliedPropertyValues="#196467a2-ecee-4f35-8987-6a898cd34616"
+                value="10000.0"/>
+          </ownedPropertyValueGroups>
+          <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
+              id="4d2ff7c1-5e1a-4f91-bf6a-de275b1e3899" name="DarkMagic.Power Level"
+              appliedPropertyValueGroups="#a0cb5a23-955e-43d6-a633-2c4e66991364">
+            <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:EnumerationPropertyValue"
+                id="0d5509b5-21d1-4b09-b4cd-f14abcc5b2cc" name="Skill" appliedPropertyValues="#7367c731-aabb-4807-9d74-7ef2c6482ec9"
+                type="#2644e99b-72c8-42f0-9bba-5141dda592e9" value="#4da42696-28e2-4f90-bfb6-90ba1fc52d01"/>
+          </ownedPropertyValueGroups>
+        </ownedLogicalComponents>
         <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
             id="b3888dad-a870-4b8b-97d4-0ddb83ef9251" name="Multiport" actor="true">
           <ownedFunctionalAllocation xsi:type="org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"

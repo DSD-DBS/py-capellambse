@@ -115,11 +115,8 @@ def test_GenericElement_has_diagrams(model: MelodyModel):
 
 def test_GenericElement_has_pvmt(model: MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
-    with pytest.raises(
-        RuntimeError,
-        match="^Cannot access PVMT: extension is not loaded$",
-    ):
-        elm.pvmt  # pylint: disable=pointless-statement
+
+    getattr(elm, "pvmt")
 
 
 def test_GenericElement_has_progress_status(model: MelodyModel):
