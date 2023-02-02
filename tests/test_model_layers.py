@@ -11,7 +11,7 @@ import pytest
 
 import capellambse
 import capellambse.model.common as c
-from capellambse.model import MelodyModel, modeltypes
+from capellambse.model import MelodyModel, la, modeltypes
 from capellambse.model.crosslayer.capellacommon import (
     Region,
     State,
@@ -74,6 +74,25 @@ def test_ElementList_filter_by_type(model: MelodyModel):
     diags = model.diagrams.by_type("OCB")
     assert len(diags) == 1
     assert diags[0].type is modeltypes.DiagramType.OCB
+
+
+def test_ElementList_dictlike_getitem(model: MelodyModel):
+    obj = model.search("LogicalComponent").by_name("Whomping Willow")
+    assert isinstance(obj, la.LogicalComponent)
+
+    result = obj.property_value_groups["Stats"]["WIS"]
+
+    assert result == 150
+
+
+def test_ElementList_dictlike_setitem(model: MelodyModel):
+    obj = model.search("LogicalComponent").by_name("Whomping Willow")
+    assert isinstance(obj, la.LogicalComponent)
+    pv_obj = obj.property_values.by_name("cars_defeated")
+
+    obj.property_values["cars_defeated"] += 1
+
+    assert pv_obj.value == 2
 
 
 def test_MixedElementList_filter_by_type(model: MelodyModel):
