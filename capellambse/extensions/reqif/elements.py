@@ -1,5 +1,17 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
+"""The |project| ReqIF extension.
+
+.. deprecated:: 0.5.11
+
+   The ``capellambse.extensions.reqif.elements`` module is deprecated
+   and will be removed with capellambse v0.6. Use the classes directly
+   from ``capellambse.extensions.reqif`` instead.
+
+   Note that some classes have been renamed to match their equivalent in
+   upstream Capella; these are marked as "alias of ..." in the
+   documentation below.
+"""
 
 from __future__ import annotations
 
