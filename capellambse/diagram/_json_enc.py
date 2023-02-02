@@ -39,12 +39,8 @@ class DiagramJSONEncoder(json.JSONEncoder):
             "name": o.name,
             "uuid": o.uuid,
             "class": o.styleclass,
-            "x": (
-                _intround(o.viewport.pos.x) if o.viewport is not None else 0
-            ),
-            "y": (
-                _intround(o.viewport.pos.y) if o.viewport is not None else 0
-            ),
+            "x": _intround(o.viewport.pos.x) if o.viewport is not None else 0,
+            "y": _intround(o.viewport.pos.y) if o.viewport is not None else 0,
             "width": (
                 _intround(o.viewport.size.x) if o.viewport is not None else 0
             ),

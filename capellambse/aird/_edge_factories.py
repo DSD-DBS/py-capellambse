@@ -34,7 +34,7 @@ def generic_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
         ostyle = next(seb.diag_element.iterchildren("ownedStyle"))
     except StopIteration:
         raise ValueError(
-            f"Cannot find style definition for edge"
+            "Cannot find style definition for edge"
             f" {seb.data_element.attrib['element']}"
         ) from None
     routingstyle = ostyle.attrib.get("routingStyle")

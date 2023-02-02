@@ -518,7 +518,7 @@ class ConfluenceSVGFormat:
     prefix = (
         f'<ac:structured-macro ac:macro-id="{uuid.uuid4()!s}" ac:name="html"'
         ' ac:schema-version="1">'
-        f"<ac:plain-text-body><![CDATA["
+        "<ac:plain-text-body><![CDATA["
     )
     postfix = "]]></ac:plain-text-body></ac:structured-macro>"
 
@@ -605,7 +605,7 @@ class TerminalGraphicsFormat:
 
     @staticmethod
     def from_cache(cache: bytes) -> bytes:
-        container = b"\x1B_Ga=T,q=2,f=100,m=%d;%b\x1B\\"
+        container = b"\x1b_Ga=T,q=2,f=100,m=%d;%b\x1b\\"
 
         chunks: list[bytes] = []
         png_b64 = base64.standard_b64encode(cache)

@@ -34,13 +34,17 @@ RE_STYLECLASS = re.compile(r"/@ownedRepresentations\[name='(.*?)'\]$")
 RE_VIEWPOINT = re.compile(r"/@ownedViewpoints\[name='(.*?)'\]$")
 
 XP_ANNOTATION_ENTRIES = etree.XPath(
-    "./ownedAnnotationEntries[@source='GMF_DIAGRAMS']"
-    "/data[@xmi:type='notation:Diagram']",
+    (
+        "./ownedAnnotationEntries[@source='GMF_DIAGRAMS']"
+        "/data[@xmi:type='notation:Diagram']"
+    ),
     namespaces=_n.NAMESPACES,
 )
 XP_DESCRIPTORS = etree.XPath(
-    "./ownedRepresentationDescriptors"
-    "[@xmi:type='viewpoint:DRepresentationDescriptor']",
+    (
+        "./ownedRepresentationDescriptors"
+        "[@xmi:type='viewpoint:DRepresentationDescriptor']"
+    ),
     namespaces=_n.NAMESPACES,
 )
 XP_VIEWS = etree.XPath(

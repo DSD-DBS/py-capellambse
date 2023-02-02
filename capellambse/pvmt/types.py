@@ -54,8 +54,8 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
         targetelem.attrib.update(
             {
                 "id": pvmt_ext.model.generate_uuid(modelobj),
-                "appliedPropertyValues": (
-                    pvmt_ext.model.create_link(modelobj, defelem)
+                "appliedPropertyValues": pvmt_ext.model.create_link(
+                    modelobj, defelem
                 ),
             }
         )
@@ -350,15 +350,13 @@ class AppliedPropertyValueGroup(XMLDictProxy):
         groupelem = xml_element.makeelement(
             "ownedPropertyValueGroups",
             attrib={
-                f"{{{_n.NAMESPACES['xsi']}}}type": (
-                    NAMESPACED_PV.format("PropertyValueGroup")
+                f"{{{_n.NAMESPACES['xsi']}}}type": NAMESPACED_PV.format(
+                    "PropertyValueGroup"
                 ),
                 "id": pvmt_ext.model.generate_uuid(xml_element),
                 "name": groupname,
-                "appliedPropertyValueGroups": (
-                    pvmt_ext.model.create_link(
-                        xml_element, groupdef.xml_element
-                    )
+                "appliedPropertyValueGroups": pvmt_ext.model.create_link(
+                    xml_element, groupdef.xml_element
                 ),
             },
         )
