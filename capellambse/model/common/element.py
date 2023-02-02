@@ -591,14 +591,18 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return len(self._elements)
 
     @t.overload
-    def __getitem__(self, idx: int | str) -> T:
+    def __getitem__(self, idx: int) -> T:
         ...
 
     @t.overload
     def __getitem__(self, idx: slice) -> ElementList[T]:
         ...
 
-    def __getitem__(self, idx):
+    @t.overload
+    def __getitem__(self, idx: str) -> t.Any:
+        ...
+
+    def __getitem__(self, idx: int | slice | str) -> t.Any:
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
         if isinstance(idx, int):
