@@ -25,7 +25,7 @@ help:
 
 # Auto-generate API documentation
 apidoc:
-	sphinx-apidoc --output-dir source/code --force .. ../capellambse/sphinx.py ../capellambse/repl.py
+	sphinx-apidoc --module-first --output-dir source/code --force .. ../capellambse/sphinx.py ../capellambse/repl.py
 
 .PHONY: apidoc
 
