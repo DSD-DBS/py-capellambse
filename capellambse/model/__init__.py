@@ -29,6 +29,7 @@ from capellambse import _diagram_cache, filehandler, loader
 from . import common, diagram  # isort:skip
 
 # Architectural Layers
+from .crosslayer import capellacore  # isort:skip
 from .layers import oa, ctx, la, pa  # isort:skip
 
 # Exports
@@ -58,6 +59,12 @@ class MelodyModel:
     la = common.DirectProxyAccessor(la.LogicalArchitecture, rootelem=XT_SYSENG)
     pa = common.DirectProxyAccessor(
         pa.PhysicalArchitecture, rootelem=XT_SYSENG
+    )
+    enumeration_property_types = common.DirectProxyAccessor(
+        capellacore.EnumerationPropertyType, aslist=common.ElementList
+    )
+    property_value_packages = common.DirectProxyAccessor(
+        capellacore.PropertyValuePkg, aslist=common.ElementList
     )
     diagrams = diagram.DiagramAccessor(
         None, cacheattr="_MelodyModel__diagram_cache"

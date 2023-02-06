@@ -1342,7 +1342,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
     ) -> None:
         assert type(self)._accessor
-        assert isinstance(parent, element.GenericElement)
+        assert isinstance(
+            parent, (element.GenericElement, capellambse.MelodyModel)
+        )
 
         super().__init__(*args, **kw)
         self._parent = parent
@@ -1355,15 +1357,21 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None:
         ...
 
-    def __setitem__(
-        self, index: int | slice, value: T | cabc.Iterable[T]
-    ) -> None:
+    @t.overload
+    def __setitem__(self, index: str, value: t.Any) -> None:
+        ...
+
+    def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         assert self._parent is not None
         accessor = type(self)._accessor
         assert isinstance(accessor, WritableAccessor)
 
+        if not isinstance(index, (int, slice)):
+            super().__setitem__(index, value)
+            return
+
         new_objs = list(self)
-        new_objs[index] = value  # type: ignore[index]
+        new_objs[index] = value
 
         if self.fixed_length and len(new_objs) != self.fixed_length:
             raise TypeError(
