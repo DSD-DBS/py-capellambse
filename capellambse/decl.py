@@ -12,6 +12,8 @@ documentation about declarative modelling <declarative-modelling>`.
 from __future__ import annotations
 
 __all__ = [
+    "ObjectFinder",
+    "ObjectReference",
     "Promise",
     "UUIDReference",
     "UnfulfilledPromisesError",
@@ -26,6 +28,7 @@ import collections
 import collections.abc as cabc
 import contextlib
 import dataclasses
+import operator
 import os
 import sys
 import typing as t
@@ -106,8 +109,8 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
     while instructions:
         instruction = instructions.popleft()
         parent = instruction.pop("parent")
-        if isinstance(parent, UUIDReference):
-            parent = model.by_uuid(parent.uuid)
+        if isinstance(parent, ObjectReference):
+            parent = parent.resolve(model)
         for op_type, apply_op in _OPERATIONS.items():
             try:
                 op = instruction.pop(op_type)
@@ -201,7 +204,7 @@ def _operate_modify(
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in modifications.items():
-        if isinstance(value, (list, Promise, UUIDReference)):
+        if isinstance(value, (list, Promise, ObjectReference)):
             try:
                 value = _resolve(promises, parent, value)
             except _UnresolvablePromise as p:
@@ -229,8 +232,8 @@ def _resolve(
             return promises[value]
         except KeyError:
             raise _UnresolvablePromise(value) from None
-    elif isinstance(value, UUIDReference):
-        return parent._model.by_uuid(value.uuid)
+    elif isinstance(value, ObjectReference):
+        return value.resolve(parent._model)
     elif isinstance(value, list):
         for i, v in enumerate(value):
             newv = _resolve(promises, parent, v)
@@ -278,7 +281,7 @@ def _create_complex_objects(
         )
     for child in objs:
         if isinstance(
-            child, (common.GenericElement, list, Promise, UUIDReference)
+            child, (common.GenericElement, list, Promise, ObjectReference)
         ):
             try:
                 obj = _resolve(promises, parent, child)
@@ -358,6 +361,16 @@ class UnfulfilledPromisesError(RuntimeError):
         return super().__str__()
 
 
+@t.runtime_checkable
+class ObjectReference(t.Protocol):
+    """A reference to an already-existing model object."""
+
+    def resolve(
+        self, model: capellambse.MelodyModel
+    ) -> capellambse.ModelObject:
+        ...
+
+
 @dataclasses.dataclass(frozen=True)
 class UUIDReference:
     """References a model object by its UUID."""
@@ -367,6 +380,36 @@ class UUIDReference:
     def __post_init__(self) -> None:
         if not helpers.is_uuid_string(self.uuid):
             raise ValueError(f"Malformed `!uuid`: {self.uuid!r}")
+
+    def resolve(
+        self, model: capellambse.MelodyModel
+    ) -> capellambse.ModelObject:
+        return model.by_uuid(self.uuid)
+
+
+@dataclasses.dataclass(frozen=True)
+class ObjectFinder:
+    """Finds a model object based on a set of attributes."""
+
+    attributes: dict[str, t.Any]
+
+    def resolve(
+        self, model: capellambse.MelodyModel
+    ) -> capellambse.ModelObject:
+        candidates = model.search()
+
+        for key, value in self.attributes.items():
+            filter = operator.attrgetter(f"by_{key}")
+            candidates = filter(candidates)(value, single=False)
+
+        if not candidates:
+            raise ValueError(f"No object found matching {self.attributes!r}")
+        if len(candidates) > 1:
+            raise ValueError(
+                f"Ambiguous filter, found {len(candidates)} matching elements:"
+                f" {self.attributes!r}"
+            )
+        return candidates[0]
 
 
 class YDMDumper(yaml.SafeDumper):
@@ -380,9 +423,14 @@ class YDMDumper(yaml.SafeDumper):
         assert isinstance(data, UUIDReference)
         return self.represent_scalar("!uuid", data.uuid)
 
+    def represent_find(self, data: t.Any) -> yaml.Node:
+        assert isinstance(data, ObjectFinder)
+        return self.represent_mapping("!find", data.attributes)
+
 
 YDMDumper.add_representer(Promise, YDMDumper.represent_promise)
 YDMDumper.add_representer(UUIDReference, YDMDumper.represent_uuidref)
+YDMDumper.add_representer(ObjectFinder, YDMDumper.represent_find)
 
 
 class YDMLoader(yaml.SafeLoader):
@@ -404,9 +452,19 @@ class YDMLoader(yaml.SafeLoader):
             raise ValueError(f"Not a well-formed UUID string: {data}")
         return UUIDReference(data)
 
+    def construct_find(self, node: yaml.Node) -> ObjectFinder:
+        if not isinstance(node, yaml.MappingNode):
+            raise TypeError("!find requires a mapping of attributes")
+        data = self.construct_mapping(node)
+        for i in data:
+            if not isinstance(i, str):
+                raise TypeError(f"!find keys must be strings, not {i!r}")
+        return ObjectFinder(t.cast(dict[str, t.Any], data))
+
 
 YDMLoader.add_constructor("!promise", YDMLoader.construct_promise)
 YDMLoader.add_constructor("!uuid", YDMLoader.construct_uuidref)
+YDMLoader.add_constructor("!find", YDMLoader.construct_find)
 
 
 try:

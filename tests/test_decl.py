@@ -506,6 +506,79 @@ class TestApplyDelete:
         assert len(root_function.functions) == 0
 
 
+class TestReferences:
+    @staticmethod
+    def test_bang_find_rejects_non_string_keys(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = """\
+            - parent: !find
+                ? !!int 3
+                : !!str ignored
+            """
+
+        with pytest.raises(TypeError, match="!find"):
+            decl.apply(model, io.StringIO(yml))
+
+    @staticmethod
+    def test_bang_find_only_accepts_yaml_mapping_nodes(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = """\
+            - parent: !find brew coffee
+            """
+
+        with pytest.raises(TypeError, match="!find"):
+            decl.apply(model, io.StringIO(yml))
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        ["attribs", "match"],
+        [
+            pytest.param({"uuid": "-"}, "No object found", id="less"),
+            pytest.param({"type": "LogicalFunction"}, "^Ambiguous", id="more"),
+        ],
+    )
+    def test_bang_find_errors_if_not_exactly_one_element_was_found(
+        model: capellambse.MelodyModel, attribs, match
+    ) -> None:
+        yml = decl.dump(
+            [
+                {"parent": decl.ObjectFinder(attribs)},
+            ]
+        )
+
+        with pytest.raises(ValueError, match=match):
+            decl.apply(model, io.StringIO(yml))
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        "attribs",
+        [
+            {"type": "LogicalComponent", "name": "Hogwarts"},
+            {"uuid": ROOT_COMPONENT},
+            {"name": "Hogwarts", "is_human": False},
+        ],
+    )
+    def test_bang_find_finds_existing_model_objects_by_a_set_of_attributes(
+        model: capellambse.MelodyModel, attribs
+    ) -> None:
+        obj = model.by_uuid(ROOT_COMPONENT)
+        assert obj.name == "Hogwarts"
+        yml = decl.dump(
+            [
+                {
+                    "parent": decl.ObjectFinder(attribs),
+                    "modify": {"name": "That old shed"},
+                }
+            ]
+        )
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert obj.name == "That old shed"
+
+
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])
 def test_full_example(model: capellambse.MelodyModel, filename: str):
     decl.apply(model, DATAPATH / filename)
