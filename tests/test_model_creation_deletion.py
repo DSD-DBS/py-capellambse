@@ -77,3 +77,28 @@ def test_delete_all_deletes_matching_objects(model: capellambse.MelodyModel):
     comps.delete_all(name="Delete Me")
     assert len(comps) == 1
     assert comps[0].name == "Keep Me"
+
+
+def test_create_adds_missing_namespace_to_fragment(
+    model: capellambse.MelodyModel,
+) -> None:
+    assert "Requirements" not in model._element.nsmap, "Precondition failed"
+    module = model.by_uuid("85a31dd7-7755-486b-b803-1df8915e2cf9")
+
+    module.requirements.create(name="TestReq")
+
+    assert "Requirements" in model._element.nsmap
+
+
+def test_adding_a_namespace_preserves_the_capella_version_comment(
+    model: capellambse.MelodyModel,
+) -> None:
+    assert "Requirements" not in model._element.nsmap, "Precondition failed"
+    prev_elements = list(model._element.itersiblings(preceding=True))
+    assert len(prev_elements) == 1, "No version comment to preserve?"
+
+    model._loader.add_namespace(model._element, "Requirements")
+
+    prev_elements = list(model._element.itersiblings(preceding=True))
+    assert len(prev_elements) == 1
+    assert model.info.capella_version != "UNKNOWN"

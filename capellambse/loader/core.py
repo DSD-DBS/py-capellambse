@@ -244,6 +244,35 @@ class ModelFile:
         """Reserve the given ID for an element to be inserted later."""
         self.__idcache[new_id] = None
 
+    def add_namespace(self, name: str, uri: str) -> None:
+        """Add the given namespace to this tree's root element."""
+        fragroot = self.root
+        olduri = fragroot.nsmap.get(name)
+        if olduri is not None and olduri != uri:
+            raise ValueError(
+                f"Namespace {name!r} already registered with URI {olduri!r}"
+            )
+        if uri == olduri:
+            return
+
+        new_root = self.root.makeelement(
+            self.root.tag,
+            attrib=self.root.attrib,
+            nsmap={**self.root.nsmap, name: uri},
+        )
+        new_root.extend(self.root.getchildren())
+
+        siblings = self.root.itersiblings(preceding=True)
+        for i in reversed(list(siblings)):
+            new_root.addprevious(i)
+
+        siblings = self.root.itersiblings(preceding=False)
+        for i in reversed(list(siblings)):
+            new_root.addnext(i)
+
+        self.root = new_root
+        self.tree = etree.ElementTree(self.root)
+
     def iterall_xt(
         self, xtypes: cabc.Container[str]
     ) -> cabc.Iterator[etree._Element]:
@@ -516,6 +545,44 @@ class MelodyLoader:
         r"""Rebuild the ID caches of all :class:`ModelFile`\ s."""
         for tree in self.trees.values():
             tree.idcache_rebuild()
+
+    def add_namespace(
+        self,
+        fragment: str | pathlib.PurePosixPath | etree._Element,
+        name: str,
+        uri: str | None = None,
+        /,
+    ) -> None:
+        """Add the given namespace to the given tree's root element.
+
+        Parameters
+        ----------
+        fragment
+            Either the name of a fragment (as
+            :class:`~pathlib.PurePosixPath` or :class:`str`), or a model
+            element. In the latter case, the fragment that contains this
+            element is used.
+        name
+            The canonical name of this namespace. This typically uses
+            reverse DNS notation in Capella.
+        uri
+            The namespace URI. If not specified, the canonical name will
+            be used to look up the URI in the list of known namespaces.
+        """
+        if isinstance(fragment, etree._Element):
+            fragment = self.find_fragment(fragment)
+        elif isinstance(fragment, str):
+            fragment = pathlib.PurePosixPath(fragment)
+        elif not isinstance(fragment, pathlib.PurePosixPath):
+            raise TypeError(f"Invalid fragment specifier {fragment!r}")
+
+        if not uri:
+            try:
+                uri = _n.NAMESPACES[name]
+            except KeyError:
+                raise ValueError(f"Unknown namespace {name!r}") from None
+
+        self.trees[fragment].add_namespace(name, uri)
 
     def generate_uuid(
         self, parent: etree._Element, *, want: str | None = None
