@@ -14,3 +14,4 @@ class ModelInfo:
     revision: str | None = None
     rev_hash: str | None = None
     capella_version: str | None = None
+    viewpoints: dict[str, str] = dataclasses.field(default_factory=dict)

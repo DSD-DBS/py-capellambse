@@ -1235,31 +1235,32 @@ class MelodyLoader:
         except TypeError:
             return tags
 
-    def get_model_info(self) -> ModelInfo:
-        """Return the Capella version found in the leading comment."""
-        info = self.filehandler.get_model_info()
-        info.capella_version = "UNKNOWN"
-
-        for fragment, tree in self.trees.items():
-            if fragment.name.endswith((".capella", ".melodymodeller")):
-                semantic_tree = tree
-                break
-        else:
-            LOGGER.warning(
-                "Cannot find capella version: No main semantic tree found!"
-            )
-            return info
-
+    def referenced_viewpoints(self) -> cabc.Iterator[tuple[str, str]]:
         try:
-            comment = semantic_tree.tree.xpath("/comment()")
-            vers_match = CAP_VERSION.match(comment[0].text)
-            assert vers_match
-            info.capella_version = vers_match.group(1)
-        except (AttributeError, IndexError):
-            LOGGER.warning(
-                "Cannot find Capella version: No version comment found"
-            )
+            metatree = next(i for i in self.trees if i.suffix == ".afm")
+        except StopIteration:
+            LOGGER.warning("Cannot list viewpoints: No .afm file loaded")
+            return
 
+        metadata = self.trees[metatree].root
+        assert metadata.tag == f"{{{_n.NAMESPACES['metadata']}}}Metadata"
+        for i in metadata.iterchildren("viewpointReferences"):
+            id = i.get("vpId")
+            version = i.get("version")
+            if not id or not version:
+                LOGGER.warning(
+                    "vpId or version missing on viewpoint reference %r", i
+                )
+                continue
+            yield (id, version)
+
+    def get_model_info(self) -> ModelInfo:
+        """Return information about the loaded model."""
+        info = self.filehandler.get_model_info()
+        info.viewpoints = dict(self.referenced_viewpoints())
+        info.capella_version = info.viewpoints.get(
+            "org.polarsys.capella.core.viewpoint", "UNKNOWN"
+        )
         return info
 
     @contextlib.contextmanager
