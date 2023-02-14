@@ -150,6 +150,16 @@ class ModelFile:
         else:
             return FragmentType.OTHER
 
+    @property
+    def tree(self) -> etree._ElementTree:
+        import warnings
+
+        warnings.warn(
+            "'ModelFile.tree' is deprecated, use the 'root' directly",
+            DeprecationWarning,
+        )
+        return etree.ElementTree(self.root)
+
     def __init__(
         self,
         filename: pathlib.PurePosixPath,
@@ -163,11 +173,11 @@ class ModelFile:
         _verify_extension(filename)
 
         with handler.open(filename) as f:
-            self.tree = etree.parse(
+            tree = etree.parse(
                 f, etree.XMLParser(remove_blank_text=True, huge_tree=True)
             )
 
-        self.root = self.tree.getroot()
+        self.root = tree.getroot()
         self.idcache_rebuild()
 
     def __getitem__(self, key: str) -> etree._Element:
@@ -267,11 +277,10 @@ class ModelFile:
             new_root.addprevious(i)
 
         siblings = self.root.itersiblings(preceding=False)
-        for i in reversed(list(siblings)):
+        for i in list(siblings):
             new_root.addnext(i)
 
         self.root = new_root
-        self.tree = etree.ElementTree(self.root)
 
     def iterall_xt(
         self, xtypes: cabc.Container[str]
@@ -299,7 +308,11 @@ class ModelFile:
             line_length = sys.maxsize
         with self.filehandler.open(filename, "wb") as file:
             exs.write(
-                self.tree, file, encoding=encoding, line_length=line_length
+                self.root,
+                file,
+                encoding=encoding,
+                line_length=line_length,
+                siblings=True,
             )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
