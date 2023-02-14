@@ -224,7 +224,6 @@ class MelodyModel:
 
         self._constructed = False
         self._loader = loader.MelodyLoader(path, **kwargs)
-        self.info = self._loader.get_model_info()
         self.jupyter_untrusted = jupyter_untrusted
 
         try:
@@ -508,6 +507,10 @@ class MelodyModel:
         )
         with self._loader.write_tmp_project_dir() as tmp_project_dir:
             diagram_cache.export_diagrams(tmp_project_dir)
+
+    @property
+    def info(self) -> loader.ModelInfo:
+        return self._loader.get_model_info()
 
     @property
     def description_badge(self) -> str:

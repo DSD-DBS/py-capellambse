@@ -150,6 +150,16 @@ class ModelFile:
         else:
             return FragmentType.OTHER
 
+    @property
+    def tree(self) -> etree._ElementTree:
+        import warnings
+
+        warnings.warn(
+            "'ModelFile.tree' is deprecated, use the 'root' directly",
+            DeprecationWarning,
+        )
+        return etree.ElementTree(self.root)
+
     def __init__(
         self,
         filename: pathlib.PurePosixPath,
@@ -163,11 +173,11 @@ class ModelFile:
         _verify_extension(filename)
 
         with handler.open(filename) as f:
-            self.tree = etree.parse(
+            tree = etree.parse(
                 f, etree.XMLParser(remove_blank_text=True, huge_tree=True)
             )
 
-        self.root = self.tree.getroot()
+        self.root = tree.getroot()
         self.idcache_rebuild()
 
     def __getitem__(self, key: str) -> etree._Element:
@@ -244,6 +254,34 @@ class ModelFile:
         """Reserve the given ID for an element to be inserted later."""
         self.__idcache[new_id] = None
 
+    def add_namespace(self, name: str, uri: str) -> None:
+        """Add the given namespace to this tree's root element."""
+        fragroot = self.root
+        olduri = fragroot.nsmap.get(name)
+        if olduri is not None and olduri != uri:
+            raise ValueError(
+                f"Namespace {name!r} already registered with URI {olduri!r}"
+            )
+        if uri == olduri:
+            return
+
+        new_root = self.root.makeelement(
+            self.root.tag,
+            attrib=self.root.attrib,
+            nsmap={**self.root.nsmap, name: uri},
+        )
+        new_root.extend(self.root.getchildren())
+
+        siblings = self.root.itersiblings(preceding=True)
+        for i in reversed(list(siblings)):
+            new_root.addprevious(i)
+
+        siblings = self.root.itersiblings(preceding=False)
+        for i in list(siblings):
+            new_root.addnext(i)
+
+        self.root = new_root
+
     def iterall_xt(
         self, xtypes: cabc.Container[str]
     ) -> cabc.Iterator[etree._Element]:
@@ -270,7 +308,11 @@ class ModelFile:
             line_length = sys.maxsize
         with self.filehandler.open(filename, "wb") as file:
             exs.write(
-                self.tree, file, encoding=encoding, line_length=line_length
+                self.root,
+                file,
+                encoding=encoding,
+                line_length=line_length,
+                siblings=True,
             )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
@@ -516,6 +558,44 @@ class MelodyLoader:
         r"""Rebuild the ID caches of all :class:`ModelFile`\ s."""
         for tree in self.trees.values():
             tree.idcache_rebuild()
+
+    def add_namespace(
+        self,
+        fragment: str | pathlib.PurePosixPath | etree._Element,
+        name: str,
+        uri: str | None = None,
+        /,
+    ) -> None:
+        """Add the given namespace to the given tree's root element.
+
+        Parameters
+        ----------
+        fragment
+            Either the name of a fragment (as
+            :class:`~pathlib.PurePosixPath` or :class:`str`), or a model
+            element. In the latter case, the fragment that contains this
+            element is used.
+        name
+            The canonical name of this namespace. This typically uses
+            reverse DNS notation in Capella.
+        uri
+            The namespace URI. If not specified, the canonical name will
+            be used to look up the URI in the list of known namespaces.
+        """
+        if isinstance(fragment, etree._Element):
+            fragment = self.find_fragment(fragment)
+        elif isinstance(fragment, str):
+            fragment = pathlib.PurePosixPath(fragment)
+        elif not isinstance(fragment, pathlib.PurePosixPath):
+            raise TypeError(f"Invalid fragment specifier {fragment!r}")
+
+        if not uri:
+            try:
+                uri = _n.NAMESPACES[name]
+            except KeyError:
+                raise ValueError(f"Unknown namespace {name!r}") from None
+
+        self.trees[fragment].add_namespace(name, uri)
 
     def generate_uuid(
         self, parent: etree._Element, *, want: str | None = None
@@ -1155,31 +1235,32 @@ class MelodyLoader:
         except TypeError:
             return tags
 
-    def get_model_info(self) -> ModelInfo:
-        """Return the Capella version found in the leading comment."""
-        info = self.filehandler.get_model_info()
-        info.capella_version = "UNKNOWN"
-
-        for fragment, tree in self.trees.items():
-            if fragment.name.endswith((".capella", ".melodymodeller")):
-                semantic_tree = tree
-                break
-        else:
-            LOGGER.warning(
-                "Cannot find capella version: No main semantic tree found!"
-            )
-            return info
-
+    def referenced_viewpoints(self) -> cabc.Iterator[tuple[str, str]]:
         try:
-            comment = semantic_tree.tree.xpath("/comment()")
-            vers_match = CAP_VERSION.match(comment[0].text)
-            assert vers_match
-            info.capella_version = vers_match.group(1)
-        except (AttributeError, IndexError):
-            LOGGER.warning(
-                "Cannot find Capella version: No version comment found"
-            )
+            metatree = next(i for i in self.trees if i.suffix == ".afm")
+        except StopIteration:
+            LOGGER.warning("Cannot list viewpoints: No .afm file loaded")
+            return
 
+        metadata = self.trees[metatree].root
+        assert metadata.tag == f"{{{_n.NAMESPACES['metadata']}}}Metadata"
+        for i in metadata.iterchildren("viewpointReferences"):
+            id = i.get("vpId")
+            version = i.get("version")
+            if not id or not version:
+                LOGGER.warning(
+                    "vpId or version missing on viewpoint reference %r", i
+                )
+                continue
+            yield (id, version)
+
+    def get_model_info(self) -> ModelInfo:
+        """Return information about the loaded model."""
+        info = self.filehandler.get_model_info()
+        info.viewpoints = dict(self.referenced_viewpoints())
+        info.capella_version = info.viewpoints.get(
+            "org.polarsys.capella.core.viewpoint", "UNKNOWN"
+        )
         return info
 
     @contextlib.contextmanager

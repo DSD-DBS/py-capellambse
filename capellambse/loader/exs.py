@@ -103,6 +103,7 @@ def write(
     encoding: str = "utf-8",
     errors: str = "strict",
     line_length: float | int = LINE_LENGTH,
+    siblings: bool = False,
 ) -> None:
     """Write the XML tree to ``file``.
 
@@ -118,6 +119,8 @@ def write(
         Set the encoding error handling behavior of newly opened files.
     line_length
         The number of characters after which to force a line break.
+    siblings
+        Also include siblings of the given subtree.
     """
     ctx: t.ContextManager[_HasWrite]
     if isinstance(file, _HasWrite):
@@ -126,7 +129,11 @@ def write(
         ctx = open(file, "wb")
 
     payload = serialize(
-        tree, encoding=encoding, errors=errors, line_length=line_length
+        tree,
+        encoding=encoding,
+        errors=errors,
+        line_length=line_length,
+        siblings=siblings,
     )
     with ctx as f:
         f.write(_declare(encoding))
@@ -140,6 +147,7 @@ def serialize(
     encoding: str = "utf-8",
     errors: str = "strict",
     line_length: float | int = LINE_LENGTH,
+    siblings: bool | None = None,
 ) -> bytes:
     """Serialize an XML tree.
 
@@ -156,6 +164,9 @@ def serialize(
         The encoding error handling behavior.
     line_length
         The number of characters after which to force a line break.
+    siblings
+        Also include siblings of the given subtree. Defaults to yes if
+        'tree' is an element tree, no if it's a single element.
 
     Returns
     -------
@@ -167,11 +178,18 @@ def serialize(
     preceding_siblings: cabc.Iterable[lxml.etree._Comment]
     following_siblings: cabc.Iterable[lxml.etree._Comment]
     if isinstance(tree, lxml.etree._ElementTree):
+        if siblings is None:
+            siblings = True
         root = tree.getroot()
+    else:
+        if siblings is None:
+            siblings = False
+        root = tree
+
+    if siblings:
         preceding_siblings = reversed(list(root.itersiblings(preceding=True)))
         following_siblings = root.itersiblings()
     else:
-        root = tree
         preceding_siblings = ()
         following_siblings = ()
 

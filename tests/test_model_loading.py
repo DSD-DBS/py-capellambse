@@ -292,3 +292,13 @@ def test_loading_model_with_unsupported_plugin_fails(
 ) -> None:
     with pytest.raises(capellambse.UnsupportedPluginError):
         capellambse.MelodyModel(model_path_with_patched_version)
+
+
+def test_model_info_contains_viewpoints_and_capella_version() -> None:
+    loader = capellambse.loader.MelodyLoader(TEST_MODEL_5_0)
+
+    info = loader.get_model_info()
+
+    assert hasattr(info, "viewpoints")
+    assert info.viewpoints["org.polarsys.capella.core.viewpoint"] == "5.0.0"
+    assert info.capella_version == "5.0.0"
