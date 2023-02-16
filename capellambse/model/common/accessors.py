@@ -1045,6 +1045,15 @@ class CustomAccessor(PhysicalAccessor[T]):
             Function that transforms a target so that it can be used by
             the matcher function.
         """
+        warnings.warn(
+            (
+                "CustomAccessor is deprecated,"
+                " create a specialized Accessor subclass instead"
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
         super().__init__(class_, aslist=aslist)
         self.elmfinders = elmfinders
         self.elmmatcher = elmmatcher
@@ -1215,13 +1224,14 @@ class SpecificationAccessor(Accessor[_Specification]):
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
     """Searches for references to the current element elsewhere."""
 
-    __slots__ = ("attrs",)
+    __slots__ = ("attrs", "target_classes")
 
     attrs: tuple[operator.attrgetter, ...]
+    target_classes: tuple[type[element.ModelObject], ...]
 
     def __init__(
         self,
-        class_: type[T],
+        class_: type[T] | tuple[type[element.ModelObject], ...],
         *attrs: str,
         aslist: type[element.ElementList] | None = None,
     ) -> None:
@@ -1239,7 +1249,15 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
             :class:`~capellambse.model.common.element.ElementList`,
             which will be used to return a list of all matched objects.
         """
-        super().__init__(class_, aslist=aslist)
+        if isinstance(class_, tuple):
+            super().__init__(
+                element.GenericElement,  # type: ignore[arg-type]
+                aslist=aslist,
+            )
+            self.target_classes = class_
+        else:
+            super().__init__(class_, aslist=aslist)
+            self.target_classes = (class_,)
         self.attrs = tuple(operator.attrgetter(i) for i in attrs)
 
     def __get__(self, obj, objtype=None):
@@ -1248,7 +1266,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
             return self
 
         matches: list[etree._Element] = []
-        for candidate in obj._model.search(self.class_.__name__):
+        for candidate in obj._model.search(*self.target_classes):
             for attr in self.attrs:
                 try:
                     value = attr(candidate)

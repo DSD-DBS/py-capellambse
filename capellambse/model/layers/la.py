@@ -7,8 +7,6 @@
 """
 from __future__ import annotations
 
-import operator
-
 from .. import common as c
 from .. import crosslayer, diagram
 from ..crosslayer import capellacommon, capellacore, cs, fa, interaction
@@ -214,31 +212,22 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
 c.set_accessor(
     ctx.Capability,
     "realizing_capabilities",
-    c.CustomAccessor(
-        CapabilityRealization,
-        operator.attrgetter("_model.la.all_capabilities"),
-        matchtransform=operator.attrgetter("realized_capabilities"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        CapabilityRealization, "realized_capabilities", aslist=c.ElementList
     ),
 )
 c.set_accessor(
     ctx.SystemComponent,
     "realizing_logical_components",
-    c.CustomAccessor(
-        LogicalComponent,
-        operator.attrgetter("_model.la.all_components"),
-        matchtransform=operator.attrgetter("realized_components"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        LogicalComponent, "realized_components", aslist=c.ElementList
     ),
 )
 c.set_accessor(
     ctx.SystemFunction,
     "realizing_logical_functions",
-    c.CustomAccessor(
-        LogicalFunction,
-        operator.attrgetter("_model.la.all_functions"),
-        matchtransform=operator.attrgetter("realized_system_functions"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        LogicalFunction, "realized_system_functions", aslist=c.ElementList
     ),
 )
 c.set_accessor(
