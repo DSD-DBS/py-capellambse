@@ -68,7 +68,7 @@ __all__ = [
     "init",
 ]
 
-# pylint: disable=unused-import, wildcard-import
+# pylint: disable=unused-import
 
 import collections.abc as cabc
 import logging

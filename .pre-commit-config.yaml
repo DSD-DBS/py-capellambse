@@ -60,6 +60,16 @@ repos:
           - types-docutils==0.17.0
           - types-pyyaml==6.0.11
           - types-requests==2.25.11
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: python
+        types: [python]
+        additional_dependencies:
+          - pylint==2.16.2
+        args: [-rn, -sn, -dfixme, -dduplicate-code]
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.4.2
     hooks:
