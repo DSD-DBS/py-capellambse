@@ -5,8 +5,12 @@ import pytest
 
 import capellambse
 
-# pylint: disable-next=relative-beyond-top-level
-from .conftest import INSTALLED_PACKAGE, TEST_MODEL, TEST_ROOT
+# pylint: disable-next=relative-beyond-top-level, useless-suppression
+from .conftest import (  # type: ignore[import]
+    INSTALLED_PACKAGE,
+    TEST_MODEL,
+    TEST_ROOT,
+)
 
 TEST_MODEL_AIRD = TEST_ROOT / "5_0" / TEST_MODEL
 TEST_MODEL_JSON = INSTALLED_PACKAGE / "known_models" / "test-5.0.json"

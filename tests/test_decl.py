@@ -14,8 +14,12 @@ import pytest
 import capellambse
 from capellambse import decl, helpers
 
-# pylint: disable-next=relative-beyond-top-level
-from .conftest import INSTALLED_PACKAGE, TEST_MODEL, TEST_ROOT
+# pylint: disable-next=relative-beyond-top-level, useless-suppression
+from .conftest import (  # type: ignore[import]
+    INSTALLED_PACKAGE,
+    TEST_MODEL,
+    TEST_ROOT,
+)
 
 DATAPATH = pathlib.Path(__file__).parent / "data" / "decl"
 MODELPATH = pathlib.Path(TEST_ROOT / "5_0")

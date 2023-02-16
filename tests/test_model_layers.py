@@ -25,8 +25,8 @@ from capellambse.model.layers.ctx import SystemComponentPkg
 from capellambse.model.layers.la import CapabilityRealization
 from capellambse.model.layers.oa import OperationalCapability
 
-# pylint: disable-next=relative-beyond-top-level
-from .conftest import TEST_MODEL, TEST_ROOT
+# pylint: disable-next=relative-beyond-top-level, useless-suppression
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
 
 
 def test_model_info_contains_capella_version(model: MelodyModel):

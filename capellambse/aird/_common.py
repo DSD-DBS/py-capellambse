@@ -334,7 +334,8 @@ class StackingBox(diagram.Box):
 class CenterAnchoredBox(diagram.Box):
     """A special Box subclass that uses its center as reference point."""
 
-    center: diagram.Vec2Property = diagram.Vec2Property()  # type: ignore[assignment]
+    center: diagram.Vec2Property  # type: ignore[assignment]
+    center = diagram.Vec2Property()  # type: ignore[assignment]
 
     def __init__(
         self, center: diagram.Vec2ish, size: diagram.Vec2ish, **kwargs: t.Any

@@ -44,15 +44,32 @@ repos:
           - pydocstyle[toml]
         args:
           - --add-ignore=D1
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.991
+  - repo: local
     hooks:
       - id: mypy
+        name: mypy
+        entry: mypy
+        language: python
+        types_or: [python, toml]
+        pass_filenames: false
+        args: [capellambse, tests]
         additional_dependencies:
+          - mypy==0.991
+          - capellambse[cli,decl,docs,httpfiles,png,termgraphics,test]
           - sphinx
           - types-docutils==0.17.0
           - types-pyyaml==6.0.11
           - types-requests==2.25.11
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: python
+        types: [python]
+        additional_dependencies:
+          - pylint==2.16.2
+        args: [-rn, -sn, -dfixme, -dduplicate-code]
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.4.2
     hooks:

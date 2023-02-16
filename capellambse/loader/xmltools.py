@@ -139,7 +139,8 @@ class AttributeProperty:
             )
 
         if value == self.default:
-            return self.__delete__(obj)
+            self.__delete__(obj)
+            return
 
         stringified = str(value)
 

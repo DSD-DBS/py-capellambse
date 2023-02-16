@@ -9,8 +9,6 @@ from lxml import etree
 from capellambse.loader.xmltools import AttributeProperty
 from capellambse.loader.xmltools import XMLDictProxy as XMLDictProxy_
 
-NAMESPACES = dict(xsi="http://www.w3.org/2001/XMLSchema-instance")
-
 
 class Generic:
     """Base class for PropertyValues, Domains etc."""
