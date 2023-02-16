@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
-"""Functions for receiving the styleclass from a given ``ModelObject``."""
+"""Functions for receiving the styleclass from a given model object."""
 from __future__ import annotations
 
 __all__ = ["get_styleclass"]
@@ -18,7 +18,7 @@ if t.TYPE_CHECKING:
 
 
 def get_styleclass(obj: ModelObject) -> str:
-    """Return the styleclass from an individual ``ModelObject``.
+    """Return the styleclass for an individual model object.
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def get_styleclass(obj: ModelObject) -> str:
 
     Returns
     -------
-    styleclass
+    str
         A string used for styling and decorating given ``obj`` in a
         diagram representation.
     """
