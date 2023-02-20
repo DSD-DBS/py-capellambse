@@ -19,8 +19,6 @@ import math
 import operator
 import typing as t
 
-_T = t.TypeVar("_T")
-
 Vec2Element = t.Union[float, int]
 Vec2ish = t.Tuple[Vec2Element, Vec2Element]
 

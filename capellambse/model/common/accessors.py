@@ -33,6 +33,7 @@ import typing as t
 import warnings
 
 import markupsafe
+import typing_extensions as te
 from lxml import etree
 
 import capellambse
@@ -42,8 +43,6 @@ from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
-
-_C = t.TypeVar("_C", bound="ElementListCouplingMixin")
 
 
 class NonUniqueMemberError(ValueError):
@@ -66,28 +65,32 @@ class NonUniqueMemberError(ValueError):
 class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     """Super class for all Accessor types."""
 
-    __slots__ = (
-        "__name__",
-        "__objclass__",
-    )
-
     __objclass__: type[t.Any]
     __name__: str
 
     @t.overload
-    def __get__(self, obj: None, objtype=None) -> Accessor:
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
         ...
 
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+    def __get__(
+        self, obj: element.ModelObject, objtype: type[t.Any] | None = ...
+    ) -> T | element.ElementList[T]:
         ...
 
     @abc.abstractmethod
-    def __get__(self, obj, objtype=None):
+    def __get__(
+        self,
+        obj: element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> te.Self | T | element.ElementList[T]:
         pass
 
-    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
+    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
         raise TypeError("Cannot set this type of attribute")
+
+    def __delete__(self, obj: element.ModelObject) -> None:
+        raise TypeError("Cannot delete this type of attribute")
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__objclass__ = owner
@@ -113,23 +116,35 @@ class DeprecatedAccessor(Accessor[T]):
         self.alternative = alternative
 
     @t.overload
-    def __get__(self, obj: None, objtype=None) -> Accessor:
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
         ...
 
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+    def __get__(
+        self,
+        obj: element.ModelObject,
+        objtype: type[t.Any] | None = ...,
+    ) -> T | element.ElementList[T]:
         ...
 
-    def __get__(self, obj, objtype=None):
+    def __get__(
+        self,
+        obj: element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> te.Self | T | element.ElementList[T]:
         self.__warn()
         if obj is None:
             return self
 
         return getattr(obj, self.alternative)
 
-    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
+    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
         self.__warn()
         setattr(obj, self.alternative, value)
+
+    def __delete__(self, obj: element.ModelObject) -> None:
+        self.__warn()
+        delattr(obj, self.alternative)
 
     def __warn(self) -> None:
         msg = f"{self._qualname} is deprecated, use {self.alternative} instead"
@@ -537,10 +552,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             elmclass, kw["xtype"] = self._match_xtype(*type_hints)
         else:
             elmclass, kw["xtype"] = self._guess_xtype()
-
         assert elmclass is not None
-        assert isinstance(elmlist._parent, element.GenericElement)
-        assert issubclass(elmclass, element.GenericElement)
 
         parent = elmlist._parent._element
         want_id: str | None = None
@@ -548,7 +560,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             want_id = kw.pop("uuid")
         with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
             obj = elmclass(elmlist._model, parent, uuid=obj_id, **kw)
-        return obj  # type: ignore[return-value]
+        return obj
 
     def insert(
         self,
@@ -567,7 +579,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             else:
                 parent_index = index
         except ValueError:
-            parent_index = len(elmlist._parent)
+            parent_index = len(elmlist._parent._element)
         elmlist._parent._element.insert(parent_index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
@@ -664,7 +676,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
         if obj._constructed:
             sys.audit("capellambse.setattr", obj, self.__name__, value)
         if self.aslist is None:
@@ -680,7 +692,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         for v in value:
             self.__create_link(obj, v)
 
-    def __delete__(self, obj):
+    def __delete__(self, obj: element.ModelObject) -> None:
         if getattr(obj, "_constructed", True):
             sys.audit("capellambse.delete", obj, self.__name__, None)
 
@@ -909,14 +921,18 @@ class IndexAccessor(Accessor[T]):
         self.wrapped = wrapped
 
     @t.overload
-    def __get__(self, obj: None, objtype=None) -> Accessor:
+    def __get__(self, obj: None, objtype=None) -> te.Self:
         ...
 
     @t.overload
     def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
         ...
 
-    def __get__(self, obj, objtype=None):
+    def __get__(
+        self,
+        obj: element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> te.Self | T | element.ElementList[T]:
         if obj is None:
             return self
         container = getattr(obj, self.wrapped)
@@ -931,7 +947,7 @@ class IndexAccessor(Accessor[T]):
             )
         return container[self.index]
 
-    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
+    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
         container = getattr(obj, self.wrapped)
         if not isinstance(container, ElementListCouplingMixin):
             raise TypeError(
@@ -987,9 +1003,9 @@ class ParentAccessor(PhysicalAccessor[T]):
 
         parent = next(obj._model._loader.iterancestors(obj._element), None)
         if parent is None:
-            rv = None
-        else:
-            rv = self.class_.from_model(obj._model, parent)
+            objrepr = getattr(obj, "_short_repr_", obj.__repr__)()
+            raise AttributeError(f"Object {objrepr} is orphaned")
+        rv = self.class_.from_model(obj._model, parent)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
@@ -1115,9 +1131,11 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
         return self.__aslist(obj._model, matches, self.class_)
 
 
-class _Specification(t.MutableMapping[str, str], element.ModelObject):
+class _Specification(t.MutableMapping[str, str]):
     _aliases = {"LinkedText": "capella:linkedText"}
     _linked_text = frozenset({"capella:linkedText"})
+    _model: capellambse.MelodyModel
+    _element: etree._Element
 
     def __init__(
         self, model: capellambse.MelodyModel, elm: etree._Element
@@ -1192,9 +1210,7 @@ class _Specification(t.MutableMapping[str, str], element.ModelObject):
         return f"<{type(self).__name__} at 0x{id(self):016X} {list(self)!r}>"
 
     @classmethod
-    def from_model(
-        cls, _1: capellambse.MelodyModel, _2: t.Any
-    ) -> element.ModelObject:
+    def from_model(cls, _1: capellambse.MelodyModel, _2: t.Any) -> te.Self:
         """Specifications can not be instantiated."""
         raise RuntimeError("Can not create a specification from a model")
 
@@ -1360,9 +1376,6 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
     ) -> None:
         assert type(self)._accessor
-        assert isinstance(
-            parent, (element.GenericElement, capellambse.MelodyModel)
-        )
 
         super().__init__(*args, **kw)
         self._parent = parent
@@ -1417,7 +1430,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             accessor.delete(self, obj)
         super().__delitem__(index)
 
-    def _newlist_type(self: _C) -> type[_C]:
+    def _newlist_type(self) -> type[element.ElementList[T]]:
         assert len(type(self).__bases__) == 2
         assert type(self).__bases__[0] is ElementListCouplingMixin
         return type(self).__bases__[1]
@@ -1457,7 +1470,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         try:
             sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
             acc.insert(self, len(self), newobj)
-            self._newlist_type().insert(self, len(self), newobj)
+            super().insert(len(self), newobj)
         except:
             self._parent._element.remove(newobj._element)
             raise
@@ -1486,7 +1499,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         try:
             sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
             acc.insert(self, len(self), newobj)
-            self._newlist_type().insert(self, len(self), newobj)
+            super().insert(len(self), newobj)
         except:
             self._parent._element.remove(newobj._element)
             raise
@@ -1514,4 +1527,4 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
                 "capellambse.insert", self._parent, acc.__name__, index, value
             )
         acc.insert(self, index, value)
-        self._newlist_type().insert(self, index, value)
+        super().insert(index, value)

@@ -22,6 +22,7 @@ import textwrap
 import typing as t
 
 import markupsafe
+import typing_extensions as te
 from lxml import etree
 
 import capellambse
@@ -90,13 +91,38 @@ class ModelObject(t.Protocol):
     mentioned special cases.
     """
 
-    _model: capellambse.MelodyModel
-    _element: etree._Element
+    @property
+    def _model(self) -> capellambse.MelodyModel:
+        ...
 
-    def __init__(self, **kw: t.Any) -> None:
-        if kw:
-            raise TypeError(f"Unconsumed keyword arguments: {kw}")
-        super().__init__()
+    @property
+    def _element(self) -> etree._Element:
+        ...
+
+    @property
+    def _constructed(self) -> bool:
+        ...
+
+    def __init__(
+        self,
+        model: capellambse.MelodyModel,
+        parent: etree._Element,
+        **kw: t.Any,
+    ) -> None:
+        """Create a new model object.
+
+        Parameters
+        ----------
+        model
+            The model instance.
+        parent
+            The parent XML element below which to create a new object.
+        kw
+            Any additional arguments will be used to populate the
+            instance attributes. Note that some attributes may be
+            required by specific element types at construction time
+            (commonly e.g. ``uuid``).
+        """
 
     @classmethod
     def from_model(
@@ -107,8 +133,6 @@ class ModelObject(t.Protocol):
 
 class GenericElement:
     """Provides high-level access to a single model element."""
-
-    _Self = t.TypeVar("_Self", bound="GenericElement")
 
     uuid = properties.AttributeProperty("id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
@@ -139,10 +163,8 @@ class GenericElement:
 
     @classmethod
     def from_model(
-        cls: type[_Self],
-        model: capellambse.MelodyModel,
-        element: etree._Element,
-    ) -> _Self:
+        cls, model: capellambse.MelodyModel, element: etree._Element
+    ) -> te.Self:
         """Wrap an existing model object.
 
         Parameters

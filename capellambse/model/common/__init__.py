@@ -11,6 +11,8 @@ import collections
 import collections.abc as cabc
 import typing as t
 
+import capellambse
+
 S = t.TypeVar("S", bound=t.Optional[str])
 T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
@@ -67,15 +69,13 @@ def enumliteral(
 
 
 def set_accessor(
-    cls: type[GenericElement],
-    attr: str,
-    accessor: Accessor,
+    cls: type[ModelObject], attr: str, accessor: Accessor
 ) -> None:
     setattr(cls, attr, accessor)
     accessor.__set_name__(cls, attr)
 
 
-def set_self_references(*args: tuple[type[GenericElement], str]) -> None:
+def set_self_references(*args: tuple[type[ModelObject], str]) -> None:
     for cls, attr in args:
         set_accessor(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
 

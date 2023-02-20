@@ -50,11 +50,11 @@ repos:
         name: mypy
         entry: mypy
         language: python
-        types_or: [python, toml]
+        types_or: [python, toml, yaml]
         pass_filenames: false
         args: [capellambse, tests]
         additional_dependencies:
-          - mypy==0.991
+          - mypy==1.0.0
           - capellambse[cli,decl,docs,httpfiles,png,termgraphics,test]
           - sphinx
           - types-docutils==0.17.0

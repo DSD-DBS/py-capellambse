@@ -517,6 +517,10 @@ class MelodyModel:
         with self._loader.write_tmp_project_dir() as tmp_project_dir:
             diagram_cache.export_diagrams(tmp_project_dir)
 
+    @classmethod
+    def from_model(cls, model: MelodyModel, element: t.Any) -> t.NoReturn:
+        raise TypeError("Cannot instantiate a model from another model")
+
     @property
     def info(self) -> loader.ModelInfo:
         return self._loader.get_model_info()
