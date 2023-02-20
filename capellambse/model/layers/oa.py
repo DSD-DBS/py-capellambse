@@ -27,7 +27,7 @@ XT_ARCH = "org.polarsys.capella.core.data.oa:OperationalAnalysis"
 class OperationalActivity(fa.AbstractFunction):
     """An operational activity."""
 
-    _xmltag = "ownedOperationalActivities"
+    xmltag = "ownedOperationalActivities"
 
     owning_entity = c.CustomAccessor(
         c.GenericElement,
@@ -71,7 +71,7 @@ class EntityOperationalCapabilityInvolvement(interaction.AbstractInvolvement):
 class OperationalCapability(c.GenericElement):
     """A capability in the OperationalAnalysis layer."""
 
-    _xmltag = "ownedOperationalCapabilities"
+    xmltag = "ownedOperationalCapabilities"
 
     extends = c.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=c.ElementList
@@ -136,7 +136,7 @@ class OperationalCapability(c.GenericElement):
 class OperationalCapabilityPkg(c.GenericElement):
     """A package that holds operational capabilities."""
 
-    _xmltag = "ownedAbstractCapabilityPkg"
+    xmltag = "ownedAbstractCapabilityPkg"
 
     capabilities = c.DirectProxyAccessor(
         OperationalCapability, aslist=c.ElementList
@@ -166,7 +166,7 @@ class AbstractEntity(cs.Component):
 class Entity(AbstractEntity):
     """An Entity in the OperationalAnalysis layer."""
 
-    _xmltag = "ownedEntities"
+    xmltag = "ownedEntities"
 
     entities: c.Accessor
 
@@ -183,7 +183,7 @@ class Entity(AbstractEntity):
 class OperationalActivityPkg(c.GenericElement):
     """A package that holds operational entities."""
 
-    _xmltag = "ownedFunctionPkg"
+    xmltag = "ownedFunctionPkg"
 
     activities = c.DirectProxyAccessor(
         OperationalActivity, aslist=c.ElementList
@@ -196,7 +196,7 @@ class OperationalActivityPkg(c.GenericElement):
 class CommunicationMean(fa.AbstractExchange):
     """An operational entity exchange."""
 
-    _xmltag = "ownedComponentExchanges"
+    xmltag = "ownedComponentExchanges"
 
     allocated_interactions = c.LinkAccessor[fa.FunctionalExchange](
         None,  # FIXME fill in tag
@@ -214,18 +214,17 @@ class CommunicationMean(fa.AbstractExchange):
 
 
 @c.xtype_handler(XT_ARCH)
-class EntityPkg(c.GenericElement):
+class EntityPkg(cs.ComponentPkg):
     """A package that holds operational entities."""
 
-    _xmltag = "ownedEntityPkg"
+    xmltag = "ownedEntityPkg"
 
     entities = c.DirectProxyAccessor(Entity, aslist=c.ElementList)
-    state_machines = c.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
+    exchanges = c.DirectProxyAccessor[CommunicationMean](
+        CommunicationMean, aslist=c.ElementList
     )
 
     packages: c.Accessor
-    exchanges = c.DirectProxyAccessor(CommunicationMean, aslist=c.ElementList)
 
 
 @c.xtype_handler(None)

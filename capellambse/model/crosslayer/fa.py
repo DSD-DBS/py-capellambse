@@ -38,7 +38,7 @@ XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
 class ControlNode(c.GenericElement):
     """A node with a specific control-kind."""
 
-    _xmltag = "ownedSequenceNodes"
+    xmltag = "ownedSequenceNodes"
 
     kind = c.EnumAttributeProperty(
         "kind", modeltypes.ControlNodeKind, writable=False
@@ -49,7 +49,7 @@ class ControlNode(c.GenericElement):
 class FunctionRealization(c.GenericElement):
     """A realization that links to a function."""
 
-    _xmltag = "ownedFunctionRealizations"
+    xmltag = "ownedFunctionRealizations"
 
 
 class AbstractExchange(c.GenericElement):
@@ -92,7 +92,7 @@ class FunctionPort(c.GenericElement):
 class FunctionInputPort(FunctionPort):
     """A function input port."""
 
-    _xmltag = "inputs"
+    xmltag = "inputs"
 
     exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem, "incomingExchangeItems", aslist=c.ElementList
@@ -103,7 +103,7 @@ class FunctionInputPort(FunctionPort):
 class FunctionOutputPort(FunctionPort):
     """A function output port."""
 
-    _xmltag = "outputs"
+    xmltag = "outputs"
 
     exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem, "outgoingExchangeItems", aslist=c.ElementList
@@ -128,7 +128,7 @@ class Function(AbstractFunction):
 class FunctionalExchange(AbstractExchange):
     """A functional exchange."""
 
-    _xmltag = "ownedFunctionalExchanges"
+    xmltag = "ownedFunctionalExchanges"
 
     exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem, "exchangedItems", aslist=c.ElementList
@@ -142,7 +142,7 @@ class FunctionalExchange(AbstractExchange):
 class FunctionalChainInvolvement(interaction.AbstractInvolvement):
     """Abstract class for FunctionalChainInvolvementLink/Function."""
 
-    _xmltag = "ownedFunctionalChainInvolvements"
+    xmltag = "ownedFunctionalChainInvolvements"
 
 
 @c.xtype_handler(None)
@@ -166,7 +166,7 @@ class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
 class FunctionalChain(c.GenericElement):
     """A functional chain."""
 
-    _xmltag = "ownedFunctionalChains"
+    xmltag = "ownedFunctionalChains"
 
     involvements = c.DirectProxyAccessor(
         c.GenericElement,
@@ -196,7 +196,7 @@ class FunctionalChain(c.GenericElement):
 class ComponentPort(c.GenericElement):
     """A component port."""
 
-    _xmltag = "ownedFeatures"
+    xmltag = "ownedFeatures"
 
     direction = c.EnumAttributeProperty(
         "orientation", modeltypes.FPortDir, writable=False
@@ -209,7 +209,7 @@ class ComponentPort(c.GenericElement):
 class ComponentExchange(AbstractExchange):
     """A functional component exchange."""
 
-    _xmltag = "ownedComponentExchanges"
+    xmltag = "ownedComponentExchanges"
 
     allocated_functional_exchanges = c.LinkAccessor[FunctionalExchange](
         None,  # FIXME fill in tag

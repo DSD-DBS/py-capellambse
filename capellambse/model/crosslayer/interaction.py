@@ -81,6 +81,14 @@ class EventReceiptOperation(EventOperation):
     """An event-receipt operation."""
 
 
+class InteractionFragment(c.GenericElement):
+    """Abstract super class of all interaction fragments in a Scenario."""
+
+    covered = c.AttrProxyAccessor[c.GenericElement](
+        None, "coveredInstanceRoles", aslist=c.MixedElementList
+    )
+
+
 @c.xtype_handler(None)
 class Scenario(c.GenericElement):
     """A scenario that holds instance roles."""
@@ -89,20 +97,16 @@ class Scenario(c.GenericElement):
         InstanceRole, aslist=c.ElementList
     )
     messages = c.DirectProxyAccessor(SequenceMessage, aslist=c.ElementList)
-    events = c.RoleTagAccessor("ownedEvents", aslist=c.MixedElementList)
+    events = c.RoleTagAccessor(
+        "ownedEvents", EventOperation, aslist=c.MixedElementList
+    )
     fragments = c.RoleTagAccessor(
-        "ownedInteractionFragments", aslist=c.MixedElementList
+        "ownedInteractionFragments",
+        InteractionFragment,
+        aslist=c.MixedElementList,
     )
     time_lapses = c.RoleTagAccessor(
-        "ownedTimeLapses", aslist=c.MixedElementList
-    )
-
-
-class InteractionFragment(c.GenericElement):
-    """Abstract super class of all interaction fragments in a Scenario."""
-
-    covered = c.AttrProxyAccessor[c.GenericElement](
-        None, "coveredInstanceRoles", aslist=c.MixedElementList
+        "ownedTimeLapses", Event, aslist=c.MixedElementList
     )
 
 
@@ -148,7 +152,7 @@ class Exchange(c.GenericElement):
 class AbstractCapabilityExtend(Exchange):
     """An AbstractCapabilityExtend."""
 
-    _xmltag = "extends"
+    xmltag = "extends"
 
     source = c.ParentAccessor(c.GenericElement)
     target = c.AttrProxyAccessor(c.GenericElement, "extended")
@@ -158,7 +162,7 @@ class AbstractCapabilityExtend(Exchange):
 class AbstractCapabilityInclude(Exchange):
     """An AbstractCapabilityInclude."""
 
-    _xmltag = "includes"
+    xmltag = "includes"
 
     source = c.ParentAccessor(c.GenericElement)
     target = c.AttrProxyAccessor(c.GenericElement, "included")
@@ -168,7 +172,7 @@ class AbstractCapabilityInclude(Exchange):
 class AbstractCapabilityGeneralization(Exchange):
     """An AbstractCapabilityGeneralization."""
 
-    _xmltag = "superGeneralizations"
+    xmltag = "superGeneralizations"
 
     source = c.ParentAccessor(c.GenericElement)
     target = c.AttrProxyAccessor(c.GenericElement, "super")

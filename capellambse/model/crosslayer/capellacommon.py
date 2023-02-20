@@ -15,7 +15,7 @@ XT_ABSTRACT_STATE_REAL = (
 class Region(c.GenericElement):
     """A region inside a state machine or state/mode."""
 
-    _xmltag = "ownedRegions"
+    xmltag = "ownedRegions"
 
     states: c.Accessor
     modes: c.Accessor
@@ -25,7 +25,7 @@ class Region(c.GenericElement):
 class AbstractStateMode(c.GenericElement):
     """Common code for states and modes."""
 
-    _xmltag = "ownedStates"
+    xmltag = "ownedStates"
 
     regions = c.DirectProxyAccessor(Region, aslist=c.ElementList)
 
@@ -91,7 +91,7 @@ class TerminatePseudoState(AbstractStateMode):
 class StateMachine(c.GenericElement):
     """A state machine."""
 
-    _xmltag = "ownedStateMachines"
+    xmltag = "ownedStateMachines"
 
     regions = c.DirectProxyAccessor(Region, aslist=c.ElementList)
 
@@ -100,7 +100,7 @@ class StateMachine(c.GenericElement):
 class StateTransition(c.GenericElement):
     r"""A transition between :class:`State`\ s or :class:`Mode`\ s."""
 
-    _xmltag = "ownedTransitions"
+    xmltag = "ownedTransitions"
 
     source = c.AttrProxyAccessor(c.GenericElement, "source")
     destination = c.AttrProxyAccessor(c.GenericElement, "target")
@@ -160,7 +160,7 @@ for cls in [
 c.set_accessor(
     Region,
     "states",
-    c.RoleTagAccessor(AbstractStateMode._xmltag, aslist=c.ElementList),
+    c.RoleTagAccessor(AbstractStateMode.xmltag, aslist=c.ElementList),
 )
 c.set_accessor(
     Region, "modes", c.DirectProxyAccessor(Mode, aslist=c.ElementList)

@@ -12,7 +12,7 @@ from . import cs, information
 class BaseArchitectureLayer(c.GenericElement):
     """A template architecture layer."""
 
-    _xmltag = "ownedArchitectures"
+    xmltag = "ownedArchitectures"
 
     data_package = c.DirectProxyAccessor(information.DataPkg)
     interface_package = c.DirectProxyAccessor(cs.InterfacePkg)

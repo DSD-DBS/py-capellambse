@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
+import pytest
 
 from capellambse import MelodyModel
+from capellambse.model.crosslayer import cs
+
+HOGWARTS_UUID = "0d2edb8f-fa34-4e73-89ec-fb9a63001440"
 
 
 def test_PhysicalPath_has_ordered_list_of_involved_items(model: MelodyModel):
@@ -74,3 +78,44 @@ def test_PhysicalLink_setting_source_and_target(model: MelodyModel):
     assert source_pp == link.source
     assert target_pp == link.ends[1]
     assert target_pp == link.target
+
+
+def test_Components_have_parts(model: MelodyModel):
+    comp = model.by_uuid(HOGWARTS_UUID)
+
+    for part in comp.parts:
+        assert isinstance(part, cs.Part)
+
+
+@pytest.mark.parametrize(
+    "uuid",
+    [
+        pytest.param(HOGWARTS_UUID, id="Component"),
+        pytest.param(
+            "84c0978d-9a32-4f5b-8013-5b0b6adbfd73", id="ComponentPkg"
+        ),
+    ],
+)
+def test_component_creation_also_creates_a_part(model: MelodyModel, uuid: str):
+    name = "Test"
+    logical_parts = model.search("Part", below=model.la).by_name
+    assert name not in logical_parts, "Part already exists"
+    obj = model.by_uuid(uuid)
+
+    comp = obj.components.create(name=name)
+
+    assert (part := model.search("Part", below=model.la).by_name(name))
+    assert isinstance(part, cs.Part)
+    assert part in comp.representing_parts
+    assert part.type == comp
+
+
+def test_changed_Component_name_is_copied_to_the_parts(model: MelodyModel):
+    name = "Test"
+
+    comp = model.by_uuid(HOGWARTS_UUID)
+    assert comp.representing_parts
+    comp.name = name
+    comp.allocated_functions.append(model.la.root_function)
+
+    assert all(i.name == name for i in comp.representing_parts)

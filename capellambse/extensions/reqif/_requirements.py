@@ -83,20 +83,20 @@ class ReqIFElement(c.GenericElement):
 class DataTypeDefinition(ReqIFElement):
     """A data type definition for requirement types."""
 
-    _xmltag = "ownedDefinitionTypes"
+    xmltag = "ownedDefinitionTypes"
 
 
 @c.xtype_handler(None)
 class AttributeDefinition(ReqIFElement):
     """An attribute definition for requirement types."""
 
-    _xmltag = "ownedAttributes"
+    xmltag = "ownedAttributes"
 
     data_type = c.AttrProxyAccessor(DataTypeDefinition, "definitionType")
 
 
 class AbstractRequirementsAttribute(c.GenericElement):
-    _xmltag = "ownedAttributes"
+    xmltag = "ownedAttributes"
 
     definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
 
@@ -199,7 +199,7 @@ class StringValueAttribute(AbstractRequirementsAttribute):
 class EnumValue(ReqIFElement):
     """An enumeration value for :class:`EnumDataTypeDefinition`."""
 
-    _xmltag = "specifiedValues"
+    xmltag = "specifiedValues"
 
     def __str__(self) -> str:
         return self.long_name
@@ -209,7 +209,7 @@ class EnumValue(ReqIFElement):
 class EnumerationDataTypeDefinition(ReqIFElement):
     """An enumeration data type definition for requirement types."""
 
-    _xmltag = "ownedDefinitionTypes"
+    xmltag = "ownedDefinitionTypes"
 
     values = c.DirectProxyAccessor(
         EnumValue, aslist=c.ElementList, single_attr="long_name"
@@ -220,7 +220,7 @@ class EnumerationDataTypeDefinition(ReqIFElement):
 class AttributeDefinitionEnumeration(ReqIFElement):
     """An enumeration attribute definition for requirement types."""
 
-    _xmltag = "ownedAttributes"
+    xmltag = "ownedAttributes"
 
     data_type = c.AttrProxyAccessor(
         EnumerationDataTypeDefinition, "definitionType"
@@ -270,28 +270,28 @@ class AbstractType(ReqIFElement):
 class ModuleType(AbstractType):
     """A requirement-module type."""
 
-    _xmltag = "ownedTypes"
+    xmltag = "ownedTypes"
 
 
 @c.xtype_handler(None)
 class RelationType(AbstractType):
     """A requirement-relation type."""
 
-    _xmltag = "ownedTypes"
+    xmltag = "ownedTypes"
 
 
 @c.xtype_handler(None)
 class RequirementType(AbstractType):
     """A requirement type."""
 
-    _xmltag = "ownedTypes"
+    xmltag = "ownedTypes"
 
 
 @c.xtype_handler(None)
 class Requirement(ReqIFElement):
     """A ReqIF Requirement."""
 
-    _xmltag = "ownedRequirements"
+    xmltag = "ownedRequirements"
 
     owner = c.ParentAccessor(c.GenericElement)
 
@@ -311,7 +311,7 @@ class Requirement(ReqIFElement):
 class Folder(Requirement):
     """A folder that stores Requirements."""
 
-    _xmltag = "ownedRequirements"
+    xmltag = "ownedRequirements"
 
     folders: c.Accessor
     requirements = c.DirectProxyAccessor(Requirement, aslist=c.ElementList)
@@ -340,7 +340,7 @@ class AbstractRequirementsRelation(ReqIFElement):
 class InternalRelation(AbstractRequirementsRelation):
     """A Relation between two requirements."""
 
-    _xmltag = "ownedRelations"
+    xmltag = "ownedRelations"
 
 
 _attr_type_hints = {

@@ -9,7 +9,7 @@ from .. import common as c
 class Constraint(c.GenericElement):
     """A constraint."""
 
-    _xmltag = "ownedConstraints"
+    xmltag = "ownedConstraints"
 
     constrained_elements = c.AttrProxyAccessor(
         c.GenericElement,
@@ -24,21 +24,21 @@ class Constraint(c.GenericElement):
 class Generalization(c.GenericElement):
     """A Generalization."""
 
-    _xmltag = "ownedGeneralizations"
+    xmltag = "ownedGeneralizations"
 
 
 @c.xtype_handler(None)
 class EnumerationPropertyLiteral(c.GenericElement):
     """A Literal for EnumerationPropertyType."""
 
-    _xmltag = "ownedLiterals"
+    xmltag = "ownedLiterals"
 
 
 @c.xtype_handler(None)
 class EnumerationPropertyType(c.GenericElement):
     """An EnumerationPropertyType."""
 
-    _xmltag = "ownedEnumerationPropertyTypes"
+    xmltag = "ownedEnumerationPropertyTypes"
 
     literals = c.DirectProxyAccessor(
         EnumerationPropertyLiteral, aslist=c.ElementList
@@ -48,7 +48,7 @@ class EnumerationPropertyType(c.GenericElement):
 class PropertyValue(c.GenericElement):
     """Abstract base class for PropertyValues."""
 
-    _xmltag = "ownedPropertyValues"
+    xmltag = "ownedPropertyValues"
 
     enumerations = c.DirectProxyAccessor(
         EnumerationPropertyType, aslist=c.ElementList
@@ -97,7 +97,7 @@ class EnumerationPropertyValue(PropertyValue):
 class PropertyValueGroup(c.GenericElement):
     """A group for PropertyValues."""
 
-    _xmltag = "ownedPropertyValueGroups"
+    xmltag = "ownedPropertyValueGroups"
 
     values = c.DirectProxyAccessor(
         c.GenericElement,
@@ -117,7 +117,7 @@ class PropertyValueGroup(c.GenericElement):
 class PropertyValuePkg(c.GenericElement):
     """A Package for PropertyValues."""
 
-    _xmltag = "ownedPropertyValuePkgs"
+    xmltag = "ownedPropertyValuePkgs"
 
     enumeration_property_types = c.DirectProxyAccessor(
         EnumerationPropertyType, aslist=c.ElementList

@@ -127,7 +127,7 @@ class GenericElement:
 
     _constructed: bool
     _required_attrs = frozenset({"uuid", "xtype"})
-    _xmltag: str | None = None
+    xmltag: str | None = None
 
     @property
     def progress_status(self) -> properties.AttributeProperty | str:
@@ -186,6 +186,7 @@ class GenericElement:
         self,
         model: capellambse.MelodyModel,
         parent: etree._Element,
+        xmltag: str | None = None,
         /,
         **kw: t.Any,
     ) -> None:
@@ -200,30 +201,35 @@ class GenericElement:
             raise TypeError(f"Missing required keyword arguments: {mattrs}")
 
         super().__init__()
-        if self._xmltag is None:
+        xmltag = xmltag or self.xmltag
+        if xmltag is None:
             raise TypeError(
                 f"Cannot instantiate {type(self).__name__} directly"
-            )
+            ) from None
+
         self._constructed = False
         self._model = model
-        self._element: etree._Element = etree.Element(self._xmltag)
+        self._element: etree._Element = etree.Element(xmltag)
         parent.append(self._element)
         try:
             for key, val in kw.items():
+                prop = getattr(type(self), key)
+                is_acc_or_attr_prop = isinstance(
+                    prop, (accessors.Accessor, properties.AttributeProperty)
+                )
                 if key == "xtype":
                     self._element.set(helpers.ATT_XT, val)
                     self._model._loader.add_namespace(
                         parent, val.split(":", maxsplit=1)[0]
                     )
-                elif not isinstance(
-                    getattr(type(self), key),
-                    (accessors.Accessor, properties.AttributeProperty),
+                elif is_acc_or_attr_prop or (
+                    isinstance(prop, property) and not self._constructed
                 ):
+                    setattr(self, key, val)
+                else:
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
                     )
-                else:
-                    setattr(self, key, val)
             self._model._loader.idcache_index(self._element)
         except BaseException:
             parent.remove(self._element)

@@ -105,7 +105,7 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
 
         >>> @xtype_handler('arch:xtype', 'xtype:1', 'xtype:2')
         ... class Test:
-        ...     _xmltag = "ownedTests"
+        ...     xmltag = "ownedTests"
         ...     def from_model(self, model, element, /):
         ...         ...  # Instantiate from model XML element
     """

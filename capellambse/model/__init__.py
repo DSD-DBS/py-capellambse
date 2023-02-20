@@ -28,16 +28,16 @@ from capellambse import _diagram_cache, filehandler, loader
 
 from . import common, diagram  # isort:skip
 
-# Architectural Layers
-from .crosslayer import capellacore  # isort:skip
-from .layers import oa, ctx, la, pa  # isort:skip
-
 # Exports
 from .common import (  # isort:skip
     ElementList,
     GenericElement,
     NonUniqueMemberError,
 )
+
+# Architectural Layers
+from .crosslayer import capellacore  # isort:skip
+from .layers import ctx, la, oa, pa  # isort:skip
 
 LOGGER = logging.getLogger(__name__)
 XT_PROJECT = "org.polarsys.capella.core.data.capellamodeller:Project"

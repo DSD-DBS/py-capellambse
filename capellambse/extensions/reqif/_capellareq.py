@@ -34,7 +34,7 @@ c.XTYPE_ANCHORS[__name__] = "CapellaRequirements"
 class CapellaModule(rq.ReqIFElement):
     """A ReqIF Module that bundles multiple Requirement folders."""
 
-    _xmltag = "ownedExtensions"
+    xmltag = "ownedExtensions"
 
     folders = c.DirectProxyAccessor(rq.Folder, aslist=c.ElementList)
     requirements = c.DirectProxyAccessor(rq.Requirement, aslist=c.ElementList)
@@ -85,14 +85,14 @@ class CapellaModule(rq.ReqIFElement):
 class CapellaIncomingRelation(rq.AbstractRequirementsRelation):
     """A Relation between a requirement and an object."""
 
-    _xmltag = "ownedRelations"
+    xmltag = "ownedRelations"
 
 
 @c.xtype_handler(None)
 class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
     """A Relation between an object and a requirement."""
 
-    _xmltag = "ownedExtensions"
+    xmltag = "ownedExtensions"
 
     source = c.AttrProxyAccessor(rq.Requirement, "target")
     target = c.AttrProxyAccessor(c.GenericElement, "source")
@@ -100,7 +100,7 @@ class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
 
 @c.xtype_handler(None)
 class CapellaTypesFolder(rq.ReqIFElement):
-    _xmltag = "ownedExtensions"
+    xmltag = "ownedExtensions"
 
     data_type_definitions = c.DirectProxyAccessor(
         c.GenericElement,
@@ -117,11 +117,9 @@ class CapellaTypesFolder(rq.ReqIFElement):
 
 
 class RequirementsRelationAccessor(
-    c.WritableAccessor["rq.AbstractRequirementsRelation"]
+    c.Accessor["rq.AbstractRequirementsRelation"]
 ):
     """Searches for requirement relations in the architecture layer."""
-
-    __slots__ = ("aslist",)
 
     def __init__(self, *args, **kw) -> None:
         super().__init__(
@@ -308,14 +306,8 @@ class RelationsList(c.ElementList["rq.AbstractRequirementsRelation"]):
         return listtype(self._model, elements, source=self._source)
 
 
-class ElementRelationAccessor(
-    c.WritableAccessor["rq.AbstractRequirementsRelation"]
-):
+class ElementRelationAccessor(c.Accessor["rq.AbstractRequirementsRelation"]):
     """Provides access to RequirementsRelations of a GenericElement."""
-
-    # pylint: disable=abstract-method  # Only partially implemented for now
-
-    __slots__ = ("aslist",)
 
     def __init__(self) -> None:
         super().__init__(aslist=RelationsList, single_attr="long_name")

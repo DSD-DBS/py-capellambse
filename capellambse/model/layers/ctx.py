@@ -22,7 +22,7 @@ XT_ARCH = "org.polarsys.capella.core.data.ctx:SystemAnalysis"
 class SystemFunction(fa.Function):
     """A system function."""
 
-    _xmltag = "ownedFunctions"
+    xmltag = "ownedFunctions"
 
     realized_operational_activities = c.LinkAccessor[oa.OperationalActivity](
         None,  # FIXME fill in tag
@@ -38,7 +38,7 @@ class SystemFunction(fa.Function):
 class SystemFunctionPkg(c.GenericElement):
     """A function package that can hold functions."""
 
-    _xmltag = "ownedFunctionPkg"
+    xmltag = "ownedFunctionPkg"
 
     functions = c.DirectProxyAccessor(SystemFunction, aslist=c.ElementList)
     packages: c.Accessor
@@ -48,7 +48,7 @@ class SystemFunctionPkg(c.GenericElement):
 class SystemComponent(cs.Component):
     """A system component."""
 
-    _xmltag = "ownedSystemComponents"
+    xmltag = "ownedSystemComponents"
 
     allocated_functions = c.LinkAccessor[SystemFunction](
         "ownedFunctionalAllocation",
@@ -65,15 +65,12 @@ class SystemComponent(cs.Component):
 
 
 @c.xtype_handler(XT_ARCH)
-class SystemComponentPkg(c.GenericElement):
+class SystemComponentPkg(cs.ComponentPkg):
     """A system component package."""
 
-    _xmltag = "ownedSystemComponentPkg"
+    xmltag = "ownedSystemComponentPkg"
 
     components = c.DirectProxyAccessor(SystemComponent, aslist=c.ElementList)
-    state_machines = c.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
 
     packages: c.Accessor
 
@@ -87,7 +84,7 @@ class CapabilityInvolvement(interaction.AbstractInvolvement):
 class Capability(c.GenericElement):
     """A capability."""
 
-    _xmltag = "ownedCapabilities"
+    xmltag = "ownedCapabilities"
 
     extends = c.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=c.ElementList
@@ -158,14 +155,14 @@ class Capability(c.GenericElement):
 class MissionInvolvement(interaction.AbstractInvolvement):
     """A MissionInvolvement."""
 
-    _xmltag = "ownedMissionInvolvements"
+    xmltag = "ownedMissionInvolvements"
 
 
 @c.xtype_handler(XT_ARCH)
 class CapabilityExploitation(c.GenericElement):
     """A CapabilityExploitation."""
 
-    _xmltag = "ownedCapabilityExploitations"
+    xmltag = "ownedCapabilityExploitations"
 
     capability = c.AttrProxyAccessor(Capability, "capability")
 
@@ -183,7 +180,7 @@ class CapabilityExploitation(c.GenericElement):
 class Mission(c.GenericElement):
     """A mission."""
 
-    _xmltag = "ownedMissions"
+    xmltag = "ownedMissions"
 
     involvements = c.DirectProxyAccessor(
         MissionInvolvement, aslist=c.ElementList
@@ -206,7 +203,7 @@ class Mission(c.GenericElement):
 class MissionPkg(c.GenericElement):
     """A system mission package that can hold missions."""
 
-    _xmltag = "ownedMissionPkg"
+    xmltag = "ownedMissionPkg"
 
     missions = c.DirectProxyAccessor(Mission, aslist=c.ElementList)
     packages: c.Accessor
@@ -216,7 +213,7 @@ class MissionPkg(c.GenericElement):
 class CapabilityPkg(c.GenericElement):
     """A capability package that can hold capabilities."""
 
-    _xmltag = "ownedAbstractCapabilityPkg"
+    xmltag = "ownedAbstractCapabilityPkg"
 
     capabilities = c.DirectProxyAccessor(Capability, aslist=c.ElementList)
 

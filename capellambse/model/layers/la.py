@@ -21,7 +21,7 @@ XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
 class LogicalFunction(fa.Function):
     """A logical function on the Logical Architecture layer."""
 
-    _xmltag = "ownedLogicalFunctions"
+    xmltag = "ownedLogicalFunctions"
 
     realized_system_functions = c.LinkAccessor[ctx.SystemFunction](
         None,  # FIXME fill in tag
@@ -46,7 +46,7 @@ class LogicalFunction(fa.Function):
 class LogicalFunctionPkg(c.GenericElement):
     """A logical function package."""
 
-    _xmltag = "ownedFunctionPkg"
+    xmltag = "ownedFunctionPkg"
 
     functions = c.DirectProxyAccessor(LogicalFunction, aslist=c.ElementList)
 
@@ -57,7 +57,7 @@ class LogicalFunctionPkg(c.GenericElement):
 class LogicalComponent(cs.Component):
     """A logical component on the Logical Architecture layer."""
 
-    _xmltag = "ownedLogicalComponents"
+    xmltag = "ownedLogicalComponents"
 
     allocated_functions = c.LinkAccessor[LogicalFunction](
         "ownedFunctionalAllocation",
@@ -77,18 +77,12 @@ class LogicalComponent(cs.Component):
 
 
 @c.xtype_handler(XT_ARCH)
-class LogicalComponentPkg(c.GenericElement):
+class LogicalComponentPkg(cs.ComponentPkg):
     """A logical component package."""
 
-    _xmltag = "ownedLogicalComponentPkg"
+    xmltag = "ownedLogicalComponentPkg"
 
     components = c.DirectProxyAccessor(LogicalComponent, aslist=c.ElementList)
-    state_machines = c.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
-    exchanges = c.DirectProxyAccessor(
-        fa.ComponentExchange, aslist=c.ElementList
-    )
 
     packages: c.Accessor
 
@@ -97,7 +91,7 @@ class LogicalComponentPkg(c.GenericElement):
 class CapabilityRealization(c.GenericElement):
     """A capability."""
 
-    _xmltag = "ownedCapabilityRealizations"
+    xmltag = "ownedCapabilityRealizations"
 
     owned_chains = c.DirectProxyAccessor(
         fa.FunctionalChain, aslist=c.ElementList
@@ -145,7 +139,7 @@ class CapabilityRealization(c.GenericElement):
 class CapabilityRealizationPkg(c.GenericElement):
     """A capability package that can hold capabilities."""
 
-    _xmltag = "ownedAbstractCapabilityPkg"
+    xmltag = "ownedAbstractCapabilityPkg"
 
     capabilities = c.DirectProxyAccessor(
         CapabilityRealization, aslist=c.ElementList

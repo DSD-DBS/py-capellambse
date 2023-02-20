@@ -11,7 +11,7 @@ from . import datavalue
 class Enumeration(c.GenericElement):
     """An Enumeration."""
 
-    _xmltag = "ownedDataTypes"
+    xmltag = "ownedDataTypes"
 
     owned_literals = c.DirectProxyAccessor(
         datavalue.EnumerationLiteral, aslist=c.ElementList

@@ -7,7 +7,6 @@ __all__ = [
     "NonUniqueMemberError",
     "Accessor",
     "DeprecatedAccessor",
-    "WritableAccessor",
     "DirectProxyAccessor",
     "DeepProxyAccessor",
     "LinkAccessor",
@@ -22,6 +21,7 @@ __all__ = [
     "ReferenceSearchingAccessor",
     "ElementListCouplingMixin",
     "RoleTagAccessor",
+    "InvalidModificationError",
 ]
 
 import abc
@@ -44,6 +44,10 @@ _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
 _C = t.TypeVar("_C", bound="ElementListCouplingMixin")
+
+
+class InvalidModificationError(Exception):
+    """Raised when a modification would result in an invalid model."""
 
 
 class NonUniqueMemberError(ValueError):
@@ -69,10 +73,38 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     __slots__ = (
         "__name__",
         "__objclass__",
+        "aslist",
+        "class_",
+        "list_extra_args",
+        "single_attr",
     )
 
     __objclass__: type[t.Any]
     __name__: str
+
+    aslist: type[element.ElementList] | None
+    class_: type[T]
+    list_extra_args: cabc.Mapping[str, t.Any]
+    single_attr: str | None
+
+    def __init__(
+        self,
+        *args: t.Any,
+        aslist: type[element.ElementList] | None = None,
+        single_attr: str | None = None,
+        **kw: t.Any,
+    ) -> None:
+        super().__init__(*args, **kw)
+        self.single_attr = single_attr
+        if aslist is not None:
+            self.aslist = type(
+                "Coupled" + aslist.__name__,
+                (ElementListCouplingMixin, aslist),
+                {"_accessor": self},
+            )
+            self.aslist.__module__ = __name__
+        else:
+            self.aslist = None
 
     @t.overload
     def __get__(self, obj: None, objtype=None) -> Accessor:
@@ -103,134 +135,13 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
             return f"(unknown {type(self).__name__} - call __set_name__)"
         return f"{self.__objclass__.__name__}.{self.__name__}"
 
-
-class DeprecatedAccessor(Accessor[T]):
-    """Provides a deprecated alias to another attribute."""
-
-    __slots__ = ("alternative",)
-
-    def __init__(self, alternative: str, /) -> None:
-        self.alternative = alternative
-
-    @t.overload
-    def __get__(self, obj: None, objtype=None) -> Accessor:
-        ...
-
-    @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
-        ...
-
-    def __get__(self, obj, objtype=None):
-        self.__warn()
-        if obj is None:
-            return self
-
-        return getattr(obj, self.alternative)
-
-    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
-        self.__warn()
-        setattr(obj, self.alternative, value)
-
-    def __warn(self) -> None:
-        msg = f"{self._qualname} is deprecated, use {self.alternative} instead"
-        warnings.warn(msg, FutureWarning, stacklevel=3)
-
-
-class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
-    """An Accessor that also provides write support on lists it returns."""
-
-    aslist: type[ElementListCouplingMixin] | None
-    class_: type[T]
-    list_extra_args: cabc.Mapping[str, t.Any]
-    single_attr: str | None
-
-    def __init__(
-        self,
-        *args: t.Any,
-        aslist: type[element.ElementList] | None,
-        single_attr: str | None = None,
-        **kw: t.Any,
-    ) -> None:
-        super().__init__(*args, **kw)
-        self.single_attr = single_attr
-        if aslist is not None:
-            self.aslist = type(
-                "Coupled" + aslist.__name__,
-                (ElementListCouplingMixin, aslist),
-                {"_accessor": self},
-            )
-            self.aslist.__module__ = __name__
-        else:
-            self.aslist = None
-
-    def create(
-        self,
-        elmlist: ElementListCouplingMixin,
-        /,
-        *type_hints: str | None,
-        **kw: t.Any,
-    ) -> T:
-        """Create and return a new element of type ``elmclass``.
-
-        Parameters
-        ----------
-        elmlist
-            The (coupled)
-            :py:class:`~capellambse.model.common.element.ElementList` to
-            insert the new object into.
-        type_hints
-            Hints for finding the correct type of element to create. Can
-            either be a full or shortened ``xsi:type`` string, or an
-            abbreviation defined by the specific Accessor instance.
-        kw
-            Initialize the properties of the new object. Depending on
-            the object's type, some attributes may be required.
-        """
-        raise TypeError("Cannot create objects")
-
-    def create_singleattr(
-        self, elmlist: ElementListCouplingMixin, arg: t.Any, /
-    ) -> T:
-        """Create an element that only has a single attribute of interest."""
-        if self.single_attr is None:
-            raise TypeError(
-                "Cannot create object from string, a dictionary is required"
-            )
-        return self.create(elmlist, **{self.single_attr: arg})
-
-    def insert(
-        self,
-        elmlist: ElementListCouplingMixin,
-        index: int,
-        value: element.ModelObject,
-    ) -> None:
-        """Insert the ``value`` object into the model.
-
-        The object must be inserted at an appropriate place, so that, if
-        ``elmlist`` were to be created afresh, ``value`` would show up
-        at index ``index``.
-        """
-        raise NotImplementedError("Objects cannot be inserted into this list")
-
-    def delete(
-        self,
-        elmlist: ElementListCouplingMixin,
-        obj: element.ModelObject,
-    ) -> None:
-        """Delete the ``obj`` from the model."""
-        raise NotImplementedError("Objects in this list cannot be deleted")
-
     def _make_list(self, parent_obj, elements):
         assert hasattr(self, "class_")
         assert hasattr(self, "list_extra_args")
         if self.aslist is None:
             return no_list(self, parent_obj._model, elements, self.class_)
         return self.aslist(
-            parent_obj._model,
-            elements,
-            self.class_,
-            parent=parent_obj,
-            **self.list_extra_args,
+            parent_obj._model, elements, self.class_, **self.list_extra_args
         )
 
     def _match_xtype(
@@ -290,16 +201,101 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         objtype = match_xt(objtype, candidate_classes)
         return candidate_classes[objtype], objtype
 
+    def create(
+        self,
+        elmlist: ElementListCouplingMixin,
+        /,
+        *type_hints: str | None,
+        **kw: t.Any,
+    ) -> T:
+        """Create and return a new element of type ``elmclass``.
+
+        Parameters
+        ----------
+        elmlist
+            The (coupled)
+            :py:class:`~capellambse.model.common.element.ElementList` to
+            insert the new object into.
+        type_hints
+            Hints for finding the correct type of element to create. Can
+            either be a full or shortened ``xsi:type`` string, or an
+            abbreviation defined by the specific Accessor instance.
+        kw
+            Initialize the properties of the new object. Depending on
+            the object's type, some attributes may be required.
+        """
+        raise TypeError("Cannot create objects")
+
+    def create_singleattr(
+        self, elmlist: ElementListCouplingMixin, arg: t.Any, /
+    ) -> T:
+        """Create an element that only has a single attribute of interest."""
+        if self.single_attr is None:
+            raise TypeError(
+                "Cannot create object from string, a dictionary is required"
+            )
+        return self.create(elmlist, **{self.single_attr: arg})
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        """Insert the ``value`` object into the model.
+
+        The object must be inserted at an appropriate place, so that, if
+        ``elmlist`` were to be created afresh, ``value`` would show up
+        at index ``index``.
+        """
+        raise TypeError("Objects cannot be inserted into this list")
+
+    def delete(
+        self,
+        elmlist: ElementListCouplingMixin,
+        obj: element.ModelObject,
+    ) -> None:
+        """Delete the ``obj`` from the model."""
+        raise TypeError("Objects in this list cannot be deleted")
+
+
+class DeprecatedAccessor(Accessor[T]):
+    """Provides a deprecated alias to another attribute."""
+
+    __slots__ = ("alternative",)
+
+    def __init__(self, alternative: str, /) -> None:
+        super().__init__()
+        self.alternative = alternative
+
+    @t.overload
+    def __get__(self, obj: None, objtype=None) -> Accessor:
+        ...
+
+    @t.overload
+    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+        ...
+
+    def __get__(self, obj, objtype=None):
+        self.__warn()
+        if obj is None:
+            return self
+
+        return getattr(obj, self.alternative)
+
+    def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
+        self.__warn()
+        setattr(obj, self.alternative, value)
+
+    def __warn(self) -> None:
+        msg = f"{self._qualname} is deprecated, use {self.alternative} instead"
+        warnings.warn(msg, FutureWarning, stacklevel=3)
+
 
 class PhysicalAccessor(Accessor[T]):
     """Helper super class for accessors that work with real elements."""
 
-    __slots__ = (
-        "aslist",
-        "class_",
-        "list_extra_args",
-        "xtypes",
-    )
+    __slots__ = ("xtypes",)
 
     aslist: type[element.ElementList] | None
     class_: type[T]
@@ -316,10 +312,12 @@ class PhysicalAccessor(Accessor[T]):
             | None
         ) = None,
         *,
-        aslist: type[element.ElementList[T]] | None = None,
+        aslist: type[element.ElementList] | None = None,
         list_extra_args: cabc.Mapping[str, t.Any] | None = None,
+        single_attr: str | None = None,
+        **kw: t.Any,
     ) -> None:
-        super().__init__()
+        super().__init__(aslist=aslist, single_attr=single_attr, **kw)
         if xtypes is None:
             self.xtypes = (
                 {build_xtype(class_)}
@@ -336,7 +334,6 @@ class PhysicalAccessor(Accessor[T]):
                 i if isinstance(i, str) else build_xtype(i) for i in xtypes
             }
 
-        self.aslist = aslist
         self.class_ = class_
         self.list_extra_args = list_extra_args or {}
 
@@ -350,23 +347,13 @@ class PhysicalAccessor(Accessor[T]):
             raise ValueError("Multiple matching `xsi:type`s")
         return self.class_, next(iter(self.xtypes))
 
-    def _make_list(self, parent_obj, elements):
-        if self.aslist is None:
-            return no_list(self, parent_obj._model, elements, self.class_)
-        return self.aslist(
-            parent_obj._model,
-            elements,
-            self.class_,
-            **self.list_extra_args,
-        )
 
-
-class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class DirectProxyAccessor(PhysicalAccessor[T]):
     """Creates proxy objects on the fly."""
 
     __slots__ = ("follow_abstract", "rootelem")
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[element.ElementList] | None
     class_: type[T]
     single_attr: str | None
 
@@ -546,8 +533,11 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         want_id: str | None = None
         if "uuid" in kw:
             want_id = kw.pop("uuid")
+        xmltag: str | None = None
+        if "xmltag" in kw:
+            xmltag = kw.pop("xmltag")
         with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
-            obj = elmclass(elmlist._model, parent, uuid=obj_id, **kw)
+            obj = elmclass(elmlist._model, parent, xmltag, uuid=obj_id, **kw)
         return obj  # type: ignore[return-value]
 
     def insert(
@@ -596,20 +586,21 @@ class DeepProxyAccessor(DirectProxyAccessor[T]):
         )
 
 
-class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class LinkAccessor(PhysicalAccessor[T]):
     """Accesses elements through reference elements."""
 
-    __slots__ = ("attr", "tag", "unique")
+    __slots__ = ("attr", "tag", "unique", "follow")
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[element.ElementList] | None
     attr: str
     class_: type[T]
     tag: str | None
+    follow: str
 
     def __init__(
         self,
         tag: str | None,
-        xtype: str | type[element.GenericElement],
+        xtype: str | type[T],
         /,
         *,
         attr: str,
@@ -645,7 +636,11 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             )
         elif not isinstance(tag, str):
             raise TypeError(f"tag must be a str, not {type(tag).__name__}")
-        super().__init__(element.GenericElement, xtype, aslist=aslist)
+        super().__init__(
+            element.GenericElement,  # type:ignore[arg-type]
+            xtype,
+            aslist=aslist,
+        )
         if len(self.xtypes) != 1:
             raise TypeError(f"One xtype is required, got {len(self.xtypes)}")
         self.follow = attr
@@ -781,7 +776,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             raise ValueError("Cannot delete: Target object not in this list")
 
 
-class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class AttrProxyAccessor(PhysicalAccessor[T]):
     """Provides access to elements that are linked in an attribute."""
 
     __slots__ = ("attr",)
@@ -812,7 +807,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             will be used to return a list of all matched objects.
         """
         del class_
-        super().__init__(element.GenericElement, aslist=aslist)
+        super().__init__(
+            element.GenericElement, aslist=aslist  # type:ignore[arg-type]
+        )
         self.attr = attr
 
     def __get__(self, obj, objtype=None):
@@ -886,6 +883,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
 
 class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
+    __slots__ = ()
+
     def __init__(
         self,
         class_: type[T],
@@ -949,7 +948,7 @@ class IndexAccessor(Accessor[T]):
 class AlternateAccessor(Accessor[T]):
     """Provides access to an "alternate" form of the object."""
 
-    __slots__ = ("class_",)
+    __slots__ = ()
 
     def __init__(
         self,
@@ -1082,7 +1081,7 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
         super().__init__(
             class_, xtypes, aslist=element.MixedElementList, **kwargs
         )
-        self.__aslist = aslist
+        self.__aslist = aslist  # type: ignore[misc]
         self.attributes = attributes
 
     def __get__(self, obj, objtype=None):
@@ -1265,18 +1264,19 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         return self._make_list(obj, matches)
 
 
-class RoleTagAccessor(PhysicalAccessor):
+class RoleTagAccessor(DirectProxyAccessor[T]):
     __slots__ = ("role_tag",)
 
     def __init__(
         self,
         role_tag: str,
+        class_: type[T] | None = None,
         *,
-        aslist: type[element.ElementList[T]] | None = None,
+        aslist: type[element.ElementList] | None = None,
         list_extra_args: dict[str, t.Any] | None = None,
     ) -> None:
         super().__init__(
-            element.GenericElement,
+            class_ or element.GenericElement,  # type:ignore[arg-type]
             (),
             aslist=aslist,
             list_extra_args=list_extra_args,
@@ -1289,11 +1289,45 @@ class RoleTagAccessor(PhysicalAccessor):
             return self
 
         elts = list(obj._element.iterchildren(self.role_tag))
+        if self.class_ is not element.GenericElement:
+            xtype = build_xtype(self.class_)
+            elts = [elt for elt in elts if elt.get(helpers.ATT_XT) == xtype]
+
         rv = self._make_list(obj, elts)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
+
+    def create(
+        self,
+        elmlist: element.GenericElement | ElementListCouplingMixin,
+        /,
+        *type_hints: str | None,
+        **kw: t.Any,
+    ) -> T:
+        if self.aslist is None:
+            raise TypeError("Cannot create multiple of this object")
+
+        assert isinstance(elmlist, ElementListCouplingMixin)
+        assert isinstance(elmlist._parent, element.GenericElement)
+
+        if not type_hints:
+            type_hints = (self.class_.__name__,)
+
+        kw["xmltag"] = self.role_tag
+        return super().create(elmlist, *type_hints, **kw)
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        if self.class_:
+            assert isinstance(value, self.class_)
+        assert value._element.tag == self.role_tag
+        super().insert(elmlist, index, value)
 
 
 def no_list(
@@ -1335,7 +1369,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     modifications to the Accessor.
     """
 
-    _accessor: WritableAccessor[T]
+    _accessor: Accessor[T]
     fixed_length: t.ClassVar[int] = 0
 
     def __init__(
@@ -1364,7 +1398,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         assert self._parent is not None
         accessor = type(self)._accessor
-        assert isinstance(accessor, WritableAccessor)
+        assert isinstance(accessor, Accessor)
 
         if not isinstance(index, (int, slice)):
             super().__setitem__(index, value)
@@ -1386,7 +1420,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         accessor = type(self)._accessor
-        assert isinstance(accessor, WritableAccessor)
+        assert isinstance(accessor, Accessor)
         if not isinstance(index, slice):
             index = slice(index, index + 1 or None)
         for obj in self[index]:
@@ -1434,7 +1468,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         acc = type(self)._accessor
-        assert isinstance(acc, WritableAccessor)
+        assert isinstance(acc, Accessor)
         newobj = acc.create(self, *type_hints, **kw)
         try:
             sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
@@ -1454,7 +1488,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         --------
         capellambse.model.common.accessor.ElementListCouplingMixin.create :
             More details on how elements are created.
-        capellambse.model.common.accessor.WritableAccessor.create_singleattr :
+        capellambse.model.common.accessor.Accessor.create_singleattr :
             The method to override in Accessors in order to implement
             this operation.
         """
@@ -1463,7 +1497,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         acc = type(self)._accessor
-        assert isinstance(acc, WritableAccessor)
+        assert isinstance(acc, Accessor)
         newobj = acc.create_singleattr(self, arg)
         try:
             sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
@@ -1490,7 +1524,7 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         acc = type(self)._accessor
-        assert isinstance(acc, WritableAccessor)
+        assert isinstance(acc, Accessor)
         if self._parent._constructed:
             sys.audit(
                 "capellambse.insert", self._parent, acc.__name__, index, value

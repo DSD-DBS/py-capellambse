@@ -11,7 +11,7 @@ import operator
 
 from .. import common as c
 from .. import crosslayer, diagram, modeltypes
-from ..crosslayer import capellacommon, cs, fa
+from ..crosslayer import cs, fa
 from . import la
 
 XT_ARCH = "org.polarsys.capella.core.data.pa:PhysicalArchitecture"
@@ -25,7 +25,7 @@ XT_LA_COMP_REAL = (
 class PhysicalFunction(fa.Function):
     """A physical function on the Physical Architecture layer."""
 
-    _xmltag = "ownedPhysicalFunctions"
+    xmltag = "ownedPhysicalFunctions"
 
     owner = c.CustomAccessor(
         c.GenericElement,
@@ -44,7 +44,7 @@ class PhysicalFunction(fa.Function):
 class PhysicalFunctionPkg(c.GenericElement):
     """A logical component package."""
 
-    _xmltag = "ownedFunctionPkg"
+    xmltag = "ownedFunctionPkg"
 
     functions = c.DirectProxyAccessor(PhysicalFunction, aslist=c.ElementList)
 
@@ -55,7 +55,7 @@ class PhysicalFunctionPkg(c.GenericElement):
 class PhysicalComponent(cs.Component):
     """A physical component on the Physical Architecture layer."""
 
-    _xmltag = "ownedPhysicalComponents"
+    xmltag = "ownedPhysicalComponents"
 
     nature = c.EnumAttributeProperty("nature", modeltypes.Nature)
     kind = c.EnumAttributeProperty(
@@ -84,7 +84,7 @@ class PhysicalComponent(cs.Component):
     ) -> c.ElementList[PhysicalComponent]:
         items = [
             cmp.type._element
-            for part in self.parts
+            for part in self.representing_parts
             for cmp in part.deployed_parts
         ]
         return c.ElementList(self._model, items, PhysicalComponent)
@@ -97,18 +97,12 @@ class PhysicalComponent(cs.Component):
 
 
 @c.xtype_handler(XT_ARCH)
-class PhysicalComponentPkg(c.GenericElement):
+class PhysicalComponentPkg(cs.ComponentPkg):
     """A logical component package."""
 
-    _xmltag = "ownedPhysicalComponentPkg"
+    xmltag = "ownedPhysicalComponentPkg"
 
     components = c.DirectProxyAccessor(PhysicalComponent, aslist=c.ElementList)
-    exchanges = c.DirectProxyAccessor(
-        fa.ComponentExchange, aslist=c.ElementList
-    )
-    state_machines = c.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=c.ElementList
-    )
 
     packages: c.Accessor
 

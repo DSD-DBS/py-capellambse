@@ -11,11 +11,18 @@ Composite Structure object-relations map (ontology):
 
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
+from __future__ import annotations
 
 import operator
+import typing as t
+
+from lxml import etree
 
 from .. import common as c
 from . import capellacommon, fa, information
+
+if t.TYPE_CHECKING:
+    import capellambse
 
 XT_DEPLOY_LINK = (
     "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
@@ -27,11 +34,33 @@ XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
 class Part(c.GenericElement):
     """A representation of a physical component."""
 
-    _xmltag = "ownedParts"
-
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
 
     deployed_parts: c.Accessor
+
+    @property  # type: ignore[override]
+    def name(self) -> str:
+        """Return the name of the Part."""
+        return self.type.name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        if not isinstance(value, str):
+            raise TypeError("Name has to be a string")
+
+        if self._constructed:
+            raise c.InvalidModificationError(
+                "This won't have any effect. The name is inferred from "
+                "`.type`."
+            )
+
+        if not value:
+            try:
+                del self._element.attrib["name"]
+            except KeyError:
+                pass
+        else:
+            self._element.attrib["name"] = value
 
 
 @c.xtype_handler(None)
@@ -64,7 +93,7 @@ class InterfacePkg(c.GenericElement):
 class PhysicalPort(c.GenericElement):
     """A physical port."""
 
-    _xmltag = "ownedFeatures"
+    xmltag = "ownedFeatures"
 
     owner = c.ParentAccessor(c.GenericElement)
 
@@ -91,7 +120,7 @@ class PhysicalLink(PhysicalPort):
 class PhysicalPath(c.GenericElement):
     """A physical path."""
 
-    _xmltag = "ownedPhysicalPath"
+    xmltag = "ownedPhysicalPath"
 
     involved_items = c.LinkAccessor[c.GenericElement](  # FIXME fill in tag
         None, XT_PHYS_PATH_INV, aslist=c.MixedElementList, attr="involved"
@@ -124,7 +153,10 @@ class Component(c.GenericElement):
     )
     ports = c.DirectProxyAccessor(fa.ComponentPort, aslist=c.ElementList)
     physical_ports = c.DirectProxyAccessor(PhysicalPort, aslist=c.ElementList)
-    parts = c.ReferenceSearchingAccessor(Part, "type", aslist=c.ElementList)
+    parts = c.RoleTagAccessor("ownedFeatures", Part, aslist=c.ElementList)
+    representing_parts = c.ReferenceSearchingAccessor(
+        Part, "type", aslist=c.ElementList
+    )
     physical_paths = c.DirectProxyAccessor(PhysicalPath, aslist=c.ElementList)
     physical_links = c.DirectProxyAccessor(PhysicalLink, aslist=c.ElementList)
     exchanges = c.DirectProxyAccessor(
@@ -138,12 +170,36 @@ class Component(c.GenericElement):
         aslist=c.ElementList,
     )
 
+    def __init__(
+        self,
+        model: capellambse.MelodyModel,
+        parent: etree._Element,
+        xmltag: str | None = None,
+        /,
+        **kw: t.Any,
+    ) -> None:
+        super().__init__(model, parent, **kw)
+
+        self.parent.parts.create(name=self.name, type=self)
+
 
 @c.xtype_handler(None)
 class ComponentRealization(c.GenericElement):
     """A realization that links to a component."""
 
-    _xmltag = "ownedComponentRealizations"
+    xmltag = "ownedComponentRealizations"
+
+
+class ComponentPkg(c.GenericElement):
+    """An abstract class for Component packages."""
+
+    exchanges = c.DirectProxyAccessor(
+        fa.ComponentExchange, aslist=c.ElementList
+    )
+    parts = c.RoleTagAccessor("ownedParts", Part, aslist=c.ElementList)
+    state_machines = c.DirectProxyAccessor(
+        capellacommon.StateMachine, aslist=c.ElementList
+    )
 
 
 c.set_accessor(

@@ -2390,6 +2390,8 @@ The predator is far away</bodies>
             name="R. Weasley" abstractType="#ff7b8672-84db-4b93-9fea-22a410907fb1"/>
         <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="249fed97-366f-4240-9e20-101cef32cda2"
             name="LogicalActor 5" abstractType="#3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5"/>
+        <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="b01f70e0-f8fc-4a2d-855d-cc00ebcbf39d"
+            name="Hogwarts" abstractType="#0d2edb8f-fa34-4e73-89ec-fb9a63001440"/>
         <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
             id="c0bc49e1-8043-4418-8c0a-de6c6b749eab" name="Headmaster Responsibilities"
             convoyedInformations="#408f9055-bdcf-4181-865c-db3e823bd93d" source="#fcbf6881-720c-421f-9fe9-12fc3dfefe9c"
