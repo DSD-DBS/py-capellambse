@@ -249,7 +249,7 @@ class MelodyModel:
                     diagram_cache
                 )
             self._diagram_cache_subdir = pathlib.PurePosixPath(
-                diagram_cache_subdir or "/"
+                diagram_cache_subdir or "."
             )
 
         self._constructed = True
