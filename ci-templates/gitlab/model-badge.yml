@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: Apache-2.0
+
+generate-model-badge:
+  image: python:3.11-bullseye
+  rules:
+    - if: $CI_COMMIT_BRANCH
+  script:
+    # Reset branch. This is helpful when chaining jobs
+    # and a previous job pushes changes that should be
+    # considered for the model badge generation.
+    - git fetch
+    - git reset --hard origin/$CI_COMMIT_BRANCH
+    - pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
+    - |
+      python <<EOF
+      import os
+      import pathlib
+
+      import capellambse
+
+      model = capellambse.MelodyModel(os.environ["ENTRYPOINT"])
+      pathlib.Path(os.environ["OUTPUT_FILE"]).write_text(model.description_badge)
+      EOF
+    - git add "$OUTPUT_FILE"
+    - "if git diff --cached --exit-code &> /dev/null; then exit 0; fi"
+    - 'git commit -m "$COMMIT_MSG"'
+    - git push -o ci.skip --set-upstream "https://${GIT_USERNAME:?}:${GIT_PASSWORD:?}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:$CI_COMMIT_BRANCH"
+  artifacts:
+    paths:
+      - "$OUTPUT_FILE"
+  variables:
+    # Specify the output file
+    # Defaults to model-complexity-badge.svg
+    OUTPUT_FILE: model-complexity-badge.svg
+
+    # Specify the commit message when pushing model complexity badge
+    COMMIT_MSG: "docs: Add/Modify model complexity badge"
