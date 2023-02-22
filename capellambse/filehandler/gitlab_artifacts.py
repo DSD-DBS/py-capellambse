@@ -125,8 +125,10 @@ class GitlabArtifactsFiles(FileHandler):
     def __resolve_path(path: str) -> str:
         if path == "glart:":
             if host := os.getenv("CI_SERVER_URL"):
+                LOGGER.debug("Using current Gitlab instance: %s", host)
                 return host
             else:
+                LOGGER.debug("Using public Gitlab instance at gitlab.com")
                 return "https://gitlab.com"
 
         if path.startswith("glart:"):
@@ -143,13 +145,17 @@ class GitlabArtifactsFiles(FileHandler):
             cred_file = pathlib.Path(cred_dir, "gitlab_artifacts_token")
             try:
                 token = cred_file.read_text(encoding="locale").strip()
-            except OSError:
-                pass
+            except OSError as err:
+                LOGGER.debug("Cannot read token from %r: %s", cred_file, err)
             else:
                 if token:
+                    LOGGER.debug("Using token from %s", cred_file)
                     return token
+                else:
+                    LOGGER.debug("Token file is empty: %s", cred_file)
 
         if token := os.getenv("CI_JOB_TOKEN"):
+            LOGGER.debug("Using the $CI_JOB_TOKEN")
             return token
 
         raise TypeError("Cannot connect to Gitlab: No 'token' found")
@@ -161,6 +167,7 @@ class GitlabArtifactsFiles(FileHandler):
         if project:
             project = urllib.parse.quote(project, safe="")
             info = self.__get(f"/projects/{project}")
+            LOGGER.debug("Resolved project %r to ID %d", project, info["id"])
             return info["id"]
 
         if project := os.getenv("CI_PROJECT_ID"):
@@ -180,6 +187,7 @@ class GitlabArtifactsFiles(FileHandler):
                 and jobinfo["pipeline"]["ref"] == self.__branch
                 and "artifacts_file" in jobinfo
             ):
+                LOGGER.debug("Selected job with ID %d", jobinfo["id"])
                 return jobinfo["id"]
 
         raise RuntimeError(f"No recent successful {job!r} job found")
@@ -245,11 +253,12 @@ class GitlabArtifactsFiles(FileHandler):
         filename: str | pathlib.PurePosixPath,
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
     ) -> t.BinaryIO:
-        path = helpers.normalize_pure_path(filename, base=self.subdir)
+        path = str(helpers.normalize_pure_path(filename, base=self.subdir))
 
         if "w" in mode:
             raise TypeError("Cannot write to Gitlab artifacts")
 
+        LOGGER.debug("Opening file %r for reading", path)
         response = self.__rawget(
             f"{self.__path}/api/v4/projects/{self.__project}"
             f"/jobs/{self.__job}/artifacts/{path}"
