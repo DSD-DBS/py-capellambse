@@ -84,6 +84,7 @@ CROSS_FRAGMENT_LINK = re.compile(
     """,
     re.VERBOSE,
 )
+METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
 
 
 def _verify_extension(filename: pathlib.PurePosixPath) -> None:
@@ -1243,7 +1244,16 @@ class MelodyLoader:
             return
 
         metadata = self.trees[metatree].root
-        assert metadata.tag == f"{{{_n.NAMESPACES['metadata']}}}Metadata"
+        if metadata.tag == f"{{{_n.NAMESPACES['xmi']}}}XMI":
+            try:
+                metadata = next(metadata.iterchildren(METADATA_TAG))
+            except StopIteration as error:
+                raise CorruptModelError(
+                    "Cannot list viewpoints: No metadata element found in"
+                    f" {metatree}"
+                ) from error
+        assert metadata.tag == METADATA_TAG
+
         for i in metadata.iterchildren("viewpointReferences"):
             id = i.get("vpId")
             version = i.get("version")
