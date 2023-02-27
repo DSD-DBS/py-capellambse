@@ -7,8 +7,6 @@
 """
 from __future__ import annotations
 
-import operator
-
 from .. import common as c
 from .. import crosslayer, diagram, modeltypes
 from ..crosslayer import capellacommon, cs, fa
@@ -27,11 +25,7 @@ class PhysicalFunction(fa.Function):
 
     _xmltag = "ownedPhysicalFunctions"
 
-    owner = c.CustomAccessor(
-        c.GenericElement,
-        operator.attrgetter("_model.pa.all_components"),
-        matchtransform=operator.attrgetter("allocated_functions"),
-    )
+    owner: c.Accessor[PhysicalComponent]
     realized_logical_functions = c.LinkAccessor[la.LogicalFunction](
         None,  # FIXME fill in tag
         fa.FunctionRealization,
@@ -178,32 +172,28 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
 c.set_accessor(
     la.LogicalComponent,
     "realizing_physical_components",
-    c.CustomAccessor(
-        PhysicalComponent,
-        operator.attrgetter("_model.pa.all_components"),
-        matchtransform=operator.attrgetter("realized_logical_components"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        PhysicalComponent, "realized_logical_components", aslist=c.ElementList
     ),
 )
 c.set_accessor(
     la.LogicalFunction,
     "realizing_physical_functions",
-    c.CustomAccessor(
-        PhysicalFunction,
-        operator.attrgetter("_model.pa.all_functions"),
-        matchtransform=operator.attrgetter("realized_logical_functions"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        PhysicalFunction, "realized_logical_functions", aslist=c.ElementList
     ),
 )
 c.set_accessor(
     PhysicalComponent,
     "deploying_components",
-    c.CustomAccessor(
-        PhysicalComponent,
-        operator.attrgetter("_model.pa.all_components"),
-        matchtransform=operator.attrgetter("deployed_components"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        PhysicalComponent, "deployed_components", aslist=c.ElementList
     ),
+)
+c.set_accessor(
+    PhysicalFunction,
+    "owner",
+    c.ReferenceSearchingAccessor(PhysicalComponent, "allocated_functions"),
 )
 c.set_accessor(
     PhysicalFunction,

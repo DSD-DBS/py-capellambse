@@ -29,13 +29,22 @@ from capellambse import _diagram_cache, filehandler, loader
 from . import common, diagram  # isort:skip
 
 # Architectural Layers
-from .crosslayer import capellacore  # isort:skip
+from .crosslayer import (  # isort:skip
+    capellacommon,
+    capellacore,
+    cs,
+    fa,
+    information,
+    interaction,
+    modellingcore,
+)
 from .layers import oa, ctx, la, pa  # isort:skip
 
 # Exports
 from .common import (  # isort:skip
     ElementList,
     GenericElement,
+    ModelObject,
     NonUniqueMemberError,
 )
 
@@ -508,6 +517,10 @@ class MelodyModel:
         with self._loader.write_tmp_project_dir() as tmp_project_dir:
             diagram_cache.export_diagrams(tmp_project_dir)
 
+    @classmethod
+    def from_model(cls, model: MelodyModel, element: t.Any) -> t.NoReturn:
+        raise TypeError("Cannot instantiate a model from another model")
+
     @property
     def info(self) -> loader.ModelInfo:
         return self._loader.get_model_info()
@@ -518,3 +531,8 @@ class MelodyModel:
         from capellambse.extensions import metrics
 
         return metrics.get_summary_badge(self)
+
+    if t.TYPE_CHECKING:
+
+        def __getattr__(self, attr: str) -> t.Any:
+            """Account for extension attributes in static type checks."""

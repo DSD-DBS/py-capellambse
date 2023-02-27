@@ -295,3 +295,13 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+c.set_accessor(
+    information.ExchangeItem,
+    "exchanges",
+    c.ReferenceSearchingAccessor(
+        (ComponentExchange, FunctionalExchange),
+        "exchange_items",
+        "allocated_exchange_items",
+        aslist=c.ElementList,
+    ),
+)

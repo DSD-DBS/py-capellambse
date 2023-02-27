@@ -227,10 +227,9 @@ def _get_allocated_exchangeitem_names(
         elm = melodyloader[targetlink.get("href")]
 
     names = []
-    for elem in melodyloader.follow_links(elm, elm.get(alloc_attr, "")):
-        if elem is None:
-            continue
-
+    for elem in melodyloader.follow_links(
+        elm, elm.get(alloc_attr, ""), ignore_broken=True
+    ):
         name = elem.get("name")
         if name is not None:
             names.append(name)

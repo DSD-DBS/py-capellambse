@@ -8,8 +8,6 @@ functions, actors etc. which is best presented in a glossary document.
 
 .. diagram:: [CDB] SA ORM
 """
-import operator
-
 from .. import common as c
 from .. import crosslayer, diagram
 from ..crosslayer import capellacommon, capellacore, cs, fa, interaction
@@ -280,11 +278,7 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
 c.set_accessor(
     SystemFunction,
     "owner",
-    c.CustomAccessor(
-        SystemComponent,
-        operator.attrgetter("_model.sa.all_components"),
-        matchtransform=operator.attrgetter("allocated_functions"),
-    ),
+    c.ReferenceSearchingAccessor(SystemComponent, "allocated_functions"),
 )
 c.set_accessor(
     SystemFunction,
@@ -294,11 +288,8 @@ c.set_accessor(
 c.set_accessor(
     oa.OperationalCapability,
     "realizing_capabilities",
-    c.CustomAccessor(
-        Capability,
-        operator.attrgetter("_model.sa.all_capabilities"),
-        matchtransform=operator.attrgetter("realized_capabilities"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        Capability, "realized_capabilities", aslist=c.ElementList
     ),
 )
 c.set_accessor(
@@ -311,21 +302,15 @@ c.set_accessor(
 c.set_accessor(
     oa.Entity,
     "realizing_system_components",
-    c.CustomAccessor(
-        SystemComponent,
-        operator.attrgetter("_model.sa.all_components"),
-        matchtransform=operator.attrgetter("realized_operational_entities"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        SystemComponent, "realized_operational_entities", aslist=c.ElementList
     ),
 )
 c.set_accessor(
     oa.OperationalActivity,
     "realizing_system_functions",
-    c.CustomAccessor(
-        SystemFunction,
-        operator.attrgetter("_model.sa.all_functions"),
-        matchtransform=operator.attrgetter("realized_operational_activities"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        SystemFunction, "realized_operational_activities", aslist=c.ElementList
     ),
 )
 c.set_self_references(

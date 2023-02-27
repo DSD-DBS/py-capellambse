@@ -11,9 +11,6 @@ Composite Structure object-relations map (ontology):
 
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
-
-import operator
-
 from .. import common as c
 from . import capellacommon, fa, information
 
@@ -168,11 +165,8 @@ c.set_accessor(
 c.set_accessor(
     PhysicalLink,
     "physical_paths",
-    c.CustomAccessor(
-        PhysicalPath,
-        operator.attrgetter("_model.pa.all_physical_paths"),
-        matchtransform=operator.attrgetter("involved_items"),
-        aslist=c.ElementList,
+    c.ReferenceSearchingAccessor(
+        PhysicalPath, "involved_items", aslist=c.ElementList
     ),
 )
 c.set_accessor(

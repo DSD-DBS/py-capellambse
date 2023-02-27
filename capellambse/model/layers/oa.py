@@ -7,8 +7,6 @@
 """
 from __future__ import annotations
 
-import operator
-
 from .. import common as c
 from .. import crosslayer, diagram
 from ..crosslayer import (
@@ -29,11 +27,7 @@ class OperationalActivity(fa.AbstractFunction):
 
     _xmltag = "ownedOperationalActivities"
 
-    owning_entity = c.CustomAccessor(
-        c.GenericElement,
-        operator.attrgetter("_model.oa.all_entities"),
-        matchtransform=operator.attrgetter("activities"),
-    )
+    owning_entity: c.Accessor[Entity]
     exchanges = c.DirectProxyAccessor(
         fa.FunctionalExchange, aslist=c.ElementList
     )
@@ -154,11 +148,8 @@ class AbstractEntity(cs.Component):
         aslist=c.ElementList,
         attr="targetElement",
     )
-    capabilities = c.CustomAccessor(
-        OperationalCapability,
-        operator.attrgetter("_model.oa.all_capabilities"),
-        matchtransform=operator.attrgetter("involved_entities"),
-        aslist=c.ElementList,
+    capabilities = c.ReferenceSearchingAccessor(
+        OperationalCapability, "involved_entities", aslist=c.ElementList
     )
 
 
@@ -280,6 +271,11 @@ c.set_accessor(
     OperationalActivity,
     "packages",
     c.DirectProxyAccessor(OperationalActivityPkg, aslist=c.ElementList),
+)
+c.set_accessor(
+    OperationalActivity,
+    "owning_entity",
+    c.ReferenceSearchingAccessor(Entity, "activities"),
 )
 c.set_accessor(
     Entity,

@@ -20,32 +20,6 @@ from .. import capellacommon, capellacore, modellingcore
 from . import datatype, datavalue
 
 
-def _allocated_exchange_items(
-    obj: c.GenericElement,
-) -> c.ElementList[c.GenericElement]:
-    try:
-        return obj.exchange_items
-    except AttributeError:
-        pass
-
-    try:
-        return obj.allocated_exchange_items
-    except AttributeError:
-        pass
-
-    raise TypeError(
-        f"Unhandled exchange type: {type(obj).__name__}"
-    )  # pragma: no cover
-
-
-def _search_all_exchanges(
-    obj: c.GenericElement,
-) -> c.ElementList[c.GenericElement]:
-    from .. import fa
-
-    return obj._model.search(fa.ComponentExchange, fa.FunctionalExchange)
-
-
 @c.xtype_handler(None)
 class Unit(c.GenericElement):
     """Unit."""
@@ -228,12 +202,7 @@ class ExchangeItem(c.GenericElement):
         "exchangeMechanism", modeltypes.ExchangeItemType, default="UNSET"
     )
     elements = c.DirectProxyAccessor(ExchangeItemElement, aslist=c.ElementList)
-    exchanges = c.CustomAccessor(
-        c.GenericElement,
-        _search_all_exchanges,
-        matchtransform=_allocated_exchange_items,
-        aslist=c.ElementList,
-    )
+    exchanges: c.Accessor[c.GenericElement]
 
 
 for cls in [Class, Union, datatype.Enumeration, Collection]:
