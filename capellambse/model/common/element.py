@@ -93,10 +93,26 @@ class ModelObject(t.Protocol):
     _model: capellambse.MelodyModel
     _element: etree._Element
 
-    def __init__(self, **kw: t.Any) -> None:
-        if kw:
-            raise TypeError(f"Unconsumed keyword arguments: {kw}")
-        super().__init__()
+    def __init__(
+        self,
+        model: capellambse.MelodyModel,
+        parent: etree._Element,
+        **kw: t.Any,
+    ) -> None:
+        """Create a new model object.
+
+        Parameters
+        ----------
+        model
+            The model instance.
+        parent
+            The parent XML element below which to create a new object.
+        kw
+            Any additional arguments will be used to populate the
+            instance attributes. Note that some attributes may be
+            required by specific element types at construction time
+            (commonly e.g. ``uuid``).
+        """
 
     @classmethod
     def from_model(

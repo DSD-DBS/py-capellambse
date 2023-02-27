@@ -33,6 +33,7 @@ import typing as t
 import warnings
 
 import markupsafe
+import typing_extensions as te
 from lxml import etree
 
 import capellambse
@@ -43,6 +44,7 @@ from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
+_A = t.TypeVar("_A", bound="Accessor")
 _C = t.TypeVar("_C", bound="ElementListCouplingMixin")
 
 
@@ -71,19 +73,29 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         "__objclass__",
     )
 
+    _Self = t.TypeVar("_Self", bound="Accessor")
+
     __objclass__: type[t.Any]
     __name__: str
 
     @t.overload
-    def __get__(self, obj: None, objtype=None) -> Accessor:
+    def __get__(self: _Self, obj: None, objtype: type[t.Any]) -> _Self:
         ...
 
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+    def __get__(
+        self,
+        obj: capellambse.MelodyModel | element.ModelObject,
+        objtype: type[t.Any] | None = ...,
+    ) -> T | element.ElementList[T]:
         ...
 
     @abc.abstractmethod
-    def __get__(self, obj, objtype=None):
+    def __get__(
+        self: _Self,
+        obj: capellambse.MelodyModel | element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> _Self | T | element.ElementList[T]:
         pass
 
     def __set__(self, obj: element.GenericElement, value: t.Any) -> None:
@@ -109,18 +121,28 @@ class DeprecatedAccessor(Accessor[T]):
 
     __slots__ = ("alternative",)
 
+    _Self = t.TypeVar("_Self", bound="DeprecatedAccessor")
+
     def __init__(self, alternative: str, /) -> None:
         self.alternative = alternative
 
     @t.overload
-    def __get__(self, obj: None, objtype=None) -> Accessor:
+    def __get__(self: _Self, obj: None, objtype: type[t.Any]) -> _Self:
         ...
 
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
+    def __get__(
+        self,
+        obj: capellambse.MelodyModel | element.ModelObject,
+        objtype: type[t.Any] | None = ...,
+    ) -> T | element.ElementList[T]:
         ...
 
-    def __get__(self, obj, objtype=None):
+    def __get__(
+        self: _Self,
+        obj: capellambse.MelodyModel | element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> _Self | T | element.ElementList[T]:
         self.__warn()
         if obj is None:
             return self
@@ -537,10 +559,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             elmclass, kw["xtype"] = self._match_xtype(*type_hints)
         else:
             elmclass, kw["xtype"] = self._guess_xtype()
-
         assert elmclass is not None
-        assert isinstance(elmlist._parent, element.GenericElement)
-        assert issubclass(elmclass, element.GenericElement)
 
         parent = elmlist._parent._element
         want_id: str | None = None
@@ -548,7 +567,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             want_id = kw.pop("uuid")
         with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
             obj = elmclass(elmlist._model, parent, uuid=obj_id, **kw)
-        return obj  # type: ignore[return-value]
+        return obj
 
     def insert(
         self,
@@ -567,7 +586,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             else:
                 parent_index = index
         except ValueError:
-            parent_index = len(elmlist._parent)
+            parent_index = len(elmlist._parent._element)
         elmlist._parent._element.insert(parent_index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
@@ -690,7 +709,9 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             obj._element.remove(i)
 
     def __follow_ref(
-        self, obj: element.ModelObject, refelm: etree._Element
+        self,
+        obj: capellambse.MelodyModel | element.ModelObject,
+        refelm: etree._Element,
     ) -> etree._Element:
         link = refelm.get(self.follow)
         if not link:
@@ -700,14 +721,16 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return obj._model._loader.follow_link(obj._element, link)
 
     def __find_refs(
-        self, obj: element.ModelObject
+        self, obj: capellambse.MelodyModel | element.ModelObject
     ) -> cabc.Iterator[etree._Element]:
         for refelm in obj._element.iterchildren(self.tag):
             if helpers.xtype_of(refelm) in self.xtypes:
                 yield refelm
 
     def __backref(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self,
+        obj: capellambse.MelodyModel | element.ModelObject,
+        target: element.ModelObject,
     ) -> etree._Element | None:
         for i in self.__find_refs(obj):
             if self.__follow_ref(obj, i) == target._element:
@@ -716,7 +739,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def __create_link(
         self,
-        parent: element.ModelObject,
+        parent: capellambse.MelodyModel | element.ModelObject,
         target: element.ModelObject,
         *,
         before: element.ModelObject | None = None,
@@ -786,6 +809,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     __slots__ = ("attr",)
 
+    _Self = t.TypeVar("_Self", bound="AttrProxyAccessor")
+
     aslist: type[ElementListCouplingMixin] | None
     class_: type[T]
 
@@ -815,17 +840,34 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         super().__init__(element.GenericElement, aslist=aslist)
         self.attr = attr
 
-    def __get__(self, obj, objtype=None):
+    @t.overload
+    def __get__(self: _Self, obj: None, objtype: type[t.Any]) -> _Self:
+        ...
+
+    @t.overload
+    def __get__(
+        self,
+        obj: capellambse.MelodyModel | element.ModelObject,
+        objtype: type[t.Any] | None = ...,
+    ) -> T | ElementListCouplingMixin[T]:
+        ...
+
+    def __get__(
+        self: _Self,
+        obj: capellambse.MelodyModel | element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> _Self | T | element.ElementList[T]:
         del objtype
         if obj is None:  # pragma: no cover
             return self
+        assert isinstance(self, AttrProxyAccessor)
 
         elems = obj._model._loader.follow_links(
             obj._element, obj._element.get(self.attr, "")
         )
 
         rv = self._make_list(obj, elems)
-        if obj._constructed:
+        if getattr(obj, "_constructed", True):
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
@@ -872,7 +914,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self.__set_links(elmlist._parent, objs)
 
     def __set_links(
-        self, obj: element.ModelObject, values: cabc.Iterable[T]
+        self,
+        obj: capellambse.MelodyModel | element.ModelObject,
+        values: cabc.Iterable[T],
     ) -> None:
         parts: list[str] = []
         for value in values:
@@ -1106,9 +1150,11 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
         return self.__aslist(obj._model, matches, self.class_)
 
 
-class _Specification(t.MutableMapping[str, str], element.ModelObject):
+class _Specification(t.MutableMapping[str, str]):
     _aliases = {"LinkedText": "capella:linkedText"}
     _linked_text = frozenset({"capella:linkedText"})
+    _model: capellambse.MelodyModel
+    _element: etree._Element
 
     def __init__(
         self, model: capellambse.MelodyModel, elm: etree._Element
@@ -1339,12 +1385,12 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     fixed_length: t.ClassVar[int] = 0
 
     def __init__(
-        self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
+        self,
+        *args: t.Any,
+        parent: element.ModelObject | capellambse.MelodyModel,
+        **kw: t.Any,
     ) -> None:
         assert type(self)._accessor
-        assert isinstance(
-            parent, (element.GenericElement, capellambse.MelodyModel)
-        )
 
         super().__init__(*args, **kw)
         self._parent = parent

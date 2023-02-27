@@ -9,6 +9,9 @@ __all__ = [
     "GenericElement",
     "NonUniqueMemberError",
     "MelodyModel",
+    "Viewpoint",
+    "MissingViewpointError",
+    "ViewpointVersionError",
 ]
 
 import collections.abc as cabc
@@ -518,3 +521,93 @@ class MelodyModel:
         from capellambse.extensions import metrics
 
         return metrics.get_summary_badge(self)
+
+    def _require_viewpoint(self, vpname: str, version: str, /) -> None:
+        """Check whether a viewpoint has been installed in the model.
+
+        :meta public:
+
+        This method will have one of three different outcomes:
+
+        1. If the given viewpoint with the given version is applied to
+           the model, the method does nothing and returns.
+        2. If the viewpoint is applied, but has a different version than
+           requested, a
+           :class:`~capellambse.model.ViewpointVersionError` is raised.
+        3. If the viewpoint is not applied at all, a
+           :class:`~capellambse.model.MissingViewpointError` is raised.
+
+        Parameters
+        ----------
+        vpname
+            The name of the viewpoint in the ``.afm`` file, e.g.
+            ``org.polarsys.capella.core.viewpoint`` for the Capella core
+            viewpoint.
+        version
+            The version to check for.
+
+        Notes
+        -----
+        Extension developers should prefer to check the viewpoint
+        version themselves, and install the viewpoint as appropriate.
+
+        See Also
+        --------
+        :meth:`_get_viewpoints`
+        """
+        for vp in self._get_viewpoints():
+            if vp.name == vpname:
+                if vp.version != version:
+                    raise ViewpointVersionError(vp, version)
+                break
+        else:
+            raise MissingViewpointError(vpname)
+
+    def _get_viewpoints(self) -> cabc.Iterator[Viewpoint]:
+        """Iterate over the installed viewpoints.
+
+        :meta public:
+
+        Yields
+        ------
+        Viewpoint
+            A ``(name, version)`` named tuple for every viewpoint that
+            is currently installed in the model.
+        """
+        for metadata in self._loader.iterall_xt("metadata:Metadata"):
+            for ref in metadata.iter("viewpointReferences"):
+                name = ref.get("vpId")
+                version = ref.get("version")
+                assert name is not None
+                assert version is not None
+                yield Viewpoint(name, version)
+
+    if t.TYPE_CHECKING:
+
+        def __getattr__(self, attr: str) -> t.Any:
+            """Account for extension attributes in static type checks."""
+
+
+class Viewpoint(t.NamedTuple):
+    name: str
+    version: str
+
+
+class MissingViewpointError(RuntimeError):
+    """Raised when a required viewpoint is not installed in the model."""
+
+    def __str__(self) -> str:
+        return f"Required viewpoint not installed: {self.args[0]}"
+
+
+class ViewpointVersionError(RuntimeError):
+    """Raised when an installed viewpoint has an incompatible version."""
+
+    def __str__(self) -> str:
+        if len(self.args) != 2:
+            return super().__str__()
+        installed, wanted = self.args
+        return (
+            f"Incompatible version for viewpoint {installed.name!r}:"
+            f" Wanted {wanted}, got {installed.version}"
+        )

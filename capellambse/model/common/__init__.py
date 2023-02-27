@@ -11,6 +11,8 @@ import collections
 import collections.abc as cabc
 import typing as t
 
+import capellambse
+
 S = t.TypeVar("S", bound=t.Optional[str])
 T = t.TypeVar("T", bound="ModelObject")
 U = t.TypeVar("U")
@@ -67,7 +69,7 @@ def enumliteral(
 
 
 def set_accessor(
-    cls: type[GenericElement],
+    cls: type[GenericElement] | type[capellambse.MelodyModel],
     attr: str,
     accessor: Accessor,
 ) -> None:
