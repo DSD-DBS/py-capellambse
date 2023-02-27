@@ -252,9 +252,6 @@ class GenericElement:
             raise
         self._constructed = True
 
-    def __getattr__(self, attr: str) -> t.Any:
-        raise AttributeError(f"{attr} isn't defined on {type(self).__name__}")
-
     def __setattr__(self, attr: str, value: t.Any) -> None:
         if attr.startswith("_") or hasattr(type(self), attr):
             super().__setattr__(attr, value)
@@ -374,6 +371,11 @@ class GenericElement:
 
     def _repr_html_(self) -> str:
         return self.__html__()
+
+    if t.TYPE_CHECKING:
+
+        def __getattr__(self, attr: str) -> t.Any:
+            """Account for extension attributes in static type checks."""
 
 
 class ElementList(cabc.MutableSequence, t.Generic[T]):
