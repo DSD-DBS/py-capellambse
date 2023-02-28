@@ -62,6 +62,6 @@ def load_model_extensions() -> None:
         except Exception:
             logging.getLogger(__name__).exception(
                 "Cannot load model extension %r from %r",
-                entrypoint,
+                entrypoint.name,
                 entrypoint.value,
             )
