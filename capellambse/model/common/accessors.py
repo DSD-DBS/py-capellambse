@@ -132,10 +132,10 @@ class DeprecatedAccessor(Accessor[T]):
         obj: element.ModelObject | None,
         objtype: type[t.Any] | None = None,
     ) -> te.Self | T | element.ElementList[T]:
-        self.__warn()
         if obj is None:
             return self
 
+        self.__warn()
         return getattr(obj, self.alternative)
 
     def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
