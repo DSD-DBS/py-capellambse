@@ -45,6 +45,61 @@ def test_model_compatibility(folder: str, aird: str) -> None:
     MelodyModel(TEST_ROOT / folder / aird)
 
 
+@pytest.mark.parametrize(
+    ["target", "expected"],
+    [
+        (
+            "a8c42033-fdf2-458f-bae9-1cfd1207c49f",
+            [
+                ("1bba6377-90b7-42d6-ad03-6c536e5519fd", "involved", None),
+                ("1bba6377-90b7-42d6-ad03-6c536e5519fd", "target", None),
+                (
+                    "53c58b24-3938-4d6a-b84a-bb9bff355a41",
+                    "involved_entities",
+                    2,
+                ),
+                ("55c6adbe-63a5-4d1f-8319-e2f768b79fbf", "involved", None),
+                ("55c6adbe-63a5-4d1f-8319-e2f768b79fbf", "target", None),
+                ("6638ccd2-61cc-481e-bb23-4c1b147e1dbc", "target", None),
+                (
+                    "83d1334f-6180-46c4-a80d-6839341df688",
+                    "involved_entities",
+                    0,
+                ),
+                ("9ac82bfc-1aa6-4773-9a99-91f910389668", "type", None),
+                ("e37510b9-3166-4f80-a919-dfaac9b696c7", "entities", 3),
+            ],
+        ),
+        (
+            "91dc2eec-c878-4fdb-91d8-8f4a4527424e",
+            [
+                ("88d7f9a7-1fae-4884-8233-7582153cc5a7", "destination", None),
+                ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "modes", 0),
+                ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "states", 0),
+                ("d0ea4afa-4231-4a3d-b1db-03655738dab8", "source", None),
+            ],
+        ),
+    ],
+)
+def test_find_references_finds_all_references(
+    model: MelodyModel, target, expected
+) -> None:
+    target_obj = model.by_uuid(target)
+
+    found_with_uuid = sorted(
+        (getattr(obj, "uuid", None), attr, idx)
+        for obj, attr, idx in model.find_references(target)
+    )
+    found_with_object = sorted(
+        (getattr(obj, "uuid", None), attr, idx)
+        for obj, attr, idx in model.find_references(target_obj)
+    )
+
+    assert found_with_uuid == found_with_object
+    assert target not in found_with_uuid
+    assert found_with_uuid == expected
+
+
 def test_ElementList_filter_by_name(model: MelodyModel):
     cap = model.oa.all_capabilities.by_name("Eat food")
     assert cap.uuid == "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422"
