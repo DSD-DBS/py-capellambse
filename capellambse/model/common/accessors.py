@@ -68,6 +68,13 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     __objclass__: type[t.Any]
     __name__: str
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.__doc__ = (
+            f"A {type(self).__name__} that was not properly configured."
+            " Ensure that ``__set_name__`` gets called after construction."
+        )
+
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
         ...
@@ -95,6 +102,8 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
         self.__objclass__ = owner
         self.__name__ = name
+        friendly_name = name.replace("_", " ")
+        self.__doc__ = f"The {friendly_name} of this {owner.__name__}."
 
     def __repr__(self) -> str:
         return f"<{self._qualname!r} {type(self).__name__}>"
@@ -113,6 +122,7 @@ class DeprecatedAccessor(Accessor[T]):
     __slots__ = ("alternative",)
 
     def __init__(self, alternative: str, /) -> None:
+        super().__init__()
         self.alternative = alternative
 
     @t.overload
