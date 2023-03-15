@@ -191,6 +191,9 @@ class ExchangeItemElement(c.GenericElement):
     abstract_type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     owner: c.Accessor
 
+    min_card = c.RoleTagAccessor("ownedMinCard")
+    max_card = c.RoleTagAccessor("ownedMaxCard")
+
 
 @c.xtype_handler(None)
 class ExchangeItem(c.GenericElement):
