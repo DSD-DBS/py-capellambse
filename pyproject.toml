@@ -104,6 +104,7 @@ http = "capellambse.filehandler.http:HTTPFileHandler"
 https = "capellambse.filehandler.http:HTTPFileHandler"
 
 [project.entry-points."capellambse.model_extensions"]
+filtering = "capellambse.extensions.filtering:init"
 pvmt = "capellambse.extensions.pvmt:init"
 reqif = "capellambse.extensions.reqif:init"
 
