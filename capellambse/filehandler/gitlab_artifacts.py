@@ -263,7 +263,7 @@ class GitlabArtifactsFiles(FileHandler):
             f"{self.__path}/api/v4/projects/{self.__project}"
             f"/jobs/{self.__job}/artifacts/{path}"
         )
-        if response.status_code == 400:
+        if response.status_code in (400, 404):
             raise FileNotFoundError(errno.ENOENT, filename)
         response.raise_for_status()
         return io.BytesIO(response.content)
