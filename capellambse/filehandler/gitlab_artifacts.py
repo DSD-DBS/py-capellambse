@@ -63,9 +63,13 @@ class GitlabArtifactsFiles(FileHandler):
         passing the token, which are checked in order:
 
         1. Directly via this argument.
-        2. A file called ``gitlab_artifacts_token`` in the
+        2. If the argument starts with a dollar sign (``$``), it is
+           treated as the name of an environment variable that points to
+           a file containing the token. This is compatible with
+           variables of type "File" in Gitlab CI/CD.
+        3. A file called ``gitlab_artifacts_token`` in the
            ``$CREDENTIALS_DIRECTORY``.
-        3. The ``CI_JOB_TOKEN`` environment variable. This is intended
+        4. The ``CI_JOB_TOKEN`` environment variable. This is intended
            for use in Gitlab pipelines, in order to avoid having to
            create explicit tokens. Note that your instance might be set
            up with restrictive default permissions for the job token.
@@ -136,29 +140,59 @@ class GitlabArtifactsFiles(FileHandler):
 
         return path
 
-    @staticmethod
-    def __resolve_token(token: str | None) -> str:
+    @classmethod
+    def __resolve_token(cls, token: str | None) -> str:
         if token:
-            return token
+            return cls.__load_token_from_arg(token)
 
         if cred_dir := os.getenv("CREDENTIALS_DIRECTORY"):
-            cred_file = pathlib.Path(cred_dir, "gitlab_artifacts_token")
-            try:
-                token = cred_file.read_text(encoding="locale").strip()
-            except OSError as err:
-                LOGGER.debug("Cannot read token from %r: %s", cred_file, err)
-            else:
-                if token:
-                    LOGGER.debug("Using token from %s", cred_file)
-                    return token
-                else:
-                    LOGGER.debug("Token file is empty: %s", cred_file)
+            if token := cls.__load_token_from_credentials(cred_dir):
+                return token
 
         if token := os.getenv("CI_JOB_TOKEN"):
             LOGGER.debug("Using the $CI_JOB_TOKEN")
             return token
 
         raise TypeError("Cannot connect to Gitlab: No 'token' found")
+
+    @staticmethod
+    def __load_token_from_arg(token: str) -> str:
+        if not token.startswith("$"):
+            return token
+
+        try:
+            filename = os.environ[token[1:]]
+        except KeyError:
+            raise ValueError(
+                f"Token environment variable {token} is unset"
+            ) from None
+
+        try:
+            contents = pathlib.Path(filename).read_text(encoding="ascii")
+        except FileNotFoundError:
+            raise ValueError(f"Token file from {token} not found") from None
+        except OSError:
+            raise ValueError(f"Cannot read token file from {token}") from None
+
+        contents = contents.strip()
+        if not contents:
+            raise ValueError(f"Token file from {token} is empty")
+        return contents
+
+    @staticmethod
+    def __load_token_from_credentials(cred_dir: str) -> str | None:
+        cred_file = pathlib.Path(cred_dir, "gitlab_artifacts_token")
+        try:
+            token = cred_file.read_text(encoding="locale").strip()
+        except OSError as err:
+            LOGGER.debug("Cannot read token from %r: %s", cred_file, err)
+        else:
+            if token:
+                LOGGER.debug("Using token from %s", cred_file)
+                return token
+            else:
+                LOGGER.debug("Token file is empty: %s", cred_file)
+        return None
 
     def __resolve_project(self, project: str | int | None) -> str | int:
         if isinstance(project, int):
