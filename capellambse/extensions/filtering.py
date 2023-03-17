@@ -3,6 +3,7 @@
 """Implements the Capella Filtering extension."""
 from __future__ import annotations
 
+import abc
 import sys
 import typing as t
 
@@ -49,13 +50,80 @@ class FilteringModel(c.GenericElement):
     )
 
 
+class AbstractFilteringResult(c.GenericElement, metaclass=abc.ABCMeta):
+    @property
+    @abc.abstractmethod
+    def filtered_objects(self) -> c.MixedElementList:
+        ...
+
+
+class FilteringResult(AbstractFilteringResult):
+    """A simple filtering result."""
+
+
+class AbstractResultSet(c.GenericElement):
+    results = c.AttrProxyAccessor(
+        FilteringResult, "filteringResults", aslist=c.ElementList
+    )
+
+
+@c.xtype_handler(None)
+class UnionFilteringResultSet(AbstractResultSet):
+    """Combines results with the union operation."""
+
+
+@c.xtype_handler(None)
+class IntersectionFilteringResultSet(AbstractResultSet):
+    """Combines results with the intersection operation."""
+
+
+@c.xtype_handler(None)
+class ExclusionFilteringResultSet(AbstractResultSet):
+    """Combines results with the exclusion operation."""
+
+
+class ComposedFilteringResult(AbstractFilteringResult):
+    """A result obtained from boolean operations of other results."""
+
+    union = c.DirectProxyAccessor(UnionFilteringResultSet)
+    intersection = c.DirectProxyAccessor(IntersectionFilteringResultSet)
+    exclusion = c.DirectProxyAccessor(ExclusionFilteringResultSet)
+
+    @property
+    def filtered_objects(self) -> c.MixedElementList:
+        ids = set[str]()
+
+        for result in self.union.results:
+            ids |= {i.uuid for i in result}
+
+        for result in self.intersection.results:
+            ids &= {i.uuid for i in result}
+
+        for result in self.exclusion.results:
+            ids -= {i.uuid for i in result}
+
+        return c.MixedElementList(
+            self._model,
+            [self._model._loader[i] for i in ids],
+        )
+
+
+@c.xtype_handler(None)
+class FilteringResults(c.GenericElement):
+    """Container for the filtering result sets."""
+
+    results = c.DirectProxyAccessor[AbstractFilteringResult](
+        c.GenericElement,  # type: ignore[arg-type]
+        (FilteringResult, ComposedFilteringResult),
+        aslist=c.MixedElementList,
+    )
+
+
 class AssociatedCriteriaAccessor(
     c.accessors.PhysicalAccessor[FilteringCriterion]
 ):
     def __init__(self) -> None:
-        super().__init__(
-            FilteringCriterion, aslist=c.ElementList[FilteringCriterion]
-        )
+        super().__init__(FilteringCriterion, aslist=c.ElementList)
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
@@ -98,6 +166,11 @@ def init() -> None:
         model.MelodyModel,
         "filtering_model",
         c.DirectProxyAccessor(FilteringModel, rootelem=model.XT_SYSENG),
+    )
+    c.set_accessor(
+        model.MelodyModel,
+        "filtering_results",
+        c.DirectProxyAccessor(FilteringResults, rootelem=model.XT_SYSENG),
     )
     c.set_accessor(
         c.GenericElement, "filtering_criteria", AssociatedCriteriaAccessor()
