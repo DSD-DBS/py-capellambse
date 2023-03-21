@@ -15,6 +15,7 @@ __all__ = [
 ]
 
 import collections.abc as cabc
+import contextlib
 import os
 import sys
 import typing as t
@@ -227,6 +228,19 @@ class RequirementsRelationAccessor(
         parent.insert(index, value._element)
         elmlist._model._loader.idcache_index(value._element)
 
+    @contextlib.contextmanager
+    def purge_references(
+        self, obj: c.ModelObject, target: c.ModelObject
+    ) -> cabc.Generator[None, None, None]:
+        """Do nothing.
+
+        This is a no-op, as this accessor provides a virtual relation.
+
+        The relation objects it handles are cleaned up by removing the
+        source or target attribute.
+        """
+        yield
+
     def _find_relation_type(
         self, target: c.GenericElement
     ) -> type[rq.InternalRelation | CapellaIncomingRelation]:
@@ -338,6 +352,19 @@ class ElementRelationAccessor(
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
+
+    @contextlib.contextmanager
+    def purge_references(
+        self, obj: c.ModelObject, target: c.ModelObject
+    ) -> cabc.Generator[None, None, None]:
+        """Do nothing.
+
+        This is a no-op, as this accessor provides a virtual relation.
+
+        The relation objects it handles are cleaned up by removing the
+        source or target attribute.
+        """
+        yield
 
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None

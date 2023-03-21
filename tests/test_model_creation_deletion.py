@@ -8,6 +8,11 @@ import pathlib
 import pytest
 
 import capellambse
+import capellambse.model as metamodel
+import capellambse.model.common as c
+
+# pylint: disable-next=relative-beyond-top-level, unused-import
+from .conftest import model as model50  # type: ignore[import]
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "writemodel"
 TEST_MODEL = "WriteTestModel.aird"
@@ -102,3 +107,73 @@ def test_adding_a_namespace_preserves_the_capella_version_comment(
     prev_elements = list(model._element.itersiblings(preceding=True))
     assert len(prev_elements) == 1
     assert model.info.capella_version != "UNKNOWN"
+
+
+def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
+    model: capellambse.MelodyModel, caplog
+) -> None:
+    part = model.by_uuid("1bd59e23-3d45-4e39-88b4-33a11c56d4e3")
+    assert isinstance(part, metamodel.cs.Part)
+    assert isinstance(type(part).type, c.AttrProxyAccessor)
+    component = model.by_uuid("ea5f09e6-a0ec-46b2-bd3e-b572f9bf99d6")
+
+    component.parent.components.remove(component)
+
+    assert not list(model.find_references(component))
+    assert part.type is None
+    assert not caplog.records
+
+
+def test_deleting_an_object_purges_references_from_LinkAccessor(
+    model50: capellambse.MelodyModel, caplog
+) -> None:
+    entity = model50.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
+    assert isinstance(entity, metamodel.oa.Entity)
+    assert isinstance(type(entity).activities, c.LinkAccessor)
+    activity = model50.by_uuid("f1cb9586-ce85-4862-849c-2eea257f706b")
+
+    activity.parent.activities.remove(activity)
+
+    assert not list(model50.find_references(activity))
+    assert activity not in entity.activities
+    assert not caplog.records
+
+
+def test_deleting_an_entire_list_purges_references_to_all_list_members(
+    model50: capellambse.MelodyModel, caplog
+) -> None:
+    component = model50.by_uuid("ff7b8672-84db-4b93-9fea-22a410907fb1")
+    assert isinstance(component, metamodel.la.LogicalComponent)
+    p1 = model50.by_uuid("db5681e4-4245-4207-a429-e89979f6ac71")
+    p2 = model50.by_uuid("7c61d723-3658-47ff-9b0c-7b016ac4cb76")
+    current_ports = [i.uuid for i in component.ports]
+    assert current_ports == [p1.uuid, p2.uuid], "Unexpected ports"
+    assert list(model50.find_references(p1)), "Dead port CP 1?"
+    assert list(model50.find_references(p2)), "Dead port CP 2?"
+
+    del component.ports
+
+    assert not list(model50.find_references(p1))
+    assert not list(model50.find_references(p2))
+    assert not caplog.records
+
+
+def test_deleting_an_object_purges_references_to_children(
+    model50: capellambse.MelodyModel, caplog
+) -> None:
+    component = model50.by_uuid("a8c46457-a702-41c4-a971-c815c4c5a674")
+    port = model50.by_uuid("e0dcf8c2-2283-4456-98a2-146e78ba5f26")
+    exchange_id = "d8655737-39ab-4482-a934-ee847c7ff6bd"
+    current_refs = [
+        (getattr(obj, "uuid", None), attr)
+        for obj, attr, _ in model50.find_references(port)
+    ]
+    assert port in component.ports
+    assert len(current_refs) > 1, "Port has no references before test"
+    assert (exchange_id, "target") in current_refs
+
+    model50.la.component_package.components.remove(component)
+
+    assert not list(model50.find_references(port))
+    assert model50.by_uuid(exchange_id).target is None
+    assert not caplog.records

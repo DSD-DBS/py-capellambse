@@ -1198,7 +1198,7 @@ class MelodyLoader:
                 part = f"{next_xtype} {part}"
             try:
                 targets.append(self.follow_link(from_element, part))
-            except KeyError:
+            except (KeyError, ValueError):
                 if not ignore_broken:
                     raise
         return targets
