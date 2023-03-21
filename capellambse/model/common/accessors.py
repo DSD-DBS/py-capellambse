@@ -611,10 +611,10 @@ class DeepProxyAccessor(DirectProxyAccessor[T]):
 class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """Accesses elements through reference elements."""
 
-    __slots__ = ("attr", "tag", "unique")
+    __slots__ = ("backattr", "tag", "unique")
 
     aslist: type[ElementListCouplingMixin] | None
-    attr: str
+    backattr: str | None
     class_: type[T]
     tag: str | None
 
@@ -624,8 +624,9 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         xtype: str | type[element.GenericElement],
         /,
         *,
-        attr: str,
         aslist: type[element.ElementList] | None = None,
+        attr: str,
+        backattr: str | None = None,
         unique: bool = True,
     ) -> None:
         """Create a LinkAccessor.
@@ -640,6 +641,9 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         attr
             The attribute on the reference element that contains the
             actual link.
+        backattr
+            An optional attribute on the reference element to store a
+            reference back to the owner (parent) object.
         aslist
             Optionally specify a different subclass of
             :class:`~capellambse.model.common.element.ElementList`.
@@ -661,6 +665,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         if len(self.xtypes) != 1:
             raise TypeError(f"One xtype is required, got {len(self.xtypes)}")
         self.follow = attr
+        self.backattr = backattr
         self.tag = tag
         self.unique = unique
 
@@ -748,6 +753,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 self.tag,
                 {helpers.ATT_XT: xtype, "id": obj_id, self.follow: link},
             )
+            if self.backattr and (parent_id := parent._element.get("id")):
+                refobj.set(self.backattr, f"#{parent_id}")
             if before is None:
                 parent._element.append(refobj)
             else:
