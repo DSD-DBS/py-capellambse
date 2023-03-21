@@ -318,6 +318,7 @@ def _create_complex_object(
             else:
                 simple_attrs[k] = _resolve(promises, parent, v)
     except _UnresolvablePromise as p:
+        obj_desc["promise_id"] = promise
         yield (p.args[0], {"parent": parent, "extend": {attr: [obj_desc]}})
         return
     assert isinstance(target, common.ElementListCouplingMixin)

@@ -75,7 +75,11 @@ class PhysicalLink(PhysicalPort):
     )
     linkEnds = c.DeprecatedAccessor[PhysicalPort]("ends")
     exchanges = c.LinkAccessor[fa.ComponentExchange](
-        None, fa.XT_COMP_EX_ALLOC, aslist=c.ElementList, attr="targetElement"
+        "ownedComponentExchangeAllocations",
+        fa.XT_COMP_EX_ALLOC,
+        aslist=c.ElementList,
+        attr="targetElement",
+        backattr="sourceElement",
     )
 
     physical_paths: c.Accessor
