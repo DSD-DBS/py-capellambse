@@ -265,6 +265,42 @@ class TestApplyExtend:
         with pytest.raises(TypeError, match=non_existing_attr):
             decl.apply(model, io.StringIO(yml))
 
+    @staticmethod
+    def test_promises_are_resolved_during_the_second_attempt(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        PHYS_COMPONENT = "b327d900-abd2-4138-a111-9ff0684739d8"
+        cmp = model.by_uuid(PHYS_COMPONENT)
+        previous_ports = len(cmp.ports)
+        yml = f"""\
+            - parent: !uuid {PHYS_COMPONENT}
+              extend:
+                physical_links:
+                  - name: My new link
+                    exchanges:
+                      - !promise my_exchange
+            - parent: !uuid {PHYS_COMPONENT}
+              extend:
+                exchanges:
+                  - source: !promise first-port
+                    target: !promise second-port
+                    promise_id: my_exchange
+            - parent: !uuid {PHYS_COMPONENT}
+              extend:
+                ports:
+                  - name: First port
+                    promise_id: first-port
+                  - name: Second port
+                    promise_id: second-port
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert len(cmp.ports) == previous_ports + 2
+        ex = cmp.physical_links.by_name("My new link")
+        assert len(ex.exchanges) == 1
+        assert ex.exchanges[0].source.name == "First port"
+
 
 class TestApplyPromises:
     @staticmethod
