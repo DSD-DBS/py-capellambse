@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 """Global fixtures for pytest."""
+import collections.abc as cabc
 import io
 import pathlib
 import sys
@@ -19,7 +20,7 @@ capellambse.load_model_extensions()
 
 
 @pytest.fixture(scope="session")
-def session_shared_model() -> capellambse.MelodyModel:
+def session_shared_model() -> cabc.Iterator[capellambse.MelodyModel]:
     """Load the standard test model.
 
     Unlike the ``model`` fixture, this fixture is shared across the
@@ -29,7 +30,9 @@ def session_shared_model() -> capellambse.MelodyModel:
     This fixture exists as a speed optimization for tests that only read
     from the model.
     """
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    loaded = capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    with capellambse.WriteProtector(loaded):
+        yield loaded
 
 
 @pytest.fixture
