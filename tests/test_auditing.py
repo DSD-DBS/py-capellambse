@@ -418,7 +418,7 @@ def test_creating_objects_fires_exactly_one_create_event(
         ),
     ],
 )
-def test_deleting_an_object_from_a_list_fires_one_delete_event(
+def test_deleting_an_object_from_a_list_fires_one_delete_event_for_the_object(
     model: capellambse.MelodyModel,
     audit_events: list[tuple[t.Any, ...]],
     obj_id: str,
@@ -434,12 +434,15 @@ def test_deleting_an_object_from_a_list_fires_one_delete_event(
 
     del target[0]
 
-    events = [i for i in audit_events if i[0] == "capellambse.delete"]
+    events = [
+        args
+        for e, o, *args in audit_events
+        if e == "capellambse.delete" and o == obj
+    ]
     assert len(events) == 1
-    _, *ev = events[0]
-    assert ev[0] is obj
-    assert ev[1] == attr
-    assert ev[2] == 0
+    (*ev,) = events[0]
+    assert ev[0] == attr
+    assert ev[1] == 0
 
 
 @pytest.mark.parametrize(
@@ -486,9 +489,12 @@ def test_deleting_an_entire_list_attribute_fires_one_delete_event(
 
     delattr(obj, attr)
 
-    events = [i for i in audit_events if i[0] == "capellambse.delete"]
+    events = [
+        args
+        for e, o, *args in audit_events
+        if e == "capellambse.delete" and o == obj
+    ]
     assert len(events) == 1
-    _, *ev = events[0]
-    assert ev[0] is obj
-    assert ev[1] == attr
-    assert ev[2] is None
+    (*ev,) = events[0]
+    assert ev[0] == attr
+    assert ev[1] is None

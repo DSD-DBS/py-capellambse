@@ -81,6 +81,9 @@ The following table shows all audit events that are fired by ``capellambse``.
 | ``capellambse.delete``         | An object or a list of objects is about to |
 |                                | be deleted from the model.                 |
 | .. versionadded:: 0.5.11       |                                            |
+|                                | This is also fired when purging left-over  |
+|                                | references while deleting another object.  |
+|                                |                                            |
 |                                | **Arguments:**                             |
 |                                |                                            |
 |                                | 1. ``parent``: The current parent object.  |
