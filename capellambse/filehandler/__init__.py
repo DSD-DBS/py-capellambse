@@ -33,7 +33,7 @@ def _looks_like_local_path(path: str | os.PathLike) -> bool:
 
 
 def _looks_like_scp(path: str) -> bool:
-    return bool(re.search(r"^(?:\w+@)?[\w.]+:[^/].*", path))
+    return bool(re.search(r"^(?:\w+@)?[\w.]+:(?:/?[^/].*)?$", path))
 
 
 def split_protocol(uri: str | os.PathLike) -> tuple[str, str | os.PathLike]:

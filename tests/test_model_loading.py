@@ -125,7 +125,14 @@ def test_plain_file_paths_are_recognized_as_file_protocol(monkeypatch, path):
 
 
 @pytest.mark.parametrize(
-    "url", ["myhost:myrepo.git", "git@host:repo.git", "git@host:path/to/repo"]
+    "url",
+    [
+        "myhost:myrepo.git",
+        "git@host:",
+        "git@host:repo.git",
+        "git@host:path/to/repo",
+        "git@host:/path/to/repo",
+    ],
 )
 def test_the_scp_short_form_is_recognized_as_git_protocol(monkeypatch, url):
     FakeEntrypoint.patch(monkeypatch, "git", url)
