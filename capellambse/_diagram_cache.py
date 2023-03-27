@@ -313,7 +313,7 @@ class DiagramCache:
                 subprocess.check_call(self._cli_cmd)
             except subprocess.CalledProcessError as err:
                 raise RuntimeError("Failed to update diagram cache") from err
-            for p in pathlib.Path(workspace).glob(
+            for p in pathlib.Path(project_dir).glob(
                 f"main_model/**/*.{self.image_format}"
             ):
                 shutil.copyfile(p, self.diagrams_dir / p.name)
