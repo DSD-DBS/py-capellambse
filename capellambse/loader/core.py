@@ -1289,8 +1289,9 @@ class MelodyLoader:
         given, library files) into a temporary directory. This is of
         interest when one wants the Capella CLI to import the project
         for instance. For the Capella model project this method ensures
-        that a ``.project`` file will be created. The model files will
-        be located in a subdirectory named `main_model` to separate them
+        that a ``.project`` file will be created, which contains the
+        hard coded project name "main_model". The model files will be
+        located in a subdirectory named `main_model` to separate them
         from library files.
         """
         E = builder.ElementMaker()
@@ -1312,7 +1313,7 @@ class MelodyLoader:
             ele = next(self.iterall("ownedModelRoots"), None)
             assert ele is not None
             xml = E.projectDescription(
-                E.name(ele.attrib["name"]),
+                E.name("main_model"),
                 E.comment(),
                 E.projects(),
                 E.buildSpec(),
@@ -1332,6 +1333,8 @@ class MelodyLoader:
             ):
                 for path in paths:
                     with self.filehandler.open(path) as fsrc:
-                        with open(dst / path.parts[-1], "wb") as fdst:
+                        dstpath = dst / path
+                        dstpath.parent.mkdir(parents=True, exist_ok=True)
+                        with open(dstpath, "wb") as fdst:
                             shutil.copyfileobj(fsrc, fdst)
             yield tmp_model_dir
