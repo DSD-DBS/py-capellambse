@@ -558,25 +558,13 @@ class MelodyModel:
             raise TypeError(
                 "Cannot update: No diagram_cache was specified for this model"
             )
-        diag_cache_dir = pathlib.Path(self._diagram_cache.path)
-        if diag_cache_dir.exists():
-            shutil.rmtree(diag_cache_dir)
-            diag_cache_dir.mkdir(parents=True)
-        capella_version = self.info.capella_version
-        assert capella_version is not None
-        assert re.fullmatch(r"\d+\.\d+\.\d+", capella_version)
-        assert self.info.title is not None
-        diagram_cache = _diagram_cache.DiagramCache(
-            capella_cli.replace("{VERSION}", str(self.info.capella_version)),
-            image_format,
-            create_index,
-            force,
-            self.info.title,
-            diag_cache_dir,
-            list(self.diagrams),
+        _diagram_cache.export(
+            capella_cli,
+            self,
+            format=image_format,
+            index=create_index,
+            force=force,
         )
-        with self._loader.write_tmp_project_dir() as tmp_project_dir:
-            diagram_cache.export_diagrams(tmp_project_dir)
 
     @classmethod
     def from_model(cls, model: MelodyModel, element: t.Any) -> t.NoReturn:
