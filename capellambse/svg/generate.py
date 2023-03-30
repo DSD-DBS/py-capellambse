@@ -67,7 +67,14 @@ class SVGDiagram:
         objects: cabc.Sequence[ContentsDict],
     ) -> None:
         self.drawing = Drawing(metadata)
+        draw_last = list[ContentsDict]()
         for obj in objects:
+            if obj["type"] in {"symbol", "circle"}:
+                draw_last.append(obj)
+            else:
+                self.draw_object(obj)
+
+        for obj in draw_last:
             self.draw_object(obj)
 
     @classmethod
