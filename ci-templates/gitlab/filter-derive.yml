@@ -1,0 +1,67 @@
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: Apache-2.0
+# yaml-language-server: $schema=https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json
+
+.derive:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+  script: &script-derive
+    - if [[ -n $DERIVE_RESULTS ]]; then mapfile -d ";" -t derive_results < <(echo -n "$DERIVE_RESULTS"); else derive_results=(); fi
+
+    # Reset branch. This is helpful when chaining jobs
+    # and a previous job pushes changes that should be
+    # considered for the model badge generation.
+    - git fetch
+    - git reset --hard origin/$CI_COMMIT_BRANCH
+
+    - pip install "capellambse[cli] @ git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
+
+    - python -m capellambse.extensions.filtering derive -m "${ENTRYPOINT:?}" -o derived-projects -p '{result.name}' "${derive_results[@]/#/--result=}" "$(if [[ -n $CAPELLA_DOCKERIMAGE ]]; then echo "--docker=$CAPELLA_DOCKERIMAGE"; else echo "--exe=$CAPELLA_EXECUTABLE"; fi)"
+
+  artifacts:
+    paths:
+      - "derived-projects"
+
+  variables:
+    # The path to the model's entrypoint, i.e. the main AIRD file,
+    # relative to the repository root.
+    # Mandatory.
+    #ENTRYPOINT: ""
+
+    # Path to the 'capella' executable. May contain a '{VERSION}' placeholder,
+    # which is replaced by the model's Capella version (e.g. '6.0.0').
+    # The default assumes that Capella is installed into /opt/capella, and
+    # has the correct version for this model.
+    CAPELLA_EXECUTABLE: /opt/capella/capella
+    # Alternatively, set this to the name of a Docker image whose entrypoint is
+    # the Capella binary. CAPELLA_EXECUTABLE will be ignored.
+    #CAPELLA_DOCKERIMAGE: ""
+
+    # Limit the derivation to the listed results.
+    # A semicolon separated list of result names and/or their UUIDs.
+    # Default: Empty, which means derive all results in the model.
+    DERIVE_RESULTS: ""
+
+    # Request a specific capellambse version to be installed.
+    # Mandatory.
+    #CAPELLAMBSE_REVISION: ""
+
+
+.derive-and-generate-diagrams:
+  extends: .derive
+  script:
+    - *script-derive
+    - for result in derived-project/*; do ( cd "$result" || exit; python -m capellambse.diagram_cache -m "${result##*/}.aird" -o "../../diagram_cache/${result##*/}" -f "$DIAGRAM_FORMAT" "$(if [[ -n $CAPELLA_DOCKERIMAGE ]]; then echo "--docker=$CAPELLA_DOCKERIMAGE"; else echo "--exe=$CAPELLA_EXECUTABLE"; fi)"); done
+
+  artifacts:
+    paths:
+      - "diagram_cache"
+
+  variables:
+    # The same variables as above apply here as well.
+
+    # The format to export the diagrams in.
+    # Supported formats include "bmp", "gif", "jpg", "png", "svg".
+    # Defaults to svg.
+    DIAGRAM_FORMAT: svg
