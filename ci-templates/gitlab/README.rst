@@ -20,6 +20,7 @@ Please add the following section to your ``.gitlab-ci.yml``:
 
   variables:
     ENTRYPOINT: test/test.aird # Entry point to the .aird file of the model (relative from root level of the repository)
+    CAPELLAMBSE_MODEL_KWARGS: '{"ignore_duplicate_uuids_and_void_all_warranties": true}' # Additional arguments as json, passed to the MelodyModel class.
 
   # The following section is only needed if you want to change the output filename or commit message
   generate-model-badge:

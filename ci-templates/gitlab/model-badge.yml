@@ -14,12 +14,15 @@ generate-model-badge:
     - pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
     - |
       python <<EOF
+      import json
       import os
       import pathlib
 
       import capellambse
 
-      model = capellambse.MelodyModel(os.environ["ENTRYPOINT"])
+      model_kwargs = json.loads(os.getenv("CAPELLAMBSE_MODEL_KWARGS", "{}"))
+
+      model = capellambse.MelodyModel(os.environ["ENTRYPOINT"], **model_kwargs)
       pathlib.Path(os.environ["OUTPUT_FILE"]).write_text(model.description_badge)
       EOF
     - git add "$OUTPUT_FILE"
