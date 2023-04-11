@@ -114,10 +114,12 @@ class LocalFileHandler(FileHandler):
                 .stdout.decode("utf-8")
                 .strip()
             )
-        except subprocess.CalledProcessError:
-            LOGGER.warning(
-                "Git rev-parse with options %s failed",
+        except Exception as err:
+            LOGGER.debug(
+                "Git rev-parse with options %s failed: %s: %s",
                 options,
+                type(err).__name__,
+                err,
             )
             return None
 
