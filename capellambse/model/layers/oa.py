@@ -27,10 +27,12 @@ class OperationalActivity(fa.AbstractFunction):
 
     _xmltag = "ownedOperationalActivities"
 
-    owning_entity: c.Accessor[Entity]
+    owning_entity = c.DeprecatedAccessor["Entity"]("owner")
+
     exchanges = c.DirectProxyAccessor(
         fa.FunctionalExchange, aslist=c.ElementList
     )
+    owner: c.Accessor[Entity]
 
     @property
     def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
@@ -274,7 +276,7 @@ c.set_accessor(
 )
 c.set_accessor(
     OperationalActivity,
-    "owning_entity",
+    "owner",
     c.ReferenceSearchingAccessor(Entity, "activities"),
 )
 c.set_accessor(

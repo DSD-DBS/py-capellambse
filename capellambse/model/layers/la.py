@@ -27,17 +27,7 @@ class LogicalFunction(fa.Function):
         aslist=c.ElementList,
         attr="targetElement",
     )
-
-    @property
-    def owner(self) -> LogicalComponent | None:
-        try:
-            return next(
-                i
-                for i in self._model.search("LogicalComponent")
-                if self in i.allocated_functions
-            )
-        except StopIteration:
-            return None
+    owner: c.Accessor[LogicalComponent]
 
 
 @c.xtype_handler(XT_ARCH)
@@ -229,6 +219,11 @@ c.set_accessor(
     c.ReferenceSearchingAccessor(
         LogicalFunction, "realized_system_functions", aslist=c.ElementList
     ),
+)
+c.set_accessor(
+    LogicalFunction,
+    "owner",
+    c.ReferenceSearchingAccessor(LogicalComponent, "allocated_functions"),
 )
 c.set_accessor(
     LogicalFunction,
