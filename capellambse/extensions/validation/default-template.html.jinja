@@ -1,15 +1,108 @@
 <!DOCTYPE html>
+{#
+SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+SPDX-License-Identifier: Apache-2.0
+#}
 <style type=text/css>
-  table { border-collapse: collapse; width: 100%; }
+
+ /*  table { border-collapse: collapse; width: 100%; }
   th, td { padding: 0.25rem 0.5rem; }
   th { font-weight: bold; background: #eee; }
 
-  thead { position: sticky; top: 0; }
+  thead { position: sticky; top: 0; }*/
 
   .small { font-size: 60%; }
   .rule-required { color: #ff4f26; }
   .rule-recommended { color: #dec342; }
   .rule-suggested { color: #17a3d4; }
+
+/* Apply Arial font style to the entire page */
+html, body {
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  font-size: 16px; /* Adjust this value according to your preference */
+  line-height: 1.5; /* Adjust this value for better readability */
+  color: #333; /* Adjust text color according to your preference */
+}
+
+body { margin: 1em; }
+
+/* Hyperlink styles */
+a {
+  color: #0066cc; /* Adjust the link color to your preference */
+  text-decoration: none; /* Remove the default underline */
+  transition: color 0.3s ease; /* Add smooth color transition */
+}
+
+/* Hyperlink hover styles */
+a:hover {
+  color: #004799; /* Adjust the hover color to your preference */
+  text-decoration: underline; /* Add underline on hover */
+}
+
+
+/* General table styles */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc; /* Outer border */
+}
+
+/* Header and rows styles */
+th, td {
+  padding: 0.75rem;
+  text-align: left;
+  position: relative;
+}
+
+/* Header background color and sticky position */
+thead th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* First column header background color and sticky position */
+tbody th {
+  background-color: #f2f2f2;
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+/* Header text styles */
+th {
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Borders for table cells */
+td {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+th {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+/* First column header border */
+tbody th {
+  border-right: 1px solid #ccc;
+}
+
+/* Striped row colors */
+tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+tr:hover {
+  background-color: #e8e8e8;
+}
+
 </style>
 
 {%- set results = model.validate() %}
@@ -61,21 +154,40 @@
 
 <h2>Capability</h2>
 <!-- TODO iterate over all object types with associated rules (how?) -->
+{# {% set obj_type = "Capability" %}
+
+{%- set objs = model.search(obj_type) %}
+{%- set total_passed = 0 %}
+{%- set total_rules = 0 %}
+{%- for obj in model.search(obj_type) %}
+  {%- set obj_results = results.by_uuid(obj.uuid) %}
+  {%- for cat in ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
+    {%- set total = results.by_category(cat).by_uuid(obj.uuid) | count %}
+    {%- set passed = results.by_category(cat).by_value(true).by_uuid(obj.uuid) | count %}
+    {%- set total_passed = total_passed + passed %}
+    {%- set total_rules = total_rules + total %}
+  {%- endfor %}
+{% endfor %}
+{%- set percent = (total_passed / total_rules * 100)|round(1) if total_rules > 0 else "—" %}
+
 <p>
-  The model contains {{ num }} capabilities in total.<br>
+  The model contains {{ objs | count }} object(s) of type Capability.<br>
+  A {{ obj_type }} is checked against {{ }}
   The overall maturity level is {{ percent }}.<br>
-</p>
+</p> #}
 <table>
+<thead>
   <tr>
     <th>Name
     <th>Required
-    <th>Recommended
-    <th>Suggested
+    <th>Recommendations
+    <th>Suggestions
     <th>Actions
+<tbody>
   {%- for obj in model.search("Capability") | sort(attribute="name") %}
   {%- set obj_results = results.by_uuid(obj.uuid) %}
   <tr>
-    <th>{{ obj.name }}
+    <th id="{{obj.uuid}}">{{ obj.name }}
     {%- for cat in ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
     {%- set total = results.by_category(cat).by_uuid(obj.uuid) | count %}
     {%- set passed = results.by_category(cat).by_value(true).by_uuid(obj.uuid) | count %}
@@ -87,7 +199,9 @@
       {%- if loop.first %}
       <ul>
       {%- endif %}
-        <li>{{ rule.actions }}
+      {% for action in rule.actions %}
+        <li><a href="#{{rule.id}}">{{ action }}</a>
+      {% endfor %}
       {%- endfor %}
   {% endfor %}
 </table>
@@ -95,15 +209,24 @@
 <h2>Validation results by rule</h2>
 <!-- TODO filter by applicability to this layer -->
 <table>
+<thead>
+  <tr>
+    <th>Rule ID
+    <th>Definition
+    <th>Passed
+    <th>Failed
   <tbody>
     {%- for rule, objs in results.items() %}
     {%- set failed = results.by_value(false)[rule] %}
+    {% set total = objs | count %}
+    {% set passed = total - failed|count %}
     <tr>
-      <th>{{ rule.id }}
+      <th id="{{rule.id}}">{{ rule.id }}<br>
+      <span class="rule-{{ rule.category.name|lower }}">{{ rule.category.name }}</span>
       <td>
         <strong>{{ rule.name }}</strong><br>{{ rule.rationale }}<br>
-        <span class="rule-{{ rule.category.name|lower }}">{{ rule.category.name }}</span>
-      <td>{{ objs|count - failed|count }} / {{ objs|count }}
+
+      <td>{{ passed }} / {{ total }} ({{(passed / total * 100)|round(1) if total > 0 else "—"}}%)
       <td>
         {%- for result in failed.values() | sort(attribute="name") %}
         {%- set obj = model.by_uuid(result.uuid) %}
@@ -111,16 +234,12 @@
         <ul>
         {%- endif %}
           <li>
-            {{ obj.name|e }}
-            <span class="small">({{ obj.uuid }})</span>
+            <a href="#{{obj.uuid}}">
+              {{ obj.name|e }}
+              <span class="small">({{ obj.uuid }})</span>
+            </a>
         {%- else %}
-        Everything passed!
+        All {{ objs | count}} comply to this rule
         {%- endfor %}
     {%- endfor %}
-  <thead>
-    <tr>
-      <th>Rule ID
-      <th>Definition
-      <th>Passed
-      <th>Failed
 </table>
