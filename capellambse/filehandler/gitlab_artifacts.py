@@ -10,6 +10,7 @@ import math
 import os
 import pathlib
 import re
+import sys
 import typing as t
 import urllib.parse
 
@@ -21,6 +22,9 @@ from . import FileHandler
 
 LOGGER = logging.getLogger(__name__)
 RE_LINK_NEXT = re.compile("<(http.*)>; rel=(?P<quote>[\"']?)next(?P=quote)")
+MAX_SEARCHED_JOBS = (
+    int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", 1000)) or sys.maxsize
+)
 
 
 class GitlabArtifactsFiles(FileHandler):
@@ -214,7 +218,8 @@ class GitlabArtifactsFiles(FileHandler):
             return job
 
         for jobinfo in self.__iterget(
-            f"/projects/{self.__project}/jobs?scope=success", max=200
+            f"/projects/{self.__project}/jobs?scope=success",
+            max=MAX_SEARCHED_JOBS,
         ):
             if (
                 jobinfo["name"] == job
