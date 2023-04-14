@@ -15,6 +15,7 @@ import pytest
 import requests_mock
 
 import capellambse
+from capellambse.filehandler import gitlab_artifacts
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
@@ -240,6 +241,143 @@ def test_http_file_handlers_passed_through_custom_headers(
     file_handler.open("test.svg", "rb").close()
 
     assert endpoint.called_once
+
+
+def test_gitlab_artifacts_handler_uses_public_gitlab_when_no_hostname_given(
+    requests_mock: requests_mock.Mocker,  # pylint: disable=unused-argument
+) -> None:
+    # pylint: disable=line-too-long
+
+    hdl = capellambse.get_filehandler(
+        "glart://",
+        project=1,
+        branch="some-branch",
+        token="my-access-token",
+        job=3,
+    )
+
+    assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
+    assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
+
+
+def test_gitlab_artifacts_handler_resolves_project_to_numeric_id(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/homegroup%2fdemo-project",
+        json={"id": 1},
+    )
+
+    hdl = capellambse.get_filehandler(
+        "glart://",
+        project="homegroup/demo-project",
+        branch="some-branch",
+        token="my-access-token",
+        job=3,
+    )
+
+    assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
+    # pylint: disable=line-too-long
+    assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
+
+
+def test_gitlab_artifacts_handler_looks_up_job_id_given_a_job_name(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/1/jobs",
+        json=[
+            {
+                "id": 3,
+                "name": "make-stuff",
+                "pipeline": {"ref": "somebranch"},
+                "artifacts": [{"file_type": "archive"}],
+            },
+        ],
+    )
+
+    hdl = capellambse.get_filehandler(
+        "glart://",
+        project=1,
+        branch="somebranch",
+        token="my-access-token",
+        job="make-stuff",
+    )
+
+    assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
+    # pylint: disable=line-too-long
+    assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
+
+
+def test_gitlab_artifacts_handler_errors_if_no_job_with_artifacts_was_found(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/1/jobs",
+        json=[],
+    )
+
+    with pytest.raises(RuntimeError, match="recent successful"):
+        capellambse.get_filehandler(
+            "glart://",
+            project=1,
+            branch="somebranch",
+            token="my-access-token",
+            job="make-stuff",
+        )
+
+
+def test_gitlab_artifacts_handler_handles_pagination_when_searching_for_jobs(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/1/jobs",
+        headers={
+            "Link": (
+                "<https://gitlab.com/api/v4/projects/1/jobs/page/2>;"
+                ' rel="next"'
+            )
+        },
+        json=[
+            {
+                "id": 2,
+                "name": "make-stuff",
+                "pipeline": {"ref": "otherbranch"},
+                "artifacts": [],
+            },
+        ],
+    )
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/1/jobs/page/2",
+        json=[
+            {
+                "id": 3,
+                "name": "make-stuff",
+                "pipeline": {"ref": "somebranch"},
+                "artifacts": [{"file_type": "archive"}],
+            },
+        ],
+    )
+
+    hdl = capellambse.get_filehandler(
+        "glart://",
+        project=1,
+        branch="somebranch",
+        token="my-access-token",
+        job="make-stuff",
+    )
+
+    assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
+    # pylint: disable=line-too-long
+    assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
 
 
 @pytest.fixture

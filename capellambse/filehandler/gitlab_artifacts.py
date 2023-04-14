@@ -10,6 +10,7 @@ import math
 import os
 import pathlib
 import re
+import sys
 import typing as t
 import urllib.parse
 
@@ -21,6 +22,9 @@ from . import FileHandler
 
 LOGGER = logging.getLogger(__name__)
 RE_LINK_NEXT = re.compile("<(http.*)>; rel=(?P<quote>[\"']?)next(?P=quote)")
+MAX_SEARCHED_JOBS = (
+    int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", 1000)) or sys.maxsize
+)
 
 
 class GitlabArtifactsFiles(FileHandler):
@@ -127,7 +131,7 @@ class GitlabArtifactsFiles(FileHandler):
 
     @staticmethod
     def __resolve_path(path: str) -> str:
-        if path == "glart:":
+        if path in {"glart:", "glart://"}:
             if host := os.getenv("CI_SERVER_URL"):
                 LOGGER.debug("Using current Gitlab instance: %s", host)
                 return host
@@ -214,17 +218,23 @@ class GitlabArtifactsFiles(FileHandler):
             return job
 
         for jobinfo in self.__iterget(
-            f"/projects/{self.__project}/jobs?scope=success", max=200
+            f"/projects/{self.__project}/jobs?scope=success",
+            max=MAX_SEARCHED_JOBS,
         ):
             if (
                 jobinfo["name"] == job
                 and jobinfo["pipeline"]["ref"] == self.__branch
-                and "artifacts_file" in jobinfo
+                and any(
+                    i["file_type"] == "archive"
+                    for i in jobinfo.get("artifacts", [])
+                )
             ):
                 LOGGER.debug("Selected job with ID %d", jobinfo["id"])
                 return jobinfo["id"]
 
-        raise RuntimeError(f"No recent successful {job!r} job found")
+        raise RuntimeError(
+            f"No recent successful {job!r} job found on {self.__branch!r}"
+        )
 
     def __rawget(self, url: str) -> requests.Response:
         """Make a GET request and return the raw Response object.
@@ -274,10 +284,10 @@ class GitlabArtifactsFiles(FileHandler):
                 if i >= stop:
                     return
 
-            match = RE_LINK_NEXT.fullmatch(response.headers["Link"])
+            match = RE_LINK_NEXT.fullmatch(response.headers.get("Link", ""))
             if not match:
                 break
-            next_url = match.group(0)
+            next_url = match.group(1)
 
     def get_model_info(self) -> loader.ModelInfo:
         return loader.ModelInfo(branch=self.__branch, url=self.__path)
