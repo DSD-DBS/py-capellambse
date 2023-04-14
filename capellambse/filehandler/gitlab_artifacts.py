@@ -232,7 +232,9 @@ class GitlabArtifactsFiles(FileHandler):
                 LOGGER.debug("Selected job with ID %d", jobinfo["id"])
                 return jobinfo["id"]
 
-        raise RuntimeError(f"No recent successful {job!r} job found")
+        raise RuntimeError(
+            f"No recent successful {job!r} job found on {self.__branch!r}"
+        )
 
     def __rawget(self, url: str) -> requests.Response:
         """Make a GET request and return the raw Response object.
