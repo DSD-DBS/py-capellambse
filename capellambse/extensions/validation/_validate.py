@@ -65,6 +65,7 @@ class Rule:
 
     id: str
     name: str
+    type: Type
     rationale: str
     category: Category
     actions: list[str]
@@ -120,6 +121,27 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
             }
         )
 
+    def by_type(self, type: Type) -> Results:
+        """Filter the validation results by ``type`` string or class."""
+        return Results(
+            {
+                rule: {uid: r for uid, r in res.items()}
+                for rule, res in self.items()
+                if (
+                    rule.type == type or rule.type.__name__ == type
+                )  # this is a bit messy as a type can be a string or a class, fix this later
+            }
+        )
+
+    def get_passed_and_total(self) -> tuple[int, int]:
+        """Return the number of passed and total validation rules."""
+        passed = 0
+        total = 0
+        for rule, res in self.items():
+            total += len(res)
+            passed += len([x for x, y in res.items() if y.value])
+        return passed, total
+
     def setdefault(
         self,
         key: t.Any,
@@ -157,6 +179,7 @@ def register_rule(
         rule = Rule(
             id,
             name,
+            type,
             rationale,
             category,
             actions,
