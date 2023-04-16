@@ -41,7 +41,8 @@ a:hover {
 
 /* Table styles */
 table {
-  width: 100%;
+  table-layout: fixed; /* This ensures that the table cells have fixed widths */
+  width: 100%; /* Ensures the table takes up the full width of its container */
   border-collapse: separate;
   border-spacing: 0;
   margin-bottom: 1rem;
@@ -54,6 +55,9 @@ th, td {
   position: relative;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+  min-width: 100px; /* You can adjust the minimum width to fit your needs */
+  word-wrap: break-word; /* Breaks long words if they exceed the cell width */
+  overflow-wrap: break-word; /* A more modern alternative to word-wrap */
 }
 
 thead th {
@@ -147,7 +151,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
   <thead>
     <tr>
       <th rowspan="2">Object type</th>
-      <th rowspan="2">Total objects</th>
+      <th rowspan="2" width="60px">Total objects</th>
       <th colspan="3">Compliance to applicable modeling rules</th>
     </tr>
     <tr>
@@ -185,9 +189,9 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 <table>
   <thead>
     <tr>
-      <th>{{ obj_type }}</th>
-      <th>Rule Category</th>
-      <th>Compliance (%)</th>
+      <th width="250px">{{ obj_type }}</th>
+      <th width="140px">Rule Category</th>
+      <th width="140px">Compliance (%)</th>
       <th>Improvement Suggestions (Actions)</th>
     </tr>
   </thead>
@@ -284,9 +288,9 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 <table>
 <thead>
   <tr>
-    <th>Rule ID
+    <th width="100px">Rule ID
     <th>Definition
-    <th>Passed
+    <th width="100px">Passed
     <th>Failed
   <tbody>
     {%- for rule, objs in results.items() %}
