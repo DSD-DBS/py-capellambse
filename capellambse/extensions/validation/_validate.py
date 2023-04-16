@@ -49,9 +49,9 @@ class Result:
     value: bool
 
 
-Validator = cabc.Callable[
-    [c.GenericElement], bool
-]  # | Callable [[Metric], Result]
+ElementType = t.TypeVar("ElementType", bound=c.GenericElement)
+
+Validator = cabc.Callable[[ElementType], bool]  # | Callable [[Metric], Result]
 Type = t.Union[
     str, type[c.GenericElement]
 ]  # | type[Metric] | type[AggregateMetric]
@@ -95,9 +95,15 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
 
         return super().__getitem__(key)
 
-    def by_uuid(self, uuid: helpers.UUIDString) -> dict[Rule, Result]:
+    def by_uuid(self, uuid: helpers.UUIDString) -> Results:
         """Filter the validation results by ``uuid``."""
-        return {rule: res[uuid] for rule, res in self.items() if uuid in res}
+        return Results(
+            {
+                rule: {uid: r for uid, r in res.items() if uid == uuid}
+                for rule, res in self.items()
+                if uuid in res
+            }
+        )
 
     def by_category(self, category: Category | str) -> Results:
         """Filter the validation results by ``category``."""
@@ -121,15 +127,13 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
             }
         )
 
-    def by_type(self, type: Type) -> Results:
-        """Filter the validation results by ``type`` string or class."""
+    def by_type(self, typ: str) -> Results:
+        """Filter the validation results by ``typ``(e)."""
         return Results(
             {
-                rule: {uid: r for uid, r in res.items()}
+                rule: dict(res.items())
                 for rule, res in self.items()
-                if (
-                    rule.type == type or rule.type.__name__ == type
-                )  # this is a bit messy as a type can be a string or a class, fix this later
+                if rule.type.__name__ == typ  # type: ignore
             }
         )
 
@@ -137,7 +141,7 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
         """Return the number of passed and total validation rules."""
         passed = 0
         total = 0
-        for rule, res in self.items():
+        for _, res in self.items():
             total += len(res)
             passed += len([x for x, y in res.items() if y.value])
         return passed, total

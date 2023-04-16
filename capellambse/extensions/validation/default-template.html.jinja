@@ -14,7 +14,7 @@ SPDX-License-Identifier: Apache-2.0
 
   .small { font-size: 60%; }
   .rule-required { color: #ff4f26; }
-  .rule-recommended { color: #dec342; }
+  .rule-recommended { color: #039c08; }
   .rule-suggested { color: #17a3d4; }
 
 /* General styles */
@@ -93,6 +93,24 @@ tr:nth-child(even) { background-color: #f8f8f8; }
   The report provides an assessment of adherence to Modeling Rules and Best Practices by the contents of the System Analysis model layer.
 </p>
 
+{% macro show_compliance_score(passed, total) %}
+  {# This macro shows compliance score and conditionally colors it: if value is below 30% it will be red, between 30 and 70 % it will be orange, above 70 % green; #}
+  {# It is also possible that total is 0, in this case it will return "not applicable" in gray color #}
+  {% if total > 0 %}
+    {% set compliance_score = (passed / total * 100)|round(1) %}
+    {% set compliance = compliance_score | string + "% ({} / {})".format(passed, total)%}
+    {% if compliance_score < 30 %}
+      <span style="color:#bc2604">{{ compliance }}</span>
+    {% elif compliance_score < 70 %}
+      <span style="color:#ae930d">{{ compliance }}</span>
+    {% else %}
+      <span style="color:#0a6600">{{ compliance }}</span>
+    {% endif %}
+  {% else %}
+    <span style="color:#ccc">not applicable</span>
+  {% endif %}
+{% endmacro %}
+
 {# <table>
   <tr>
     <th>Layer
@@ -124,7 +142,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 
 {# Summary table #}
 <h2>Assessment Summary</h2>
-{% set object_types = ["Capability", "SystemFunction", "ComponentExchange", "FunctionalExchange"] %}
+{% set object_types = ["Capability", "SystemComponent", "SystemFunction", "ComponentExchange", "FunctionalExchange"] %}
 <table>
   <thead>
     <tr>
@@ -151,8 +169,10 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 
           {% set rules = results.by_category(category).by_type(obj_type) %}
           {% set passed, total = rules.get_passed_and_total() %}
-          {% set compliance = ((passed / total * 100)|round(1) if total > 0 else "—") | string + "% ({} / {})".format(passed, total) %}
-          <td>{{ compliance }}</td>
+          {# {% set compliance = ((passed / total * 100)|round(1) | string + "% ({} / {})".format(passed, total) if total > 0 else false)%} #}
+          <td>
+            {{ show_compliance_score(passed, total) }}
+          </td>
         {% endfor %}
     {% endfor %}
 </table>
@@ -183,7 +203,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
         {% set rules = results.by_category(category).by_uuid(object.uuid) %}
         {% set passed = rules.items() | selectattr('1.value', 'equalto', true) | list | count %}
         {% set total = rules | count %}
-        {% set compliance = ((passed / total * 100)|round(1) if total > 0 else "—") | string + "% ({} / {})".format(passed, total) %}
+        {# {% set compliance = ((passed / total * 100)|round(1) if total > 0 else "—") | string + "% ({} / {})".format(passed, total) %} #}
         {% set actions = [] %}
         {% for rule in rules.items() | selectattr('1.value', 'equalto', false) | map("first") | list %}
           {% for action in rule.actions %}
@@ -191,7 +211,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
           {% endfor %}
         {% endfor %}
         {% if rules | count > 0 %}
-          {% set _ = categories.append([category, compliance, actions]) %}
+          {% set _ = categories.append([category, passed, total, actions]) %}
         {% endif %}
       {% endfor %}
 
@@ -202,14 +222,14 @@ tr:nth-child(even) { background-color: #f8f8f8; }
           <td colspan="3">No rules applied</td>
         </tr>
       {% else %}
-        {% for category, compliance, actions in categories %}
+        {% for category, passed, total, actions in categories %}
           <tr>
             {# only show next line if it is first loop pass #}
             {% if loop.first %}
               <th rowspan="{{ categories | count }}">{{ object.name }}</th>
             {% endif %}
             <td><b class="rule-{{ category |lower }}">{{ category }}</b></td>
-            <td>{{ compliance }}</td>
+            <td>{{ show_compliance_score(passed, total) }}</td>
             <td>
               {% if actions %}
                 <ul>
@@ -281,7 +301,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       <td>
         <strong>{{ rule.name }}</strong><br>{{ rule.rationale }}<br>
 
-      <td>{{ passed }} / {{ total }} ({{(passed / total * 100)|round(1) if total > 0 else "—"}}%)
+      <td>{{ show_compliance_score(passed, total) }}
       <td>
         {%- for result in failed.values() | sort(attribute="name") %}
         {%- set obj = model.by_uuid(result.uuid) %}
