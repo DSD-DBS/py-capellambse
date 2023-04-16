@@ -102,14 +102,9 @@ tr:nth-child(even) { background-color: #f8f8f8; }
   {# It is also possible that total is 0, in this case it will return "not applicable" in gray color #}
   {% if total > 0 %}
     {% set compliance_score = (passed / total * 100)|round(1) %}
-    {% set compliance = compliance_score | string + "% ({} / {})".format(passed, total)%}
-    {% if compliance_score < 30 %}
-      <span style="color:#bc2604">{{ compliance }}</span>
-    {% elif compliance_score < 70 %}
-      <span style="color:#ae930d">{{ compliance }}</span>
-    {% else %}
-      <span style="color:#0a6600">{{ compliance }}</span>
-    {% endif %}
+    {% set compliance = compliance_score | string + "%" %}
+    {% set color = "#bc2604" if compliance_score < 30 else ("#ae930d" if compliance_score < 70 else "#0a6600") %}
+    <span style="color:{{ color }}">{{ compliance }} <small>{{ "({} / {})".format(passed, total) }}</small></span>
   {% else %}
     <span style="color:#ccc">not applicable</span>
   {% endif %}
@@ -166,7 +161,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       {% set categories = ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
       {% set total = objects | count %}
       <tr>
-        <th>{{ obj_type }}</th>
+        <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
         <td>{{ total }}</td>
         {% for category in categories %}
           {% set rules = results.by_category(category).by_type(obj_type) %}
@@ -183,7 +178,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
   potential for improvement, we provide actionable suggestions to enhance its compliance.</p>
 
 {% for obj_type in object_types %}
-<h3>{{ obj_type }}</h3>
+<h3 id="{{ obj_type }}">{{ obj_type }}</h3>
 {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
 
 <table>
@@ -288,7 +283,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 <table>
 <thead>
   <tr>
-    <th width="100px">Rule ID
+    <th width="160px">Rule ID
     <th>Definition
     <th width="100px">Passed
     <th>Failed
@@ -301,7 +296,9 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       <th id="{{rule.id}}">{{ rule.id }}<br>
       <span class="rule-{{ rule.category.name|lower }}">{{ rule.category.name }}</span>
       <td>
-        <strong>{{ rule.name }}</strong><br>{{ rule.rationale }}<br>
+        <strong>{{ rule.name }}</strong><br>
+        {{ rule.rationale }} {% if rule.url %}<a href="{{ rule.url }}">More info</a>{% endif %}
+        <p><b>Recommended action:</b><br>{{ rule.actions | join(" ")}}</p>
 
       <td>{{ show_compliance_score(passed, total) }}
       <td>
