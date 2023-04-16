@@ -165,13 +165,10 @@ tr:nth-child(even) { background-color: #f8f8f8; }
         <th>{{ obj_type }}</th>
         <td>{{ total }}</td>
         {% for category in categories %}
-          {# we will count here for every object of a type and category, how many rules applied to it and to how many it complied, then show a sum of those values for all objects of type #}
-
           {% set rules = results.by_category(category).by_type(obj_type) %}
-          {% set passed, total = rules.get_passed_and_total() %}
-          {# {% set compliance = ((passed / total * 100)|round(1) | string + "% ({} / {})".format(passed, total) if total > 0 else false)%} #}
+          {% set passed, total_checks = rules.get_passed_and_total(type=obj_type) %}
           <td>
-            {{ show_compliance_score(passed, total) }}
+            {{ show_compliance_score(passed, total_checks) }}
           </td>
         {% endfor %}
     {% endfor %}
@@ -181,7 +178,6 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 <p>This section evaluates the selected objects' adherence to modeling rules. If an object needs additional work or has
   potential for improvement, we provide actionable suggestions to enhance its compliance.</p>
 
-{% set object_types = ["Capability", "SystemFunction", "ComponentExchange", "FunctionalExchange"] %}
 {% for obj_type in object_types %}
 <h3>{{ obj_type }}</h3>
 {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
@@ -201,13 +197,15 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       {% set categories = [] %}
       {% for category in ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
         {% set rules = results.by_category(category).by_uuid(object.uuid) %}
-        {% set passed = rules.items() | selectattr('1.value', 'equalto', true) | list | count %}
-        {% set total = rules | count %}
-        {# {% set compliance = ((passed / total * 100)|round(1) if total > 0 else "—") | string + "% ({} / {})".format(passed, total) %} #}
+        {% set passed, total = rules.get_passed_and_total() %}
         {% set actions = [] %}
-        {% for rule in rules.items() | selectattr('1.value', 'equalto', false) | map("first") | list %}
-          {% for action in rule.actions %}
-            {% set _ = actions.append([rule.id, action]) %}
+        {% for rule, results in rules.items() %}
+          {% for result in results.values() %}
+            {% if not result.value %}
+              {% for action in rule.actions %}
+                {% set _ = actions.append([rule.id, action]) %}
+              {% endfor %}
+            {% endif %}
           {% endfor %}
         {% endfor %}
         {% if rules | count > 0 %}

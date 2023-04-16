@@ -26,7 +26,7 @@ def test_ValidationRule_discovery(
 
     @v.register_rule(
         category=category,
-        type=la.LogicalFunction,
+        types=[la.LogicalFunction],
         id="R1",
         name=name,
         rationale="True",

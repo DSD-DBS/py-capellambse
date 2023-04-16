@@ -2,41 +2,48 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
-__all__ = ["has_non_empty_description"]
-
 from capellambse.model import common as c
-from capellambse.model.layers import ctx, la
+from capellambse.model.layers import ctx as sa
 
 from . import _validate
+
+# __all__ = ["has_non_empty_description"]
 
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    type=la.LogicalComponent,
+    types=[sa.SystemComponent, sa.SystemFunction, sa.Capability],
     id="Rule-001",
-    name="No empty description",
-    rationale="An object shall have a description or summary.",
+    name="Object has a description or summary",
+    rationale=(
+        "Object name may be insufficient to describe the object. "
+        "Name also may use acronyms, abbreviations or context "
+        "references that may not be known to the reader. In simple "
+        "cases it might be sufficient to populate the summary field, "
+        "however when the object is more complex, the description "
+        "field should be used."
+    ),
     actions=["Fill the description and/or summary text fields."],
 )
-def has_non_empty_description(obj: c.GenericElement) -> bool:
+def has_non_empty_description_or_summary(obj: c.GenericElement) -> bool:
     return bool(obj.description) or bool(obj.summary)
 
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    type=ctx.Capability,
+    types=[sa.Capability],
     id="Rule-002",
     name="Capability involves an Actor",
     rationale="Every Capability shall involve an Actor",
     actions=["Add an involvement with an actor to the Capability."],
 )
-def capability_involves_an_actor(obj: ctx.Capability) -> bool:
+def capability_involves_an_actor(obj: sa.Capability) -> bool:
     return len(obj.involved_components.by_is_actor(True)) > 0
 
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    type=ctx.Capability,
+    types=[sa.Capability],
     id="Rule-003",
     name="Capability involves an actor function",
     rationale=(
@@ -44,7 +51,7 @@ def capability_involves_an_actor(obj: ctx.Capability) -> bool:
     ),
     actions=["Add an involvement with an actor function to the Capability."],
 )
-def capability_involves_an_actor_function(obj: ctx.Capability) -> bool:
+def capability_involves_an_actor_function(obj: sa.Capability) -> bool:
     owners = [
         True
         for fnc in obj.involved_functions
@@ -55,7 +62,7 @@ def capability_involves_an_actor_function(obj: ctx.Capability) -> bool:
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    type=ctx.Capability,
+    types=[sa.Capability],
     id="Rule-004",
     name="Capability involves a SystemFunction",
     rationale=(
@@ -63,7 +70,7 @@ def capability_involves_an_actor_function(obj: ctx.Capability) -> bool:
     ),
     actions=["Add an involvement with a SystemFunction to the Capability."],
 )
-def capability_involves_a_system_function(obj: ctx.Capability) -> bool:
+def capability_involves_a_system_function(obj: sa.Capability) -> bool:
     owners = [
         True
         for fnc in obj.involved_functions
@@ -74,13 +81,13 @@ def capability_involves_a_system_function(obj: ctx.Capability) -> bool:
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    type=ctx.Capability,
+    types=[sa.Capability],
     id="Rule-005",
     name="IS- and SHOULD-entity-involvements match",
     rationale="This should be a thing.",
     actions=["Make more involvements."],
 )
-def is_and_should_entity_involvements_match(obj: ctx.Capability) -> bool:
+def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
     is_involvements = {x.owner.uuid for x in obj.involved_functions if x.owner}
     should_involvements = {x.uuid for x in obj.involved_components}
     return is_involvements == should_involvements
@@ -88,7 +95,7 @@ def is_and_should_entity_involvements_match(obj: ctx.Capability) -> bool:
 
 @_validate.register_rule(
     category=_validate.Category.RECOMMENDED,
-    type=ctx.Capability,
+    types=[sa.Capability],
     id="Rule-006",
     name="Capability has precondition",
     rationale="A Capability shall define its precondition.",
@@ -100,7 +107,7 @@ def has_precondition(obj) -> bool:
 
 @_validate.register_rule(
     category=_validate.Category.RECOMMENDED,
-    type=ctx.Capability,
+    types=[sa.Capability],
     id="Rule-007",
     name="Capability has postcondition",
     rationale="A Capability shall define its postcondition.",
@@ -116,7 +123,7 @@ except ImportError:
 
     @_validate.register_rule(
         category=_validate.Category.SUGGESTED,
-        type=ctx.Capability,
+        types=[sa.Capability],
         id="Rule-007",
         name="Spacy failed to load",
         rationale="Cannot apply this rule.",
@@ -133,7 +140,7 @@ else:
 
         @_validate.register_rule(
             category=_validate.Category.SUGGESTED,
-            type=ctx.Capability,
+            types=[sa.Capability],
             id="Rule-007",
             name="Spacy failed to load",
             rationale="Cannot apply this rule.",
@@ -147,7 +154,7 @@ else:
 
         @_validate.register_rule(
             category=_validate.Category.SUGGESTED,
-            type=ctx.Capability,
+            types=[sa.Capability],
             id="Rule-007",
             name="Behavior name follows verb-noun pattern",
             rationale="This makes things more consistent.",

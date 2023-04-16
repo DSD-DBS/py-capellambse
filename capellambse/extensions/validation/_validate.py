@@ -47,6 +47,7 @@ class Result:
         Category.RECOMMENDED
     ] | t.Literal[Category.SUGGESTED]
     value: bool
+    object: c.GenericElement
 
 
 ElementType = t.TypeVar("ElementType", bound=c.GenericElement)
@@ -65,7 +66,7 @@ class Rule:
 
     id: str
     name: str
-    type: Type
+    types: list[Type]
     rationale: str
     category: Category
     actions: list[str]
@@ -133,17 +134,27 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
             {
                 rule: dict(res.items())
                 for rule, res in self.items()
-                if rule.type.__name__ == typ  # type: ignore
+                for rule_type in rule.types
+                if rule_type.__name__ == typ  # type: ignore
             }
         )
 
-    def get_passed_and_total(self) -> tuple[int, int]:
+    def get_passed_and_total(self, type=None) -> tuple[int, int]:
         """Return the number of passed and total validation rules."""
         passed = 0
         total = 0
-        for _, res in self.items():
-            total += len(res)
-            passed += len([x for x, y in res.items() if y.value])
+        for _, results in self.items():
+            for _, result in results.items():
+                if not type:
+                    total += 1
+                    if result.value:
+                        passed += 1
+                else:
+                    result_type = result.object.__class__.__name__
+                    if type == result_type:
+                        total += 1
+                        if result.value:
+                            passed += 1
         return passed, total
 
     def setdefault(
@@ -166,7 +177,7 @@ VALIDATION_RESULTS = Results()
 
 def register_rule(
     category: Category,
-    type: Type,
+    types: list[Type],
     id: str,
     name: str,
     rationale: str,
@@ -183,14 +194,15 @@ def register_rule(
         rule = Rule(
             id,
             name,
-            type,
+            types,
             rationale,
             category,
             actions,
             rule,
             hyperlink_further_reading,
         )
-        VALIDATION_RULES[category].setdefault(type, []).append(rule)
+        for typ in types:
+            VALIDATION_RULES[category].setdefault(typ, []).append(rule)
         return rule
 
     return rule_decorator
@@ -247,7 +259,10 @@ class ModelValidation(Validation):
                             continue
 
                         result = Result(
-                            uuid=obj.uuid, category=category, value=_rule(obj)
+                            uuid=obj.uuid,
+                            category=category,
+                            value=_rule(obj),
+                            object=obj,
                         )
                         store_result(_rule, obj, result)
         return self.results
@@ -289,6 +304,7 @@ class ElementValidation(Validation):
                         uuid=self._element.uuid,
                         category=category,
                         value=_rule(self._element),
+                        object=self._element,
                     )
                     store_result(_rule, self._element, result)
         return self.results
