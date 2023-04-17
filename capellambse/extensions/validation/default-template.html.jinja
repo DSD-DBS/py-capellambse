@@ -145,8 +145,8 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 <table>
   <thead>
     <tr>
-      <th rowspan="2">Object type</th>
-      <th rowspan="2" width="60px">Total objects</th>
+      <th rowspan="2">Reviewed objects</th>
+      <th rowspan="2" width="90px">Total objects</th>
       <th colspan="3">Compliance to applicable modeling rules</th>
     </tr>
     <tr>
@@ -201,9 +201,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
         {% for rule, results in rules.items() %}
           {% for result in results.values() %}
             {% if not result.value %}
-              {% for action in rule.actions %}
-                {% set _ = actions.append([rule.id, action]) %}
-              {% endfor %}
+              {% set _ = actions.append([rule.id, rule.action]) %}
             {% endif %}
           {% endfor %}
         {% endfor %}
@@ -298,7 +296,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       <td>
         <strong>{{ rule.name }}</strong><br>
         {{ rule.rationale }} {% if rule.url %}<a href="{{ rule.url }}">More info</a>{% endif %}
-        <p><b>Recommended action:</b><br>{{ rule.actions | join(" ")}}</p>
+        <p><b>Recommended action:</b><br>{{ rule.action }}</p>
 
       <td>{{ show_compliance_score(passed, total) }}
       <td>
@@ -313,7 +311,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
               <span class="small">({{ obj.uuid }})</span>
             </a>
         {%- else %}
-        All {{ objs | count}} comply to this rule
+        All {{ objs | count}} object(s) comply to this rule
         {%- endfor %}
     {%- endfor %}
 </table>

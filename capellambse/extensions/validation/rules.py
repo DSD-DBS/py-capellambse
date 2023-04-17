@@ -14,7 +14,7 @@ from . import _validate
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    types=[sa.SystemComponent],
+    types=[sa.SystemComponent, sa.SystemFunction, sa.Capability],
     id="Rule-001",
     name="Object has a description or summary",
     rationale=(
@@ -31,9 +31,8 @@ from . import _validate
 def has_non_empty_description_or_summary(
     obj: c.GenericElement,
 ) -> bool | t.Literal["NotApplicable"]:
-    if not obj.is_actor:  # Precondition
-        return "NotApplicable"
-
+    # if not obj.is_actor:  # Precondition
+    #    return "NotApplicable"
     return bool(obj.description) or bool(obj.summary)  # Validation-Rule
 
 
