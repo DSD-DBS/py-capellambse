@@ -293,6 +293,8 @@ tr:nth-child(even) { background-color: #f8f8f8; }
     <tr>
       <th id="{{rule.id}}">{{ rule.id }}<br>
       <span class="rule-{{ rule.category.name|lower }}">{{ rule.category.name }}</span>
+      <p style="color:#999">Applies to: {{ rule.types |map(attribute='__name__') | list | join(", ") }}</p>
+
       <td>
         <strong>{{ rule.name }}</strong><br>
         {{ rule.rationale }} {% if rule.url %}<a href="{{ rule.url }}">More info</a>{% endif %}
