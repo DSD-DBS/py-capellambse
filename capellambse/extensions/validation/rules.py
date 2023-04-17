@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import typing as t
+
 from capellambse.model import common as c
 from capellambse.model.layers import ctx as sa
 
@@ -12,7 +14,7 @@ from . import _validate
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    types=[sa.SystemComponent, sa.SystemFunction, sa.Capability],
+    types=[sa.SystemComponent],
     id="Rule-001",
     name="Object has a description or summary",
     rationale=(
@@ -23,10 +25,16 @@ from . import _validate
         "among team members, reduces ambiguity, and facilitates "
         "efficient decision-making."
     ),
-    actions=["fill the description and/or summary text fields"],
+    action="fill the description and/or summary text fields",
+    applicable_to="SystemComponent where <i>is_actor</i> is set to True.",
 )
-def has_non_empty_description_or_summary(obj: c.GenericElement) -> bool:
-    return bool(obj.description) or bool(obj.summary)
+def has_non_empty_description_or_summary(
+    obj: c.GenericElement,
+) -> bool | t.Literal["NotApplicable"]:
+    if not obj.is_actor:  # Precondition
+        return "NotApplicable"
+
+    return bool(obj.description) or bool(obj.summary)  # Validation-Rule
 
 
 @_validate.register_rule(
@@ -43,13 +51,12 @@ def has_non_empty_description_or_summary(obj: c.GenericElement) -> bool:
         "traceability, and fosters collaboration throughout the system "
         "development process."
     ),
-    actions=[
-        (
-            "involve a primary Actor that would benefit from the "
-            "Capability and any supporting Actors required for the "
-            "desired outcome"
-        )
-    ],
+    action=(
+        "involve a primary Actor that would benefit from the "
+        "Capability and any supporting Actors required for the "
+        "desired outcome"
+    ),
+    applicable_to="TODO",
 )
 def capability_involves_an_actor(obj: sa.Capability) -> bool:
     return len(obj.involved_components.by_is_actor(True)) > 0
@@ -65,7 +72,8 @@ def capability_involves_an_actor(obj: sa.Capability) -> bool:
         "Function. This helps understanding the functional contribution "
         "of an Actor in the scope of the Capability."
     ),
-    actions=["involve an actor function in the Capability"],
+    action="involve an actor function in the Capability",
+    applicable_to="TODO",
 )
 def capability_involves_an_actor_function(obj: sa.Capability) -> bool:
     owners = [
@@ -86,7 +94,8 @@ def capability_involves_an_actor_function(obj: sa.Capability) -> bool:
         "Function. This helps understanding the functional contribution "
         "of the System in the scope of the Capability."
     ),
-    actions=["involves a system function in the Capability"],
+    action="involves a system function in the Capability",
+    applicable_to="TODO",
 )
 def capability_involves_a_system_function(obj: sa.Capability) -> bool:
     owners = [
@@ -112,14 +121,13 @@ def capability_involves_a_system_function(obj: sa.Capability) -> bool:
         "helps maintain logical consistency and efficiency in the "
         "system design."
     ),
-    actions=[
-        (
-            "To correct the mismatch, review and update the "
-            "Capability's involved Actors and Functions, ensuring each "
-            "Actor contributes at least one Function, and each Function "
-            "is allocated to an appropriate Actor or System"
-        )
-    ],
+    action=(
+        "To correct the mismatch, review and update the "
+        "Capability's involved Actors and Functions, ensuring each "
+        "Actor contributes at least one Function, and each Function "
+        "is allocated to an appropriate Actor or System"
+    ),
+    applicable_to="TODO",
 )
 def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
     is_involvements = {x.owner.uuid for x in obj.involved_functions if x.owner}
@@ -139,14 +147,13 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
         "and ensures prerequisites are met for successful system "
         "performance within the scope of the Capability."
     ),
-    actions=[
-        (
-            "Define a pre-condition for this Capability that describes the "
-            "initial state or requirements of the primary Actor before "
-            "interacting with the System, to provide clarity on the "
-            "starting context for the Capability."
-        )
-    ],
+    action=(
+        "Define a pre-condition for this Capability that describes the "
+        "initial state or requirements of the primary Actor before "
+        "interacting with the System, to provide clarity on the "
+        "starting context for the Capability."
+    ),
+    applicable_to="TODO",
 )
 def has_precondition(obj) -> bool:
     return obj.precondition is not None
@@ -164,15 +171,14 @@ def has_precondition(obj) -> bool:
         "outcome and enabling effective evaluation of system performance "
         "within the scope of the Capability."
     ),
-    actions=[
-        (
-            "Define a post-condition for this Capability that describes the "
-            "expected state or outcome for the primary Actor after "
-            "interacting with the System, to ensure clear understanding of "
-            "the desired results and enable effective evaluation of system "
-            "performance."
-        )
-    ],
+    action=(
+        "Define a post-condition for this Capability that describes the "
+        "expected state or outcome for the primary Actor after "
+        "interacting with the System, to ensure clear understanding of "
+        "the desired results and enable effective evaluation of system "
+        "performance."
+    ),
+    applicable_to="TODO",
 )
 def has_postcondition(obj):
     return obj.postcondition is not None
@@ -212,19 +218,17 @@ NLP = try_load_language_model(SPACY) if SPACY else None
 
 if SPACY is None:
     rule_name = "Can't check if behavior name follows verb-noun pattern"
-    rule_actions = ["Install spacy and download the natural language model."]
+    rule_actions = "Install spacy and download the natural language model."
 elif NLP is None:
     rule_name = "Can't check if behavior name follows verb-noun pattern"
-    rule_actions = ["Download the natural language model."]
+    rule_actions = "Download the natural language model."
 else:
     rule_name = "Behavior name follows verb-noun pattern"
-    rule_actions = [
-        (
-            "change the object name to follow "
-            'the pattern of "VERB NOUN",'
-            ' for example "brew coffee"'
-        )
-    ]
+    rule_actions = (
+        "change the object name to follow "
+        'the pattern of "VERB NOUN",'
+        ' for example "brew coffee"'
+    )
 
 
 @_validate.register_rule(
@@ -239,7 +243,8 @@ else:
         "stakeholders. Please revise any non-compliant names to align with "
         "this proven practice."
     ),
-    actions=rule_actions,
+    action=rule_actions,
+    applicable_to="TODO",
 )
 def behavior_name_follows_verb_noun_pattern(obj) -> bool:
     if NLP is None or len(obj.name) < 1:
@@ -255,3 +260,4 @@ def behavior_name_follows_verb_noun_pattern(obj) -> bool:
 
 
 # TODO: figure how to ignore / exclude Root System Function
+# if obj == model.la.root_component: ...

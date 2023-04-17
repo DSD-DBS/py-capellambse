@@ -30,7 +30,8 @@ def test_ValidationRule_discovery(
         id="R1",
         name=name,
         rationale="True",
-        actions=["Nothing"],
+        action="Nothing",
+        applicable_to="Nothing",
     )
     def always_true(_):
         return True

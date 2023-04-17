@@ -52,7 +52,9 @@ class Result:
 
 ElementType = t.TypeVar("ElementType", bound=c.GenericElement)
 
-Validator = cabc.Callable[[ElementType], bool]  # | Callable [[Metric], Result]
+Validator = cabc.Callable[
+    [ElementType], t.Union[bool, t.Literal["NotApplicable"]]
+]  # | Callable [[Metric], Result]
 Type = t.Union[
     str, type[c.GenericElement]
 ]  # | type[Metric] | type[AggregateMetric]
@@ -69,17 +71,27 @@ class Rule:
     types: list[Type]
     rationale: str
     category: Category
-    actions: list[str]
+    action: str
+    applicable_to: str
     validator: Validator
     hyperlink_further_reading: str | None = None
     """The actual function will be assigned to this attribute, so that we do
     not need to have 100 classes for 100 rules."""
 
-    def __call__(self, obj: c.GenericElement) -> bool:  # | Metric
+    def __call__(
+        self, obj: c.GenericElement
+    ) -> bool | t.Literal["NotApplicable"]:
         return self.validator(obj)
 
     def __hash__(self) -> int:
         return hash(self.id)
+
+
+VALIDATION_RULES: dict[Category, list[Rule]] = {
+    Category.REQUIRED: [],
+    Category.RECOMMENDED: [],
+    Category.SUGGESTED: [],
+}
 
 
 class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
@@ -167,11 +179,6 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
         return super().setdefault(key, default)
 
 
-VALIDATION_RULES: dict[Category, dict[Type, list[Rule]]] = {
-    Category.REQUIRED: {},
-    Category.RECOMMENDED: {},
-    Category.SUGGESTED: {},
-}
 VALIDATION_RESULTS = Results()
 
 
@@ -181,7 +188,8 @@ def register_rule(
     id: str,
     name: str,
     rationale: str,
-    actions: list[str],
+    action: str,
+    applicable_to: str,
     hyperlink_further_reading: str | None = None,
 ) -> cabc.Callable[[Validator], Validator]:
     """Register the validation rule.
@@ -197,12 +205,12 @@ def register_rule(
             types,
             rationale,
             category,
-            actions,
+            action,
+            applicable_to,
             rule,
             hyperlink_further_reading,
         )
-        for typ in types:
-            VALIDATION_RULES[category].setdefault(typ, []).append(rule)
+        VALIDATION_RULES[category].append(rule)
         return rule
 
     return rule_decorator
@@ -238,7 +246,7 @@ class ModelValidation(Validation):
     """Provides access to the model's validation rules and results."""
 
     @property
-    def rules(self) -> dict[Category, dict[Type, list[Rule]]]:
+    def rules(self) -> dict[Category, list[Rule]]:
         """Return all registered validation rules."""
         return VALIDATION_RULES
 
@@ -250,18 +258,18 @@ class ModelValidation(Validation):
     def validate(self, *, rule: Rule | str | None = None) -> Results:
         """Execute all registered validation rules and store results."""
         for category, obj_type_rules in self.rules.items():
-            for type, rules in obj_type_rules.items():
-                for obj in self._model.search(type):
-                    for _rule in rules:
-                        if isinstance(rule, Rule) and rule != _rule:
-                            continue
-                        if isinstance(rule, str) and rule != _rule.id:
-                            continue
+            for _rule in obj_type_rules:
+                for obj in self._model.search(*_rule.types):
+                    if isinstance(rule, Rule) and rule != _rule:
+                        continue
+                    if isinstance(rule, str) and rule != _rule.id:
+                        continue
 
+                    if (value := _rule(obj)) != "NotApplicable":
                         result = Result(
                             uuid=obj.uuid,
                             category=category,
-                            value=_rule(obj),
+                            value=value,
                             object=obj,
                         )
                         store_result(_rule, obj, result)
@@ -272,14 +280,14 @@ class ElementValidation(Validation):
     """Provides access to the model's validation rules and results."""
 
     @property
-    def rules(self) -> dict[Category, dict[Type, list[Rule]]]:
+    def rules(self) -> dict[Category, list[Rule]]:
         """Return all registered validation rules for this ModelObject."""
         return {
-            category: {
-                typ: rules
-                for typ, rules in obj_type_rules.items()
-                if typ == type(self._element)
-            }
+            category: [
+                rule
+                for rule in obj_type_rules
+                if type(self._element) in rule.types
+            ]
             for category, obj_type_rules in VALIDATION_RULES.items()
         }
 
@@ -291,19 +299,19 @@ class ElementValidation(Validation):
     def validate(self, *, rule: Rule | str | None = None) -> Results:
         """Execute the rules and store results for this ModelObject."""
         for category, obj_type_rules in self.rules.items():
-            for typ, rules in obj_type_rules.items():
-                if typ != type(self._element):
+            for _rule in obj_type_rules:
+                if type(self._element) not in _rule.types:
                     continue
-                for _rule in rules:
-                    if isinstance(rule, Rule) and rule != _rule:
-                        continue
-                    if isinstance(rule, str) and rule != _rule.id:
-                        continue
+                if isinstance(rule, Rule) and rule != _rule:
+                    continue
+                if isinstance(rule, str) and rule != _rule.id:
+                    continue
 
+                if value := _rule(self._element) != "NotApplicable":
                     result = Result(
                         uuid=self._element.uuid,
                         category=category,
-                        value=_rule(self._element),
+                        value=value,
                         object=self._element,
                     )
                     store_result(_rule, self._element, result)
