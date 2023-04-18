@@ -31,9 +31,9 @@ from itertools import chain
 from lxml import etree
 
 import capellambse
+import capellambse.model.modeltypes as mt
 from capellambse import helpers
 from capellambse.model import common as c
-import capellambse.model.modeltypes as mt
 
 
 class Category(mt._StringyEnumMixin, enum.Flag):
@@ -350,10 +350,11 @@ class ModelValidation(Validation):
     def validate(self) -> Results:
         """Execute all registered validation rules and store results."""
         ROOT_FUNCTION_PARENTS = [
-            self._model.oa.activity_package, 
-            self._model.sa.function_package, 
-            self._model.la.function_package, 
-            self._model.pa.function_package]
+            self._model.oa.activity_package,
+            self._model.sa.function_package,
+            self._model.la.function_package,
+            self._model.pa.function_package,
+        ]
         for category, obj_type_rules in self.rules.items():
             for _rule in obj_type_rules:
                 for obj in self._model.search(*_rule.types):
