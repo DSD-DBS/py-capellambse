@@ -186,8 +186,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       <thead>
         <tr>
           <th width="250px">{{ obj_type }}</th>
-          <th width="140px">Rule Category</th>
-          <th width="140px">Compliance (%)</th>
+          <th width="220px">Rule Compliance (%)</th>
           <th>Improvement Suggestions (Actions)</th>
         </tr>
       </thead>
@@ -196,7 +195,8 @@ tr:nth-child(even) { background-color: #f8f8f8; }
     {%- set categories = [] %}
     {%- for category in CATEGORIES %}
       {%- set rules = results.by_value(False).by_category(category).by_uuid(object.uuid) %}
-      {%- set passed, total = get_passed_and_total(rules) %}
+      {%- set rules_pass_fail = results.by_category(category).by_uuid(object.uuid) %}
+      {%- set passed, total = get_passed_and_total(rules_pass_fail) %}
       {%- set actions = [] %}
       {%- for rule, result in rules.items() %}
         {%- set _ = actions.append([rule.id, rule.action]) %}
@@ -210,10 +210,10 @@ tr:nth-child(even) { background-color: #f8f8f8; }
         <tr>
           {# only show next line if it is first loop pass #}
           {% if loop.first %}
-            <th rowspan="{{ categories | count }}">{{ object.name }}</th>
+            <th rowspan="{{ categories | count }}" id="{{ object.uuid }}">{{ object.name }}</th>
           {% endif %}
-          <td><b class="rule-{{ category |lower }}">{{ category }}</b></td>
-          <td>{{ show_compliance_score(passed, total) }}</td>
+          <td><b class="rule-{{ category |lower }}">{{ category }}</b>:
+          {{ show_compliance_score(passed, total) }}</td>
           <td>
             {% if actions %}
               <ul>
@@ -275,7 +275,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
     <tr>
       <th id="{{rule.id}}">{{ rule.id }}<br>
       <span class="rule-{{ rule.category.name|lower }}">{{ rule.category.name }}</span>
-      <p style="color:#999">Applies to: {{ rule.types |map(attribute='__name__') | list | join(", ") }}</p>
+      <p style="color:#999">Applies to: {{ rule.types | list | join(", ") }}</p>
 
       <td>
         <strong>{{ rule.name }}</strong><br>

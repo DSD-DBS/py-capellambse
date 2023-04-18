@@ -360,9 +360,8 @@ class ModelValidation(Validation):
                 for obj in self._model.search(*_rule.types):
                     if obj.parent in ROOT_FUNCTION_PARENTS:
                         continue
-                    if isinstance(rule, Rule) and rule != _rule:
-                        continue
-
+                    # if isinstance(_rule, Rule) and _rule != _rule:
+                    #    continue
                     if (value := _rule(obj)) != "NotApplicable":
                         result = Result(
                             uuid=obj.uuid,
@@ -370,7 +369,7 @@ class ModelValidation(Validation):
                             value=value,
                             object=obj,
                         )
-                        store_result(rule_, obj, result)
+                        store_result(_rule, obj, result)
         return self.results
 
 
