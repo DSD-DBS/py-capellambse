@@ -1,5 +1,10 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
+
+import pathlib
+import subprocess
+import sys
 
 import pytest
 
@@ -7,6 +12,9 @@ import capellambse
 from capellambse import helpers
 from capellambse.extensions import validation as v
 from capellambse.model.layers import la
+
+# pylint: disable-next=relative-beyond-top-level, useless-suppression
+from .conftest import INSTALLED_PACKAGE  # type: ignore[import]
 
 TEST_UUID = helpers.UUIDString("da12377b-fb70-4441-8faa-3a5c153c5de2")
 TEST_RULE_ID = "Rule-001"
@@ -65,6 +73,7 @@ def test_ModelObject_rules_access(
     assert obj.validation.rules
     assert (required_rules := obj.validation.rules["REQUIRED"])
     assert required_rules.by_id(TEST_RULE_ID)  # type: ignore[attr-defined]
+    assert required_rules.by_category("REQUIRED")
 
 
 def test_MelodyModel_validation(model: capellambse.MelodyModel):
@@ -77,20 +86,34 @@ def test_MelodyModel_validation(model: capellambse.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    "params", [pytest.param((TEST_RULE_ID, 1, 1, 13), id=TEST_RULE_ID)]
+    "params", [pytest.param((TEST_RULE_ID, 1, 1, 13, 13), id=TEST_RULE_ID)]
 )
 def test_MelodyModel_validation_access(
-    model: capellambse.MelodyModel, params: tuple[str, int, int, int]
+    model: capellambse.MelodyModel, params: tuple[str, int, int, int, int]
 ):
-    rule_id, uuids, trues, categories = params
+    rule_id, uuids, trues, categories, types = params
     assert isinstance(model.validation, v.ModelValidation)
     assert model.validation.rules
 
     results = model.validate(rule=rule_id)
 
-    assert len(results.by_uuid(TEST_UUID)[rule_id]) == uuids
+    assert len(results.by_uuid(TEST_UUID)) == uuids
     assert len(results.by_value(True)[rule_id]) == trues
     assert len(results.by_category(v.Category.REQUIRED)[rule_id]) == categories
+    assert len(results.by_type("SystemComponent")[rule_id]) == types
+
+
+@pytest.mark.parametrize("type", [None, "SystemComponent"])
+def test_get_passed_and_total_results(
+    model: capellambse.MelodyModel, type: str | None
+):
+    assert isinstance(model.validation, v.ModelValidation)
+    assert model.validation.rules
+
+    results = model.validate()
+    passed, total = v.get_passed_and_total(results, type=type)
+
+    assert isinstance(passed, int) and isinstance(total, int)
 
 
 def test_ModelObject_validation(model: capellambse.MelodyModel):
@@ -113,8 +136,26 @@ def test_MelodyObject_validation_access(
 
     results = obj.validate(rule=rule_id)
 
-    assert len(results[rule_id]) == 1
-    assert results[rule_id][TEST_UUID]
+    assert len(results) == 1
+    assert results[rule_id].uuid == obj.uuid
 
 
 # TODO: Test runtime for large models (50k+) to access results and rules
+
+
+def test_cli_writes_validation_report(tmp_path: pathlib.Path):
+    output_file = tmp_path / "report.html"
+    cli = subprocess.run(
+        [
+            sys.executable,
+            "-mcapellambse.extensions.validation",
+            "-mtest-5.0",
+            "-o",
+            output_file,
+        ],
+        cwd=INSTALLED_PACKAGE.parent,
+        check=False,
+    )
+
+    assert cli.returncode == 0, "CLI process exited unsuccessfully"
+    assert output_file.exists() and output_file.read_text(encoding="utf8")

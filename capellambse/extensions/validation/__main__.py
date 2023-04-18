@@ -9,6 +9,8 @@ import typing as t
 
 import capellambse
 
+from . import _validate
+
 try:
     import click
     import jinja2
@@ -53,7 +55,9 @@ else:
 
         tpl = env.get_template(template)
 
-        rendered = tpl.render(model=model)
+        rendered = tpl.render(
+            model=model, get_passed_and_total=_validate.get_passed_and_total
+        )
         with output:
             output.write(rendered)
 

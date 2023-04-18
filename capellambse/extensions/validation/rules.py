@@ -10,8 +10,6 @@ from capellambse.model.layers import ctx as sa
 
 from . import _validate
 
-# __all__ = ["has_non_empty_description"]
-
 
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
@@ -33,7 +31,7 @@ def has_non_empty_description_or_summary(
     obj: c.GenericElement,
 ) -> bool | t.Literal["NotApplicable"]:
     # if not obj.is_actor:  # Precondition
-    #    return "NotApplicable"
+    #     return "NotApplicable"
     return bool(obj.description) or bool(obj.summary)  # Validation-Rule
 
 

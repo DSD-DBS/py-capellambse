@@ -164,8 +164,8 @@ tr:nth-child(even) { background-color: #f8f8f8; }
         <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
         <td>{{ total }}</td>
         {% for category in categories %}
-          {% set rules = results.by_category(category).by_type(obj_type) %}
-          {% set passed, total_checks = rules.get_passed_and_total(type=obj_type) %}
+          {% set result = results.by_category(category).by_type(obj_type) %}
+          {% set passed, total_checks = get_passed_and_total(result, type=obj_type) %}
           <td>
             {{ show_compliance_score(passed, total_checks) }}
           </td>
@@ -196,14 +196,12 @@ tr:nth-child(even) { background-color: #f8f8f8; }
       {% set categories = [] %}
       {% for category in ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
         {% set rules = results.by_category(category).by_uuid(object.uuid) %}
-        {% set passed, total = rules.get_passed_and_total() %}
+        {% set passed, total = get_passed_and_total(rules) %}
         {% set actions = [] %}
-        {% for rule, results in rules.items() %}
-          {% for result in results.values() %}
-            {% if not result.value %}
-              {% set _ = actions.append([rule.id, rule.action]) %}
-            {% endif %}
-          {% endfor %}
+        {% for rule, result in rules.items() %}
+          {% if not result.value %}
+            {% set _ = actions.append([rule.id, rule.action]) %}
+          {% endif %}
         {% endfor %}
         {% if rules | count > 0 %}
           {% set _ = categories.append([category, passed, total, actions]) %}

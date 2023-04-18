@@ -6,6 +6,7 @@ from __future__ import annotations
 __all__ = [
     "Category",
     "ElementValidation",
+    "get_passed_and_total",
     "ModelValidation",
     "register_rule",
     "Result",
@@ -64,7 +65,7 @@ Type = t.Union[
 function the value of which will be validated by the rule."""
 
 
-@dataclasses.dataclass(frozen=True, eq=True)
+@dataclasses.dataclass(frozen=True)
 class Rule:
     """Common (generic) class representing any validation rule."""
 
@@ -77,8 +78,6 @@ class Rule:
     applicable_to: str
     validator: Validator
     hyperlink_further_reading: str | None = None
-    """The actual function will be assigned to this attribute, so that we do
-    not need to have 100 classes for 100 rules."""
 
     def __call__(
         self, obj: c.GenericElement
@@ -87,6 +86,11 @@ class Rule:
 
     def __hash__(self) -> int:
         return hash(self.id)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, str):
+            return self.id == other
+        return hash(self) == hash(other)
 
 
 def _rule_attr_getter(val: str, attr: str) -> Rule | RuleList:
@@ -115,6 +119,7 @@ class RuleList(list[Rule]):
         return VALIDATION_RULES[category]
 
     def by_type(self, type: type[c.GenericElement] | str) -> RuleList:
+        """Filter the validation rules by ``type``."""
         if not isinstance(type, str):
             type = type.__name__
 
@@ -148,25 +153,11 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
     """A validation rule result mapping."""
 
     def __getitem__(self, key: Rule | str) -> dict[helpers.UUIDString, Result]:
-        if isinstance(key, str):
-            for rule in self:
-                if rule.id == key:
-                    key = rule
-                    break
-            else:
-                raise KeyError(f"No rule with id: {key!r} found")
+        return super().__getitem__(key)  # type: ignore[index]
 
-        return super().__getitem__(key)
-
-    def by_uuid(self, uuid: helpers.UUIDString) -> Results:
+    def by_uuid(self, uuid: helpers.UUIDString) -> dict[Rule, Result]:
         """Filter the validation results by ``uuid``."""
-        return Results(
-            {
-                rule: {uid: r for uid, r in res.items() if uid == uuid}
-                for rule, res in self.items()
-                if uuid in res
-            }
-        )
+        return {rule: res[uuid] for rule, res in self.items() if uuid in res}
 
     def by_category(self, category: Category | str) -> Results:
         """Filter the validation results by ``category``."""
@@ -175,7 +166,9 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
         return Results(
             {
                 rule: {
-                    uid: r for uid, r in res.items() if r.category == category
+                    uid: r
+                    for uid, r in res.items()
+                    if r.category == category and r
                 }
                 for rule, res in self.items()
             }
@@ -185,39 +178,24 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
         """Filter the validation results by ``value``."""
         return Results(
             {
-                rule: {uid: r for uid, r in res.items() if r.value == value}
+                rule: {
+                    uid: r for uid, r in res.items() if r.value == value and r
+                }
                 for rule, res in self.items()
             }
         )
 
-    def by_type(self, typ: str) -> Results:
-        """Filter the validation results by ``typ``(e)."""
+    def by_type(self, type: str) -> Results:
+        """Filter the validation results by ``type``."""
         return Results(
             {
-                rule: dict(res.items())
+                rule: res
                 for rule, res in self.items()
                 for rule_type in rule.types
-                if rule_type.__name__ == typ  # type: ignore
+                if rule_type.__name__ == type  # type: ignore
+                if res
             }
         )
-
-    def get_passed_and_total(self, type=None) -> tuple[int, int]:
-        """Return the number of passed and total validation rules."""
-        passed = 0
-        total = 0
-        for _, results in self.items():
-            for _, result in results.items():
-                if not type:
-                    total += 1
-                    if result.value:
-                        passed += 1
-                else:
-                    result_type = result.object.__class__.__name__
-                    if type == result_type:
-                        total += 1
-                        if result.value:
-                            passed += 1
-        return passed, total
 
     def setdefault(
         self,
@@ -230,6 +208,34 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
 
 
 VALIDATION_RESULTS = Results()
+
+
+def get_passed_and_total(
+    result_container: Results | dict[Rule, Result], type: str | None = None
+) -> tuple[int, int]:
+    """Return the number of passed and total validation rules."""
+    results: cabc.Iterable[Result]
+    if isinstance(result_container, Results):
+        results = chain.from_iterable(
+            (result.values() for result in result_container.values())
+        )
+    else:
+        results = result_container.values()
+
+    passed = 0
+    total = 0
+    for result in results:
+        if not type:
+            total += 1
+            if result.value:
+                passed += 1
+        else:
+            result_type = result.object.__class__.__name__
+            if type == result_type:
+                total += 1
+                if result.value:
+                    passed += 1
+    return passed, total
 
 
 def register_rule(
@@ -312,8 +318,6 @@ class ModelValidation(Validation):
                 for obj in self._model.search(*_rule.types):
                     if isinstance(rule, Rule) and rule != _rule:
                         continue
-                    if isinstance(rule, str) and rule != _rule.id:
-                        continue
 
                     if (value := _rule(obj)) != "NotApplicable":
                         result = Result(
@@ -346,19 +350,19 @@ class ElementValidation(Validation):
         )
 
     @property
-    def results(self) -> Results:
+    def results(self) -> dict[Rule, Result]:
         """Return the validation rule results for this ModelObject."""
         return VALIDATION_RESULTS.by_uuid(self._element.uuid)
 
-    def validate(self, *, rule: Rule | str | None = None) -> Results:
+    def validate(
+        self, *, rule: Rule | str | None = None
+    ) -> dict[Rule, Result]:
         """Execute the rules and store results for this ModelObject."""
         for category, obj_type_rules in self.rules.items():
             for _rule in obj_type_rules:
                 if type(self._element) not in _rule.types:
                     continue
                 if isinstance(rule, Rule) and rule != _rule:
-                    continue
-                if isinstance(rule, str) and rule != _rule.id:
                     continue
 
                 if value := _rule(self._element) != "NotApplicable":

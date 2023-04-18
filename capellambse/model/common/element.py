@@ -380,7 +380,9 @@ class GenericElement:
         def __getattr__(self, attr: str) -> t.Any:
             """Account for extension attributes in static type checks."""
 
-    def validate(self, **kwargs: t.Any) -> validation.Results:
+    def validate(
+        self, **kwargs: t.Any
+    ) -> dict[validation.Rule | str, validation.Result]:
         if not hasattr(self, "validation"):
             raise ValueError(
                 "Validation rules are not available in this model"
