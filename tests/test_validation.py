@@ -11,7 +11,8 @@ import pytest
 import capellambse
 from capellambse import helpers
 from capellambse.extensions import validation as v
-from capellambse.model.layers import la
+from capellambse.model import common as c
+from capellambse.model.layers import ctx, la
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import INSTALLED_PACKAGE  # type: ignore[import]
@@ -51,6 +52,44 @@ def test_ValidationRule_discovery(
         assert getattr(rule, attr) == expected_value
 
 
+@pytest.mark.parametrize(
+    "types,id",
+    [
+        ([la.LogicalComponent, la.LogicalFunction], "RLA-1"),
+        ([la.LogicalComponent, "LogicalFunction"], "RLAS-1"),
+        ([ctx.SystemComponent, la.LogicalComponent], "RMIX-1"),
+    ],
+)
+def test_ValidationRule_register_multiple_types(
+    model: capellambse.MelodyModel,
+    types: list[type[c.GenericElement] | str],
+    id: str,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    expected = dict(TEST_RULE_PARAMS, id=id)
+    monkeypatch.setattr(
+        v._validate,
+        "VALIDATION_RULES",
+        v.Rules(
+            {
+                v.Category.REQUIRED: v.RuleList([]),
+                v.Category.RECOMMENDED: v.RuleList([]),
+                v.Category.SUGGESTED: v.RuleList([]),
+            }
+        ),
+    )
+
+    @v.register_rule(category=v.Category.REQUIRED, types=types, **expected)
+    def always_true(_):
+        return True
+
+    rules = model.validation.rules
+
+    assert rules
+    for type_ in types:
+        assert rules.by_type(type_).by_id(id)
+
+
 def test_MelodyModel_rules_access(
     model: capellambse.MelodyModel,
 ):
@@ -61,6 +100,11 @@ def test_MelodyModel_rules_access(
     assert rules == model.validation.rules["REQUIRED"]
     assert rules.by_name("Object has a description or summary").id == expected
     assert rules.by_type("SystemComponent").by_id(expected).id == expected
+    assert rules.by_type(ctx.SystemComponent).by_id(expected).id == expected
+    assert rules.by_category("REQUIRED").by_id(expected).id == expected
+    assert (
+        rules.by_category(v.Category.REQUIRED).by_id(expected).id == expected
+    )
 
 
 def test_ModelObject_rules_access(
@@ -95,7 +139,7 @@ def test_MelodyModel_validation_access(
     assert isinstance(model.validation, v.ModelValidation)
     assert model.validation.rules
 
-    results = model.validate(rule=rule_id)
+    results = model.validate()
 
     assert len(results.by_uuid(TEST_UUID)) == uuids
     assert len(results.by_value(True)[rule_id]) == trues
@@ -134,10 +178,21 @@ def test_MelodyObject_validation_access(
     assert isinstance(obj.validation, v.ElementValidation)
     assert obj.validation.rules
 
-    results = obj.validate(rule=rule_id)
+    results = obj.validate()
 
     assert len(results) == 1
     assert results[rule_id].uuid == obj.uuid
+
+
+def test_validation_automatic_result_population(
+    model: capellambse.MelodyModel,
+):
+    assert isinstance(model.validation, v.ModelValidation)
+    assert model.validation.rules
+
+    results = model.validation.results
+
+    assert results
 
 
 # TODO: Test runtime for large models (50k+) to access results and rules

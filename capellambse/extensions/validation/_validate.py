@@ -12,6 +12,8 @@ __all__ = [
     "Result",
     "Results",
     "Rule",
+    "RuleList",
+    "Rules",
     "store_result",
     "Type",
     "Validation",
@@ -139,6 +141,34 @@ class Rules(dict[t.Union[Category, str], RuleList]):
             key = Category[key]
         return super().__getitem__(key)
 
+    def by_id(self, rid: str) -> Rules:
+        """Filter the validation results by ``uuid``."""
+        return Rules(
+            {
+                category: RuleList((rule for rule in rules if rule.id == rid))
+                for category, rules in self.items()
+            }
+        )
+
+    def by_category(self, category: Category | str) -> Rules:
+        """Filter the validation results by ``category``."""
+        if isinstance(category, str):
+            category = Category[category]
+        return Rules({category: self[category]})
+
+    def by_type(self, type: type[c.GenericElement] | str) -> Rules:
+        """Filter the validation results by ``type``."""
+        if not isinstance(type, str):
+            type = type.__name__
+        return Rules(
+            {
+                category: RuleList(
+                    (rule for rule in rules if type in rule.types)
+                )
+                for category, rules in self.items()
+            }
+        )
+
 
 VALIDATION_RULES = Rules(
     {
@@ -192,7 +222,7 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
                 rule: res
                 for rule, res in self.items()
                 for rule_type in rule.types
-                if rule_type.__name__ == type  # type: ignore
+                if rule_type == type
                 if res
             }
         )
@@ -205,9 +235,6 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
         if not isinstance(default, dict):
             raise ValueError("Only a result dictionary is accepted")
         return super().setdefault(key, default)
-
-
-VALIDATION_RESULTS = Results()
 
 
 def get_passed_and_total(
@@ -258,7 +285,7 @@ def register_rule(
         rule = Rule(
             id,
             name,
-            types,
+            _convert_types(types),
             rationale,
             category,
             action,
@@ -272,9 +299,13 @@ def register_rule(
     return rule_decorator
 
 
+def _convert_types(types: cabc.Sequence[Type]) -> list[Type]:
+    return [type if isinstance(type, str) else type.__name__ for type in types]
+
+
 def store_result(rule: Rule, obj: c.GenericElement, result: Result) -> None:
     """Save a ``result`` for the given ``rule`` and ModelObject."""
-    results = VALIDATION_RESULTS
+    results = obj._model.validation.results
     results.setdefault(rule, {}).setdefault(obj.uuid, result)
 
 
@@ -309,24 +340,25 @@ class ModelValidation(Validation):
     @property
     def results(self) -> Results:
         """Return all stored validation rule results."""
-        return VALIDATION_RESULTS
+        key = f"{__name__}.RESULTS"
+        if key not in self._model.__dict__:
+            self._model.__dict__[key] = Results()
+            self.validate()
+        return self._model.__dict__[key]
 
-    def validate(self, *, rule: Rule | str | None = None) -> Results:
+    def validate(self) -> Results:
         """Execute all registered validation rules and store results."""
         for category, obj_type_rules in self.rules.items():
-            for _rule in obj_type_rules:
-                for obj in self._model.search(*_rule.types):
-                    if isinstance(rule, Rule) and rule != _rule:
-                        continue
-
-                    if (value := _rule(obj)) != "NotApplicable":
+            for rule_ in obj_type_rules:
+                for obj in self._model.search(*rule_.types):
+                    if (value := rule_(obj)) != "NotApplicable":
                         result = Result(
                             uuid=obj.uuid,
                             category=category,  # type: ignore[arg-type]
                             value=value,
                             object=obj,
                         )
-                        store_result(_rule, obj, result)
+                        store_result(rule_, obj, result)
         return self.results
 
 
@@ -342,7 +374,7 @@ class ElementValidation(Validation):
                     (
                         rule
                         for rule in rules
-                        if type(self._element) in rule.types
+                        if type(self._element).__name__ in rule.types
                     )
                 )
                 for category, rules in VALIDATION_RULES.items()
@@ -352,25 +384,9 @@ class ElementValidation(Validation):
     @property
     def results(self) -> dict[Rule, Result]:
         """Return the validation rule results for this ModelObject."""
-        return VALIDATION_RESULTS.by_uuid(self._element.uuid)
+        return self._model.validation.results.by_uuid(self._element.uuid)
 
-    def validate(
-        self, *, rule: Rule | str | None = None
-    ) -> dict[Rule, Result]:
+    def validate(self) -> dict[Rule, Result]:
         """Execute the rules and store results for this ModelObject."""
-        for category, obj_type_rules in self.rules.items():
-            for _rule in obj_type_rules:
-                if type(self._element) not in _rule.types:
-                    continue
-                if isinstance(rule, Rule) and rule != _rule:
-                    continue
-
-                if value := _rule(self._element) != "NotApplicable":
-                    result = Result(
-                        uuid=self._element.uuid,
-                        category=category,  # type: ignore[arg-type]
-                        value=value,
-                        object=self._element,
-                    )
-                    store_result(_rule, self._element, result)
+        self._model.validate()
         return self.results
