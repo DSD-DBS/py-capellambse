@@ -1,0 +1,4 @@
+{
+  "path": "git+https://gitlab.com/vik.works/capella-coffee-machine.git",
+  "entrypoint": "coffee-machine-demo.aird"
+}
