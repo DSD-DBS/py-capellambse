@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import re
 import typing as t
 
 from capellambse.model import common as c
@@ -402,16 +403,27 @@ else:
     applicable_to="TODO",
 )
 def behavior_name_follows_verb_noun_pattern(obj) -> bool:
-    if NLP is None or len(obj.name) < 1:
+    text = re.sub(r"^\d+: ", "", obj.name)
+    if NLP is None or len(text) < 1:
         return False
-    doc = NLP(obj.name)
+    doc = NLP(text)
     if len(doc) < 2:
         return False
+
+    # Check if the first token is a verb
     if doc[0].pos_ != "VERB":
         return False
-    if not "NOUN" in [x.pos_ for x in doc[1:]]:
-        return False
-    return True
+
+    # Skip any number of adjectives and adverbs following the verb
+    i = 1
+    while i < len(doc) and doc[i].pos_ in ("ADJ", "ADV"):
+        i += 1
+
+    # If there's a noun after the adjectives/adverbs, the pattern is valid
+    if i < len(doc) and doc[i].pos_ in ("NOUN", "PROPN"):
+        return True
+
+    return False
 
 
 # TODO: figure how to ignore / exclude Root System Function
