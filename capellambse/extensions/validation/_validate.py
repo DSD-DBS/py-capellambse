@@ -21,7 +21,9 @@ import abc
 import collections.abc as cabc
 import dataclasses
 import enum
+import functools
 import typing as t
+from itertools import chain
 
 from lxml import etree
 
@@ -87,11 +89,59 @@ class Rule:
         return hash(self.id)
 
 
-VALIDATION_RULES: dict[Category, list[Rule]] = {
-    Category.REQUIRED: [],
-    Category.RECOMMENDED: [],
-    Category.SUGGESTED: [],
-}
+def _rule_attr_getter(val: str, attr: str) -> Rule | RuleList:
+    all_rules = chain.from_iterable(VALIDATION_RULES.values())
+    rules = [rule for rule in all_rules if getattr(rule, attr) == val]
+    if len(rules) == 1:
+        return rules[0]
+    return RuleList(rules)
+
+
+class RuleList(list[Rule]):
+    """Stores all discovered validation rules."""
+
+    def __init__(self, rules: cabc.Iterable[Rule] | None = None) -> None:
+        super().__init__(rules or [])
+
+    for attr in ("id", "name", "rationale", "action", "applicable_to"):
+        method = functools.partial(_rule_attr_getter, attr=attr)
+        method.__doc__ = f"Filter the validation rules by ``{attr}``"
+        vars()[f"by_{attr}"] = method
+
+    def by_category(self, category: Category | str) -> RuleList:
+        """Filter the validation rules by ``category``."""
+        if isinstance(category, str):
+            category = Category[category]
+        return VALIDATION_RULES[category]
+
+    def by_type(self, type: type[c.GenericElement] | str) -> RuleList:
+        if not isinstance(type, str):
+            type = type.__name__
+
+        rules = list[Rule]()
+        for rule in chain.from_iterable(VALIDATION_RULES.values()):
+            types = (
+                t if isinstance(t, str) else t.__name__ for t in rule.types
+            )
+            if type in types:
+                rules.append(rule)
+        return RuleList(rules)
+
+
+class Rules(dict[t.Union[Category, str], RuleList]):
+    def __getitem__(self, key: Category | str) -> RuleList:
+        if isinstance(key, str):
+            key = Category[key]
+        return super().__getitem__(key)
+
+
+VALIDATION_RULES = Rules(
+    {
+        Category.REQUIRED: RuleList([]),
+        Category.RECOMMENDED: RuleList([]),
+        Category.SUGGESTED: RuleList([]),
+    }
+)
 
 
 class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
@@ -246,7 +296,7 @@ class ModelValidation(Validation):
     """Provides access to the model's validation rules and results."""
 
     @property
-    def rules(self) -> dict[Category, list[Rule]]:
+    def rules(self) -> Rules:
         """Return all registered validation rules."""
         return VALIDATION_RULES
 
@@ -268,7 +318,7 @@ class ModelValidation(Validation):
                     if (value := _rule(obj)) != "NotApplicable":
                         result = Result(
                             uuid=obj.uuid,
-                            category=category,
+                            category=category,  # type: ignore[arg-type]
                             value=value,
                             object=obj,
                         )
@@ -280,16 +330,20 @@ class ElementValidation(Validation):
     """Provides access to the model's validation rules and results."""
 
     @property
-    def rules(self) -> dict[Category, list[Rule]]:
+    def rules(self) -> Rules:
         """Return all registered validation rules for this ModelObject."""
-        return {
-            category: [
-                rule
-                for rule in obj_type_rules
-                if type(self._element) in rule.types
-            ]
-            for category, obj_type_rules in VALIDATION_RULES.items()
-        }
+        return Rules(
+            {
+                category: RuleList(
+                    (
+                        rule
+                        for rule in rules
+                        if type(self._element) in rule.types
+                    )
+                )
+                for category, rules in VALIDATION_RULES.items()
+            }
+        )
 
     @property
     def results(self) -> Results:
@@ -310,7 +364,7 @@ class ElementValidation(Validation):
                 if value := _rule(self._element) != "NotApplicable":
                     result = Result(
                         uuid=self._element.uuid,
-                        category=category,
+                        category=category,  # type: ignore[arg-type]
                         value=value,
                         object=self._element,
                     )

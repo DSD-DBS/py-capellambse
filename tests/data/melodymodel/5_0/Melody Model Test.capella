@@ -1839,7 +1839,7 @@ The predator is far away</bodies>
               id="297f4bdd-af81-4050-a066-e252f7b8e35d" name="Default Region"/>
         </ownedStateMachines>
         <ownedSystemComponents xsi:type="org.polarsys.capella.core.data.ctx:SystemComponent"
-            id="230c4621-7e0a-4d0a-9db2-d4ba5e97b3df" name="System">
+            id="230c4621-7e0a-4d0a-9db2-d4ba5e97b3df" name="System" summary="It's a system">
           <ownedTraces xsi:type="org.polarsys.capella.core.data.capellacommon:TransfoLink"
               id="f02e3aa0-228b-4e24-aabd-df1c90536810" targetElement="#67c297fd-4fca-4526-b907-d275bb55dab4"
               sourceElement="#1a4cdbea-1c84-420b-82fa-8aeb9f01f85e"/>

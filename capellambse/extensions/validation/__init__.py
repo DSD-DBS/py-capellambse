@@ -4,8 +4,8 @@
 import capellambse
 from capellambse.model import common as c
 
+from . import rules
 from ._validate import *
-from .rules import *
 
 
 def init() -> None:

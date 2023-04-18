@@ -8,52 +8,63 @@ from capellambse import helpers
 from capellambse.extensions import validation as v
 from capellambse.model.layers import la
 
-HOGWARTS_UUID = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+TEST_UUID = helpers.UUIDString("da12377b-fb70-4441-8faa-3a5c153c5de2")
+TEST_RULE_ID = "Rule-001"
+TEST_RULE_PARAMS = {
+    "name": "Always True",
+    "rationale": "True",
+    "action": "Nothing",
+    "applicable_to": "Nothing",
+}
 
 
 @pytest.mark.parametrize(
-    "category",
+    "category,id",
     [
-        v.Category.REQUIRED,
-        v.Category.RECOMMENDED,
-        v.Category.SUGGESTED,
+        (v.Category.REQUIRED, "REQ-1"),
+        (v.Category.RECOMMENDED, "REC-1"),
+        (v.Category.SUGGESTED, "SUG-1"),
     ],
 )
 def test_ValidationRule_discovery(
-    model: capellambse.MelodyModel, category: v.Category
+    model: capellambse.MelodyModel, category: v.Category, id: str
 ):
-    name = "Always True"
+    expected = dict(TEST_RULE_PARAMS, id=id)
 
-    @v.register_rule(
-        category=category,
-        types=[la.LogicalFunction],
-        id="R1",
-        name=name,
-        rationale="True",
-        action="Nothing",
-        applicable_to="Nothing",
-    )
+    @v.register_rule(category=category, types=[la.LogicalFunction], **expected)
     def always_true(_):
         return True
 
-    assert category in model.validation.rules
-    assert (rules := model.validation.rules[category][la.LogicalFunction])
-    assert rules[0].name == name
-    assert rules[0].id == "R1"
+    rules = model.validation.rules[category]
+
+    assert rules
+    assert (rule := rules.by_type(la.LogicalFunction).by_id(id))
+    for attr, expected_value in expected.items():
+        assert getattr(rule, attr) == expected_value
 
 
 def test_MelodyModel_rules_access(
     model: capellambse.MelodyModel,
-):  # pylint: disable=[unused-argument]
+):
     """Test convenient access of MelodyModel rules with by_id,... ."""
-    # TODO
+    rules = model.validation.rules[v.Category.REQUIRED]
+    expected = TEST_RULE_ID
+
+    assert rules == model.validation.rules["REQUIRED"]
+    assert rules.by_name("Object has a description or summary").id == expected
+    assert rules.by_type("SystemComponent").by_id(expected).id == expected
 
 
 def test_ModelObject_rules_access(
     model: capellambse.MelodyModel,
-):  # pylint: disable=[unused-argument]
+):
     """Test convenient access of ModelObject rules with by_id,... ."""
-    # TODO
+    obj = model.by_uuid(TEST_UUID)
+    assert isinstance(obj.validation, v.ElementValidation)
+
+    assert obj.validation.rules
+    assert (required_rules := obj.validation.rules["REQUIRED"])
+    assert required_rules.by_id(TEST_RULE_ID)  # type: ignore[attr-defined]
 
 
 def test_MelodyModel_validation(model: capellambse.MelodyModel):
@@ -65,22 +76,25 @@ def test_MelodyModel_validation(model: capellambse.MelodyModel):
     assert results
 
 
-@pytest.mark.parametrize("rule_id", ["Rule-001"])
+@pytest.mark.parametrize(
+    "params", [pytest.param((TEST_RULE_ID, 1, 1, 13), id=TEST_RULE_ID)]
+)
 def test_MelodyModel_validation_access(
-    model: capellambse.MelodyModel, rule_id: str
+    model: capellambse.MelodyModel, params: tuple[str, int, int, int]
 ):
+    rule_id, uuids, trues, categories = params
     assert isinstance(model.validation, v.ModelValidation)
     assert model.validation.rules
 
     results = model.validate(rule=rule_id)
 
-    assert len(results.by_uuid(HOGWARTS_UUID)[rule_id]) == 1
-    assert len(results.by_value(True)[rule_id]) == 4
-    assert len(results.by_category(v.Category.REQUIRED)[rule_id]) == 17
+    assert len(results.by_uuid(TEST_UUID)[rule_id]) == uuids
+    assert len(results.by_value(True)[rule_id]) == trues
+    assert len(results.by_category(v.Category.REQUIRED)[rule_id]) == categories
 
 
 def test_ModelObject_validation(model: capellambse.MelodyModel):
-    obj = model.by_uuid(HOGWARTS_UUID)
+    obj = model.by_uuid(TEST_UUID)
     assert isinstance(obj.validation, v.ElementValidation)
     assert obj.validation.rules
 
@@ -89,18 +103,18 @@ def test_ModelObject_validation(model: capellambse.MelodyModel):
     assert results
 
 
-@pytest.mark.parametrize("rule_id", ["Rule-001"])
+@pytest.mark.parametrize("rule_id", [TEST_RULE_ID])
 def test_MelodyObject_validation_access(
     model: capellambse.MelodyModel, rule_id: str
 ):
-    obj = model.by_uuid(HOGWARTS_UUID)
+    obj = model.by_uuid(TEST_UUID)
     assert isinstance(obj.validation, v.ElementValidation)
     assert obj.validation.rules
 
     results = obj.validate(rule=rule_id)
 
     assert len(results[rule_id]) == 1
-    assert results[rule_id][HOGWARTS_UUID]
+    assert results[rule_id][TEST_UUID]
 
 
 # TODO: Test runtime for large models (50k+) to access results and rules
