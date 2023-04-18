@@ -33,9 +33,10 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 from capellambse.model import common as c
+import capellambse.model.modeltypes as mt
 
 
-class Category(enum.Flag):
+class Category(mt._StringyEnumMixin, enum.Flag):
     """A category for a rule."""
 
     REQUIRED = enum.auto()
@@ -126,7 +127,7 @@ class RuleList(list[Rule]):
             type = type.__name__
 
         rules = list[Rule]()
-        for rule in chain.from_iterable(VALIDATION_RULES.values()):
+        for rule in self:
             types = (
                 t if isinstance(t, str) else t.__name__ for t in rule.types
             )
@@ -348,10 +349,20 @@ class ModelValidation(Validation):
 
     def validate(self) -> Results:
         """Execute all registered validation rules and store results."""
+        ROOT_FUNCTION_PARENTS = [
+            self._model.oa.activity_package, 
+            self._model.sa.function_package, 
+            self._model.la.function_package, 
+            self._model.pa.function_package]
         for category, obj_type_rules in self.rules.items():
-            for rule_ in obj_type_rules:
-                for obj in self._model.search(*rule_.types):
-                    if (value := rule_(obj)) != "NotApplicable":
+            for _rule in obj_type_rules:
+                for obj in self._model.search(*_rule.types):
+                    if obj.parent in ROOT_FUNCTION_PARENTS:
+                        continue
+                    if isinstance(rule, Rule) and rule != _rule:
+                        continue
+
+                    if (value := _rule(obj)) != "NotApplicable":
                         result = Result(
                             uuid=obj.uuid,
                             category=category,  # type: ignore[arg-type]

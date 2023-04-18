@@ -88,6 +88,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 </style>
 
 {%- set results = model.validate() %}
+{%- set CATEGORIES = model.validation.rules %}
 
 <title>System Analysis Layer: Modeling Rules Compliance Report</title>
 </head>
@@ -158,12 +159,11 @@ tr:nth-child(even) { background-color: #f8f8f8; }
   <tbody>
     {% for obj_type in object_types %}
       {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
-      {% set categories = ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
       {% set total = objects | count %}
       <tr>
         <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
         <td>{{ total }}</td>
-        {% for category in categories %}
+        {% for category in CATEGORIES %}
           {% set result = results.by_category(category).by_type(obj_type) %}
           {% set passed, total_checks = get_passed_and_total(result, type=obj_type) %}
           <td>
@@ -179,100 +179,84 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 
 {% for obj_type in object_types %}
 <h3 id="{{ obj_type }}">{{ obj_type }}</h3>
-{% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
-
-<table>
-  <thead>
-    <tr>
-      <th width="250px">{{ obj_type }}</th>
-      <th width="140px">Rule Category</th>
-      <th width="140px">Compliance (%)</th>
-      <th>Improvement Suggestions (Actions)</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% set objects = objects | sort(attribute="name") %}
-    {% for object in objects %}
-      {% set categories = [] %}
-      {% for category in ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
-        {% set rules = results.by_category(category).by_uuid(object.uuid) %}
-        {% set passed, total = get_passed_and_total(rules) %}
-        {% set actions = [] %}
-        {% for rule, result in rules.items() %}
-          {% if not result.value %}
-            {% set _ = actions.append([rule.id, rule.action]) %}
-          {% endif %}
-        {% endfor %}
-        {% if rules | count > 0 %}
-          {% set _ = categories.append([category, passed, total, actions]) %}
-        {% endif %}
-      {% endfor %}
-
-      {% if categories | count == 0 %}
-        {# no rules applied to the object #}
+{%- set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
+{%- for object in objects if results.by_value(False).by_uuid(object.uuid) %}
+  {%- if loop.first %}
+    <table>
+      <thead>
         <tr>
-          <th>{{ object.name }}</th>
-          <td colspan="3">No rules applied</td>
+          <th width="250px">{{ obj_type }}</th>
+          <th width="140px">Rule Category</th>
+          <th width="140px">Compliance (%)</th>
+          <th>Improvement Suggestions (Actions)</th>
         </tr>
-      {% else %}
-        {% for category, passed, total, actions in categories %}
-          <tr>
-            {# only show next line if it is first loop pass #}
-            {% if loop.first %}
-              <th rowspan="{{ categories | count }}">{{ object.name }}</th>
+      </thead>
+      <tbody>
+    {%- endif %}
+    {%- set categories = [] %}
+    {%- for category in CATEGORIES %}
+      {%- set rules = results.by_value(False).by_category(category).by_uuid(object.uuid) %} 
+      {%- set passed, total = get_passed_and_total(rules) %}
+      {%- set actions = [] %}
+      {%- for rule, result in rules.items() %}
+        {%- set _ = actions.append([rule.id, rule.action]) %}
+      {%- endfor %}
+      {%- if rules | count > 0 %}
+        {%- set _ = categories.append([category, passed, total, actions]) %}
+      {%- endif %}
+    {%- endfor %}
+
+      {%- for category, passed, total, actions in categories %}
+        <tr>
+          {# only show next line if it is first loop pass #}
+          {% if loop.first %}
+            <th rowspan="{{ categories | count }}">{{ object.name }}</th>
+          {% endif %}
+          <td><b class="rule-{{ category |lower }}">{{ category }}</b></td>
+          <td>{{ show_compliance_score(passed, total) }}</td>
+          <td>
+            {% if actions %}
+              <ul>
+                {% for rule_id, action in actions %}
+                  <li><a href="#{{ rule_id }}">{{ action }}</a></li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <em>No action required</em>
             {% endif %}
-            <td><b class="rule-{{ category |lower }}">{{ category }}</b></td>
-            <td>{{ show_compliance_score(passed, total) }}</td>
-            <td>
-              {% if actions %}
-                <ul>
-                  {% for rule_id, action in actions %}
-                    <li><a href="#{{ rule_id }}">{{ action }}</a></li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                <em>No action required</em>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      {% endif %}
-    {% endfor%}
+          </td>
+        </tr>
+      {%- endfor %}
+{%- if loop.last %}
   </tbody>
 </table>
-{%- endfor %}
+{%- endif %}
+{%- else %}
+  <p>No rules apply to {{ obj_type }} objects or no objects of interest found in the selected layer.</p>
+{%- endfor%}
 
-{# <table>
-<thead>
-  <tr>
-    <th>Name
-    <th>Required
-    <th>Recommendations
-    <th>Suggestions
-    <th>Actions
-<tbody>
-  {%- for obj in model.search("Capability") | sort(attribute="name") %}
-  {%- set obj_results = results.by_uuid(obj.uuid) %}
-  <tr>
-    <th id="{{obj.uuid}}">{{ obj.name }}
-    {%- for cat in ["REQUIRED", "RECOMMENDED", "SUGGESTED"] %}
-    {%- set total = results.by_category(cat).by_uuid(obj.uuid) | count %}
-    {%- set passed = results.by_category(cat).by_value(true).by_uuid(obj.uuid) | count %}
-    {%- set percent = (passed / total * 100)|round(1) if total > 0 else "—" %}
-    <td>{{passed}} / {{total}} ({{percent}}%)
-    {%- endfor %}
-    <td>
-      {%- for rule, result in obj_results.items() if result.value is false %}
-      {%- if loop.first %}
-      <ul>
-      {%- endif %}
-      {% for action in rule.actions %}
-        <li><a href="#{{rule.id}}">{{ action }}</a>
-      {% endfor %}
-      {%- endfor %}
+{# compliant objects section #}
+  {% set categories_of_interest = [] %}
+  {% for category in CATEGORIES %}
+    {% set objects_of_interest = [] %}
+    {% for object in objects if results.by_category(category).by_uuid(object.uuid) and not results.by_category(category).by_value(False).by_uuid(object.uuid) %}
+      {% set _ = objects_of_interest.append(object) %}
+    {% endfor %}
+    {% if objects_of_interest | count > 0 %}
+      {% set _ = categories_of_interest.append([category, objects_of_interest])%}
+    {% endif %}
+  {%endfor%}
+  {% for category, objects_of_interest in categories_of_interest %}
+    {% if loop.first %}
+      <p>These objects comply completely to at least one rule category completely</p>
+    {% endif %}
+    <p>All 
+      {{ model.validation.rules[category].by_type(obj_type) | count}} 
+      <strong class="rule-{{category.name | lower}}">{{category}}</strong> rules were met by the following {{ objects_of_interest | count }} object(s):</b>
+    {{ objects_of_interest | join("; ", attribute="name")}}
+    </p>
   {% endfor %}
-</table> #}
-
+{%- endfor %} {# end of object_types loop #}
 
 <h2>Validation results by rule</h2>
 <!-- TODO filter by applicability to this layer -->
