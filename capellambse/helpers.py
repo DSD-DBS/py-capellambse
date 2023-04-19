@@ -433,6 +433,36 @@ def escape_linked_text(
     return markupsafe.Markup(text)
 
 
+def split_links(links: str) -> cabc.Iterator[str]:
+    """Split a string containing intra- and inter-fragment links.
+
+    Intra-fragment links are simply "#UUID", whereas inter-fragment
+    links look like "xtype fragment#UUID". Multiple such links are
+    space-separated in a single long string to form a list. This
+    function splits such a string back into its individual components
+    (each being either an intra- or inter-fragment link), and yields
+    them.
+
+    Yields
+    ------
+    str
+        A single link from the list.
+    """
+    next_xtype = ""
+    for part in links.split():
+        if "#" in part:
+            if next_xtype:
+                yield f"{next_xtype} {part}"
+            else:
+                yield part
+            next_xtype = ""
+
+        else:
+            if next_xtype:
+                raise ValueError(f"Malformed link definition: {links}")
+            next_xtype = part
+
+
 @t.overload
 def xpath_fetch_unique(
     xpath: str | etree.XPath,
