@@ -36,7 +36,7 @@ from capellambse import helpers
 from capellambse.model import common as c
 
 
-class Category(mt._StringyEnumMixin, enum.Flag):
+class Category(mt._StringyEnumMixin, enum.Enum):
     """A category for a rule."""
 
     REQUIRED = enum.auto()
@@ -49,11 +49,17 @@ class Result:
     """A validation rule result."""
 
     uuid: helpers.UUIDString
-    category: t.Literal[Category.REQUIRED] | t.Literal[
-        Category.RECOMMENDED
-    ] | t.Literal[Category.SUGGESTED]
+    category: Category
     value: bool
     object: c.GenericElement
+
+    def __repr__(self) -> str:
+        """Return the representation of a result."""
+        obj_repr = self.object._short_repr_()
+        return (
+            f"Result(uuid={self.uuid!r}, category={self.category!r}"
+            f"value={self.value!r}, object={obj_repr})"
+        )
 
 
 ElementType = t.TypeVar("ElementType", bound=c.GenericElement)
@@ -110,6 +116,11 @@ class RuleList(list[Rule]):
     def __init__(self, rules: cabc.Iterable[Rule] | None = None) -> None:
         super().__init__(rules or [])
 
+    if t.TYPE_CHECKING:
+
+        def __getattr__(self, key: str) -> cabc.Callable[..., RuleList]:
+            ...
+
     for attr in ("id", "name", "rationale", "action", "applicable_to"):
         method = functools.partial(_rule_attr_getter, attr=attr)
         method.__doc__ = f"Filter the validation rules by ``{attr}``"
@@ -117,9 +128,7 @@ class RuleList(list[Rule]):
 
     def by_category(self, category: Category | str) -> RuleList:
         """Filter the validation rules by ``category``."""
-        if isinstance(category, str):
-            category = Category[category]
-        return VALIDATION_RULES[category]
+        return RuleList((rule for rule in self if rule.category == category))
 
     def by_type(self, type: type[c.GenericElement] | str) -> RuleList:
         """Filter the validation rules by ``type``."""
@@ -136,11 +145,9 @@ class RuleList(list[Rule]):
         return RuleList(rules)
 
 
-class Rules(dict[t.Union[Category, str], RuleList]):
+class Rules(dict[Category, RuleList]):
     def __getitem__(self, key: Category | str) -> RuleList:
-        if isinstance(key, str):
-            key = Category[key]
-        return super().__getitem__(key)
+        return super().__getitem__(t.cast(Category, key))
 
     def by_id(self, rid: str) -> Rules:
         """Filter the validation results by ``uuid``."""
@@ -192,8 +199,6 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
 
     def by_category(self, category: Category | str) -> Results:
         """Filter the validation results by ``category``."""
-        if isinstance(category, str):
-            category = Category[category]
         return Results(
             {
                 rule: {
@@ -360,12 +365,11 @@ class ModelValidation(Validation):
                 for obj in self._model.search(*_rule.types):
                     if obj.parent in ROOT_FUNCTION_PARENTS:
                         continue
-                    # if isinstance(_rule, Rule) and _rule != _rule:
-                    #    continue
+
                     if (value := _rule(obj)) != "NotApplicable":
                         result = Result(
                             uuid=obj.uuid,
-                            category=category,  # type: ignore[arg-type]
+                            category=category,
                             value=value,
                             object=obj,
                         )

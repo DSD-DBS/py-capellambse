@@ -3,19 +3,17 @@
 from __future__ import annotations
 
 import pathlib
-import subprocess
-import sys
+import typing as t
 
 import pytest
+from click import testing as clitest
 
 import capellambse
 from capellambse import helpers
 from capellambse.extensions import validation as v
+from capellambse.extensions.validation import __main__
 from capellambse.model import common as c
 from capellambse.model.layers import ctx, la
-
-# pylint: disable-next=relative-beyond-top-level, useless-suppression
-from .conftest import INSTALLED_PACKAGE  # type: ignore[import]
 
 TEST_UUID = helpers.UUIDString("da12377b-fb70-4441-8faa-3a5c153c5de2")
 TEST_RULE_ID = "Rule-001"
@@ -114,9 +112,11 @@ def test_ModelObject_rules_access(
     obj = model.by_uuid(TEST_UUID)
     assert isinstance(obj.validation, v.ElementValidation)
 
-    assert obj.validation.rules
-    assert (required_rules := obj.validation.rules["REQUIRED"])
-    assert required_rules.by_id(TEST_RULE_ID)  # type: ignore[attr-defined]
+    rules = obj.validation.rules
+
+    assert rules
+    assert (required_rules := rules["REQUIRED"])
+    assert required_rules.by_id(TEST_RULE_ID)
     assert required_rules.by_category("REQUIRED")
 
 
@@ -129,22 +129,26 @@ def test_MelodyModel_validation(model: capellambse.MelodyModel):
     assert results
 
 
-@pytest.mark.parametrize(
-    "params", [pytest.param((TEST_RULE_ID, 1, 1, 13, 13), id=TEST_RULE_ID)]
-)
-def test_MelodyModel_validation_access(
-    model: capellambse.MelodyModel, params: tuple[str, int, int, int, int]
-):
-    rule_id, uuids, trues, categories, types = params
+def test_MelodyModel_validation_access(model: capellambse.MelodyModel):
     assert isinstance(model.validation, v.ModelValidation)
     assert model.validation.rules
 
     results = model.validate()
 
-    assert len(results.by_uuid(TEST_UUID)) == uuids
-    assert len(results.by_value(True)[rule_id]) == trues
-    assert len(results.by_category(v.Category.REQUIRED)[rule_id]) == categories
-    assert len(results.by_type("SystemComponent")[rule_id]) == types
+    result: t.Any
+    for result in results.by_uuid(TEST_UUID).values():
+        assert result.uuid == TEST_UUID
+
+    for result in results.by_value(True).values():
+        assert all(result.values())
+
+    for result in results.by_category(v.Category.REQUIRED).values():
+        assert all(i.category == v.Category.REQUIRED for i in result.values())
+
+    assert all(
+        "SystemComponent" in rule.types
+        for rule in results.by_type("SystemComponent")
+    )
 
 
 @pytest.mark.parametrize("type", [None, "SystemComponent"])
@@ -171,7 +175,7 @@ def test_ModelObject_validation(model: capellambse.MelodyModel):
 
 
 @pytest.mark.parametrize("rule_id", [TEST_RULE_ID])
-def test_MelodyObject_validation_access(
+def test_ModelObject_validation_access(
     model: capellambse.MelodyModel, rule_id: str
 ):
     obj = model.by_uuid(TEST_UUID)
@@ -182,6 +186,21 @@ def test_MelodyObject_validation_access(
 
     assert len(results) == 1
     assert results[rule_id].uuid == obj.uuid
+
+
+def test_validation_result_representation(model: capellambse.MelodyModel):
+    obj = model.by_uuid(TEST_UUID)
+    assert isinstance(obj.validation, v.ElementValidation)
+    assert obj.validation.rules
+    expected = (
+        "Result(uuid='da12377b-fb70-4441-8faa-3a5c153c5de2', "
+        "category=<Category.REQUIRED: 1>value=False, "
+        "object=<SystemComponent 'Affleck'"
+    )
+
+    results = obj.validate()
+
+    assert repr(results[TEST_RULE_ID]).startswith(expected)
 
 
 def test_validation_automatic_result_population(
@@ -195,22 +214,16 @@ def test_validation_automatic_result_population(
     assert results
 
 
-# TODO: Test runtime for large models (50k+) to access results and rules
+class TestCLI:
+    @staticmethod
+    def test_validation_report(tmp_path: pathlib.Path):
+        output_file = tmp_path / "report.html"
+        runner = clitest.CliRunner()
 
+        result = runner.invoke(
+            __main__._main,  # type: ignore[arg-type]
+            ["-m", "test-5.0", "-o", str(output_file)],
+        )
 
-def test_cli_writes_validation_report(tmp_path: pathlib.Path):
-    output_file = tmp_path / "report.html"
-    cli = subprocess.run(
-        [
-            sys.executable,
-            "-mcapellambse.extensions.validation",
-            "-mtest-5.0",
-            "-o",
-            output_file,
-        ],
-        cwd=INSTALLED_PACKAGE.parent,
-        check=False,
-    )
-
-    assert cli.returncode == 0, "CLI process exited unsuccessfully"
-    assert output_file.exists() and output_file.read_text(encoding="utf8")
+        assert result.exit_code == 0, "CLI process exited unsuccessfully"
+        assert output_file.exists() and output_file.read_text(encoding="utf8")
