@@ -1186,16 +1186,7 @@ class MelodyLoader:
             ``xsi:type`` of the found target.
         """
         targets = []
-        next_xtype = None
-        for part in links.split():
-            if "#" not in part:
-                if next_xtype is not None:
-                    raise ValueError(f"Malformed link definition: {links}")
-                next_xtype = part
-                continue
-
-            if next_xtype is not None:
-                part = f"{next_xtype} {part}"
+        for part in helpers.split_links(links):
             try:
                 targets.append(self.follow_link(from_element, part))
             except (KeyError, ValueError):
