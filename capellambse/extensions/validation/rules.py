@@ -31,8 +31,6 @@ from . import _validate
 def has_non_empty_description_or_summary(
     obj: c.GenericElement,
 ) -> bool | t.Literal["NotApplicable"]:
-    # if not obj.is_actor:  # Precondition
-    #     return "NotApplicable"
     return bool(obj.description) or bool(obj.summary)  # Validation-Rule
 
 

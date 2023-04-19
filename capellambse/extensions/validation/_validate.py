@@ -25,6 +25,7 @@ import collections.abc as cabc
 import dataclasses
 import enum
 import functools
+import logging
 import typing as t
 from itertools import chain
 
@@ -34,6 +35,8 @@ import capellambse
 import capellambse.model.modeltypes as mt
 from capellambse import helpers
 from capellambse.model import common as c
+
+LOGGER = logging.getLogger("capellambse.extensions.validation")
 
 
 class Category(mt._StringyEnumMixin, enum.Enum):
@@ -149,20 +152,19 @@ class Rules(dict[Category, RuleList]):
     def __getitem__(self, key: Category | str) -> RuleList:
         return super().__getitem__(t.cast(Category, key))
 
-    def by_id(self, rid: str) -> Rules:
+    def by_id(self, rid: str) -> Rule:
         """Filter the validation results by ``uuid``."""
-        return Rules(
-            {
-                category: RuleList((rule for rule in rules if rule.id == rid))
-                for category, rules in self.items()
-            }
-        )
+        for rules in self.values():
+            for rule in rules:
+                if rule.id == rid:
+                    return rule
+        raise KeyError(f"No rule found with id: {rid!r}")
 
-    def by_category(self, category: Category | str) -> Rules:
+    def by_category(self, category: Category | str) -> RuleList:
         """Filter the validation results by ``category``."""
         if isinstance(category, str):
             category = Category[category]
-        return Rules({category: self[category]})
+        return self[category]
 
     def by_type(self, type: type[c.GenericElement] | str) -> Rules:
         """Filter the validation results by ``type``."""
@@ -174,6 +176,7 @@ class Rules(dict[Category, RuleList]):
                     (rule for rule in rules if type in rule.types)
                 )
                 for category, rules in self.items()
+                if rules
             }
         )
 
@@ -283,9 +286,22 @@ def register_rule(
 ) -> cabc.Callable[[Validator], Validator]:
     """Register the validation rule.
 
-    The validator along with the object to validate which will be used
-    to feed it with inputs in validate()
+    The decorator registers the validation rule function (validator)
+    along with the object type to be validated (type). The type is the
+    object type the rule is applicable to. The type will be used to feed
+    the validator with inputs (instances of type) during validation.
     """
+    try:
+        VALIDATION_RULES.by_id(id)
+        LOGGER.warning(
+            "Failed to register rule: %r with ID: %r. The ID needs to be "
+            "unique",
+            name,
+            id,
+        )
+        unique_check = False
+    except KeyError:
+        unique_check = True
 
     def rule_decorator(rule: Validator) -> Validator:
         rule = Rule(
@@ -299,7 +315,8 @@ def register_rule(
             rule,
             hyperlink_further_reading,
         )
-        VALIDATION_RULES[category].append(rule)
+        if unique_check:
+            VALIDATION_RULES[category].append(rule)
         return rule
 
     return rule_decorator

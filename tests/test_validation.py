@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import logging
 import pathlib
 import typing as t
 
@@ -88,6 +89,49 @@ def test_ValidationRule_register_multiple_types(
         assert rules.by_type(type_).by_id(id)
 
 
+def test_ValidationRule_register_with_same_id_fails(
+    model: capellambse.MelodyModel,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+):
+    params_ = TEST_RULE_PARAMS.copy()
+    del params_["name"]
+    params = dict(
+        params_, category=v.Category.REQUIRED, types=[la.LogicalComponent]
+    )
+    monkeypatch.setattr(
+        v._validate,
+        "VALIDATION_RULES",
+        v.Rules(
+            {
+                v.Category.REQUIRED: v.RuleList([]),
+                v.Category.RECOMMENDED: v.RuleList([]),
+                v.Category.SUGGESTED: v.RuleList([]),
+            }
+        ),
+    )
+
+    # pylint: disable=repeated-keyword
+    @v.register_rule(
+        id=TEST_RULE_ID, name="First", **params  # type: ignore[arg-type]
+    )
+    def _(_):
+        return True
+
+    with caplog.at_level(logging.WARNING):
+
+        @v.register_rule(
+            id=TEST_RULE_ID, name="Second", **params  # type: ignore[arg-type]
+        )
+        def _(_):
+            return False
+
+    assert "Second" in caplog.text
+    assert TEST_RULE_ID in caplog.text
+    assert model.validation.rules.by_category("REQUIRED")
+    assert model.validation.rules.by_id(TEST_RULE_ID)
+
+
 def test_MelodyModel_rules_access(
     model: capellambse.MelodyModel,
 ):
@@ -114,8 +158,12 @@ def test_ModelObject_rules_access(
 
     rules = obj.validation.rules
 
-    assert rules
+    assert rules and isinstance(rules, v.Rules)
+    assert isinstance(rules.by_id(TEST_RULE_ID), v.Rule)
     assert (required_rules := rules["REQUIRED"])
+    assert rules.by_category("REQUIRED") == required_rules
+    assert isinstance(required_rules, v.RuleList)
+    assert isinstance(rules.by_type("SystemComponent"), v.Rules)
     assert required_rules.by_id(TEST_RULE_ID)
     assert required_rules.by_category("REQUIRED")
 
