@@ -85,7 +85,7 @@ repos:
           - "#"
       - id: insert-license
         name: Insert license headers (XML-style comments)
-        files: '\.(?:html|md|xml)$'
+        files: '\.(?:html|md|xml|jinja)$'
         exclude: '(?:^|/)\..+'
         args:
           - --detect-license-in-X-top-lines=15

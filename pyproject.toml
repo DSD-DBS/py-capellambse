@@ -59,6 +59,7 @@ docs = [
 test = [
   "click",
   "cssutils",
+  "jinja2",
   "pytest",
   "pytest-cov",
   "pyyaml>=6.0",

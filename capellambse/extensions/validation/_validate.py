@@ -15,7 +15,6 @@ __all__ = [
     "RuleList",
     "Rules",
     "store_result",
-    "Type",
     "Validation",
     "Validator",
 ]
@@ -70,11 +69,6 @@ ElementType = t.TypeVar("ElementType", bound=c.GenericElement)
 Validator = cabc.Callable[
     [ElementType], t.Union[bool, t.Literal["NotApplicable"]]
 ]  # | Callable [[Metric], Result]
-Type = t.Union[
-    str, type[c.GenericElement]
-]  # | type[Metric] | type[AggregateMetric]
-"""Type to be used in capellambse.model.MelodyModel.search(type) or metric
-function the value of which will be validated by the rule."""
 
 
 @dataclasses.dataclass(frozen=True)
@@ -83,7 +77,7 @@ class Rule:
 
     id: str
     name: str
-    types: list[Type]
+    types: list[str]
     rationale: str
     category: Category
     action: str
@@ -114,7 +108,7 @@ def _rule_attr_getter(val: str, attr: str) -> Rule | RuleList:
 
 
 class RuleList(list[Rule]):
-    """Stores all discovered validation rules."""
+    """Stores validation rules."""
 
     def __init__(self, rules: cabc.Iterable[Rule] | None = None) -> None:
         super().__init__(rules or [])
@@ -137,18 +131,12 @@ class RuleList(list[Rule]):
         """Filter the validation rules by ``type``."""
         if not isinstance(type, str):
             type = type.__name__
-
-        rules = list[Rule]()
-        for rule in self:
-            types = (
-                t if isinstance(t, str) else t.__name__ for t in rule.types
-            )
-            if type in types:
-                rules.append(rule)
-        return RuleList(rules)
+        return RuleList((rule for rule in self if type in rule.types))
 
 
 class Rules(dict[Category, RuleList]):
+    """Stores validation rules classified into categories."""
+
     def __getitem__(self, key: Category | str) -> RuleList:
         return super().__getitem__(t.cast(Category, key))
 
@@ -226,15 +214,18 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
 
     def by_type(self, type: str) -> Results:
         """Filter the validation results by ``type``."""
-        return Results(
-            {
-                rule: res
-                for rule, res in self.items()
-                for rule_type in rule.types
-                if rule_type == type
-                if res
-            }
-        )
+        results = dict[Rule, dict[helpers.UUIDString, Result]]()
+        for rule, res in self.items():
+            if not res:
+                continue
+
+            for rule_type in rule.types:
+                if rule_type != type:
+                    continue
+
+                results[rule] = res
+
+        return Results(results)
 
     def setdefault(
         self,
@@ -258,25 +249,19 @@ def get_passed_and_total(
     else:
         results = result_container.values()
 
-    passed = 0
-    total = 0
+    total, passed = 0, 0
     for result in results:
-        if not type:
-            total += 1
-            if result.value:
-                passed += 1
-        else:
-            result_type = result.object.__class__.__name__
-            if type == result_type:
-                total += 1
-                if result.value:
-                    passed += 1
+        if type != result.object.__class__.__name__:
+            continue
+
+        total += 1
+        passed += result.value
     return passed, total
 
 
 def register_rule(
     category: Category,
-    types: list[Type],
+    types: cabc.Iterable[str | type[c.GenericElement]],
     id: str,
     name: str,
     rationale: str,
@@ -294,8 +279,7 @@ def register_rule(
     try:
         VALIDATION_RULES.by_id(id)
         LOGGER.warning(
-            "Failed to register rule: %r with ID: %r. The ID needs to be "
-            "unique",
+            "Failed to register rule: %r with ID: %r. Rule ID already exists",
             name,
             id,
         )
@@ -322,7 +306,9 @@ def register_rule(
     return rule_decorator
 
 
-def _convert_types(types: cabc.Sequence[Type]) -> list[Type]:
+def _convert_types(
+    types: cabc.Iterable[str | type[c.GenericElement]],
+) -> list[str]:
     return [type if isinstance(type, str) else type.__name__ for type in types]
 
 
@@ -400,18 +386,7 @@ class ElementValidation(Validation):
     @property
     def rules(self) -> Rules:
         """Return all registered validation rules for this ModelObject."""
-        return Rules(
-            {
-                category: RuleList(
-                    (
-                        rule
-                        for rule in rules
-                        if type(self._element).__name__ in rule.types
-                    )
-                )
-                for category, rules in VALIDATION_RULES.items()
-            }
-        )
+        return VALIDATION_RULES.by_type(type(self._element))
 
     @property
     def results(self) -> dict[Rule, Result]:
