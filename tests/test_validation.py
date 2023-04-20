@@ -26,6 +26,21 @@ TEST_RULE_PARAMS = {
 }
 
 
+def setup_validation_rule_register(monkeypatch: pytest.MonkeyPatch):
+    """Initialization for validation rule registration tests."""
+    monkeypatch.setattr(
+        v._validate,
+        "VALIDATION_RULES",
+        v.Rules(
+            {
+                v.Category.REQUIRED: v.RuleList([]),
+                v.Category.RECOMMENDED: v.RuleList([]),
+                v.Category.SUGGESTED: v.RuleList([]),
+            }
+        ),
+    )
+
+
 @pytest.mark.parametrize(
     "category,id",
     [
@@ -35,9 +50,13 @@ TEST_RULE_PARAMS = {
     ],
 )
 def test_ValidationRule_discovery(
-    model: capellambse.MelodyModel, category: v.Category, id: str
+    model: capellambse.MelodyModel,
+    category: v.Category,
+    id: str,
+    monkeypatch: pytest.MonkeyPatch,
 ):
     expected = dict(TEST_RULE_PARAMS, id=id)
+    setup_validation_rule_register(monkeypatch)
 
     @v.register_rule(category=category, types=[la.LogicalFunction], **expected)
     def always_true(_):
@@ -66,17 +85,7 @@ def test_ValidationRule_register_multiple_types(
     monkeypatch: pytest.MonkeyPatch,
 ):
     expected = dict(TEST_RULE_PARAMS, id=id)
-    monkeypatch.setattr(
-        v._validate,
-        "VALIDATION_RULES",
-        v.Rules(
-            {
-                v.Category.REQUIRED: v.RuleList([]),
-                v.Category.RECOMMENDED: v.RuleList([]),
-                v.Category.SUGGESTED: v.RuleList([]),
-            }
-        ),
-    )
+    setup_validation_rule_register(monkeypatch)
 
     @v.register_rule(category=v.Category.REQUIRED, types=types, **expected)
     def always_true(_):
@@ -86,6 +95,30 @@ def test_ValidationRule_register_multiple_types(
 
     assert rules
     for type_ in types:
+        assert rules.by_type(type_).by_id(id)
+
+
+@pytest.mark.parametrize(
+    "types,id",
+    [(la.LogicalComponent, "JR-1"), ("LogicalComponent", "JRS-1")],
+)
+def test_ValidationRule_register(
+    model: capellambse.MelodyModel,
+    types: type[c.GenericElement] | str,
+    id: str,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    expected = dict(TEST_RULE_PARAMS, id=id)
+    setup_validation_rule_register(monkeypatch)
+
+    @v.register_rule(category=v.Category.REQUIRED, types=types, **expected)
+    def always_true(_):
+        return True
+
+    rules = model.validation.rules
+
+    assert rules
+    for type_ in [types]:
         assert rules.by_type(type_).by_id(id)
 
 
@@ -99,17 +132,7 @@ def test_ValidationRule_register_with_same_id_fails(
     params = dict(
         params_, category=v.Category.REQUIRED, types=[la.LogicalComponent]
     )
-    monkeypatch.setattr(
-        v._validate,
-        "VALIDATION_RULES",
-        v.Rules(
-            {
-                v.Category.REQUIRED: v.RuleList([]),
-                v.Category.RECOMMENDED: v.RuleList([]),
-                v.Category.SUGGESTED: v.RuleList([]),
-            }
-        ),
-    )
+    setup_validation_rule_register(monkeypatch)
 
     # pylint: disable=repeated-keyword
     @v.register_rule(
@@ -197,19 +220,6 @@ def test_MelodyModel_validation_access(model: capellambse.MelodyModel):
         "SystemComponent" in rule.types
         for rule in results.by_type("SystemComponent")
     )
-
-
-@pytest.mark.parametrize("type", [None, "SystemComponent"])
-def test_get_passed_and_total_results(
-    model: capellambse.MelodyModel, type: str | None
-):
-    assert isinstance(model.validation, v.ModelValidation)
-    assert model.validation.rules
-
-    results = model.validate()
-    passed, total = v.get_passed_and_total(results, type=type)
-
-    assert isinstance(passed, int) and isinstance(total, int)
 
 
 def test_ModelObject_validation(model: capellambse.MelodyModel):

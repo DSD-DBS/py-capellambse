@@ -6,7 +6,6 @@ from __future__ import annotations
 __all__ = [
     "Category",
     "ElementValidation",
-    "get_passed_and_total",
     "ModelValidation",
     "register_rule",
     "Result",
@@ -237,31 +236,11 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
         return super().setdefault(key, default)
 
 
-def get_passed_and_total(
-    result_container: Results | dict[Rule, Result], type: str | None = None
-) -> tuple[int, int]:
-    """Return the number of passed and total validation rules."""
-    results: cabc.Iterable[Result]
-    if isinstance(result_container, Results):
-        results = chain.from_iterable(
-            (result.values() for result in result_container.values())
-        )
-    else:
-        results = result_container.values()
-
-    total, passed = 0, 0
-    for result in results:
-        if type != result.object.__class__.__name__:
-            continue
-
-        total += 1
-        passed += result.value
-    return passed, total
-
-
 def register_rule(
     category: Category,
-    types: cabc.Iterable[str | type[c.GenericElement]],
+    types: str
+    | type[c.GenericElement]
+    | cabc.Iterable[str | type[c.GenericElement]],
     id: str,
     name: str,
     rationale: str,
@@ -307,8 +286,13 @@ def register_rule(
 
 
 def _convert_types(
-    types: cabc.Iterable[str | type[c.GenericElement]],
+    types: str
+    | type[c.GenericElement]
+    | cabc.Iterable[str | type[c.GenericElement]],
 ) -> list[str]:
+    if isinstance(types, (str, type(c.GenericElement))):
+        types = [types]
+    assert isinstance(types, cabc.Iterable)
     return [type if isinstance(type, str) else type.__name__ for type in types]
 
 
