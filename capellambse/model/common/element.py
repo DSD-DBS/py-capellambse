@@ -140,7 +140,7 @@ class GenericElement:
     description = properties.HTMLAttributeProperty(
         "description", optional=True
     )
-    summary = properties.HTMLAttributeProperty("summary", optional=True)
+    summary = properties.AttributeProperty("summary", optional=True)
     diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
     diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target_uuid(self.uuid)
