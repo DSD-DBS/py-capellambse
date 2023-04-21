@@ -25,7 +25,6 @@ import capellambse
 import capellambse.helpers
 import capellambse.pvmt
 from capellambse import _diagram_cache, filehandler, loader
-from capellambse.extensions import validation
 
 from . import common, diagram  # isort:skip
 
@@ -599,12 +598,8 @@ class MelodyModel:
         def __getattr__(self, attr: str) -> t.Any:
             """Account for extension attributes in static type checks."""
 
-    def validate(self, **kwargs: t.Any) -> validation.Results:
-        if not hasattr(self, "validation"):
-            raise ValueError(
-                "Validation rules are not available in this model"
-            )
-        return self.validation.validate(**kwargs)
+        def __setattr__(self, attr: str, value: t.Any) -> None:
+            """Allow extensions to add arbitrary attributes."""
 
 
 def _reference_attributes(objtype: type[ModelObject], /) -> tuple[str, ...]:

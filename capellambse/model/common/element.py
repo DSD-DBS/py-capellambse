@@ -33,9 +33,6 @@ from . import XTYPE_HANDLERS, T, U, accessors, properties
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
-if t.TYPE_CHECKING:
-    from capellambse.extensions import validation
-
 
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
     def add_wrapped_eq(cls: type[T]) -> type[T]:
@@ -379,15 +376,6 @@ class GenericElement:
 
         def __getattr__(self, attr: str) -> t.Any:
             """Account for extension attributes in static type checks."""
-
-    def validate(
-        self, **kwargs: t.Any
-    ) -> dict[validation.Rule | str, validation.Result]:
-        if not hasattr(self, "validation"):
-            raise ValueError(
-                "Validation rules are not available in this model"
-            )
-        return self.validation.validate(**kwargs)
 
 
 class ElementList(cabc.MutableSequence, t.Generic[T]):
