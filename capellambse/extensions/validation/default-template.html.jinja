@@ -78,13 +78,34 @@ td ul {
 
 tr:nth-child(even) { background-color: #f8f8f8; }
 
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.container > table {
+  flex-basis: 50%;
+  max-width: 50%;
+  box-sizing: border-box;
+  padding-right: 10px;
+}
+
+.container > svg {
+  flex-basis: 50%;
+  max-width: 50%;
+  box-sizing: border-box;
+  padding-left: 10px;
+}
+
 
 </style>
 
 {%- set results = model.validate() %}
 {%- set CATEGORIES = model.validation.rules %}
 
-<title>System Analysis Layer: Modeling Rules Compliance Report</title>
+<title>System Analysis Layer: Modelling Rules Compliance Report</title>
 </head>
 <body>
 <h1>System Analysis Layer: Modeling Rules Compliance Report</h1>
@@ -99,60 +120,69 @@ tr:nth-child(even) { background-color: #f8f8f8; }
     {% set compliance_score = metrics.get_compliance_score(passed, total)|round(1) %}
     {% set compliance = compliance_score | string + "%" %}
     {% set color = "#bc2604" if compliance_score < 30 else ("#ae930d" if compliance_score < 70 else "#0a6600") %}
-    {{ make_score_and_bar(compliance, passed, total, align) }}
+    {{ make_score_and_bar(compliance, passed, total, color, align) }}
   {% else %}
     <span style="color:#ccc">not applicable</span>
     <div style="margin: 0; height: 5px; background: #ccc"></div>
   {% endif %}
 {% endmacro %}
 
-{% macro make_score_and_bar(compliance, passed, total, align=None) %}
-  <span style="color:{{ color }}{% if align %}; float: {{ align }}{% endif %}">{{ compliance }} <small>{{ "({} / {})".format(passed, total) }}</small></span>
+{% macro make_score_and_bar(compliance, passed, total, color, align=None) %}
+  <span style="color:{{ color }}{% if align %}; float: {{ align }}{% endif %}">{{ render_score(compliance, passed, total) }}</span>
   <div style="margin: 0; height: 5px; background:linear-gradient(to right, green {{ compliance }}, red {{ compliance }})"></div>
+{% endmacro %}
+
+{% macro render_score(compliance, passed, total) %}
+  {{ compliance }} <small>{{ "({} / {})".format(passed, total) }}</small>
 {% endmacro %}
 
 {# Summary table #}
 <h2>Assessment Summary</h2>
 {% set object_types = ["Capability", "SystemComponent", "SystemFunction", "ComponentExchange", "FunctionalExchange"] %}
-{# TODO #}
-{# {% set total_objects_of_interest = metrics.get_total_objects(object_types) %}
+{% set total_objects_of_interest = metrics.get_total_objects(object_types, results) %}
+{% set scores = [] %}
+{% for category in CATEGORIES %}
+  {% set passed, total = total_objects_of_interest.by_category(category) %}
+  {% set compliance_score = metrics.get_compliance_score(passed, total) | round(1) %}
+  {% set color = "#bc2604" if compliance_score < 30 else ("#ae930d" if compliance_score < 70 else "#0a6600") %}
+  {% set compliance = '<span style="color:{}">{}</span>'.format(color, compliance_score | string + "%") %}
+  {% set _ = scores.append("{} <small>({} / {})</small>) for {}".format(compliance, passed, total, category.name)) %}
+{% endfor %}
+We reviewed <strong>{{ total_objects_of_interest.amount }}</strong> model objects and found that overall compliance with the modelling rules is:<br>
+{{ scores | join("; ") }}.
 
-We reviewed {{ total_objects_of_interest.amount }} and found that overall compliance with the modelling rules is:
-{{ total_objects_of_interest.by_category("REQUIRED") }} for REQUIRED;
-{{ total_objects_of_interest.by_category("RECOMMENDED") }} for RECOMMENDED;
-{{ total_objects_of_interest.by_category("SUGGESTED") }} for SUGGESTED.
-
-{{ metrics.get_compliance_bar_chart(total_objects_of_interest) }} #}
-{# TODO #}
-<table>
-  <thead>
-    <tr>
-      <th rowspan="2">Reviewed objects</th>
-      <th rowspan="2" width="90px">Total objects</th>
-      <th colspan="3">Compliance to applicable modeling rules</th>
-    </tr>
-    <tr>
-      <th>REQUIRED</th>
-      <th>RECOMMENDED</th>
-      <th>SUGGESTED</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for obj_type in object_types %}
-      {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
-      {% set total = objects | count %}
+<div class="container">
+  <table>
+    <thead>
       <tr>
-        <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
-        <td>{{ total }}</td>
-        {% for category in CATEGORIES %}
-          {% set result = results.by_category(category).by_type(obj_type) %}
-          {% set passed, total_checks = metrics.get_passed_and_total(result, type=obj_type) %}
-          <td>
-            {{ show_compliance_score(passed, total_checks) }}
-          </td>
-        {% endfor %}
-    {% endfor %}
-</table>
+        <th rowspan="2">Reviewed objects</th>
+        <th rowspan="2" width="90px">Total objects</th>
+        <th colspan="3">Compliance to applicable modeling rules</th>
+      </tr>
+      <tr>
+        <th>REQUIRED</th>
+        <th>RECOMMENDED</th>
+        <th>SUGGESTED</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj_type in object_types %}
+        {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
+        {% set total = objects | count %}
+        <tr>
+          <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
+          <td>{{ total }}</td>
+          {% for category in CATEGORIES %}
+            {% set result = results.by_category(category).by_type(obj_type) %}
+            {% set passed, total_checks = metrics.get_passed_and_total(result, type=obj_type) %}
+            <td>
+              {{ show_compliance_score(passed, total_checks) }}
+            </td>
+          {% endfor %}
+      {% endfor %}
+  </table>
+  {{ metrics.get_compliance_chart(total_objects_of_interest) }}
+</div>
 
 <h2>Object Compliance Analysis</h2>
 <p>This section evaluates the selected objects' adherence to modeling rules. If an object needs additional work or has

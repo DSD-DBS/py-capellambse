@@ -6,6 +6,13 @@ from __future__ import annotations
 
 import collections.abc as cabc
 
+import plotly.graph_objects as go  # type: ignore[import]
+import plotly.io as pio  # type: ignore[import]
+
+from capellambse.extensions import validation as v
+
+from . import _plotlyjs
+
 COLORS = ("#ffdd87", "#91cc84", "#a5c2e6", "#f89f9f")
 LEGEND = (
     (2, "Operational Analysis"),
@@ -177,3 +184,34 @@ def draw_summary_badge(
         f' width="{scale*134}" height="{scale*30}" viewBox="0 0 134 30">'
         f"{text}</svg>"
     )
+
+
+def generate_compliance_bar_chart(
+    data: dict[str, dict[str, dict[str, int]]], title: str = ""
+) -> str:
+    """Return a horizontal, multi-categorical axies bar chart."""
+    categories = [c.name for c in v.Category]
+    statuses = ["PASSED", "TOTAL"]
+    n = len(data)
+    y = [categories * n, statuses * n]
+
+    fig = go.Figure()
+    for object_type, category_numbers in data.items():
+        x = list[int]()
+        for value in category_numbers.values():
+            for status in statuses:
+                x.append(value[status])
+
+        fig.add_trace(go.Bar(y=y, x=x, name=object_type, orientation="h"))
+
+    fig.update_layout(
+        title_text=title, margin={"l": 5, "r": 5, "t": 20, "b": 20}
+    )
+
+    try:
+        svg_bytes = pio.to_image(fig, format="svg", engine="orca")
+    except ValueError:
+        _plotlyjs.npm_install_plotly_orca()
+        svg_bytes = pio.to_image(fig, format="svg", engine="orca")
+
+    return svg_bytes.decode("utf8")
