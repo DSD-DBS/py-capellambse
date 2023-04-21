@@ -16,7 +16,6 @@ __all__ = [
     "get_compliance_score",
     "get_passed_and_total",
     "get_total_objects",
-    "quantify_compliancy",
     "quantify_model_layers",
 ]
 
@@ -137,41 +136,3 @@ class BinCountResults:
     def by_category(self, category: str) -> tuple[int, int]:
         results = self.results.by_category(category)
         return get_passed_and_total(results)
-
-
-def quantify_compliancy(
-    results: BinCountResults,
-) -> dict[str, dict[str, dict[str, int]]]:
-    """Return compliancy data for given ``results``.
-
-    Example
-    -------
-    {
-        "Capability": {
-            "REQUIRED": {"PASSED": 10, "TOTAL": 15},
-            "RECOMMENDED": {"PASSED": 20, "TOTAL": 25},
-            "SUGGESTED": {"PASSED": 30, "TOTAL": 35},
-        },
-        "SystemComponent": {
-            "REQUIRED": {"PASSED": 12, "TOTAL": 17},
-            "RECOMMENDED": {"PASSED": 22, "TOTAL": 27},
-            "SUGGESTED": {"PASSED": 32, "TOTAL": 37},
-        },
-        "Function": {
-            "REQUIRED": {"PASSED": 14, "TOTAL": 19},
-            "RECOMMENDED": {"PASSED": 24, "TOTAL": 29},
-            "SUGGESTED": {"PASSED": 34, "TOTAL": 39},
-        },
-    }
-    """
-    data = dict[str, dict[str, dict[str, int]]]()
-    for object_type in results.types:
-        for category in (c.name for c in v.Category):
-            res = results.results.by_category(category)
-            passed, total = get_passed_and_total(res, type=object_type)
-            data.setdefault(object_type, {})[category] = {
-                "PASSED": passed,
-                "TOTAL": total,
-            }
-
-    return data

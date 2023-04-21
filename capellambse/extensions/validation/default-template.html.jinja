@@ -151,38 +151,35 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 We reviewed <strong>{{ total_objects_of_interest.amount }}</strong> model objects and found that overall compliance with the modelling rules is:<br>
 {{ scores | join("; ") }}.
 
-<div class="container">
-  <table>
-    <thead>
+<table>
+  <thead>
+    <tr>
+      <th rowspan="2">Reviewed objects</th>
+      <th rowspan="2" width="90px">Total objects</th>
+      <th colspan="3">Compliance to applicable modeling rules</th>
+    </tr>
+    <tr>
+      <th>REQUIRED</th>
+      <th>RECOMMENDED</th>
+      <th>SUGGESTED</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj_type in object_types %}
+      {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
+      {% set total = objects | count %}
       <tr>
-        <th rowspan="2">Reviewed objects</th>
-        <th rowspan="2" width="90px">Total objects</th>
-        <th colspan="3">Compliance to applicable modeling rules</th>
-      </tr>
-      <tr>
-        <th>REQUIRED</th>
-        <th>RECOMMENDED</th>
-        <th>SUGGESTED</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for obj_type in object_types %}
-        {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
-        {% set total = objects | count %}
-        <tr>
-          <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
-          <td>{{ total }}</td>
-          {% for category in CATEGORIES %}
-            {% set result = results.by_category(category).by_type(obj_type) %}
-            {% set passed, total_checks = metrics.get_passed_and_total(result, type=obj_type) %}
-            <td>
-              {{ show_compliance_score(passed, total_checks) }}
-            </td>
-          {% endfor %}
-      {% endfor %}
-  </table>
-  {{ metrics.get_compliance_chart(total_objects_of_interest) }}
-</div>
+        <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
+        <td>{{ total }}</td>
+        {% for category in CATEGORIES %}
+          {% set result = results.by_category(category).by_type(obj_type) %}
+          {% set passed, total_checks = metrics.get_passed_and_total(result, type=obj_type) %}
+          <td>
+            {{ show_compliance_score(passed, total_checks) }}
+          </td>
+        {% endfor %}
+    {% endfor %}
+</table>
 
 <h2>Object Compliance Analysis</h2>
 <p>This section evaluates the selected objects' adherence to modeling rules. If an object needs additional work or has
