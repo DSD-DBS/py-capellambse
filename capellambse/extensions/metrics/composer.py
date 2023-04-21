@@ -6,8 +6,6 @@ from __future__ import annotations
 
 import collections.abc as cabc
 
-from capellambse.extensions import validation as v
-
 COLORS = ("#ffdd87", "#91cc84", "#a5c2e6", "#f89f9f")
 LEGEND = (
     (2, "Operational Analysis"),

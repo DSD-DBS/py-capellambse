@@ -85,7 +85,7 @@ repos:
           - "#"
       - id: insert-license
         name: Insert license headers (XML-style comments)
-        files: '\.(?:html|md|xml|jinja)$'
+        files: '\.(?:html|md|xml)$'
         exclude: '(?:^|/)\..+'
         args:
           - --detect-license-in-X-top-lines=15
@@ -113,6 +113,16 @@ repos:
           - LICENSES/.license_header.txt
           - --comment-style
           - "..|  |"
+      - id: insert-license
+        name: Insert license headers (Jinja2-style comments)
+        files: '\.(?:jinja)$'
+        exclude: '(?:^|/)\..+'
+        args:
+          - --detect-license-in-X-top-lines=15
+          - --license-filepath
+          - LICENSES/.license_header.txt
+          - --comment-style
+          - "{# || #}"
   - repo: https://github.com/psf/black
     rev: 23.1.0
     hooks:
