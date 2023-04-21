@@ -3,18 +3,22 @@
 from __future__ import annotations
 
 import re
-import typing as t
 
-from capellambse.model import common as c
+from capellambse.extensions import validation
 from capellambse.model.crosslayer import fa
 from capellambse.model.layers import ctx as sa
 
 from . import _validate
 
 
+@validation.virtual_type(sa.SystemComponent)
+def SystemActor(cmp: sa.SystemComponent) -> bool:
+    return cmp.is_actor
+
+
 @_validate.register_rule(
     category=_validate.Category.REQUIRED,
-    types=[sa.SystemComponent, sa.SystemFunction, sa.Capability],
+    types=sa.SystemComponent,
     id="Rule-001",
     name="Object has a description or summary",
     rationale=(
@@ -26,12 +30,12 @@ from . import _validate
         "efficient decision-making."
     ),
     action="fill the description and/or summary text fields",
-    applicable_to="SystemComponent where <i>is_actor</i> is set to True.",
+    applicable_to="SystemActor",
 )
 def has_non_empty_description_or_summary(
-    obj: c.GenericElement,
-) -> bool | t.Literal["NotApplicable"]:
-    return bool(obj.description) or bool(obj.summary)  # Validation-Rule
+    obj: sa.SystemComponent,
+) -> bool:
+    return bool(obj.description) or bool(obj.summary)
 
 
 @_validate.register_rule(
@@ -53,7 +57,6 @@ def has_non_empty_description_or_summary(
         "Capability and any supporting Actors required for the "
         "desired outcome"
     ),
-    applicable_to="TODO",
 )
 def capability_involves_an_actor(obj: sa.Capability) -> bool:
     return len(obj.involved_components.by_is_actor(True)) > 0
@@ -70,7 +73,6 @@ def capability_involves_an_actor(obj: sa.Capability) -> bool:
         "of an Actor in the scope of the Capability."
     ),
     action="involve an actor function in the Capability",
-    applicable_to="TODO",
 )
 def capability_involves_an_actor_function(obj: sa.Capability) -> bool:
     owners = [
@@ -92,7 +94,6 @@ def capability_involves_an_actor_function(obj: sa.Capability) -> bool:
         "of the System in the scope of the Capability."
     ),
     action="involves a system function in the Capability",
-    applicable_to="TODO",
 )
 def capability_involves_a_system_function(obj: sa.Capability) -> bool:
     owners = [
@@ -124,7 +125,6 @@ def capability_involves_a_system_function(obj: sa.Capability) -> bool:
         "Actor contributes at least one Function, and each Function "
         "is allocated to an appropriate Actor or System"
     ),
-    applicable_to="TODO",
 )
 def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
     is_involvements = {x.owner.uuid for x in obj.involved_functions if x.owner}
@@ -150,7 +150,6 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
         "interacting with the System, to provide clarity on the "
         "starting context for the Capability."
     ),
-    applicable_to="TODO",
 )
 def has_precondition(obj) -> bool:
     return obj.precondition is not None
@@ -175,7 +174,6 @@ def has_precondition(obj) -> bool:
         "the desired results and enable effective evaluation of system "
         "performance."
     ),
-    applicable_to="TODO",
 )
 def has_postcondition(obj):
     return obj.postcondition is not None
@@ -193,7 +191,6 @@ def has_postcondition(obj):
         "ensure proper delivery within the overall system context."
     ),
     action="allocate Function to the System or an Actor, or delete it",
-    applicable_to="TODO",
 )
 def function_is_allocated(obj: sa.SystemFunction) -> bool:
     return bool(obj.owner)
@@ -201,16 +198,16 @@ def function_is_allocated(obj: sa.SystemFunction) -> bool:
 
 # TODO: This rules requires a solution for sub-setting the SystemComponent
 # (to those that are not actors)
-# @_validate.register_rule(
-#     category=_validate.Category.REQUIRED,
-#     type=ctx.SystemComponent,
-#     id="SY-001",
-#     name="System has at least one Function allocated to it.",
-#     rationale="A System has functionalities and those have to be described.",
-#     actions=["Allocate at least one Function to the System"],
-# )
-# def system_involves_function(sys: ctx.SystemComponent) -> bool:
-#     return len(sys.allocated_functions) > 0
+@_validate.register_rule(
+    category=_validate.Category.REQUIRED,
+    types=SystemActor,
+    id="SY-001",
+    name="System has at least one Function allocated to it.",
+    rationale="A System has functionalities and those have to be described.",
+    action="Allocate at least one Function to the System",
+)
+def system_involves_function(sys: sa.SystemComponent) -> bool:
+    return len(sys.allocated_functions) > 0
 
 
 @_validate.register_rule(
@@ -223,7 +220,6 @@ def function_is_allocated(obj: sa.SystemFunction) -> bool:
         "to the overall model, as it would not interact with other functions."
     ),
     action="consider adding inputs and / or outputs to the Function.",
-    applicable_to="TODO",
 )
 def function_has_inputs_and_outputs(obj: sa.SystemFunction) -> bool:
     return (
@@ -273,7 +269,6 @@ def function_has_inputs_and_outputs(obj: sa.SystemFunction) -> bool:
         "elements."
     ),
     action="add an Exchange Item to the Functional Exchange",
-    applicable_to="TODO",
 )
 def exchange_transmits_items(ex: fa.FunctionalExchange) -> bool:
     return len(ex.exchange_items) > 0
@@ -295,7 +290,6 @@ def exchange_transmits_items(ex: fa.FunctionalExchange) -> bool:
         "Specify the behaviour of the System Capability by creating a system "
         "exchange scenarios or defining functional chains"
     ),
-    applicable_to="TODO",
 )
 def capability_involves_functional_chain_or_scenario(
     cap: sa.Capability,
@@ -321,7 +315,6 @@ def capability_involves_functional_chain_or_scenario(
         "consider introducing interaction with another Entity "
         "(System, Actor), merging or removing this function"
     ),
-    applicable_to="TODO",
 )
 def function_has_external_exchanges(obj: sa.SystemFunction) -> bool:
     owner = obj.owner
@@ -398,7 +391,6 @@ else:
         "this proven practice."
     ),
     action=rule_actions,
-    applicable_to="TODO",
 )
 def behavior_name_follows_verb_noun_pattern(obj) -> bool:
     text = re.sub(r"^\d+: ", "", obj.name)

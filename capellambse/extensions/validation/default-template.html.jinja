@@ -1,7 +1,7 @@
-{#
+{#-
  # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
  # SPDX-License-Identifier: Apache-2.0
- #}
+-#}
 
 <!DOCTYPE html>
 <head>
@@ -138,7 +138,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 
 {# Summary table #}
 <h2>Assessment Summary</h2>
-{% set object_types = ["Capability", "SystemComponent", "SystemFunction", "ComponentExchange", "FunctionalExchange"] %}
+{% set object_types = ["Capability", "SystemActor", "SystemComponent", "SystemFunction", "ComponentExchange", "FunctionalExchange"] %}
 {% set total_objects_of_interest = metrics.get_total_objects(object_types, results) %}
 {% set scores = [] %}
 {% for category in CATEGORIES %}
@@ -166,7 +166,7 @@ We reviewed <strong>{{ total_objects_of_interest.amount }}</strong> model object
   </thead>
   <tbody>
     {% for obj_type in object_types %}
-      {% set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
+      {% set objects = model.validation.search(obj_type) | sort(attribute="name") %}
       {% set total = objects | count %}
       <tr>
         <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
@@ -187,7 +187,7 @@ We reviewed <strong>{{ total_objects_of_interest.amount }}</strong> model object
 
 {% for obj_type in object_types %}
 <h3 id="{{ obj_type }}">{{ obj_type }}</h3>
-{%- set objects = model.search(obj_type, below=model.sa) | sort(attribute="name") %}
+{%- set objects = model.validation.search(obj_type) | sort(attribute="name") %}
 {%- for object in objects if results.by_value(False).by_uuid(object.uuid) %}
   {%- if loop.first %}
     <table>

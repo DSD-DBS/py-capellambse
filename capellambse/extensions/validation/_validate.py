@@ -7,15 +7,17 @@ __all__ = [
     "Category",
     "ElementValidation",
     "ModelValidation",
-    "register_rule",
+    "RealType",
     "Result",
     "Results",
     "Rule",
     "RuleList",
     "Rules",
-    "store_result",
     "Validation",
-    "Validator",
+    "VirtualType",
+    "register_rule",
+    "store_result",
+    "virtual_type",
 ]
 
 import abc
@@ -23,18 +25,110 @@ import collections.abc as cabc
 import dataclasses
 import enum
 import functools
+import itertools
 import logging
 import typing as t
-from itertools import chain
 
 from lxml import etree
 
 import capellambse
 import capellambse.model.modeltypes as mt
-from capellambse import helpers
+from capellambse import helpers, model
 from capellambse.model import common as c
 
 LOGGER = logging.getLogger("capellambse.extensions.validation")
+_T = t.TypeVar("_T", bound=t.Union[c.GenericElement, "VirtualType"])
+
+
+@dataclasses.dataclass(frozen=True)
+class VirtualType(t.Generic[_T]):
+    name: str
+    real_type: type[_T]
+    filter: cabc.Callable[[_T], bool]
+
+    def search(self, model: capellambse.MelodyModel) -> cabc.Iterable[_T]:
+        for i in model.search(self.real_type):
+            if self.filter(i):
+                yield i
+
+
+@dataclasses.dataclass(frozen=True)
+class RealType(t.Generic[_T]):
+    class_: type[_T]
+
+    @property
+    def name(self) -> str:
+        return self.class_.__name__
+
+    def search(self, model: capellambse.MelodyModel) -> cabc.Iterable[_T]:
+        return model.search(self.class_)
+
+
+class _VirtualTypesRegistry(cabc.Mapping[str, t.Union[VirtualType, RealType]]):
+    def __init__(self) -> None:
+        self.__registry: dict[str, VirtualType] = {}
+
+    def __iter__(self) -> cabc.Iterator[str]:
+        yield from self.__registry
+
+    def __len__(self) -> int:
+        return len(self.__registry)
+
+    def __contains__(self, key: object) -> bool:
+        return key in self.__registry
+
+    def __getitem__(self, key: str) -> VirtualType | RealType:
+        try:
+            return self.__registry[key]
+        except KeyError:
+            pass
+
+        _, class_ = c.resolve_handler(key)
+        return RealType(class_)
+
+    def register(self, vtype: VirtualType) -> None:
+        if vtype.name in self:
+            known = self.__registry[vtype.name]
+            raise RuntimeError(f"Virtual type already known: {known}")
+        self.__registry[vtype.name] = vtype
+
+
+_types_registry = _VirtualTypesRegistry()
+
+
+def virtual_type(
+    real_type: str | type[_T],
+) -> cabc.Callable[[cabc.Callable[[_T], bool]], VirtualType[_T]]:
+    def decorate(func: cabc.Callable[[_T], bool]) -> VirtualType[_T]:
+        nonlocal real_type
+        if isinstance(real_type, str):
+            _, real_type = c.resolve_handler(real_type)
+
+        vtype = VirtualType(func.__name__, real_type, func)
+        _types_registry.register(vtype)
+        return vtype
+
+    return decorate
+
+
+@virtual_type(model.oa.OperationalActivity)
+def OperationalActivity(obj):
+    return obj.parent != obj._model.oa.activity_package
+
+
+@virtual_type(model.ctx.SystemFunction)
+def SystemFunction(obj):
+    return obj.parent != obj._model.sa.function_package
+
+
+@virtual_type(model.la.LogicalFunction)
+def LogicalFunction(obj):
+    return obj.parent != obj._model.la.function_package
+
+
+@virtual_type(model.la.LogicalFunction)
+def PhysicalFunction(obj):
+    return obj.parent != obj._model.pa.function_package
 
 
 class Category(mt._StringyEnumMixin, enum.Enum):
@@ -65,13 +159,9 @@ class Result:
 
 ElementType = t.TypeVar("ElementType", bound=c.GenericElement)
 
-Validator = cabc.Callable[
-    [ElementType], t.Union[bool, t.Literal["NotApplicable"]]
-]  # | Callable [[Metric], Result]
-
 
 @dataclasses.dataclass(frozen=True)
-class Rule:
+class Rule(t.Generic[_T]):
     """Common (generic) class representing any validation rule."""
 
     id: str
@@ -80,13 +170,16 @@ class Rule:
     rationale: str
     category: Category
     action: str
-    applicable_to: str
-    validator: Validator
+    validator: cabc.Callable[[_T], bool]
+    """Returns True if the object passed this rule."""
     hyperlink_further_reading: str | None = None
 
-    def __call__(
-        self, obj: c.GenericElement
-    ) -> bool | t.Literal["NotApplicable"]:
+    def find(self, model) -> cabc.Iterator[_T]:
+        for i in model.search(*self.types):
+            if not self.filter or self.filter(i):
+                yield i
+
+    def __call__(self, obj: _T) -> bool:
         return self.validator(obj)
 
     def __hash__(self) -> int:
@@ -99,7 +192,7 @@ class Rule:
 
 
 def _rule_attr_getter(val: str, attr: str) -> Rule | RuleList:
-    all_rules = chain.from_iterable(VALIDATION_RULES.values())
+    all_rules = itertools.chain.from_iterable(VALIDATION_RULES.values())
     rules = [rule for rule in all_rules if getattr(rule, attr) == val]
     if len(rules) == 1:
         return rules[0]
@@ -238,16 +331,19 @@ class Results(dict[Rule, dict[helpers.UUIDString, Result]]):
 
 def register_rule(
     category: Category,
-    types: str
-    | type[c.GenericElement]
-    | cabc.Iterable[str | type[c.GenericElement]],
+    types: (
+        str
+        | VirtualType[_T]
+        | type[_T]
+        | cabc.Iterable[str | VirtualType[_T] | type[_T]]
+    ),
     id: str,
     name: str,
     rationale: str,
     action: str,
-    applicable_to: str,
+    applicable_to: str | None = None,
     hyperlink_further_reading: str | None = None,
-) -> cabc.Callable[[Validator], Validator]:
+) -> cabc.Callable[[cabc.Callable[[_T], bool]], cabc.Callable[[_T], bool]]:
     """Register the validation rule.
 
     The decorator registers the validation rule function (validator)
@@ -255,6 +351,15 @@ def register_rule(
     object type the rule is applicable to. The type will be used to feed
     the validator with inputs (instances of type) during validation.
     """
+    if applicable_to:
+        import warnings
+
+        warnings.warn(
+            "applicable_to is ignored; use virtual types instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
     try:
         VALIDATION_RULES.by_id(id)
         LOGGER.warning(
@@ -266,15 +371,32 @@ def register_rule(
     except KeyError:
         unique_check = True
 
-    def rule_decorator(rule: Validator) -> Validator:
+    if not types:
+        raise TypeError("No 'types' specified")
+    if isinstance(types, type):
+        type_names = [types.__name__]
+    elif isinstance(types, (RealType, VirtualType)):
+        type_names = [types.name]
+    else:
+        type_names = []
+        for i in types:
+            if isinstance(i, str):
+                type_names.append(i)
+            elif isinstance(i, (RealType, VirtualType)):
+                type_names.append(i.name)
+            else:
+                type_names.append(i.__name__)
+
+    def rule_decorator(
+        rule: cabc.Callable[[_T], bool]
+    ) -> cabc.Callable[[_T], bool]:
         rule = Rule(
             id,
             name,
-            _convert_types(types),
+            type_names,
             rationale,
             category,
             action,
-            applicable_to,
             rule,
             hyperlink_further_reading,
         )
@@ -341,27 +463,24 @@ class ModelValidation(Validation):
 
     def validate(self) -> Results:
         """Execute all registered validation rules and store results."""
-        ROOT_FUNCTION_PARENTS = [
-            self._model.oa.activity_package,
-            self._model.sa.function_package,
-            self._model.la.function_package,
-            self._model.pa.function_package,
-        ]
         for category, obj_type_rules in self.rules.items():
-            for _rule in obj_type_rules:
-                for obj in self._model.search(*_rule.types):
-                    if obj.parent in ROOT_FUNCTION_PARENTS:
-                        continue
-
-                    if (value := _rule(obj)) != "NotApplicable":
-                        result = Result(
-                            uuid=obj.uuid,
-                            category=category,
-                            value=value,
-                            object=obj,
-                        )
-                        store_result(_rule, obj, result)
+            for rule in obj_type_rules:
+                for type_name in rule.types:
+                    applicable_type = _types_registry[type_name]
+                    for obj in applicable_type.search(self._model):
+                        if (value := rule(obj)) != "NotApplicable":
+                            result = Result(
+                                uuid=obj.uuid,
+                                category=category,
+                                value=value,
+                                object=obj,
+                            )
+                            store_result(rule, obj, result)
         return self.results
+
+    def search(self, typename: str) -> cabc.Iterable[c.GenericElement]:
+        typeobj = _types_registry[typename]
+        return typeobj.search(self._model)
 
 
 class ElementValidation(Validation):
@@ -370,7 +489,7 @@ class ElementValidation(Validation):
     @property
     def rules(self) -> Rules:
         """Return all registered validation rules for this ModelObject."""
-        return VALIDATION_RULES.by_type(type(self._element))
+        return self._model.validation.rules.by_type(type(self._element))
 
     @property
     def results(self) -> dict[Rule, Result]:
