@@ -30,7 +30,6 @@ def SystemActor(cmp: sa.SystemComponent) -> bool:
         "efficient decision-making."
     ),
     action="fill the description and/or summary text fields",
-    applicable_to="SystemActor",
 )
 def has_non_empty_description_or_summary(
     obj: sa.SystemComponent,

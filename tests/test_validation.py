@@ -22,7 +22,6 @@ TEST_RULE_PARAMS = {
     "name": "Always True",
     "rationale": "True",
     "action": "Nothing",
-    "applicable_to": "Nothing",
 }
 
 
@@ -242,7 +241,7 @@ def test_ModelObject_validation_access(
 
     results = obj.validate()
 
-    assert len(results) == 1
+    assert len(results) >= 1
     assert results[rule_id].uuid == obj.uuid
 
 

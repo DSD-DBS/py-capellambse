@@ -174,10 +174,9 @@ class Rule(t.Generic[_T]):
     """Returns True if the object passed this rule."""
     hyperlink_further_reading: str | None = None
 
-    def find(self, model) -> cabc.Iterator[_T]:
-        for i in model.search(*self.types):
-            if not self.filter or self.filter(i):
-                yield i
+    def find(self, model: capellambse.MelodyModel) -> cabc.Iterator[_T]:
+        for i in self.types:
+            yield from _types_registry[i].search(model)
 
     def __call__(self, obj: _T) -> bool:
         return self.validator(obj)
@@ -210,7 +209,7 @@ class RuleList(list[Rule]):
         def __getattr__(self, key: str) -> cabc.Callable[..., RuleList]:
             ...
 
-    for attr in ("id", "name", "rationale", "action", "applicable_to"):
+    for attr in ("id", "name", "rationale", "action"):
         method = functools.partial(_rule_attr_getter, attr=attr)
         method.__doc__ = f"Filter the validation rules by ``{attr}``"
         vars()[f"by_{attr}"] = method
@@ -341,7 +340,6 @@ def register_rule(
     name: str,
     rationale: str,
     action: str,
-    applicable_to: str | None = None,
     hyperlink_further_reading: str | None = None,
 ) -> cabc.Callable[[cabc.Callable[[_T], bool]], cabc.Callable[[_T], bool]]:
     """Register the validation rule.
@@ -351,15 +349,6 @@ def register_rule(
     object type the rule is applicable to. The type will be used to feed
     the validator with inputs (instances of type) during validation.
     """
-    if applicable_to:
-        import warnings
-
-        warnings.warn(
-            "applicable_to is ignored; use virtual types instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
     try:
         VALIDATION_RULES.by_id(id)
         LOGGER.warning(
@@ -377,6 +366,8 @@ def register_rule(
         type_names = [types.__name__]
     elif isinstance(types, (RealType, VirtualType)):
         type_names = [types.name]
+    elif isinstance(types, str):
+        type_names = [types]
     else:
         type_names = []
         for i in types:
@@ -405,17 +396,6 @@ def register_rule(
         return rule
 
     return rule_decorator
-
-
-def _convert_types(
-    types: str
-    | type[c.GenericElement]
-    | cabc.Iterable[str | type[c.GenericElement]],
-) -> list[str]:
-    if isinstance(types, (str, type(c.GenericElement))):
-        types = [types]
-    assert isinstance(types, cabc.Iterable)
-    return [type if isinstance(type, str) else type.__name__ for type in types]
 
 
 def store_result(rule: Rule, obj: c.GenericElement, result: Result) -> None:
@@ -466,16 +446,14 @@ class ModelValidation(Validation):
         for category, obj_type_rules in self.rules.items():
             for rule in obj_type_rules:
                 for type_name in rule.types:
-                    applicable_type = _types_registry[type_name]
-                    for obj in applicable_type.search(self._model):
-                        if (value := rule(obj)) != "NotApplicable":
-                            result = Result(
-                                uuid=obj.uuid,
-                                category=category,
-                                value=value,
-                                object=obj,
-                            )
-                            store_result(rule, obj, result)
+                    for obj in self.search(type_name):
+                        result = Result(
+                            uuid=obj.uuid,
+                            category=category,
+                            value=rule(obj),
+                            object=obj,
+                        )
+                        store_result(rule, obj, result)
         return self.results
 
     def search(self, typename: str) -> cabc.Iterable[c.GenericElement]:
