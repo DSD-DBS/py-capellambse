@@ -22,12 +22,11 @@ def SystemActor(cmp: sa.SystemComponent) -> bool:
     id="Rule-001",
     name="Object has a description or summary",
     rationale=(
-        "A comprehensive description or summary for an object is "
-        "essential to ensure a clear understanding of its purpose, "
-        "function, and role within the system. Providing a concise, "
-        "yet informative description fosters better collaboration "
-        "among team members, reduces ambiguity, and facilitates "
-        "efficient decision-making."
+        "A comprehensive description or summary for an object is essential to"
+        " ensure a clear understanding of its purpose, function, and role"
+        " within the system. Providing a concise, yet informative description"
+        " fosters better collaboration among team members, reduces ambiguity,"
+        " and facilitates efficient decision-making."
     ),
     action="fill the description and/or summary text fields",
 )
@@ -43,18 +42,16 @@ def has_non_empty_description_or_summary(
     id="Rule-002",
     name="Capability involves an Actor",
     rationale=(
-        "By involving a primary actor and considering the supporting "
-        "actors in a System Capability, the system design highlights "
-        "the relationships between system elements and the roles they "
-        "play in achieving the desired outcomes. This approach enables "
-        "more effective communication among stakeholders, facilitates "
-        "traceability, and fosters collaboration throughout the system "
-        "development process."
+        "By involving a primary actor and considering the supporting actors in"
+        " a System Capability, the system design highlights the relationships"
+        " between system elements and the roles they play in achieving the"
+        " desired outcomes. This approach enables more effective communication"
+        " among stakeholders, facilitates traceability, and fosters"
+        " collaboration throughout the system development process."
     ),
     action=(
-        "involve a primary Actor that would benefit from the "
-        "Capability and any supporting Actors required for the "
-        "desired outcome"
+        "involve a primary Actor that would benefit from the Capability and"
+        " any supporting Actors required for the desired outcome"
     ),
 )
 def capability_involves_an_actor(obj: sa.Capability) -> bool:
@@ -67,9 +64,9 @@ def capability_involves_an_actor(obj: sa.Capability) -> bool:
     id="Rule-003",
     name="Capability involves at least one Actor Function",
     rationale=(
-        "A well-defined Capability should involve at least one Actor "
-        "Function. This helps understanding the functional contribution "
-        "of an Actor in the scope of the Capability."
+        "A well-defined Capability should involve at least one Actor Function."
+        " This helps understanding the functional contribution of an Actor in"
+        " the scope of the Capability."
     ),
     action="involve an actor function in the Capability",
 )
@@ -88,9 +85,9 @@ def capability_involves_an_actor_function(obj: sa.Capability) -> bool:
     id="Rule-004",
     name="Capability involves at least one System Function",
     rationale=(
-        "A well-defined Capability should involve at least one System "
-        "Function. This helps understanding the functional contribution "
-        "of the System in the scope of the Capability."
+        "A well-defined Capability should involve at least one System"
+        " Function. This helps understanding the functional contribution of"
+        " the System in the scope of the Capability."
     ),
     action="involves a system function in the Capability",
 )
@@ -109,20 +106,19 @@ def capability_involves_a_system_function(obj: sa.Capability) -> bool:
     id="Rule-005",
     name="IS- and SHOULD entity involvements match",
     rationale=(
-        "Capability should involve both Actors and Functions, "
-        "with Functions allocated to respective entities (Actor "
-        "or System). A mismatch between these two lists might "
-        "suggest that a function is linked to an uninvolved actor, "
-        "or an actor is involved without having any associated "
-        "functions for that capability. Ensuring proper alignment "
-        "helps maintain logical consistency and efficiency in the "
-        "system design."
+        "Capability should involve both Actors and Functions, with Functions"
+        " allocated to respective entities (Actor or System). A mismatch"
+        " between these two lists might suggest that a function is linked to"
+        " an uninvolved actor, or an actor is involved without having any"
+        " associated functions for that capability. Ensuring proper alignment"
+        " helps maintain logical consistency and efficiency in the system"
+        " design."
     ),
     action=(
-        "To correct the mismatch, review and update the "
-        "Capability's involved Actors and Functions, ensuring each "
-        "Actor contributes at least one Function, and each Function "
-        "is allocated to an appropriate Actor or System"
+        "To correct the mismatch, review and update the Capability's involved"
+        " Actors and Functions, ensuring each Actor contributes at least one"
+        " Function, and each Function is allocated to an appropriate Actor or"
+        " System"
     ),
 )
 def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
@@ -137,17 +133,17 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
     id="Rule-006",
     name="Capability has a defined pre-condition",
     rationale=(
-        "Defining a pre-condition for a Capability helps clarify the "
-        "necessary state of the primary Actor before interacting with "
-        "the System, which enables a better understanding of the context "
-        "and ensures prerequisites are met for successful system "
-        "performance within the scope of the Capability."
+        "Defining a pre-condition for a Capability helps clarify the necessary"
+        " state of the primary Actor before interacting with the System, which"
+        " enables a better understanding of the context and ensures"
+        " prerequisites are met for successful system performance within the"
+        " scope of the Capability."
     ),
     action=(
-        "Define a pre-condition for this Capability that describes the "
-        "initial state or requirements of the primary Actor before "
-        "interacting with the System, to provide clarity on the "
-        "starting context for the Capability."
+        "Define a pre-condition for this Capability that describes the initial"
+        " state or requirements of the primary Actor before interacting with"
+        " the System, to provide clarity on the starting context for the"
+        " Capability."
     ),
 )
 def has_precondition(obj) -> bool:
@@ -160,18 +156,17 @@ def has_precondition(obj) -> bool:
     id="Rule-007",
     name="Capability has a defined post-condition",
     rationale=(
-        "Defining a post-condition for a Capability helps establish "
-        "the expected state of the primary Actor after interacting "
-        "with the System, ensuring clear understanding of the desired "
-        "outcome and enabling effective evaluation of system performance "
-        "within the scope of the Capability."
+        "Defining a post-condition for a Capability helps establish the"
+        " expected state of the primary Actor after interacting with the"
+        " System, ensuring clear understanding of the desired outcome and"
+        " enabling effective evaluation of system performance within the scope"
+        " of the Capability."
     ),
     action=(
-        "Define a post-condition for this Capability that describes the "
-        "expected state or outcome for the primary Actor after "
-        "interacting with the System, to ensure clear understanding of "
-        "the desired results and enable effective evaluation of system "
-        "performance."
+        "Define a post-condition for this Capability that describes the"
+        " expected state or outcome for the primary Actor after interacting"
+        " with the System, to ensure clear understanding of the desired"
+        " results and enable effective evaluation of system performance."
     ),
 )
 def has_postcondition(obj):
@@ -184,10 +179,10 @@ def has_postcondition(obj):
     id="SF-030",
     name="Function shall be allocated to the System or an Actor.",
     rationale=(
-        "An unallocated Function can lead to ambiguity, as it's unclear "
-        "which entity is responsible for its implementation. Allocating the "
-        "Function to the System or an Actor will clarify ownership and "
-        "ensure proper delivery within the overall system context."
+        "An unallocated Function can lead to ambiguity, as it's unclear which"
+        " entity is responsible for its implementation. Allocating the"
+        " Function to the System or an Actor will clarify ownership and ensure"
+        " proper delivery within the overall system context."
     ),
     action="allocate Function to the System or an Actor, or delete it",
 )
@@ -215,8 +210,8 @@ def system_involves_function(sys: sa.SystemComponent) -> bool:
     id="SF-040",
     name="Function shall have at least one input or output",
     rationale=(
-        "A Function without inputs or outputs may not effectively contribute "
-        "to the overall model, as it would not interact with other functions."
+        "A Function without inputs or outputs may not effectively contribute"
+        " to the overall model, as it would not interact with other functions."
     ),
     action="consider adding inputs and / or outputs to the Function.",
 )
@@ -233,23 +228,30 @@ def function_has_inputs_and_outputs(obj: sa.SystemFunction) -> bool:
 #     category=_validate.Category.RECOMMENDED,
 #     type=ctx.SystemFunction,
 #     id="SF-050",
-#     name="A System Function shall be connected to at least one System Actor
-#  through a Functional Exchange.",
-#     rationale="A System Function is justified only if it provides some
-# useful service directly to an System Actor. BUT: there are functions
-#  connected only to other functions, \
-#     which then connect to actors. So the rule should read: A System
-#  Function shall be connected directly or indirectly (via other functions)
-# to at least one System Actor through a Functional Exchange.",
-#     actions=["Connect the System Function via a Functional Exchange to a
-# System Actor or to another System Function which is (directly or
-# indirectly) connected \
-#     to a System Actor or delete the System Function."],
+#     name=(
+#         "A System Function shall be connected to at least one System Actor"
+#         " through a Functional Exchange."
+#     ),
+#     rationale=(
+#         "A System Function is justified only if it provides some useful"
+#         " service directly to an System Actor. BUT: there are functions"
+#         " connected only to other functions, which then connect to actors. So"
+#         " the rule should read: A System Function shall be connected directly"
+#         " or indirectly (via other functions) to at least one System Actor"
+#         " through a Functional Exchange."
+#     ),
+#     action=(
+#         "Connect the System Function via a Functional Exchange to a System"
+#         " Actor or to another System Function which is (directly or"
+#         " indirectly) connected to a System Actor or delete the System"
+#         " Function."
+#     ),
 # )
-# def function_of_system_exchanges_with_actor(func: ctx.SystemFunction)
-# -> bool:
-#     using_actors = sum(ex.source.is_actor or ex.target.is_actor for ex
-# in func.related_exchanges)
+# def function_of_system_exchanges_with_actor(func: ctx.SystemFunction) -> bool:
+#     using_actors = sum(
+#         ex.source.is_actor or ex.target.is_actor
+#         for ex in func.related_exchanges
+#     )
 #     return bool(using_actors)
 # TODO: the above mentioned .condition/.filter attribute is needed here too,
 # to constrain this rule to just functions allcoated to the system (and
@@ -262,10 +264,9 @@ def function_has_inputs_and_outputs(obj: sa.SystemFunction) -> bool:
     id="SFE-020",
     name="Functional Exchange should have an allocated Exchange Item.",
     rationale=(
-        "Allocating Exchange Items to Functional Exchanges clarifies the "
-        "data, material, or energy being exchanged between functions, and "
-        "allows for greater understanding and detailing of the exchanged "
-        "elements."
+        "Allocating Exchange Items to Functional Exchanges clarifies the data,"
+        " material, or energy being exchanged between functions, and allows"
+        " for greater understanding and detailing of the exchanged elements."
     ),
     action="add an Exchange Item to the Functional Exchange",
 )
@@ -279,15 +280,15 @@ def exchange_transmits_items(ex: fa.FunctionalExchange) -> bool:
     id="SC-200",
     name="System Capability should represent a specific behaviour",
     rationale=(
-        "To ensure a System Capability is well-defined and concrete, it "
-        "should be based on an actual behavior or use case with an "
-        "appropriate level of detail. Work Instructions ARCH.052 "
-        "'Create initial system exchange scenarios' or ARCH.053 'Create "
-        "initial system functional chains' may help you getting there."
+        "To ensure a System Capability is well-defined and concrete, it should"
+        " be based on an actual behavior or use case with an appropriate level"
+        " of detail. Work Instructions ARCH.052 'Create initial system"
+        " exchange scenarios' or ARCH.053 'Create initial system functional"
+        " chains' may help you getting there."
     ),
     action=(
-        "Specify the behaviour of the System Capability by creating a system "
-        "exchange scenarios or defining functional chains"
+        "Specify the behaviour of the System Capability by creating a system"
+        " exchange scenarios or defining functional chains"
     ),
 )
 def capability_involves_functional_chain_or_scenario(
@@ -302,17 +303,17 @@ def capability_involves_functional_chain_or_scenario(
     id="VK-001-XD",
     name="Function is connected to another Entity's function (System, Actor)",
     rationale=(
-        "To keep system analysis solution-agnostic, it is important to ensure "
-        "that System-level functions focus on stakeholder-facing interactions "
-        "rather than functional decomposition within a component. This "
-        "approach emphasizes component responsibilities towards other actors, "
-        "fostering a better understanding of the system's intended behavior "
-        "and facilitating alignment with stakeholder needs, while avoiding "
-        "premature commitment to specific solutions."
+        "To keep system analysis solution-agnostic, it is important to ensure"
+        " that System-level functions focus on stakeholder-facing interactions"
+        " rather than functional decomposition within a component. This"
+        " approach emphasizes component responsibilities towards other actors,"
+        " fostering a better understanding of the system's intended behavior"
+        " and facilitating alignment with stakeholder needs, while avoiding"
+        " premature commitment to specific solutions."
     ),
     action=(
-        "consider introducing interaction with another Entity "
-        "(System, Actor), merging or removing this function"
+        "consider introducing interaction with another Entity (System, Actor),"
+        " merging or removing this function"
     ),
 )
 def function_has_external_exchanges(obj: sa.SystemFunction) -> bool:
@@ -371,9 +372,8 @@ elif NLP is None:
 else:
     rule_name = "Behavior name follows verb-noun pattern"
     rule_actions = (
-        "change the object name to follow "
-        'the pattern of "VERB NOUN",'
-        ' for example "brew coffee"'
+        'change the object name to follow the pattern of "VERB NOUN", for'
+        ' example "brew coffee"'
     )
 
 
@@ -383,11 +383,11 @@ else:
     id="Rule-008",
     name=rule_name,
     rationale=(
-        "Using the verb-noun pattern for naming behaviors promotes clarity, "
-        "consistency, and effective communication across the system. Adhering "
-        "to this convention simplifies understanding and management for all "
-        "stakeholders. Please revise any non-compliant names to align with "
-        "this proven practice."
+        "Using the verb-noun pattern for naming behaviors promotes clarity,"
+        " consistency, and effective communication across the system. Adhering"
+        " to this convention simplifies understanding and management for all"
+        " stakeholders. Please revise any non-compliant names to align with"
+        " this proven practice."
     ),
     action=rule_actions,
 )
@@ -413,7 +413,3 @@ def behavior_name_follows_verb_noun_pattern(obj) -> bool:
         return True
 
     return False
-
-
-# TODO: figure how to ignore / exclude Root System Function
-# if obj == model.la.root_component: ...
