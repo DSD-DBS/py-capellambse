@@ -84,8 +84,7 @@ def quantify_model_layers(
 
 
 def get_passed_and_total(
-    result_container: v.Results | dict[v.Rule, v.Result],
-    type: str | None = None,
+    result_container: v.Results | dict[v.Rule, v.Result], /
 ) -> tuple[int, int]:
     """Return the number of passed and total validation rules."""
     results: cabc.Iterable[v.Result]
@@ -98,9 +97,6 @@ def get_passed_and_total(
 
     total, passed = 0, 0
     for result in results:
-        if type and type != result.object.__class__.__name__:
-            continue
-
         total += 1
         passed += result.value
     return passed, total

@@ -173,7 +173,7 @@ We reviewed <strong>{{ total_objects_of_interest.amount }}</strong> model object
         <td>{{ total }}</td>
         {% for category in CATEGORIES %}
           {% set result = results.by_category(category).by_type(obj_type) %}
-          {% set passed, total_checks = metrics.get_passed_and_total(result, type=obj_type) %}
+          {% set passed, total_checks = metrics.get_passed_and_total(result) %}
           <td>
             {{ show_compliance_score(passed, total_checks) }}
           </td>
