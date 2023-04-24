@@ -152,8 +152,8 @@ class Result:
         """Return the representation of a result."""
         obj_repr = self.object._short_repr_()
         return (
-            f"Result(uuid={self.uuid!r}, category={self.category!r}"
-            f"value={self.value!r}, object={obj_repr})"
+            f"Result(uuid={self.uuid!r}, category={self.category!r},"
+            f" value={self.value!r}, object={obj_repr})"
         )
 
 
