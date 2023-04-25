@@ -41,12 +41,11 @@ Filtered project derivation
 ---------------------------
 
 If you use the `Capella Filtering extension`__, you can automatically derive
-filtered projects from the main project.
+filtered projects from the main project. The derived projects are stored as
+Gitlab job artifacts, and can optionally be pushed to separate branches.
+
 
 __ https://github.com/eclipse/capella-filtering
-
-This can also be combined with pre-rendering cached diagram images for each
-derived model.
 
 Add the following code to your ``.gitlab-ci.yml``:
 
@@ -56,30 +55,18 @@ Add the following code to your ``.gitlab-ci.yml``:
     - remote: https://raw.githubusercontent.com/DSD-DBS/py-capellambse/${CAPELLAMBSE_REVISION}/ci-templates/gitlab/filter-derive.yml
 
   variables:
+    CAPELLA_VERSION: 6.0.0 # Semantic Capella version
     ENTRYPOINT: test/test.aird # Entry point to the .aird file of the model (relative from root level of the repository)
+    CAPELLAMBSE_REVISION: release-0.5 # Set the capellambse revision. Defaults to release-0.5.
 
   derive:
-    # Use the following line to only derive filtered models.
-    extends: .derive
-    # Use this instead if you also want to generate diagrams after derivation.
-    extends: .derive-and-generate-diagrams
-
     # If you want to change any settings (see filter-derive.yml),
     # add a variables section, like so:
     variables:
-      CAPELLA_DOCKERIMAGE: some/image/name:{VERSION}
+
+      # Push derived model to individual branches.
+      # The branch name is 'derived/<derived-project-name>'.
+      # Defaults to 1, set it to 0 if pushing in separate branches is not wanted.
+      PUSH_DERIVED_MODELS: 1
+
       DERIVE_RESULTS: 01234567-89ab-cdef-0123-456789abcdef;My Result 1;My Result 2
-
-If your Gitlab runner does not support Docker-in-Docker, you can still use this
-template, but you'll have to specify slightly different options. In this case,
-the Capella image you use must have a Python interpreter installed.
-
-.. code:: yaml
-
-  derive:
-    extends: .derive # As above
-    image:
-      name: some/image/name:6.0.0 # You have to pre-select the correct version manually
-      entrypoint: [""]
-    variables:
-      CAPELLA_EXECUTABLE: /opt/capella/capella-in-xvfb.sh

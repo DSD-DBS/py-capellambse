@@ -25,7 +25,7 @@ generate-model-badge:
     - git add "$OUTPUT_FILE"
     - "if git diff --cached --exit-code &> /dev/null; then exit 0; fi"
     - 'git commit -m "$COMMIT_MSG"'
-    - git push -o ci.skip --set-upstream "https://${GIT_USERNAME:?}:${GIT_PASSWORD:?}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:$CI_COMMIT_BRANCH"
+    - git push -o ci.skip "https://${GIT_USERNAME:?}:${GIT_PASSWORD:?}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "HEAD:$CI_COMMIT_BRANCH"
   artifacts:
     paths:
       - "$OUTPUT_FILE"

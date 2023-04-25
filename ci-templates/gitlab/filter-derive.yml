@@ -2,66 +2,84 @@
 # SPDX-License-Identifier: Apache-2.0
 # yaml-language-server: $schema=https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json
 
-.derive:
-  rules:
-    - if: $CI_COMMIT_BRANCH
+derive:
+  image:
+    name: $DOCKER_REGISTRY/capella/cli:${CAPELLA_DOCKER_IMAGES_TAG}
+    entrypoint: [""]
 
-  script: &script-derive
-    - if [[ -n $DERIVE_RESULTS ]]; then mapfile -d ";" -t derive_results < <(echo -n "$DERIVE_RESULTS"); else derive_results=(); fi
+  script:
+    - |
+      if [[ -z "$MODEL_MODIFIER_EMAIL" ]]; then
+        echo '$MODEL_MODIFIER_EMAIL is required. Please set the environment variable.'
+        exit 1;
+      fi
+    - |
+      if [[ -z "$GIT_USERNAME" || -z "$GIT_PASSWORD" ]]; then
+        echo '$GIT_USERNAME and $GIT_PASSWORD are required. Please set the environment variables.'
+        exit 1;
+      fi
+
+    - |
+      if [[ -n $DERIVE_RESULTS ]]; then
+        mapfile -d ";" -t derive_results < <(echo -n "$DERIVE_RESULTS");
+      else
+        derive_results=();
+      fi
 
     # Reset branch. This is helpful when chaining jobs
     # and a previous job pushes changes that should be
     # considered for the model badge generation.
-    - git fetch
-    - git reset --hard origin/$CI_COMMIT_BRANCH
-
-    - pip install "capellambse[cli] @ git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
-
-    - python -m capellambse.extensions.filtering derive -m "${ENTRYPOINT:?}" -o derived-projects -p '{result.name}' "${derive_results[@]/#/--result=}" "$(if [[ -n $CAPELLA_DOCKERIMAGE ]]; then echo "--docker=$CAPELLA_DOCKERIMAGE"; else echo "--exe=$CAPELLA_EXECUTABLE"; fi)"
+    - |
+      if [[ -n $CI_COMMIT_BRANCH ]]; then
+        git fetch;
+        git reset --hard origin/$CI_COMMIT_BRANCH;
+      fi
+    - pip install "capellambse[cli] @ git+https://github.com/DSD-DBS/py-capellambse.git@${CAPELLAMBSE_REVISION:-release-0.5}"
+    - export DISPLAY=:99
+    - |
+      xvfb-run python \
+        -m capellambse.extensions.filtering derive \
+        -m "${ENTRYPOINT:?}" \
+        -o derived-projects \
+        -p '{result.name}' \
+        "${derive_results[@]/#/--result=}" \
+        --exe="/opt/capella/capella"
+    - |
+      git config --global user.email "${MODEL_MODIFIER_EMAIL:?}";
+      git config --global user.name "Filtering model modifier";
+      mkdir -p .git/info && echo "derived-projects/" > .git/info/exclude
+      if [[ "${PUSH_DERIVED_MODELS:-1}" == "1" ]]; then
+        for result in derived-projects/*; do
+          RESULT_DIR_NAME="${result#derived-projects/}"
+          DERIVED_BRANCH_NAME="$(echo "derived/$RESULT_DIR_NAME" | sed 's/[^a-zA-Z0-9.-_]/-/g')";
+          git switch "$DERIVED_BRANCH_NAME" || git switch --orphan "$DERIVED_BRANCH_NAME";
+          cp -r "$result/." .
+          git add .
+          git commit -m "feat: Add/update derived model '$RESULT_DIR_NAME'"
+          git push "https://${GIT_USERNAME:?}:${GIT_PASSWORD:?}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" "$DERIVED_BRANCH_NAME"
+        done
+      fi
 
   artifacts:
     paths:
       - "derived-projects"
 
   variables:
-    # The path to the model's entrypoint, i.e. the main AIRD file,
-    # relative to the repository root.
-    # Mandatory.
-    #ENTRYPOINT: ""
-
-    # Path to the 'capella' executable. May contain a '{VERSION}' placeholder,
-    # which is replaced by the model's Capella version (e.g. '6.0.0').
-    # The default assumes that Capella is installed into /opt/capella, and
-    # has the correct version for this model.
-    CAPELLA_EXECUTABLE: /opt/capella/capella
-    # Alternatively, set this to the name of a Docker image whose entrypoint is
-    # the Capella binary. CAPELLA_EXECUTABLE will be ignored.
-    #CAPELLA_DOCKERIMAGE: ""
-
     # Limit the derivation to the listed results.
     # A semicolon separated list of result names and/or their UUIDs.
     # Default: Empty, which means derive all results in the model.
     DERIVE_RESULTS: ""
 
-    # Request a specific capellambse version to be installed.
-    # Mandatory.
-    #CAPELLAMBSE_REVISION: ""
+variables:
+  # This is a workaround to set a default value until the following epic is implemented:
+  # https://gitlab.com/groups/gitlab-org/-/epics/7437
+  # Variables defined outside of jobs (globally) have a low precedence, so it's easy to overwrite it.
+  # When the image is overwritten, the variable is ignored.
+  # Otherwise, we recommend to set it to a specific tag.
+  # See the available list of tags here: https://github.com/DSD-DBS/capella-dockerimages/releases
+  CAPELLA_DOCKER_IMAGES_REVISION: main
 
-
-.derive-and-generate-diagrams:
-  extends: .derive
-  script:
-    - *script-derive
-    - for result in derived-project/*; do ( cd "$result" || exit; python -m capellambse.diagram_cache -m "${result##*/}.aird" -o "../../diagram_cache/${result##*/}" -f "$DIAGRAM_FORMAT" "$(if [[ -n $CAPELLA_DOCKERIMAGE ]]; then echo "--docker=$CAPELLA_DOCKERIMAGE"; else echo "--exe=$CAPELLA_EXECUTABLE"; fi)"); done
-
-  artifacts:
-    paths:
-      - "diagram_cache"
-
-  variables:
-    # The same variables as above apply here as well.
-
-    # The format to export the diagrams in.
-    # Supported formats include "bmp", "gif", "jpg", "png", "svg".
-    # Defaults to svg.
-    DIAGRAM_FORMAT: svg
+  # Depending on the local environment, images can be tagged differently.
+  # In this case, we use the tag, which is also used by the predefined images:
+  # https://dsd-dbs.github.io/capella-dockerimages/capella/introduction/#tagging-schema-for-prebuilt-images
+  CAPELLA_DOCKER_IMAGES_TAG: ${CAPELLA_VERSION}-selected-dropins-${CAPELLA_DOCKER_IMAGES_REVISION}
