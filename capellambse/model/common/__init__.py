@@ -125,6 +125,10 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
             )
 
     def register_xtype_handler(cls: type[T]) -> type[T]:
+        # Avoid double registration when executing an extension as module
+        if cls.__module__ == "__main__":
+            return cls
+
         if not xtype_strs:
             xtype_strs.append(build_xtype(cls))
 
