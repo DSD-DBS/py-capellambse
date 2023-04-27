@@ -6,14 +6,19 @@ from __future__ import annotations
 
 import collections
 import collections.abc as cabc
+import contextlib
+import errno
 import functools
 import html
 import importlib.resources as imr
 import itertools
+import logging
 import math
 import operator
 import pathlib
 import re
+import sys
+import time
 import typing as t
 
 import lxml.html
@@ -24,6 +29,13 @@ from PIL import ImageFont
 
 import capellambse
 import capellambse._namespaces as _n
+
+if sys.platform.startswith("win"):
+    import msvcrt
+else:
+    import fcntl
+
+LOGGER = logging.getLogger(__name__)
 
 ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
 FALLBACK_FONT = "OpenSans-Regular.ttf"
@@ -114,6 +126,47 @@ def normalize_pure_path(
             parts.append(i)
 
     return pathlib.PurePosixPath(*parts)
+
+
+if sys.platform.startswith("win"):
+
+    @contextlib.contextmanager
+    def flock(file: pathlib.Path) -> t.Iterator[None]:
+        file = file.resolve()
+        logged = False
+        with file.open("wb") as lock:
+            while True:
+                try:
+                    msvcrt.locking(lock.fileno(), msvcrt.LK_LOCK, 1)
+                except OSError as err:
+                    if err.errno == errno.EDEADLOCK:
+                        if not logged:
+                            LOGGER.debug("Waiting for lock file %s", file)
+                            logged = True
+                        time.sleep(1)
+                    else:
+                        raise
+                else:
+                    break
+
+            try:
+                yield
+            finally:
+                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+
+else:
+
+    @contextlib.contextmanager
+    def flock(file: pathlib.Path) -> t.Iterator[None]:
+        file = file.resolve()
+        with file.open("wb") as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                LOGGER.debug("Waiting for lock file %s", file)
+                fcntl.flock(lock, fcntl.LOCK_EX)
+
+            yield
 
 
 # Text processing and rendering

@@ -677,7 +677,7 @@ class GitFileHandler(FileHandler):
         if isinstance(path, pathlib.WindowsPath):
             path = pathlib.Path(str(path)[1:])
         assert path.is_absolute()
-        self.cache_dir = path.resolve()
+        self.__repo = self.cache_dir = path.resolve()
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1f\x7f"*/:<>?\\|]+'
@@ -685,7 +685,7 @@ class GitFileHandler(FileHandler):
             str(self.path).encode("utf-8", errors="surrogatepass")
         ).hexdigest()
         path_slug = re.sub(slug_pattern, "-", str(self.path))
-        self.cache_dir = pathlib.Path(
+        self.__repo = self.cache_dir = pathlib.Path(
             capellambse.dirs.user_cache_dir,
             "models",
             path_hash,
@@ -716,7 +716,10 @@ class GitFileHandler(FileHandler):
     def __resolve_remote_ref(self, ref: str) -> tuple[str, str]:
         """Resolve the given ``ref`` on the remote."""
         LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
-        listing = self._git("ls-remote", self.path, ref, encoding="utf-8")
+        listing = self.__git_nolock(
+            "ls-remote", self.path, ref, encoding="utf-8"
+        )
+        assert isinstance(listing, str)
         if not listing:
             if not _git_object_name.search(ref):
                 raise ValueError(f"Ref does not exist on remote: {ref}")
@@ -820,6 +823,16 @@ class GitFileHandler(FileHandler):
         ...
 
     def _git(
+        self,
+        *cmd: t.Any,
+        env: cabc.Mapping[str, str] | None = None,
+        silent: bool = False,
+        **kw: t.Any,
+    ) -> bytes | str:
+        with capellambse.helpers.flock(self.__repo / "capellambse.lock"):
+            return self.__git_nolock(*cmd, env=env, silent=silent, **kw)
+
+    def __git_nolock(
         self,
         *cmd: t.Any,
         env: cabc.Mapping[str, str] | None = None,
