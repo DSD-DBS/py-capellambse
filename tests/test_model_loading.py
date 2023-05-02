@@ -5,11 +5,16 @@
 from __future__ import annotations
 
 import base64
+import contextlib
+import errno
+import logging
 import pathlib
 import re
 import shutil
+import subprocess
 import sys
 from importlib import metadata
+from unittest import mock
 
 import pytest
 import requests_mock
@@ -45,6 +50,47 @@ def test_model_loading_via_GitFileHandler():
     capellambse.MelodyModel(
         path, entrypoint="tests/data/melodymodel/5_0/Melody Model Test.aird"
     )
+
+
+def test_GitFileHandler_locks_repo_during_tasks(monkeypatch, caplog):
+    did_ls_files = False
+
+    def mock_run(cmd, *args, encoding="", **kw):
+        del args, kw
+        nonlocal did_ls_files
+        if len(cmd) >= 2 and cmd[1] == "ls-remote":
+            assert not did_ls_files
+            did_ls_files = True
+            data = "0123456789abcdef0123456789abcdef01234567\tHEAD"
+            mock_return = mock.Mock()
+            mock_return.stdout = data if encoding else data.encode("ascii")
+            mock_return.stderr = "" if encoding else b""
+            mock_return.returncode = 0
+            return mock_return
+
+        assert did_ls_files
+        raise FileNotFoundError(errno.ENOENT, "--mocked end of test--")
+
+    did_flock = False
+
+    @contextlib.contextmanager
+    def mock_flock(file):
+        del file
+        nonlocal did_flock
+        assert not did_flock
+        did_flock = True
+        yield
+
+    monkeypatch.setattr(subprocess, "run", mock_run)
+    monkeypatch.setattr(capellambse.helpers, "flock", mock_flock)
+    caplog.set_level(logging.DEBUG)
+    caplog.clear()
+
+    with pytest.raises(FileNotFoundError, match="--mocked end of test--$"):
+        capellambse.get_filehandler("git+https://domain.invalid/demo.git")
+
+    assert did_ls_files
+    assert did_flock
 
 
 def test_model_loading_from_badpath_raises_FileNotFoundError():

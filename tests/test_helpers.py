@@ -1,7 +1,11 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
+import errno
+import logging
 import pathlib
+import re
+import sys
 
 import pytest
 
@@ -93,3 +97,72 @@ def test_flatten_html_formats_unordered_lists(
     input: str, expected: str
 ) -> None:
     assert helpers.flatten_html_string(input) == expected
+
+
+if sys.platform.startswith("win"):
+    import msvcrt
+
+    def test_flock_locks_and_unlocks_again(monkeypatch, tmpdir):
+        calls = []
+
+        def mock_locking(_1, mode, _2):
+            nonlocal calls
+            calls.append(mode)
+
+        monkeypatch.setattr(msvcrt, "locking", mock_locking)
+        tmpfile = pathlib.Path(tmpdir, "capellambse.lock")
+
+        with helpers.flock(tmpfile):
+            pass
+
+        assert calls == [msvcrt.LK_LOCK, msvcrt.LK_UNLCK]
+
+    def test_flock_retries_after_EDEADLOCK(monkeypatch, tmpdir):
+        locks = 0
+
+        def mock_locking(_1, mode, _2):
+            nonlocal locks
+            if mode == msvcrt.LK_LOCK:
+                locks += 1
+                if locks < 2:
+                    raise OSError(errno.EDEADLOCK, "First non-blocking call")
+
+        monkeypatch.setattr(msvcrt, "locking", mock_locking)
+        tmpfile = pathlib.Path(tmpdir, "capellambse.lock")
+
+        with helpers.flock(tmpfile):
+            pass
+
+        assert locks == 2
+
+else:
+    import fcntl
+
+    def test_flock_blocks_indefinitely(monkeypatch, tmpdir, caplog):
+        call_order = []
+
+        def mock_flock(_, flags):
+            nonlocal call_order
+            if flags & fcntl.LOCK_NB == fcntl.LOCK_NB:
+                call_order.append("nonblock")
+                raise OSError(errno.EAGAIN, "Non-blocking flock mocks failure")
+            else:
+                call_order.append("blocking")
+
+        caplog.set_level(logging.DEBUG)
+        monkeypatch.setattr(fcntl, "flock", mock_flock)
+        tmpfile = pathlib.Path(tmpdir, "capellambse.lock")
+
+        with helpers.flock(tmpfile):
+            pass
+
+        logs = [
+            i.message
+            for i in caplog.records
+            if i.name == "capellambse.helpers"
+        ]
+        assert any(
+            re.fullmatch(r"Waiting for lock file /.*/capellambse\.lock", i)
+            for i in logs
+        )
+        assert call_order == ["nonblock", "blocking"]
