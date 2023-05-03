@@ -260,9 +260,10 @@ class ModelFile:
         fragroot = self.root
         olduri = fragroot.nsmap.get(name)
         if olduri is not None and olduri != uri:
-            raise ValueError(
-                f"Namespace {name!r} already registered with URI {olduri!r}"
+            LOGGER.warning(
+                "Namespace %r already registered with URI %r", name, olduri
             )
+            return
         if uri == olduri:
             return
 
