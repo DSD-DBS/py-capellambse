@@ -19,6 +19,7 @@ U = t.TypeVar("U")
 
 
 XTYPE_ANCHORS = {
+    "capellambse.model": "org.polarsys.capella.core.data.capellamodeller",
     "capellambse.model.crosslayer": "org.polarsys.capella.core.data",
     "capellambse.model.layers": "org.polarsys.capella.core.data",
 }
@@ -45,13 +46,16 @@ These keys map to a further dictionary.  This second layer maps from the
 
 
 def build_xtype(class_: type[ModelObject]) -> str:
-    for anchor, package in XTYPE_ANCHORS.items():
-        if class_.__module__.startswith(anchor):
-            module = class_.__module__[len(anchor) :]
-            break
-    else:
-        package = ""  # https://github.com/PyCQA/pylint/issues/1175
+    anchor = package = ""
+    for a, p in XTYPE_ANCHORS.items():
+        if len(a) > len(anchor) and class_.__module__.startswith(a):
+            anchor = a
+            package = p
+
+    if not anchor:
         raise TypeError(f"Module is not an xtype anchor: {class_.__module__}")
+
+    module = class_.__module__[len(anchor) :]
     clsname = class_.__name__
     return f"{package}{module}:{clsname}"
 

@@ -54,6 +54,7 @@ XT_LIBRARY = "org.polarsys.capella.core.data.capellamodeller:Library"
 XT_SYSENG = "org.polarsys.capella.core.data.capellamodeller:SystemEngineering"
 
 
+@common.xtype_handler(None, XT_PROJECT, XT_LIBRARY)
 class MelodyModel:
     """Provides high-level access to a model.
 
@@ -277,6 +278,10 @@ class MelodyModel:
     def _model(self) -> MelodyModel:
         return self
 
+    @property
+    def parent(self) -> None:
+        raise AttributeError("The model root doesn't have a parent object")
+
     def save(self, **kw: t.Any) -> None:
         # pylint: disable=line-too-long
         """Save the model back to where it was loaded from.
@@ -334,7 +339,7 @@ class MelodyModel:
         """
         xtypes_: list[str] = []
         for i in xtypes:
-            if isinstance(i, type) and issubclass(i, common.GenericElement):
+            if isinstance(i, type):
                 xtypes_.append(common.build_xtype(i))
             elif ":" in i:
                 xtypes_.append(i)
@@ -567,8 +572,10 @@ class MelodyModel:
         )
 
     @classmethod
-    def from_model(cls, model: MelodyModel, element: t.Any) -> t.NoReturn:
-        raise TypeError("Cannot instantiate a model from another model")
+    def from_model(cls, model: MelodyModel, element: t.Any) -> MelodyModel:
+        if element is not model._element:
+            raise ValueError("'element' is not the model root")
+        return model
 
     @property
     def info(self) -> loader.ModelInfo:

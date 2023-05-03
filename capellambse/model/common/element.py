@@ -198,6 +198,8 @@ class GenericElement:
                         class_ = XTYPE_HANDLERS[None][xtype]
                     except KeyError:
                         pass
+            if class_ is not cls:
+                return class_.from_model(model, element)
         self = class_.__new__(class_)
         self._model = model
         self._element = element
