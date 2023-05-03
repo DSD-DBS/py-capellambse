@@ -19,6 +19,7 @@ U = t.TypeVar("U")
 
 
 XTYPE_ANCHORS = {
+    "capellambse.model": "org.polarsys.capella.core.data.capellamodeller",
     "capellambse.model.crosslayer": "org.polarsys.capella.core.data",
     "capellambse.model.layers": "org.polarsys.capella.core.data",
 }
