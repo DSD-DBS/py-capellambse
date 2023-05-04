@@ -45,6 +45,7 @@ derive:
         "${derive_results[@]/#/--result=}" \
         --exe="/opt/capella/capella"
     - |
+      git fetch origin "+refs/heads/derived/*:refs/heads/derived/*"
       git config --global user.email "${MODEL_MODIFIER_EMAIL:?}";
       git config --global user.name "Filtering model modifier";
       mkdir -p .git/info && echo "derived-projects/" > .git/info/exclude
