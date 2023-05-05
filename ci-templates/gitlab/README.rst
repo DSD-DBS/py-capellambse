@@ -63,10 +63,16 @@ Add the following code to your ``.gitlab-ci.yml``:
     # If you want to change any settings (see filter-derive.yml),
     # add a variables section, like so:
     variables:
-
-      # Push derived model to individual branches.
-      # The branch name is 'derived/<derived-project-name>'.
-      # Defaults to 1, set it to 0 if pushing in separate branches is not wanted.
-      PUSH_DERIVED_MODELS: 1
-
       DERIVE_RESULTS: 01234567-89ab-cdef-0123-456789abcdef;My Result 1;My Result 2
+
+By default, the pipeline job is set up to only push the results to individual
+branches when running on the default branch. To change this behavior, override
+the ``rules`` key in the ``derive`` job.
+
+.. code:: yaml
+
+   include: ...
+
+   derive:
+     rules:
+       - if: ... # see gitlab-ci.yml reference

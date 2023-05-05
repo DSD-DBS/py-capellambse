@@ -7,6 +7,12 @@ derive:
     name: $DOCKER_REGISTRY/capella/cli:${CAPELLA_DOCKER_IMAGES_TAG}
     entrypoint: [""]
 
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        PUSH_DERIVED_MODELS: 1
+    - when: on_success
+
   script:
     - |
       if [[ -z "$MODEL_MODIFIER_EMAIL" ]]; then
@@ -49,7 +55,7 @@ derive:
       git config --global user.email "${MODEL_MODIFIER_EMAIL:?}";
       git config --global user.name "Filtering model modifier";
       mkdir -p .git/info && echo "derived-projects/" > .git/info/exclude
-      if [[ "${PUSH_DERIVED_MODELS:-1}" == "1" ]]; then
+      if [[ "${PUSH_DERIVED_MODELS:-0}" == "1" ]]; then
         for result in derived-projects/*; do
           RESULT_DIR_NAME="${result#derived-projects/}"
           DERIVED_BRANCH_NAME="$(echo "derived/$RESULT_DIR_NAME" | sed 's/[^a-zA-Z0-9.-_]/-/g')";
