@@ -64,6 +64,7 @@ class PhysicalPort(c.GenericElement):
     _xmltag = "ownedFeatures"
 
     owner = c.ParentAccessor(c.GenericElement)
+    links: c.Accessor
 
 
 @c.xtype_handler(None)
@@ -161,10 +162,8 @@ c.set_accessor(
 )
 c.set_accessor(
     PhysicalPort,
-    "exchanges",
-    c.ReferenceSearchingAccessor(
-        PhysicalLink, "link_ends", aslist=c.ElementList
-    ),
+    "links",
+    c.ReferenceSearchingAccessor(PhysicalLink, "ends", aslist=c.ElementList),
 )
 c.set_accessor(
     PhysicalLink,
