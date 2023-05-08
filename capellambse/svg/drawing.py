@@ -905,15 +905,15 @@ def get_label_position_x(
     builder: LabelBuilder, lines: LinesData, render_icon: bool
 ) -> tuple[float, float]:
     """Return x-coordinate of label-text and icon."""
+    icon_size = (builder.icon_size + decorations.icon_padding) * render_icon
+    sh_icon_size = (
+        builder.icon_size + decorations.icon_padding / 2
+    ) * render_icon
     if builder.text_anchor == "start":
-        x = (
-            builder.label["x"]
-            + lines.margin
-            + (builder.icon_size + decorations.icon_padding) * render_icon
-        )
-        return x, builder.label["x"] + lines.margin
-    x = builder.label["x"] + builder.label["width"] / 2
-    return x, x - lines.max_line_width / 2 - builder.icon_size
+        x = builder.label["x"] + lines.margin + icon_size
+        return x, x - sh_icon_size
+    x = builder.label["x"] + (builder.label["width"] + icon_size) / 2
+    return x, x - (lines.max_line_width / 2 + sh_icon_size)
 
 
 def get_label_position_y(builder: LabelBuilder, lines: LinesData) -> float:
