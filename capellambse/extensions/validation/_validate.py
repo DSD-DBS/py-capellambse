@@ -46,8 +46,9 @@ class VirtualType(t.Generic[_T]):
     real_type: type[_T]
     filter: cabc.Callable[[_T], bool]
 
-    def search(self, model: capellambse.MelodyModel) -> cabc.Iterable[_T]:
-        for i in model.search(self.real_type):
+    def search(self, model_: capellambse.MelodyModel) -> cabc.Iterable[_T]:
+        assert isinstance(self.real_type, (str, type(c.GenericElement)))
+        for i in model_.search(self.real_type):
             if self.filter(i):
                 yield i
 
@@ -60,8 +61,9 @@ class RealType(t.Generic[_T]):
     def name(self) -> str:
         return self.class_.__name__
 
-    def search(self, model: capellambse.MelodyModel) -> cabc.Iterable[_T]:
-        return model.search(self.class_)
+    def search(self, model_: capellambse.MelodyModel) -> cabc.Iterable[_T]:
+        assert isinstance(self.class_, (str, type(c.GenericElement)))
+        return model_.search(self.class_)
 
 
 class _VirtualTypesRegistry(cabc.Mapping[str, t.Union[VirtualType, RealType]]):
@@ -174,9 +176,9 @@ class Rule(t.Generic[_T]):
     """Returns True if the object passed this rule."""
     hyperlink_further_reading: str | None = None
 
-    def find(self, model: capellambse.MelodyModel) -> cabc.Iterator[_T]:
+    def find(self, model_: capellambse.MelodyModel) -> cabc.Iterator[_T]:
         for i in self.types:
-            yield from _types_registry[i].search(model)
+            yield from _types_registry[i].search(model_)
 
     def __call__(self, obj: _T) -> bool:
         return self.validator(obj)
@@ -415,12 +417,12 @@ class Validation(metaclass=abc.ABCMeta):
 
     @classmethod
     def from_model(
-        cls, model: capellambse.MelodyModel, element: etree._Element
+        cls, model_: capellambse.MelodyModel, element: etree._Element
     ) -> Validation:
         """Create a Validation object for a MelodyModel or an element."""
         self = cls.__new__(cls)
-        self._model = model
-        self._element = c.GenericElement.from_model(model, element)
+        self._model = model_
+        self._element = c.GenericElement.from_model(model_, element)
         return self
 
 
