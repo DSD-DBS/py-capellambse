@@ -251,7 +251,7 @@ def test_validation_result_representation(model: capellambse.MelodyModel):
     assert obj.validation.rules
     expected = (
         "Result(uuid='da12377b-fb70-4441-8faa-3a5c153c5de2', "
-        "category=<Category.REQUIRED: 1>value=False, "
+        "category=<Category.REQUIRED: 1>, value=False, "
         "object=<SystemComponent 'Affleck'"
     )
 
