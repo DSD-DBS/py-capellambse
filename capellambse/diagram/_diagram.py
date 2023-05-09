@@ -271,7 +271,7 @@ class Box:
     ) -> diagram.Vector2D:
         angle = self.size.angleto(source - self.center)
         alpha = 2 * self.size.angleto((1, 0))
-        assert alpha > 0
+        assert alpha >= 0
         alpha_prime = math.pi - alpha
 
         if 0 < angle < alpha:
