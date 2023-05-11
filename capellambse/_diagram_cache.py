@@ -134,7 +134,7 @@ def _copy_images(
     name_counts = collections.defaultdict[str, int](lambda: -1)
     index: list[_IndexEntry] = []
     files = {i.name: i for i in srcdir.glob("**/*") if i.is_file()}
-    copy = (shutil.copyfile, _copy_svg)[extension == "svg"]
+    copy = (shutil.copyfile, _copy_and_sanitize_svg)[extension == "svg"]
 
     for i in model.diagrams:
         entry: _IndexEntry = {"uuid": i.uuid, "name": i.name, "success": False}
@@ -188,9 +188,18 @@ def _sanitize_filename(fname: str) -> str:
     return fname
 
 
-def _copy_svg(src: pathlib.Path, dest: pathlib.Path) -> None:
-    tree = etree.parse(src)
+def _copy_and_sanitize_svg(src: pathlib.Path, dest: pathlib.Path) -> None:
+    """Copy ``src`` to ``dest`` and post process SVG diagram.
 
+    Post-processing stops propagation of default ``fill`` and ``stroke``
+    styling into elements that don't have these stylings. Fixates
+    ``font-family`` to ``'Open Sans','Segoe UI',Arial,sans-serif`` and
+    deletes ``stroke- miterlimit``.
+    """
+    tree = etree.parse(src)
+    root = tree.getroot()
+    root.attrib["fill"] = "none"
+    root.attrib["stroke"] = "none"
     for elm in tree.iter():
         attrib = elm.attrib
         if "font-family" in attrib:
@@ -198,7 +207,8 @@ def _copy_svg(src: pathlib.Path, dest: pathlib.Path) -> None:
         if "stroke-miterlimit" in attrib:
             del attrib["stroke-miterlimit"]
 
-    dest.write_bytes(etree.tostring(tree, pretty_print=True))
+    svg = etree.tostring(tree, pretty_print=True)
+    dest.write_bytes(svg)
 
 
 def _write_index(
