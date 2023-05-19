@@ -197,15 +197,14 @@ def _copy_and_sanitize_svg(src: pathlib.Path, dest: pathlib.Path) -> None:
     deletes ``stroke- miterlimit``.
     """
     tree = etree.parse(src)
-    root = tree.getroot()
-    root.attrib["fill"] = "none"
-    root.attrib["stroke"] = "none"
     for elm in tree.iter():
         attrib = elm.attrib
         if "font-family" in attrib:
             attrib["font-family"] = "'Open Sans','Segoe UI',Arial,sans-serif"
         if "stroke-miterlimit" in attrib:
             del attrib["stroke-miterlimit"]
+        if elm.tag == "{http://www.w3.org/2000/svg}clipPath":
+            attrib.update({"fill": "transparent", "stroke": "transparent"})
 
     svg = etree.tostring(tree, pretty_print=True)
     dest.write_bytes(svg)
