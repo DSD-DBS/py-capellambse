@@ -466,7 +466,6 @@ class MelodyLoader:
             self.__load_referenced_files(ref_name)
 
     def save(self, **kw: t.Any) -> None:
-        # pylint: disable=line-too-long
         """Save all model files back to their original locations.
 
         Parameters
@@ -491,7 +490,6 @@ class MelodyLoader:
         always leave the ``update_cache`` parameter at its default value
         of ``True`` if you intend to save changes.
         """
-        # pylint: enable=line-too-long
         self.check_duplicate_uuids()
 
         overwrite_corrupt = kw.pop("i_have_a_recent_backup", False)

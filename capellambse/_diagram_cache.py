@@ -160,7 +160,6 @@ def _copy_images(
 
 
 def _sanitize_filename(fname: str) -> str:
-    # pylint: disable=line-too-long
     r"""Sanitize the filename.
 
     This function removes all characters that are illegal in file
@@ -176,7 +175,6 @@ def _sanitize_filename(fname: str) -> str:
 
     __ https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming-conventions
     """
-    # pylint: enable=line-too-long
     fname = fname.rstrip(" .")
     fname = re.sub(
         '[\x00-\x1f<>:"/\\\\|?*]',

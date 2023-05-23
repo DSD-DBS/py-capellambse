@@ -57,10 +57,9 @@ def generic_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
 
     _filters.setfilters(seb, edge)
     # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
-    # pylint: disable-next=line-too-long
-    edge.styleoverrides = _styling.apply_style_overrides(  # type: ignore[assignment]
+    edge.styleoverrides = _styling.apply_style_overrides(
         seb.target_diagram.styleclass, f"Edge.{seb.styleclass}", ostyle
-    )
+    )  # type: ignore[assignment]
     edge.labels.extend(_construct_labels(edge, seb))
 
     if isinstance(targetport, diagram.Box):

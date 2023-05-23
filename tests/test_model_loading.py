@@ -292,8 +292,6 @@ def test_http_file_handlers_passed_through_custom_headers(
 def test_gitlab_artifacts_handler_uses_public_gitlab_when_no_hostname_given(
     requests_mock: requests_mock.Mocker,  # pylint: disable=unused-argument
 ) -> None:
-    # pylint: disable=line-too-long
-
     hdl = capellambse.get_filehandler(
         "glart://",
         project=1,
@@ -303,6 +301,7 @@ def test_gitlab_artifacts_handler_uses_public_gitlab_when_no_hostname_given(
     )
 
     assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
+    # pylint: disable=line-too-long
     assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]

@@ -106,7 +106,6 @@ class MelodyModel:
         jupyter_untrusted: bool = False,
         **kwargs: t.Any,
     ) -> None:
-        # pylint: disable=line-too-long
         """Load a project.
 
         For complete information on which exact ``kwargs`` are
@@ -169,7 +168,7 @@ class MelodyModel:
         password: str
             The password to use for logging in. Will be ignored when
             ``identity_file`` is passed as well.
-        diagram_cache: str | pathlib.Path | ~capellambse.filehandler.FileHandler | dict[str, ~typing.Any]
+        diagram_cache
             An optional place where to find pre-rendered, cached
             diagrams. When a diagram is found in this cache, it will be
             loaded from there instead of being rendered on access. Note
@@ -283,7 +282,6 @@ class MelodyModel:
         raise AttributeError("The model root doesn't have a parent object")
 
     def save(self, **kw: t.Any) -> None:
-        # pylint: disable=line-too-long
         """Save the model back to where it was loaded from.
 
         Parameters

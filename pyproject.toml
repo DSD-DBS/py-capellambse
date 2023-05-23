@@ -161,6 +161,9 @@ add-ignore = [
   "D213",  # Multi-line docstring summary should start at the second line
 ]
 
+[tool.pylint.format]
+ignore-long-lines = '^\s*(?:(?:__ |\.\. __: )?https?://[^ ]+|def test_.*|[A-Za-z0-9_\.]+(?: ?:)?)$'
+
 [tool.pylint.master]
 extension-pkg-allow-list = [
   "lxml.builder",
