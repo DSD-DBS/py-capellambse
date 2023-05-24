@@ -20,7 +20,6 @@ __all__ = [
     "virtual_type",
 ]
 
-import abc
 import collections.abc as cabc
 import dataclasses
 import enum
@@ -406,7 +405,7 @@ def store_result(rule: Rule, obj: c.GenericElement, result: Result) -> None:
     results.setdefault(rule, {}).setdefault(obj.uuid, result)
 
 
-class Validation(metaclass=abc.ABCMeta):
+class Validation:
     """Basic class for access to validation rules and results."""
 
     _model: capellambse.MelodyModel
