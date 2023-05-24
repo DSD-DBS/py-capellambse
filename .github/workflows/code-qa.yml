@@ -1,12 +1,14 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: CC0-1.0
 
-name: Build
+name: Code QA
 
 on:
+  workflow_dispatch:
   push:
-    branches: ["*"]
+    branches: [master]
     tags: ["v*.*.*"]
+  pull_request:
 
 jobs:
   test:
@@ -37,6 +39,22 @@ jobs:
         run: python -m pip install '.[test]'
       - name: Run unit tests
         run: python -m pytest --cov-report=term --cov=capellambse --rootdir=.
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          cache: pip
+          cache-dependency-path: pyproject.toml
+          python-version: "3.11"
+      - name: Upgrade pip
+        run: python -m pip install -U pip
+      - name: Install pre-commit
+        run: python -m pip install pre-commit
+      - name: Run Pre-Commit
+        run: pre-commit run --all-files
 
   publish:
     name: Publish artifacts

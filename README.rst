@@ -9,11 +9,8 @@ Python-Capellambse
    :target: https://pypi.org/project/capellambse/
    :alt: PyPI - Python Version
 
-.. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
-  :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/build-test-publish.yml/badge.svg
-
-.. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
-  :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/lint.yml/badge.svg
+.. image:: https://github.com/DSD-DBS/py-capellambse/actions/workflows/code-qa.yml/badge.svg
+  :target: https://github.com/DSD-DBS/py-capellambse/actions/workflows/code-qa.yml/badge.svg
 
 .. image:: https://img.shields.io/github/license/dsd-dbs/py-capellambse
    :target: LICENSES/Apache-2.0.txt
