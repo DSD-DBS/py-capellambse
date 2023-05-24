@@ -23,7 +23,7 @@ import collections.abc as cabc
 from itertools import chain
 
 import capellambse
-from capellambse.extensions import validation as v
+from capellambse.extensions import validation
 
 COMMON_OBJECTS = [
     "Requirement",
@@ -84,11 +84,14 @@ def quantify_model_layers(
 
 
 def get_passed_and_total(
-    result_container: v.Results | dict[v.Rule, v.Result], /
+    result_container: (
+        validation.Results | dict[validation.Rule, validation.Result]
+    ),
+    /,
 ) -> tuple[int, int]:
     """Return the number of passed and total validation rules."""
-    results: cabc.Iterable[v.Result]
-    if isinstance(result_container, v.Results):
+    results: cabc.Iterable[validation.Result]
+    if isinstance(result_container, validation.Results):
         results = chain.from_iterable(
             (result.values() for result in result_container.values())
         )
@@ -110,9 +113,9 @@ def get_compliance_score(
 
 
 def get_total_objects(
-    types: cabc.Iterable[str], all_results: v.Results
+    types: cabc.Iterable[str], all_results: validation.Results
 ) -> BinCountResults:
-    results = v.Results({})
+    results = validation.Results({})
     for type in types:
         results.update(all_results.by_type(type))
 
@@ -120,7 +123,9 @@ def get_total_objects(
 
 
 class BinCountResults:
-    def __init__(self, results: v.Results, types: cabc.Iterable[str]) -> None:
+    def __init__(
+        self, results: validation.Results, types: cabc.Iterable[str]
+    ) -> None:
         self.results = results
         self.types = set(types)
 
