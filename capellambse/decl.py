@@ -20,17 +20,23 @@ __all__ = [
     "apply",
     "dump",
     "load",
+    "load_with_metadata",
 ]
 
 import collections
 import collections.abc as cabc
 import contextlib
 import dataclasses
+import importlib.metadata as imm
+import logging
 import os
+import pathlib
+import re
 import sys
 import typing as t
 import warnings
 
+import awesomeversion as av
 import yaml
 
 import capellambse
@@ -43,11 +49,37 @@ _OperatorResult = tuple[
     "Promise",
     t.Union[capellambse.ModelObject, _FutureAction],
 ]
+logger = logging.getLogger(__name__)
 
 
-def dump(instructions: cabc.Sequence[cabc.Mapping[str, t.Any]]) -> str:
-    """Dump an instruction stream to YAML."""
-    return yaml.dump(instructions, Dumper=YDMDumper)
+def dump(
+    instructions: cabc.Sequence[cabc.Mapping[str, t.Any]],
+    metadata: cabc.Mapping[str, t.Any] | None = None,
+) -> str:
+    """Dump an instruction stream to YAML.
+
+    Optionally dump metadata with the instruction stream to YAML. The
+    metadata will be dumped into the same YAML as the first document.
+    For an example YAML dump with metadata refer to the
+    :ref:`declarative modelling documentation
+    </start/declarative.rst#metadata>`.
+
+    See Also
+    --------
+    capellambse.decl.load_with_metadata :
+        Load a declarative modelling YAML file with metadata.
+    capellambse.decl.load :
+        Load a declarative modelling YAML file neglecting metadata.
+
+    Returns
+    -------
+    yaml
+        The instructions and optionally metadata dumped to YAML in
+        string format.
+    """
+    if not metadata:
+        return yaml.dump(instructions, Dumper=YDMDumper)
+    return yaml.dump_all([metadata, instructions], Dumper=YDMDumper)
 
 
 def load(file: FileOrPath) -> list[dict[str, t.Any]]:
@@ -59,6 +91,31 @@ def load(file: FileOrPath) -> list[dict[str, t.Any]]:
         An open file-like object, or a path or PathLike pointing to such
         a file. Files are expected to use UTF-8 encoding.
     """
+    _, instructions = load_with_metadata(file)
+    return instructions
+
+
+def load_with_metadata(
+    file: FileOrPath,
+) -> tuple[dict[str, t.Any], list[dict[str, t.Any]]]:
+    """Load a declarative modelling file-stream from a YAML file.
+
+    If the declarative modelling file is missing a metadata section, an
+    empty metadata dict is returned.
+
+    Parameters
+    ----------
+    file
+        An open file-like object, or a path or PathLike pointing to such
+        a file. Files are expected to use UTF-8 encoding.
+
+    Returns
+    -------
+    metadata
+        A metadata dictionary.
+    instructions
+        A list of instruction dictionaries.
+    """
     if hasattr(file, "read"):
         file = t.cast(t.IO[str], file)
         ctx: t.ContextManager[t.IO[str]] = contextlib.nullcontext(file)
@@ -67,10 +124,20 @@ def load(file: FileOrPath) -> list[dict[str, t.Any]]:
         ctx = open(file, encoding="utf-8")
 
     with ctx as opened_file:
-        return yaml.load(opened_file, Loader=YDMLoader)
+        contents = list(yaml.load_all(opened_file, Loader=YDMLoader))
+
+    if len(contents) == 1:
+        assert isinstance(instructions := contents[0], list)
+        return {}, instructions
+
+    metadata, instructions = contents
+    assert isinstance(metadata, dict) and isinstance(instructions, list)
+    return metadata, instructions
 
 
-def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
+def apply(
+    model: capellambse.MelodyModel, file: FileOrPath, strict: bool = False
+) -> None:
     """Apply a declarative modelling file to the given model.
 
     Parameters
@@ -84,6 +151,10 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
         The full format of these files is documented in the
         :ref:`section about declarative modelling
         <declarative-modelling>`.
+    strict
+        Only accept a declarative modelling file if a metadata section
+        as the first document with matching values compared to the
+        ``model.info`` is found.
 
     Notes
     -----
@@ -99,9 +170,23 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
     ``!promise``, but reorderings are still possible even if no promises
     are used in an input document.
     """
-    instructions = collections.deque(load(file))
+    metadata, raw_instructions = load_with_metadata(file)
+    instructions = collections.deque(raw_instructions)
     promises = dict[Promise, capellambse.ModelObject]()
     deferred = collections.defaultdict[Promise, list[_FutureAction]](list)
+    if not metadata:
+        if strict:
+            raise ValueError("No metadata found in provided YAML")
+    try:
+        _validate_metadata(model, metadata)
+    except ValueError as error:
+        if strict:
+            raise
+        else:
+            logger.info(
+                "Declared metadata does not match provided model: %s",
+                error.args[0],
+            )
 
     while instructions:
         instruction = instructions.popleft()
@@ -128,6 +213,77 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
             raise ValueError(f"Unrecognized keys in instruction: {keys}")
     if deferred:
         raise UnfulfilledPromisesError(frozenset(deferred))
+
+
+def _validate_metadata(
+    model: capellambse.MelodyModel, metadata: dict[str, t.Any]
+) -> None:
+    if writer_metadata := metadata.get("written_by"):
+        version = writer_metadata.get("capellambse_version", "")
+    else:
+        raise ValueError(
+            "Unsupported YAML: Can't find 'written_by' in metadata"
+        )
+
+    model_metadata = metadata.get("model", {})
+    if (url := model_metadata.get("url")) != model.info.url:
+        raise ValueError(
+            "Unsupported YAML: Model URL isn't matching. Got"
+            f" {url!r} but current is {model.info.url!r}"
+        )
+
+    entrypoint = pathlib.PurePosixPath(model_metadata.get("entrypoint", ""))
+    if entrypoint != model.info.entrypoint:
+        raise ValueError(
+            "Unsupported YAML: Model entrypoint isn't matching. Got"
+            f" {entrypoint!r} but current is {model.info.entrypoint!r}"
+        )
+
+    if (hash := model_metadata.get("version")) != model.info.rev_hash:
+        raise ValueError(
+            "Unsupported YAML: Model revision hash isn't matching. Got"
+            f" {hash!r} but current is {model.info.rev_hash!r}"
+        )
+
+    current = av.AwesomeVersion(imm.version("capellambse"))
+    received = av.AwesomeVersion(version)
+    try:
+        if not _is_canonical(version):
+            raise ValueError(
+                f"Malformatted version number in metadata: {version}"
+            )
+
+        if current < received:
+            raise ValueError(
+                "Unsupported YAML: The version of the installed"
+                f" capellambse({current}) is lower than the version with which"
+                f" the YAMLwas written with ({received})."
+            )
+    except av.AwesomeVersionCompareException:
+        raise ValueError(
+            "Unsupported YAML: Cannot check installed capellambse version"
+            f" {current!r} against metadata {version!r}"
+        ) from None
+
+    if (referencing := metadata.get("referencing")) != "implicit":
+        raise ValueError(
+            "Unsupported YAML: Only implict YAMLs are supported for now."
+            f" Got 'referencing: {referencing}'"
+        )
+
+
+def _is_canonical(version: str) -> bool:
+    """Check if given version aligns with PEP440.
+
+    See Also
+    --------
+    https://peps.python.org/pep-0440/#appendix-b-parsing-version-strings-with-regular-expressions
+    """
+    pep440_ptrn = re.compile(
+        r"^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)"
+        r"(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$"
+    )
+    return pep440_ptrn.match(version) is not None
 
 
 def _operate_create(
@@ -423,10 +579,15 @@ else:
 
     @click.command()
     @click.option("-m", "--model", type=capellambse.ModelCLI(), required=True)
+    @click.option(
+        "-s", "--strict", is_flag=True, default=False, required=False
+    )
     @click.argument("file", type=click.File("r"))
-    def _main(model: capellambse.MelodyModel, file: t.IO[str]) -> None:
+    def _main(
+        model: capellambse.MelodyModel, file: t.IO[str], strict: bool
+    ) -> None:
         """Apply a declarative modelling YAML file to a model."""
-        apply(model, file)
+        apply(model, file, strict=strict)
         model.save()
 
 

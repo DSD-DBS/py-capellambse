@@ -1,6 +1,14 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
 
+model:
+  version: 1234abcd
+  url: https://example.com/model.git
+  entrypoint: path/to/model.aird
+written_by:
+  capellambse_version: 1.0.0
+referencing: implicit
+---
 - parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440 # root logical component
   extend:
     components:

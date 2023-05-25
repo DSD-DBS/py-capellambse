@@ -60,6 +60,7 @@ repos:
           - types-docutils==0.17.0
           - types-pyyaml==6.0.11
           - types-requests==2.25.11
+          - awesomeversion
   - repo: local
     hooks:
       - id: pylint

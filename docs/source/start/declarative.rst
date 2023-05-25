@@ -68,9 +68,37 @@ containing YAML, wrap it in :external:class:`io.StringIO`:
 Format description
 ==================
 
-The expected YAML follows a simple format, where a parent object (i.e. an
-object that already exists in the model) is selected, and one or more of three
-different operations is applied to it:
+Metadata
+--------
+
+.. versionadded:: 0.5.16
+   Added metadata section to the declarative modelling YAML.
+
+The metadata section is optional and has the following format:
+
+.. code-block:: yaml
+
+   model:
+     version: 2fd4e1c67a2d28fced849ee1bb76e7391b93eb12
+     url: https://example.com/model.git
+     entrypoint: path/to/model.aird
+   written_by:
+     capellambse_version: 1.0.0
+     generator: Declarative Modelling Generator 1.0.0
+
+It gives information about which model the declarative modelling YAML file
+wants to change, with which capellambse version and generator it was written
+with. A versioned model (e.g. using a git URL) can be uniquely identified by
+its revision and the repository ``url``. These values are checked against the
+``model.info`` during ``decl.apply`` when the ``strict`` parameter is ``True``
+(``False`` per default).
+
+Instructions
+------------
+
+The expected instruction document in the YAML follows a simple format, where a
+parent object (i.e. an object that already exists in the model) is selected,
+and one or more of three different operations is applied to it:
 
 - ``extend``-ing the object on list attributes,
 - ``modify``-ing the object itself, or

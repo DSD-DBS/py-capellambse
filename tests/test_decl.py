@@ -2,17 +2,22 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import collections.abc as cabc
 import hashlib
 import io
 import pathlib
 import shutil
 import subprocess
 import sys
+import textwrap
+import typing as t
+from importlib import metadata as imm
 
 import pytest
 
 import capellambse
 from capellambse import decl, helpers
+from capellambse.loader import modelinfo
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import (  # type: ignore[import]
@@ -26,6 +31,18 @@ MODELPATH = pathlib.Path(TEST_ROOT / "5_0")
 
 ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
+METADATA = {
+    "written_by": {
+        "capellambse_version": "1.0.0",
+        "generator": "Example 1.0.0",
+    },
+    "model": {
+        "url": "https://example.invalid",
+        "version": "12345678",
+        "entrypoint": "path/to/model.aird",
+    },
+    "referencing": "explicit",
+}
 
 
 class TestDumpLoad:
@@ -68,6 +85,51 @@ class TestDumpLoad:
         actual = decl.load(io.StringIO(yaml))
 
         assert actual == expected
+
+    @staticmethod
+    def test_dumping_with_metadata():
+        data = [{"parent": decl.UUIDReference(ROOT_FUNCTION)}]
+        expected = textwrap.dedent(
+            f"""\
+            model:
+              entrypoint: path/to/model.aird
+              url: https://example.invalid
+              version: '12345678'
+            referencing: explicit
+            written_by:
+              capellambse_version: 1.0.0
+              generator: Example 1.0.0
+            ---
+            - parent: !uuid {ROOT_FUNCTION!r}
+            """
+        )
+
+        yml = decl.dump(data, metadata=METADATA)
+
+        assert yml == expected
+
+    @staticmethod
+    def test_loading_with_metadata():
+        uuid = helpers.UUIDString(ROOT_FUNCTION)
+        yml = textwrap.dedent(
+            f"""\
+            written_by:
+                capellambse_version: 1.0.0
+                generator: Example 1.0.0
+            model:
+              version: "12345678"
+              url: https://example.invalid
+              entrypoint: path/to/model.aird
+            referencing: explicit
+            ---
+            - parent: !uuid {uuid!r}
+            """
+        )
+
+        metadata, instructions = decl.load_with_metadata(io.StringIO(yml))
+
+        assert metadata == METADATA
+        assert instructions == [{"parent": decl.UUIDReference(uuid)}]
 
 
 class TestApplyExtend:
@@ -546,9 +608,126 @@ class TestApplyDelete:
         assert len(root_function.functions) == 0
 
 
+class TestMetadataMatchesModelinfo:
+    @staticmethod
+    @pytest.mark.parametrize(
+        ["metadata", "info_getter", "expected"],
+        [
+            pytest.param(
+                {
+                    "model": {
+                        "url": "https://example.com/models/456",
+                        "version": None,
+                    },
+                    "written_by": {
+                        "capellambse_version": imm.version("capellambse")
+                    },
+                    "referencing": "explicit",
+                },
+                lambda: modelinfo.ModelInfo(
+                    url="https://example.com/models/123"
+                ),
+                "https://example.com/models/456",
+                id="Model URL not matching",
+            ),
+            pytest.param(
+                {
+                    "model": {
+                        "url": None,
+                        "version": None,
+                        "entrypoint": "other/path/to/model.aird",
+                    },
+                    "written_by": {
+                        "capellambse_version": imm.version("capellambse")
+                    },
+                    "referencing": "explicit",
+                },
+                lambda: modelinfo.ModelInfo(
+                    rev_hash=None,
+                    url=None,
+                    entrypoint=pathlib.PurePosixPath("path/to/model.aird"),
+                ),
+                "other/path/to/model.aird",
+                id="Model entrypoint not matching",
+            ),
+            pytest.param(
+                {
+                    "model": {"version": "def456"},
+                    "written_by": {
+                        "capellambse_version": imm.version("capellambse")
+                    },
+                    "referencing": "explicit",
+                },
+                lambda: modelinfo.ModelInfo(
+                    rev_hash="abc123", entrypoint=pathlib.PurePosixPath(".")
+                ),
+                "def456",
+                id="Model rev hash not matching",
+            ),
+            pytest.param(
+                {"written_by": {"capellambse_version": "99999.9.9"}},
+                lambda: modelinfo.ModelInfo(
+                    rev_hash=None,
+                    url=None,
+                    entrypoint=pathlib.PurePosixPath("."),
+                ),
+                imm.version("capellambse"),
+                id="Current version less than installed",
+            ),
+            pytest.param(
+                {"written_by": {"capellambse_version": "123.."}},
+                lambda: modelinfo.ModelInfo(
+                    rev_hash=None,
+                    url=None,
+                    entrypoint=pathlib.PurePosixPath("."),
+                ),
+                "123..",
+                id="Malformatted (not PEP440) version",
+            ),
+            pytest.param(
+                {
+                    "written_by": {
+                        "capellambse_version": imm.version("capellambse")
+                    },
+                    "referencing": "explicit",
+                },
+                lambda: modelinfo.ModelInfo(
+                    rev_hash=None,
+                    url=None,
+                    entrypoint=pathlib.PurePosixPath("."),
+                ),
+                "explicit",
+                id="Referencing not implicit",
+            ),
+        ],
+    )
+    def test__validate_metadata(
+        model: capellambse.MelodyModel,
+        monkeypatch: pytest.MonkeyPatch,
+        metadata: dict[str, t.Any],
+        info_getter: cabc.Callable[[], modelinfo.ModelInfo],
+        expected: str,
+    ):
+        monkeypatch.setattr(model._loader, "get_model_info", info_getter)
+
+        with pytest.raises(ValueError, match=expected):
+            decl._validate_metadata(model, metadata)
+
+
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])
 def test_full_example(model: capellambse.MelodyModel, filename: str):
     decl.apply(model, DATAPATH / filename)
+
+
+@pytest.mark.parametrize("filename", ["coffee-machine.yml"])
+def test_strict_apply_fails_on_missing_metadata(
+    model: capellambse.MelodyModel, filename: str
+):
+    _, instructions = decl.load_with_metadata(DATAPATH / filename)
+    yml = decl.dump(instructions)
+
+    with pytest.raises(ValueError, match="No metadata found in provided YAML"):
+        decl.apply(model, io.StringIO(yml), strict=True)
 
 
 def test_cli_applies_a_yaml_and_saves_the_model_back(tmp_path: pathlib.Path):
@@ -567,3 +746,46 @@ def test_cli_applies_a_yaml_and_saves_the_model_back(tmp_path: pathlib.Path):
     assert cli.returncode == 0, "CLI process exited unsuccessfully"
     newhash = hashlib.sha256(semmodel.read_bytes()).hexdigest()
     assert newhash != oldhash, "Files on disk didn't change"
+
+
+def test_cli_applies_a_yaml_with_metadata_and_saves_the_model_back(
+    tmp_path: pathlib.Path,
+):
+    shutil.copytree(MODELPATH, tmp_path / "model")
+    model = tmp_path / "model" / TEST_MODEL
+    semmodel = model.with_suffix(".capella")
+    oldhash = hashlib.sha256(semmodel.read_bytes()).hexdigest()
+    declfile = patch_metadata(DATAPATH / "coffee-machine.yml", model, tmp_path)
+
+    cli = subprocess.run(
+        [
+            sys.executable,
+            "-mcapellambse.decl",
+            f"--model={model}",
+            "--strict",
+            declfile,
+        ],
+        cwd=INSTALLED_PACKAGE.parent,
+        check=False,
+    )
+
+    assert cli.returncode == 0, "CLI process exited unsuccessfully"
+    newhash = hashlib.sha256(semmodel.read_bytes()).hexdigest()
+    assert newhash != oldhash, "Files on disk didn't change"
+
+
+def patch_metadata(
+    decl_path: pathlib.Path, model_path: pathlib.Path, tmp_path: pathlib.Path
+) -> pathlib.Path:
+    model = capellambse.MelodyModel(model_path)
+    metadata, instructions = decl.load_with_metadata(decl_path)
+    metadata["written_by"] = {
+        "capellambse_version": imm.version("capellambse")
+    }
+    metadata["model"]["version"] = model.info.rev_hash
+    metadata["model"]["url"] = model.info.url
+    metadata["model"]["entrypoint"] = str(model.info.entrypoint)
+    yml = decl.dump(instructions, metadata=metadata)
+    new_path = tmp_path / decl_path.name
+    new_path.write_text(yml, encoding="utf8")
+    return new_path

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import dataclasses
+import pathlib
 
 
 @dataclasses.dataclass
@@ -13,5 +14,6 @@ class ModelInfo:
     url: str | None = None
     revision: str | None = None
     rev_hash: str | None = None
+    entrypoint: pathlib.PurePosixPath | None = None
     capella_version: str | None = None
     viewpoints: dict[str, str] = dataclasses.field(default_factory=dict)

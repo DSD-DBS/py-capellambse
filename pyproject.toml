@@ -57,6 +57,7 @@ docs = [
 ]
 
 test = [
+  "awesomeversion>=22.9.0",
   "click",
   "cssutils",
   "pytest",
@@ -70,6 +71,7 @@ cli = [
 ]
 
 decl = [
+  "awesomeversion>=22.9.0",
   "pyyaml>=6.0",
 ]
 
