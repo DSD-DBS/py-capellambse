@@ -71,13 +71,11 @@ else:
             _diagram_cache.export(
                 docker, model_, format=format, index=index, force="docker"
             )
-        elif exe:
+        else:
+            exe = exe or "capella{VERSION}"
             _diagram_cache.export(
                 exe, model_, format=format, index=index, force="exe"
             )
-        else:
-            click.echo("Error: Missing --exe or --docker option", err=True)
-            raise SystemExit(1)
 
 
 if __name__ == "__main__":

@@ -6,9 +6,9 @@ from __future__ import annotations
 
 import collections
 import datetime
+import itertools
 import json
 import logging
-import operator
 import pathlib
 import re
 import shutil
@@ -20,6 +20,7 @@ from lxml import etree
 import capellambse.model.diagram
 from capellambse import _native
 from capellambse.filehandler import local
+from capellambse.model import modeltypes
 
 E = lxml.builder.ElementMaker()
 BAD_FILENAMES = frozenset(
@@ -37,11 +38,20 @@ VALID_FORMATS = frozenset(
         "svg",
     }
 )
+VIEWPOINT_ORDER = (
+    "Common",
+    "Operational Analysis",
+    "System Analysis",
+    "Logical Architecture",
+    "Physical Architecture",
+)
 
 
 class _IndexEntry(t.TypedDict):
     uuid: str
     name: str
+    type: modeltypes.DiagramType
+    viewpoint: str
     success: bool
 
 
@@ -137,7 +147,13 @@ def _copy_images(
     copy = (shutil.copyfile, _copy_and_sanitize_svg)[extension == "svg"]
 
     for i in model.diagrams:
-        entry: _IndexEntry = {"uuid": i.uuid, "name": i.name, "success": False}
+        entry: _IndexEntry = {
+            "uuid": i.uuid,
+            "name": i.name,
+            "type": i.type,
+            "viewpoint": i.viewpoint,
+            "success": False,
+        }
         index.append(entry)
 
         name_counts[i.name] = c = name_counts[i.name] + 1
@@ -221,25 +237,44 @@ def _write_index(
             E.style(
                 "a:active, a:hover, a:link, a:visited {text-decoration: none}"
                 " .missing {color: red}"
-                " ol {font-family: Courier}"
-                " span.small {font-size: 40%}"
-                " span.uuid {color: #dddddd; font-size: 40%}"
+                " .helptext {text-decoration: dashed underline; cursor: help}"
+                " .small {font-size: 60%}"
+                " .uuid {color: #AAA; font-size: 60%}"
             )
         ),
-        E.body(
-            E.h1(title, E.span({"class": "small"}, " created: ", now)),
-            ol := E.ol(),
-        ),
+        body := E.body(E.h1(title), E.p({"class": "small"}, "Created: ", now)),
     )
 
-    for diagram in sorted(index, key=operator.itemgetter("name")):
-        uuid = E.span(diagram["uuid"], {"class": "uuid"})
-        if diagram["success"]:
-            href = f"{diagram['uuid']}.{extension}"
-            label = E.a({"href": href}, diagram["name"])
-        else:
-            label = E.span({"class": "missing"}, diagram["name"])
-        ol.append(E.li(label, " ", uuid))
+    def sortkey(entry: _IndexEntry):
+        try:
+            vp_index = VIEWPOINT_ORDER.index(entry["viewpoint"])
+        except ValueError:
+            vp_index = len(VIEWPOINT_ORDER)
+        return (vp_index, entry["viewpoint"], entry["name"])
 
-    dest.joinpath("index.json").write_text(json.dumps(index))
+    diagrams = sorted(index, key=sortkey)
+    for vp, diags in itertools.groupby(diagrams, key=lambda i: i["viewpoint"]):
+        body.append(E.h2(vp))
+        body.append(ol := E.ol())
+        for diagram in diags:
+            uuid = E.span(diagram["uuid"], {"class": "uuid"})
+            tlabel = E.span(
+                {"title": diagram["type"].value, "class": "helptext"},
+                f"[{diagram['type'].name}]",
+            )
+            if diagram["success"]:
+                href = f"{diagram['uuid']}.{extension}"
+                label = E.a({"href": href}, diagram["name"])
+            else:
+                label = E.span({"class": "missing"}, diagram["name"])
+            ol.append(E.li(tlabel, " ", label, " ", uuid))
+
+    dest.joinpath("index.json").write_text(json.dumps(index, cls=IndexEncoder))
     dest.joinpath("index.html").write_bytes(etree.tostring(html))
+
+
+class IndexEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, modeltypes.DiagramType):
+            return o.name
+        return super().default(o)
