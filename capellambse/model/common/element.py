@@ -277,6 +277,16 @@ class GenericElement:
         for attr in dir(self):
             if attr.startswith("_"):
                 continue
+
+            acc = getattr(type(self), attr, None)
+            if isinstance(acc, accessors.ReferenceSearchingAccessor):
+                classes = ", ".join(i.__name__ for i in acc.target_classes)
+                attrs.append(
+                    f".{attr} = ... # backreference to {classes}"
+                    " - omitted: can be slow to compute"
+                )
+                continue
+
             try:
                 value = getattr(self, attr)
             except Exception:
@@ -332,6 +342,19 @@ class GenericElement:
         for attr in dir(self):
             if attr.startswith("_"):
                 continue
+
+            acc = getattr(type(self), attr, None)
+            if isinstance(acc, accessors.ReferenceSearchingAccessor):
+                classes = ", ".join(i.__name__ for i in acc.target_classes)
+                fragments.append('<tr><th style="text-align: right;">')
+                fragments.append(escape(attr))
+                fragments.append('</th><td style="text-align: left;"><em>')
+                fragments.append(f"Backreference to {escape(classes)}")
+                fragments.append(" - omitted: can be slow to compute.")
+                fragments.append(" Display this property directly to show.")
+                fragments.append("</em></td></tr>")
+                continue
+
             try:
                 value = getattr(self, attr)
             except Exception:
