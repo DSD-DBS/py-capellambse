@@ -27,6 +27,12 @@ from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 
+DUMMY_SVG = b'<svg xmlns="http://www.w3.org/2000/svg"/>'
+DUMMY_PNG = base64.standard_b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQott"
+    "AAAAABJRU5ErkJggg=="
+)
+
 
 @pytest.mark.parametrize(
     "path",
@@ -492,3 +498,53 @@ def test_model_info_contains_viewpoints_and_capella_version() -> None:
     assert hasattr(info, "viewpoints")
     assert info.viewpoints["org.polarsys.capella.core.viewpoint"] == "5.0.0"
     assert info.capella_version == "5.0.0"
+
+
+@pytest.mark.parametrize(
+    ["format", "content"],
+    [
+        pytest.param("svg", DUMMY_SVG, id="svg"),
+        pytest.param("png", DUMMY_PNG, id="png"),
+    ],
+)
+def test_model_loads_diagrams_from_cache_by_uuid(
+    tmp_path: pathlib.Path, format: str, content: bytes
+):
+    model = capellambse.MelodyModel(TEST_MODEL_5_0, diagram_cache=tmp_path)
+    dg = model.diagrams[0]
+    tmp_path.joinpath(f"{dg.uuid}.{format}").write_bytes(content)
+
+    rendered = dg.render(format)
+    if isinstance(rendered, str):
+        rendered = rendered.encode("utf-8")
+
+    assert rendered == content
+
+
+def test_model_will_refuse_to_render_diagrams_if_diagram_cache_was_given(
+    tmp_path: pathlib.Path,
+):
+    model = capellambse.MelodyModel(TEST_MODEL_5_0, diagram_cache=tmp_path)
+
+    with pytest.raises(RuntimeError, match="not in cache"):
+        model.diagrams[0].render("svg")
+
+
+def test_model_will_fall_back_to_rendering_internally_despite_the_cache_if_told_to(
+    tmp_path: pathlib.Path,
+):
+    model = capellambse.MelodyModel(
+        TEST_MODEL_5_0,
+        diagram_cache=tmp_path,
+        fallback_render_aird=True,
+    )
+
+    assert model.diagrams[0].render("svg")
+
+
+def test_model_diagram_visible_nodes_can_be_accessed_when_a_cache_was_specified(
+    tmp_path: pathlib.Path,
+):
+    model = capellambse.MelodyModel(TEST_MODEL_5_0, diagram_cache=tmp_path)
+
+    assert model.diagrams[0].nodes

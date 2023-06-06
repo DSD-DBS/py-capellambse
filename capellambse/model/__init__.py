@@ -104,6 +104,7 @@ class MelodyModel:
         ) = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         jupyter_untrusted: bool = False,
+        fallback_render_aird: bool = False,
         **kwargs: t.Any,
     ) -> None:
         """Load a project.
@@ -215,6 +216,11 @@ class MelodyModel:
             this only disables the SVG format as rich display option for
             Ipython, which is needed to avoid rendering issues with
             Github's Jupyter notebook viewer.
+        fallback_render_aird: bool
+            If set to True, enable the internal engine to render
+            diagrams that were not found in the pre-rendered cache.
+            Defaults to False, which means an exception is raised
+            instead. Ignored if no ``diagram_cache`` was specified.
 
         See Also
         --------
@@ -233,6 +239,7 @@ class MelodyModel:
 
         self._constructed = False
         self._loader = loader.MelodyLoader(path, **kwargs)
+        self._fallback_render_aird = fallback_render_aird
         self.jupyter_untrusted = jupyter_untrusted
 
         try:

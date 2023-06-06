@@ -70,6 +70,21 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     filters: cabc.MutableSet[str]
     """The filters that are activated for this diagram."""
 
+    if t.TYPE_CHECKING:
+
+        @property
+        def _allow_render(self) -> bool:
+            ...
+
+    else:
+        _allow_render: bool
+        """Allow this diagram to be rendered by the internal rendering engine.
+
+        If this property is set to False, and a diagram cache was
+        specified for the model, this diagram can only be loaded from
+        the cache, and will never be rendered. Has no effect if there
+        was no diagram cache specified.
+        """
     _model: capellambse.MelodyModel
     _render: diagram.Diagram
     _error: BaseException
@@ -242,10 +257,15 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             def conv(i: diagram.Diagram) -> diagram.Diagram:
                 return i
 
-        try:
-            return self.__load_cache(conv)
-        except KeyError:
-            pass
+        cache_handler = getattr(self._model, "_diagram_cache", None)
+        if fmt is not None and cache_handler is not None:
+            try:
+                return self.__load_cache(conv)
+            except KeyError:
+                pass
+
+            if not self._allow_render:
+                raise RuntimeError(f"Diagram not in cache: {self.name}")
 
         render = self.__render_fresh(params)
         if isinstance(conv, DiagramFormat):
@@ -395,6 +415,10 @@ class Diagram(AbstractDiagram):
         if not isinstance(other, type(self)):
             return NotImplemented
         return self._model is other._model and self._element == other._element
+
+    @property
+    def _allow_render(self) -> bool:
+        return self._model._fallback_render_aird
 
     @property
     def description(self) -> str | None:
