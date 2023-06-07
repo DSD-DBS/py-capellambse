@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Provides easy access to the Polarsys Capella PVMT extension.
 
 The public API of this submodule uses raw LXML elements.  For a more

@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Miscellaneous utility functions used throughout the modules."""
 from __future__ import annotations
 

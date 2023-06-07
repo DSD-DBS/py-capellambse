@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Utility classes that are used across all layers.
 
 .. diagram:: [CDB] BaseLayer

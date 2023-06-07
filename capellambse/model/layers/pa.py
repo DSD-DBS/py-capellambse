@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Tools for the Physical Architecture layer.
 
 .. diagram:: [CDB] Physical Architecture [Ontology]

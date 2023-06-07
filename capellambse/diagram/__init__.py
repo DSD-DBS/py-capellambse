@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Various diagramming related tools.
 
 This module is used to create diagrams, which can then be exported in

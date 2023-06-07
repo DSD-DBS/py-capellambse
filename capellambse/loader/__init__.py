@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """The MelodyLoader loads and provides access to a Capella model.
 
 It is using LXML internally to efficiently parse and navigate through

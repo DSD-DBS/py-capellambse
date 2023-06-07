@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Factory functions for different types of Boxes."""
 from __future__ import annotations
 
@@ -377,8 +376,8 @@ def statemode_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     as stacked boxes.  The child boxes themselves can in turn have more
     children either in floating or stacked form.
 
-    Additionally, States and Modes can have associated activities.
-    These are displayed after the label, separated by a horizontal line.
+    Additionally, States and Modes can have associated activities. These
+    are displayed after the label, separated by a horizontal line.
     """
     xmt = seb.diag_element.get(C.ATT_XMT)
     if xmt == "diagram:DNodeContainer":

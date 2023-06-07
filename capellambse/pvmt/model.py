@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Provides easy access to the Polarsys Capella PVMT extensions."""
 
 from __future__ import annotations

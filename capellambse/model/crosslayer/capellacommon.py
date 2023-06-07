@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Classes handling Mode/State-Machines and related content."""
 from .. import common as c
 from . import capellacore, modellingcore

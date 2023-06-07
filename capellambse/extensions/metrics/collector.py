@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Collection of tools for collection of statistical data from a model.
 
 Objects of interest are those that we see people working on most. We

@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Objects and relations for information capture and data modelling.
 
 Information objects inheritance tree (taxonomy):

@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Parser entry point for semantic elements.
 
 Semantic elements have a ``<target>`` which references the represented

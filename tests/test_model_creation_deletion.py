@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Tests for creating and deleting model elements."""
 # pylint: disable=missing-function-docstring, redefined-outer-name
 import pathlib

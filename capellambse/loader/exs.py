@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """An Eclipse-like XML serializer.
 
 The libxml2 XML serializer produces very different output from the one

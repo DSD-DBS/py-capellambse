@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Functions for parsing and interacting with diagrams in a Capella model."""
 from __future__ import annotations
 

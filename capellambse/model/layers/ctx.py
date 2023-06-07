@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Tools for the System Analysis layer.
 
 This is normally the place to declare data used in the model for e.g.

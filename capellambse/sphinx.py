@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Sphinx extension for python-capella-mbse.
 
 This extension is be used to display diagrams in Sphinx-generated

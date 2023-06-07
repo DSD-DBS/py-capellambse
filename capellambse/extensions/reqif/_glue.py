@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Some additional glue to tie ReqIF into capellambse."""
 
 __all__ = ["init"]

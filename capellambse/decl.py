@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-
 """Support for YAML-based declarative modelling.
 
 A YAML-based approach to describing how to create and modify
