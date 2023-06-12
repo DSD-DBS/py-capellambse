@@ -598,6 +598,9 @@ class MelodyModel:
         def __getattr__(self, attr: str) -> t.Any:
             """Account for extension attributes in static type checks."""
 
+        def __setattr__(self, attr: str, value: t.Any) -> None:
+            """Allow extensions to add arbitrary attributes."""
+
 
 def _reference_attributes(objtype: type[ModelObject], /) -> tuple[str, ...]:
     ignored_accessors: tuple[type[common.Accessor], ...] = (

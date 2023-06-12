@@ -59,6 +59,7 @@ docs = [
 test = [
   "click",
   "cssutils",
+  "jinja2",
   "pytest",
   "pytest-cov",
   "pyyaml>=6.0",
@@ -107,6 +108,7 @@ https = "capellambse.filehandler.http:HTTPFileHandler"
 filtering = "capellambse.extensions.filtering:init"
 pvmt = "capellambse.extensions.pvmt:init"
 reqif = "capellambse.extensions.reqif:init"
+validation = "capellambse.extensions.validation:init"
 
 [tool.black]
 line-length = 79

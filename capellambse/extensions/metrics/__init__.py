@@ -5,11 +5,11 @@
 
 import capellambse
 
-from .collector import quantify_model_layers
-from .composer import draw_summary_badge
+from . import composer
+from .collector import *
 
 
 def get_summary_badge(model: capellambse.MelodyModel) -> str:
     """Provide visual summary of model contents."""
     objects, diagrams = quantify_model_layers(model)
-    return draw_summary_badge(objects, diagrams)
+    return composer.draw_summary_badge(objects, diagrams)
