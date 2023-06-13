@@ -36,7 +36,6 @@ import code
 import collections.abc as cabc
 import contextlib
 import importlib
-import importlib.resources as imr
 import json
 import logging
 import os
@@ -97,23 +96,17 @@ basedir = pathlib.Path(__file__).parent.resolve()
 logger = logging.getLogger("capellambse.repl")
 
 
-def _load_model_info(datapath: str | importlib.abc.Traversable) -> _ModelInfo:
-    if isinstance(datapath, str):
-        try:
-            return json.loads(datapath)
-        except json.JSONDecodeError:
-            pass
-        datapath = imr.files(capellambse) / "known_models" / f"{datapath}.json"
+def _load_model_info(datapath: importlib.abc.Traversable) -> _ModelInfo:
     with datapath.open("r", encoding="utf-8") as file:
         return json.load(file)
 
 
 def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
-    known_models = list(
-        i.name[: -len(".json")]
+    known_models = {
+        i.name[: -len(".json")]: i
         for i in capellambse.enumerate_known_models()
         if i.name.endswith(".json")
-    )
+    }
     parser = argparse.ArgumentParser("capellambse/repl.py")
     parser.add_argument(
         "model",
@@ -162,8 +155,15 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
         modelinfo = _load_model_info(pathlib.Path(model))
     elif model.endswith(".aird"):
         modelinfo = {"path": model}
+    elif model in known_models:
+        modelinfo = _load_model_info(known_models[model])
     else:
-        modelinfo = _load_model_info(model)
+        try:
+            modelinfo = json.loads(model)
+        except json.JSONDecodeError:
+            raise ValueError(
+                f"Invalid JSON and not a known model: {model}"
+            ) from None
 
     if pargs.hold:
         modelinfo["update_cache"] = False
