@@ -54,21 +54,41 @@ except ImportError:
 
 
 def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
-    """Enumerate the models that are found in the ``known_models`` folder.
+    """Enumerate the models that are found in the ``known_models`` folders.
 
-    In order to make a custom model known, place a JSON file in the
-    ``known_models`` folder below the  installed ``capellambse`` package.
-    It should contain a dictionary with the keyword arguments to
-    :class:`capellambse.MelodyModel` - specifically it needs a ``path``,
-    an ``entrypoint``, and any additional arguments that the underlying
+    Two places are searched for models: The *known_models* folder in the
+    user's configuration directory, and the *known_models* folder in the
+    installed ``capellambse`` package.
+
+    In order to make a custom model known, place a JSON file in one of
+    these *known_models* folders. It should contain a dictionary with
+    the keyword arguments to :class:`capellambse.MelodyModel` -
+    specifically it needs a ``path``, an ``entrypoint``, and any
+    additional arguments that the underlying
     :class:`capellambse.filehandler.FileHandler` might need to gain
     access to the model.
+
+    Files in the user's configuration directory take precedence over
+    files in the package directory. If a file with the same name exists
+    in both places, the one in the user's configuration directory will
+    be used.
 
     Be aware that relative paths in the JSON will be interpreted
     relative to the current working directory.
     """
-    for i in imr.files(capellambse).joinpath("known_models").iterdir():
-        if i.name.endswith(".json") and i.is_file():
+    names = set[str]()
+    userdir = capellambse.dirs.user_config_path.joinpath("known_models")
+    configdir = imr.files(capellambse).joinpath("known_models")
+    i: importlib.abc.Traversable
+    try:
+        for i in userdir.iterdir():
+            if i.name.endswith(".json") and i.is_file():
+                names.add(i.name)
+                yield i
+    except FileNotFoundError:
+        pass
+    for i in configdir.iterdir():
+        if i.name.endswith(".json") and i.is_file() and i.name not in names:
             yield i
 
 
