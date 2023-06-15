@@ -417,6 +417,15 @@ class Diagram(AbstractDiagram):
         return self._model is other._model and self._element == other._element
 
     @property
+    def nodes(self) -> c.MixedElementList:
+        diagram_elements = list(
+            aird.iter_visible(self._model._loader, self._element)
+        )
+        return c.MixedElementList(
+            self._model, diagram_elements, c.GenericElement
+        )
+
+    @property
     def _allow_render(self) -> bool:
         return self._model._fallback_render_aird
 
