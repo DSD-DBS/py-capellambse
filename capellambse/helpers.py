@@ -367,6 +367,46 @@ def repair_html(markup: str) -> markupsafe.Markup:
     markup
         The repaired markup.
     """
+
+    def cb(node: etree._Element) -> None:
+        for k in list(node.keys()):
+            if ":" in k:
+                del node.attrib[k]
+
+    return process_html_fragments(markup, cb)
+
+
+def process_html_fragments(
+    markup: str, node_callback: cabc.Callable[[etree._Element], None]
+) -> markupsafe.Markup:
+    """Repair and modify HTML markup.
+
+    The original markup, which can be an HTML fragment (without a root
+    element), is parsed and processed, and then reassembled into a
+    Markup instance. If the original markup contained any errors or
+    inconsistencies, these are repaired in the returned Markup instance.
+
+    Parameters
+    ----------
+    markup
+        The markup string to modify.
+    node_callback
+        A callback function to process each node in the parsed markup.
+        The function should accept a single
+        :external:py:class:`lxml.etree._Element` as argument; its return
+        value is ignored.
+
+        Note that, since the markup is parsed as fragments, more than
+        the first element passed to the callback may have no parent.
+
+        The callback will not be invoked for leading text, if there is
+        any, and thus it has no ability to influence it.
+
+    Returns
+    -------
+    markupsafe.Markup
+        The processed markup.
+    """
     nodes: list[str | lxml.html._Element]
     nodes = lxml.html.fragments_fromstring(markup)
     if nodes and isinstance(nodes[0], str):
@@ -378,9 +418,7 @@ def repair_html(markup: str) -> markupsafe.Markup:
     for node in itertools.chain.from_iterable(
         map(operator.methodcaller("iter"), nodes)
     ):
-        for k in list(node.keys()):
-            if ":" in k:
-                del node.attrib[k]
+        node_callback(node)
 
     othernodes = b"".join(
         etree.tostring(i, encoding="utf-8") for i in nodes
