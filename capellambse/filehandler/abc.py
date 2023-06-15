@@ -79,6 +79,26 @@ class FileHandler(metaclass=abc.ABCMeta):
             :meth:`write_transaction()` first.
         """
 
+    def write_file(
+        self, path: str | pathlib.PurePosixPath, content: bytes, /
+    ) -> None:
+        """Write a file.
+
+        This method is a convenience wrapper around
+        :meth:`open()`.
+        """
+        with self.open(path, "wb") as f:
+            f.write(content)
+
+    def read_file(self, path: str | pathlib.PurePosixPath, /) -> bytes:
+        """Read a file.
+
+        This method is a convenience wrapper around
+        :meth:`open()`.
+        """
+        with self.open(path, "rb") as f:
+            return f.read()
+
     def write_transaction(
         self, **kw: t.Any
     ) -> t.ContextManager[cabc.Mapping[str, t.Any]]:
