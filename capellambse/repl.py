@@ -48,6 +48,7 @@ import typing as t
 from lxml import etree
 
 import capellambse
+from capellambse import cli_helpers
 from capellambse.loader import exs
 
 try:
@@ -94,11 +95,6 @@ _ModelInfo = t.Dict[str, t.Union[str, t.Dict[str, str]]]
 
 basedir = pathlib.Path(__file__).parent.resolve()
 logger = logging.getLogger("capellambse.repl")
-
-
-def _load_model_info(datapath: importlib.abc.Traversable) -> _ModelInfo:
-    with datapath.open("r", encoding="utf-8") as file:
-        return json.load(file)
 
 
 def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
@@ -149,21 +145,7 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
 
     pargs = parser.parse_args(args or sys.argv[1:])
     assert len(pargs.model) == 1
-    (model,) = pargs.model
-    modelinfo: dict[str, t.Any]
-    if model.endswith(".json"):
-        modelinfo = _load_model_info(pathlib.Path(model))
-    elif model.endswith(".aird"):
-        modelinfo = {"path": model}
-    elif model in known_models:
-        modelinfo = _load_model_info(known_models[model])
-    else:
-        try:
-            modelinfo = json.loads(model)
-        except json.JSONDecodeError:
-            raise ValueError(
-                f"Invalid JSON and not a known model: {model}"
-            ) from None
+    modelinfo = cli_helpers.loadinfo(pargs.model[0])
 
     if pargs.hold:
         modelinfo["update_cache"] = False
