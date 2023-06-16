@@ -99,6 +99,89 @@ def test_flatten_html_formats_unordered_lists(
     assert helpers.flatten_html_string(input) == expected
 
 
+def test_process_html_fragments_does_not_process_empty_markup() -> None:
+    markup = ""
+
+    def cb(node):
+        raise AssertionError("Callback should not be called")
+
+    processed_markup = helpers.process_html_fragments(markup, cb)
+
+    assert str(processed_markup) == ""
+
+
+def test_process_html_fragments_does_not_process_plain_text() -> None:
+    markup = "Test"
+
+    def cb(node):
+        raise AssertionError("Callback should not be called")
+
+    processed_markup = helpers.process_html_fragments(markup, cb)
+
+    assert str(processed_markup) == "Test"
+
+
+def test_process_html_fragments_processes_a_single_root_element() -> None:
+    markup = "<div>Test</div>"
+
+    def cb(node):
+        if node.text == "Test":
+            node.text = "Modified"
+
+    processed_markup = helpers.process_html_fragments(markup, cb)
+
+    assert str(processed_markup) == "<div>Modified</div>"
+
+
+def test_process_html_fragments_processes_multiple_root_elements() -> None:
+    markup = "<div>Test</div><p>Another</p>"
+
+    def cb(node):
+        if node.text == "Test":
+            node.text = "Modified"
+        elif node.text == "Another":
+            node.text = "Changed"
+
+    processed_markup = helpers.process_html_fragments(markup, cb)
+
+    assert str(processed_markup) == "<div>Modified</div><p>Changed</p>"
+
+
+def test_process_html_fragments_keeps_leading_text() -> None:
+    markup = "Leading text<div>Test</div>"
+
+    def cb(node):
+        if node.text == "Test":
+            node.text = "Modified"
+
+    processed_markup = helpers.process_html_fragments(markup, cb)
+
+    assert str(processed_markup) == "Leading text<div>Modified</div>"
+
+
+def test_process_html_fragments_callback_visits_nodes_in_order() -> None:
+    markup = (
+        "<div>Outer 1<div>Inner 1</div><div>Inner 2</div></div>"
+        "<div>Outer 2<div>Inner 3</div><div>Inner 4</div></div>"
+    )
+    expected = [
+        "Outer 1",
+        "Inner 1",
+        "Inner 2",
+        "Outer 2",
+        "Inner 3",
+        "Inner 4",
+    ]
+    actual = []
+
+    def cb(node):
+        actual.append(node.text)
+
+    helpers.process_html_fragments(markup, cb)
+
+    assert actual == expected
+
+
 if sys.platform.startswith("win"):
     import msvcrt
 
