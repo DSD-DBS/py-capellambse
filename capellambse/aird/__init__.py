@@ -10,9 +10,11 @@ __all__ = [
     "enumerate_diagrams",
     "parse_diagrams",
     "parse_diagram",
+    "iter_visible",
 ]
 
 import collections.abc as cabc
+import logging
 import pathlib
 import typing as t
 import urllib.parse
@@ -217,6 +219,83 @@ def _element_from_xml(ebd: C.ElementBuilder) -> diagram.DiagramElement:
     else:
         factory = _visual.from_xml
     return factory(ebd)
+
+
+def iter_visible(
+    model: loader.MelodyLoader, descriptor: DiagramDescriptor
+) -> cabc.Iterator[etree._Element]:
+    r"""Iterate over all semantic elements that are visible in a diagram.
+
+    This is a much faster alternative to calling :func:`parse_diagram`
+    and iterating over the diagram elements, if you only need to know
+    which semantic elements are visible, but are not otherwise
+    interested in the layout of the diagram.
+
+    Parameters
+    ----------
+    model
+        A loaded model.
+    descriptor
+        A DiagramDescriptor as obtained from :func:`enumerate_diagrams`.
+
+    Raises
+    ------
+    ValueError
+        If the corresponding data or style element can't be found in the
+        ``*.aird`` file.
+
+    Yields
+    ------
+    etree._Element
+        A semantic element from the ``*.capella`` file.
+    """
+    diag_element = model.follow_link(
+        model.trees[descriptor.fragment].root, descriptor.uid
+    )
+    style_data = helpers.xpath_fetch_unique(
+        C.XP_ANNOTATION_ENTRIES,
+        diag_element,
+        "ownedAnnotationsEntries with source GMF_DIAGRAMS",
+        diag_element.attrib["uid"],
+    )
+    port_tag = "ownedBorderedNodes"
+    visited: set[str] = set()
+    for elt in diag_element.iterdescendants("ownedDiagramElements", port_tag):
+        style_element = helpers.xpath_fetch_unique(
+            f".//*[@element='{elt.attrib['uid']}']",
+            style_data,
+            "style description",
+        )
+        if style_element.get("visible", "true") != "true":
+            continue
+
+        # Component Ports have their visible attribute on a child element
+        if elt.tag == port_tag:
+            try:
+                real_se = next(style_element.iterchildren("children"))
+            except StopIteration:
+                pass
+
+            if real_se.get("visible", "true") != "true":
+                continue
+
+        try:
+            target = next(elt.iterdescendants("target"))
+        except StopIteration:
+            C.LOGGER.warning(
+                "No semantic element found for %r",
+                elt.get("name", elt.attrib["uid"]),
+            )
+            continue
+
+        elem = model.follow_link(target, target.attrib["href"])
+        fragment = model.find_fragment(elem)
+        if (
+            model.trees[fragment].fragment_type == loader.FragmentType.SEMANTIC
+            and elem.attrib["id"] not in visited
+        ):
+            yield elem
+            visited.add(elem.attrib["id"])
 
 
 if not t.TYPE_CHECKING:
