@@ -30,6 +30,7 @@ classifiers = [
   "Topic :: Other/Nonlisted Topic",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
 ]
 dependencies = [
   "lxml>=4.5.0",
