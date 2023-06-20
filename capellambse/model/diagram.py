@@ -76,7 +76,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             ...
 
     else:
-        _allow_render: bool
+        _allow_render: bool = True
         """Allow this diagram to be rendered by the internal rendering engine.
 
         If this property is set to False, and a diagram cache was
