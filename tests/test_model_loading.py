@@ -56,6 +56,7 @@ def test_model_loading_via_GitFileHandler():
     capellambse.MelodyModel(
         path, entrypoint="tests/data/melodymodel/5_0/Melody Model Test.aird"
     )
+    assert not pathlib.Path.cwd().joinpath("capellambse.lock").exists()
 
 
 def test_GitFileHandler_locks_repo_during_tasks(monkeypatch, caplog):

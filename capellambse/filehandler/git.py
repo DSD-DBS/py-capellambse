@@ -677,7 +677,10 @@ class GitFileHandler(FileHandler):
         if isinstance(path, pathlib.WindowsPath):
             path = pathlib.Path(str(path)[1:])
         assert path.is_absolute()
-        self.__repo = self.cache_dir = path.resolve()
+        self.cache_dir = path.resolve()
+        gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
+        assert isinstance(gitdir, str)
+        self.__repo = pathlib.Path(self.cache_dir, gitdir.strip()).resolve()
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1f\x7f"*/:<>?\\|]+'
@@ -755,7 +758,6 @@ class GitFileHandler(FileHandler):
         except:
             os.rmdir(worktree)
             raise
-        self.__repo = self.cache_dir
         self.cache_dir = worktree
 
         self.__fnz = weakref.finalize(  # pylint: disable=unused-private-member
