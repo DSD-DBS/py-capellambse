@@ -220,25 +220,15 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def nodes(self) -> c.MixedElementList:
         """Return a list of all nodes visible in this diagram."""
         allids = {e.uuid for e in self.render(None) if not e.hidden}
-        assert None not in allids
         elems = []
         for elemid in allids:
             assert elemid is not None
             try:
-                elem = self._model._loader[elemid]
-                elem = next(elem.iterchildren("target"))
-                elem = self._model._loader.follow_link(
-                    elem, elem.attrib["href"]
-                )
-            except (KeyError, StopIteration):  # pragma: no cover
+                elem = self._model.by_uuid(elemid)
+            except KeyError:
                 continue
-            else:
-                # Filter out visual-only elements that live in the
-                # .aird / .airdfragment files
-                frag = self._model._loader.find_fragment(elem)
-                if frag.suffix not in {".aird", ".airdfragment"}:
-                    elems.append(elem)
 
+            elems.append(elem._element)
         return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
