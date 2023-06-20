@@ -83,6 +83,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         specified for the model, this diagram can only be loaded from
         the cache, and will never be rendered. Has no effect if there
         was no diagram cache specified.
+
+        :meta public:
         """
     _model: capellambse.MelodyModel
     _render: diagram.Diagram
