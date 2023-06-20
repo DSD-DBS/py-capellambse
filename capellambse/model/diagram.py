@@ -278,8 +278,16 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def _create_diagram(self, params: dict[str, t.Any]) -> diagram.Diagram:
         """Perform the actual rendering of the diagram.
 
-        This method should only be called by the public :meth:`render`
-        method, as it handles caching of the results.
+        This method is called by :meth:`render` to perform the actual
+        rendering of the diagram. It is passed the parameters that were
+        passed to :meth:`render` as a dictionary.
+
+        Subclasses override this method to implement their rendering
+        logic. Do not call this method directly, use :meth:`render`
+        instead - it will take care of caching and properly converting
+        the render output.
+
+        :meta public:
         """
 
     def __create_error_image(
