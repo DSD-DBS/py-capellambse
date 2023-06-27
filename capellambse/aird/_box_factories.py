@@ -144,7 +144,7 @@ def generic_stacked_factory(seb: C.SemanticElementBuilder) -> C.StackingBox:
 def class_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a Class.
 
-    Classes contain multiple `Property` sub-elements.  These aren't
+    Classes contain multiple `Property` sub-elements. These aren't
     actual boxes, but should instead be shown as part of the Class'
     regular label text.
     """
@@ -230,7 +230,7 @@ def component_port_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
 def constraint_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create the box for a Constraint.
 
-    Constraints are comprised of two parts: A Box and some Edges.  The
+    Constraints are comprised of two parts: A Box and some Edges. The
     Box' label must be extracted from the semantic object, because it
     isn't always easily accessible for the ``generic_factory``.
 
@@ -373,7 +373,7 @@ def statemode_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a State or Mode.
 
     Unlike other elements, these have their immediate children rendered
-    as stacked boxes.  The child boxes themselves can in turn have more
+    as stacked boxes. The child boxes themselves can in turn have more
     children either in floating or stacked form.
 
     Additionally, States and Modes can have associated activities. These
@@ -442,8 +442,8 @@ def fcif_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Create a FunctionalChainInvolvementFunction.
 
     These are special boxes that point to another element via their
-    ``involved`` attribute.  As there's no relevant information stored
-    in the original target attribute, we can simply use the "involved"
+    ``involved`` attribute. As there's no relevant information stored in
+    the original target attribute, we can simply use the "involved"
     element for constructing the actual box.
     """
     seb.melodyobjs[0] = seb.melodyloader.follow_link(

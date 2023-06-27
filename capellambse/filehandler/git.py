@@ -210,7 +210,7 @@ class _GitTransaction:
             or tag.
         remote_branch
             An alternative branch name to push to on the remote, instead
-            of pushing back to the same branch.  This is required if
+            of pushing back to the same branch. This is required if
             ``push`` is ``True`` and the ``revision`` that was passed to
             the constructor does not refer to a branch (or looks like a
             git object).
@@ -224,7 +224,7 @@ class _GitTransaction:
         push
             Set to ``False`` to inhibit pushing the changes back.
         push_options
-            Additional git push options.  See ``--push-option`` in
+            Additional git push options. See ``--push-option`` in
             ``git-push(1)``. Ignored if ``push`` is ``False``.
 
         Raises

@@ -89,7 +89,7 @@ class GenericPropertyValue(Generic, metaclass=abc.ABCMeta):
         value
             The value that should be serialized.
         element
-            The XML element into which the value will be inserted.  This
+            The XML element into which the value will be inserted. This
             may be used to construct links across fragment boundaries.
             This parameter may be None, in which case it is assumed that
             all elements exist within the same fragment.
@@ -231,7 +231,7 @@ class EnumerationPropertyValue(GenericPropertyValue):
 
         value = value.split("#")[-1]
         if value in self.typedef:
-            # It's already the UUID.  Normalize it.
+            # It's already the UUID. Normalize it.
             return pvext.model.create_link(element, pvext.model[value])
 
         raise ValueError(f"Not a valid value for this enumeration: {value}")

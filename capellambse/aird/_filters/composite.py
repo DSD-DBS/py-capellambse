@@ -37,8 +37,8 @@ def hide_empty_ports(
     """Hide child ports without context.
 
     This filter utilizes the fact that boxes track all connected edges
-    as their "context".  As ports do not have children, their context
-    can only be the edge(s) that connect directly to them.
+    as their "context". As ports do not have children, their context can
+    only be the edge(s) that connect directly to them.
     """
     del ebd
     assert isinstance(dgobject, diagram.Box)

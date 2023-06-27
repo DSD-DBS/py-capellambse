@@ -182,10 +182,10 @@ class PVMTExtension(XMLDictProxy):
 def load_pvmt_from_model(model):
     """Load the Property Value management extension for the given model.
 
-    This function is the main entry point for the ``pvmt`` module.  It
+    This function is the main entry point for the ``pvmt`` module. It
     should be called after constructing a ``MelodyLoader`` instance on
-    the model file.  It will return a ``PVMTExtension`` object, which
-    can be used to easily access the property values of the model given
+    the model file. It will return a ``PVMTExtension`` object, which can
+    be used to easily access the property values of the model given
     during intialization.
     """
     pkgs = model.xpath(

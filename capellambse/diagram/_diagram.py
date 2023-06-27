@@ -82,7 +82,7 @@ class Box:
         pos
             A Vector2D describing the spatial position.
         size
-            A Vector2D describing the box' size.  If one or both of its
+            A Vector2D describing the box' size. If one or both of its
             components are 0, it/they will be calculated based on the
             Box' label text and contained children.
         label
@@ -92,19 +92,19 @@ class Box:
         parent
             This box' parent box.
         collapsed
-            Collapse this box and hide all its children.  Note that
+            Collapse this box and hide all its children. Note that
             setting this flag does not change the box' size.
         minsize
             When dynamically calculating Box size, the minimum size it
-            should have.  Default: zero.
+            should have. Default: zero.
         maxsize
             When dynamically calculating Box size, the maximum size it
-            can have.  Default: inifite.
+            can have. Default: infinite.
         context
-            A list of UUIDs of objects in this box' context.  This
+            A list of UUIDs of objects in this box' context. This
             includes children and associated edges.
         port
-            Flag this box as a port.  Affects how context is added.
+            Flag this box as a port. Affects how context is added.
         features
             Certain classes of Box (like ``Class``) have features, which
             is a list of strings that will be displayed inside the Box,
@@ -359,7 +359,7 @@ class Box:
         offset
             The offset to move the box by.
         children
-            Recursively move children as well.  If False, the positions
+            Recursively move children as well. If False, the positions
             of children need to be adjusted separately.
         """
         self.pos += offset
@@ -533,7 +533,7 @@ class Edge(diagram.Vec2List):
     """An edge in the diagram.
 
     An Edge consists of a series of points that are traversed in order.
-    Each point is given as Vector2D containing absolute coordinates.  At
+    Each point is given as Vector2D containing absolute coordinates. At
     least two points are required.
     """
 

@@ -105,7 +105,7 @@ def normalize_pure_path(
         The input path to normalize.
     base
         The base directory to which relative paths should be
-        interpreted.  Ignored if the input path is not relative.
+        interpreted. Ignored if the input path is not relative.
 
     Returns
     -------
@@ -253,7 +253,7 @@ def ssvparse(
     cast
         A type to cast the values into.
     parens
-        The parentheses that must exist around the input.  Either a
+        The parentheses that must exist around the input. Either a
         two-character string or a 2-tuple of strings.
     sep
         The separator between values.
@@ -597,10 +597,10 @@ def xpath_fetch_unique(
     elm_name
         A human-readable element name for error messages.
     elm_uid
-        UID of the element which triggered this lookup.  Will be
-        included in the error message if an error occured.
+        UID of the element which triggered this lookup. Will be included
+        in the error message if an error occured.
     optional
-        True to return None in case the element is not found.  Otherwise
+        True to return None in case the element is not found. Otherwise
         a ValueError will be raised.
 
     Returns
@@ -710,7 +710,7 @@ def ntuples(
         An iterable.
     pad
         If the items in ``iterable`` are not evenly divisible by ``n``,
-        pad the last yielded tuple with ``None``\ s.  If False, the last
+        pad the last yielded tuple with ``None``\ s. If False, the last
         tuple will be discarded.
 
     Yields

@@ -35,11 +35,11 @@ XTYPE_HANDLERS: dict[
 r"""Defines a mapping between ``xsi:type``\ s and wrapper classes.
 
 The first layer's keys can be either ``None`` or the ``xsi:type`` of the
-architectural layer that the wrapper should be applied to.  In the case
-of ``None``, the wrapper will be applied to all layers.  Note that
+architectural layer that the wrapper should be applied to. In the case
+of ``None``, the wrapper will be applied to all layers. Note that
 layer-specific wrappers have precedence over layer-agnostic ones.
 
-These keys map to a further dictionary.  This second layer maps from the
+These keys map to a further dictionary. This second layer maps from the
 ``xsi:type``\ (s) that each wrapper handles to the wrapper class.
 """
 
@@ -88,19 +88,19 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
 ) -> cabc.Callable[[type[T]], type[T]]:
     """Register a class as handler for a specific ``xsi:type``.
 
-    ``arch`` is the ``xsi:type`` of the desired architecture.  It must
-    always be a simple string or None.  In the latter case the
-    definition applies to all elements regardless of their architectural
-    layer.  Architecture-specific definitions will always win over
+    ``arch`` is the ``xsi:type`` of the desired architecture. It must
+    always be a simple string or None. In the latter case the definition
+    applies to all elements regardless of their architectural layer.
+    Architecture-specific definitions will always win over
     architecture-independent ones.
 
     Each string given in ``xtypes`` notes an ``xsi:type`` of elements
-    that this class handles.  It is possible to specify multiple values,
+    that this class handles. It is possible to specify multiple values,
     in which case the class will be registered for each ``xsi:type``
     under the architectural layer given in ``arch``.
 
     Handler classes' ``__init__`` methods must accept two positional
-    arguments.  The first argument is the :class:`MelodyModel` instance
+    arguments. The first argument is the :class:`MelodyModel` instance
     which loaded the corresponding model, and the second one is the LXML
     element that needs to be handled.
 

@@ -43,8 +43,8 @@ def composite_filter(
 ) -> cabc.Callable[[CompositeFilter], CompositeFilter]:
     """Register a composite filter.
 
-    Composite filters are executed in two phases.  The first phase
-    occurs during each diagram element's creation.  Here the callables
+    Composite filters are executed in two phases. The first phase occurs
+    during each diagram element's creation. Here the callables
     registered with this decorator are directly executed with the
     diagram under construction and the to-be-filtered element as
     arguments.
@@ -54,7 +54,7 @@ def composite_filter(
     callable object during the first phase; this object will then be
     called with the same (now constructed) diagram and the element.
 
-    Composite filters should always operate in place.  They may append
+    Composite filters should always operate in place. They may append
     additional elements to the diagram, but they should never remove
     any; instead they should simply change their "hidden" flag to True.
     """
@@ -112,7 +112,7 @@ def setfilters(
     Returns
     -------
     dgobject
-        The modified ``dgobject``.  This is done for convenience; the
+        The modified ``dgobject``. This is done for convenience; the
         object is modified in place.
 
     See Also
@@ -153,7 +153,7 @@ def applyfilters(args: FilterArguments) -> None:
     Firstly it executes phase 2 of all elements' composite filters; see
     :func:`composite_filter` for more details.
 
-    Secondly it applies the diagram's global filters.  These are always
+    Secondly it applies the diagram's global filters. These are always
     applied after all composite filters have run.
     """
     # Apply post-processing filters on elements

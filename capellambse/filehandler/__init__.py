@@ -127,7 +127,7 @@ class FileHandler(metaclass=abc.ABCMeta):
 
         A "file" in this context does not necessarily refer to a
         physical file on disk; it may just as well be streamed in via
-        network or other means.  Due to this, the file-like returned by
+        network or other means. Due to this, the file-like returned by
         this method is not required to support random access.
 
         Parameters
@@ -136,10 +136,10 @@ class FileHandler(metaclass=abc.ABCMeta):
             The name of the file, relative to the ``path`` that was
             given to the constructor.
         mode
-            The mode to open the file in.  Either ``"r"`` or ``"rb"``
-            for reading, or ``"w"`` or ``"wb"`` for writing a new file.
-            Be aware that this method may refuse to open a file for
-            writing unless a transaction was started with
+            The mode to open the file in. Either ``"r"`` or ``"rb"`` for
+            reading, or ``"w"`` or ``"wb"`` for writing a new file. Be
+            aware that this method may refuse to open a file for writing
+            unless a transaction was started with
             :meth:`write_transaction()` first.
         """
 
@@ -151,33 +151,33 @@ class FileHandler(metaclass=abc.ABCMeta):
         During a transaction, writable objects returned by
         :meth:`open()` buffer their contents in a temporary location,
         and once the transaction ends, all updated files are committed
-        to their destinations at once.  If the transaction is aborted,
+        to their destinations at once. If the transaction is aborted,
         for example because an exception was raised, then all changes
         must be rolled back to the state immediately before the
-        transaction.  If, during a transaction, any relevant file is
+        transaction. If, during a transaction, any relevant file is
         touched without the file handler knowing about it, the behavior
         is undefined.
 
         Note that :meth:`open()` may refuse to open a file as writable
-        if no transaction is currently open.  This depends on the needs
+        if no transaction is currently open. This depends on the needs
         of the underlying abstract file system.
 
         Transaction arguments
         ---------------------
         A concrete file handler implementation may accept arbitrary
-        additional arguments to this method.  The implementation should
+        additional arguments to this method. The implementation should
         however always support the case of no arguments given, in which
         case it should start a transaction with sensible defaults, and
         it should also accept and ignore any arguments it does not
-        understand.  All additional arguments must be passed in via
-        keywords.  Positional arguments are not supported.
+        understand. All additional arguments must be passed in via
+        keywords. Positional arguments are not supported.
 
         The return value of the context manager's ``__enter__()`` method
         is expected to be a mapping of all the keyword arguments that
-        were not understood.  Client code may use this to react properly
+        were not understood. Client code may use this to react properly
         (e.g. by aborting the transaction early) if a required keyword
         argument is found to be not supported by the underlying file
-        handler.  If a subclass wishes to call its super class'
+        handler. If a subclass wishes to call its super class'
         ``write_transaction()`` method, it should remove all the keyword
         arguments that it handles itself and pass on the others
         unchanged.
@@ -199,7 +199,7 @@ class FileHandler(metaclass=abc.ABCMeta):
             which will be recorded in the version control system.
         -   ``remote_branch`` (``str``): If the model came from a remote
             version control system, changes are normally pushed back to
-            the same branch on that remote.  This argument specifies an
+            the same branch on that remote. This argument specifies an
             alternative branch name to push to (which may not yet exist
             on the remote).
         """

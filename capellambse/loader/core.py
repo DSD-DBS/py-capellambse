@@ -709,7 +709,7 @@ class MelodyLoader:
         query
             The XPath query
         namespaces
-            Namespaces used in the query.  Defaults to all known
+            Namespaces used in the query. Defaults to all known
             namespaces.
         roots
             A list of XML elements to use as roots for the query.
@@ -747,7 +747,7 @@ class MelodyLoader:
         query
             The XPath query
         namespaces
-            Namespaces used in the query.  Defaults to all known
+            Namespaces used in the query. Defaults to all known
             namespaces.
         roots
             A list of XML elements to use as roots for the query.

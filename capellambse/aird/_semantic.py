@@ -3,7 +3,7 @@
 """Parser entry point for semantic elements.
 
 Semantic elements have a ``<target>`` which references the represented
-object in the ``.melodymodeller`` or ``.melodyfragment`` file.  The
+object in the ``.melodymodeller`` or ``.melodyfragment`` file. The
 melody file is the source of truth for all attributes that are not
 specific to a single diagram, i.e. basically everything except position,
 size and styling.

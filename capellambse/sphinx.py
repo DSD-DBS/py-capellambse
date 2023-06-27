@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-"""Sphinx extension for python-capella-mbse.
+"""Sphinx extension for capellambse.
 
 This extension is be used to display diagrams in Sphinx-generated
 documentation.
@@ -37,20 +37,20 @@ To enable this extension, add it to your list of extensions in Sphinx'
 
 The following configuration variables are understood by this extension:
 
-*   ``capellambse_model``: Path to the Capella model.
+* ``capellambse_model``: Path to the Capella model.
 
-    Set this variable to the root ``.aird`` file of the model you want
-    to use in the documentation.  The path must be relative to Sphinx'
-    current working directory, which should be the directory containing
-    the ``conf.py`` file.
+  Set this variable to the root ``.aird`` file of the model you want to
+  use in the documentation. The path must be relative to Sphinx' current
+  working directory, which should be the directory containing the
+  ``conf.py`` file.
 
 Known limitations
 -----------------
 
-*   The extension currently does not detect changes to the model, nor
-    does it track which source files are using it.  This means that,
-    after changing the model, you need to force a full rebuild of all
-    pages by passing ``--fresh-env`` to Sphinx' build command.
+* The extension currently does not detect changes to the model, nor does
+  it track which source files are using it. This means that, after
+  changing the model, you need to force a full rebuild of all pages by
+  passing ``--fresh-env`` to Sphinx' build command.
 """
 from __future__ import annotations
 
@@ -108,7 +108,7 @@ def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
     """Unload the model.
 
     The LXML tree cannot be pickled together with the rest of the build
-    environment.  This means we need to unload the model again after
+    environment. This means we need to unload the model again after
     processing the source files.
     """
     if hasattr(env, "capellambse_loaded_model"):

@@ -98,16 +98,16 @@ class HTTPFileHandler(FileHandler):
 
         This file handler supports three ways of specifying a URL:
 
-        1.  If a plain URL is passed, the requested file name is
-            appended after a forward slash ``/``.
-        2.  If the URL contains ``%s``, it will be replaced by the
-            requested file name, instead of appending it at the end.
-            This allows for example to pass query parameters after the
-            file name. File names are percent-escaped as implemented by
-            ``urllib.parse.quote``.
-        3.  The sequence ``%q`` is replaced similar to ``%s``, but the
-            forward slash ``/`` is not considered a safe character and
-            is percent-escaped as well.
+        1. If a plain URL is passed, the requested file name is appended
+           after a forward slash ``/``.
+        2. If the URL contains ``%s``, it will be replaced by the
+           requested file name, instead of appending it at the end. This
+           allows for example to pass query parameters after the file
+           name. File names are percent-escaped as implemented by
+           ``urllib.parse.quote``.
+        3. The sequence ``%q`` is replaced similar to ``%s``, but the
+           forward slash ``/`` is not considered a safe character and is
+           percent-escaped as well.
 
         Examples: When requesting the file name ``demo/my model.aird``,
         ...

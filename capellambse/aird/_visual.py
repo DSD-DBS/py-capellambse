@@ -3,7 +3,7 @@
 """Parser entry point for visual elements.
 
 Visual elements, contrary to semantic ones, do not exist in the melody
-files at all.  They are used for things such as Notes and inter-diagram
+files at all. They are used for things such as Notes and inter-diagram
 hyperlinks.
 """
 from __future__ import annotations
@@ -118,7 +118,7 @@ VISUAL_TYPES: dict[
 ] = {
     "BasicDecorationNode": c.SkipObject.raise_,
     "Connector": connector_factory,
-    # Nodes are actually semantic elements.  If one got through to here,
+    # Nodes are actually semantic elements. If one got through to here,
     # it's an internal node, not an element root.
     "Node": c.SkipObject.raise_,
     "Shape": shape_factory,

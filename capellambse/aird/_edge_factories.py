@@ -497,7 +497,7 @@ def sequence_link_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a SequenceLink.
 
     Sequence links (in Operational Process Diagrams) use the guard
-    condition as label, if it is set.  Otherwise the label stays empty.
+    condition as label, if it is set. Otherwise the label stays empty.
     """
     edge = generic_factory(seb)
     guard = _guard_condition(seb, "condition")
