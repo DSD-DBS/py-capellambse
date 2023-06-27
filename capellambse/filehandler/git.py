@@ -31,7 +31,7 @@ import weakref
 import capellambse.helpers
 from capellambse.loader import modelinfo
 
-from . import FileHandler, TransactionClosedError
+from . import abc
 
 LOGGER = logging.getLogger(__name__)
 
@@ -445,7 +445,7 @@ class _GitTransaction:
         return tree_hash
 
 
-class GitFileHandler(FileHandler):
+class GitFileHandler(abc.FileHandler):
     """File handler for ``git://`` and related protocols.
 
     Parameters
@@ -490,7 +490,7 @@ class GitFileHandler(FileHandler):
 
     See Also
     --------
-    capellambse.filehandler.FileHandler :
+    capellambse.filehandler.abc.FileHandler :
         Documentation of common parameters.
     """
 
@@ -556,7 +556,7 @@ class GitFileHandler(FileHandler):
         )
         if "w" in mode:
             if self._transaction is None:
-                raise TransactionClosedError(
+                raise abc.TransactionClosedError(
                     "Writing to git requires a transaction"
                 )
             return self.__open_writable(path)

@@ -13,12 +13,12 @@ import typing as t
 from capellambse import helpers
 from capellambse.loader.modelinfo import ModelInfo
 
-from . import FileHandler
+from . import abc
 
 LOGGER = logging.getLogger(__name__)
 
 
-class LocalFileHandler(FileHandler):
+class LocalFileHandler(abc.FileHandler):
     def __init__(
         self,
         path: str | os.PathLike,

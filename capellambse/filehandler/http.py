@@ -22,7 +22,7 @@ import requests
 
 from capellambse import helpers, loader
 
-from . import FileHandler
+from . import abc
 
 
 class DownloadStream(t.BinaryIO):
@@ -78,7 +78,7 @@ class DownloadStream(t.BinaryIO):
         del self.__buffer
 
 
-class HTTPFileHandler(FileHandler):
+class HTTPFileHandler(abc.FileHandler):
     """A remote file handler that fetches files using HTTP GET."""
 
     def __init__(

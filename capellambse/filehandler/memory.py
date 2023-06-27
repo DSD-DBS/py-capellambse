@@ -21,13 +21,13 @@ import typing as t
 
 from capellambse import helpers
 
-from . import FileHandler
+from . import abc
 
 if t.TYPE_CHECKING:
     from capellambse.loader.modelinfo import ModelInfo
 
 
-class MemoryFileHandler(FileHandler):
+class MemoryFileHandler(abc.FileHandler):
     """A file handler that stores data in memory."""
 
     def __init__(
