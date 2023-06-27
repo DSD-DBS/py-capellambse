@@ -174,5 +174,5 @@ def draw_summary_badge(
     return (
         '<svg xmlns="http://www.w3.org/2000/svg"'
         f' width="{scale*134}" height="{scale*30}" viewBox="0 0 134 30">'
-        f"{text}</svg>"
+        f"{text}</svg>\n"
     )
