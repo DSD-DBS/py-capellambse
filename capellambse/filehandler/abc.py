@@ -5,14 +5,20 @@ from __future__ import annotations
 
 __all__ = [
     "FileHandler",
+    "AbstractFilePath",
     "TransactionClosedError",
 ]
 
 import abc
 import collections.abc as cabc
+import importlib.abc as iabc
 import os
 import pathlib
 import typing as t
+
+import typing_extensions as te
+
+from capellambse import helpers
 
 if t.TYPE_CHECKING:
     from capellambse.loader import modelinfo
@@ -168,6 +174,118 @@ class FileHandler(metaclass=abc.ABCMeta):
                 pass
 
         return EmptyTransaction()
+
+    @property
+    def rootdir(self) -> AbstractFilePath[te.Self]:  # pragma: no cover
+        """The root directory of the file handler."""
+        raise TypeError(
+            f"{type(self).__name__} does not support listing files"
+        )
+
+    def iterdir(  # pragma: no cover
+        self, path: str | pathlib.PurePosixPath = ".", /
+    ) -> cabc.Iterator[AbstractFilePath[te.Self]]:
+        """Iterate over the contents of a directory.
+
+        This method is equivalent to calling
+        ``fh.rootdir.joinpath(path).iterdir()``.
+
+        Parameters
+        ----------
+        path
+            The directory to list. If not given, lists the contents of
+            the root directory (i.e. the one specified by ``path`` and
+            ``subdir``).
+        """
+        raise TypeError(
+            f"{type(self).__name__} does not support listing files"
+        )
+
+
+class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
+    """A path to a file in a file handler.
+
+    This is an abstract class with FileHandler-agnostic implementations
+    of some of Traversable's methods. It is not meant to be instantiated
+    directly, but rather to be used as a base class for concrete file
+    path implementations.
+
+    Note that some of these implementations may be inefficient, and
+    subclasses are encouraged to override them with more efficient
+    implementations if possible.
+    """
+
+    def __init__(self, parent: _F, path: pathlib.PurePosixPath):
+        self._parent = parent
+        self._path = path
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self._parent!r}, {self._path!r})"
+
+    def __str__(self) -> str:
+        return str(self._path)
+
+    def __truediv__(self, path: str | pathlib.PurePosixPath) -> te.Self:
+        return self.joinpath(path)
+
+    def __fspath__(self) -> str:
+        return str(self._path)
+
+    def joinpath(self, path: str | pathlib.PurePosixPath) -> te.Self:
+        newpath = helpers.normalize_pure_path(path, base=self._path)
+        return type(self)(self._parent, newpath)
+
+    @abc.abstractmethod
+    def is_dir(self) -> bool:
+        ...
+
+    @abc.abstractmethod
+    def is_file(self) -> bool:
+        ...
+
+    def iterdir(
+        self, path: str | pathlib.PurePosixPath = "."
+    ) -> cabc.Iterator[te.Self]:
+        path = helpers.normalize_pure_path(path, base=self._path)
+        return t.cast("cabc.Iterator[te.Self]", self._parent.iterdir(path))
+
+    @property
+    def name(self) -> str:
+        return self._path.name
+
+    def open(  # type: ignore[override]
+        self,
+        mode: t.Literal["r", "rb", "w", "wb"] = "rb",
+        buffering: int = -1,
+        encoding: str | None = None,
+        errors: str | None = None,
+        newline: str | None = None,
+    ) -> t.BinaryIO:
+        del buffering, errors
+
+        if "b" not in mode:
+            raise ValueError("Only binary mode is supported")
+        if "r" in mode:
+            mode = "rb"
+        elif "w" in mode:
+            mode = "wb"
+        else:
+            raise ValueError(f"Unsupported mode: {mode!r}")
+
+        if encoding is not None:
+            raise ValueError("Encoding is not supported")
+        if newline is not None:
+            raise ValueError("Newline is not supported")
+
+        return self._parent.open(self._path, mode)
+
+    def read_bytes(self) -> bytes:
+        with self.open("rb") as f:
+            return f.read()
+
+    def read_text(self, encoding: str | None = None) -> str:
+        with self.open("rb") as f:
+            return f.read().decode(encoding or "utf-8")
 
 
 class TransactionClosedError(RuntimeError):

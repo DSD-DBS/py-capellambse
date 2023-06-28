@@ -620,6 +620,35 @@ class GitFileHandler(abc.FileHandler):
 
     write_transaction.__doc__ = _GitTransaction.__init__.__doc__
 
+    @property
+    def rootdir(self) -> _GitPath:
+        """The root directory of the repository."""
+        return _GitPath(self, pathlib.PurePosixPath("."))
+
+    def iterdir(
+        self, path: str | pathlib.PurePosixPath = "."
+    ) -> t.Iterator[_GitPath]:
+        """Iterate over the files in the given directory.
+
+        Parameters
+        ----------
+        path
+            The path to the directory to iterate over.
+        """
+        path = capellambse.helpers.normalize_pure_path(path, base=self.subdir)
+        if path == pathlib.PurePosixPath("."):
+            treename = self.revision
+        else:
+            treename = f"{self.revision}:{path}"
+        tree = (
+            self._git("ls-tree", "-z", "--name-only", treename)
+            .decode("utf-8", errors="surrogateescape")
+            .rstrip("\x00")
+            .split("\x00")
+        )
+        for line in tree:
+            yield _GitPath(self, pathlib.PurePosixPath(path, line))
+
     @staticmethod
     def __cleanup_worktree(
         repo_root: pathlib.Path, worktree: pathlib.Path, /
@@ -873,3 +902,13 @@ class GitFileHandler(abc.FileHandler):
                 for line in stderr.splitlines():
                     LOGGER.getChild("git").log(level, "%s", line)
             LOGGER.log(level, "Exit status: %d", returncode)
+
+
+class _GitPath(abc.AbstractFilePath[GitFileHandler]):
+    def is_dir(self) -> bool:
+        obj = f"{self._parent.revision}:{self._path}"
+        return self._parent._git("cat-file", "-t", obj) == b"tree\n"
+
+    def is_file(self) -> bool:
+        obj = f"{self._parent.revision}:{self._path}"
+        return self._parent._git("cat-file", "-t", obj) == b"blob\n"

@@ -101,6 +101,21 @@ class LocalFileHandler(abc.FileHandler):
                         (self.path / tmpname).replace(self.path / file)
                 self.__transaction = None
 
+    @property
+    def rootdir(self) -> LocalFilePath:
+        return LocalFilePath(self, pathlib.PurePosixPath("/"))
+
+    def iterdir(
+        self, subdir: str | pathlib.PurePosixPath = "."
+    ) -> t.Iterator[LocalFilePath]:
+        assert isinstance(self.path, pathlib.Path)
+        subdir = helpers.normalize_pure_path(subdir)
+        for p in self.path.joinpath(subdir).iterdir():
+            yield LocalFilePath(
+                self,
+                pathlib.PurePosixPath(p.relative_to(self.path)),
+            )
+
     def __git_rev_parse(self, *options: str) -> str | None:
         assert isinstance(self.path, pathlib.Path)
         try:
@@ -155,3 +170,15 @@ def _tmpname(filename: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
     suffix = ".tmp"
     name = filename.name[0 : 255 - (len(prefix) + len(suffix))]
     return filename.with_name(f"{prefix}{name}{suffix}")
+
+
+class LocalFilePath(abc.AbstractFilePath[LocalFileHandler]):
+    def is_dir(self) -> bool:
+        base = t.cast(pathlib.Path, self._parent.path)
+        path = base.joinpath(self._path).resolve()
+        return path.is_dir()
+
+    def is_file(self) -> bool:
+        base = t.cast(pathlib.Path, self._parent.path)
+        path = base.joinpath(self._path).resolve()
+        return path.is_file()
