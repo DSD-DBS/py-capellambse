@@ -11,6 +11,7 @@ __all__ = [
 
 import logging
 import os
+import pathlib
 import re
 import sys
 import typing as t
@@ -33,8 +34,28 @@ def _looks_like_scp(path: str) -> bool:
 
 
 def split_protocol(uri: str | os.PathLike) -> tuple[str, str | os.PathLike]:
+    """Split the protocol from the URI.
+
+    This function is used to find the name of the file handler for a
+    given URI. It takes a URI and returns a tuple of the handler name
+    and the potentially modified URI. This function performs the
+    following checks and modifications:
+
+    - If the URI either does not contain a protocol, uses the
+      ``file://`` protocol, or is a PathLike object, the handler name is
+      ``file`` and the URI is converted to a :class:`pathlib.Path`
+      object.
+
+    - If the URI is an SCP-style URI (``user@host:path``), the handler
+      name is ``git`` and the URI is not modified.
+
+    - If the URI contains nested protocols (e.g. ``git+file://repo``),
+      the outermost protocol (i.e. ``git``) is split off and becomes the
+      handler name. The rest of the URI (``file://repo``) is returned
+      unmodified.
+    """
     if _looks_like_local_path(uri):
-        return "file", uri
+        return "file", pathlib.Path(uri)
     if isinstance(uri, str) and _looks_like_scp(uri):
         return "git", uri
 
@@ -46,8 +67,17 @@ def split_protocol(uri: str | os.PathLike) -> tuple[str, str | os.PathLike]:
         handler_name = prefix_match.group(1)
         if prefix_match.group(2) == "+":
             uri = uri[len(prefix_match.group(0)) :]
+        elif handler_name == "file":
+            if match := re.match(r"^file://(?:localhost)?/", uri):
+                uri = uri[len(match.group(0)) :]
+            else:
+                raise ValueError(f"Invalid non-local file URI: {uri}")
+            uri = pathlib.Path(
+                "/" * (not sys.platform.startswith("win")) + uri
+            )
     else:
         handler_name = "file"
+        uri = pathlib.Path(uri)
     return (handler_name, uri)
 
 

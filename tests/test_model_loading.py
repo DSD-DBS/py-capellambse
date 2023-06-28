@@ -106,8 +106,79 @@ def test_model_loading_from_badpath_raises_FileNotFoundError():
         capellambse.MelodyModel(badpath)
 
 
+def test_split_protocol_returns_path_objects_unchanged():
+    expected = pathlib.Path.cwd()
+
+    handler, actual = capellambse.filehandler.split_protocol(expected)
+
+    assert handler == "file"
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    ["url", "expected"],
+    (
+        [
+            ("/path/to/file", pathlib.Path("/path/to/file")),
+            ("file:///path/to/file", pathlib.Path("/path/to/file")),
+            ("file://localhost/path/to/file", pathlib.Path("/path/to/file")),
+        ]
+        if not sys.platform.startswith("win")
+        else [
+            ("C:/path/to/file", pathlib.Path("C:/path/to/file")),
+            (r"C:\path\to\file", pathlib.Path(r"C:\path\to\file")),
+            ("file:///C:/path/to/file", pathlib.Path("C:/path/to/file")),
+            (
+                "file://localhost/C:/path/to/file",
+                pathlib.Path("C:/path/to/file"),
+            ),
+        ]
+    ),
+)
+def test_split_protocol_converts_file_urls_to_paths(url, expected):
+    handler, actual = capellambse.filehandler.split_protocol(url)
+
+    assert handler == "file"
+    assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "myhost:myrepo.git",
+        "git@host:",
+        "git@host:repo.git",
+        "git@host:path/to/repo",
+        "git@host:/path/to/repo",
+    ],
+)
+def test_split_protocol_recognizes_scp_style_uris_as_git(url: str):
+    handler, actual = capellambse.filehandler.split_protocol(url)
+
+    assert handler == "git"
+    assert actual == url
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        pytest.param("http://domain.invalid/path", id="http"),
+        pytest.param("https://domain.invalid/path", id="https"),
+        pytest.param("ftp://domain.invalid/path", id="ftp"),
+        pytest.param("ftps://domain.invalid/path", id="ftps"),
+        pytest.param("sftp://domain.invalid/path", id="sftp"),
+        pytest.param("ssh://domain.invalid/path", id="ssh"),
+    ],
+)
+def test_split_protocol_does_not_change_simple_urls(url: str):
+    handler, actual = capellambse.filehandler.split_protocol(url)
+
+    assert handler == url.split(":", 1)[0]
+    assert actual == url
+
+
 class FakeEntrypoint:
-    def __init__(self, expected_name, expected_url):
+    def __init__(self, expected_name: str, expected_url: str):
         self._expected_name = expected_name
         self._expected_url = expected_url
 
@@ -122,8 +193,11 @@ class FakeEntrypoint:
         return AlwaysEqual()
 
     def load(self):
-        def filehandler(url):
-            assert url == self._expected_url
+        def filehandler(url: str | pathlib.Path):
+            if isinstance(url, pathlib.Path):
+                assert url == pathlib.Path(self._expected_url)
+            else:
+                assert str(url) == self._expected_url
 
         return filehandler
 
@@ -166,6 +240,9 @@ def test_a_wrapping_protocol_separated_by_plus_is_stripped(monkeypatch):
     "path",
     [
         "/data/model/model.aird",
+    ]
+    if not sys.platform.startswith("win")
+    else [
         r"S:\model\model.aird",
         r"S:/model/model.aird",
         r"\\?\S:\model\model.aird",
