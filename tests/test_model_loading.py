@@ -45,7 +45,7 @@ def test_model_loading_via_LocalFileHandler(path: str | pathlib.Path):
     capellambse.MelodyModel(path)
 
 
-@pytest.mark.parametrize("suffix", [".capella", ".melodymodel"])
+@pytest.mark.parametrize("suffix", [".afm", ".capella"])
 def test_model_loading_with_invalid_entrypoint_fails(suffix: str):
     with pytest.raises(ValueError, match="(?i)invalid entrypoint"):
         capellambse.MelodyModel(TEST_MODEL_5_0.with_suffix(suffix))

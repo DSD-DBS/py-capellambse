@@ -30,7 +30,6 @@ from lxml import builder, etree
 import capellambse
 import capellambse._namespaces as _n
 from capellambse import filehandler, helpers
-from capellambse.filehandler import local
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
@@ -84,6 +83,41 @@ CROSS_FRAGMENT_LINK = re.compile(
     re.VERBOSE,
 )
 METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
+
+
+def _derive_entrypoint(
+    path: str | os.PathLike | filehandler.FileHandler,
+    entrypoint: str | pathlib.PurePosixPath | None = None,
+) -> tuple[filehandler.FileHandler, pathlib.PurePosixPath]:
+    if entrypoint:
+        if not isinstance(path, filehandler.FileHandler):
+            path = filehandler.get_filehandler(path)
+        entrypoint = helpers.normalize_pure_path(entrypoint)
+        return path, entrypoint
+
+    if not isinstance(path, filehandler.FileHandler):
+        path = os.fspath(path)
+        protocol, nested_path = filehandler.split_protocol(path)
+        if protocol == "file":
+            assert isinstance(nested_path, pathlib.Path)
+            if nested_path.suffix == ".aird":
+                entrypoint = pathlib.PurePosixPath(nested_path.name)
+                path = nested_path.parent
+                return filehandler.get_filehandler(path), entrypoint
+            elif nested_path.is_file():
+                raise ValueError(
+                    f"Invalid entrypoint: Not an .aird file: {nested_path}"
+                )
+        path = filehandler.get_filehandler(path)
+
+    aird_files = [i for i in path.iterdir() if i.name.endswith(".aird")]
+    if not aird_files:
+        raise ValueError("No .aird file found, specify entrypoint")
+    if len(aird_files) > 1:
+        raise ValueError("Multiple .aird files found, specify entrypoint")
+    entrypoint = pathlib.PurePosixPath(aird_files[0])
+
+    return path, entrypoint
 
 
 def _verify_extension(filename: pathlib.PurePosixPath) -> None:
@@ -382,10 +416,10 @@ class MelodyLoader:
             "ignore_duplicate_uuids_and_void_all_warranties", False
         )
 
-        if isinstance(path, filehandler.FileHandler):
-            handler = path
-        else:
-            handler = filehandler.get_filehandler(path, **kwargs)
+        handler, self.entrypoint = _derive_entrypoint(path, entrypoint)
+        if self.entrypoint.suffix != ".aird":
+            raise ValueError("Invalid entrypoint, specify the ``.aird`` file")
+
         self.resources = ResourceLocationManager({"\0": handler})
         for resname, reshdl in (resources or {}).items():
             if not resname:
@@ -399,9 +433,6 @@ class MelodyLoader:
                 self.resources[resname] = filehandler.get_filehandler(**reshdl)
             else:
                 self.resources[resname] = reshdl
-        self.entrypoint = self.__derive_entrypoint(entrypoint)
-        if self.entrypoint.suffix != ".aird":
-            raise ValueError("Invalid entrypoint, specify the ``.aird`` file")
 
         self.trees: dict[pathlib.PurePosixPath, ModelFile] = {}
         self.__load_referenced_files(
@@ -431,20 +462,6 @@ class MelodyLoader:
                 "Model has duplicated UUIDs across fragments"
                 " - check the 'resources' for duplicate models"
             )
-
-    def __derive_entrypoint(
-        self, entrypoint: str | pathlib.PurePosixPath | None
-    ) -> pathlib.PurePosixPath:
-        if entrypoint:
-            return helpers.normalize_pure_path(entrypoint)
-
-        if isinstance(self.filehandler, local.LocalFileHandler):
-            basedir = self.filehandler.path
-            assert isinstance(basedir, pathlib.Path)
-            self.filehandler.path = basedir.parent
-            return helpers.normalize_pure_path(basedir.name)
-
-        raise ValueError("This type of file handler needs an ``entrypoint``")
 
     def __load_referenced_files(
         self, resource_path: pathlib.PurePosixPath
