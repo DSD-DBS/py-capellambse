@@ -112,6 +112,20 @@ reqif = "capellambse.extensions.reqif:init"
 [tool.black]
 line-length = 79
 
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest"
+source = ["capellambse"]
+
+[tool.coverage.report]
+exclude_also = [
+  'if t\.TYPE_CHECKING:',
+  'class .*\bt\.Protocol\):',
+  '@abc\.abstractmethod',
+  '@t\.overload',
+]
+skip_covered = true
+
 [tool.docformatter]
 wrap-descriptions = 72
 wrap-summaries = 79
