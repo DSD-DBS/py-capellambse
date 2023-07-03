@@ -166,22 +166,6 @@ class Collection(c.GenericElement):
 
 
 @c.xtype_handler(None)
-class DataPkg(c.GenericElement):
-    """A data package that can hold classes."""
-
-    classes = c.DirectProxyAccessor(Class, aslist=c.ElementList)
-    unions = c.DirectProxyAccessor(Union, aslist=c.ElementList)
-    collections = c.DirectProxyAccessor(Collection, aslist=c.ElementList)
-    enumerations = c.DirectProxyAccessor(
-        datatype.Enumeration, aslist=c.ElementList
-    )
-    complex_values = c.DirectProxyAccessor(
-        datavalue.ComplexValue, aslist=c.ElementList
-    )
-    packages: c.Accessor
-
-
-@c.xtype_handler(None)
 class ExchangeItemElement(c.GenericElement):
     """An ExchangeItemElement (proxy link)."""
 
@@ -205,6 +189,25 @@ class ExchangeItem(c.GenericElement):
     )
     elements = c.DirectProxyAccessor(ExchangeItemElement, aslist=c.ElementList)
     exchanges: c.Accessor[c.GenericElement]
+
+
+@c.xtype_handler(None)
+class DataPkg(c.GenericElement):
+    """A data package that can hold classes."""
+
+    associations = c.DirectProxyAccessor(Association, aslist=c.ElementList)
+    classes = c.DirectProxyAccessor(Class, aslist=c.ElementList)
+    unions = c.DirectProxyAccessor(Union, aslist=c.ElementList)
+    collections = c.DirectProxyAccessor(Collection, aslist=c.ElementList)
+    enumerations = c.DirectProxyAccessor(
+        datatype.Enumeration, aslist=c.ElementList
+    )
+    exchange_items = c.DirectProxyAccessor(ExchangeItem, aslist=c.ElementList)
+    complex_values = c.DirectProxyAccessor(
+        datavalue.ComplexValue, aslist=c.ElementList
+    )
+
+    packages: c.Accessor
 
 
 for cls in [Class, Union, datatype.Enumeration, Collection]:
