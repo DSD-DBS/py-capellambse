@@ -72,8 +72,8 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
 
             return orig_hash(self)
 
-        cls.__eq__ = new_eq  # type: ignore[assignment]
-        cls.__hash__ = new_hash  # type: ignore[assignment]
+        cls.__eq__ = new_eq  # type: ignore[method-assign]
+        cls.__hash__ = new_hash  # type: ignore[method-assign]
 
         return cls
 

@@ -75,7 +75,7 @@ class _ProcessWriter(t.BinaryIO):
         assert self.process.stdin is not None
         self.write = self.process.stdin.write  # type: ignore[assignment]
 
-    def write(self, s: bytes) -> int:
+    def write(self, s: bytes) -> int:  # type: ignore[override]
         return len(s)  # stub
 
     def close(self) -> None:

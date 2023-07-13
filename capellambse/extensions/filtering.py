@@ -244,14 +244,15 @@ else:
 
     def _find_results(
         loaded_model: capellambse.MelodyModel, result_strings: list[str]
-    ) -> cabc.Sequence[capellambse.ModelObject]:
+    ) -> cabc.Sequence[FilteringResult | ComposedFilteringResult]:
+        all_results: c.ElementList[FilteringResult | ComposedFilteringResult]
         all_results = loaded_model.search(
             FilteringResult, ComposedFilteringResult
         )
         if not result_strings:
             return all_results
 
-        wanted: list[capellambse.ModelObject] = []
+        wanted: list[FilteringResult | ComposedFilteringResult] = []
         for result in result_strings:
             if helpers.is_uuid_string(result):
                 try:

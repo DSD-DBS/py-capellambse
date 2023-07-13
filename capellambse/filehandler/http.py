@@ -67,7 +67,7 @@ class DownloadStream(t.BinaryIO):
     def readable(self) -> bool:
         return True
 
-    def write(self, s: bytes | bytearray) -> int:
+    def write(self, s: bytes | bytearray) -> int:  # type: ignore[override]
         raise TypeError("Cannot write to a read-only stream")
 
     def writable(self) -> bool:

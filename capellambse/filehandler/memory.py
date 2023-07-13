@@ -91,7 +91,7 @@ class MemoryFile(t.BinaryIO):
     def __exit__(self, *args: t.Any) -> None:
         pass
 
-    def write(self, s: bytes) -> int:
+    def write(self, s: bytes | bytearray) -> int:  # type: ignore[override]
         if self._mode != "w":
             raise io.UnsupportedOperation("not writable")
         self._data[self._pos : self._pos + len(s)] = s

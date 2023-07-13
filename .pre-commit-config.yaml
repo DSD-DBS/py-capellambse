@@ -101,12 +101,19 @@ repos:
         pass_filenames: false
         args: [capellambse, tests]
         additional_dependencies:
-          - mypy==1.0.0
+          - mypy==1.4.1
           - capellambse[cli,decl,docs,httpfiles,png,termgraphics,test]
+          # click 8.1.4 breaks mypy, see <https://github.com/pallets/click/issues/2558>
+          - click!=8.1.4
           - sphinx
-          - types-docutils==0.17.0
+          - types-Pygments==2.15.0.1
+          - types-colorama==0.4.15.11
+          - types-docutils==0.20.0.1
+          - types-pytz==2023.3.0.0
           - types-pyyaml==6.0.11
           - types-requests==2.25.11
+          - types-setuptools==68.0.0.1
+          - types-six==1.16.21.8
   - repo: local
     hooks:
       - id: pylint
