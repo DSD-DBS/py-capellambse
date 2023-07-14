@@ -627,7 +627,7 @@ class GitFileHandler(abc.FileHandler):
     @property
     def rootdir(self) -> _GitPath:
         """The root directory of the repository."""
-        return _GitPath(self, pathlib.PurePosixPath("."))
+        return _GitPath(self, pathlib.PurePosixPath("."), "tree")
 
     def iterdir(
         self, path: str | pathlib.PurePosixPath = "."
@@ -645,13 +645,14 @@ class GitFileHandler(abc.FileHandler):
         else:
             treename = f"{self.revision}:{path}"
         tree = (
-            self._git("ls-tree", "-z", "--name-only", treename)
+            self._git("ls-tree", "-z", treename)
             .decode("utf-8", errors="surrogateescape")
             .rstrip("\x00")
             .split("\x00")
         )
         for line in tree:
-            yield _GitPath(self, pathlib.PurePosixPath(path, line))
+            _, type, _, name = line.split(maxsplit=3)
+            yield _GitPath(self, pathlib.PurePosixPath(path, name), type)
 
     @staticmethod
     def __cleanup_worktree(
@@ -918,10 +919,30 @@ class GitFileHandler(abc.FileHandler):
 
 
 class _GitPath(abc.AbstractFilePath[GitFileHandler]):
+    def __init__(
+        self,
+        parent: GitFileHandler,
+        path: pathlib.PurePosixPath,
+        type: str | None = None,
+    ) -> None:
+        super().__init__(parent, path)
+        self._type = type
+
     def is_dir(self) -> bool:
-        obj = f"{self._parent.revision}:{self._path}"
-        return self._parent._git("cat-file", "-t", obj) == b"tree\n"
+        if self._type is None:
+            self._type = self._find_type()
+        return self._type == "tree"
 
     def is_file(self) -> bool:
-        obj = f"{self._parent.revision}:{self._path}"
-        return self._parent._git("cat-file", "-t", obj) == b"blob\n"
+        if self._type is None:
+            self._type = self._find_type()
+        return self._type == "blob"
+
+    def _find_type(self) -> str:
+        return (
+            self._parent._git(
+                "cat-file", "-t", f"{self._parent.revision}:{self._path}"
+            )
+            .strip()
+            .decode("utf-8")
+        )
