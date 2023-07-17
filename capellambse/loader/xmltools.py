@@ -60,10 +60,10 @@ class AttributeProperty:
             ``str`` as argument.
         optional
             If False (default) and the XML attribute does not exist, an
-            AttributeError is raised.  Otherwise a default value is
+            AttributeError is raised. Otherwise a default value is
             returned.
         default
-            A new-style format string to use as fallback value.  You can
+            A new-style format string to use as fallback value. You can
             access the object instance as ``self`` and the XML element
             as ``xml``.
         writable
@@ -382,9 +382,9 @@ class EnumAttributeProperty(AttributeProperty):
     but members of the Enum that was passed into the constructor.
 
     Usually it is expected that the enum members will be directly
-    assigned to this property.  However it is also possible to assign a
-    :class:`str` instead.  In this case, the string will be taken to be
-    an enum member's name.  In both cases, the enum member's value will
+    assigned to this property. However it is also possible to assign a
+    :class:`str` instead. In this case, the string will be taken to be
+    an enum member's name. In both cases, the enum member's value will
     be placed in the underlying XML attribute.
 
     If the XML attribute contains a value that does not correspond to
@@ -415,12 +415,12 @@ class EnumAttributeProperty(AttributeProperty):
         attribute
             The attribute on the XML element to handle.
         enumcls
-            The :class:`enum.Enum` subclass to use.  The class' members'
+            The :class:`enum.Enum` subclass to use. The class' members'
             values are used as the possible values for the XML
             attribute.
         default
             The default value to return if the attribute is not present
-            in the XML.  If None, an AttributeError will be raised
+            in the XML. If None, an AttributeError will be raised
             instead.
         """
         if not (isinstance(enumcls, type) and issubclass(enumcls, enum.Enum)):
@@ -502,7 +502,7 @@ class XMLDictProxy(cabc.MutableMapping):
         keyattr
             The element attribute to use as dictionary key.
         model
-            Reference to the original MelodyLoader.  If not None, the
+            Reference to the original MelodyLoader. If not None, the
             loader will be informed about element creation and deletion.
         """
         super().__init__(*args, **kwargs)

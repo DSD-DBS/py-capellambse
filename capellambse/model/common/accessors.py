@@ -516,9 +516,9 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         class_
             The proxy class.
         xtypes
-            The ``xsi:type``\ (s) of the child element(s).  If None,
-            then the constructed proxy will be passed the original
-            element instead of a child.
+            The ``xsi:type``\ (s) of the child element(s). If None, then
+            the constructed proxy will be passed the original element
+            instead of a child.
         aslist
             If None, only a single element must match, which will be
             returned directly. If not None, must be a subclass of
@@ -1251,7 +1251,7 @@ class CustomAccessor(PhysicalAccessor[T]):
         class_
             The target subclass of ``GenericElement``
         elmfinders
-            Functions that are called on the current element.  Each
+            Functions that are called on the current element. Each
             returns an iterable of possible targets.
         aslist
             If None, only a single element must match, which will be
@@ -1645,12 +1645,12 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         Instead of specifying the full ``xsi:type`` including the
         namespace, you can also pass in just the part after the ``:``
-        separator.  If this is unambiguous, the appropriate
+        separator. If this is unambiguous, the appropriate
         layer-specific type will be selected automatically.
 
         This method can be called with or without the ``layertype``
-        argument.  If a layertype is not given, all layers will be tried
-        to find an appropriate ``xsi:type`` handler.  Note that setting
+        argument. If a layertype is not given, all layers will be tried
+        to find an appropriate ``xsi:type`` handler. Note that setting
         the layertype to ``None`` explicitly is different from not
         specifying it at all; ``None`` tries only the "Transverse
         modelling" type elements.

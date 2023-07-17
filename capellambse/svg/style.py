@@ -379,9 +379,9 @@ class StyleBuilder:
     def create(self) -> None:
         """Create style builder and all needed components.
 
-        Create sheet string buffer from _base string template.  Copy
+        Create sheet string buffer from _base string template. Copy
         global styles from aird.STYLES and update with class-specific
-        styles.  Write styles to sheet.
+        styles. Write styles to sheet.
         """
         self.sheet = io.StringIO(
             self._base.format(
@@ -547,7 +547,7 @@ def deep_update_dict(
     target
         The target dict, which will be modified in place.
     updates
-        A dict containing the updates to apply.  If one of the values is
+        A dict containing the updates to apply. If one of the values is
         the special object ``deep_update_dict.delete``, the
         corresponding key will be deleted from the target.
 

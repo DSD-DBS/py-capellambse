@@ -84,9 +84,9 @@ class ModelObject(t.Protocol):
     """A class that wraps a specific model object.
 
     Most of the time, you'll want to subclass the concrete
-    ``GenericElement`` class.  However, some special classes (e.g. AIRD
+    ``GenericElement`` class. However, some special classes (e.g. AIRD
     diagrams) provide a compatible interface, but it doesn't make sense
-    to wrap a specific XML element.  This protocol class is used in type
+    to wrap a specific XML element. This protocol class is used in type
     annotations to catch both "normal" GenericElement subclasses and the
     mentioned special cases.
     """
@@ -446,9 +446,9 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 Use elements that match (True) or don't (False)
             single
                 When listing all matches, return a single element
-                instead.  If multiple elements match, it is an error; if
-                none match, a ``KeyError`` is raised.
-                Can be overridden at call time.
+                instead. If multiple elements match, it is an error; if
+                none match, a ``KeyError`` is raised. Can be overridden
+                at call time.
             """
             self._attr = attr
             self._parent = parent
@@ -510,8 +510,8 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
             The returned iterator yields all values that, when given to
             :meth:`__call__`, will result in a non-empty list being
-            returned.  Consequently, if the original list was empty,
-            this iterator will yield no values.
+            returned. Consequently, if the original list was empty, this
+            iterator will yield no values.
 
             The order in which the values are yielded is undefined.
             """

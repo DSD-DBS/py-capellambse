@@ -3,7 +3,7 @@
 """An Eclipse-like XML serializer.
 
 The libxml2 XML serializer produces very different output from the one
-used by Capella.  This causes a file saved by libxml2 to look vastly
+used by Capella. This causes a file saved by libxml2 to look vastly
 different, even though semantically nothing might have changed at all.
 This module implements a serializer which produces output like Capella
 does.
@@ -69,7 +69,7 @@ def to_bytes(
     """Serialize an XML tree as a ``str``.
 
     At the start of the document, an XML processing instruction will be
-    inserted declaring the used encoding.  Pass
+    inserted declaring the used encoding. Pass
     ``declare_encoding=False`` to inhibit this behavior.
 
     Arguments
@@ -77,7 +77,7 @@ def to_bytes(
     tree
         The XML tree to serialize.
     encoding
-        The encoding to use.  An XML processing instruction will be
+        The encoding to use. An XML processing instruction will be
         inserted which declares the used encoding.
     errors
         How to handle errors during encoding.

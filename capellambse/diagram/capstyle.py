@@ -17,8 +17,8 @@ class RGB(t.NamedTuple):
     """A color.
 
     Each color component (red, green, blue) is an integer in the range
-    of 0..255 (inclusive).  The alpha channel is a float between 0.0 and
-    1.0 (inclusive).  If it is 1, then the ``str()`` form does not
+    of 0..255 (inclusive). The alpha channel is a float between 0.0 and
+    1.0 (inclusive). If it is 1, then the ``str()`` form does not
     include transparency information.
     """
 
@@ -80,7 +80,7 @@ class RGB(t.NamedTuple):
     def fromhex(cls, hexstring: str) -> RGB:
         """Create an RGB from a hexadecimal string.
 
-        The string can have 3, 4, 6 or 8 hexadecimal characters.  In the
+        The string can have 3, 4, 6 or 8 hexadecimal characters. In the
         cases of 3 and 6 characters, the alpha channel is set to 1.0
         (fully opaque) and the remaining characters are interpreted as
         the red, green and blue components.
@@ -138,7 +138,7 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
 
             Type.StyleClass
 
-        The type can be: ``Box``, ``Edge``.  The style class can be any
+        The type can be: ``Box``, ``Edge``. The style class can be any
         known style class.
     """
     if "symbol" in objectclass.lower():
@@ -241,11 +241,11 @@ COLORS: dict[str, RGB] = {
 #: This dict contains the default styles that Capella applies, grouped
 #: by the diagram class they belong to.
 #:
-#: The first level of keys are the diagrams' styleclasses.  The special
+#: The first level of keys are the diagrams' styleclasses. The special
 #: key "__GLOBAL__" applies to all diagrams.
 #:
 #: The second level contains the style definitions for each element that
-#: can appear in the diagram.  The keys work in the following way:
+#: can appear in the diagram. The keys work in the following way:
 #:
 #:     Type.Class
 #:

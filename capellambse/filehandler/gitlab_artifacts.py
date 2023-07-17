@@ -18,7 +18,7 @@ import requests
 
 from capellambse import helpers, loader
 
-from . import FileHandler
+from . import abc
 
 LOGGER = logging.getLogger(__name__)
 RE_LINK_NEXT = re.compile("<(http.*)>; rel=(?P<quote>[\"']?)next(?P=quote)")
@@ -27,7 +27,7 @@ MAX_SEARCHED_JOBS = (
 )
 
 
-class GitlabArtifactsFiles(FileHandler):
+class GitlabArtifactsFiles(abc.FileHandler):
     """Download files from Gitlab's artifacts hosting service.
 
     This file handler is roughly equivalent to an HTTPFileHandler with

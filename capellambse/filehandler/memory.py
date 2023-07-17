@@ -14,6 +14,7 @@ __all__ = [
     "MemoryFileHandler",
 ]
 
+import collections.abc as cabc
 import io
 import os
 import pathlib
@@ -21,13 +22,13 @@ import typing as t
 
 from capellambse import helpers
 
-from . import FileHandler
+from . import abc
 
 if t.TYPE_CHECKING:
     from capellambse.loader.modelinfo import ModelInfo
 
 
-class MemoryFileHandler(FileHandler):
+class MemoryFileHandler(abc.FileHandler):
     """A file handler that stores data in memory."""
 
     def __init__(
@@ -78,6 +79,18 @@ class MemoryFileHandler(FileHandler):
             f"{', '.join(map(str, self._data.keys()))}>"
         )
 
+    @property
+    def rootdir(self) -> MemoryFilePath:
+        return MemoryFilePath(self, pathlib.PurePosixPath("."))
+
+    def iterdir(
+        self, path: str | pathlib.PurePosixPath = "/", /
+    ) -> cabc.Iterator[MemoryFilePath]:
+        path = helpers.normalize_pure_path(path)
+        for p in self._data:
+            if p.parent == path:
+                yield MemoryFilePath(self, p)
+
 
 class MemoryFile(t.BinaryIO):
     def __init__(self, data: bytearray, mode: t.Literal["r", "w"]) -> None:
@@ -106,3 +119,11 @@ class MemoryFile(t.BinaryIO):
         result = self._data[self._pos : self._pos + n]
         self._pos += len(result)
         return bytes(result)
+
+
+class MemoryFilePath(abc.AbstractFilePath[MemoryFileHandler]):
+    def is_dir(self) -> bool:
+        return not self.is_file()
+
+    def is_file(self) -> bool:
+        return self._path in self._parent._data
