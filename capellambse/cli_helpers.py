@@ -9,10 +9,13 @@ import collections.abc as cabc
 import importlib.abc
 import importlib.resources as imr
 import json
+import logging
 import os
 import typing as t
 
 import capellambse
+
+LOGGER = logging.getLogger(__name__)
 
 try:
     import click
@@ -148,6 +151,7 @@ def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
         This function wrapped as a ``click.ParamType``
     """
     modelinfo = loadinfo(value)
+    LOGGER.info("Loading model from %s", modelinfo["path"])
     return capellambse.MelodyModel(**modelinfo)
 
 
