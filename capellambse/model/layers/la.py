@@ -20,11 +20,8 @@ class LogicalFunction(fa.Function):
 
     _xmltag = "ownedLogicalFunctions"
 
-    realized_system_functions = c.LinkAccessor[ctx.SystemFunction](
-        None,  # FIXME fill in tag
-        fa.FunctionRealization,
-        aslist=c.ElementList,
-        attr="targetElement",
+    realized_system_functions = c.TypecastAccessor(
+        ctx.SystemFunction, "realized_functions"
     )
     owner: c.Accessor[LogicalComponent]
 
@@ -52,11 +49,9 @@ class LogicalComponent(cs.Component):
         aslist=c.ElementList,
         attr="targetElement",
     )
-    realized_components = c.LinkAccessor[ctx.SystemComponent](
-        None,  # FIXME fill in tag
-        cs.ComponentRealization,
-        aslist=c.ElementList,
-        attr="targetElement",
+    realized_system_components = c.TypecastAccessor(
+        ctx.SystemComponent,
+        "realized_components",
     )
 
     components: c.Accessor

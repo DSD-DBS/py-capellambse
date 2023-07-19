@@ -1522,8 +1522,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     class_: type[T]
 
     def __init__(self, cls: type[T], attr: str) -> None:
-        super().__init__(aslist=element.ElementList)
-        self.class_ = cls
+        super().__init__(cls, (), aslist=element.ElementList)
         self.attr = attr
 
     @t.overload

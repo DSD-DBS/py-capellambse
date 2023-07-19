@@ -17,6 +17,9 @@ XT_DEPLOY_LINK = (
     "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
 )
 XT_PHYS_PATH_INV = "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+XT_COMPONENT_REALIZATION = (
+    "org.polarsys.capella.core.data.cs:ComponentRealization"
+)
 
 
 @c.xtype_handler(None)
@@ -137,6 +140,16 @@ class Component(c.GenericElement):
         "source.owner",
         "target.owner",
         aslist=c.ElementList,
+    )
+
+    realized_components = c.LinkAccessor["Component"](
+        "ownedComponentRealizations",
+        XT_COMPONENT_REALIZATION,
+        aslist=c.ElementList,
+        attr="targetElement",
+    )
+    realizing_components = c.ReferenceSearchingAccessor["Component"](
+        (), "realized_components", aslist=c.ElementList
     )
 
 
