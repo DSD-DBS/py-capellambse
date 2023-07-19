@@ -332,7 +332,7 @@ class GenericElement:
             fragments.append("<h1>Model element")
         else:
             fragments.append("<h1>")
-            fragments.append(escape(type(self).__name__))
+            fragments.append(escape(self.name or type(self).__name__))
         fragments.append(' <span style="font-size: 70%;">(')
         fragments.append(escape(self.xtype))
         fragments.append(")</span>")
