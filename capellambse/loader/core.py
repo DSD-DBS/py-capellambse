@@ -88,10 +88,11 @@ METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
 def _derive_entrypoint(
     path: str | os.PathLike | filehandler.FileHandler,
     entrypoint: str | pathlib.PurePosixPath | None = None,
+    **kwargs: t.Any,
 ) -> tuple[filehandler.FileHandler, pathlib.PurePosixPath]:
     if entrypoint:
         if not isinstance(path, filehandler.FileHandler):
-            path = filehandler.get_filehandler(path)
+            path = filehandler.get_filehandler(path, **kwargs)
         entrypoint = helpers.normalize_pure_path(entrypoint)
         return path, entrypoint
 
@@ -103,12 +104,12 @@ def _derive_entrypoint(
             if nested_path.suffix == ".aird":
                 entrypoint = pathlib.PurePosixPath(nested_path.name)
                 path = nested_path.parent
-                return filehandler.get_filehandler(path), entrypoint
+                return filehandler.get_filehandler(path, **kwargs), entrypoint
             elif nested_path.is_file():
                 raise ValueError(
                     f"Invalid entrypoint: Not an .aird file: {nested_path}"
                 )
-        path = filehandler.get_filehandler(path)
+        path = filehandler.get_filehandler(path, **kwargs)
 
     aird_files = [i for i in path.iterdir() if i.name.endswith(".aird")]
     if not aird_files:
@@ -372,6 +373,7 @@ class MelodyLoader:
             filehandler.FileHandler | str | os.PathLike | dict[str, t.Any],
         ]
         | None = None,
+        ignore_duplicate_uuids_and_void_all_warranties: bool = False,
         **kwargs: t.Any,
     ) -> None:
         """Construct a MelodyLoader.
@@ -387,6 +389,8 @@ class MelodyLoader:
         resources
             Additional file handler instances that provide library
             resources that are referenced from the model.
+        ignore_duplicate_uuids_and_void_all_warranties
+            Ignore corruption due to duplicate UUIDs (see below).
         kwargs
             Additional arguments to the primary file handler, if
             necessary.
@@ -412,11 +416,13 @@ class MelodyLoader:
             also set the :kw:`i_have_a_recent_backup` keyword argument
             to ``True`` when calling :meth:`save`.
         """
-        self.__ignore_uuid_dups: bool = kwargs.pop(
-            "ignore_duplicate_uuids_and_void_all_warranties", False
+        self.__ignore_uuid_dups: bool = (
+            ignore_duplicate_uuids_and_void_all_warranties
         )
 
-        handler, self.entrypoint = _derive_entrypoint(path, entrypoint)
+        handler, self.entrypoint = _derive_entrypoint(
+            path, entrypoint, **kwargs
+        )
         if self.entrypoint.suffix != ".aird":
             raise ValueError("Invalid entrypoint, specify the ``.aird`` file")
 
