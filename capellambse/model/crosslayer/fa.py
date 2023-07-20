@@ -122,6 +122,16 @@ class Function(AbstractFunction):
     packages: c.Accessor
     related_exchanges: c.Accessor["FunctionalExchange"]
 
+    realized_functions = c.LinkAccessor[AbstractFunction](
+        "ownedFunctionRealizations",
+        FunctionRealization,
+        aslist=c.MixedElementList,
+        attr="targetElement",
+    )
+    realizing_functions = c.ReferenceSearchingAccessor[AbstractFunction](
+        (), "realized_functions", aslist=c.MixedElementList
+    )
+
 
 @c.xtype_handler(None)
 class FunctionalExchange(AbstractExchange):
@@ -132,6 +142,15 @@ class FunctionalExchange(AbstractExchange):
     exchange_items = c.AttrProxyAccessor(
         information.ExchangeItem, "exchangedItems", aslist=c.ElementList
     )
+
+    realized_functional_exchanges = c.LinkAccessor["FunctionalExchange"](
+        "ownedFunctionalExchangeRealizations",
+        "org.polarsys.capella.core.data.fa:FunctionalExchangeRealization",
+        aslist=c.ElementList,
+        attr="targetElement",
+        backattr="sourceElement",
+    )
+    realizing_functional_exchanges: c.Accessor["FunctionalExchange"]
 
     @property
     def owner(self) -> ComponentExchange | None:
@@ -266,6 +285,15 @@ c.set_accessor(
     "allocating_component_exchange",
     c.ReferenceSearchingAccessor(
         ComponentExchange, "allocated_functional_exchanges"
+    ),
+)
+c.set_accessor(
+    FunctionalExchange,
+    "realizing_functional_exchanges",
+    c.ReferenceSearchingAccessor(
+        FunctionalExchange,
+        "realized_functional_exchanges",
+        aslist=c.ElementList,
     ),
 )
 

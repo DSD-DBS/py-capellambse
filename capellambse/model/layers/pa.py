@@ -25,11 +25,8 @@ class PhysicalFunction(fa.Function):
     _xmltag = "ownedPhysicalFunctions"
 
     owner: c.Accessor[PhysicalComponent]
-    realized_logical_functions = c.LinkAccessor[la.LogicalFunction](
-        None,  # FIXME fill in tag
-        fa.FunctionRealization,
-        aslist=c.ElementList,
-        attr="targetElement",
+    realized_logical_functions = c.TypecastAccessor(
+        la.LogicalFunction, "realized_functions"
     )
 
 
@@ -61,11 +58,9 @@ class PhysicalComponent(cs.Component):
         aslist=c.ElementList,
         attr="targetElement",
     )
-    realized_logical_components = c.LinkAccessor[la.LogicalComponent](
-        None,  # FIXME fill in tag
-        cs.ComponentRealization,
-        aslist=c.ElementList,
-        attr="targetElement",
+    realized_logical_components = c.TypecastAccessor(
+        la.LogicalComponent,
+        "realized_components",
     )
 
     owned_components: c.Accessor

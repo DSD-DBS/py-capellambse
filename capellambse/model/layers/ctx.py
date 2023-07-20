@@ -21,11 +21,8 @@ class SystemFunction(fa.Function):
 
     _xmltag = "ownedFunctions"
 
-    realized_operational_activities = c.LinkAccessor[oa.OperationalActivity](
-        None,  # FIXME fill in tag
-        fa.FunctionRealization,
-        aslist=c.ElementList,
-        attr="targetElement",
+    realized_operational_activities = c.TypecastAccessor(
+        oa.OperationalActivity, "realized_functions"
     )
 
     owner: c.Accessor
@@ -53,11 +50,13 @@ class SystemComponent(cs.Component):
         aslist=c.ElementList,
         attr="targetElement",
     )
-    realized_operational_entities = c.LinkAccessor[oa.Entity](
-        None,  # FIXME fill in tag
-        cs.ComponentRealization,
-        aslist=c.ElementList,
-        attr="targetElement",
+    realized_entities = c.TypecastAccessor(
+        oa.Entity,
+        "realized_components",
+    )
+    realized_operational_entities = c.TypecastAccessor(
+        oa.Entity,
+        "realized_components",
     )
 
 

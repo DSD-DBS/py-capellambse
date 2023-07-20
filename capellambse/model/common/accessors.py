@@ -23,6 +23,7 @@ __all__ = [
     "ReferenceSearchingAccessor",
     "ElementListCouplingMixin",
     "RoleTagAccessor",
+    "TypecastAccessor",
 ]
 
 import abc
@@ -1502,6 +1503,121 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
                     matches.append(candidate._element)
                     break
         return self._make_list(obj, matches)
+
+
+class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+    """Changes the static type of the value of another accessor.
+
+    This is useful for when a class has an attribute that is
+    polymorphic, but the accessor should always return a specific
+    subclass.
+
+    At runtime, this Accessor mostly behaves like a simple alias
+    (without performing any runtime type checks or conversions). When
+    creating new objects, it will only allow to create objects of the
+    specified type.
+    """
+
+    aslist: type[ElementListCouplingMixin] | None
+    class_: type[T]
+
+    def __init__(self, cls: type[T], attr: str) -> None:
+        super().__init__(cls, (), aslist=element.ElementList)
+        self.attr = attr
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
+        ...
+
+    @t.overload
+    def __get__(
+        self, obj: element.ModelObject, objtype: type[t.Any] | None = None
+    ) -> element.ElementList[T]:
+        ...
+
+    def __get__(
+        self,
+        obj: element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> te.Self | element.ElementList[T]:
+        del objtype
+        if obj is None:
+            return self
+
+        rv = getattr(obj, self.attr)
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
+
+    def __set__(
+        self, obj: element.ModelObject, value: cabc.Iterable[T]
+    ) -> None:
+        if obj._constructed:
+            sys.audit("capellambse.setattr", obj, self.__name__, value)
+
+        if isinstance(value, (list, element.ElementList, tuple)):
+            pass
+        elif isinstance(value, cabc.Iterable):
+            value = list(value)
+        else:
+            raise TypeError(f"Expected list, got {type(value).__name__}")
+        if not all(isinstance(i, self.class_) for i in value):
+            raise TypeError(
+                f"Expected {self.class_.__name__}, got {type(value).__name__}"
+            )
+        setattr(obj, self.attr, value)
+
+    def __delete__(self, obj):
+        if obj._constructed:
+            sys.audit("capellambse.delattr", obj, self.__name__, None)
+
+        delattr(obj, self.attr)
+
+    def create(
+        self,
+        elmlist: ElementListCouplingMixin,
+        /,
+        *type_hints: str | None,
+        **kw: t.Any,
+    ) -> T:
+        if type_hints:
+            raise TypeError(f"{self._qualname} does not support type hints")
+        acc: WritableAccessor = getattr(self.class_, self.attr)
+        obj = acc.create(elmlist, build_xtype(self.class_), **kw)
+        assert isinstance(obj, self.class_)
+        return obj
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        if not isinstance(value, self.class_):
+            raise TypeError(
+                f"Expected {self.class_.__name__}, got {type(value).__name__}"
+            )
+        acc: WritableAccessor = getattr(self.class_, self.attr)
+        acc.insert(elmlist, index, value)
+
+    def delete(
+        self,
+        elmlist: ElementListCouplingMixin,
+        obj: element.ModelObject,
+    ) -> None:
+        acc: WritableAccessor = getattr(self.class_, self.attr)
+        acc.delete(elmlist, obj)
+
+    @contextlib.contextmanager
+    def purge_references(
+        self, obj: element.ModelObject, target: element.ModelObject
+    ) -> cabc.Iterator[None]:
+        acc: WritableAccessor = getattr(self.class_, self.attr)
+        # XXX: This should really fire a ``capellambse.delete`` audit event,
+        #      but the event parameters depend on things only ``acc`` knows.
+        with acc.purge_references(obj, target):
+            yield
 
 
 class RoleTagAccessor(PhysicalAccessor):
