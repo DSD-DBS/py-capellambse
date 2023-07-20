@@ -522,6 +522,10 @@ class GitFileHandler(abc.FileHandler):
     ) -> None:
         super().__init__(path, subdir=subdir)
         self.disable_cache = disable_cache
+
+        if bool(username) != bool(password):
+            raise TypeError("Either specify username and password or neither")
+
         self.username = username
         self.password = password
         self.identity_file = identity_file
@@ -586,7 +590,7 @@ class GitFileHandler(abc.FileHandler):
         file = cls(
             cb=functools.partial(self._transaction.record_update, path),
             cwd=self.cache_dir,
-            env=self.__get_git_env(),
+            env=self.__get_git_env()[0],
             filename=path,
         )
         self._transaction.record_pending_update(path, file)
@@ -660,8 +664,10 @@ class GitFileHandler(abc.FileHandler):
             cwd=repo_root,
         )
 
-    def __get_git_env(self) -> dict[str, str]:
+    def __get_git_env(self) -> tuple[dict[str, str], list[str]]:
         git_env = os.environ.copy()
+        git_cmd = ["git"]
+
         if not os.environ.get("GIT_ASKPASS"):
             path_to_askpass = (
                 pathlib.Path(__file__).parent / "git_askpass.py"
@@ -680,6 +686,8 @@ class GitFileHandler(abc.FileHandler):
             git_env["GIT_USERNAME"] = self.username
             git_env["GIT_PASSWORD"] = self.password
 
+            git_cmd += ["-c", "credential.helper="]
+
         if self.identity_file and self.known_hosts_file:
             ssh_command = [
                 "ssh",
@@ -689,7 +697,9 @@ class GitFileHandler(abc.FileHandler):
             ]
             git_env["GIT_SSH_COMMAND"] = shlex.join(ssh_command)
 
-        return git_env
+            git_cmd += ["-c", "credential.helper="]
+
+        return git_env, git_cmd
 
     def __init_cache_dir(self) -> None:
         if str(self.path).startswith("file://"):
@@ -873,13 +883,16 @@ class GitFileHandler(abc.FileHandler):
         LOGGER.debug("Running command %s", cmd)
         returncode = 0
         stderr = None
+
+        git_env, git_cmd = self.__get_git_env()
+
         try:
             proc = subprocess.run(
-                ["git"] + [str(i) for i in cmd],
+                git_cmd + [str(i) for i in cmd],
                 capture_output=True,
                 check=True,
                 cwd=self.cache_dir,
-                env={**self.__get_git_env(), **(env or {})},
+                env={**git_env, **(env or {})},
                 **kw,
             )
             returncode = proc.returncode
