@@ -12,6 +12,7 @@ import pytest
 from lxml import etree
 
 import capellambse
+import capellambse.diagram
 from capellambse.svg import (
     SVGDiagram,
     decorations,
@@ -55,7 +56,8 @@ def tmp_json_fixture(
 ) -> pathlib.Path:
     """Return tmp path of diagram json file."""
     dest = tmp_path / (TEST_LAB + ".json")
-    diagram_json: str = model.diagrams.by_name(TEST_LAB).render("json_pretty")
+    diagram = model.diagrams.by_name(TEST_LAB).render(None)
+    diagram_json = capellambse.diagram.DiagramJSONEncoder().encode(diagram)
     dest.write_text(diagram_json)
     return dest
 
