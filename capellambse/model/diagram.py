@@ -594,31 +594,6 @@ class SVGInHTMLIMGFormat:
         return markupsafe.Markup(f'<img src="{payload}"/>')
 
 
-class JSONFormat:
-    filename_extension = ".json"
-
-    @staticmethod
-    def convert(dg: diagram.Diagram) -> str:
-        return diagram.DiagramJSONEncoder().encode(dg)
-
-    @staticmethod
-    def from_cache(cache: bytes) -> str:
-        return cache.decode("utf-8")
-
-
-class PrettyJSONFormat:
-    filename_extension = ".json"
-    mimetype = "application/json"
-
-    @staticmethod
-    def convert(dg: diagram.Diagram) -> str:
-        return diagram.DiagramJSONEncoder(indent=4).encode(dg)
-
-    @staticmethod
-    def from_cache(cache: bytes) -> str:
-        return cache.decode("utf-8")
-
-
 class TerminalGraphicsFormat:
     """The kitty terminal graphics protocol diagram format.
 

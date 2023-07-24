@@ -89,8 +89,6 @@ termgraphics = [
 [project.entry-points."capellambse.diagram.formats"]
 datauri_svg = "capellambse.model.diagram:SVGDataURIFormat"
 html_img = "capellambse.model.diagram:SVGInHTMLIMGFormat"
-json = "capellambse.model.diagram:JSONFormat"
-json_pretty = "capellambse.model.diagram:PrettyJSONFormat"
 png = "capellambse.model.diagram:PNGFormat"
 svg = "capellambse.model.diagram:SVGFormat"
 svg_confluence = "capellambse.model.diagram:ConfluenceSVGFormat"
