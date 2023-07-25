@@ -3518,6 +3518,46 @@ The predator is far away</bodies>
           <ownedComponentRealizations xsi:type="org.polarsys.capella.core.data.cs:ComponentRealization"
               id="7aaa4d4d-741f-4b58-a782-2dce998ccf0e" targetElement="#0d2edb8f-fa34-4e73-89ec-fb9a63001440"
               sourceElement="#b9f9a83c-fb02-44f7-9123-9d86326de5f1"/>
+          <ownedPhysicalPath xsi:type="org.polarsys.capella.core.data.cs:PhysicalPath"
+              id="c87c9b4a-7dfc-47a0-a18b-ec31622fb791" name="Internet via cable">
+            <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+                id="d1462b70-b7f9-4ef1-a605-594c7c3289c1" targetElement="#9c2f9ebd-f495-40e7-94b4-e84518dd4bfc"
+                sourceElement="#c87c9b4a-7dfc-47a0-a18b-ec31622fb791"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="fc98f8d6-4eca-4aa2-90b1-d813ce201687" involved="#695e355d-ebf5-42e7-ba0d-cb6c435372f6"
+                nextInvolvements="#5459a866-42be-4e6e-ae17-14470fb94b3f"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="5459a866-42be-4e6e-ae17-14470fb94b3f" involved="#c2959c7d-4a54-4df9-9a18-e8e779476b71"
+                nextInvolvements="#347d1642-271a-4429-a699-51cf5e3f1099"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="347d1642-271a-4429-a699-51cf5e3f1099" involved="#ba9e025d-a030-41e3-a552-226313d85d9f"
+                nextInvolvements="#f56403c7-7215-400e-bbcb-bd06fe332cc8"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="f56403c7-7215-400e-bbcb-bd06fe332cc8" involved="#8ad5d19b-3d26-414f-94e6-addd9633631a"
+                nextInvolvements="#29f91862-19f2-4e95-b3d7-5c4fb4eee4d3"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="29f91862-19f2-4e95-b3d7-5c4fb4eee4d3" involved="#f3df2a31-cf19-4f5f-a0ed-427f9c439e62"/>
+          </ownedPhysicalPath>
+          <ownedPhysicalPath xsi:type="org.polarsys.capella.core.data.cs:PhysicalPath"
+              id="c6f229b8-dec0-4f37-9b6e-4c682ac151d7" name="Internet via wifi">
+            <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
+                id="efca4b84-6849-4d55-bc7a-830856c76aba" targetElement="#9c2f9ebd-f495-40e7-94b4-e84518dd4bfc"
+                sourceElement="#c6f229b8-dec0-4f37-9b6e-4c682ac151d7"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="bd503646-472d-47b9-b5e7-7036f4ce2b10" involved="#695e355d-ebf5-42e7-ba0d-cb6c435372f6"
+                nextInvolvements="#d6a71baa-0f41-4ded-8642-8346af0cb9a5"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="d6a71baa-0f41-4ded-8642-8346af0cb9a5" involved="#c2959c7d-4a54-4df9-9a18-e8e779476b71"
+                nextInvolvements="#5cf82858-71cc-4caa-a6e7-f2193a5aa24c"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="5cf82858-71cc-4caa-a6e7-f2193a5aa24c" involved="#ba9e025d-a030-41e3-a552-226313d85d9f"
+                nextInvolvements="#e93af8f9-af47-4e5a-86d4-ee837649c16b"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="e93af8f9-af47-4e5a-86d4-ee837649c16b" involved="#ce3e82a7-ffef-49e4-a059-ea4d60735f12"
+                nextInvolvements="#16948e17-426c-4244-a592-d87ff4705245"/>
+            <ownedPhysicalPathInvolvements xsi:type="org.polarsys.capella.core.data.cs:PhysicalPathInvolvement"
+                id="16948e17-426c-4244-a592-d87ff4705245" involved="#f3df2a31-cf19-4f5f-a0ed-427f9c439e62"/>
+          </ownedPhysicalPath>
           <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
               id="90517d41-da3e-430c-b0a9-e3badf416509" name="PL 1" linkEnds="#7400c2a3-913f-4a08-aca7-8dd7c389e5e9 #38c69508-f12f-4e1d-a8c1-a422cbf8f358">
             <ownedComponentExchangeAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
@@ -3842,6 +3882,81 @@ The predator is far away</bodies>
                 id="4f45fbfd-f397-4a4a-9dee-6b8231f39f68" name="CP 1" orientation="OUT"
                 kind="FLOW"/>
           </ownedPhysicalComponents>
+          <ownedPhysicalComponentPkgs xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponentPkg"
+              id="f204b518-5ecb-44c0-9950-4fc933a33600" name="Computer example">
+            <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="695e355d-ebf5-42e7-ba0d-cb6c435372f6"
+                name="ISP Network" abstractType="#221cef9f-0582-419c-b67e-96ddb678dd4c">
+              <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                  id="9f962b9c-0a4b-407c-aa4c-8575b97d3cca" deployedElement="#8dcff551-c8df-4405-ac0d-57a54597d4a4"
+                  location="#695e355d-ebf5-42e7-ba0d-cb6c435372f6"/>
+            </ownedParts>
+            <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="ba9e025d-a030-41e3-a552-226313d85d9f"
+                name="Router" abstractType="#69bfe48d-78f0-4b1f-89c0-917dc2339ff9"/>
+            <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="f3df2a31-cf19-4f5f-a0ed-427f9c439e62"
+                name="Computer" abstractType="#b14ff190-9198-4d05-95db-b121c11e9f17">
+              <ownedDeploymentLinks xsi:type="org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink"
+                  id="7207c71d-2f0d-4957-864a-682931e0fdf8" deployedElement="#79159b4c-bcee-4e0d-b264-35dbf4f92f6a"
+                  location="#f3df2a31-cf19-4f5f-a0ed-427f9c439e62"/>
+            </ownedParts>
+            <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="79159b4c-bcee-4e0d-b264-35dbf4f92f6a"
+                name="Mail client" abstractType="#e7801c37-81ef-4473-9d7a-61e0de8c4ec1"/>
+            <ownedParts xsi:type="org.polarsys.capella.core.data.cs:Part" id="8dcff551-c8df-4405-ac0d-57a54597d4a4"
+                name="Mail server" abstractType="#03070ee7-e0ee-4cf6-b62e-b614c603631b"/>
+            <ownedComponentExchanges xsi:type="org.polarsys.capella.core.data.fa:ComponentExchange"
+                id="9c2f9ebd-f495-40e7-94b4-e84518dd4bfc" name="send email" source="#a7b3225d-34fb-48eb-b540-737d2ce2413b"
+                target="#67f4ef32-dccd-4c9e-a1c6-7d7abfdd3ebe" kind="FLOW"/>
+            <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+                id="8ad5d19b-3d26-414f-94e6-addd9633631a" name="Ethernet cable" linkEnds="#e2ee0df2-d89a-48a5-bce0-cd64c0c85850 #ec2ab8e8-7ca3-4b5e-9f27-58826d40ffd9"/>
+            <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+                id="ce3e82a7-ffef-49e4-a059-ea4d60735f12" name="Wifi" linkEnds="#f9d71d49-c32b-40cc-b2f9-a8dc87c76ffc #f649f01e-e1d1-4c7a-b027-a44e81f0579a"/>
+            <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
+                id="c2959c7d-4a54-4df9-9a18-e8e779476b71" name="Optical cable" linkEnds="#a4e05f74-c39f-4983-a2bc-4f1284b8aaa9 #0de917b1-1c2e-4901-a9e4-7c1cb4a9eb03"/>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="b14ff190-9198-4d05-95db-b121c11e9f17" name="Computer" nature="NODE">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                  id="f649f01e-e1d1-4c7a-b027-a44e81f0579a" name="wlan0">
+                <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                    id="3bb5eab3-d37b-43ef-9f54-536ad63cdedb" targetElement="#a7b3225d-34fb-48eb-b540-737d2ce2413b"
+                    sourceElement="#f649f01e-e1d1-4c7a-b027-a44e81f0579a"/>
+              </ownedFeatures>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                  id="ec2ab8e8-7ca3-4b5e-9f27-58826d40ffd9" name="eth0">
+                <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                    id="269076a5-fdb6-43dd-84aa-6996dd65c08a" targetElement="#a7b3225d-34fb-48eb-b540-737d2ce2413b"
+                    sourceElement="#ec2ab8e8-7ca3-4b5e-9f27-58826d40ffd9"/>
+              </ownedFeatures>
+            </ownedPhysicalComponents>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="e7801c37-81ef-4473-9d7a-61e0de8c4ec1" name="Mail client" nature="BEHAVIOR">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                  id="a7b3225d-34fb-48eb-b540-737d2ce2413b" name="CP 1" orientation="OUT"
+                  kind="FLOW"/>
+            </ownedPhysicalComponents>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="69bfe48d-78f0-4b1f-89c0-917dc2339ff9" name="Router" nature="NODE">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                  id="0de917b1-1c2e-4901-a9e4-7c1cb4a9eb03" name="Upstream port"/>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                  id="f9d71d49-c32b-40cc-b2f9-a8dc87c76ffc" name="Wifi Antenna"/>
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                  id="e2ee0df2-d89a-48a5-bce0-cd64c0c85850" name="LAN 1"/>
+            </ownedPhysicalComponents>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="03070ee7-e0ee-4cf6-b62e-b614c603631b" name="Mail server" nature="BEHAVIOR">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.fa:ComponentPort"
+                  id="67f4ef32-dccd-4c9e-a1c6-7d7abfdd3ebe" name="CP 1" orientation="IN"
+                  kind="FLOW"/>
+            </ownedPhysicalComponents>
+            <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
+                id="221cef9f-0582-419c-b67e-96ddb678dd4c" name="ISP Network" nature="NODE">
+              <ownedFeatures xsi:type="org.polarsys.capella.core.data.cs:PhysicalPort"
+                  id="a4e05f74-c39f-4983-a2bc-4f1284b8aaa9" name="Downstream port">
+                <ownedComponentPortAllocations xsi:type="org.polarsys.capella.core.data.fa:ComponentPortAllocation"
+                    id="3ed6585f-35c2-43c7-8e1d-18de864cd1fa" targetElement="#67f4ef32-dccd-4c9e-a1c6-7d7abfdd3ebe"
+                    sourceElement="#a4e05f74-c39f-4983-a2bc-4f1284b8aaa9"/>
+              </ownedFeatures>
+            </ownedPhysicalComponents>
+          </ownedPhysicalComponentPkgs>
         </ownedPhysicalComponents>
         <ownedPhysicalComponents xsi:type="org.polarsys.capella.core.data.pa:PhysicalComponent"
             id="a0847e9c-8b82-407d-8143-e908e2db97a1" name="PA 1" actor="true" human="true"

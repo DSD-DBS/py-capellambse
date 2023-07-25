@@ -1074,7 +1074,7 @@ class TestArchitectureLayers:
         path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
         cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
 
-        assert cex.allocating_physical_path == cex.owner == path
+        assert cex.allocating_physical_paths == [path]
 
 
 @pytest.mark.parametrize(

@@ -245,8 +245,30 @@ class ComponentExchange(AbstractExchange):
     )
 
     @property
-    def owner(self) -> cs.PhysicalLink | cs.PhysicalPath | None:
-        return self.allocating_physical_link or self.allocating_physical_path
+    def allocating_physical_path(self) -> cs.PhysicalPath | None:
+        import warnings
+
+        warnings.warn(
+            (
+                "allocating_physical_path is deprecated; use"
+                " allocating_physical_paths instead, which supports multiple"
+                " allocations"
+            ),
+            DeprecationWarning,
+        )
+
+        alloc = self.allocating_physical_paths
+        if len(alloc) > 1:
+            raise RuntimeError(
+                "Multiple allocations; use allocating_physical_paths"
+            )
+        if not alloc:
+            return None
+        return alloc[0]
+
+    @property
+    def owner(self) -> cs.PhysicalLink | None:
+        return self.allocating_physical_link
 
     @property
     def exchange_items(

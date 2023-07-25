@@ -191,6 +191,8 @@ c.set_accessor(
 )
 c.set_accessor(
     fa.ComponentExchange,
-    "allocating_physical_path",
-    c.ReferenceSearchingAccessor(PhysicalPath, "exchanges"),
+    "allocating_physical_paths",
+    c.ReferenceSearchingAccessor(
+        PhysicalPath, "exchanges", aslist=c.ElementList
+    ),
 )
