@@ -30,6 +30,7 @@ XT_COMP_EX_FNC_EX_ALLOC = (
 XT_COMP_EX_ALLOC = (
     "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
 )
+XT_CEX_REAL = "org.polarsys.capella.core.data.fa:ComponentExchangeRealization"
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
 
 
@@ -302,6 +303,24 @@ for _port, _exchange in [
     )
 del _port, _exchange
 
+c.set_accessor(
+    ComponentExchange,
+    "realized_component_exchanges",
+    c.LinkAccessor[ComponentExchange](
+        "ownedComponentExchangeRealizations",
+        XT_CEX_REAL,
+        aslist=c.ElementList,
+        attr="targetElement",
+        backattr="sourceElement",
+    ),
+)
+c.set_accessor(
+    ComponentExchange,
+    "realizing_component_exchanges",
+    c.ReferenceSearchingAccessor(
+        ComponentExchange, "realized_component_exchanges", aslist=c.ElementList
+    ),
+)
 c.set_accessor(
     FunctionalExchange,
     "allocating_component_exchange",
