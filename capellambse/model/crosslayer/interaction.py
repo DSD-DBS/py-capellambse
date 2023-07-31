@@ -96,6 +96,10 @@ class Scenario(c.GenericElement):
     time_lapses = c.RoleTagAccessor(
         "ownedTimeLapses", aslist=c.MixedElementList
     )
+    postcondition = c.AttrProxyAccessor(
+        capellacore.Constraint, "postCondition"
+    )
+    precondition = c.AttrProxyAccessor(capellacore.Constraint, "preCondition")
 
 
 class InteractionFragment(c.GenericElement):
@@ -108,6 +112,8 @@ class InteractionFragment(c.GenericElement):
 
 @c.xtype_handler(None)
 class ExecutionEnd(InteractionFragment):
+    """An end for an execution."""
+
     event = c.AttrProxyAccessor[Event](None, "event")
 
 
