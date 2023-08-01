@@ -45,9 +45,50 @@ try:
                 self.fail(err.args[0], param, ctx)
                 assert False
 
+    class ModelInfoCLI(click.ParamType):
+        """Declare an option that loads model information.
+
+        This is similar to :class:`ModelCLI`, but it returns a
+        dict with information on how to load the model, rather than
+        the model itself. This is useful for commands that need to
+        alter the way a model is loaded.
+
+        Use instances of this class for the ``type=`` argument to
+        ``@click.option`` etc.
+
+        Examples
+        --------
+        .. code-block:: python
+
+           @click.command()
+           @click.open("-m", "modelinfo", type=capellambse.ModelInfoCLI())
+           def main(modelinfo: dict[str, t.Any]) -> None:
+               # change any options, for example:
+               modelinfo["diagram_cache"] = "/tmp/diagrams"
+               # load the model:
+               model = capellambse.MelodyModel(**modelinfo)
+               ...
+        """
+
+        name = "CAPELLA_MODEL"
+
+        def convert(self, value: t.Any, param, ctx) -> dict[str, t.Any]:
+            if isinstance(value, dict):
+                return value
+
+            try:
+                return loadinfo(value)
+            except ValueError as err:
+                self.fail(err.args[0], param, ctx)
+                assert False
+
 except ImportError:
 
     def ModelCLI(*__, **_):  # type: ignore[no-redef]
+        """Raise a dependency error."""
+        raise RuntimeError("click is not installed")
+
+    def ModelInfoCLI(*__, **_):  # type: ignore[no-redef]
         """Raise a dependency error."""
         raise RuntimeError("click is not installed")
 
@@ -106,14 +147,18 @@ def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
     capellambse.cli_helpers.CLIModel :
         This function wrapped as a ``click.ParamType``
     """
+    modelinfo = loadinfo(value)
+    return capellambse.MelodyModel(**modelinfo)
+
+
+def loadinfo(value: str | os.PathLike[str]) -> dict[str, t.Any]:
     if isinstance(value, str):
         if value.endswith((".aird", ".json")):
             return _load_from_file(value)
         try:
-            data = json.loads(value)
+            return json.loads(value)
         except json.JSONDecodeError:
             return _load_from_file(value)
-        return capellambse.MelodyModel(**data)
 
     if isinstance(value, os.PathLike):
         value = os.fspath(value)
@@ -123,24 +168,22 @@ def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
     raise TypeError("value must be a str or PathLike returning str")
 
 
-def _load_from_file(value: str) -> capellambse.MelodyModel:
+def _load_from_file(value: str) -> dict[str, t.Any]:
     if value.endswith(".aird"):
-        return capellambse.MelodyModel(value)
+        return {"path": value}
 
     if value.endswith(".json"):
         with open(value, encoding="utf-8") as file:
-            data = json.load(file)
-    else:
-        value = value + ".json"
-        for known in enumerate_known_models():
-            if value == known.name:
-                data = json.loads(known.read_text(encoding="utf-8"))
-                break
-        else:
-            try:
-                data = json.loads(value)
-            except json.JSONDecodeError:
-                raise ValueError(
-                    "value is not a known model nor contains valid JSON"
-                ) from None
-    return capellambse.MelodyModel(**data)
+            return json.load(file)
+
+    name = value + ".json"
+    for known in enumerate_known_models():
+        if known.name == name:
+            return json.loads(known.read_text(encoding="utf-8"))
+
+    if os.path.exists(value):
+        return {"path": value}
+
+    raise ValueError(
+        "value is not a known model nor contains valid JSON"
+    ) from None

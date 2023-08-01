@@ -1,0 +1,70 @@
+# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-License-Identifier: Apache-2.0
+
+name: "Generate Model Complexity Badge"
+description: "An action to create and push a model complexity badge"
+
+inputs:
+  commit_msg:
+    description: "The commit message for updating the model complexity badge"
+    required: false
+    default: "docs: Update model complexity badge"
+  output_file:
+    description: "The file path to store the generated model badge"
+    required: false
+    default: model-complexity-badge.svg
+  entrypoint:
+    description: "The entry point of the used model"
+    required: false
+    default: "."
+  capellambse_revision:
+    description: "The revision of the py-capellambse package to install"
+    required: false
+    default: release-0.5
+  push_model_badge:
+    description: "Whether to push the model badge changes or not"
+    required: false
+    default: "true"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11
+    - name: Generate model badge
+      shell: bash
+      env:
+        ENTRYPOINT: ${{ inputs.entrypoint }}
+        OUTPUT_FILE: ${{ inputs.output_file }}
+        CAPELLAMBSE_REVISION: ${{ inputs.capellambse_revision }}
+      run: |
+        echo "::group::Install capellambse version $CAPELLAMBSE_REVISION"
+        pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
+        echo "::endgroup::"
+
+        python >"$OUTPUT_FILE" <<EOF
+        import os, capellambse
+        model = capellambse.loadcli(os.getenv("ENTRYPOINT"))
+        print(model.description_badge, end="")
+        EOF
+    - name: Push model badge
+      if: inputs.push_model_badge
+      shell: bash
+      env:
+        COMMIT_MSG: ${{ inputs.commit_msg }}
+      run: |
+        git add "${{ inputs.OUTPUT_FILE }}"
+        if git diff --cached --exit-code &> /dev/null; then
+          exit 0
+        fi
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "capellambse[bot]"
+        git commit -m "$COMMIT_MSG"
+        git push
+    - name: Archive model badge in artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: model-complexity-badge
+        path: ${{ inputs.output_file }}
