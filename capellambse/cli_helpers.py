@@ -174,18 +174,16 @@ def _load_from_file(value: str) -> dict[str, t.Any]:
 
     if value.endswith(".json"):
         with open(value, encoding="utf-8") as file:
-            data = json.load(file)
-    else:
-        value = value + ".json"
-        for known in enumerate_known_models():
-            if value == known.name:
-                data = json.loads(known.read_text(encoding="utf-8"))
-                break
-        else:
-            try:
-                data = json.loads(value)
-            except json.JSONDecodeError:
-                raise ValueError(
-                    "value is not a known model nor contains valid JSON"
-                ) from None
-    return data
+            return json.load(file)
+
+    name = value + ".json"
+    for known in enumerate_known_models():
+        if known.name == name:
+            return json.loads(known.read_text(encoding="utf-8"))
+
+    if os.path.exists(value):
+        return {"path": value}
+
+    raise ValueError(
+        "value is not a known model nor contains valid JSON"
+    ) from None
