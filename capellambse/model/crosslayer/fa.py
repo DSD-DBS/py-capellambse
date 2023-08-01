@@ -30,6 +30,7 @@ XT_COMP_EX_FNC_EX_ALLOC = (
 XT_COMP_EX_ALLOC = (
     "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation"
 )
+XT_CEX_REAL = "org.polarsys.capella.core.data.fa:ComponentExchangeRealization"
 XT_FCALLOC = "org.polarsys.capella.core.data.fa:ComponentFunctionalAllocation"
 
 
@@ -245,8 +246,30 @@ class ComponentExchange(AbstractExchange):
     )
 
     @property
-    def owner(self) -> cs.PhysicalLink | cs.PhysicalPath | None:
-        return self.allocating_physical_link or self.allocating_physical_path
+    def allocating_physical_path(self) -> cs.PhysicalPath | None:
+        import warnings
+
+        warnings.warn(
+            (
+                "allocating_physical_path is deprecated; use"
+                " allocating_physical_paths instead, which supports multiple"
+                " allocations"
+            ),
+            DeprecationWarning,
+        )
+
+        alloc = self.allocating_physical_paths
+        if len(alloc) > 1:
+            raise RuntimeError(
+                "Multiple allocations; use allocating_physical_paths"
+            )
+        if not alloc:
+            return None
+        return alloc[0]
+
+    @property
+    def owner(self) -> cs.PhysicalLink | None:
+        return self.allocating_physical_link
 
     @property
     def exchange_items(
@@ -280,6 +303,24 @@ for _port, _exchange in [
     )
 del _port, _exchange
 
+c.set_accessor(
+    ComponentExchange,
+    "realized_component_exchanges",
+    c.LinkAccessor[ComponentExchange](
+        "ownedComponentExchangeRealizations",
+        XT_CEX_REAL,
+        aslist=c.ElementList,
+        attr="targetElement",
+        backattr="sourceElement",
+    ),
+)
+c.set_accessor(
+    ComponentExchange,
+    "realizing_component_exchanges",
+    c.ReferenceSearchingAccessor(
+        ComponentExchange, "realized_component_exchanges", aslist=c.ElementList
+    ),
+)
 c.set_accessor(
     FunctionalExchange,
     "allocating_component_exchange",
