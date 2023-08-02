@@ -116,6 +116,8 @@ class GitlabArtifactsFiles(abc.FileHandler):
     ) -> None:
         super().__init__(path, subdir=subdir)
 
+        self.__session = requests.Session()
+
         self.__path = self.__resolve_path(path)
         self.__token = self.__resolve_token(token)
         self.__project = self.__resolve_project(project)
@@ -245,7 +247,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
             The full URL to request, including the server and protocol.
         """
         LOGGER.debug("GET %s", url)
-        return requests.get(
+        return self.__session.get(
             url, headers={"PRIVATE-TOKEN": self.__token}, timeout=30
         )
 
