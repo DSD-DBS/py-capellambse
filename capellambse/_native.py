@@ -11,6 +11,7 @@ import dataclasses
 import errno
 import json
 import logging
+import os
 import pathlib
 import random
 import shutil
@@ -47,6 +48,46 @@ def native_capella(
     exe: str | pathlib.Path | None = None,
     docker: str | None = None,
 ) -> cabc.Iterator[_NativeCapella]:
+    """Prepare for running a native Capella instance.
+
+    This context manager prepares a temporary workspace and project
+    directory, and provides a function for running a native Capella
+    instance with the given arguments.
+
+    It currently supports two ways of running a native Capella instance:
+
+    - Using a native executable, by using the ``exe`` argument to
+      specify the path to the executable, or the name of the executable
+      if it is in the ``PATH``.
+    - Using a Docker image, by specifying the image name with the
+      ``docker`` argument.
+
+    Both argument values may be strings containing a ``{VERSION}``
+    placeholder, which will be replaced with the Capella version of the
+    given model. Note that no substitution will be performed if the
+    argument is a :class:`pathlib.Path` object.
+
+    Additionally, to facilitate writing wrapper scripts, the process
+    specified by the ``exe`` argument is invoked with the following
+    additional environment variables:
+
+    - ``CAPELLA_PROJECT``: The path to the project directory
+    - ``CAPELLA_WORKSPACE``: The path to the workspace directory
+    - ``CAPELLA_VERSION``: The Capella version of the given model
+
+    The context manager yields a callable that can be used to run the
+    native Capella instance. The callable takes the arguments to pass
+    to Capella as positional arguments, and returns a
+    :class:`subprocess.CompletedProcess` object with the result of the
+    execution.
+
+    Some cases may require multiple internal subprocess calls, in which
+    case either of them may fail. The caller can therefore not rely on a
+    :class:`subprocess.CalledProcessError` to belong to the actual
+    Capella execution; it may belong to any of the preparation or
+    cleanup calls as well. However, the CompletedProcess object returned
+    in case of success always belongs to the Capella process.
+    """
     with contextlib.ExitStack() as stack:
         workspace = tempfile.TemporaryDirectory(prefix="workspace.")
         workspace_path = pathlib.Path(stack.enter_context(workspace))
@@ -60,7 +101,7 @@ def native_capella(
         if exe:
             if isinstance(exe, str):
                 exe = exe.replace("{VERSION}", model.info.capella_version)
-            runner: _Runner = _SimpleRunner(exe)
+            runner: _Runner = _SimpleRunner(exe, model.info.capella_version)
         elif docker:
             docker = docker.replace("{VERSION}", model.info.capella_version)
             runner = _DockerRunner(docker)
@@ -91,7 +132,8 @@ class _NativeCapella:
 
 
 class _SimpleRunner:
-    def __init__(self, path: str | pathlib.Path) -> None:
+    def __init__(self, path: str | pathlib.Path, capella_version: str) -> None:
+        self.capella_version = capella_version
         path = pathlib.Path(path)
         if path.is_absolute():
             self.path = path
@@ -117,6 +159,11 @@ class _SimpleRunner:
         /,
         *args: str | pathlib.Path,
     ) -> subprocess.CompletedProcess:
+        env = os.environ | {
+            "CAPELLA_PROJECT": str(project),
+            "CAPELLA_WORKSPACE": str(workspace),
+            "CAPELLA_VERSION": self.capella_version,
+        }
         cmd: list[str | pathlib.Path] = [
             self.path,
             *_COMMON_ARGS,
@@ -129,6 +176,7 @@ class _SimpleRunner:
         _LOGGER.debug("Running native Capella with command %r", cmd)
         return subprocess.run(
             cmd,
+            env=env,
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
