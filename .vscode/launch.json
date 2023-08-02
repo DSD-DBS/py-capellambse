@@ -2,6 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run all unit tests with pytest",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "module": "pytest"
+    },
+    {
+      "name": "Step-wise testing with pytest",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "module": "pytest",
+      "args": [
+        "--sw"
+      ]
+    },
+    {
       "name": "Interact with the documentation model",
       "type": "python",
       "request": "launch",
@@ -44,6 +63,20 @@
       ]
     },
     {
+      "name": "Interact with the 6.0 test model",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "pythonArgs": [
+        "-Xdev"
+      ],
+      "module": "capellambse.repl",
+      "args": [
+        "test-6.0"
+      ]
+    },
+    {
       "name": "Interact with the library test model",
       "type": "python",
       "request": "launch",
@@ -55,6 +88,20 @@
       "module": "capellambse.repl",
       "args": [
         "test-lib"
+      ]
+    },
+    {
+      "name": "Interact with the coffee-maker demo model",
+      "type": "python",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "envFile": ".env",
+      "pythonArgs": [
+        "-Xdev"
+      ],
+      "module": "capellambse.repl",
+      "args": [
+        "coffee-maker"
       ]
     }
   ]
