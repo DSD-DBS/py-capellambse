@@ -69,7 +69,9 @@ def load(file: FileOrPath) -> list[dict[str, t.Any]]:
         return yaml.load(opened_file, Loader=YDMLoader)
 
 
-def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
+def apply(
+    model: capellambse.MelodyModel, file: FileOrPath
+) -> dict[Promise, capellambse.ModelObject]:
     """Apply a declarative modelling file to the given model.
 
     Parameters
@@ -127,6 +129,7 @@ def apply(model: capellambse.MelodyModel, file: FileOrPath) -> None:
             raise ValueError(f"Unrecognized keys in instruction: {keys}")
     if deferred:
         raise UnfulfilledPromisesError(frozenset(deferred))
+    return promises
 
 
 def _operate_create(
