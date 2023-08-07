@@ -20,6 +20,7 @@ import sys
 import typing as t
 
 import markupsafe
+from lxml import etree
 
 from capellambse import helpers
 
@@ -200,6 +201,24 @@ class HTMLAttributeProperty(AttributeProperty):
             optional=optional,
             writable=writable,
             __doc__=__doc__,
+        )
+
+    def _get(self, obj):
+        rv = super()._get(obj)
+
+        def convert_diagram_reference_to_svg(node: etree._Element):
+            if node.tag == "a":
+                try:
+                    uuid = node.attrib["href"].split("hlink://")[-1]
+                    ref_obj = obj._model.diagrams.by_uuid(uuid)
+                    node.tag = "img"
+                    node.attrib["src"] = ref_obj.as_datauri_svg
+                    del node.attrib["href"]
+                except KeyError:
+                    pass
+
+        return helpers.process_html_fragments(
+            rv, convert_diagram_reference_to_svg
         )
 
     def __set__(self, obj: t.Any, value: str) -> None:

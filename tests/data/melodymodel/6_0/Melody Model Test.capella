@@ -1175,7 +1175,7 @@ The predator is far away</bodies>
                 sourceElement="#1a414995-f4cd-488c-8152-486e459fb9de"/>
           </ownedFunctionalExchanges>
           <ownedSystemFunctionPkgs xsi:type="org.polarsys.capella.core.data.ctx:SystemFunctionPkg"
-              id="f1423c01-dd0f-4189-97e2-33c4332383f9" name="Subfuncs">
+              id="f1423c01-dd0f-4189-97e2-33c4332383f9" name="Subfuncs" description="&lt;p>&lt;a href=&quot;hlink://22b9c1d6-a754-4614-9fcb-fa4f53837d9a&quot;>Test Chain&lt;/a> ist daf&amp;uuml;r da. Weiter geht es mit dem diagram:&lt;br />&#xA;&lt;a href=&quot;hlink://_RSWgcHPIEeyW3OIB4qRWZA&quot;>[LFCD] Test Chain&lt;/a> und noch text danach.&lt;/p>&#xA;">
             <ownedSystemFunctions xsi:type="org.polarsys.capella.core.data.ctx:SystemFunction"
                 id="00e7b925-cf4c-4cb0-929e-5409a1cd872b" name="Sysexfunc">
               <ownedExtensions xsi:type="CapellaRequirements:CapellaOutgoingRelation"
@@ -2170,7 +2170,8 @@ The predator is far away</bodies>
                 id="3612f112-f0c7-42ec-b0e9-f53afc1ef486" name="FOP 1"/>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
-              id="4a2a7f3c-d223-4d44-94a7-50dd2906a70c" name="maintain a layer of defense for the Sorcerer's Stone">
+              id="4a2a7f3c-d223-4d44-94a7-50dd2906a70c" name="maintain a layer of defense for the Sorcerer's Stone"
+              description="&lt;p>&lt;a href=&quot;hlink://_RSWgcHPIEeyW3OIB4qRWZA&quot;>[LFCD] Test Chain&lt;/a>&lt;/p>&#xA;">
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
                 id="0eae1038-95fe-48b7-af6f-ad6890f2c207" name="FOP 1"/>
           </ownedFunctions>
@@ -2236,7 +2237,8 @@ The predator is far away</bodies>
                 id="68399bb1-5f8c-4137-89f4-73f25d3bdbe6" name="FIP 1"/>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
-              id="aa9931e3-116c-461e-8215-6b9fdbdd4a1b" name="kill He Who Must Not Be Named">
+              id="aa9931e3-116c-461e-8215-6b9fdbdd4a1b" name="kill He Who Must Not Be Named"
+              description="&lt;p>&lt;a href=&quot;hlink://_RSWgcHPIEeyW3OIB4qRWZA&quot;>[LFCD] Test Chain&lt;/a>&lt;/p>&#xA;">
             <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
                 id="ef435fb5-de1e-48ca-be00-40c79cc6a659" name="FIP 1"/>
             <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
@@ -2248,7 +2250,8 @@ The predator is far away</bodies>
                 id="08fa1029-81c9-4402-ab57-e1a11e4d2ff2" name="FOP 1"/>
           </ownedFunctions>
           <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
-              id="edbd1ad4-31c0-4d53-b856-3ffa60e0e99b" name="break school rules">
+              id="edbd1ad4-31c0-4d53-b856-3ffa60e0e99b" name="break school rules"
+              description="&lt;p>&lt;a href=&quot;hlink://f28ec0f8-f3b3-43a0-8af7-79f194b29a2d&quot;>Root Logical Function&lt;/a>&lt;/p>&#xA;">
             <inputs xsi:type="org.polarsys.capella.core.data.fa:FunctionInputPort"
                 id="2178d219-e817-4a50-b451-74b19874a6bf" name="FIP 1"/>
             <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"

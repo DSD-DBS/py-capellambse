@@ -46,3 +46,10 @@ def model_5_2(monkeypatch) -> capellambse.MelodyModel:
     """Return the Capella 5.2 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
     return capellambse.MelodyModel(TEST_ROOT / "5_2" / TEST_MODEL)
+
+
+@pytest.fixture
+def model_6_0(monkeypatch) -> capellambse.MelodyModel:
+    """Return the Capella 6.0 test model."""
+    monkeypatch.setattr(sys, "stderr", io.StringIO)
+    return capellambse.MelodyModel(TEST_ROOT / "6_0" / TEST_MODEL)

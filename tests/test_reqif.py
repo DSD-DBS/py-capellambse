@@ -7,20 +7,22 @@ import datetime
 import operator
 import typing as t
 
+import markupsafe
 import pytest
 
 import capellambse
 from capellambse import helpers
 from capellambse.extensions import reqif
 
-long_req_text = """\
-<p>Test requirement 1 really l o n g text that is&nbsp;way too long to \
+long_req_text = markupsafe.Markup(
+    """\
+<p>Test requirement 1 really l o n g text that is\xa0way too long to \
 display here as that</p>
 
-<p>&lt; &gt; &quot; &#39;</p>
+<p>&lt; &gt; " \'</p>
 
 <ul>
-\t<li>This&nbsp;is a list</li>
+\t<li>This\xa0is a list</li>
 \t<li>an unordered one</li>
 </ul>
 
@@ -29,6 +31,7 @@ display here as that</p>
 \t<li>Ok</li>
 </ol>
 """
+)
 
 
 @pytest.mark.parametrize(
