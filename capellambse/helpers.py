@@ -43,6 +43,7 @@ RE_VALID_UUID = re.compile(
     r"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}",
     re.IGNORECASE,
 )
+RE_VALID_DIAGRAM_UID = re.compile(r"^_[A-Za-z0-9+/]{22}$")
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
 
@@ -89,6 +90,13 @@ def _flatten_subtree(element: etree._Element) -> cabc.Iterator[str]:
 def is_uuid_string(string: t.Any) -> te.TypeGuard[UUIDString]:
     """Validate that ``string`` is a valid UUID."""
     return isinstance(string, str) and bool(RE_VALID_UUID.fullmatch(string))
+
+
+def is_diagram_uuid_string(string: t.Any) -> te.TypeGuard[UUIDString]:
+    """Validate that ``string`` is a valid diagram UUID."""
+    return isinstance(string, str) and bool(
+        RE_VALID_DIAGRAM_UID.fullmatch(string)
+    )
 
 
 # File name and path manipulation

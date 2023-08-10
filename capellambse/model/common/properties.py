@@ -22,6 +22,7 @@ import typing as t
 import markupsafe
 from lxml import etree
 
+import capellambse
 from capellambse import helpers
 
 
@@ -205,21 +206,27 @@ class HTMLAttributeProperty(AttributeProperty):
 
     def _get(self, obj):
         rv = super()._get(obj)
-
-        def convert_diagram_reference_to_svg(node: etree._Element):
-            if node.tag == "a":
-                try:
-                    uuid = node.attrib["href"].split("hlink://")[-1]
-                    ref_obj = obj._model.diagrams.by_uuid(uuid)
-                    node.tag = "img"
-                    node.attrib["src"] = ref_obj.as_datauri_svg
-                    del node.attrib["href"]
-                except KeyError:
-                    pass
-
         return helpers.process_html_fragments(
-            rv, convert_diagram_reference_to_svg
+            rv,
+            lambda node: self._convert_diagram_reference_to_svg(
+                node, obj._model
+            ),
         )
+
+    @staticmethod
+    def _convert_diagram_reference_to_svg(
+        node: etree._Element, model: capellambse.MelodyModel
+    ) -> None:
+        if node.tag == "a":
+            try:
+                uuid = node.attrib["href"].split("hlink://")[-1]
+                ref_obj = model.diagrams.by_uuid(uuid)
+                node.tag = "img"
+                node.attrib["src"] = ref_obj.as_datauri_svg
+                node.attrib["alt"] = uuid
+                del node.attrib["href"]
+            except KeyError:
+                pass
 
     def __set__(self, obj: t.Any, value: str) -> None:
         if not isinstance(value, str):
@@ -227,8 +234,36 @@ class HTMLAttributeProperty(AttributeProperty):
                 f"Cannot set {self._qualname} on {obj!r}:"
                 f" Expected str, got {type(value).__name__}"
             )
-        value = helpers.repair_html(value)
+        value = helpers.process_html_fragments(
+            helpers.repair_html(value),
+            lambda node: self._convert_image_to_diagram_reference(
+                node, obj._model
+            ),
+        )
         super().__set__(obj, value)
+
+    @staticmethod
+    def _convert_image_to_diagram_reference(
+        node: etree._Element, model: capellambse.MelodyModel
+    ) -> None:
+        if node.tag == "img":
+            uuid = node.get("alt")
+            if uuid is None or not helpers.is_diagram_uuid_string(uuid):
+                raise ValueError(
+                    "Image needs an `alt` attribute on which a valid diagram "
+                    "UID was set."
+                )
+            try:
+                model.diagrams.by_uuid(uuid)
+                node.tag = "a"
+                node.attrib["href"] = f"hlink://{uuid}"
+                del node.attrib["alt"]
+                node.attrib.pop("src", None)
+            except KeyError as error:
+                raise ValueError(
+                    "Tried to reference a diagram which isn't in the model: "
+                    + repr(uuid)
+                ) from error
 
 
 class NumericAttributeProperty(AttributeProperty):

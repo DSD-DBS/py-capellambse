@@ -43,3 +43,41 @@ def test_only_diagram_in_descriptions_is_resolved(
 
     assert want_href == (HREF_START in obj.description)
     assert want_svg == (SVG_START in obj.description)
+
+
+def test_set_description_with_image_is_converted_to_diagram_reference(
+    model_6_0: capellambse.MelodyModel,
+):
+    obj = model_6_0.by_uuid(SVG_IN_DESCR_UUID)
+    uuid = "_RSWgcHPIEeyW3OIB4qRWZA"
+
+    obj.description = f'<p>A diagram: <img alt="{uuid}"/> Some text</p>'
+
+    assert obj.description.startswith("<p>A diagram")
+    assert SVG_START in obj.description
+    assert f'alt="{uuid}"' in obj.description
+    assert obj.description.endswith("Some text</p>")
+
+
+@pytest.mark.parametrize(
+    "description,expected",
+    (
+        pytest.param(
+            '<img alt="_RSWgcHPIEeyW3OIB4qRWZ1"/> Some text</p>',
+            "Tried to reference a diagram which isn't in the model",
+            id="unknown diagram reference",
+        ),
+        pytest.param(
+            '<img src="..."/> Some text</p>',
+            "Image needs an `alt` attribute on which a valid diagram UID",
+            id="missing diagram UID",
+        ),
+    ),
+)
+def test_set_description_with_image_fails(
+    model_6_0: capellambse.MelodyModel, description: str, expected: str
+):
+    obj = model_6_0.by_uuid(SVG_IN_DESCR_UUID)
+
+    with pytest.raises(ValueError, match=expected):
+        obj.description = description
