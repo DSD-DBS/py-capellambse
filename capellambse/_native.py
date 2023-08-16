@@ -26,6 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 
 _Runner = t.Union["_SimpleRunner", "_DockerRunner"]
 _COMMON_ARGS: t.Final = (
+    "--launcher.suppressErrors",
     "-nosplash",
     "-consolelog",
     "-forceimport",
