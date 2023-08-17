@@ -55,6 +55,12 @@ else:
     )
     @click.option("--exe", help="Name or path of the Capella executable")
     @click.option("--docker", help="Name of a Docker image containing Capella")
+    @click.option(
+        "--background/--no-background",
+        help="Inserts a white background into the diagrams.",
+        default=False,
+        show_default=True,
+    )
     def _main(
         model_: capellambse.MelodyModel,
         output: pathlib.Path,
@@ -62,18 +68,29 @@ else:
         index: bool,
         exe: str | None,
         docker: str | None,
+        background: bool,
     ) -> None:
         model_._diagram_cache = capellambse.get_filehandler(output)
         model_._diagram_cache_subdir = pathlib.PurePosixPath(".")
 
         if docker:
             _diagram_cache.export(
-                docker, model_, format=format, index=index, force="docker"
+                docker,
+                model_,
+                format=format,
+                index=index,
+                force="docker",
+                background=background,
             )
         else:
             exe = exe or "capella{VERSION}"
             _diagram_cache.export(
-                exe, model_, format=format, index=index, force="exe"
+                exe,
+                model_,
+                format=format,
+                index=index,
+                force="exe",
+                background=background,
             )
 
 

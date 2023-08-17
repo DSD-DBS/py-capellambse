@@ -62,6 +62,7 @@ def export(
     format: str,
     index: bool,
     force: t.Literal["exe", "docker", None],
+    background: bool,
 ) -> None:
     if not isinstance(
         getattr(model, "_diagram_cache", None), local.LocalFileHandler
@@ -103,6 +104,7 @@ def export(
             cli.project / "main_model" / "output",
             diag_cache_dir,
             format,
+            background,
         )
         if index:
             _write_index(model, format, diag_cache_dir, diagrams)
@@ -140,11 +142,11 @@ def _copy_images(
     srcdir: pathlib.Path,
     destdir: pathlib.Path,
     extension: str,
+    background: bool,
 ) -> list[_IndexEntry]:
     name_counts = collections.defaultdict[str, int](lambda: -1)
     index: list[_IndexEntry] = []
     files = {i.name: i for i in srcdir.glob("**/*") if i.is_file()}
-    copy = (shutil.copyfile, _copy_and_sanitize_svg)[extension == "svg"]
 
     for i in model.diagrams:
         entry: _IndexEntry = {
@@ -166,7 +168,13 @@ def _copy_images(
             continue
 
         try:
-            copy(srcdir / files[name], destdir / f"{i.uuid}.{extension}")
+            source = srcdir / files[name]
+            destination = destdir / f"{i.uuid}.{extension}"
+            if extension == "svg":
+                _copy_and_sanitize_svg(source, destination, background)
+            else:
+                shutil.copyfile(source, destination)
+
         except Exception:
             LOGGER.exception("Cannot copy diagram %s (%s)", i.name, i.uuid)
         else:
@@ -202,7 +210,9 @@ def _sanitize_filename(fname: str) -> str:
     return fname
 
 
-def _copy_and_sanitize_svg(src: pathlib.Path, dest: pathlib.Path) -> None:
+def _copy_and_sanitize_svg(
+    src: pathlib.Path, dest: pathlib.Path, background: bool
+) -> None:
     """Copy ``src`` to ``dest`` and post process SVG diagram.
 
     Post-processing stops propagation of default ``fill`` and ``stroke``
@@ -211,6 +221,12 @@ def _copy_and_sanitize_svg(src: pathlib.Path, dest: pathlib.Path) -> None:
     deletes ``stroke- miterlimit``.
     """
     tree = etree.parse(src)
+    if background:
+        root = tree.getroot()
+        background_elem = etree.Element(
+            "rect", x="0", y="0", width="100%", height="100%", fill="white"
+        )
+        root.insert(0, background_elem)
     for elm in tree.iter():
         attrib = elm.attrib
         if "font-family" in attrib:

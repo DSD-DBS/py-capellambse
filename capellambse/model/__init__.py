@@ -441,6 +441,7 @@ class MelodyModel:
         *,
         create_index: bool = False,
         force: t.Literal["docker", "exe"] | None = None,
+        background: bool = False,
     ) -> None:
         r"""Update the diagram cache if one has been specified.
 
@@ -519,6 +520,10 @@ class MelodyModel:
             ``capella_cli`` as local executable, ``"docker"`` always
             interprets it as a docker image name. ``None`` (the default)
             enables automatic detection.
+        background
+            Add a white background to exported SVG images.
+
+            Ignored if the ``image_format`` is not ``"svg"``.
 
         Raises
         ------
@@ -573,6 +578,7 @@ class MelodyModel:
             format=image_format,
             index=create_index,
             force=force,
+            background=background,
         )
 
     @classmethod
