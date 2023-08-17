@@ -308,17 +308,17 @@ class Drawing:
         assert isinstance(builder.label["y"], (int, float))
         assert isinstance(builder.label["width"], (int, float))
         assert isinstance(builder.label["height"], (int, float))
-        assert "text" not in builder.label or isinstance(
-            builder.label["text"], str
-        )
-        text = self.__drawing.text(
-            text="",
-            insert=(builder.label["x"], builder.label["y"]),
-            class_=builder.label["class"],
-            text_anchor=builder.text_anchor,
-            dominant_baseline="middle",
-            style=builder.labelstyle[""],
-        )
+        assert isinstance(builder.label.get("text", ""), str)
+        textattrs = {
+            "text": "",
+            "insert": (builder.label["x"], builder.label["y"]),
+            "text_anchor": builder.text_anchor,
+            "dominant_baseline": "middle",
+            "style": builder.labelstyle[""],
+        }
+        if "class" in builder.label:
+            textattrs["class_"] = builder.label["class"]
+        text = self.__drawing.text(**textattrs)
         builder.group.add(text)
 
         render_icon = (
