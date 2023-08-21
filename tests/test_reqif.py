@@ -336,6 +336,38 @@ class TestRequirementRelations:
         )
         assert {i.uuid for i in relations} == target_uuids
 
+    @pytest.mark.parametrize(
+        "obj_uuid,target_uuid,expected_type",
+        (
+            pytest.param(
+                "0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc",
+                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
+                reqif.InternalRelation,
+                id="Internal",
+            ),
+            pytest.param(
+                "0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc",
+                "f708bc29-d69f-42a0-90cc-11fc01054cd0",
+                reqif.CapellaIncomingRelation,
+                id="Incoming",
+            ),
+        ),
+    )
+    def test_creating_RequirementRelations(
+        self,
+        model: capellambse.MelodyModel,
+        obj_uuid: str,
+        target_uuid: str,
+        expected_type: type[reqif.AbstractRequirementsRelation],
+    ):
+        source = model.by_uuid(obj_uuid)
+        target = model.by_uuid(target_uuid)
+        req = source if isinstance(source, reqif.Requirement) else target
+
+        relation = req.relations.create(target=target)
+
+        assert isinstance(relation, expected_type)
+
 
 class TestReqIFAccess:
     def test_RequirementsModule_attributes(
