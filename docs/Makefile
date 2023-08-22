@@ -27,7 +27,11 @@ help:
 apidoc:
 	sphinx-apidoc --module-first --output-dir source/code --force .. ../capellambse/sphinx.py ../capellambse/repl.py
 
-.PHONY: apidoc
+clean-apidoc:
+	rm -rfv source/code
+
+.PHONY: apidoc clean-apidoc
+clean: clean-apidoc
 
 .PHONY: serve
 html: apidoc
