@@ -92,10 +92,15 @@ class GitlabArtifactsFiles(abc.FileHandler):
         Name of the job to pull artifacts from. May also be a numeric
         job ID.
 
-        The last 20 pipeline runs on the given branch are searched for a
-        successful job with this name that has artifacts. If nothing is
-        found, an exception is raised, and a numeric job ID has to be
-        specified explicitly.
+        If a job name was given, the Gitlab API is queried for the most
+        recent successful job on the given ``branch`` that has attached
+        artifacts. Note that jobs whose artifacts have been deleted (for
+        example, because their retention period expired) are ignored.
+
+        By default, at most 1000 jobs will be checked. This includes all
+        successful jobs in the repo, regardless of their name or the
+        branch they ran on. This number can be changed using the
+        ``CAPELLAMBSE_GLART_MAX_JOBS`` environment variable.
     subdir
         An optional path prefix inside the artifacts archive to prepend
         to all file names.
@@ -178,7 +183,10 @@ class GitlabArtifactsFiles(abc.FileHandler):
         try:
             contents = pathlib.Path(filename).read_text(encoding="ascii")
         except FileNotFoundError:
-            raise ValueError(f"Token file from {token} not found") from None
+            raise ValueError(
+                f"Token file from {token} not found"
+                " - did you set the variable type to FILE?"
+            ) from None
         except OSError:
             raise ValueError(f"Cannot read token file from {token}") from None
 
