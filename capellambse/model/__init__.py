@@ -441,7 +441,7 @@ class MelodyModel:
         *,
         create_index: bool = False,
         force: t.Literal["docker", "exe"] | None = None,
-        background: bool = False,
+        background: bool = True,
     ) -> None:
         r"""Update the diagram cache if one has been specified.
 

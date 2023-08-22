@@ -58,7 +58,7 @@ else:
     @click.option(
         "--background/--no-background",
         help="Inserts a white background into the diagrams.",
-        default=False,
+        default=True,
         show_default=True,
     )
     def _main(
