@@ -15,6 +15,8 @@ import typing as t
 import urllib.parse
 
 import requests
+import requests.exceptions
+import urllib3.exceptions
 
 from capellambse import helpers, loader
 
@@ -305,10 +307,26 @@ class GitlabArtifactsFiles(abc.FileHandler):
             raise TypeError("Cannot write to Gitlab artifacts")
 
         LOGGER.debug("Opening file %r for reading", path)
-        response = self.__rawget(
-            f"{self.__path}/api/v4/projects/{self.__project}"
-            f"/jobs/{self.__job}/artifacts/{path}"
-        )
+        try:
+            response = self.__rawget(
+                f"{self.__path}/api/v4/projects/{self.__project}"
+                f"/jobs/{self.__job}/artifacts/{path}"
+            )
+        # <https://gitlab.com/gitlab-org/gitlab/-/issues/414807>
+        except requests.exceptions.ChunkedEncodingError as err:
+            if len(err.args) != 1:
+                raise
+            (err1,) = err.args
+            if not isinstance(err1, urllib3.exceptions.ProtocolError):
+                raise
+            if len(err1.args) != 2:
+                raise
+            (_, err2) = err1.args
+            if not isinstance(err2, urllib3.exceptions.IncompleteRead):
+                raise
+            if err2.args != (0, 2):
+                raise
+            raise FileNotFoundError(errno.ENOENT, filename) from None
         if response.status_code in (400, 404):
             raise FileNotFoundError(errno.ENOENT, filename)
         response.raise_for_status()
