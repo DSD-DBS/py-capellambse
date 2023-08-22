@@ -15,6 +15,8 @@ import typing as t
 import urllib.parse
 
 import requests
+import requests.exceptions
+import urllib3.exceptions
 
 from capellambse import helpers, loader
 
@@ -90,10 +92,15 @@ class GitlabArtifactsFiles(abc.FileHandler):
         Name of the job to pull artifacts from. May also be a numeric
         job ID.
 
-        The last 20 pipeline runs on the given branch are searched for a
-        successful job with this name that has artifacts. If nothing is
-        found, an exception is raised, and a numeric job ID has to be
-        specified explicitly.
+        If a job name was given, the Gitlab API is queried for the most
+        recent successful job on the given ``branch`` that has attached
+        artifacts. Note that jobs whose artifacts have been deleted (for
+        example, because their retention period expired) are ignored.
+
+        By default, at most 1000 jobs will be checked. This includes all
+        successful jobs in the repo, regardless of their name or the
+        branch they ran on. This number can be changed using the
+        ``CAPELLAMBSE_GLART_MAX_JOBS`` environment variable.
     subdir
         An optional path prefix inside the artifacts archive to prepend
         to all file names.
@@ -176,7 +183,10 @@ class GitlabArtifactsFiles(abc.FileHandler):
         try:
             contents = pathlib.Path(filename).read_text(encoding="ascii")
         except FileNotFoundError:
-            raise ValueError(f"Token file from {token} not found") from None
+            raise ValueError(
+                f"Token file from {token} not found"
+                " - did you set the variable type to FILE?"
+            ) from None
         except OSError:
             raise ValueError(f"Cannot read token file from {token}") from None
 
@@ -305,10 +315,26 @@ class GitlabArtifactsFiles(abc.FileHandler):
             raise TypeError("Cannot write to Gitlab artifacts")
 
         LOGGER.debug("Opening file %r for reading", path)
-        response = self.__rawget(
-            f"{self.__path}/api/v4/projects/{self.__project}"
-            f"/jobs/{self.__job}/artifacts/{path}"
-        )
+        try:
+            response = self.__rawget(
+                f"{self.__path}/api/v4/projects/{self.__project}"
+                f"/jobs/{self.__job}/artifacts/{path}"
+            )
+        # <https://gitlab.com/gitlab-org/gitlab/-/issues/414807>
+        except requests.exceptions.ChunkedEncodingError as err:
+            if len(err.args) != 1:
+                raise
+            (err1,) = err.args
+            if not isinstance(err1, urllib3.exceptions.ProtocolError):
+                raise
+            if len(err1.args) != 2:
+                raise
+            (_, err2) = err1.args
+            if not isinstance(err2, urllib3.exceptions.IncompleteRead):
+                raise
+            if err2.args != (0, 2):
+                raise
+            raise FileNotFoundError(errno.ENOENT, filename) from None
         if response.status_code in (400, 404):
             raise FileNotFoundError(errno.ENOENT, filename)
         response.raise_for_status()
