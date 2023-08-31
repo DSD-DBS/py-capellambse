@@ -13,14 +13,10 @@ generate-model-badge:
     - git reset --hard origin/$CI_COMMIT_BRANCH
     - pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
     - |
-      python <<EOF
-      import os
-      import pathlib
-
-      import capellambse
-
-      model = capellambse.MelodyModel(os.environ["ENTRYPOINT"])
-      pathlib.Path(os.environ["OUTPUT_FILE"]).write_text(model.description_badge)
+      python >"$OUTPUT_FILE" <<EOF
+      import os, capellambse
+      model = capellambse.loadcli(os.environ["ENTRYPOINT"])
+      print(model.description_badge, end="")
       EOF
     - if [[ "${CAPELLAMBSE_PUSH_MODEL_BADGE:-1}" != 1 ]]; then exit 0; fi
     - git add "$OUTPUT_FILE"
