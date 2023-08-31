@@ -22,6 +22,7 @@ generate-model-badge:
       model = capellambse.MelodyModel(os.environ["ENTRYPOINT"])
       pathlib.Path(os.environ["OUTPUT_FILE"]).write_text(model.description_badge)
       EOF
+    - if [[ "${CAPELLAMBSE_PUSH_MODEL_BADGE:-1}" != 1 ]]; then exit 0; fi
     - git add "$OUTPUT_FILE"
     - "if git diff --cached --exit-code &> /dev/null; then exit 0; fi"
     - 'git commit -m "$COMMIT_MSG"'
@@ -36,3 +37,8 @@ generate-model-badge:
 
     # Specify the commit message when pushing model complexity badge
     COMMIT_MSG: "docs: Add/Modify model complexity badge"
+
+    CAPELLAMBSE_PUSH_MODEL_BADGE:
+      description: Commit the model badge to git and push it back to the current branch. 1 to enable, 0 to disable.
+      value: 1
+      options: ["0", "1"]
