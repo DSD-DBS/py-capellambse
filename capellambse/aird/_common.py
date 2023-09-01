@@ -74,7 +74,7 @@ class StackingBox(diagram.Box):
 
     CHILD_MARGIN = 0
 
-    children: StackingBox._StackingChildren  # type: ignore[name-defined]
+    children: _StackingChildren
     __features: cabc.MutableSequence[str] | None
 
     def __init__(

@@ -78,15 +78,14 @@ class Plugin:
         return self.name
 
     def __repr__(self) -> str:
-        if len(_values := list(self._values)) > 2:
-            name, minv, maxv = _values
-            values = [name, f"[{minv}|{maxv}]"]
+        if isinstance(self.version, tuple):
+            minv, maxv = self.version
+            values = [self.name, f"[{minv}|{maxv}]"]
         else:
-            name, version = _values
-            values = [name]
-            if version is not None:
-                values.append(version)
-        return "".join(values)  # type: ignore[arg-type]
+            values = [self.name]
+            if self.version is not None:
+                values.append(self.version)
+        return "".join(values)
 
 
 def _tofloat(other: str) -> float:

@@ -86,14 +86,15 @@ try:
                 assert False
 
 except ImportError:
+    if not t.TYPE_CHECKING:
 
-    def ModelCLI(*__, **_):  # type: ignore[no-redef]
-        """Raise a dependency error."""
-        raise RuntimeError("click is not installed")
+        def ModelCLI(*__, **_):
+            """Raise a dependency error."""
+            raise RuntimeError("click is not installed")
 
-    def ModelInfoCLI(*__, **_):  # type: ignore[no-redef]
-        """Raise a dependency error."""
-        raise RuntimeError("click is not installed")
+        def ModelInfoCLI(*__, **_):
+            """Raise a dependency error."""
+            raise RuntimeError("click is not installed")
 
 
 def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
