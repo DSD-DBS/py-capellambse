@@ -3,7 +3,7 @@
 """Helpers for working with models in CLI scripts."""
 from __future__ import annotations
 
-__all__ = ["ModelCLI", "enumerate_known_models", "loadcli"]
+__all__ = ["ModelCLI", "enumerate_known_models", "loadcli", "loadinfo"]
 
 import collections.abc as cabc
 import importlib.abc
