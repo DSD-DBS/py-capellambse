@@ -251,7 +251,7 @@ class RequirementsRelationAccessor(
                 f" {type(target).__name__}"
             )
         else:
-            return rq.InternalRelation
+            return CapellaIncomingRelation
 
 
 class RelationsList(c.ElementList["rq.AbstractRequirementsRelation"]):
