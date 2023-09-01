@@ -194,8 +194,7 @@ else:
         will be replaced by the Capella version number that the model
         was created with (e.g. "6.0.0").
 
-        Exactly one of ``--capella-binary`` or ``--docker-image`` must
-        be specified.
+        Exactly one of ``--exe`` or ``--docker`` must be specified.
         """
         if command != "derive":
             click.echo(f"Unsupported command: {command}", err=True)
