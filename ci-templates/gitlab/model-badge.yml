@@ -34,7 +34,8 @@ generate-model-badge:
     # Specify the commit message when pushing model complexity badge
     COMMIT_MSG: "docs: Add/Modify model complexity badge"
 
-    CAPELLAMBSE_PUSH_MODEL_BADGE:
-      description: Commit the model badge to git and push it back to the current branch. 1 to enable, 0 to disable.
-      value: 1
-      options: ["0", "1"]
+variables:
+  CAPELLAMBSE_PUSH_MODEL_BADGE:
+    description: Commit the model badge to git and push it back to the current branch. 1 to enable (default), 0 to disable.
+    options: ["0", "1"]
+    value: "1"
