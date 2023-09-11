@@ -90,8 +90,7 @@ class FileHandler(metaclass=abc.ABCMeta):
     ) -> None:
         """Write a file.
 
-        This method is a convenience wrapper around
-        :meth:`open()`.
+        This method is a convenience wrapper around :meth:`open()`.
         """
         with self.open(path, "wb") as f:
             f.write(content)
@@ -99,8 +98,7 @@ class FileHandler(metaclass=abc.ABCMeta):
     def read_file(self, path: str | pathlib.PurePosixPath, /) -> bytes:
         """Read a file.
 
-        This method is a convenience wrapper around
-        :meth:`open()`.
+        This method is a convenience wrapper around :meth:`open()`.
         """
         with self.open(path, "rb") as f:
             return f.read()
