@@ -224,10 +224,22 @@ Render diagrams in untrusted jupyter notebooks
 
 The SVG format relies on a stylesheet, however in untrusted notebooks any
 stylesheets are stripped. As a workaround we support the PNG format. For this
-the `cairosvg`__ library is needed which requires the following additional
-setup steps on windows:
+the `cairosvg`__ library is needed which depends on additional binaries. They
+can be installed with the following commands based on your OS:
 
 __ https://pypi.org/project/CairoSVG/
+
+On linux
+""""""""
+
+Make sure to use the right package manager. For debian/ubuntu:
+
+.. code::
+
+    sudo apt-get install libcairo2
+
+For windows
+"""""""""""
 
 - Download and execute the `latest GTK installer`__.
 
