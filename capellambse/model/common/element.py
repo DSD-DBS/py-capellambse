@@ -33,6 +33,10 @@ from . import XTYPE_HANDLERS, T, U, accessors, properties
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
+_MapFunction: te.TypeAlias = (
+    "cabc.Callable[[T], GenericElement | cabc.Iterable[GenericElement]]"
+)
+
 
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
     def add_wrapped_eq(cls: type[T]) -> type[T]:
@@ -844,6 +848,69 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
     def values(self) -> ElementList[T]:
         return self
+
+    def filter(
+        self, predicate: str | cabc.Callable[[T], bool]
+    ) -> ElementList[T]:
+        """Filter this list with a custom predicate.
+
+        The predicate may be the name of an attribute or a callable,
+        which will be called on each list item. If the attribute value
+        or the callable's return value is truthy, the item is included
+        in the resulting list.
+
+        When specifying the name of an attribute, nested attributes can
+        be chained using ``.``, like ``"parent.name"`` (which would
+        pick all elements whose ``parent`` has a non-empty ``name``).
+        """
+        if isinstance(predicate, str):
+            predicate = operator.attrgetter(predicate)
+        return self._newlist([i._element for i in self if predicate(i)])
+
+    def map(self, attr: str | _MapFunction[T]) -> ElementList[GenericElement]:
+        """Apply a function to each element in this list.
+
+        If the argument is a string, it is interpreted as an attribute
+        name, and the value of that attribute is returned for each
+        element. Nested attribute names can be chained with ``.``.
+
+        If the argument is a callable, it is called for each element,
+        and the return value is included in the result. If the callable
+        returns a sequence, the sequence is flattened into the result.
+
+        Duplicate values and Nones are always filtered out.
+
+        It is an error if a callable returns something that is not a
+        model element or a flat sequence of model elements.
+        """
+        if isinstance(attr, str):
+            attr = operator.attrgetter(attr)
+        newelems: list[etree._Element] = []
+        classes: set[type[GenericElement]] = set()
+        for i in self:
+            try:
+                value = attr(i)
+            except AttributeError:
+                continue
+
+            if not isinstance(value, cabc.Iterable):
+                value = [value]
+
+            for v in value:  # type: ignore[union-attr] # false-positive
+                if v is None:
+                    continue
+                if isinstance(v, GenericElement):
+                    newelems.append(v._element)
+                    classes.add(type(v))
+                else:
+                    raise TypeError(
+                        f"Map function must return a model element or a list"
+                        f" of model elements, not {v!r}"
+                    )
+
+        if len(classes) == 1:
+            return ElementList(self._model, newelems, classes.pop())
+        return MixedElementList(self._model, newelems)
 
 
 class CachedElementList(ElementList[T], t.Generic[T]):
