@@ -143,6 +143,29 @@ notebook.
   __ https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html
   __ https://developers.google.com/protocol-buffers
 
+- `08 Property Values.ipynb`__ shows how to access property values and property
+  value groups, as well as the `Property Value Management (PVMT)`__ extension.
+
+  __ https://dsd-dbs.github.io/py-capellambse/examples/08%20Property%20Values.html
+  __ https://eclipse.dev/capella/addons.html
+
+- `09 Context Diagrams.ipynb`__ shows the `capellambse-context-diagrams extension`__ that visualizes
+  contexts of Capella objects. The extension is external to the capellambse library
+  and needs to be installed separately.
+
+  __ https://dsd-dbs.github.io/py-capellambse/examples/09%20Context%20Diagrams.html
+  __ https://dsd-dbs.github.io/capellambse-context-diagrams/
+
+- `10 Declarative Modeling.ipynb`__ demonstrates a basic application of the
+  declarative approach to modeling on a coffee machine example.
+
+  __ https://dsd-dbs.github.io/py-capellambse/examples/10%20Declarative%20Modeling.html
+
+- `11 Complexity Assessment.ipynb`__ quickly demonstrates how to use and view the
+  model complexity badge for a Capella model.
+
+  __ https://dsd-dbs.github.io/py-capellambse/examples/11%20Complexity%20Assessment.html
+
 We are constantly working on improving everything shown here, as well as adding
 even more useful functionality and helpful demos. If you have any new ideas
 that were not mentioned yet, `don't hesitate to contribute`__!
