@@ -735,7 +735,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
 
 class DeepProxyAccessor(DirectProxyAccessor[T]):
-    """Creates proxy objects that searches recursively through the tree."""
+    """A DirectProxyAccessor that searches recursively through the tree."""
 
     __slots__ = ()
 
