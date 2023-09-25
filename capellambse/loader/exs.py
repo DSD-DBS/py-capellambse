@@ -260,13 +260,14 @@ def _unmapped_attrs(
         parent_ns = set(element.getparent().nsmap)
 
     attribs = dict(element.items())
-    try:
-        yield (
-            _unmap_namespace(nsmap, "xmi:version"),
-            _escape(attribs.pop("{http://www.omg.org/XMI}version")),
-        )
-    except KeyError:
-        pass
+    for attr in ("version", "type", "id"):
+        try:
+            yield (
+                _unmap_namespace(nsmap, f"xmi:{attr}"),
+                _escape(attribs.pop("{http://www.omg.org/XMI}" + attr)),
+            )
+        except KeyError:
+            pass
 
     for attr, value in element.nsmap.items():
         if attr in parent_ns:
