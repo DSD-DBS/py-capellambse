@@ -401,6 +401,31 @@ class GenericElement:
     def _repr_html_(self) -> str:
         return self.__html__()
 
+    def get_children(self) -> MixedElementList:
+        """Return all model elements that are children of this one.
+
+        The list returned from this method contains all model element
+        that are direct descendants of this element, with regard to the
+        XML hierarchy (usually referred to as "owned objects" in the
+        metamodel).
+        """
+        elements: list[etree._Element] = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            acc = getattr(type(self), attr, None)
+            if (
+                # pylint: disable-next=unidiomatic-typecheck
+                type(acc) is accessors.DirectProxyAccessor
+                and not acc.rootelem
+                or isinstance(acc, accessors.RoleTagAccessor)
+            ):
+                if acc.aslist is None:
+                    elements.append(getattr(self, attr)._element)
+                else:
+                    elements.extend(i._element for i in getattr(self, attr))
+        return MixedElementList(self._model, elements)
+
     if t.TYPE_CHECKING:
 
         def __getattr__(self, attr: str) -> t.Any:
