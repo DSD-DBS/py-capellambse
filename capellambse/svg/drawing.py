@@ -16,6 +16,7 @@ from svgwrite import text as svgtext
 
 from capellambse import diagram
 from capellambse import helpers as chelpers
+from capellambse.diagram import capstyle
 
 from . import decorations, generate, helpers, style, symbols
 
@@ -48,13 +49,14 @@ class Drawing:
             "filename": f"{metadata.name}.svg",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
+            "style": "shape-rendering: geometricPrecision; font-family: 'Segoe UI'; font-size: 8pt; cursor: pointer;",
         }
         if metadata.class_:
             superparams["class_"] = re.sub(r"\s+", "", metadata.class_)
 
         self.__drawing = drawing.Drawing(**superparams)
         self.diagram_class = metadata.class_
-        self.stylesheet = self.make_stylesheet()
+        self.add_static_decorations()
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
 
         self.obj_cache: dict[str | None, t.Any] = {}
@@ -104,6 +106,14 @@ class Drawing:
             self.__drawing.defs.add(grad)
 
         return stylesheet
+
+    def add_static_decorations(self) -> None:
+        static_deco = style.STATIC_DECORATIONS[
+            "__GLOBAL__"
+        ] + style.STATIC_DECORATIONS.get(self.diagram_class, ())
+
+        for name in static_deco:
+            self.__drawing.defs.add(decorations.deco_factories[name]())
 
     def __repr__(self) -> str:
         return self.__drawing._repr_svg_()
@@ -390,11 +400,10 @@ class Drawing:
         parent_id: str | None,
         *,
         class_: str,
-        obj_style: style.Styling | None = None,
+        obj_style: style.Styling,
         label: LabelDict | None = None,
         id_: str | None = None,
     ) -> container.Group:
-        styles = None if obj_style is None else obj_style[""]
         grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
         if class_ in decorations.all_directed_ports:
             port_id = "#ErrorSymbol"
@@ -403,7 +412,6 @@ class Drawing:
             elif class_ in decorations.component_ports:
                 port_id = "#ComponentPortSymbol"
 
-            grp.style = styles
             grp.add(
                 self.__drawing.use(
                     href=port_id,
@@ -413,6 +421,7 @@ class Drawing:
                         pos, size, class_, parent_id
                     ),
                     class_=class_,
+                    style=obj_style,
                 )
             )
         else:
@@ -424,7 +433,7 @@ class Drawing:
                     transform=self.get_port_transformation(
                         pos, size, class_, parent_id
                     ),
-                    style=styles,
+                    style=obj_style,
                 )
             )
 
@@ -451,38 +460,50 @@ class Drawing:
         obj
             The (decoded) JSON-dict of a single diagram object.
         """
-        try:
-            drawfunc: t.Any = getattr(self, f'_draw_{obj["type"]}')
-        except AttributeError:
-            raise ValueError(f'Invalid object type: {obj["type"]}') from None
-
         mobj = copy.deepcopy(obj)
+        del obj
+        if mobj["type"] == "box":
+            drawfunc: t.Any = self._draw_box
+            style_type = "Box"
+        elif mobj["type"] == "edge":
+            drawfunc: t.Any = self._draw_edge
+            style_type = "Edge"
+        elif mobj["type"] == "circle":
+            drawfunc: t.Any = self._draw_circle
+            style_type = "Edge"
+        elif mobj["type"] == "symbol":
+            drawfunc: t.Any = self._draw_symbol
+            style_type = "Box"
+        else:
+            raise ValueError(f'Invalid object type: {mobj["type"]}') from None
+
         objparams = {
-            f"{k}_": v for k, v in obj.items() if k not in {"type", "style"}
+            f"{k}_": v for k, v in mobj.items() if k not in {"type", "style"}
         }
-        if obj["class"] in decorations.all_ports:
+        if mobj["class"] in decorations.all_ports:
             mobj["type"] = "box"  # type: ignore[index]
 
-        class_: str = mobj["type"].capitalize() + (
-            f".{mobj['class']}" if "class" in obj else ""
+        class_: str = style_type + (
+            f".{mobj['class']}" if "class" in mobj else ""
         )
+        my_styles = capstyle.get_style(self.diagram_class, class_)
+        my_styles.update(mobj.get("style", {}))
+
         obj_style = style.Styling(
             self.diagram_class,
             class_,
-            **{k: v for k, v in obj.get("style", {}).items() if "_" not in k},
+            **{k: v for k, v in my_styles.items() if "_" not in k},
         )
         text_style = style.Styling(
             self.diagram_class,
             class_,
             "text",
             **{
-                k[len("text_") :]: v
-                for k, v in obj.get("style", {}).items()
-                if k.startswith("text_")
+                k[5:]: v for k, v in my_styles.items() if k.startswith("text_")
             },
         )
 
-        self.obj_cache[mobj["id"]] = obj
+        self.obj_cache[mobj["id"]] = mobj
 
         drawfunc(**objparams, obj_style=obj_style, text_style=text_style)
 
@@ -553,7 +574,7 @@ class Drawing:
         text_style: style.Styling,
         **kw: t.Any,
     ):
-        del obj_style, context_  # FIXME Add context to SVG
+        del context_  # FIXME Add context to SVG
         del kw  # Dismiss additional info from json
         assert isinstance(label_, (dict, type(None)))
         pos = (x_ + 0.5, y_ + 0.5)
@@ -566,6 +587,7 @@ class Drawing:
                 text_style,
                 parent_,
                 class_=class_,
+                obj_style=obj_style,
                 label=label_,
                 id_=id_,
             )
@@ -577,6 +599,7 @@ class Drawing:
                     insert=pos,
                     size=size,
                     class_=class_,
+                    style=obj_style,
                 )
             )
 
@@ -719,7 +742,6 @@ class Drawing:
         # Received text space doesn't allow for anything else than the text
         for label_ in labels_:
             label_["class"] = "Annotation"
-            self._draw_label_bbox(label_, grp, "AnnotationBB")
             self._draw_edge_label(
                 label_,
                 grp,
@@ -763,35 +785,6 @@ class Drawing:
         )
 
         return group
-
-    def _draw_label_bbox(
-        self,
-        label: LabelDict,
-        group: container.Group | None = None,
-        class_: str | None = None,
-        obj_style: style.Styling | None = None,
-    ) -> None:
-        """Draw a bounding box for given label."""
-        if DEBUG:
-            if obj_style is not None:
-                setattr(obj_style, "stroke", "rgb(239, 41, 41);")
-            else:
-                obj_style = style.Styling(
-                    self.diagram_class,
-                    "AnnotationBB",
-                    stroke="rgb(239, 41, 41);",
-                )
-
-        bbox = self.__drawing.rect(
-            insert=(label["x"], label["y"]),
-            size=(label["width"], label["height"]),
-            class_=class_,
-            style=obj_style,
-        )
-        if group is None:
-            return bbox
-
-        return group.add(bbox)
 
     def _draw_line(
         self,
