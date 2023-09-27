@@ -147,12 +147,12 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
     if "symbol" in objectclass.lower():
         return {}
 
-    obj_type = objectclass.split(".", 1)[0]
+    obj_type: str = objectclass.split(".", 1)[0]
     styles = {
         **STYLES["__GLOBAL__"].get(obj_type, {}),
-        **STYLES.get(diagramclass, {}).get(obj_type, {}),
+        **STYLES.get(diagramclass or "", {}).get(obj_type, {}),
         **STYLES["__GLOBAL__"].get(objectclass, {}),
-        **STYLES.get(diagramclass, {}).get(objectclass, {}),
+        **STYLES.get(diagramclass or "", {}).get(objectclass, {}),
     }
     return styles
 

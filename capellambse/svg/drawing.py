@@ -49,7 +49,8 @@ class Drawing:
             "filename": f"{metadata.name}.svg",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
-            "style": "shape-rendering: geometricPrecision; font-family: 'Segoe UI'; font-size: 8pt; cursor: pointer;",
+            "style": """shape-rendering: geometricPrecision; font-family:
+                'Segoe UI'; font-size: 8pt; cursor: pointer;""",
         }
         if metadata.class_:
             superparams["class_"] = re.sub(r"\s+", "", metadata.class_)
@@ -95,22 +96,10 @@ class Drawing:
         )
         self.__drawing.add(self.__backdrop)
 
-    def make_stylesheet(self) -> style.SVGStylesheet:
-        """Return created stylesheet and add sheet and decorations to defs."""
-        stylesheet = style.SVGStylesheet(class_=self.diagram_class or "")
-        self.__drawing.defs.add(stylesheet.sheet)
-        for name in stylesheet.static_deco:
-            self.__drawing.defs.add(decorations.deco_factories[name]())
-
-        for grad in stylesheet.yield_gradients():
-            self.__drawing.defs.add(grad)
-
-        return stylesheet
-
     def add_static_decorations(self) -> None:
         static_deco = style.STATIC_DECORATIONS[
             "__GLOBAL__"
-        ] + style.STATIC_DECORATIONS.get(self.diagram_class, ())
+        ] + style.STATIC_DECORATIONS.get(self.diagram_class or "", ())
 
         for name in static_deco:
             self.__drawing.defs.add(decorations.deco_factories[name]())
@@ -259,45 +248,12 @@ class Drawing:
 
     def _draw_box_label(self, builder: LabelBuilder) -> container.Group:
         """Draw label text on given object and return label position."""
-        x, text_height, _, y_margin = self._draw_label(builder)
+        _, _, _, y_margin = self._draw_label(builder)
 
         if DEBUG:
             assert builder.label is not None
             assert y_margin is not None
-            debug_y = builder.label["y"] + y_margin
-            debug_y1 = (
-                builder.label["y"]
-                + (builder.label["height"] - decorations.icon_size) / 2
-            )
-            x = (
-                builder.label["x"]
-                + decorations.icon_size
-                + 2 * decorations.icon_padding
-            )
-            if text_height >= decorations.icon_size:
-                debug_height = text_height
-            else:
-                debug_height = decorations.icon_size
 
-            bbox: LabelDict = {
-                "x": (
-                    x
-                    if builder.text_anchor == "start"
-                    else x - builder.label["width"] / 2
-                ),
-                "y": debug_y if debug_y <= debug_y1 else debug_y1,
-                "width": builder.label["width"],
-                "height": debug_height,
-            }
-            labelstyle = style.Styling(
-                self.diagram_class,
-                "Box",
-                stroke="rgb(239, 41, 41)",
-                fill="none",
-            )
-            self._draw_label_bbox(
-                bbox, builder.group, "Box", obj_style=labelstyle
-            )
             self._draw_circle(
                 center_=(builder.label["x"], builder.label["y"]),
                 radius_=3,
@@ -462,20 +418,17 @@ class Drawing:
         """
         mobj = copy.deepcopy(obj)
         del obj
-        if mobj["type"] == "box":
-            drawfunc: t.Any = self._draw_box
-            style_type = "Box"
-        elif mobj["type"] == "edge":
-            drawfunc: t.Any = self._draw_edge
-            style_type = "Edge"
-        elif mobj["type"] == "circle":
-            drawfunc: t.Any = self._draw_circle
-            style_type = "Edge"
-        elif mobj["type"] == "symbol":
-            drawfunc: t.Any = self._draw_symbol
-            style_type = "Box"
-        else:
-            raise ValueError(f'Invalid object type: {mobj["type"]}') from None
+        type_mapping: dict[str, tuple[t.Any, str]] = {
+            "box": (self._draw_box, "Box"),
+            "edge": (self._draw_edge, "Edge"),
+            "circle": (self._draw_circle, "Edge"),
+            "symbol": (self._draw_symbol, "Box"),
+        }
+
+        try:
+            drawfunc, style_type = type_mapping[mobj["type"]]
+        except KeyError:
+            raise ValueError(f"Invalid object type: {mobj['type']}") from None
 
         objparams = {
             f"{k}_": v for k, v in mobj.items() if k not in {"type", "style"}
@@ -486,9 +439,10 @@ class Drawing:
         class_: str = style_type + (
             f".{mobj['class']}" if "class" in mobj else ""
         )
-        my_styles = capstyle.get_style(self.diagram_class, class_)
-        my_styles.update(mobj.get("style", {}))
-
+        my_styles: dict[str, t.Any] = {
+            **capstyle.get_style(self.diagram_class, class_),
+            **mobj.get("style", {}),
+        }
         obj_style = style.Styling(
             self.diagram_class,
             class_,

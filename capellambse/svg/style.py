@@ -256,7 +256,7 @@ class Styling:
 
         return "_".join((self._prefix, attr))
 
-    def __contains__(self, obj: t.Any) -> t.Bool:
+    def __contains__(self, obj: t.Any) -> bool:
         return hasattr(self, obj)
 
 
