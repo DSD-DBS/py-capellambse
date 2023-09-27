@@ -141,25 +141,20 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
         The type can be: ``Box``, ``Edge``. The style class can be any
         known style class.
     """
+    if "." not in objectclass:
+        raise ValueError(f"Malformed objectclass: {objectclass}")
+
     if "symbol" in objectclass.lower():
         return {}
 
-    if (
-        objectclass not in STYLES["__GLOBAL__"]
-        and diagramclass
-        and objectclass not in STYLES.get(diagramclass, {})
-    ):
-        LOGGER.debug(
-            "No default style for %r in %r", objectclass, diagramclass
-        )
-    try:
-        retval = STYLES["__GLOBAL__"][objectclass].copy()
-    except KeyError:
-        retval = {}
-
-    if diagramclass:
-        retval.update(STYLES.get(diagramclass, {}).get(objectclass, {}))
-    return retval
+    obj_type: str = objectclass.split(".", 1)[0]
+    styles = {
+        **STYLES["__GLOBAL__"].get(obj_type, {}),
+        **STYLES.get(diagramclass or "", {}).get(obj_type, {}),
+        **STYLES["__GLOBAL__"].get(objectclass, {}),
+        **STYLES.get(diagramclass or "", {}).get(objectclass, {}),
+    }
+    return styles
 
 
 #: This dict maps the color names used by Capella to RGB tuples.
@@ -295,6 +290,8 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge": {
             "stroke-width": 1,
+            "fill": None,
+            "stroke": COLORS["black"],
         },
         "Edge.Connector": {
             "stroke": RGB(176, 176, 176),

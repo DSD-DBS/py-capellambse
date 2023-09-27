@@ -184,10 +184,6 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             if not mime or mime not in include or mime in exclude:
                 continue
 
-            # XXX Hack to fix diagram previews on Github-rendered notebooks
-            if self._model.jupyter_untrusted and mime != "image/png":
-                continue
-
             formats[mime] = conv
         if not formats:
             return None
