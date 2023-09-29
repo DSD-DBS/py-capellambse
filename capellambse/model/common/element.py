@@ -421,7 +421,8 @@ class GenericElement:
                 or isinstance(acc, accessors.RoleTagAccessor)
             ):
                 if acc.aslist is None:
-                    elements.append(getattr(self, attr)._element)
+                    if getattr(self, attr) is not None:
+                        elements.append(getattr(self, attr)._element)
                 else:
                     elements.extend(i._element for i in getattr(self, attr))
         return MixedElementList(self._model, elements)
