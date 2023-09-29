@@ -67,6 +67,5 @@ class EnumerationLiteral(c.GenericElement):
 
 @c.xtype_handler(None)
 class EnumerationReference(c.GenericElement):
-    name = c.AttributeProperty("name", returntype=str)
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     value = c.AttrProxyAccessor(c.GenericElement, "referencedValue")
