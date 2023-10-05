@@ -102,7 +102,7 @@ class MelodyModel:
             | None
         ) = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
-        jupyter_untrusted: bool = False,
+        jupyter_untrusted: bool | None = None,
         fallback_render_aird: bool = False,
         **kwargs: t.Any,
     ) -> None:
@@ -234,12 +234,23 @@ class MelodyModel:
         capellambse.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
+        import warnings
+
+        if jupyter_untrusted is not None:
+            warnings.warn(
+                (
+                    "The 'jupyter_untrusted' argument is no longer needed and"
+                    " will be removed soon. Please remove it from your calls."
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         capellambse.load_model_extensions()
 
         self._constructed = False
         self._loader = loader.MelodyLoader(path, **kwargs)
         self._fallback_render_aird = fallback_render_aird
-        self.jupyter_untrusted = jupyter_untrusted
 
         try:
             self._pvext = capellambse.pvmt.load_pvmt_from_model(self._loader)
