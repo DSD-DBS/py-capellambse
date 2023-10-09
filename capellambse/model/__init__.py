@@ -512,8 +512,11 @@ class MelodyModel:
             list of dictionaries, each representing a diagram in the
             model. The dictionaries come with the keys
 
-            - name: Name of the diagram as it has been set in Capella
             - uuid: The UUID of the diagram
+            - name: Name of the diagram as it has been set in Capella
+            - type: The diagram type as it was created in Capella
+            - viewpoint: The source layer from where the representation
+              is loaded from. It is ``Common`` for layerless diagrams.
             - success: A boolean stating if a diagram has been exported
               from Capella
 
