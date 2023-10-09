@@ -274,18 +274,18 @@ def test_the_scp_short_form_is_recognized_as_git_protocol(monkeypatch, url):
 @pytest.mark.parametrize(
     "link",
     [
-        "xtype MelodyModelTest.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "MelodyModelTest.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "xtype MelodyModel%20Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "MelodyModel%20Test.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
+        "xtype MelodyModelTest.aird#00000000-0000-4000-0000-000000000000",
+        "MelodyModelTest.aird#00000000-0000-4000-0000-000000000000",
+        "#00000000-0000-4000-0000-000000000000",
+        "xtype MelodyModel%20Test.aird#00000000-0000-4000-0000-000000000000",
+        "MelodyModel%20Test.aird#00000000-0000-4000-0000-000000000000",
     ],
 )
 def test_MelodyLoader_follow_link_finds_target(link: str):
     loader = capellambse.loader.MelodyLoader(TEST_MODEL_5_0)
 
     with pytest.raises(KeyError):
-        assert loader.follow_link(None, link) is not None
+        loader.follow_link(None, link)
 
 
 @pytest.mark.parametrize(
