@@ -9,6 +9,9 @@ import sys
 import capellambse
 from capellambse import _diagram_cache, cli_helpers
 
+# pylint: disable=unused-import
+from capellambse._diagram_cache import IndexEntry
+
 try:
     import click
 except ImportError:

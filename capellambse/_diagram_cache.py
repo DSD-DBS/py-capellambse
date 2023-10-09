@@ -47,7 +47,9 @@ VIEWPOINT_ORDER = (
 )
 
 
-class _IndexEntry(t.TypedDict):
+class IndexEntry(t.TypedDict):
+    """An entry for the index JSON file."""
+
     uuid: str
     name: str
     type: modeltypes.DiagramType
@@ -143,13 +145,13 @@ def _copy_images(
     destdir: pathlib.Path,
     extension: str,
     background: bool,
-) -> list[_IndexEntry]:
+) -> list[IndexEntry]:
     name_counts = collections.defaultdict[str, int](lambda: -1)
-    index: list[_IndexEntry] = []
+    index: list[IndexEntry] = []
     files = {i.name: i for i in srcdir.glob("**/*") if i.is_file()}
 
     for i in model.diagrams:
-        entry: _IndexEntry = {
+        entry: IndexEntry = {
             "uuid": i.uuid,
             "name": i.name,
             "type": i.type,
@@ -244,7 +246,7 @@ def _write_index(
     model: capellambse.MelodyModel,
     extension: str,
     dest: pathlib.Path,
-    index: list[_IndexEntry],
+    index: list[IndexEntry],
 ) -> None:
     now = datetime.datetime.now().strftime("%A, %Y-%m-%d %H:%M:%S")
     title = f"Capella diagram cache for {model.name!r}"
@@ -261,7 +263,7 @@ def _write_index(
         body := E.body(E.h1(title), E.p({"class": "small"}, "Created: ", now)),
     )
 
-    def sortkey(entry: _IndexEntry):
+    def sortkey(entry: IndexEntry):
         try:
             vp_index = VIEWPOINT_ORDER.index(entry["viewpoint"])
         except ValueError:
@@ -290,6 +292,8 @@ def _write_index(
 
 
 class IndexEncoder(json.JSONEncoder):
+    """A JSON encoder for the index file."""
+
     def default(self, o):
         if isinstance(o, modeltypes.DiagramType):
             return o.name
