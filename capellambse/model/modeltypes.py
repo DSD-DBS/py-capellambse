@@ -215,3 +215,11 @@ class ControlNodeKind(_StringyEnumMixin, _enum.Enum):
     OR = _enum.auto()
     AND = _enum.auto()
     ITERATE = _enum.auto()
+
+
+class FunctionalChainKind(_StringyEnumMixin, _enum.Enum):
+    """The kind of a Functional Chain."""
+
+    SIMPLE = _enum.auto()
+    COMPOSITE = _enum.auto()
+    FRAGMENT = _enum.auto()
