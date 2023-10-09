@@ -287,7 +287,15 @@ def iter_visible(
             )
             continue
 
-        elem = model.follow_link(target, target.attrib["href"])
+        try:
+            elem = model.follow_link(target, target.attrib["href"])
+        except KeyError:
+            C.LOGGER.debug(
+                "Semantic element has been deleted, ignoring: %s",
+                target.attrib["href"],
+            )
+            continue
+
         fragment = model.find_fragment(elem)
         if (
             model.trees[fragment].fragment_type == loader.FragmentType.SEMANTIC
