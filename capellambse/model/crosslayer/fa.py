@@ -113,6 +113,10 @@ class FunctionOutputPort(FunctionPort):
 class Function(AbstractFunction):
     """Common Code for Function's."""
 
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.FunctionKind, default="FUNCTION"
+    )
+
     is_leaf = property(lambda self: not self.functions)
 
     inputs = c.DirectProxyAccessor(FunctionInputPort, aslist=c.ElementList)
@@ -229,6 +233,10 @@ class ComponentExchange(AbstractExchange):
     """A functional component exchange."""
 
     _xmltag = "ownedComponentExchanges"
+
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.ComponentExchangeKind, default="UNSET"
+    )
 
     allocated_functional_exchanges = c.LinkAccessor[FunctionalExchange](
         None,  # FIXME fill in tag
