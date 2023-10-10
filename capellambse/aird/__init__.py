@@ -213,7 +213,9 @@ def parse_diagram(
 
 def _element_from_xml(ebd: C.ElementBuilder) -> diagram.DiagramElement:
     """Construct a single diagram element from the model XML."""
-    if ebd.data_element.get("element") is not None:
+    element = ebd.data_element.get("element")
+    tag = ebd.melodyloader[element].tag if element else None
+    if element is not None and tag != "ownedRepresentationDescriptors":
         factory = _semantic.from_xml
     else:
         factory = _visual.from_xml
