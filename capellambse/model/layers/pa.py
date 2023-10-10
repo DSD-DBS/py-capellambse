@@ -157,6 +157,9 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_physical_links = c.DeepProxyAccessor(
         cs.PhysicalLink, aslist=c.ElementList
     )
+    all_functional_chains = property(
+        lambda self: self._model.search(fa.FunctionalChain, below=self)
+    )
 
     diagrams = diagram.DiagramAccessor(
         "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"

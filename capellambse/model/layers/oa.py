@@ -262,6 +262,9 @@ class OperationalAnalysis(crosslayer.BaseArchitectureLayer):
         CommunicationMean,
         aslist=c.ElementList,
     )
+    all_operational_processes = property(
+        lambda self: self._model.search(OperationalProcess, below=self)
+    )
 
     diagrams = diagram.DiagramAccessor(
         "Operational Analysis", cacheattr="_MelodyModel__diagram_cache"

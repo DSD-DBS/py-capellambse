@@ -167,6 +167,9 @@ class LogicalArchitecture(crosslayer.BaseArchitectureLayer):
     all_actors = property(
         lambda self: self._model.search(LogicalComponent).by_is_actor(True)
     )
+    all_functional_chains = property(
+        lambda self: self._model.search(fa.FunctionalChain, below=self)
+    )
 
     actor_exchanges = c.DirectProxyAccessor(
         fa.ComponentExchange,
