@@ -186,6 +186,11 @@ class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
 
 
 @c.xtype_handler(None)
+class FunctionalChainReference(FunctionalChainInvolvement):
+    """An element linking two related functional chains together."""
+
+
+@c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):
     """A functional chain."""
 
@@ -193,21 +198,42 @@ class FunctionalChain(c.GenericElement):
 
     involvements = c.DirectProxyAccessor(
         c.GenericElement,
-        (FunctionalChainInvolvementFunction, FunctionalChainInvolvementLink),
+        (
+            FunctionalChainInvolvementFunction,
+            FunctionalChainInvolvementLink,
+            FunctionalChainReference,
+        ),
         aslist=c.ElementList,
     )
     involved_functions = c.LinkAccessor[AbstractFunction](
-        None,  # FIXME fill in tag
+        "ownedFunctionalChainInvolvements",
         FunctionalChainInvolvementFunction,
         aslist=c.MixedElementList,
         attr="involved",
     )
     involved_links = c.LinkAccessor[AbstractExchange](
-        None,  # FIXME fill in tag
+        "ownedFunctionalChainInvolvements",
         FunctionalChainInvolvementLink,
         aslist=c.MixedElementList,
         attr="involved",
     )
+    involved_chains = c.LinkAccessor["FunctionalChain"](
+        "ownedFunctionalChainInvolvements",
+        "org.polarsys.capella.core.data.fa:FunctionalChainReference",
+        attr="involved",
+        aslist=c.ElementList,
+    )
+    involving_chains: c.Accessor["FunctionalChain"]
+
+    realized_chains = c.LinkAccessor["FunctionalChain"](
+        "ownedFunctionalChainRealizations",
+        "org.polarsys.capella.core.data.fa:FunctionalChainRealization",
+        attr="targetElement",
+        backattr="sourceElement",
+        aslist=c.ElementList,
+    )
+    realizing_chains: c.Accessor["FunctionalChain"]
+
     control_nodes = c.DirectProxyAccessor(ControlNode, aslist=c.ElementList)
 
     @property
@@ -343,6 +369,26 @@ c.set_accessor(
         FunctionalExchange,
         "realized_functional_exchanges",
         aslist=c.ElementList,
+    ),
+)
+c.set_accessor(
+    FunctionalExchange,
+    "involving_functional_chains",
+    c.ReferenceSearchingAccessor(FunctionalChain, "involved_links"),
+)
+
+c.set_accessor(
+    FunctionalChain,
+    "involving_chains",
+    c.ReferenceSearchingAccessor(
+        FunctionalChain, "involved_chains", aslist=c.ElementList
+    ),
+)
+c.set_accessor(
+    FunctionalChain,
+    "realizing_chains",
+    c.ReferenceSearchingAccessor(
+        FunctionalChain, "realized_chains", aslist=c.ElementList
     ),
 )
 
