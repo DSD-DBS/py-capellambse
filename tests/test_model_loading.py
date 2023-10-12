@@ -321,9 +321,14 @@ def test_MelodyLoader_follow_link_finds_target(link: str):
             "~user",
             "https://example.com/?file=~user%2Fdemo%2Fmy%20model.aird",
         ),
+        (
+            "https://example.com/?dir=%d&file=%n&type=%e",
+            "/",
+            "https://example.com/?dir=demo&file=my%20model&type=aird",
+        ),
     ],
 )
-def test_http_file_handler_replaces_percent_s_percent_q(
+def test_http_file_handler_replaces_percent_escapes(
     requests_mock: requests_mock.Mocker, path: str, subdir: str, req_url: str
 ) -> None:
     endpoint = requests_mock.get(req_url)
