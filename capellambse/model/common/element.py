@@ -111,6 +111,8 @@ class ModelObject(t.Protocol):
         self,
         model: capellambse.MelodyModel,
         parent: etree._Element,
+        xmltag: str | None,
+        /,
         **kw: t.Any,
     ) -> None:
         """Create a new model object.

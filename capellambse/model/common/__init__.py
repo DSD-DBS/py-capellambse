@@ -145,6 +145,7 @@ def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
 
 
 from .accessors import *
+from .accessors import _NewObject as new_object
 from .element import *
 from .properties import *
 

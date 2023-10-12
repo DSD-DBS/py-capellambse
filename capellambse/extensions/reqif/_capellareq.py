@@ -213,8 +213,11 @@ class RequirementsRelationAccessor(
         self,
         elmlist: c.ElementListCouplingMixin,
         index: int,
-        value: c.ModelObject,
+        value: c.ModelObject | c.new_object,
     ) -> None:
+        if isinstance(value, c.new_object):
+            raise NotImplementedError("Cannot insert new objects yet")
+
         if isinstance(value, CapellaOutgoingRelation):
             parent = value.target._element
         else:
