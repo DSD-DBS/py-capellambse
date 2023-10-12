@@ -1620,8 +1620,11 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             yield
 
 
-class RoleTagAccessor(PhysicalAccessor):
+class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     __slots__ = ("role_tag",)
+
+    aslist: type[ElementListCouplingMixin] | None
+    class_: type[element.GenericElement]
 
     def __init__(
         self,
@@ -1649,6 +1652,63 @@ class RoleTagAccessor(PhysicalAccessor):
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
+
+    def create(
+        self,
+        elmlist: ElementListCouplingMixin,
+        /,
+        *type_hints: str | None,
+        **kw: t.Any,
+    ) -> element.GenericElement:
+        if type_hints:
+            elmclass, kw["xtype"] = self._match_xtype(*type_hints)
+        else:
+            raise TypeError(f"{self._qualname} requires a type hint")
+        assert elmclass is not None
+
+        parent = elmlist._parent._element
+        want_id: str | None = None
+        if "uuid" in kw:
+            want_id = kw.pop("uuid")
+        with elmlist._model._loader.new_uuid(parent, want=want_id) as obj_id:
+            obj = elmclass(
+                elmlist._model, parent, self.role_tag, uuid=obj_id, **kw
+            )
+        return obj
+
+    def insert(
+        self,
+        elmlist: ElementListCouplingMixin,
+        index: int,
+        value: element.ModelObject,
+    ) -> None:
+        if value._model is not elmlist._model:
+            raise ValueError("Cannot move elements between models")
+        try:
+            indexof = elmlist._parent._element.index
+            if index > 0:
+                parent_index = indexof(elmlist._elements[index - 1]) + 1
+            elif index < -1:
+                parent_index = indexof(elmlist._elements[index + 1]) - 1
+            else:
+                parent_index = index
+        except ValueError:
+            parent_index = len(elmlist._parent._element)
+        elmlist._parent._element.insert(parent_index, value._element)
+        elmlist._model._loader.idcache_index(value._element)
+
+    def delete(
+        self,
+        elmlist: ElementListCouplingMixin,
+        obj: element.ModelObject,
+    ) -> None:
+        raise NotImplementedError("NYI")
+
+    @contextlib.contextmanager
+    def purge_references(
+        self, obj: element.ModelObject, target: element.ModelObject
+    ) -> cabc.Iterator[None]:
+        yield
 
 
 def no_list(
