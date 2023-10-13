@@ -215,3 +215,10 @@ class ControlNodeKind(_StringyEnumMixin, _enum.Enum):
     OR = _enum.auto()
     AND = _enum.auto()
     ITERATE = _enum.auto()
+
+
+class NumericTypeKind(_StringyEnumMixin, _enum.Enum):
+    """Specifies the kind of this numeric data type."""
+
+    INTEGER = _enum.auto()
+    FLOAT = _enum.auto()

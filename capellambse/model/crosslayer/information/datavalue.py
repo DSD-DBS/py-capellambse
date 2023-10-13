@@ -5,6 +5,14 @@
 from ... import common as c
 
 
+class LiteralBooleanValue(c.GenericElement):
+    """A Literal Boolean Value."""
+
+    _xmltag = "ownedLiterals"
+
+    value = c.BooleanAttributeProperty("value")
+
+
 class LiteralValue(c.GenericElement):
     is_abstract = c.BooleanAttributeProperty(
         "abstract", __doc__="Indicates if property is abstract"

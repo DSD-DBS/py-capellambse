@@ -180,6 +180,17 @@ class DataPkg(c.GenericElement):
     enumerations = c.DirectProxyAccessor(
         datatype.Enumeration, aslist=c.ElementList
     )
+    datatypes = c.DirectProxyAccessor(
+        c.GenericElement,
+        (
+            datatype.BooleanType,
+            datatype.Enumeration,
+            datatype.StringType,
+            datatype.NumericType,
+            datatype.PhysicalQuantity,
+        ),
+        aslist=c.MixedElementList,
+    )
     complex_values = c.DirectProxyAccessor(
         datavalue.ComplexValue, aslist=c.ElementList
     )
