@@ -22,8 +22,7 @@ def check_for_horizontal_overflow(
     label_width = text_width + icon_size + 2 * icon_padding
     assert text_width <= max_text_width
     assert label_width <= width
-    label_margin = (width - label_width) / 2
-    return (lines, label_margin, max_text_width)
+    return (lines, label_width, max_text_width)
 
 
 def check_for_vertical_overflow(

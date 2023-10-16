@@ -8,6 +8,8 @@ import dataclasses
 import math
 import typing as t
 
+from lxml import etree
+
 from capellambse import diagram, helpers
 
 from . import _common as C
@@ -472,9 +474,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
             seb.melodyobjs[0], seb.melodyobjs[0].get("triggers", "")
         )
         label = ", ".join(
-            i.get("name", "(unnamed trigger)")
-            for i in triggers
-            if i is not None
+            _get_trigger_expression(i, seb) for i in triggers if i is not None
         )
 
         if guard := _guard_condition(seb, "guard"):
@@ -491,6 +491,29 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
 
         edge.labels[0].label = label
     return edge
+
+
+def _get_trigger_expression(
+    trigger: etree._Element, seb: C.SemanticElementBuilder
+) -> str:
+    exprid = trigger.get("expression")
+    if not exprid:
+        return ""
+
+    change_event_type = trigger.attrib[helpers.ATT_XT]
+    if change_event_type.endswith("TimeEvent"):
+        kind = trigger.get("kind", "AT")
+    elif change_event_type.endswith("ChangeEvent"):
+        kind = trigger.get("kind", "WHEN")
+
+    constraint = seb.melodyloader.follow_link(seb.melodyobjs[0], exprid)
+    try:
+        spec = next(constraint.iterchildren("ownedSpecification"))
+        body = next(spec.iterchildren("bodies"))
+    except StopIteration:
+        return ""
+
+    return f"({kind}) {body.text}"
 
 
 def sequence_link_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:

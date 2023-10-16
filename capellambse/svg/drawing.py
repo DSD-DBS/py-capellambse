@@ -151,11 +151,12 @@ class Drawing:
                 )
 
         if label:
-            text_anchor = (
-                "start" if class_ in decorations.start_aligned else "middle"
+            defaultstyles = diagram.get_style(
+                self.diagram_class, text_style._class
             )
+            text_anchor = defaultstyles.get("text_anchor", "middle")
             y_margin = None
-            if children or class_ in decorations.always_top_label:
+            if children or defaultstyles.get("text_position") == "always_top":
                 y_margin = 5
 
             self._draw_box_label(
@@ -296,7 +297,10 @@ class Drawing:
             f"{builder.class_}Symbol" in decorations.deco_factories
             and builder.icon
         )
-        lines = render_hbounded_lines(builder, render_icon)
+        defaultstyles = diagram.get_style(
+            self.diagram_class, builder.labelstyle._class
+        )
+        lines = render_hbounded_lines(builder, defaultstyles, render_icon)
         x, icon_x = get_label_position_x(builder, lines, render_icon)
         y = get_label_position_y(builder, lines)
         for line in lines.lines:
@@ -828,11 +832,11 @@ class LinesData(t.NamedTuple):
 
 
 def render_hbounded_lines(
-    builder: LabelBuilder, render_icon: bool
+    builder: LabelBuilder, defaultstyles: dict[str, t.Any], render_icon: bool
 ) -> LinesData:
     (
         lines,
-        label_margin,
+        label_width,
         max_text_width,
     ) = helpers.check_for_horizontal_overflow(
         str(builder.label["text"]),
@@ -840,6 +844,11 @@ def render_hbounded_lines(
         decorations.icon_padding if render_icon else 0,
         builder.icon_size if render_icon else 0,
     )
+    if defaultstyles.get("text_align") == "left":
+        label_margin: int | float = decorations.text_margin
+    else:
+        label_margin = (builder.label["width"] - label_width) / 2
+
     lines_to_render = helpers.check_for_vertical_overflow(
         lines, builder.label["height"], max_text_width
     )

@@ -16,29 +16,18 @@ icon_padding = 2
 """Default icon padding (left/right side)."""
 feature_space = 24
 """Default margins/padding (top/bot and left/right) for feature text."""
+text_margin = 5
+"""Default margins/padding (left and right) for label text."""
 
 function_ports = {"FIP", "FOP"}
 directed_component_ports = {"CP_IN", "CP_OUT"}
 component_ports = directed_component_ports | {"PP", "CP_INOUT", "CP_UNSET"}
 all_ports = function_ports | component_ports
 all_directed_ports = directed_component_ports | function_ports
-start_aligned = {
-    "LogicalComponent",
-    "LogicalActor",
-    "LogicalHumanActor",
-    "LogicalHumanComponent",
-}
 only_icons = {"Requirement"}
 DiagramClass = str
 FaultyClass = str
 PatchClass = str
-always_top_label = {
-    "Class",
-    "Enumeration",
-    "Note",
-    "OperationalActivity",
-    "PhysicalComponent",
-}
 needs_feature_line = {"Class", "Enumeration"}
 
 

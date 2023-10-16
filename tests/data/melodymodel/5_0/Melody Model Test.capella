@@ -862,6 +862,61 @@ The predator is far away</bodies>
             id="37419abe-6c8e-42b2-a721-2b9cad51c689" name="float"/>
         <ownedDataTypes xsi:type="org.polarsys.capella.core.data.information.datatype:StringType"
             id="bc78f82d-aebc-4090-98da-86024629b383" name="str"/>
+        <ownedStateEvents xsi:type="org.polarsys.capella.core.data.capellacommon:ChangeEvent"
+            id="1b6f7817-569d-48b9-9ff3-b29bdca070ba" name="ChangeEvent 1" expression="#7e927ae4-f457-41a9-8d2f-3a42ab51b9e3">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="7e927ae4-f457-41a9-8d2f-3a42ab51b9e3" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="0dd849c7-cb67-4b1f-9e11-244cab0feb68">
+              <bodies>Early in the morning</bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
+        </ownedStateEvents>
+        <ownedStateEvents xsi:type="org.polarsys.capella.core.data.capellacommon:TimeEvent"
+            id="3aa5695d-5cfa-49c3-b017-4d675b1e8342" name="TimeEvent 2" expression="#de567360-249b-4186-bd6d-ba166543ac1c">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="de567360-249b-4186-bd6d-ba166543ac1c" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="14fd463f-b242-453b-9c86-e3f2e1e886c7">
+              <bodies>Night</bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
+        </ownedStateEvents>
+        <ownedStateEvents xsi:type="org.polarsys.capella.core.data.capellacommon:ChangeEvent"
+            id="77687971-34ea-40a4-972c-bd367029a516" name="ChangeEvent 3" expression="#f5544fa2-14be-4780-9da3-4b72b73630f1">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="f5544fa2-14be-4780-9da3-4b72b73630f1" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="7d189cbc-e514-47c9-babf-7bc353438460">
+              <bodies>Sun goes down</bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
+        </ownedStateEvents>
+        <ownedStateEvents xsi:type="org.polarsys.capella.core.data.capellacommon:TimeEvent"
+            id="545a46d7-5786-4c4a-bcc9-b79e634903e0" name="TimeEvent 4" expression="#782c3969-0e4a-487a-b3df-6bab888b1eb8">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="782c3969-0e4a-487a-b3df-6bab888b1eb8" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="b2917c1b-b402-41db-8b26-af9805e6bc34">
+              <bodies>Night</bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
+        </ownedStateEvents>
+        <ownedStateEvents xsi:type="org.polarsys.capella.core.data.capellacommon:ChangeEvent"
+            id="bacb091d-2b72-4826-8c1f-165141f226c1" name="ChangeEvent 5" expression="#c26a34b6-9c19-49bf-beae-01b543bdbd43">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="c26a34b6-9c19-49bf-beae-01b543bdbd43" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="0c7fb953-b225-4511-a959-12135421cd48">
+              <bodies>Sleeping</bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
+        </ownedStateEvents>
       </ownedDataPkg>
       <ownedRolePkg xsi:type="org.polarsys.capella.core.data.oa:RolePkg" id="bb3da84b-3be8-4d66-bb9d-38a4a485d149"
           name="Roles">
@@ -943,11 +998,33 @@ The predator is far away</bodies>
                       id="30f0aca9-150e-478e-8f27-5a2985b25f61" name="region"/>
                 </ownedStates>
                 <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                    id="88d7f9a7-1fae-4884-8233-7582153cc5a7" triggerDescription=""
-                    source="#0687f6ce-f5fe-4ef5-a549-829ff8d9e2d0" target="#91dc2eec-c878-4fdb-91d8-8f4a4527424e"/>
+                    id="88d7f9a7-1fae-4884-8233-7582153cc5a7" name="Sunrise event"
+                    triggerDescription="" guard="#9a5d43a1-dad2-4687-b78e-f275015e7ac2"
+                    source="#0687f6ce-f5fe-4ef5-a549-829ff8d9e2d0" target="#91dc2eec-c878-4fdb-91d8-8f4a4527424e"
+                    triggers="#1b6f7817-569d-48b9-9ff3-b29bdca070ba">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="9a5d43a1-dad2-4687-b78e-f275015e7ac2" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="96290ff7-9dac-4236-9cd3-06b8fc978dec">
+                      <bodies>SUN=1</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
                 <ownedTransitions xsi:type="org.polarsys.capella.core.data.capellacommon:StateTransition"
-                    id="d0ea4afa-4231-4a3d-b1db-03655738dab8" triggerDescription=""
-                    source="#91dc2eec-c878-4fdb-91d8-8f4a4527424e" target="#0687f6ce-f5fe-4ef5-a549-829ff8d9e2d0"/>
+                    id="d0ea4afa-4231-4a3d-b1db-03655738dab8" name="Sunfall event"
+                    triggerDescription="" guard="#21e2b3fb-43cf-4826-99b9-b0a9f5d38a38"
+                    source="#91dc2eec-c878-4fdb-91d8-8f4a4527424e" target="#0687f6ce-f5fe-4ef5-a549-829ff8d9e2d0"
+                    triggers="#545a46d7-5786-4c4a-bcc9-b79e634903e0 #bacb091d-2b72-4826-8c1f-165141f226c1">
+                  <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                      id="21e2b3fb-43cf-4826-99b9-b0a9f5d38a38" name="">
+                    <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                        id="ad134f43-60b4-41e9-be6f-7106eea33a86">
+                      <bodies>SUN=0</bodies>
+                      <languages>capella:linkedText</languages>
+                    </ownedSpecification>
+                  </ownedConstraints>
+                </ownedTransitions>
               </ownedRegions>
             </ownedStateMachines>
           </ownedEntities>
