@@ -58,13 +58,8 @@ def enumerate_diagrams(
     model
         The MelodyLoader instance
     """
-    raw_views = model.xpath2(C.XP_VIEWS)
     views: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
-    if len(raw_views) == 0:
-        raise ValueError("Invalid XML: No viewpoints found")
-
-    # Extract the views' names
-    for i in raw_views:
+    for i in model.xpath2(C.XP_VIEWS):
         viewname = helpers.xpath_fetch_unique(
             "./viewpoint", i[1], "viewpoint description"
         )
@@ -75,16 +70,14 @@ def enumerate_diagrams(
         views.append((*i, urllib.parse.unquote(viewname or "")))
 
     if not views:
-        raise ValueError("No viewpoints found")
+        C.LOGGER.debug("No viewpoints found in the model")
+        return
 
     descriptors: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
     for view in views:
         descriptors += [
             (view[0], d, view[2]) for d in C.XP_DESCRIPTORS(view[1])
         ]
-
-    if len(descriptors) == 0:
-        raise ValueError("Invalid XML: No diagrams found")
 
     for descriptor in descriptors:
         name = uid = None
