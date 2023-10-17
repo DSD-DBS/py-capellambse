@@ -1149,7 +1149,7 @@ def fine_arrow_mark(
     id_: str = "FineArrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
     return _make_marker(
-        (7, 3.5),
+        (7, 3.75),
         (7.5, 7.5),
         id_=id_,
         d=(
