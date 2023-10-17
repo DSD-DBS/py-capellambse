@@ -11,7 +11,7 @@ import capellambse.model as metamodel
 import capellambse.model.common as c
 
 # pylint: disable-next=relative-beyond-top-level, unused-import
-from .conftest import model as model50  # type: ignore[import]
+from .conftest import model as model50  # type: ignore[import-untyped]
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "writemodel"
 TEST_MODEL = "WriteTestModel.aird"
