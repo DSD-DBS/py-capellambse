@@ -10,6 +10,10 @@ import pytest
 import capellambse
 from capellambse import aird, diagram, loader
 
+EMPTY_MODEL = pathlib.Path(__file__).parent.joinpath(
+    "data/decl/empty_project_52/empty_project_52.aird"
+)
+
 
 class TestAIRDBasicFunctionality:
     test_model = (
@@ -80,6 +84,11 @@ class TestAIRDBasicFunctionality:
         expected = self.test_repr.read_text().strip()
         actual = repr(diagram_under_test)
         assert actual == expected
+
+    def test_enumerate_diagrams_doesnt_crash_if_there_are_no_diagrams(self):
+        model = loader.MelodyLoader(EMPTY_MODEL)
+        for _ in aird.enumerate_diagrams(model):
+            pass
 
 
 def test_airdparser_msm_produces_valid_json_without_error(
