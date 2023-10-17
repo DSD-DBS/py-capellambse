@@ -8,6 +8,7 @@ import base64
 import contextlib
 import errno
 import logging
+import os
 import pathlib
 import re
 import shutil
@@ -32,6 +33,13 @@ DUMMY_PNG = base64.standard_b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQott"
     "AAAAABJRU5ErkJggg=="
 )
+
+
+@pytest.fixture(autouse=True, scope="function")
+def glart_clear_env(monkeypatch):
+    for i in list(os.environ):
+        if i.startswith("CI_"):
+            monkeypatch.delenv(i)
 
 
 @pytest.mark.parametrize(
