@@ -196,6 +196,10 @@ class FunctionalChain(c.GenericElement):
 
     _xmltag = "ownedFunctionalChains"
 
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.FunctionalChainKind, default="SIMPLE"
+    )
+
     involvements = c.DirectProxyAccessor(
         c.GenericElement,
         (

@@ -27,7 +27,6 @@ import uuid
 
 from lxml import builder, etree
 
-import capellambse
 import capellambse._namespaces as _n
 from capellambse import filehandler, helpers
 from capellambse.loader import exs
@@ -1108,51 +1107,16 @@ class MelodyLoader:
         KeyError
             If the target cannot be found
         """
+        del from_element
+
         linkmatch = CROSS_FRAGMENT_LINK.fullmatch(link)
         if not linkmatch:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
-        if fragment is not None:
-            fragment = urllib.parse.unquote(_unquote_ref(fragment))
-
-        def find_trees(
-            from_element: etree._Element | None,
-            fragment: pathlib.PurePosixPath | None,
-        ) -> cabc.Iterable[ModelFile]:
-            if fragment and from_element is None:
-                return (
-                    v for k, v in self.trees.items() if k.name == fragment.name
-                )
-            elif fragment:
-                sourcefragment = self._find_fragment(from_element)[0]
-                fragment = capellambse.helpers.normalize_pure_path(
-                    fragment, base=sourcefragment.parent
-                )
-                try:
-                    return [self.trees[fragment]]
-                except KeyError:  # pragma: no cover
-                    raise FileNotFoundError(
-                        f"Fragment not loaded: {fragment}"
-                    ) from None
-            else:
-                sourcefragment = pathlib.PurePosixPath("/")
-                if from_element is not None:
-                    sourcefragment = self._find_fragment(from_element)[0]
-                return map(
-                    operator.itemgetter(1),
-                    sorted(
-                        self.trees.items(),
-                        key=lambda tree: tree[0].name != sourcefragment.name,
-                    ),
-                )
-
-        trees = find_trees(
-            from_element,
-            pathlib.PurePosixPath(fragment) if fragment else None,
-        )
+        del fragment  # TODO use 'fragment' to disambiguate multiple matches
 
         matches = []
-        for tree in trees:
+        for tree in self.trees.values():
             try:
                 matches.append(tree[ref])
             except KeyError:
