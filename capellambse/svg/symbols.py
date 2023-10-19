@@ -1145,6 +1145,53 @@ def class_symbol(id_: str = "ClassSymbol") -> container.Symbol:
 
 
 @decorations.deco_factories
+def representation_link_symbol(
+    id_: str = "RepresentationLinkSymbol",
+) -> container.Symbol:
+    symb = container.Symbol(id=id_, viewBox="0 0 16 16")
+    grp = symb.add(container.Group(style="stroke-width:0.5;"))
+    grp.add(
+        shapes.Rect(
+            insert=(5.95, 2.96),
+            size=(4.98, 2.7),
+            rx=0.5,
+            style="fill:#d9d297;stroke:#a48a44;",
+        )
+    )
+    grp.add(
+        shapes.Rect(
+            insert=(1.66, 10.1),
+            size=(4.98, 2.7),
+            rx=0.5,
+            style="fill:#abc0c9;stroke:#557099;",
+        )
+    )
+    grp.add(
+        shapes.Rect(
+            insert=(10.12, 10.1),
+            size=(4.98, 2.7),
+            rx=0.5,
+            style="fill:#acbd57;stroke:#326f46;",
+        )
+    )
+    grp.add(
+        path.Path(
+            d="m 8.4526548,7.7355622 -4.3161119,-0.00711 0.00491,"
+            "2.2573969 m 4.3112023,-2.250294 4.3161128,-0.00711 "
+            "-0.0049,2.2573968",
+            style="fill:none;stroke:#557099;",
+        )
+    )
+    grp.add(
+        path.Path(
+            d="m 8.5000114,5.7276095 0.00519,2.0502552",
+            style="fill:none;stroke:#557099;",
+        )
+    )
+    return symb
+
+
+@decorations.deco_factories
 def fine_arrow_mark(
     id_: str = "FineArrow", *, style: style_.Styling, **kw
 ) -> container.Marker:
