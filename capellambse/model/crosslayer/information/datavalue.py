@@ -64,6 +64,7 @@ class EnumerationLiteral(c.GenericElement):
     _xmltag = "ownedLiterals"
 
     name = c.AttributeProperty("name", returntype=str)
+    value = c.RoleTagAccessor("domainValue")
 
     owner: c.Accessor
 
