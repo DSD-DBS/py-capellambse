@@ -280,6 +280,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": RGB(255, 204, 102),
             "text_fill": RGB(0, 0, 0),
         },
+        "Box.RepresentationLink": {
+            "fill": RGB(255, 255, 203),
+            "stroke": RGB(255, 204, 102),
+            "text_fill": RGB(0, 0, 0),
+        },
         "Box.Requirement": {  # ReqVP_Requirement
             "fill": COLORS["light_purple"],
             "stroke": COLORS["dark_purple"],

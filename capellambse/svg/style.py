@@ -88,12 +88,6 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
     ),
     "Physical Architecture Blank": (
         "PhysicalLinkSymbol",
-        "PhysicalBehaviorComponentSymbol",
-        "PhysicalBehaviorActorSymbol",
-        "PhysicalBehaviorHumanActorSymbol",
-        "PhysicalNodeComponentSymbol",
-        "PhysicalNodeActorSymbol",
-        "PhysicalNodeHumanActorSymbol",
         "ComponentExchangeSymbol",
         "ComponentPortSymbol",
         "PortSymbol",
