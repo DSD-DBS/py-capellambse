@@ -69,6 +69,8 @@ class DiagramJSONEncoder(json.JSONEncoder):
         }
         if o.label is not None and not o.hidelabel:
             jsonobj["label"] = _encode_label(o.label)
+        if o.description is not None:
+            jsonobj["description"] = o.description
         if o.styleoverrides:
             jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)
         if o.features:

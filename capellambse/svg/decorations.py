@@ -36,6 +36,7 @@ always_top_label = {
     "Class",
     "Enumeration",
     "Note",
+    "RepresentationLink",
     "OperationalActivity",
     "PhysicalComponent",
 }

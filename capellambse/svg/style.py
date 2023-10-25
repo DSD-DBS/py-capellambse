@@ -21,6 +21,7 @@ STATIC_DECORATIONS: dict[str, tuple[str, ...]] = {
     "__GLOBAL__": (
         "ErrorSymbol",
         "RequirementSymbol",
+        "RepresentationLinkSymbol",
     ),
     "Error": (),
     "Class Diagram Blank": ("ClassSymbol",),

@@ -120,6 +120,7 @@ class Drawing:
         *,
         class_: str = "",
         label: LabelDict | None = None,
+        description: str | None = None,
         features: cabc.Sequence[str] = (),
         id_: str | None = None,
         children: bool = False,
@@ -142,6 +143,21 @@ class Drawing:
 
         rect: shapes.Rect = self.__drawing.rect(**rectparams)
         grp.add(rect)
+
+        if description is not None and label is not None:
+            new_label: LabelDict = copy.deepcopy(label)
+            new_label["text"] = description
+            self._draw_box_label(
+                LabelBuilder(
+                    new_label,
+                    grp,
+                    labelstyle=text_style,
+                    class_=class_,
+                    text_anchor="middle",
+                    y_margin=None,
+                    icon=False,
+                )
+            )
 
         if features or class_ in decorations.needs_feature_line:
             self._draw_feature_line(rect, grp, rect_style)
@@ -589,6 +605,7 @@ class Drawing:
         children_: cabc.Sequence[str] = (),
         features_: cabc.Sequence[str] = (),
         label_: str | LabelDict | None = None,
+        description_: str | None = None,
         id_: str,
         class_: str,
         obj_style: style.Styling,
@@ -621,6 +638,7 @@ class Drawing:
             class_=class_,
             id_=id_,
             label=label,
+            description=description_,
             features=features_,
             children=bool(children_),
         )
