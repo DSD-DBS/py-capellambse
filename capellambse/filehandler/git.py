@@ -836,7 +836,9 @@ class GitFileHandler(abc.FileHandler):
         return True
 
     def __open_from_index(self, filename: pathlib.PurePosixPath) -> bytes:
-        return self._git("cat-file", "blob", f"{self.revision}:{filename}")
+        return self._git(
+            "cat-file", "blob", f"{self.revision}:{filename}", silent=True
+        )
 
     def __open_from_lfs(self, filename: pathlib.PurePosixPath) -> bytes:
         lfsinfo = self.__open_from_index(filename)
