@@ -145,7 +145,10 @@ def draw_labeled_bar(
 ) -> str:
     """Construct a bar with label and icon (SVG string)."""
     total = sum(segments)
-    normalized_segments = [x / total for x in segments]
+    if total:
+        normalized_segments = [x / total for x in segments]
+    else:
+        normalized_segments = [0 for _ in segments]
     return (
         draw_icon(x, y)
         + draw_text(x + 5, y + 3, f"{total}")
