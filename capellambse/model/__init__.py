@@ -298,6 +298,10 @@ class MelodyModel:
     def parent(self) -> None:
         raise AttributeError("The model root doesn't have a parent object")
 
+    @property
+    def resources(self) -> dict[str, filehandler.FileHandler]:
+        return self._loader.resources
+
     def save(self, **kw: t.Any) -> None:
         """Save the model back to where it was loaded from.
 
