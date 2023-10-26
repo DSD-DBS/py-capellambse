@@ -38,7 +38,14 @@ always_top_label = {
     "Note",
     "RepresentationLink",
     "OperationalActivity",
-    "PhysicalComponent",
+    "PhysicalBehaviorComponent",
+    "PhysicalBehaviorHumanComponent",
+    "PhysicalBehaviorActor",
+    "PhysicalBehaviorHumanActor",
+    "PhysicalNodeComponent",
+    "PhysicalNodeHumanComponent",
+    "PhysicalNodeActor",
+    "PhysicalNodeHumanActor",
 }
 needs_feature_line = {"Class", "Enumeration"}
 
