@@ -272,7 +272,7 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
     )
 
     diagrams = diagram.DiagramAccessor(
-        "System Analysis", cacheattr="_MelodyModel__diagram_cache"
+        "System Analysis", cacheattr="_MelodyModel__diagram_image_cache"
     )
 
 

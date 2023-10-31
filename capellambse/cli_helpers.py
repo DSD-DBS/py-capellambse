@@ -67,7 +67,7 @@ try:
            @click.open("-m", "modelinfo", type=capellambse.ModelInfoCLI())
            def main(modelinfo: dict[str, t.Any]) -> None:
                # change any options, for example:
-               modelinfo["diagram_cache"] = "/tmp/diagrams"
+               modelinfo["diagram_image_cache"] = "/tmp/diagrams"
                # load the model:
                model = capellambse.MelodyModel(**modelinfo)
                ...

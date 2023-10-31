@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-"""Module to populate the diagram cache with native Capella diagrams."""
+"""Module to populate the diagram image cache with native Capella diagrams."""
 
 from __future__ import annotations
 
@@ -67,10 +67,10 @@ def export(
     background: bool,
 ) -> None:
     if not isinstance(
-        getattr(model, "_diagram_cache", None), local.LocalFileHandler
+        getattr(model, "_diagram_image_cache", None), local.LocalFileHandler
     ):
         raise TypeError(
-            "Diagram cache updates are only supported for local paths"
+            "Diagram image cache updates are only supported for local paths"
         )
 
     format = format.lower()
@@ -80,12 +80,12 @@ def export(
             f"Invalid image format {format!r}, supported are {supported}"
         )
 
-    diag_cache_dir = pathlib.Path(model._diagram_cache.path)
+    diag_image_cache_dir = pathlib.Path(model._diagram_image_cache.path)
     try:
-        shutil.rmtree(diag_cache_dir)
+        shutil.rmtree(diag_image_cache_dir)
     except FileNotFoundError:
         pass
-    diag_cache_dir.mkdir(parents=True)
+    diag_image_cache_dir.mkdir(parents=True)
 
     native_args = _find_executor(model, capella, force)
     with _native.native_capella(model, **native_args) as cli:
@@ -104,12 +104,12 @@ def export(
         diagrams = _copy_images(
             model,
             cli.project / "main_model" / "output",
-            diag_cache_dir,
+            diag_image_cache_dir,
             format,
             background,
         )
         if index:
-            _write_index(model, format, diag_cache_dir, diagrams)
+            _write_index(model, format, diag_image_cache_dir, diagrams)
 
 
 def _find_executor(
@@ -249,7 +249,7 @@ def _write_index(
     index: list[IndexEntry],
 ) -> None:
     now = datetime.datetime.now().strftime("%A, %Y-%m-%d %H:%M:%S")
-    title = f"Capella diagram cache for {model.name!r}"
+    title = f"Capella diagram image cache for {model.name!r}"
     html = E.html(
         E.head(
             E.style(

@@ -152,8 +152,11 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
     if pargs.wipe:
         modelinfo["disable_cache"] = True
 
-    if pargs.disable_diagram_cache and "diagram_cache" in modelinfo:
-        del modelinfo["diagram_cache"]
+    if (
+        pargs.disable_diagram_image_cache
+        and "diagram_image_cache" in modelinfo
+    ):
+        del modelinfo["diagram_image_cache"]
 
     if pargs.dump:
         print(json.dumps(modelinfo, indent=2))

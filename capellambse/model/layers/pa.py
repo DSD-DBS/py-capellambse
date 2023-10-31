@@ -162,7 +162,7 @@ class PhysicalArchitecture(crosslayer.BaseArchitectureLayer):
     )
 
     diagrams = diagram.DiagramAccessor(
-        "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
+        "Physical Architecture", cacheattr="_MelodyModel__diagram_image_cache"
     )
 
 

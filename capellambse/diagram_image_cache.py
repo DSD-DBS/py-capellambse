@@ -1,16 +1,16 @@
 # SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
 # SPDX-License-Identifier: Apache-2.0
-"""CLI for the diagram cache updating feature."""
+"""CLI for the diagram image cache updating feature."""
 from __future__ import annotations
 
 import pathlib
 import sys
 
 import capellambse
-from capellambse import _diagram_cache, cli_helpers
+from capellambse import _diagram_image_cache, cli_helpers
 
 # pylint: disable=unused-import
-from capellambse._diagram_cache import IndexEntry
+from capellambse._diagram_image_cache import IndexEntry
 
 try:
     import click
@@ -45,7 +45,7 @@ else:
     @click.option(
         "-f",
         "--format",
-        type=click.Choice(sorted(_diagram_cache.VALID_FORMATS)),
+        type=click.Choice(sorted(_diagram_image_cache.VALID_FORMATS)),
         default="svg",
         help="Image output format",
         show_default=True,
@@ -73,11 +73,11 @@ else:
         docker: str | None,
         background: bool,
     ) -> None:
-        model_._diagram_cache = capellambse.get_filehandler(output)
-        model_._diagram_cache_subdir = pathlib.PurePosixPath(".")
+        model_._diagram_image_cache = capellambse.get_filehandler(output)
+        model_._diagram_image_cache_subdir = pathlib.PurePosixPath(".")
 
         if docker:
-            _diagram_cache.export(
+            _diagram_image_cache.export(
                 docker,
                 model_,
                 format=format,
@@ -87,7 +87,7 @@ else:
             )
         else:
             exe = exe or "capella{VERSION}"
-            _diagram_cache.export(
+            _diagram_image_cache.export(
                 exe,
                 model_,
                 format=format,

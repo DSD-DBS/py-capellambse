@@ -23,7 +23,7 @@ from lxml import etree
 import capellambse
 import capellambse.helpers
 import capellambse.pvmt
-from capellambse import _diagram_cache, filehandler, loader
+from capellambse import _diagram_image_cache, filehandler, loader
 
 from . import common, diagram  # isort:skip
 
@@ -76,7 +76,7 @@ class MelodyModel:
         capellacore.PropertyValuePkg, aslist=common.ElementList
     )
     diagrams = diagram.DiagramAccessor(
-        None, cacheattr="_MelodyModel__diagram_cache"
+        None, cacheattr="_MelodyModel__diagram_image_cache"
     )
 
     uuid = common.AttributeProperty(
@@ -86,14 +86,21 @@ class MelodyModel:
     )
     name = common.AttributeProperty("name", __doc__="The name of this model.")
 
-    _diagram_cache: filehandler.FileHandler
-    _diagram_cache_subdir: pathlib.PurePosixPath
+    _diagram_image_cache: filehandler.FileHandler
+    _diagram_image_cache_subdir: pathlib.PurePosixPath
     _constructed: bool
 
     def __init__(
         self,
         path: str | os.PathLike,
         *,
+        diagram_image_cache: (
+            str
+            | os.PathLike
+            | filehandler.FileHandler
+            | dict[str, t.Any]
+            | None
+        ) = None,
         diagram_cache: (
             str
             | os.PathLike
@@ -101,6 +108,7 @@ class MelodyModel:
             | dict[str, t.Any]
             | None
         ) = None,
+        diagram_image_cache_subdir: str | pathlib.PurePosixPath | None = None,
         diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         jupyter_untrusted: bool | None = None,
         fallback_render_aird: bool = False,
@@ -169,6 +177,8 @@ class MelodyModel:
             The password to use for logging in. Will be ignored when
             ``identity_file`` is passed as well.
         diagram_cache
+            Deprecated.
+        diagram_image_cache
             An optional place where to find pre-rendered, cached
             diagrams. When a diagram is found in this cache, it will be
             loaded from there instead of being rendered on access. Note
@@ -205,8 +215,10 @@ class MelodyModel:
 
             *This argument is **not** passed to the file handler.*
         diagram_cache_subdir: str
+            Deprecated.
+        diagram_image_cache_subdir: str
             A sub-directory prefix to prepend to diagram UUIDs before
-            looking them up in the ``diagram_cache``.
+            looking them up in the ``diagram_image_cache``.
 
             *This argument is **not** passed to the file handler.*
         jupyter_untrusted: bool
@@ -219,7 +231,7 @@ class MelodyModel:
             If set to True, enable the internal engine to render
             diagrams that were not found in the pre-rendered cache.
             Defaults to False, which means an exception is raised
-            instead. Ignored if no ``diagram_cache`` was specified.
+            instead. Ignored if no ``diagram_image_cache`` was specified.
 
         See Also
         --------
@@ -238,13 +250,31 @@ class MelodyModel:
 
         if jupyter_untrusted is not None:
             warnings.warn(
-                (
-                    "The 'jupyter_untrusted' argument is no longer needed and"
-                    " will be removed soon. Please remove it from your calls."
-                ),
+                "The 'jupyter_untrusted' argument is no longer needed and"
+                " will be removed soon. Please remove it from your calls.",
                 DeprecationWarning,
                 stacklevel=2,
             )
+
+        if diagram_cache is not None:
+            warnings.warn(
+                "The 'diagram_cache' argument is no longer used and"
+                " will be removed soon. Please use 'diagram_image_cache'"
+                " instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            diagram_image_cache = diagram_cache
+
+        if diagram_cache_subdir is not None:
+            warnings.warn(
+                "The 'diagram_cache_subdir' argument is no longer used and"
+                " will be removed soon. Please use"
+                " 'diagram_image_cache_subdir' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            diagram_image_cache_subdir = diagram_cache_subdir
 
         capellambse.load_model_extensions()
 
@@ -261,21 +291,21 @@ class MelodyModel:
             LOGGER.warning("Property values are not available in this model")
             self._pvext = None
 
-        if diagram_cache:
-            if diagram_cache == path:
-                self._diagram_cache = self._loader.filehandler
-            elif isinstance(diagram_cache, filehandler.FileHandler):
-                self._diagram_cache = diagram_cache
-            elif isinstance(diagram_cache, cabc.Mapping):
-                self._diagram_cache = filehandler.get_filehandler(
-                    **diagram_cache
+        if diagram_image_cache:
+            if diagram_image_cache == path:
+                self._diagram_image_cache = self._loader.filehandler
+            elif isinstance(diagram_image_cache, filehandler.FileHandler):
+                self._diagram_image_cache = diagram_image_cache
+            elif isinstance(diagram_image_cache, cabc.Mapping):
+                self._diagram_image_cache = filehandler.get_filehandler(
+                    **diagram_image_cache
                 )
             else:
-                self._diagram_cache = filehandler.get_filehandler(
-                    diagram_cache
+                self._diagram_image_cache = filehandler.get_filehandler(
+                    diagram_image_cache
                 )
-            self._diagram_cache_subdir = pathlib.PurePosixPath(
-                diagram_cache_subdir or "."
+            self._diagram_image_cache_subdir = pathlib.PurePosixPath(
+                diagram_image_cache_subdir or "."
             )
 
         self._constructed = True
@@ -458,12 +488,115 @@ class MelodyModel:
         force: t.Literal["docker", "exe"] | None = None,
         background: bool = True,
     ) -> None:
-        r"""Update the diagram cache if one has been specified.
+        r"""Use ``update_diagram_image_cache`` instead.
 
-        If a ``diagram_cache`` has been specified while loading a
+        Deprecated function.
+
+        Parameters
+        ----------
+        capella_cli
+            The Capella CLI to use when exporting diagrams from the
+            given Capella model. The provided string can come with a
+            ``"{VERSION}"`` placeholder. If specified, this placeholder
+            will be replaced by the x.y.z formatted version of Capella
+            that has been used when the given Capella model was last
+            saved. After consideration of the optional placeholder this
+            function will first check if the value of ``capella_cli``
+            points to a local Capella executable (that can be an
+            absolute path or an executable/ symbolic link that has been
+            made available via the environment variable ``PATH``). If no
+            executable can be found it is expected that ``capella_cli``
+            represents a Docker image name for an image that behaves
+            like the Capella CLI. For the case of passing a Docker image
+            name through ``capella_cli`` this means it is assumed that
+            something like the following
+
+            .. code-block:: bash
+
+                docker run --rm -it <capella_cli> -nosplash \
+                    -consolelog -app APP -appid APPID
+
+            will work.
+            The parameter ``force`` can be set to change the described
+            behaviour and force the function to treat the
+            ``capella_cli`` as a local executable or a Docker image
+            only.
+        image_format
+            Format of the image file(s) for the exported diagram(s).
+            This can be set to any value out of ``"bmp"``, ``"gif"``,
+            ``"jpg"``, ``"png"``, or ``"svg"``.
+        create_index
+            If ``True``, two index files ``index.json`` and
+            ``index.html`` will be created. The JSON file consists of a
+            list of dictionaries, each representing a diagram in the
+            model. The dictionaries come with the keys
+
+            - uuid: The unique ID of the diagram
+            - name: Name of the diagram as it has been set in Capella
+            - type: The diagram type as it was created in Capella
+            - viewpoint: The source layer from where the representation
+              is loaded from. It is ``Common`` for layerless diagrams.
+            - success: A boolean stating if a diagram has been exported
+              from Capella
+
+            The HTML file shows a numbered list of diagram names which
+            are hyperlinked to the diagram image file. Right beside a
+            diagram's name one can also see the diagram's UUID in a
+            discreet light gray and tiny font size. The HTML index also
+            provides some meta data like a timestamp for the
+            update of diagrams.
+        force
+            If the value of ``capella_cli`` is ambiguous and can match
+            both a local executable and a Docker image, this parameter
+            can be used to bypass the auto-detection and force the
+            choice. A value of ``"exe"`` always interprets
+            ``capella_cli`` as local executable, ``"docker"`` always
+            interprets it as a docker image name. ``None`` (the default)
+            enables automatic detection.
+        background
+            Add a white background to exported SVG images.
+
+            Ignored if the ``image_format`` is not ``"svg"``.
+        """
+        import warnings
+
+        warnings.warn(
+            "The 'update_diagram_cache' function is no longer used and"
+            " will be removed soon. Please use 'update_diagram_image_cache'"
+            " instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        if not hasattr(self, "_diagram_image_cache"):
+            raise TypeError(
+                "Cannot update: No diagram_image_cache "
+                "was specified for this model."
+            )
+        _diagram_image_cache.export(
+            capella_cli,
+            self,
+            format=image_format,
+            index=create_index,
+            force=force,
+            background=background,
+        )
+
+    def update_diagram_image_cache(
+        self,
+        capella_cli: str,
+        image_format: t.Literal["bmp", "gif", "jpg", "png", "svg"] = "svg",
+        *,
+        create_index: bool = False,
+        force: t.Literal["docker", "exe"] | None = None,
+        background: bool = True,
+    ) -> None:
+        r"""Update the diagram image cache if one has been specified.
+
+        If a ``diagram_image_cache`` has been specified while loading a
         Capella model it will be updated when this function is called.
 
-        The diagram cache will be populated by executing the Capella
+        The diagram image cache will be populated by executing the Capella
         function "Export representations as images" which is normally
         accessible via the context menu of an ``.aird`` node in
         Capella's project explorer. The export of diagrams happens with
@@ -546,7 +679,7 @@ class MelodyModel:
         Raises
         ------
         TypeError
-            If no ``diagram_cache`` was specified while loading the
+            If no ``diagram_image_cache`` was specified while loading the
             model.
         RuntimeError
             If an error occurs while diagrams are being exported from
@@ -557,40 +690,41 @@ class MelodyModel:
         **Running a local installation of Capella**
 
         All the following examples call the method
-        :meth:`update_diagram_cache` on a model
-        for which a diagram cache has been specified, example:
+        :meth:`update_diagram_image_cache` on a model
+        for which a diagram image cache has been specified, example:
 
         >>> import capellambse
         >>> model = capellambse.MelodyModel(
         ...    "/path/to/model.aird",
-        ...    diagram_cache="/path/to/diagram_cache",
+        ...    diagram_image_cache="/path/to/diagram_image_cache",
         ... )
 
         Passing an executable/ symlink named ``capella`` that is in the
         ``PATH`` environment variable:
 
-        >>> model.update_diagram_cache(
+        >>> model.update_diagram_image_cache(
         ...     "capella", "png", True
         ... )
 
         Passing an absolute path to a local installation of Capella that
         contains the Capella version:
 
-        >>> model.update_diagram_cache(
+        >>> model.update_diagram_image_cache(
         ...     "/Applications/Capella_{VERSION}.app/Contents/MacOS/capella"
         ... )
 
         **Running a Capella CLI container**
 
-        >>> model.update_diagram_cache(
+        >>> model.update_diagram_image_cache(
         ...     "capella/cli:{VERSION}-latest"
         ... )
         """
-        if not hasattr(self, "_diagram_cache"):
+        if not hasattr(self, "_diagram_image_cache"):
             raise TypeError(
-                "Cannot update: No diagram_cache was specified for this model"
+                "Cannot update: No diagram_image_cache "
+                "was specified for this model."
             )
-        _diagram_cache.export(
+        _diagram_image_cache.export(
             capella_cli,
             self,
             format=image_format,

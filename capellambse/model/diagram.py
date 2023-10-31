@@ -244,7 +244,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             def conv(i: diagram.Diagram) -> diagram.Diagram:
                 return i
 
-        cache_handler = getattr(self._model, "_diagram_cache", None)
+        cache_handler = getattr(self._model, "_diagram_image_cache", None)
         if fmt is not None and cache_handler is not None:
             try:
                 return self.__load_cache(conv)
@@ -325,8 +325,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return diag
 
     def __load_cache(self, converter: DiagramConverter):
-        cache_handler = getattr(self._model, "_diagram_cache", None)
-        cachedir = getattr(self._model, "_diagram_cache_subdir", None)
+        cache_handler = getattr(self._model, "_diagram_image_cache", None)
+        cachedir = getattr(self._model, "_diagram_image_cache_subdir", None)
         if cache_handler is None or cachedir is None:
             raise KeyError(self.uuid)
 
