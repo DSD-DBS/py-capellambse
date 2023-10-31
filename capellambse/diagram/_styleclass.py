@@ -30,6 +30,8 @@ def get_styleclass(obj: model.ModelObject) -> str:
 
 
 def _default(obj: model.ModelObject) -> str:
+    if type(obj).__name__ == "GenericElement":
+        return obj.xtype.split(":")[-1]  # type: ignore[attr-defined]
     return type(obj).__name__
 
 

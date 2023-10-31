@@ -341,6 +341,26 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Datatype_Border_Gray"],
             "text_fill": COLORS["black"],
         },
+        "Box.BooleanType": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.NumericType": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.PhysicalQuantity": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.StringType": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
         "Box.ExchangeItem": {  # DT_ExchangeItem
             "fill": COLORS["_CAP_ExchangeItem_Pinkkish"],
             "stroke": COLORS["_CAP_Interface_Border_Reddish"],

@@ -122,6 +122,9 @@ class Class(c.GenericElement):
         capellacommon.StateMachine, aslist=c.ElementList
     )
     owned_properties = c.DirectProxyAccessor(Property, aslist=c.ElementList)
+    generalizations = c.DirectProxyAccessor(
+        capellacore.Generalization, aslist=c.ElementList
+    )
 
     @property
     def properties(self) -> c.ElementList[Property]:
@@ -207,6 +210,9 @@ class ExchangeItem(c.GenericElement):
     exchanges: c.Accessor[c.GenericElement]
 
 
+c.set_accessor(
+    capellacore.Generalization, "super", c.AttrProxyAccessor(None, "super")
+)
 for cls in [Class, Union, datatype.Enumeration, Collection]:
     c.set_accessor(
         cls,
