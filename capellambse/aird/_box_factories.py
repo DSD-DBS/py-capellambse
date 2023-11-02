@@ -290,6 +290,15 @@ def part_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
 
         seb.styleclass = abstract_obj.attrib[C.ATT_XST].split(":")[-1]
         assert seb.styleclass is not None
+        if seb.styleclass.startswith("Physical"):
+            seb.styleclass = "".join(
+                (
+                    "Physical",
+                    abstract_obj.get("nature", "Node").capitalize(),
+                    seb.styleclass[len("Physical") :],
+                )
+            )
+
         if seb.styleclass.endswith("Component"):
             seb.styleclass = "".join(
                 (

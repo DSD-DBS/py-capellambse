@@ -32,6 +32,7 @@ TEST_DIAGS = [
     "[PAB] Physical System",
     "[LDFB] Test flow",
     "[CC] Capability",
+    "[PAB] A sample vehicle arch",
 ]
 TEST_DECO = set(style.STATIC_DECORATIONS.keys()) - {"__GLOBAL__"}
 FREE_SYMBOLS = {
