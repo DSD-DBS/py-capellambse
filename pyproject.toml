@@ -60,6 +60,7 @@ docs = [
 test = [
   "click",
   "cssutils",
+  "diskcache>=5.0",
   "pytest",
   "pytest-cov",
   "pyyaml>=6.0",
@@ -75,6 +76,7 @@ decl = [
 ]
 
 httpfiles = [
+  "diskcache>=5.0",
   "requests>=2.25.0",
 ]
 
@@ -151,6 +153,7 @@ allow_untyped_defs = true
 module = [
   "cairosvg.*",
   "cssutils.*",
+  "diskcache.*",
   "lxml.*",
   "PIL.*",
   "requests_mock.*",
