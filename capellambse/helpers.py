@@ -551,6 +551,8 @@ def split_links(links: str) -> cabc.Iterator[str]:
             if next_xtype:
                 raise ValueError(f"Malformed link definition: {links}")
             next_xtype = part
+    if next_xtype:
+        raise ValueError(f"Malformed link definition: {links}")
 
 
 @t.overload
