@@ -85,7 +85,7 @@ def enumerate_diagrams(
             name = descriptor[1].attrib["name"]
             uid = descriptor[1].attrib["repPath"]
             if not uid.startswith("#"):
-                raise ValueError("Malformed diagram reference: {uid!r}")
+                raise ValueError(f"Malformed diagram reference: {uid!r}")
 
             diag_root = model[uid]
             if diag_root.tag not in DIAGRAM_ROOTS:
