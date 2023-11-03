@@ -1004,6 +1004,8 @@ class MelodyLoader:
         self,
         from_element: etree._Element,
         to_element: etree._Element,
+        *,
+        include_target_type: bool | None = None,
     ) -> str:
         """Create a link to ``to_element`` from ``from_element``.
 
@@ -1013,13 +1015,26 @@ class MelodyLoader:
             The source element of the link.
         to_element
             The target element of the link.
+        include_target_type
+            Whether to include the target type in cross-fragment link
+            definitions.
+
+            If set to True, it will always be included, False will
+            always exclude it. Setting it to None (the default) will use
+            a simple heuristic: It will be added *unless* the
+            ``from_element`` is in a visual-only fragment (aird /
+            airdfragment).
+
+            Regardless of this setting, the target type will never be
+            included if the link does not cross fragment boundaries.
 
         Returns
         -------
         str
             A link in one of the formats described by :meth:`follow_link`.
             Which format is used depends on whether ``from_element`` and
-            ``to_element`` live in the the same fragment.
+            ``to_element`` live in the the same fragment, and whether the
+            ``include_target_type`` parameter is set.
         """
         to_uuids = set(to_element.keys()) & IDTYPES_RESOLVED
         try:
@@ -1030,7 +1045,6 @@ class MelodyLoader:
             ) from None
         to_uuid = to_element.get(to_uuid)
 
-        # Find the fragments corresponding to each tree
         from_fragment, _ = self._find_fragment(from_element)
         to_fragment, _ = self._find_fragment(to_element)
         assert from_fragment and to_fragment
@@ -1038,12 +1052,17 @@ class MelodyLoader:
         if from_fragment == to_fragment:
             return f"#{to_uuid}"
 
+        if include_target_type is None:
+            include_target_type = from_fragment.suffix not in VISUAL_EXTS
+
         to_fragment = pathlib.PurePosixPath(
             os.path.relpath(to_fragment, from_fragment.parent)
         )
         link = urllib.parse.quote(str(to_fragment))
-        to_type = helpers.xtype_of(to_element)
-        if to_type is not None:
+        if not include_target_type:
+            return f"{link}#{to_uuid}"
+
+        if to_type := helpers.xtype_of(to_element):
             return f"{to_type} {link}#{to_uuid}"
         return f"{link}#{to_uuid}"
 
