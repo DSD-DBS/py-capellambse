@@ -66,21 +66,6 @@ RE_VALID_ID = re.compile(
     r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
 )
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
-CROSS_FRAGMENT_LINK = re.compile(
-    r"""
-    ^
-    (?:
-        (?:
-            (?:(?P<xtype>[^ #]+)\ )?
-            (?P<fragment>[^ #]+)
-        )?
-        \#
-    )?
-    (?P<uuid>[^ #]+)
-    $
-    """,
-    re.VERBOSE,
-)
 METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
 
 
@@ -1109,7 +1094,7 @@ class MelodyLoader:
         """
         del from_element
 
-        linkmatch = CROSS_FRAGMENT_LINK.fullmatch(link)
+        linkmatch = helpers.CROSS_FRAGMENT_LINK.fullmatch(link)
         if not linkmatch:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
