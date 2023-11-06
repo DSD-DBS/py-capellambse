@@ -62,7 +62,7 @@ class Drawing:
 
         self.__drawing = drawing.Drawing(**superparams)
         self.diagram_class = metadata.class_
-        self.add_static_decorations()
+        self.deco_cache: list[str] = []
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
 
         self.obj_cache: dict[str | None, t.Any] = {}
@@ -100,14 +100,6 @@ class Drawing:
             stroke="none",
         )
         self.__drawing.add(self.__backdrop)
-
-    def add_static_decorations(self) -> None:
-        static_deco = style.STATIC_DECORATIONS[
-            "__GLOBAL__"
-        ] + style.STATIC_DECORATIONS.get(self.diagram_class or "", ())
-
-        for name in static_deco:
-            self.__drawing.defs.add(decorations.deco_factories[name]())
 
     def __repr__(self) -> str:
         return self.__drawing._repr_svg_()
@@ -338,6 +330,12 @@ class Drawing:
         if builder.class_ is None:
             builder.class_ = "Error"
 
+        if builder.class_ not in self.deco_cache:
+            self.__drawing.defs.add(
+                decorations.deco_factories[f"{builder.class_}Symbol"]()
+            )
+            self.deco_cache.append(builder.class_)
+
         builder.group.add(
             self.__drawing.use(
                 href=f"#{builder.class_}Symbol",
@@ -383,15 +381,19 @@ class Drawing:
     ) -> container.Group:
         grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
         if class_ in decorations.all_directed_ports:
-            port_id = "#ErrorSymbol"
+            port_id = "ErrorSymbol"
             if class_ in decorations.function_ports:
-                port_id = "#PortSymbol"
+                port_id = "PortSymbol"
             elif class_ in decorations.component_ports:
-                port_id = "#ComponentPortSymbol"
+                port_id = "ComponentPortSymbol"
+
+            if port_id not in self.deco_cache:
+                self.__drawing.defs.add(decorations.deco_factories[port_id]())
+                self.deco_cache.append(port_id)
 
             grp.add(
                 self.__drawing.use(
-                    href=port_id,
+                    href=f"#{port_id}",
                     insert=pos,
                     size=size,
                     transform=self.get_port_transformation(
@@ -461,6 +463,7 @@ class Drawing:
         class_: str = style_type + (
             f".{mobj['class']}" if "class" in mobj else ""
         )
+
         my_styles: dict[str, t.Any] = {
             **capstyle.get_style(self.diagram_class, class_),
             **mobj.get("style", {}),
@@ -555,6 +558,11 @@ class Drawing:
         assert isinstance(label_, (dict, type(None)))
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
+        if class_ not in self.deco_cache:
+            self.__drawing.defs.add(
+                decorations.deco_factories[f"{class_}Symbol"]()
+            )
+            self.deco_cache.append(class_)
 
         if class_ in decorations.all_ports:
             grp = self.add_port(
@@ -742,9 +750,6 @@ class Drawing:
         text_anchor: str = "start",
         y_margin: int | float,
     ) -> container.Group:
-        class_ = (
-            style.get_symbol_styleclass(class_, self.diagram_class) or class_
-        )
         if f"{class_}Symbol" in decorations.deco_factories:
             additional_space = (
                 decorations.icon_size + 2 * decorations.icon_padding

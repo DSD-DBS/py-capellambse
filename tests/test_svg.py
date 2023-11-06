@@ -11,14 +11,7 @@ from lxml import etree
 
 import capellambse
 import capellambse.diagram
-from capellambse.svg import (
-    SVGDiagram,
-    decorations,
-    generate,
-    helpers,
-    style,
-    symbols,
-)
+from capellambse.svg import SVGDiagram, decorations, generate, helpers, symbols
 
 TEST_LAB = "[LAB] Wizzard Education"
 TEST_DIAGS = [
@@ -34,7 +27,6 @@ TEST_DIAGS = [
     "[CC] Capability",
     "[PAB] A sample vehicle arch",
 ]
-TEST_DECO = set(style.STATIC_DECORATIONS.keys()) - {"__GLOBAL__"}
 FREE_SYMBOLS = {
     "OperationalCapabilitySymbol",
     "AndControlNodeSymbol",
