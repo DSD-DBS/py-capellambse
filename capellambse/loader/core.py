@@ -312,28 +312,22 @@ class ModelFile:
 
     def write_xml(
         self,
-        filename: pathlib.PurePosixPath,
+        file: t.BinaryIO,
         encoding: str = "utf-8",
     ) -> None:
         """Write this file's XML into the file specified by ``path``."""
-        LOGGER.debug("Saving tree %r to file %s", self, filename)
-        if filename.suffix in {
-            ".capella",
-            ".capellafragment",
-            ".melodyfragment",
-            ".melodymodeller",
-        }:
+        if self.fragment_type == FragmentType.SEMANTIC:
             line_length = exs.LINE_LENGTH
         else:
             line_length = sys.maxsize
-        with self.filehandler.open(filename, "wb") as file:
-            exs.write(
-                self.root,
-                file,
-                encoding=encoding,
-                line_length=line_length,
-                siblings=True,
-            )
+
+        exs.write(
+            self.root,
+            file,
+            encoding=encoding,
+            line_length=line_length,
+            siblings=True,
+        )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
         """Unfollow a fragment link and return the placeholder element.
@@ -472,7 +466,7 @@ class MelodyLoader:
             self.__load_referenced_files(ref_name)
 
     def save(self, **kw: t.Any) -> None:
-        """Save all model files back to their original locations.
+        """Save all model files.
 
         Parameters
         ----------
@@ -518,7 +512,9 @@ class MelodyLoader:
                 if resname != "\0":
                     continue
 
-                tree.write_xml(fname)
+                LOGGER.debug("Saving tree %r to file %s", tree, fname)
+                with self.resources[resname].open(fname, "wb") as f:
+                    tree.write_xml(f)
 
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``.
