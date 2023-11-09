@@ -123,6 +123,7 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
         styleclass=styleclass,
         # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
         styleoverrides=styleoverrides,  # type: ignore[arg-type]
+        minsize=diagram.Vector2D(100, 54),
     )
 
 
