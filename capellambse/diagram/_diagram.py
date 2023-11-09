@@ -433,8 +433,10 @@ class Box:
         ):
             height += 24
 
-        width = max(self.minsize.x, width)
-        height = max(self.minsize.y, height)
+        if needwidth:
+            width = max(self.minsize.x, width)
+        if needheight:
+            height = max(self.minsize.y, height)
         return diagram.Vector2D(width, height)
 
     @size.setter
