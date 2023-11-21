@@ -397,16 +397,6 @@ c.set_accessor(
 )
 
 c.set_accessor(
-    capellacommon.State,
-    "functions",
-    c.ReferenceSearchingAccessor(
-        AbstractFunction,
-        "availableInStates",
-        aslist=c.ElementList,
-    ),
-)
-
-c.set_accessor(
     Function,
     "exchanges",
     c.DirectProxyAccessor(FunctionalExchange, aslist=c.ElementList),

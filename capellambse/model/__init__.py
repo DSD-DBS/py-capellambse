@@ -640,3 +640,19 @@ def _reference_attributes(objtype: type[ModelObject], /) -> tuple[str, ...]:
         ):
             attrs.append(i)
     return tuple(attrs)
+
+
+common.set_accessor(
+    capellacommon.State,
+    "functions",
+    common.ReferenceSearchingAccessor(
+        (
+            oa.OperationalActivity,
+            ctx.SystemFunction,
+            la.LogicalFunction,
+            pa.PhysicalFunction,
+        ),
+        "available_in_states",
+        aslist=common.ElementList,
+    ),
+)
