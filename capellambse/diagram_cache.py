@@ -27,8 +27,8 @@ else:
     @click.option(
         "-m",
         "--model",
-        "model_",
-        type=cli_helpers.ModelCLI(),
+        "modelinfo",
+        type=cli_helpers.ModelInfoCLI(),
         required=True,
         help="Capella model to export diagrams from",
     )
@@ -65,7 +65,7 @@ else:
         show_default=True,
     )
     def _main(
-        model_: capellambse.MelodyModel,
+        modelinfo: dict[str, t.Any],
         output: pathlib.Path,
         format: str,
         index: bool,
@@ -73,8 +73,8 @@ else:
         docker: str | None,
         background: bool,
     ) -> None:
-        model_._diagram_cache = capellambse.get_filehandler(output)
-        model_._diagram_cache_subdir = pathlib.PurePosixPath(".")
+        modelinfo["diagram_cache"] = {"path": output}
+        model_ = capellambse.MelodyModel(**modelinfo)
 
         if docker:
             _diagram_cache.export(
