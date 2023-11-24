@@ -62,6 +62,7 @@ class Box:
         size: diagram.Vec2ish,
         *,
         label: Box | str | None = None,
+        description: str | None = None,
         uuid: str | None = None,
         parent: Box | None = None,
         collapsed: bool = False,
@@ -87,6 +88,8 @@ class Box:
             Box' label text and contained children.
         label
             This box' label text.
+        description
+            Optional label text used only by Representation Links.
         uuid
             UUID of the semantic element this box represents.
         parent
@@ -124,6 +127,7 @@ class Box:
         self.minsize = minsize
         self.maxsize = maxsize
         self.label: Box | str | None = label
+        self.description: str | None = description
         self.collapsed: bool = collapsed
         self.features: cabc.MutableSequence[str] | None = features
 
@@ -429,8 +433,10 @@ class Box:
         ):
             height += 24
 
-        width = max(self.minsize.x, width)
-        height = max(self.minsize.y, height)
+        if needwidth:
+            width = max(self.minsize.x, width)
+        if needheight:
+            height = max(self.minsize.y, height)
         return diagram.Vector2D(width, height)
 
     @size.setter

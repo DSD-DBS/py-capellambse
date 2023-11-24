@@ -28,8 +28,6 @@ class AbstractStateMode(c.GenericElement):
 
     regions = c.DirectProxyAccessor(Region, aslist=c.ElementList)
 
-    functions: c.Accessor
-
 
 @c.xtype_handler(None)
 class State(AbstractStateMode):
@@ -44,6 +42,8 @@ class State(AbstractStateMode):
     exits = c.AttrProxyAccessor(
         c.GenericElement, "exit", aslist=c.MixedElementList
     )
+
+    functions: c.Accessor
 
 
 @c.xtype_handler(None)

@@ -30,6 +30,8 @@ def get_styleclass(obj: model.ModelObject) -> str:
 
 
 def _default(obj: model.ModelObject) -> str:
+    if isinstance(obj, model.GenericElement):
+        return obj.xtype.split(":")[-1]
     return type(obj).__name__
 
 
@@ -116,6 +118,11 @@ def _region(obj: model.ModelObject) -> str:
     return f"{parent_xclass}{_default(obj)}"
 
 
+def _property(obj: model.ModelObject) -> str:
+    assert isinstance(obj, model.information.Property)
+    return obj.kind.name.capitalize()
+
+
 _STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
     "Association": _association,
     "CapellaIncomingRelation": lambda _: "RequirementRelation",
@@ -130,6 +137,7 @@ _STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
     "Part": _part,
     "PhysicalComponent": _physical_component,
     "PhysicalPort": lambda _: "PP",
+    "Property": _property,
     "PortAllocation": _port_allocation,
     "Region": _region,
     "SystemComponent": _generic_component,

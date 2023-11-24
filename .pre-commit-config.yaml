@@ -5,7 +5,7 @@ default_install_hook_types: [commit-msg, pre-commit]
 default_stages: [commit, merge-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
       - id: check-added-large-files
       - id: check-ast
@@ -27,7 +27,7 @@ repos:
       - id: fix-byte-order-marker
       - id: trailing-whitespace
   - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.1
+    rev: v1.5.4
     hooks:
       - id: insert-license
         name: Insert license headers (shell-style comments)
@@ -101,7 +101,7 @@ repos:
         pass_filenames: false
         args: [capellambse, tests]
         additional_dependencies:
-          - mypy==1.4.1
+          - mypy==1.6.0
           - capellambse[cli,decl,docs,httpfiles,png,termgraphics,test]
           # click 8.1.4 breaks mypy, see <https://github.com/pallets/click/issues/2558>
           - click!=8.1.4
@@ -122,7 +122,7 @@ repos:
         language: python
         types: [python]
         additional_dependencies:
-          - pylint==2.16.2
+          - pylint==3.0.1
         args: [-rn, -sn, -dfixme, -dduplicate-code]
   - repo: https://github.com/fsfe/reuse-tool
     rev: v2.1.0

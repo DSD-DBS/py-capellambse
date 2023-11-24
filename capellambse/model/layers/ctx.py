@@ -244,6 +244,9 @@ class SystemAnalysis(crosslayer.BaseArchitectureLayer):
         lambda self: self._model.search(SystemComponent).by_is_actor(True)
     )
     all_missions = c.DeepProxyAccessor(Mission, aslist=c.ElementList)
+    all_functional_chains = property(
+        lambda self: self._model.search(fa.FunctionalChain, below=self)
+    )
 
     actor_exchanges = c.DirectProxyAccessor(
         fa.ComponentExchange,

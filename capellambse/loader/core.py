@@ -27,7 +27,6 @@ import uuid
 
 from lxml import builder, etree
 
-import capellambse
 import capellambse._namespaces as _n
 from capellambse import filehandler, helpers
 from capellambse.loader import exs
@@ -67,21 +66,6 @@ RE_VALID_ID = re.compile(
     r"([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})"
 )
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
-CROSS_FRAGMENT_LINK = re.compile(
-    r"""
-    ^
-    (?:
-        (?:
-            (?:(?P<xtype>[^ #]+)\ )?
-            (?P<fragment>[^ #]+)
-        )?
-        \#
-    )?
-    (?P<uuid>[^ #]+)
-    $
-    """,
-    re.VERBOSE,
-)
 METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
 
 
@@ -328,28 +312,22 @@ class ModelFile:
 
     def write_xml(
         self,
-        filename: pathlib.PurePosixPath,
+        file: t.BinaryIO,
         encoding: str = "utf-8",
     ) -> None:
         """Write this file's XML into the file specified by ``path``."""
-        LOGGER.debug("Saving tree %r to file %s", self, filename)
-        if filename.suffix in {
-            ".capella",
-            ".capellafragment",
-            ".melodyfragment",
-            ".melodymodeller",
-        }:
+        if self.fragment_type == FragmentType.SEMANTIC:
             line_length = exs.LINE_LENGTH
         else:
             line_length = sys.maxsize
-        with self.filehandler.open(filename, "wb") as file:
-            exs.write(
-                self.root,
-                file,
-                encoding=encoding,
-                line_length=line_length,
-                siblings=True,
-            )
+
+        exs.write(
+            self.root,
+            file,
+            encoding=encoding,
+            line_length=line_length,
+            siblings=True,
+        )
 
     def unfollow_href(self, element_id: str) -> etree._Element:
         """Unfollow a fragment link and return the placeholder element.
@@ -488,7 +466,7 @@ class MelodyLoader:
             self.__load_referenced_files(ref_name)
 
     def save(self, **kw: t.Any) -> None:
-        """Save all model files back to their original locations.
+        """Save all model files.
 
         Parameters
         ----------
@@ -534,7 +512,9 @@ class MelodyLoader:
                 if resname != "\0":
                     continue
 
-                tree.write_xml(fname)
+                LOGGER.debug("Saving tree %r to file %s", tree, fname)
+                with self.resources[resname].open(fname, "wb") as f:
+                    tree.write_xml(f)
 
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``.
@@ -1020,6 +1000,8 @@ class MelodyLoader:
         self,
         from_element: etree._Element,
         to_element: etree._Element,
+        *,
+        include_target_type: bool | None = None,
     ) -> str:
         """Create a link to ``to_element`` from ``from_element``.
 
@@ -1029,13 +1011,26 @@ class MelodyLoader:
             The source element of the link.
         to_element
             The target element of the link.
+        include_target_type
+            Whether to include the target type in cross-fragment link
+            definitions.
+
+            If set to True, it will always be included, False will
+            always exclude it. Setting it to None (the default) will use
+            a simple heuristic: It will be added *unless* the
+            ``from_element`` is in a visual-only fragment (aird /
+            airdfragment).
+
+            Regardless of this setting, the target type will never be
+            included if the link does not cross fragment boundaries.
 
         Returns
         -------
         str
             A link in one of the formats described by :meth:`follow_link`.
             Which format is used depends on whether ``from_element`` and
-            ``to_element`` live in the the same fragment.
+            ``to_element`` live in the the same fragment, and whether the
+            ``include_target_type`` parameter is set.
         """
         to_uuids = set(to_element.keys()) & IDTYPES_RESOLVED
         try:
@@ -1046,7 +1041,6 @@ class MelodyLoader:
             ) from None
         to_uuid = to_element.get(to_uuid)
 
-        # Find the fragments corresponding to each tree
         from_fragment, _ = self._find_fragment(from_element)
         to_fragment, _ = self._find_fragment(to_element)
         assert from_fragment and to_fragment
@@ -1054,12 +1048,17 @@ class MelodyLoader:
         if from_fragment == to_fragment:
             return f"#{to_uuid}"
 
+        if include_target_type is None:
+            include_target_type = from_fragment.suffix not in VISUAL_EXTS
+
         to_fragment = pathlib.PurePosixPath(
             os.path.relpath(to_fragment, from_fragment.parent)
         )
         link = urllib.parse.quote(str(to_fragment))
-        to_type = helpers.xtype_of(to_element)
-        if to_type is not None:
+        if not include_target_type:
+            return f"{link}#{to_uuid}"
+
+        if to_type := helpers.xtype_of(to_element):
             return f"{to_type} {link}#{to_uuid}"
         return f"{link}#{to_uuid}"
 
@@ -1108,51 +1107,16 @@ class MelodyLoader:
         KeyError
             If the target cannot be found
         """
-        linkmatch = CROSS_FRAGMENT_LINK.fullmatch(link)
+        del from_element
+
+        linkmatch = helpers.CROSS_FRAGMENT_LINK.fullmatch(link)
         if not linkmatch:
             raise ValueError(f"Malformed link: {link!r}")
         xtype, fragment, ref = linkmatch.groups()
-        if fragment is not None:
-            fragment = urllib.parse.unquote(_unquote_ref(fragment))
-
-        def find_trees(
-            from_element: etree._Element | None,
-            fragment: pathlib.PurePosixPath | None,
-        ) -> cabc.Iterable[ModelFile]:
-            if fragment and from_element is None:
-                return (
-                    v for k, v in self.trees.items() if k.name == fragment.name
-                )
-            elif fragment:
-                sourcefragment = self._find_fragment(from_element)[0]
-                fragment = capellambse.helpers.normalize_pure_path(
-                    fragment, base=sourcefragment.parent
-                )
-                try:
-                    return [self.trees[fragment]]
-                except KeyError:  # pragma: no cover
-                    raise FileNotFoundError(
-                        f"Fragment not loaded: {fragment}"
-                    ) from None
-            else:
-                sourcefragment = pathlib.PurePosixPath("/")
-                if from_element is not None:
-                    sourcefragment = self._find_fragment(from_element)[0]
-                return map(
-                    operator.itemgetter(1),
-                    sorted(
-                        self.trees.items(),
-                        key=lambda tree: tree[0].name != sourcefragment.name,
-                    ),
-                )
-
-        trees = find_trees(
-            from_element,
-            pathlib.PurePosixPath(fragment) if fragment else None,
-        )
+        del fragment  # TODO use 'fragment' to disambiguate multiple matches
 
         matches = []
-        for tree in trees:
+        for tree in self.trees.values():
             try:
                 matches.append(tree[ref])
             except KeyError:

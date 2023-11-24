@@ -96,18 +96,22 @@ class HTTPFileHandler(abc.FileHandler):
     ) -> None:
         """Connect to a remote server through HTTP or HTTPS.
 
-        This file handler supports three ways of specifying a URL:
+        This file handler supports two ways of specifying a URL:
 
         1. If a plain URL is passed, the requested file name is appended
            after a forward slash ``/``.
-        2. If the URL contains ``%s``, it will be replaced by the
-           requested file name, instead of appending it at the end. This
-           allows for example to pass query parameters after the file
-           name. File names are percent-escaped as implemented by
-           ``urllib.parse.quote``.
-        3. The sequence ``%q`` is replaced similar to ``%s``, but the
-           forward slash ``/`` is not considered a safe character and is
-           percent-escaped as well.
+        2. The URL may contain one or more of the following escape
+           sequences to provide more fine-grained control over how and
+           where the file name is inserted into the URL:
+
+           - ``%s``: The path to the file, with everything except
+             forward slashes percent-escaped
+           - ``%q``: The path to the file, with forward slashes percent
+             escaped as well
+           - ``%d``: The directory name, without trailing slash, like %s
+           - ``%n``: The file name without extension
+           - ``%e``: The file extension without leading dot
+           - ``%%``: A literal percent sign
 
         Examples: When requesting the file name ``demo/my model.aird``,
         ...
@@ -155,7 +159,7 @@ class HTTPFileHandler(abc.FileHandler):
                 "Either both username and password must be given, or neither"
             )
 
-        if "%s" not in path and "%q" not in path:
+        if not re.search("%[%a-z]", path):
             path = path.rstrip("/") + "/%s"
 
         super().__init__(path, subdir=subdir)
@@ -183,11 +187,16 @@ class HTTPFileHandler(abc.FileHandler):
         assert isinstance(self.path, str)
         fname = self.subdir / helpers.normalize_pure_path(filename)
         fname_str = str(fname).lstrip("/")
+        q = urllib.parse.quote
         replace = {
-            "%s": urllib.parse.quote(fname_str, safe="/"),
-            "%q": urllib.parse.quote(fname_str, safe=""),
+            "%s": q(fname_str, safe="/"),
+            "%q": q(fname_str, safe=""),
+            "%d": q(str(fname.parent).lstrip("/")),
+            "%n": q(fname.with_suffix("").name),
+            "%e": q(fname.suffix.lstrip(".")),
+            "%%": "%",
         }
-        url = re.sub("%[sq]", lambda m: replace[m.group(0)], self.path)
+        url = re.sub("%[%a-z]", lambda m: replace[m.group(0)], self.path)
         assert url != self.path
         return DownloadStream(  # type: ignore[abstract] # false-positive
             self.session, url

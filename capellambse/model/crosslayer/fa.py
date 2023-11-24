@@ -113,6 +113,10 @@ class FunctionOutputPort(FunctionPort):
 class Function(AbstractFunction):
     """Common Code for Function's."""
 
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.FunctionKind, default="FUNCTION"
+    )
+
     is_leaf = property(lambda self: not self.functions)
 
     inputs = c.DirectProxyAccessor(FunctionInputPort, aslist=c.ElementList)
@@ -182,28 +186,58 @@ class FunctionalChainInvolvementFunction(FunctionalChainInvolvement):
 
 
 @c.xtype_handler(None)
+class FunctionalChainReference(FunctionalChainInvolvement):
+    """An element linking two related functional chains together."""
+
+
+@c.xtype_handler(None)
 class FunctionalChain(c.GenericElement):
     """A functional chain."""
 
     _xmltag = "ownedFunctionalChains"
 
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.FunctionalChainKind, default="SIMPLE"
+    )
+
     involvements = c.DirectProxyAccessor(
         c.GenericElement,
-        (FunctionalChainInvolvementFunction, FunctionalChainInvolvementLink),
+        (
+            FunctionalChainInvolvementFunction,
+            FunctionalChainInvolvementLink,
+            FunctionalChainReference,
+        ),
         aslist=c.ElementList,
     )
     involved_functions = c.LinkAccessor[AbstractFunction](
-        None,  # FIXME fill in tag
+        "ownedFunctionalChainInvolvements",
         FunctionalChainInvolvementFunction,
         aslist=c.MixedElementList,
         attr="involved",
     )
     involved_links = c.LinkAccessor[AbstractExchange](
-        None,  # FIXME fill in tag
+        "ownedFunctionalChainInvolvements",
         FunctionalChainInvolvementLink,
         aslist=c.MixedElementList,
         attr="involved",
     )
+    involved_chains = c.LinkAccessor["FunctionalChain"](
+        "ownedFunctionalChainInvolvements",
+        "org.polarsys.capella.core.data.fa:FunctionalChainReference",
+        attr="involved",
+        aslist=c.ElementList,
+    )
+    involving_chains: c.Accessor["FunctionalChain"]
+
+    realized_chains = c.LinkAccessor["FunctionalChain"](
+        "ownedFunctionalChainRealizations",
+        "org.polarsys.capella.core.data.fa:FunctionalChainRealization",
+        attr="targetElement",
+        backattr="sourceElement",
+        aslist=c.ElementList,
+    )
+    realizing_chains: c.Accessor["FunctionalChain"]
+
     control_nodes = c.DirectProxyAccessor(ControlNode, aslist=c.ElementList)
 
     @property
@@ -229,6 +263,10 @@ class ComponentExchange(AbstractExchange):
     """A functional component exchange."""
 
     _xmltag = "ownedComponentExchanges"
+
+    kind = c.EnumAttributeProperty(
+        "kind", modeltypes.ComponentExchangeKind, default="UNSET"
+    )
 
     allocated_functional_exchanges = c.LinkAccessor[FunctionalExchange](
         None,  # FIXME fill in tag
@@ -337,14 +375,24 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+c.set_accessor(
+    FunctionalExchange,
+    "involving_functional_chains",
+    c.ReferenceSearchingAccessor(FunctionalChain, "involved_links"),
+)
 
 c.set_accessor(
-    capellacommon.State,
-    "functions",
+    FunctionalChain,
+    "involving_chains",
     c.ReferenceSearchingAccessor(
-        AbstractFunction,
-        "availableInStates",
-        aslist=c.ElementList,
+        FunctionalChain, "involved_chains", aslist=c.ElementList
+    ),
+)
+c.set_accessor(
+    FunctionalChain,
+    "realizing_chains",
+    c.ReferenceSearchingAccessor(
+        FunctionalChain, "realized_chains", aslist=c.ElementList
     ),
 )
 

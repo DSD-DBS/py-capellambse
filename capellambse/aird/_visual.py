@@ -65,7 +65,13 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
     assert ebd.target_diagram.styleclass is not None
 
     uid = ebd.data_element.attrib[c.ATT_XMID]
-    label = ebd.data_element.get("description", "")
+    element = ebd.data_element.get("element")
+    if element is not None:
+        label = ebd.melodyloader[element].attrib["name"]
+        description = ebd.data_element.get("description", "")
+    else:
+        label = ebd.data_element.get("description", "")
+        description = None
     parent = ebd.data_element.getparent()
     while parent.tag == "children":
         parent_uid = parent.attrib.get("element") or parent.attrib.get(
@@ -97,19 +103,27 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
         int(layout.attrib.get("width", "0")),
         int(layout.attrib.get("height", "0")),
     )
-    styleclass = ebd.data_element.attrib["type"]
+
+    if element is not None:
+        styleclass = "RepresentationLink"
+    else:
+        styleclass = "Note"
+
     styleoverrides = _styling.apply_visualelement_styles(
         ebd.target_diagram.styleclass, f"Box.{styleclass}", ebd.data_element
     )
+
     return diagram.Box(
         pos,
         size,
         label=label,
+        description=description,
         uuid=uid,
         parent=parent,
         styleclass=styleclass,
         # <https://github.com/python/mypy/issues/8136#issuecomment-565387901>
         styleoverrides=styleoverrides,  # type: ignore[arg-type]
+        minsize=diagram.Vector2D(100, 54),
     )
 
 

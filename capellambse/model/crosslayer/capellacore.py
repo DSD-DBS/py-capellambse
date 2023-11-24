@@ -26,6 +26,8 @@ class Generalization(c.GenericElement):
 
     _xmltag = "ownedGeneralizations"
 
+    super: c.Accessor
+
 
 @c.xtype_handler(None)
 class EnumerationPropertyLiteral(c.GenericElement):

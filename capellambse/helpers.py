@@ -46,6 +46,22 @@ RE_VALID_UUID = re.compile(
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
 
+CROSS_FRAGMENT_LINK = re.compile(
+    r"""
+    ^
+    (?:
+        (?:
+            (?:(?P<xtype>[^ #]+)\ )?
+            (?P<fragment>[^ #]+)
+        )?
+        \#
+    )?
+    (?P<uuid>[A-Za-z0-9_-]+)
+    $
+    """,
+    re.VERBOSE,
+)
+
 UUIDString = t.NewType("UUIDString", str)
 _T = t.TypeVar("_T")
 
@@ -542,15 +558,18 @@ def split_links(links: str) -> cabc.Iterator[str]:
     for part in links.split():
         if "#" in part:
             if next_xtype:
-                yield f"{next_xtype} {part}"
-            else:
-                yield part
-            next_xtype = ""
+                part = f"{next_xtype} {part}"
+                next_xtype = ""
+            if not CROSS_FRAGMENT_LINK.fullmatch(part):
+                raise ValueError(f"Malformed link definition: {links}")
+            yield part
 
         else:
             if next_xtype:
                 raise ValueError(f"Malformed link definition: {links}")
             next_xtype = part
+    if next_xtype:
+        raise ValueError(f"Malformed link definition: {links}")
 
 
 @t.overload

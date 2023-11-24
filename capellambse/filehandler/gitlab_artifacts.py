@@ -13,11 +13,14 @@ import re
 import sys
 import typing as t
 import urllib.parse
+import weakref
 
+import diskcache
 import requests
 import requests.exceptions
 import urllib3.exceptions
 
+import capellambse
 from capellambse import helpers, loader
 
 from . import abc
@@ -104,6 +107,8 @@ class GitlabArtifactsFiles(abc.FileHandler):
     subdir
         An optional path prefix inside the artifacts archive to prepend
         to all file names.
+    disable_cache
+        Clear the local cache and discard any previously cached data.
 
     See Also
     --------
@@ -120,6 +125,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
         project: str | int | None = None,
         branch: str | None = None,
         job: str | int,
+        disable_cache: bool = False,
     ) -> None:
         super().__init__(path, subdir=subdir)
 
@@ -130,6 +136,15 @@ class GitlabArtifactsFiles(abc.FileHandler):
         self.__project = self.__resolve_project(project)
         self.__branch = branch or os.getenv("CI_DEFAULT_BRANCH") or "main"
         self.__job = self.__resolve_job(job)
+
+        self.__cache = diskcache.Cache(
+            capellambse.dirs.user_cache_path / "gitlab-artifacts"
+        )
+        # pylint: disable-next=unused-private-member
+        self.__fnz = weakref.finalize(self, self.__cache.close)
+
+        if disable_cache:
+            self.__cache.clear()
 
     def __repr__(self) -> str:
         return (
@@ -314,7 +329,15 @@ class GitlabArtifactsFiles(abc.FileHandler):
         if "w" in mode:
             raise TypeError("Cannot write to Gitlab artifacts")
 
-        LOGGER.debug("Opening file %r for reading", path)
+        cachekey = f"{self.__path}|{self.__project}|{self.__job}|{path}"
+        if cachekey in self.__cache:
+            content = self.__cache[cachekey]
+            if content is None:
+                LOGGER.debug("Negative cache hit for %r", path)
+                raise FileNotFoundError(errno.ENOENT, filename)
+            LOGGER.debug("Opening cached file %r for reading", path)
+            return io.BytesIO(self.__cache[cachekey])
+
         try:
             response = self.__rawget(
                 f"{self.__path}/api/v4/projects/{self.__project}"
@@ -334,8 +357,15 @@ class GitlabArtifactsFiles(abc.FileHandler):
                 raise
             if err2.args != (0, 2):
                 raise
+
+            LOGGER.debug("File not found in artifacts archive: %r", path)
+            self.__cache[cachekey] = None
             raise FileNotFoundError(errno.ENOENT, filename) from None
         if response.status_code in (400, 404):
+            LOGGER.debug("File not found in artifacts archive: %r", path)
+            self.__cache[cachekey] = None
             raise FileNotFoundError(errno.ENOENT, filename)
         response.raise_for_status()
+        LOGGER.debug("Opening file %r for reading", path)
+        self.__cache[cachekey] = response.content
         return io.BytesIO(response.content)

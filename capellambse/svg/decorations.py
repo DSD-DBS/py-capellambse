@@ -32,14 +32,27 @@ only_icons = {"Requirement"}
 DiagramClass = str
 FaultyClass = str
 PatchClass = str
-always_top_label = {
+needs_feature_line = {
+    "BooleanType",
     "Class",
     "Enumeration",
-    "Note",
-    "OperationalActivity",
-    "PhysicalComponent",
+    "NumericType",
+    "PhysicalQuantity",
+    "StringType",
 }
-needs_feature_line = {"Class", "Enumeration"}
+always_top_label = needs_feature_line | {
+    "Note",
+    "RepresentationLink",
+    "OperationalActivity",
+    "PhysicalBehaviorComponent",
+    "PhysicalBehaviorHumanComponent",
+    "PhysicalBehaviorActor",
+    "PhysicalBehaviorHumanActor",
+    "PhysicalNodeComponent",
+    "PhysicalNodeHumanComponent",
+    "PhysicalNodeActor",
+    "PhysicalNodeHumanActor",
+}
 
 
 class DecoFactories(t.Dict[str, cabc.Callable]):

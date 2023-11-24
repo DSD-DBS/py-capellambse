@@ -280,6 +280,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": RGB(255, 204, 102),
             "text_fill": RGB(0, 0, 0),
         },
+        "Box.RepresentationLink": {
+            "fill": RGB(255, 255, 203),
+            "stroke": RGB(255, 204, 102),
+            "text_fill": RGB(0, 0, 0),
+        },
         "Box.Requirement": {  # ReqVP_Requirement
             "fill": COLORS["light_purple"],
             "stroke": COLORS["dark_purple"],
@@ -336,6 +341,26 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Datatype_Border_Gray"],
             "text_fill": COLORS["black"],
         },
+        "Box.BooleanType": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.NumericType": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.PhysicalQuantity": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.StringType": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
         "Box.ExchangeItem": {  # DT_ExchangeItem
             "fill": COLORS["_CAP_ExchangeItem_Pinkkish"],
             "stroke": COLORS["_CAP_Interface_Border_Reddish"],
@@ -348,10 +373,12 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Edge.Aggregation": {
             "stroke": COLORS["_CAP_Association_Color"],
             "marker-start": "DiamondMark",
+            "marker-end": "FineArrowMark",
         },
         "Edge.Composition": {
             "stroke": COLORS["_CAP_Association_Color"],
             "marker-start": "FilledDiamondMark",
+            "marker-end": "FineArrowMark",
         },
         "Edge.ExchangeItemElement": {  # DT_ExchangeItemElement
             "stroke": COLORS["black"],

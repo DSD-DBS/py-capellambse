@@ -40,7 +40,7 @@ class LocalFileHandler(abc.FileHandler):
         normpath = helpers.normalize_pure_path(filename)
         if "w" not in mode or self.__transaction is None:
             path = self.path / normpath
-            return t.cast(t.BinaryIO, path.open(mode))
+            return path.open("rb")
 
         if normpath in self.__transaction:
             raise RuntimeError(
@@ -48,7 +48,7 @@ class LocalFileHandler(abc.FileHandler):
             )
         self.__transaction.add(normpath)
         tmppath = _tmpname(normpath)
-        return t.cast(t.BinaryIO, (self.path / tmppath).open(mode))
+        return (self.path / tmppath).open("wb")
 
     def get_model_info(self) -> ModelInfo:
         assert isinstance(self.path, pathlib.Path)

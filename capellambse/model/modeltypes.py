@@ -172,6 +172,26 @@ class Kind(_StringyEnumMixin, _enum.Enum):
     SOFTWARE_APPLICATION = _enum.auto()
 
 
+class FunctionKind(_StringyEnumMixin, _enum.Enum):
+    """The KIND of a Function."""
+
+    FUNCTION = _enum.auto()
+    DUPLICATE = _enum.auto()
+    GATHER = _enum.auto()
+    SELECT = _enum.auto()
+    SPLIT = _enum.auto()
+    ROUTE = _enum.auto()
+
+
+class ComponentExchangeKind(_StringyEnumMixin, _enum.Enum):
+    """The KIND of a ComponentExchange."""
+
+    UNSET = _enum.auto()
+    DELEGATION = _enum.auto()
+    ASSEMBLY = _enum.auto()
+    FLOW = _enum.auto()
+
+
 class VisibilityKind(_StringyEnumMixin, _enum.Enum):
     """Visibility kind."""
 
@@ -215,6 +235,14 @@ class ControlNodeKind(_StringyEnumMixin, _enum.Enum):
     OR = _enum.auto()
     AND = _enum.auto()
     ITERATE = _enum.auto()
+
+
+class FunctionalChainKind(_StringyEnumMixin, _enum.Enum):
+    """The kind of a Functional Chain."""
+
+    SIMPLE = _enum.auto()
+    COMPOSITE = _enum.auto()
+    FRAGMENT = _enum.auto()
 
 
 class NumericTypeKind(_StringyEnumMixin, _enum.Enum):

@@ -58,13 +58,8 @@ def enumerate_diagrams(
     model
         The MelodyLoader instance
     """
-    raw_views = model.xpath2(C.XP_VIEWS)
     views: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
-    if len(raw_views) == 0:
-        raise ValueError("Invalid XML: No viewpoints found")
-
-    # Extract the views' names
-    for i in raw_views:
+    for i in model.xpath2(C.XP_VIEWS):
         viewname = helpers.xpath_fetch_unique(
             "./viewpoint", i[1], "viewpoint description"
         )
@@ -75,7 +70,8 @@ def enumerate_diagrams(
         views.append((*i, urllib.parse.unquote(viewname or "")))
 
     if not views:
-        raise ValueError("No viewpoints found")
+        C.LOGGER.debug("No viewpoints found in the model")
+        return
 
     descriptors: list[tuple[pathlib.PurePosixPath, etree._Element, str]] = []
     for view in views:
@@ -83,16 +79,13 @@ def enumerate_diagrams(
             (view[0], d, view[2]) for d in C.XP_DESCRIPTORS(view[1])
         ]
 
-    if len(descriptors) == 0:
-        raise ValueError("Invalid XML: No diagrams found")
-
     for descriptor in descriptors:
         name = uid = None
         try:
             name = descriptor[1].attrib["name"]
             uid = descriptor[1].attrib["repPath"]
             if not uid.startswith("#"):
-                raise ValueError("Malformed diagram reference: {uid!r}")
+                raise ValueError(f"Malformed diagram reference: {uid!r}")
 
             diag_root = model[uid]
             if diag_root.tag not in DIAGRAM_ROOTS:
@@ -213,7 +206,9 @@ def parse_diagram(
 
 def _element_from_xml(ebd: C.ElementBuilder) -> diagram.DiagramElement:
     """Construct a single diagram element from the model XML."""
-    if ebd.data_element.get("element") is not None:
+    element = ebd.data_element.get("element")
+    tag = ebd.melodyloader[element].tag if element else None
+    if element is not None and tag != "ownedRepresentationDescriptors":
         factory = _semantic.from_xml
     else:
         factory = _visual.from_xml
@@ -287,7 +282,15 @@ def iter_visible(
             )
             continue
 
-        elem = model.follow_link(target, target.attrib["href"])
+        try:
+            elem = model.follow_link(target, target.attrib["href"])
+        except KeyError:
+            C.LOGGER.debug(
+                "Semantic element has been deleted, ignoring: %s",
+                target.attrib["href"],
+            )
+            continue
+
         fragment = model.find_fragment(elem)
         if (
             model.trees[fragment].fragment_type == loader.FragmentType.SEMANTIC

@@ -8,6 +8,7 @@ import base64
 import contextlib
 import errno
 import logging
+import os
 import pathlib
 import re
 import shutil
@@ -23,7 +24,7 @@ import capellambse
 from capellambse.filehandler import gitlab_artifacts
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
-from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import]
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import-untyped]
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 
@@ -32,6 +33,13 @@ DUMMY_PNG = base64.standard_b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQott"
     "AAAAABJRU5ErkJggg=="
 )
+
+
+@pytest.fixture(autouse=True, scope="function")
+def glart_clear_env(monkeypatch):
+    for i in list(os.environ):
+        if i.startswith("CI_"):
+            monkeypatch.delenv(i)
 
 
 @pytest.mark.parametrize(
@@ -274,18 +282,18 @@ def test_the_scp_short_form_is_recognized_as_git_protocol(monkeypatch, url):
 @pytest.mark.parametrize(
     "link",
     [
-        "xtype MelodyModelTest.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "MelodyModelTest.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "xtype MelodyModel%20Test.aird#078b2c69-4352-4cf9-9ea5-6573b75e5eec",
-        "MelodyModel%20Test.aird#071b2c69-4352-4cf9-9ea5-6573b75e5eec",
+        "xtype MelodyModelTest.aird#00000000-0000-4000-0000-000000000000",
+        "MelodyModelTest.aird#00000000-0000-4000-0000-000000000000",
+        "#00000000-0000-4000-0000-000000000000",
+        "xtype MelodyModel%20Test.aird#00000000-0000-4000-0000-000000000000",
+        "MelodyModel%20Test.aird#00000000-0000-4000-0000-000000000000",
     ],
 )
 def test_MelodyLoader_follow_link_finds_target(link: str):
     loader = capellambse.loader.MelodyLoader(TEST_MODEL_5_0)
 
     with pytest.raises(KeyError):
-        assert loader.follow_link(None, link) is not None
+        loader.follow_link(None, link)
 
 
 @pytest.mark.parametrize(
@@ -321,9 +329,14 @@ def test_MelodyLoader_follow_link_finds_target(link: str):
             "~user",
             "https://example.com/?file=~user%2Fdemo%2Fmy%20model.aird",
         ),
+        (
+            "https://example.com/?dir=%d&file=%n&type=%e",
+            "/",
+            "https://example.com/?dir=demo&file=my%20model&type=aird",
+        ),
     ],
 )
-def test_http_file_handler_replaces_percent_s_percent_q(
+def test_http_file_handler_replaces_percent_escapes(
     requests_mock: requests_mock.Mocker, path: str, subdir: str, req_url: str
 ) -> None:
     endpoint = requests_mock.get(req_url)
