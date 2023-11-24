@@ -19,7 +19,7 @@ from .auditing import *
 from .cli_helpers import *
 from .filehandler import *
 from .model import MelodyModel
-from .model.common import ModelObject
+from .model.common import ModelObject, new_object
 
 _has_loaded_extensions = False
 

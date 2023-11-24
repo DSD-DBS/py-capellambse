@@ -45,6 +45,7 @@ from .common import (  # isort:skip
     GenericElement,
     ModelObject,
     NonUniqueMemberError,
+    new_object,
 )
 
 LOGGER = logging.getLogger(__name__)

@@ -111,6 +111,8 @@ class ModelObject(t.Protocol):
         self,
         model: capellambse.MelodyModel,
         parent: etree._Element,
+        xmltag: str | None,
+        /,
         **kw: t.Any,
     ) -> None:
         """Create a new model object.
@@ -214,6 +216,7 @@ class GenericElement:
         self,
         model: capellambse.MelodyModel,
         parent: etree._Element,
+        xmltag: str | None = None,
         /,
         **kw: t.Any,
     ) -> None:
@@ -228,13 +231,15 @@ class GenericElement:
             raise TypeError(f"Missing required keyword arguments: {mattrs}")
 
         super().__init__()
-        if self._xmltag is None:
+        if xmltag is None:
+            xmltag = self._xmltag
+        if xmltag is None:
             raise TypeError(
                 f"Cannot instantiate {type(self).__name__} directly"
             )
         self._constructed = False
         self._model = model
-        self._element: etree._Element = etree.Element(self._xmltag)
+        self._element: etree._Element = etree.Element(xmltag)
         parent.append(self._element)
         try:
             for key, val in kw.items():

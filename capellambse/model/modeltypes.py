@@ -243,3 +243,10 @@ class FunctionalChainKind(_StringyEnumMixin, _enum.Enum):
     SIMPLE = _enum.auto()
     COMPOSITE = _enum.auto()
     FRAGMENT = _enum.auto()
+
+
+class NumericTypeKind(_StringyEnumMixin, _enum.Enum):
+    """Specifies the kind of this numeric data type."""
+
+    INTEGER = _enum.auto()
+    FLOAT = _enum.auto()

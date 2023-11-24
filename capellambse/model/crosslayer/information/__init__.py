@@ -172,11 +172,27 @@ class Collection(c.GenericElement):
 class DataPkg(c.GenericElement):
     """A data package that can hold classes."""
 
+    _xmltag = "ownedDataPkgs"
+
+    owned_associations = c.DirectProxyAccessor(
+        Association, aslist=c.ElementList
+    )
     classes = c.DirectProxyAccessor(Class, aslist=c.ElementList)
     unions = c.DirectProxyAccessor(Union, aslist=c.ElementList)
     collections = c.DirectProxyAccessor(Collection, aslist=c.ElementList)
     enumerations = c.DirectProxyAccessor(
         datatype.Enumeration, aslist=c.ElementList
+    )
+    datatypes = c.DirectProxyAccessor(
+        c.GenericElement,
+        (
+            datatype.BooleanType,
+            datatype.Enumeration,
+            datatype.StringType,
+            datatype.NumericType,
+            datatype.PhysicalQuantity,
+        ),
+        aslist=c.MixedElementList,
     )
     complex_values = c.DirectProxyAccessor(
         datavalue.ComplexValue, aslist=c.ElementList
@@ -239,7 +255,7 @@ c.set_accessor(ExchangeItemElement, "owner", c.ParentAccessor(ExchangeItem))
 c.set_accessor(
     Association,
     "members",
-    c.DirectProxyAccessor(Property, aslist=c.ElementList),
+    c.RoleTagAccessor("ownedMembers", aslist=c.ElementList),
 )
 c.set_accessor(
     Association,
