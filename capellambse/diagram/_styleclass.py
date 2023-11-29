@@ -9,6 +9,7 @@ import collections.abc as cabc
 import re
 
 from capellambse import model
+from capellambse.model import modeltypes
 
 
 def get_styleclass(obj: model.ModelObject) -> str:
@@ -37,12 +38,12 @@ def _default(obj: model.ModelObject) -> str:
 
 def _association(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.information.Association)
-    default_kind = kind = "ASSOCIATION"
+    default_kind = kind = modeltypes.AggregationKind.ASSOCIATION
     assert isinstance(obj.members, model.ElementList)
     for member in obj.members:
         if member.kind != default_kind:
             kind = member.kind
-    return kind.capitalize()
+    return kind.name.capitalize()
 
 
 def _component_port(obj: model.ModelObject) -> str:
