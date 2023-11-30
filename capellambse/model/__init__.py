@@ -227,10 +227,10 @@ class MelodyModel:
         capellambse.filehandler.FileHandler :
             Abstract super class for file handlers. Contains information
             needed for implementing custom handlers.
-        capellambse.filehandler.localfilehandler.LocalFileHandler :
+        capellambse.filehandler.local.LocalFileHandler :
             The file handler responsible for local files and
             directories.
-        capellambse.filehandler.gitfilehandler.GitFileHandler :
+        capellambse.filehandler.git.GitFileHandler :
             The file handler implementing the ``git://`` protocol.
         capellambse.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
