@@ -29,8 +29,13 @@ try:
     class ModelCLI(click.ParamType):
         """Declare an option that loads a model.
 
-        Use instances of this class for the ``type=`` argument to
-        ``@click.option`` etc.
+        Use instances of this class for the *type* argument to
+        :func:`click.option` etc.
+
+        See Also
+        --------
+        capellambse.cli_helpers.loadcli :
+            A standalone function performing the same task.
 
         Examples
         --------
@@ -55,15 +60,15 @@ try:
                 assert False
 
     class ModelInfoCLI(click.ParamType):
-        """Declare an option that loads model information.
+        """Declare an option that loads information about a model.
 
-        This is similar to :class:`ModelCLI`, but it returns a
-        dict with information on how to load the model, rather than
-        the model itself. This is useful for commands that need to
-        alter the way a model is loaded.
+        Use instances of this class for the *type* argument to
+        :func:`click.option` etc.
 
-        Use instances of this class for the ``type=`` argument to
-        ``@click.option`` etc.
+        See Also
+        --------
+        capellambse.cli_helpers.loadinfo :
+            A standalone function performing the same task.
 
         Examples
         --------
@@ -74,9 +79,7 @@ try:
            def main(modelinfo: dict[str, t.Any]) -> None:
                # change any options, for example:
                modelinfo["diagram_cache"] = "/tmp/diagrams"
-               # load the model:
                model = capellambse.MelodyModel(**modelinfo)
-               ...
         """
 
         name = "CAPELLA_MODEL"
@@ -110,12 +113,19 @@ def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
     user's configuration directory, and the *known_models* folder in the
     installed ``capellambse`` package.
 
+    Run the following command to print the location of the user's
+    *known_models* folder:
+
+    .. code:: bash
+
+       python -m capellambse.cli_helpers
+
     In order to make a custom model known, place a JSON file in one of
     these *known_models* folders. It should contain a dictionary with
-    the keyword arguments to :class:`capellambse.MelodyModel` -
-    specifically it needs a ``path``, an ``entrypoint``, and any
-    additional arguments that the underlying
-    :class:`capellambse.filehandler.FileHandler` might need to gain
+    the keyword arguments to :class:`~capellambse.model.MelodyModel` -
+    specifically it needs a ``path``, optionally an ``entrypoint``, and
+    any additional arguments that the underlying
+    :class:`~capellambse.filehandler.FileHandler` might need to gain
     access to the model.
 
     Files in the user's configuration directory take precedence over
@@ -145,17 +155,25 @@ def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
 def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
     """Load a model from a file or JSON string.
 
-    This function tries to load a model from the following inputs:
+    This function works like :func:`loadinfo`, and also loads the model
+    for convenience.
 
-    - A str or PathLike pointing to an ``.aird`` file
-    - A str or PathLike pointing to a ``.json`` file, which contains the
-      arguments to instantiate a :class:`capellambse.MelodyModel`
-    - The contents of such a JSON file (as string)
+    Parameters
+    ----------
+    value
+        As described for :func:`loadinfo`.
 
-    See Also
+    Returns
+    -------
+    ~capellambse.model.MelodyModel
+        The loaded model, as described by the *value*.
+
+    Examples
     --------
-    capellambse.cli_helpers.CLIModel :
-        This function wrapped as a ``click.ParamType``
+    .. code-block:: python
+
+       def main():
+           model = capellambse.loadcli(sys.argv[1])
     """
     modelinfo = loadinfo(value)
     LOGGER.info("Loading model from %s", modelinfo["path"])
@@ -163,6 +181,43 @@ def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
 
 
 def loadinfo(value: str | os.PathLike[str]) -> dict[str, t.Any]:
+    """Load information about how to load a model as dict.
+
+    Parameters
+    ----------
+    value
+        One of the following:
+
+        - A str or PathLike pointing to an ``.aird`` file
+        - A str or PathLike pointing to a ``.json`` file, which
+          contains the arguments to instantiate a
+          :class:`~capellambse.model.MelodyModel`
+        - The contents of such a JSON file (as string)
+
+    Returns
+    -------
+    dict[str, ~typing.Any]
+        A dict with information about how to load a
+        :class:`~capellambse.model.MelodyModel`.
+
+    Raises
+    ------
+    TypeError
+        If the *value* cannot be parsed as described above.
+    ValueError
+        If the *value* looks like a "known model" name, but the name is
+        not defined.
+
+    Examples
+    --------
+    .. code-block:: python
+
+       def main():
+           modelinfo = capellambse.loadinfo(sys.argv[1])
+           # change any options, for example:
+           modelinfo["diagram_cache"] = "/tmp/diagrams"
+           model = MelodyModel(**modelinfo)
+    """
     if isinstance(value, str):
         if value.endswith((".aird", ".json")):
             return _load_from_file(value)
