@@ -198,3 +198,18 @@ def _load_from_file(value: str) -> dict[str, t.Any]:
     raise ValueError(
         "value is not a known model nor contains valid JSON"
     ) from None
+
+
+def _main() -> None:
+    print("User-defined 'known models' are searched in:")
+    print()
+    print(f"   {capellambse.dirs.user_config_path / 'known_models'}")
+    print()
+    print("The following models are currently known:")
+    for file in enumerate_known_models():
+        name, _, _ = file.name.rpartition(".")
+        print(f"  - {name}")
+
+
+if __name__ == "__main__":
+    _main()
