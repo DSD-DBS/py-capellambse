@@ -558,7 +558,10 @@ class Drawing:
         assert isinstance(label_, (dict, type(None)))
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
-        if class_ not in self.deco_cache:
+        if (
+            class_ not in self.deco_cache
+            and class_ not in decorations.all_ports
+        ):
             self.__drawing.defs.add(
                 decorations.deco_factories[f"{class_}Symbol"]()
             )
