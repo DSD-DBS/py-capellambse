@@ -5,8 +5,11 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import math
+import typing as t
 
 from capellambse import helpers
+
+AlignmentLiteral = t.Literal["center", "left", "right"]
 
 
 def check_for_horizontal_overflow(
@@ -14,6 +17,7 @@ def check_for_horizontal_overflow(
     width: int | float,
     icon_padding: int | float,
     icon_size: int | float,
+    alignment: AlignmentLiteral = "center",
 ) -> tuple[cabc.Sequence[str], float, float]:
     max_text_width = width - (icon_size + 2 * icon_padding)
     assert max_text_width >= 0
@@ -22,7 +26,12 @@ def check_for_horizontal_overflow(
     label_width = text_width + icon_size + 2 * icon_padding
     assert text_width <= max_text_width
     assert label_width <= width
-    label_margin = (width - label_width) / 2
+    if alignment == "center":
+        label_margin = (width - label_width) / 2
+    elif alignment == "left":
+        label_margin = 0
+    else:
+        label_margin = width - label_margin
     return (lines, label_margin, max_text_width)
 
 

@@ -239,9 +239,9 @@ class Drawing:
         x, y = obj.attribs["x"], obj.attribs["y"]
         w, h = obj.attribs["width"], obj.attribs["height"]
         label: LabelDict = {
-            "x": x,
+            "x": x + decorations.feature_space / 2,
             "y": y + decorations.feature_space,
-            "width": w,
+            "width": w - decorations.feature_space / 2,
             "height": h - decorations.feature_space,
             "class": "Features",
             "text": "\n".join(
@@ -256,6 +256,7 @@ class Drawing:
                 labelstyle=labelstyle,
                 y_margin=7,
                 icon=False,
+                alignment="left",
             )
         )
 
@@ -841,6 +842,7 @@ class LabelBuilder:
     text_anchor: str = "start"
     icon: bool = True
     icon_size: float | int = decorations.icon_size
+    alignment: helpers.AlignmentLiteral = "center"
 
 
 class LinesData(t.NamedTuple):
@@ -865,6 +867,7 @@ def render_hbounded_lines(
         builder.label["width"],
         decorations.icon_padding if render_icon else 0,
         builder.icon_size if render_icon else 0,
+        builder.alignment,
     )
     lines_to_render = helpers.check_for_vertical_overflow(
         lines, builder.label["height"], max_text_width
