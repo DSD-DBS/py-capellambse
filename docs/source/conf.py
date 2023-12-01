@@ -84,6 +84,7 @@ napoleon_include_init_with_doc = True
 
 # -- Options for Intersphinx output ------------------------------------------
 intersphinx_mapping = {
+    "click": ("https://click.palletsprojects.com/en/latest", None),
     "lxml": ("https://lxml.de/apidoc/", None),
     "python": ("https://docs.python.org/3", None),
     "svgwrite": ("https://svgwrite.readthedocs.io/en/latest/", None),

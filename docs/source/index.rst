@@ -42,6 +42,7 @@ If you want a quickstart at how to use this package, head right into the
    :titlesonly:
 
    start/installation
+   start/specifying-models
    start/intro-to-api
    start/declarative
    start/audit-events
