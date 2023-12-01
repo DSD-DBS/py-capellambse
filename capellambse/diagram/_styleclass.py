@@ -38,11 +38,11 @@ def _default(obj: model.ModelObject) -> str:
 def _association(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.information.Association)
     default_kind = kind = "ASSOCIATION"
-    assert isinstance(obj.members, model.ElementList)
-    for member in obj.members:
+    assert isinstance(obj.roles, model.ElementList)
+    for member in obj.roles:
         if member.kind != default_kind:
-            kind = member.kind
-    return kind.capitalize()
+            kind = member.kind.name.capitalize()
+    return kind
 
 
 def _component_port(obj: model.ModelObject) -> str:
