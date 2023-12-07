@@ -58,6 +58,24 @@ the present Capella ontology. We are continuously improving the API
 (introducing shortcuts), increasing the meta-model coverage and have more
 engineering automations and improvements in the pipeline to share.
 
+Related projects
+----------------
+
+- `capellambse-context-diagrams`__ — A capellambse extension that visualizes
+  the context of Capella objects, and exposes it on element attributes like
+  ``.context_diagram``, ``.tree_view``, etc.
+
+  __ https://github.com/DSD-DBS/capellambse-context-diagrams
+
+- `capella-diff-tools`__ — A set of tools to compare Capella models.
+
+  __ https://github.com/DSD-DBS/capella-diff-tools
+
+Did you make something cool that is using or extending capellambse? `Tell us
+about it`__, so we can add it to this list!
+
+__ https://github.com/DSD-DBS/py-capellambse/issues
+
 Documentation and examples
 --------------------------
 
