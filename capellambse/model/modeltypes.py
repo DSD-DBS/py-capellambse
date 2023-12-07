@@ -146,14 +146,15 @@ class ExchangeItemType(_StringyEnumMixin, _enum.Enum):
     SHARED_DATA = _enum.auto()
 
 
-class Nature(_StringyEnumMixin, _enum.Enum):
+class PhysicalComponentNature(_StringyEnumMixin, _enum.Enum):
     r"""The "NATURE" of ``PhysicalComponent``\ s."""
 
+    UNSET = _enum.auto()
     NODE = _enum.auto()
     BEHAVIOR = _enum.auto()
 
 
-class Kind(_StringyEnumMixin, _enum.Enum):
+class PhysicalComponentKind(_StringyEnumMixin, _enum.Enum):
     r"""The "KIND" of ``PhysicalComponent``\ s."""
 
     UNSET = _enum.auto()
@@ -250,3 +251,27 @@ class NumericTypeKind(_StringyEnumMixin, _enum.Enum):
 
     INTEGER = _enum.auto()
     FLOAT = _enum.auto()
+
+
+if not t.TYPE_CHECKING:
+
+    def __getattr__(name: str) -> t.Any:
+        if name == "Kind":
+            import warnings
+
+            warnings.warn(
+                "Kind is deprecated; use PhysicalComponentKind instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return PhysicalComponentKind
+        if name == "Nature":
+            import warnings
+
+            warnings.warn(
+                "Nature is deprecated; use PhysicalComponentNature instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return PhysicalComponentNature
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

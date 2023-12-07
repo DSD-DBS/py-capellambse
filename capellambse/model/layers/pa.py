@@ -47,9 +47,11 @@ class PhysicalComponent(cs.Component):
 
     _xmltag = "ownedPhysicalComponents"
 
-    nature = c.EnumAttributeProperty("nature", modeltypes.Nature)
+    nature = c.EnumAttributeProperty(
+        "nature", modeltypes.PhysicalComponentNature, default="UNSET"
+    )
     kind = c.EnumAttributeProperty(
-        "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
+        "kind", modeltypes.PhysicalComponentKind, default="UNSET"
     )
 
     allocated_functions = c.LinkAccessor[PhysicalFunction](
