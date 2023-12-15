@@ -39,22 +39,13 @@ def load_model_extensions() -> None:
 
     # pylint: disable=redefined-outer-name  # false-positive
     import logging
-    import sys
 
     global _has_loaded_extensions
     if _has_loaded_extensions:
         return
     _has_loaded_extensions = True
 
-    if sys.version_info < (3, 10):
-        try:
-            entrypoints = imm.entry_points()["capellambse.model_extensions"]
-        except KeyError:
-            return
-    else:
-        entrypoints = imm.entry_points(group="capellambse.model_extensions")
-
-    for entrypoint in entrypoints:
+    for entrypoint in imm.entry_points(group="capellambse.model_extensions"):
         try:
             initfunc = entrypoint.load()
             initfunc()

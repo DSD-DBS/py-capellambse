@@ -11,7 +11,7 @@ dynamic = ["version"]
 name = "capellambse"
 description = "Provides access to Capella MBSE projects in Python"
 readme = "README.rst"
-requires-python = ">=3.9, <3.12"
+requires-python = ">=3.10, <3.13"
 license = { text = "Apache-2.0" }
 authors = [
   { name = "DB Netz AG" },
@@ -24,9 +24,9 @@ classifiers = [
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Topic :: Other/Nonlisted Topic",
   "Topic :: Scientific/Engineering",
   "Topic :: Software Development :: Libraries :: Python Modules",
@@ -111,6 +111,7 @@ reqif = "capellambse.extensions.reqif:init"
 
 [tool.black]
 line-length = 79
+target-version = ["py310"]
 
 [tool.coverage.run]
 branch = true
@@ -141,7 +142,7 @@ show_error_codes = true
 warn_redundant_casts = true
 warn_unreachable = true
 warn_unused_ignores = true
-python_version = "3.9"
+python_version = "3.10"
 
 [[tool.mypy.overrides]]
 module = ["tests.*"]
