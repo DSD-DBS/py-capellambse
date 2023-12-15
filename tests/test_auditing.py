@@ -110,12 +110,6 @@ def prohibit_events(*events: str) -> cabc.Iterator[None]:
             id="HTMLAttributeProperty",
         ),
         pytest.param(
-            "303c2a4d-0eff-41e6-b7e8-0e500cfa38f7",
-            "value",
-            common.NumericAttributeProperty,
-            id="NumericAttributeProperty",
-        ),
-        pytest.param(
             "b97c09b5-948a-46e8-a656-69d764ddce7d",
             "value",
             common.DatetimeAttributeProperty,
@@ -253,13 +247,6 @@ def test_attribute_access_fires_read_attribute_events(
             lambda _: markupsafe.Markup("<h1>Thing</h1>"),
             common.HTMLAttributeProperty,
             id="HTMLAttributeProperty",
-        ),
-        pytest.param(
-            "303c2a4d-0eff-41e6-b7e8-0e500cfa38f7",
-            "value",
-            lambda o: o.value + 1,
-            common.NumericAttributeProperty,
-            id="NumericAttributeProperty",
         ),
         pytest.param(
             "b97c09b5-948a-46e8-a656-69d764ddce7d",
