@@ -546,7 +546,6 @@ class Edge(diagram.Vec2List):
     JSON_TYPE = "edge"
 
     collapsed = False
-    context: cabc.Set[str] = frozenset()
     hidelabel = False
     port = False
 
@@ -561,6 +560,7 @@ class Edge(diagram.Vec2List):
         styleclass: str | None = None,
         styleoverrides: StyleOverrides | None = None,
         hidden: bool = False,
+        context: cabc.Iterable[str] | None = None,
     ):
         r"""Construct an Edge.
 
@@ -586,6 +586,8 @@ class Edge(diagram.Vec2List):
             A dict of CSS properties to override.
         hidden
             True to skip drawing this edge entirely.
+        context
+            A list of UUIDs of objects in this edge's context.
         """
         super().__init__(points)
         if len(self) < 2:
@@ -603,10 +605,11 @@ class Edge(diagram.Vec2List):
 
         self.labels = labels or []
         self.hidden = hidden
+        self.context = set(context) if context else set()
 
     def add_context(self, uuid: str) -> None:
-        """Do nothing."""
-        # Edges don't save context
+        """Add a UUID as context for this edge."""
+        self.context.add(uuid)
 
     def vector_snap(
         self,
@@ -760,7 +763,6 @@ class Circle:
     JSON_TYPE = "circle"
 
     collapsed = False
-    context: cabc.Set[str] = frozenset()
     hidelabel = True
     label = None
     port = False
@@ -776,6 +778,7 @@ class Circle:
         styleclass: str | None = None,
         styleoverrides: StyleOverrides | None = None,
         hidden: bool = False,
+        context: cabc.Iterable[str] | None = None,
     ):
         """Construct a Circle.
 
@@ -794,6 +797,8 @@ class Circle:
             defaults.
         hidden
             True to skip drawing this Circle.
+        context
+            A list of UUIDs of objects in this circle's context.
         """
         self.uuid = uuid
         self.center = center
@@ -802,10 +807,11 @@ class Circle:
         self.styleclass = styleclass
         self.styleoverrides = styleoverrides or {}
         self.hidden = hidden
+        self.context = set(context) if context else set()
 
     def add_context(self, uuid: str) -> None:
-        """Do nothing."""
-        # Circles don't save context
+        """Add a UUID as context for this circle."""
+        self.context.add(uuid)
 
     @property
     def bounds(self) -> Box:

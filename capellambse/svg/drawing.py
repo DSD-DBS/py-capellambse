@@ -624,7 +624,6 @@ class Drawing:
         text_style: style.Styling,
         **kw: t.Any,
     ) -> container.Group:
-        del context_  # FIXME Add context to SVG
         del kw  # Dismiss additional info from json, for e.g.: ports_
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
@@ -654,6 +653,10 @@ class Drawing:
             features=features_,
             children=bool(children_),
         )
+        if context_:
+            grp.add(
+                container.Group(class_="context-" + " context-".join(context_))
+            )
         return self.__drawing.add(grp)
 
     def _draw_box_symbol(
@@ -721,7 +724,6 @@ class Drawing:
         text_style: style.Styling,
         **kw,
     ):
-        del kw  # Dismiss additional info from json
         points: list = [(x + 0.5, y + 0.5) for x, y in points_]
         grp = self.__drawing.g(class_=f"Edge {class_}", id_=id_)
         grp.add(
@@ -729,6 +731,11 @@ class Drawing:
                 d=["M"] + points, class_="Edge", style=obj_style[""]
             )
         )
+
+        if context := kw.get("context_", []):
+            grp.add(
+                container.Group(class_="context-" + " context-".join(context))
+            )
 
         # Received text space doesn't allow for anything else than the text
         for label_ in labels_:
