@@ -25,6 +25,11 @@ DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
 """Debug flag to render helping lines."""
 LABEL_ICON_PADDING = 2
 """Default padding between a label's icon and text."""
+NUMBER = r"-?\d+(\.\d+)?"
+RE_ROTATION = re.compile(
+    rf"rotate\((?P<angle>{NUMBER}),\s*(?P<x>{NUMBER}),\s*(?P<y>{NUMBER})\) "
+    f"(?P<tspan_y>{NUMBER})"
+)
 
 
 LabelDict = t.TypedDict(
@@ -130,6 +135,13 @@ class Drawing:
             "class_": class_,
             **transform,
         }
+        if rx := getattr(rect_style, "rx", None):
+            rectparams["rx"] = rx
+            delattr(rect_style, "rx")
+        if ry := getattr(rect_style, "ry", None):
+            rectparams["ry"] = ry
+            delattr(rect_style, "ry")
+
         if rect_style:
             rectparams["style"] = rect_style[""]
 
@@ -261,29 +273,11 @@ class Drawing:
         )
 
     def _draw_box_label(self, builder: LabelBuilder) -> container.Group:
-        """Draw label text on given object and return label position."""
-        _, _, _, y_margin = self._draw_label(builder)
-
-        if DEBUG:
-            assert builder.label is not None
-            assert y_margin is not None
-
-            self._draw_circle(
-                center_=(builder.label["x"], builder.label["y"]),
-                radius_=3,
-                obj_style=style.Styling(
-                    self.diagram_class,
-                    "Box",
-                    fill="rgb(239, 41, 41)",
-                ),
-                text_style=None,
-            )
-
+        """Draw label text on given object and return the label's group."""
+        self._draw_label(builder)
         return builder.group
 
-    def _draw_label(
-        self, builder: LabelBuilder
-    ) -> tuple[float, float, float, float | int | None]:
+    def _draw_label(self, builder: LabelBuilder) -> None:
         assert isinstance(builder.label["x"], (int, float))
         assert isinstance(builder.label["y"], (int, float))
         assert isinstance(builder.label["width"], (int, float))
@@ -294,10 +288,29 @@ class Drawing:
             "insert": (builder.label["x"], builder.label["y"]),
             "text_anchor": builder.text_anchor,
             "dominant_baseline": "middle",
-            "style": builder.labelstyle[""],
         }
         if "class" in builder.label:
             textattrs["class_"] = builder.label["class"]
+
+        if transform := getattr(builder.labelstyle, "transform", None):
+            if match := re.search(RE_ROTATION, transform):
+                if match.group("angle") != "-90":
+                    raise NotImplementedError(
+                        "Angles other than -90 are not supported"
+                    )
+
+                x = float(match.group("x"))
+                y = float(match.group("y"))
+                if new_y := match.group("tspan_y"):
+                    y = float(new_y)
+                    transform = transform.replace(f" {new_y}", "")
+
+            textattrs["transform"] = transform
+            delattr(builder.labelstyle, "transform")
+
+        if labelstyle := builder.labelstyle[""]:
+            textattrs["style"] = labelstyle
+
         text = self.__drawing.text(**textattrs)
         builder.group.add(text)
 
@@ -305,24 +318,30 @@ class Drawing:
             f"{builder.class_}Symbol" in decorations.deco_factories
             and builder.icon
         )
-        lines = render_hbounded_lines(builder, render_icon)
-        x, icon_x = get_label_position_x(builder, lines, render_icon)
-        y = get_label_position_y(builder, lines)
-        for line in lines.lines:
-            text.add(
-                svgtext.TSpan(
-                    insert=(x, y), text=line, **{"xml:space": "preserve"}
+        if transform:
+            params = {
+                "insert": (x, y),
+                "text": str(builder.label["text"]),
+                "xml:space": "preserve",
+            }
+            text.add(svgtext.TSpan(**params))
+        else:
+            lines = render_hbounded_lines(builder, render_icon)
+            x, icon_x = get_label_position_x(builder, lines, render_icon)
+            y = get_label_position_y(builder, lines)
+            for line in lines.lines:
+                text.add(
+                    svgtext.TSpan(
+                        insert=(x, y), text=line, **{"xml:space": "preserve"}
+                    )
                 )
-            )
-            y += lines.line_height
+                y += lines.line_height
 
-        if render_icon:
-            icon_pos = get_label_icon_position(
-                builder, lines.text_height, icon_x
-            )
-            self.add_label_image(builder, icon_pos)
-
-        return x, lines.text_height, lines.max_line_width, builder.y_margin
+            if render_icon:
+                icon_pos = get_label_icon_position(
+                    builder, lines.text_height, icon_x
+                )
+                self.add_label_image(builder, icon_pos)
 
     def add_label_image(
         self, builder: LabelBuilder, pos: tuple[float, float]
