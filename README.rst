@@ -1,5 +1,5 @@
 ..
-   SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+   SPDX-FileCopyrightText: Copyright DB InfraGO AG
    SPDX-License-Identifier: Apache-2.0
 
 Python-Capellambse
@@ -284,7 +284,7 @@ This project is compliant with the `REUSE Specification Version 3.0`__.
 
 __ https://git.fsfe.org/reuse/docs/src/commit/d173a27231a36e1a2a3af07421f5e557ae0fec46/spec.md
 
-Copyright DB Netz AG, licensed under Apache 2.0 (see full text in
+Copyright DB InfraGO AG, licensed under Apache 2.0 (see full text in
 `<LICENSES/Apache-2.0.txt>`__)
 
 Dot-files are licensed under CC0-1.0 (see full text in

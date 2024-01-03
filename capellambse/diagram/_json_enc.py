@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Module that handles converting diagrams to the intermediary JSON format."""
 from __future__ import annotations

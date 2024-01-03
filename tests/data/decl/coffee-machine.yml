@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 - parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440 # root logical component

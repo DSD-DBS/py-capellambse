@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 [build-system]
@@ -14,7 +14,7 @@ readme = "README.rst"
 requires-python = ">=3.10, <3.13"
 license = { text = "Apache-2.0" }
 authors = [
-  { name = "DB Netz AG" },
+  { name = "DB InfraGO AG" },
 ]
 keywords = ["arcadia", "capella", "mbse", "model-based systems engineering"]
 classifiers = [
