@@ -3,4 +3,4 @@
 
 name: CapellaMBSE Binder environment
 dependencies:
-  - python=3.9
+  - python=3.12
