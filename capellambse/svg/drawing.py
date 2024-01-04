@@ -350,6 +350,12 @@ class Drawing:
         if builder.class_ is None:
             builder.class_ = "Error"
 
+        if "Human" in builder.class_ and "StickFigure" not in self.deco_cache:
+            self.__drawing.defs.add(
+                decorations.deco_factories["StickFigureSymbol"]()
+            )
+            self.deco_cache.append("StickFigure")
+
         if builder.class_ not in self.deco_cache:
             self.__drawing.defs.add(
                 decorations.deco_factories[f"{builder.class_}Symbol"]()
