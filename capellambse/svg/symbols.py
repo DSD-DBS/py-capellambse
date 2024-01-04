@@ -491,37 +491,40 @@ def initial_pseudo_state_symbol(id_="InitialPseudoStateSymbol"):
 def logical_function_symbol(
     id_: str = "LogicalFunctionSymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, label="LF")
+    return function_symbol(id_, gradient_url="LF_green", label="LF")
 
 
 @decorations.deco_factories
 def system_function_symbol(
     id_: str = "SystemFunctionSymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, label="SF")
+    return function_symbol(id_, gradient_url="SF_green", label="SF")
 
 
 @decorations.deco_factories
 def physical_function_symbol(
     id_: str = "PhysicalFunctionSymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, label="PF")
+    return function_symbol(id_, gradient_url="PF_green", label="PF")
 
 
 @decorations.deco_factories
 def operational_activity_symbol(
     id_: str = "OperationalActivitySymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, ("#f4901d", "white"), "OA")
+    return function_symbol(
+        id_, colors=("#f4901d", "white"), gradient_url="OA_orange", label="OA"
+    )
 
 
 @decorations.deco_factories
 def function_symbol(
     id_: str = "FunctionSymbol",
     colors: tuple[str, str] = ("#6CB35B", "#ffffff"),
+    gradient_url="green",
     label: str = "F",
 ) -> container.Symbol:
-    grad = _make_lgradient("green", stop_colors=colors, end=(1, 0))
+    grad = _make_lgradient(gradient_url, stop_colors=colors, end=(1, 0))
     symb = _make_function_symbol(id_, gradient=grad)
     symb.add(
         text.Text(
@@ -1147,7 +1150,7 @@ def _brown_oval(id_: str) -> container.Symbol:
 def system_human_actor_symbol(
     id_: str = "SystemHumanActorSymbol",
 ) -> container.Symbol:
-    return stick_figure_symbol(id_)
+    return standalone_stick_figure_symbol(id_)
 
 
 @decorations.deco_factories
