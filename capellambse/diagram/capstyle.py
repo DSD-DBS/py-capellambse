@@ -219,6 +219,8 @@ COLORS: dict[str, RGB] = {
     "_CAP_StateTransition_Color": RGB(0, 0, 0),
     "_CAP_State_Gray": RGB(228, 228, 228),
     "_CAP_Unit_LightBrown": RGB(214, 197, 171),
+    "_CAP_Unset_Gray": RGB(205, 205, 205),
+    "_CAP_Unset_Gray_min": RGB(234, 234, 234),
     "_CAP_Value_LightBrown": RGB(254, 253, 250),
     "_CAP_xAB_Activity_Label_Orange": RGB(91, 64, 64),
     "_CAP_xAB_Function_Border_Green": RGB(9, 92, 46),
@@ -769,11 +771,30 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Box.PhysicalComponent": {
             "fill": [
+                COLORS["_CAP_Unset_Gray_min"],
+                COLORS["_CAP_Unset_Gray"],
+            ],
+            "stroke": COLORS["_CAP_Lifeline_Gray"],
+            "text_fill": COLORS["black"],
+        },
+        "Box.PhysicalNodeComponent": {
+            "fill": [
                 COLORS["_CAP_Node_Yellow_min"],
                 COLORS["_CAP_Node_Yellow"],
             ],
             "stroke": COLORS["_CAP_Node_Yellow_Border"],
             "text_fill": COLORS["_CAP_Node_Yellow_Label"],
+        },
+        "Box.PhysicalBehaviorComponent": {
+            "fill": [
+                COLORS["_CAP_Component_Blue_min"],
+                COLORS["_CAP_Component_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "rx": "10px",
+            "ry": "10px",
+            "text_fill": COLORS["black"],
+            "text_font-style": "italic",
         },
         "Box.PhysicalFunction": {
             "fill": COLORS["_CAP_xAB_Function_Green"],

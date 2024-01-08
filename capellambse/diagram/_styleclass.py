@@ -87,7 +87,7 @@ def _physical_component(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.pa.PhysicalComponent)
     styleclass = _generic_component(obj)
     ptrn = re.compile("^(.*)(Component|Actor)$")
-    nature = obj.nature.name
+    nature = [obj.nature.name, ""][obj.nature.name == "UNSET"]
     return ptrn.sub(rf"\1{nature.capitalize()}\2", styleclass)
 
 
