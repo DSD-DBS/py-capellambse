@@ -65,6 +65,7 @@ def export(
     index: bool,
     force: t.Literal["exe", "docker", None],
     background: bool,
+    refresh: bool = False,
 ) -> None:
     if not isinstance(
         getattr(model, "_diagram_cache", None), local.LocalFileHandler
@@ -90,6 +91,14 @@ def export(
     native_args = _find_executor(model, capella, force)
     with _native.native_capella(model, **native_args) as cli:
         assert cli.project
+
+        if refresh:
+            cli(
+                *_native.ARGS_CMDLINE,
+                "-appid",
+                "org.polarsys.capella.refreshRepresentations",
+            )
+
         cli(
             *_native.ARGS_CMDLINE,
             "-appid",
