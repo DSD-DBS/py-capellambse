@@ -34,7 +34,11 @@ class DataType(c.GenericElement):
 
 @c.xtype_handler(None)
 class BooleanType(DataType):
-    literals = c.DirectProxyAccessor(datavalue.LiteralBooleanValue)
+    literals = c.DirectProxyAccessor(
+        datavalue.LiteralBooleanValue,
+        aslist=c.ElementList,
+        list_extra_args={"fixed_length": 2},
+    )
     default = c.RoleTagAccessor("ownedDefaultValue")
 
 
