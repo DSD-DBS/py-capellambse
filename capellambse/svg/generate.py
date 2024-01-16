@@ -109,7 +109,18 @@ class SVGDiagram:
         """Draw the given ``obj`` on the underlaying ``Drawing``."""
         self.drawing.draw_object(obj)
 
-    def save_drawing(
+    def save_drawing(self, *args, **kwargs) -> None:
+        import warnings
+
+        warnings.warn(
+            "'save_drawing' is deprecated, use 'save' instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        del warnings
+        self.save(*args, **kwargs)
+
+    def save(
         self,
         filename: str | None = None,
         pretty: bool = False,
