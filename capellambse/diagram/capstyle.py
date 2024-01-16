@@ -543,19 +543,22 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
     },
     "Missions Capabilities Blank": {
         "Box.SystemComponent": {
-            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
-            "stroke": COLORS["_CAP_Actor_Border_Blue"],
-            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+            "fill": [
+                COLORS["_CAP_Component_Blue_min"],
+                COLORS["_CAP_Component_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_fill": COLORS["black"],
         },
         "Box.SystemActor": {
             "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
             "stroke": COLORS["_CAP_Actor_Border_Blue"],
-            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+            "text_fill": COLORS["black"],
         },
         "Box.SystemHumanActor": {
             "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
             "stroke": COLORS["_CAP_Actor_Border_Blue"],
-            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+            "text_fill": COLORS["black"],
         },
         "Edge.AbstractCapabilityExtend": {
             "marker-end": "FineArrowMark",
@@ -857,9 +860,12 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "text_fill": COLORS["_CAP_Actor_Blue_label"],
         },
         "Box.SystemComponent": {
-            "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
-            "stroke": COLORS["_CAP_Actor_Border_Blue"],
-            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+            "fill": [
+                COLORS["_CAP_Component_Blue_min"],
+                COLORS["_CAP_Component_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Component_Border_Blue"],
+            "text_fill": COLORS["black"],
         },
         "Box.SystemHumanActor": {
             "fill": [COLORS["_CAP_Actor_Blue_min"], COLORS["_CAP_Actor_Blue"]],
