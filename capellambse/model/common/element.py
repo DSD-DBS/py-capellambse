@@ -666,11 +666,10 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     def __getitem__(self, idx: int | slice | str) -> t.Any:
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
-        if isinstance(idx, int):
-            return self._elemclass.from_model(self._model, self._elements[idx])
-
-        obj = self._map_find(idx)
-        return self._map_getvalue(obj)
+        if isinstance(idx, str):
+            obj = self._map_find(idx)
+            return self._map_getvalue(obj)
+        return self._elemclass.from_model(self._model, self._elements[idx])
 
     @t.overload
     def __setitem__(self, index: int, value: T) -> None:
