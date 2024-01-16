@@ -116,7 +116,7 @@ class TestSVG:
         return svg
 
     def test_diagram_saves(self, tmp_svg: SVGDiagram) -> None:
-        tmp_svg.save_drawing()
+        tmp_svg.save()
         assert pathlib.Path(tmp_svg.drawing.filename).is_file()
 
     def test_base_css_styles(self, tmp_json: pathlib.Path) -> None:
