@@ -111,7 +111,6 @@ class StackingBox(diagram.Box):
             width = max(map(operator.attrgetter("size.x"), self.children))
         except ValueError:
             width = 0
-        # pylint: disable=unpacking-non-sequence  # false-positive
         pad_x, pad_y = self.padding * 2
         if isinstance(self.label, str):
             label_extent = helpers.get_text_extent(
