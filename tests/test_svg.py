@@ -146,7 +146,9 @@ class TestDecoFactory:
         assert class_ in decorations.deco_factories
 
     def test_deco_factory_returns_symbol_factory_for_given_styleclass(self):
-        assert decorations.deco_factories["PortSymbol"] is symbols.port_symbol
+        deco_factory = decorations.DecoFactory(symbols.port_symbol, ())
+
+        assert decorations.deco_factories["PortSymbol"] == deco_factory
 
     @pytest.mark.parametrize(
         "class_", ["ImaginaryClassSymbol", "NothingSymbol"]

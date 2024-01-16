@@ -67,7 +67,7 @@ class Drawing:
 
         self.__drawing = drawing.Drawing(**superparams)
         self.diagram_class = metadata.class_
-        self.deco_cache: list[str] = []
+        self.deco_cache: set[str] = set()
         self.add_backdrop(pos=metadata.pos, size=metadata.size)
 
         self.obj_cache: dict[str | None, t.Any] = {}
@@ -350,17 +350,8 @@ class Drawing:
         if builder.class_ is None:
             builder.class_ = "Error"
 
-        if "Human" in builder.class_ and "StickFigure" not in self.deco_cache:
-            self.__drawing.defs.add(
-                decorations.deco_factories["StickFigureSymbol"]()
-            )
-            self.deco_cache.append("StickFigure")
-
         if builder.class_ not in self.deco_cache:
-            self.__drawing.defs.add(
-                decorations.deco_factories[f"{builder.class_}Symbol"]()
-            )
-            self.deco_cache.append(builder.class_)
+            self._add_decofactory(builder.class_)
 
         builder.group.add(
             self.__drawing.use(
@@ -407,19 +398,18 @@ class Drawing:
     ) -> container.Group:
         grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
         if class_ in decorations.all_directed_ports:
-            port_id = "ErrorSymbol"
+            port_id = "Error"
             if class_ in decorations.function_ports:
-                port_id = "PortSymbol"
+                port_id = "Port"
             elif class_ in decorations.component_ports:
-                port_id = "ComponentPortSymbol"
+                port_id = "ComponentPort"
 
             if port_id not in self.deco_cache:
-                self.__drawing.defs.add(decorations.deco_factories[port_id]())
-                self.deco_cache.append(port_id)
+                self._add_decofactory(port_id)
 
             grp.add(
                 self.__drawing.use(
-                    href=f"#{port_id}",
+                    href=f"#{port_id}Symbol",
                     insert=pos,
                     size=size,
                     transform=self.get_port_transformation(
@@ -550,7 +540,7 @@ class Drawing:
             marker_id = styling._generate_id(marker, [stroke])
             if marker_id not in defs_ids:
                 self.__drawing.defs.add(
-                    decorations.deco_factories[marker](
+                    decorations.deco_factories[marker].function(
                         marker_id,
                         style=style.Styling(
                             self.diagram_class,
@@ -588,10 +578,7 @@ class Drawing:
             class_ not in self.deco_cache
             and class_ not in decorations.all_ports
         ):
-            self.__drawing.defs.add(
-                decorations.deco_factories[f"{class_}Symbol"]()
-            )
-            self.deco_cache.append(class_)
+            self._add_decofactory(class_)
 
         if class_ in decorations.all_ports:
             grp = self.add_port(
@@ -853,6 +840,15 @@ class Drawing:
             )
         )
         return lines
+
+    def _add_decofactory(self, name: str) -> None:
+        factory = decorations.deco_factories[f"{name}Symbol"]
+        self.__drawing.defs.add(factory.function())
+        for dep in factory.dependencies:
+            if dep not in self.deco_cache:
+                self._add_decofactory(dep)
+
+        self.deco_cache.add(name)
 
 
 @dataclasses.dataclass

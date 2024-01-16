@@ -380,7 +380,7 @@ def stick_figure_symbol(
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def standalone_stick_figure_symbol(
     id_: str = "StandaloneStickFigureSymbol",
 ) -> container.Symbol:
@@ -427,7 +427,7 @@ def logical_actor_symbol(id_: str = "LogicalActorSymbol") -> container.Symbol:
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def logical_human_component_symbol(
     id_: str = "LogicalHumanComponentSymbol",
 ) -> container.Symbol:
@@ -1146,7 +1146,7 @@ def _brown_oval(id_: str) -> container.Symbol:
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def system_human_actor_symbol(
     id_: str = "SystemHumanActorSymbol",
 ) -> container.Symbol:
@@ -1231,7 +1231,7 @@ def physical_behavior_component_symbol(
     return _make_physical_component_symbol(id_, color="#a5bde7")
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def physical_behavior_human_component_symbol(
     id_: str = "PhysicalBehaviorHumanComponentSymbol",
 ) -> container.Symbol:
@@ -1299,7 +1299,7 @@ def physical_component_symbol(
     return _make_physical_component_symbol(id_, color="#dbe6f4")
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def physical_node_human_component_symbol(
     id_: str = "PhysicalNodeHumanComponentSymbol",
 ) -> container.Symbol:
