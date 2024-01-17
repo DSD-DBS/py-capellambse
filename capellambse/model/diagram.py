@@ -7,6 +7,7 @@ import abc
 import base64
 import collections.abc as cabc
 import importlib.metadata as imm
+import io
 import logging
 import operator
 import os
@@ -33,6 +34,13 @@ class DiagramFormat(t.Protocol):
 
     @classmethod
     def from_cache(cls, cache: bytes) -> t.Any:
+        ...
+
+
+@t.runtime_checkable
+class PrettyDiagramFormat(DiagramFormat, t.Protocol):
+    @classmethod
+    def convert_pretty(cls, dg: diagram.Diagram) -> t.Any:
         ...
 
 
@@ -232,11 +240,36 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         ...
 
     @t.overload
-    def render(self, fmt: str, /, **params) -> t.Any:
+    def render(
+        self, fmt: str, /, *, pretty_print: bool = ..., **params
+    ) -> t.Any:
         ...
 
-    def render(self, fmt: str | None, /, **params) -> t.Any:
-        """Render the diagram in the given format."""
+    def render(
+        self,
+        fmt: str | None,
+        /,
+        *,
+        pretty_print: bool = False,
+        **params,
+    ) -> t.Any:
+        """Render the diagram in the given format.
+
+        Parameters
+        ----------
+        fmt
+            The output format to use.
+
+            If ``None``, the :class:`diagram.Diagram` is returned
+            without format conversion.
+        pretty_print
+            Whether to pretty-print the output. Only applies to
+            text-based formats. Ignored if the output format converter
+            does not support pretty-printing.
+        params
+            Additional render parameters. Which parameters are
+            supported depends on the specific type of diagram.
+        """
         if fmt is not None:
             conv = _find_format_converter(fmt)
         else:
@@ -255,7 +288,9 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 raise RuntimeError(f"Diagram not in cache: {self.name}")
 
         render = self.__render_fresh(params)
-        if isinstance(conv, DiagramFormat):
+        if pretty_print and isinstance(conv, PrettyDiagramFormat):
+            return conv.convert_pretty(render)
+        elif isinstance(conv, DiagramFormat):
             return conv.convert(render)
         else:
             return conv(render)
@@ -504,6 +539,14 @@ class SVGFormat:
         return convert_svgdiagram(dg).to_string()
 
     @staticmethod
+    def convert_pretty(dg: diagram.Diagram) -> str:
+        buf = io.StringIO()
+        svgdg = convert_svgdiagram(dg).drawing
+        drawing = svgdg._Drawing__drawing  # type: ignore[attr-defined]
+        drawing.write(buf, pretty=True)
+        return buf.getvalue()
+
+    @staticmethod
     def from_cache(cache: bytes) -> str:
         return cache.decode("utf-8")
 
@@ -553,6 +596,16 @@ class ConfluenceSVGFormat:
     @classmethod
     def convert(cls, dg: diagram.Diagram) -> str:
         return "".join((cls.prefix, SVGFormat.convert(dg), cls.postfix))
+
+    @classmethod
+    def convert_pretty(cls, dg: diagram.Diagram) -> str:
+        return (
+            cls.prefix
+            + "\n"
+            + SVGFormat.convert_pretty(dg)
+            + "\n"
+            + cls.postfix
+        )
 
     @classmethod
     def from_cache(cls, cache: bytes) -> str:
