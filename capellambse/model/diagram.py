@@ -179,7 +179,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         self,
         include: cabc.Container[str] | None = None,
         exclude: cabc.Container[str] | None = None,
-        **_,
+        **_kw,
     ) -> tuple[dict[str, t.Any], dict[t.Any, t.Any]] | dict[str, t.Any] | None:
         if include is None:
             include = helpers.EverythingContainer()
@@ -187,7 +187,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             exclude = ()
 
         formats: dict[str, DiagramConverter] = {}
-        for conv in _iter_format_converters():
+        for _, conv in _iter_format_converters():
             mime = getattr(conv, "mimetype", None)
             if not mime or mime not in include or mime in exclude:
                 continue
@@ -294,6 +294,49 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             return conv.convert(render)
         else:
             return conv(render)
+
+    def save(
+        self,
+        file: str | os.PathLike | t.IO[bytes],
+        fmt: str,
+        /,
+        *,
+        pretty_print: bool = False,
+        **params,
+    ) -> None:
+        """Render the diagram and write it to a file.
+
+        Parameters
+        ----------
+        file
+            The file to write the diagram to. Can be a filename, or a
+            file-like object in binary mode.
+
+            Text-based formats that render to a :class:`str` will always
+            be encoded as UTF-8.
+        fmt
+            The output format to use.
+        pretty_print
+            Whether to pretty-print the output. Only applies to
+            text-based formats. Ignored if the output format converter
+            does not support pretty-printing.
+        params
+            Additional render parameters to pass to the :meth:`render`
+            call.
+        """
+        data = self.render(fmt, pretty_print=pretty_print, **params)
+        if isinstance(data, str):
+            data = data.encode("utf-8")
+        elif not isinstance(data, bytes):
+            raise TypeError(
+                f"Cannot write format {fmt!r} to file:"
+                f" expected str or bytes, got {type(data).__name__}"
+            )
+        if hasattr(file, "write"):
+            file.write(data)
+        else:
+            with open(file, "wb") as f:
+                f.write(data)
 
     @abc.abstractmethod
     def _create_diagram(self, params: dict[str, t.Any]) -> diagram.Diagram:
@@ -694,11 +737,11 @@ def _find_format_converter(fmt: str) -> DiagramConverter:
     return next(iter(eps)).load()
 
 
-def _iter_format_converters() -> t.Iterator[DiagramConverter]:
+def _iter_format_converters() -> t.Iterator[tuple[str, DiagramConverter]]:
     for ep in imm.entry_points(group="capellambse.diagram.formats"):
         try:
             conv = ep.load()
         except ImportError:
             pass
         else:
-            yield conv
+            yield (ep.name, conv)
