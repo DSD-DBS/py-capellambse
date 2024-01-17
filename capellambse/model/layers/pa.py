@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Tools for the Physical Architecture layer.
 
@@ -47,9 +47,11 @@ class PhysicalComponent(cs.Component):
 
     _xmltag = "ownedPhysicalComponents"
 
-    nature = c.EnumAttributeProperty("nature", modeltypes.Nature)
+    nature = c.EnumAttributeProperty(
+        "nature", modeltypes.PhysicalComponentNature, default="UNSET"
+    )
     kind = c.EnumAttributeProperty(
-        "kind", modeltypes.Kind, default=modeltypes.Kind.UNSET
+        "kind", modeltypes.PhysicalComponentKind, default="UNSET"
     )
 
     allocated_functions = c.LinkAccessor[PhysicalFunction](

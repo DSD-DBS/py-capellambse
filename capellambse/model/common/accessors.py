@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -1038,6 +1038,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         attr: str,
         *,
         aslist: type[element.ElementList] | None = None,
+        list_extra_args: cabc.Mapping[str, t.Any] | None = None,
     ):
         """Create an AttrProxyAccessor.
 
@@ -1053,9 +1054,17 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             returned. If not None, must be a subclass of
             :class:`~capellambse.model.common.element.ElementList`. It
             will be used to return a list of all matched objects.
+        list_extra_args
+            Extra arguments to pass to the
+            :class:`~capellambse.model.common.element.ElementList`
+            constructor.
         """
         del class_
-        super().__init__(element.GenericElement, aslist=aslist)
+        super().__init__(
+            element.GenericElement,
+            aslist=aslist,
+            list_extra_args=list_extra_args,
+        )
         self.attr = attr
 
     def __get__(self, obj, objtype=None):
@@ -1174,9 +1183,13 @@ class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
         *,
         aslist: type[element.ElementList],
     ) -> None:
-        super().__init__(class_, attr, aslist=aslist)
+        super().__init__(
+            class_,
+            attr,
+            aslist=aslist,
+            list_extra_args={"fixed_length": 2},
+        )
         assert self.aslist is not None
-        self.aslist.fixed_length = 2
 
     @contextlib.contextmanager
     def purge_references(
@@ -1847,15 +1860,19 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
     """
 
     _accessor: WritableAccessor[T]
-    fixed_length: t.ClassVar[int] = 0
 
     def __init__(
-        self, *args: t.Any, parent: element.ModelObject, **kw: t.Any
+        self,
+        *args: t.Any,
+        parent: element.ModelObject,
+        fixed_length: int = 0,
+        **kw: t.Any,
     ) -> None:
         assert type(self)._accessor
 
         super().__init__(*args, **kw)
         self._parent = parent
+        self.fixed_length = fixed_length
 
     @t.overload
     def __setitem__(self, index: int, value: T) -> None:

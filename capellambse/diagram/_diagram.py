@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Classes that represent different aspects of a diagram."""
 from __future__ import annotations
@@ -384,7 +384,6 @@ class Box:
             return self._size
 
         if isinstance(self.label, str):
-            # pylint: disable=unpacking-non-sequence  # false-positive
             pad_w, pad_h = self.padding * 2  # Pad on all four sides
 
             # Fill in missing box size fields based on label text extent

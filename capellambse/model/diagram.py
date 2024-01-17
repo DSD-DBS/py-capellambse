@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Classes that allow access to diagrams in the model."""
 from __future__ import annotations
@@ -635,20 +635,14 @@ class TerminalGraphicsFormat:
 
 
 def _find_format_converter(fmt: str) -> DiagramConverter:
-    try:
-        return next(
-            i.load()
-            for i in imm.entry_points()["capellambse.diagram.formats"]
-            if i.name == fmt
-        )
-    except StopIteration:
-        raise UnknownOutputFormat(
-            f"Unknown image output format {fmt}"
-        ) from None
+    eps = imm.entry_points(group="capellambse.diagram.formats", name=fmt)
+    if not eps:
+        raise UnknownOutputFormat(f"Unknown image output format {fmt}")
+    return next(iter(eps)).load()
 
 
 def _iter_format_converters() -> t.Iterator[DiagramConverter]:
-    for ep in imm.entry_points()["capellambse.diagram.formats"]:
+    for ep in imm.entry_points(group="capellambse.diagram.formats"):
         try:
             conv = ep.load()
         except ImportError:

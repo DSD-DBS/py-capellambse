@@ -1,5 +1,5 @@
 ..
-   SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+   SPDX-FileCopyrightText: Copyright DB InfraGO AG
    SPDX-License-Identifier: Apache-2.0
 
 Python-Capellambse
@@ -57,6 +57,24 @@ re-architected a few times and now has a full read/write capability for most of
 the present Capella ontology. We are continuously improving the API
 (introducing shortcuts), increasing the meta-model coverage and have more
 engineering automations and improvements in the pipeline to share.
+
+Related projects
+----------------
+
+- `capellambse-context-diagrams`__ — A capellambse extension that visualizes
+  the context of Capella objects, and exposes it on element attributes like
+  ``.context_diagram``, ``.tree_view``, etc.
+
+  __ https://github.com/DSD-DBS/capellambse-context-diagrams
+
+- `capella-diff-tools`__ — A set of tools to compare Capella models.
+
+  __ https://github.com/DSD-DBS/capella-diff-tools
+
+Did you make something cool that is using or extending capellambse? `Tell us
+about it`__, so we can add it to this list!
+
+__ https://github.com/DSD-DBS/py-capellambse/issues
 
 Documentation and examples
 --------------------------
@@ -266,7 +284,7 @@ This project is compliant with the `REUSE Specification Version 3.0`__.
 
 __ https://git.fsfe.org/reuse/docs/src/commit/d173a27231a36e1a2a3af07421f5e557ae0fec46/spec.md
 
-Copyright DB Netz AG, licensed under Apache 2.0 (see full text in
+Copyright DB InfraGO AG, licensed under Apache 2.0 (see full text in
 `<LICENSES/Apache-2.0.txt>`__)
 
 Dot-files are licensed under CC0-1.0 (see full text in

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 
@@ -23,9 +23,7 @@ class LiteralValue(c.GenericElement):
 
 @c.xtype_handler(None)
 class LiteralNumericValue(LiteralValue):
-    value = c.NumericAttributeProperty(
-        "value", optional=True, allow_float=False
-    )
+    value = c.AttributeProperty("value", optional=True)
     unit = c.AttrProxyAccessor(c.GenericElement, "unit")
 
 

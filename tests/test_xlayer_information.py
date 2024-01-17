@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 import typing as t
@@ -237,7 +237,9 @@ def test_complex_value(model: MelodyModel):
     "uuid,expected_value,expected_cls",
     [
         pytest.param(
-            "1d24c16d-61ad-40b9-9ce0-80e72320e74f", 3, "LiteralNumericValue"
+            "1d24c16d-61ad-40b9-9ce0-80e72320e74f",
+            "3",
+            "LiteralNumericValue",
         ),
         pytest.param(
             "3c6d9df2-1229-4642-aede-a7ac129035c9",

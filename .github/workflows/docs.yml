@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: CC0-1.0
 
 name: Docs
@@ -21,7 +21,7 @@ jobs:
         with:
           cache: pip
           cache-dependency-path: pyproject.toml
-          python-version: "3.11"
+          python-version: "3.12"
       - name: Upgrade pip
         run: python -m pip install -U pip
       - name: Install dependencies

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Functions for receiving the styleclass from a given model object."""
 from __future__ import annotations
@@ -87,7 +87,7 @@ def _physical_component(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.pa.PhysicalComponent)
     styleclass = _generic_component(obj)
     ptrn = re.compile("^(.*)(Component|Actor)$")
-    nature = obj.nature.name
+    nature = [obj.nature.name, ""][obj.nature.name == "UNSET"]
     return ptrn.sub(rf"\1{nature.capitalize()}\2", styleclass)
 
 

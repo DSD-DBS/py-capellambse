@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -116,7 +116,7 @@ class TestSVG:
         return svg
 
     def test_diagram_saves(self, tmp_svg: SVGDiagram) -> None:
-        tmp_svg.save_drawing()
+        tmp_svg.save()
         assert pathlib.Path(tmp_svg.drawing.filename).is_file()
 
     def test_base_css_styles(self, tmp_json: pathlib.Path) -> None:
@@ -146,7 +146,9 @@ class TestDecoFactory:
         assert class_ in decorations.deco_factories
 
     def test_deco_factory_returns_symbol_factory_for_given_styleclass(self):
-        assert decorations.deco_factories["PortSymbol"] is symbols.port_symbol
+        deco_factory = decorations.DecoFactory(symbols.port_symbol, ())
+
+        assert decorations.deco_factories["PortSymbol"] == deco_factory
 
     @pytest.mark.parametrize(
         "class_", ["ImaginaryClassSymbol", "NothingSymbol"]

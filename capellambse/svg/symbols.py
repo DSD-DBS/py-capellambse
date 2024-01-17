@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -240,6 +240,36 @@ def _make_icon_frame(id_: str, color: str) -> container.Symbol:
     return symb
 
 
+def _make_physical_component_symbol(id_: str, color: str) -> container.Symbol:
+    symb = _make_icon_frame(id_=id_, color=color)
+    symb.add(
+        path.Path(
+            d=(
+                "m 57.589299,33.276194 c 0,1.410473 -0.249326,2.72122"
+                " -0.747979,3.93224 -0.484407,1.19676 -1.168275,2.236807"
+                " -2.051603,3.12014 -1.097038,1.097033 -2.393538,1.923373"
+                " -3.889499,2.47902 -1.495959,0.541393 -3.383718,0.81209"
+                " -5.663277,0.81209 h -4.231429 v 11.86083 h -4.23143 v"
+                " -31.82122 h 8.633826 c 1.909129,0 3.526191,0.163843"
+                " 4.851185,0.49153 1.324993,0.31344 2.500391,0.812097"
+                " 3.526192,1.49597 1.211016,0.812087 2.14421,1.82364"
+                " 2.799583,3.03466 0.669621,1.211013 1.004431,2.742593"
+                " 1.004431,4.59474 z m -4.402396,0.10687 c 0,-1.09704"
+                " -0.192339,-2.051607 -0.577016,-2.8637 -0.384675,-0.812093"
+                " -0.968811,-1.47459 -1.752408,-1.98749 -0.683868,-0.441667"
+                " -1.467467,-0.755107 -2.350798,-0.94032 -0.869079,-0.19946"
+                " -1.97324,-0.29919 -3.312483,-0.29919 h -4.188686 v 12.71566"
+                " h 3.568931 c 1.709669,0 3.098776,-0.149593 4.167321,-0.44878"
+                " 1.068543,-0.31344 1.937623,-0.80497 2.607242,-1.47459"
+                " 0.669621,-0.683867 1.139781,-1.403353 1.410478,-2.15846"
+                " 0.284946,-0.7551 0.427419,-1.60281 0.427419,-2.54313 z"
+            ),
+            style="fill: #000;stroke-width: 0.1;",
+        )
+    )
+    return symb
+
+
 @decorations.deco_factories
 def entity_symbol(id_: str = "EntitySymbol") -> container.Symbol:
     symb = _make_icon_frame(id_=id_, color="#a5b9c8")
@@ -350,7 +380,7 @@ def stick_figure_symbol(
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def standalone_stick_figure_symbol(
     id_: str = "StandaloneStickFigureSymbol",
 ) -> container.Symbol:
@@ -397,7 +427,7 @@ def logical_actor_symbol(id_: str = "LogicalActorSymbol") -> container.Symbol:
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def logical_human_component_symbol(
     id_: str = "LogicalHumanComponentSymbol",
 ) -> container.Symbol:
@@ -461,37 +491,40 @@ def initial_pseudo_state_symbol(id_="InitialPseudoStateSymbol"):
 def logical_function_symbol(
     id_: str = "LogicalFunctionSymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, label="LF")
+    return function_symbol(id_, gradient_url="LF_green", label="LF")
 
 
 @decorations.deco_factories
 def system_function_symbol(
     id_: str = "SystemFunctionSymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, label="SF")
+    return function_symbol(id_, gradient_url="SF_green", label="SF")
 
 
 @decorations.deco_factories
 def physical_function_symbol(
     id_: str = "PhysicalFunctionSymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, label="PF")
+    return function_symbol(id_, gradient_url="PF_green", label="PF")
 
 
 @decorations.deco_factories
 def operational_activity_symbol(
     id_: str = "OperationalActivitySymbol",
 ) -> container.Symbol:
-    return function_symbol(id_, ("#f4901d", "white"), "OA")
+    return function_symbol(
+        id_, colors=("#f4901d", "white"), gradient_url="OA_orange", label="OA"
+    )
 
 
 @decorations.deco_factories
 def function_symbol(
     id_: str = "FunctionSymbol",
     colors: tuple[str, str] = ("#6CB35B", "#ffffff"),
+    gradient_url="green",
     label: str = "F",
 ) -> container.Symbol:
-    grad = _make_lgradient("green", stop_colors=colors, end=(1, 0))
+    grad = _make_lgradient(gradient_url, stop_colors=colors, end=(1, 0))
     symb = _make_function_symbol(id_, gradient=grad)
     symb.add(
         text.Text(
@@ -1113,11 +1146,11 @@ def _brown_oval(id_: str) -> container.Symbol:
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def system_human_actor_symbol(
     id_: str = "SystemHumanActorSymbol",
 ) -> container.Symbol:
-    return stick_figure_symbol(id_)
+    return standalone_stick_figure_symbol(id_)
 
 
 @decorations.deco_factories
@@ -1195,38 +1228,10 @@ def representation_link_symbol(
 def physical_behavior_component_symbol(
     id_: str = "PhysicalBehaviorComponentSymbol",
 ) -> container.Symbol:
-    symb = _make_icon_frame(id_=id_, color="#a5bde7")
-    letter = container.Group(transform="scale(0.7,0.7) translate(15, 18)")
-    letter.add(
-        path.Path(
-            d=(
-                "m 57.589299,33.276194 c 0,1.410473 -0.249326,2.72122"
-                " -0.747979,3.93224 -0.484407,1.19676 -1.168275,2.236807"
-                " -2.051603,3.12014 -1.097038,1.097033 -2.393538,1.923373"
-                " -3.889499,2.47902 -1.495959,0.541393 -3.383718,0.81209"
-                " -5.663277,0.81209 h -4.231429 v 11.86083 h -4.23143 v"
-                " -31.82122 h 8.633826 c 1.909129,0 3.526191,0.163843"
-                " 4.851185,0.49153 1.324993,0.31344 2.500391,0.812097"
-                " 3.526192,1.49597 1.211016,0.812087 2.14421,1.82364"
-                " 2.799583,3.03466 0.669621,1.211013 1.004431,2.742593"
-                " 1.004431,4.59474 z m -4.402396,0.10687 c 0,-1.09704"
-                " -0.192339,-2.051607 -0.577016,-2.8637 -0.384675,-0.812093"
-                " -0.968811,-1.47459 -1.752408,-1.98749 -0.683868,-0.441667"
-                " -1.467467,-0.755107 -2.350798,-0.94032 -0.869079,-0.19946"
-                " -1.97324,-0.29919 -3.312483,-0.29919 h -4.188686 v 12.71566"
-                " h 3.568931 c 1.709669,0 3.098776,-0.149593 4.167321,-0.44878"
-                " 1.068543,-0.31344 1.937623,-0.80497 2.607242,-1.47459"
-                " 0.669621,-0.683867 1.139781,-1.403353 1.410478,-2.15846"
-                " 0.284946,-0.7551 0.427419,-1.60281 0.427419,-2.54313 z"
-            ),
-            style="white-space: pre;inline-size: 15.4494;stroke-width: 0.1;",
-        )
-    )
-    symb.add(letter)
-    return symb
+    return _make_physical_component_symbol(id_, color="#a5bde7")
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def physical_behavior_human_component_symbol(
     id_: str = "PhysicalBehaviorHumanComponentSymbol",
 ) -> container.Symbol:
@@ -1284,38 +1289,17 @@ def physical_behavior_human_actor_symbol(
 def physical_node_component_symbol(
     id_: str = "PhysicalNodeComponentSymbol",
 ) -> container.Symbol:
-    symb = _make_icon_frame(id_=id_, color="#ffff00")
-    letter = container.Group(transform="scale(0.7,0.7) translate(15, 18)")
-    letter.add(
-        path.Path(
-            d=(
-                "m 57.589299,33.276194 c 0,1.410473 -0.249326,2.72122"
-                " -0.747979,3.93224 -0.484407,1.19676 -1.168275,2.236807"
-                " -2.051603,3.12014 -1.097038,1.097033 -2.393538,1.923373"
-                " -3.889499,2.47902 -1.495959,0.541393 -3.383718,0.81209"
-                " -5.663277,0.81209 h -4.231429 v 11.86083 h -4.23143 v"
-                " -31.82122 h 8.633826 c 1.909129,0 3.526191,0.163843"
-                " 4.851185,0.49153 1.324993,0.31344 2.500391,0.812097"
-                " 3.526192,1.49597 1.211016,0.812087 2.14421,1.82364"
-                " 2.799583,3.03466 0.669621,1.211013 1.004431,2.742593"
-                " 1.004431,4.59474 z m -4.402396,0.10687 c 0,-1.09704"
-                " -0.192339,-2.051607 -0.577016,-2.8637 -0.384675,-0.812093"
-                " -0.968811,-1.47459 -1.752408,-1.98749 -0.683868,-0.441667"
-                " -1.467467,-0.755107 -2.350798,-0.94032 -0.869079,-0.19946"
-                " -1.97324,-0.29919 -3.312483,-0.29919 h -4.188686 v 12.71566"
-                " h 3.568931 c 1.709669,0 3.098776,-0.149593 4.167321,-0.44878"
-                " 1.068543,-0.31344 1.937623,-0.80497 2.607242,-1.47459"
-                " 0.669621,-0.683867 1.139781,-1.403353 1.410478,-2.15846"
-                " 0.284946,-0.7551 0.427419,-1.60281 0.427419,-2.54313 z"
-            ),
-            style="white-space: pre;inline-size: 15.4494;stroke-width: 0.1;",
-        )
-    )
-    symb.add(letter)
-    return symb
+    return _make_physical_component_symbol(id_, color="#ffff00")
 
 
 @decorations.deco_factories
+def physical_component_symbol(
+    id_: str = "PhysicalComponentSymbol",
+) -> container.Symbol:
+    return _make_physical_component_symbol(id_, color="#dbe6f4")
+
+
+@decorations.deco_factories(dependencies=("StickFigure",))
 def physical_node_human_component_symbol(
     id_: str = "PhysicalNodeHumanComponentSymbol",
 ) -> container.Symbol:

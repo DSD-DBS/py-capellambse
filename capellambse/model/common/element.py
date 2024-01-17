@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 from __future__ import annotations
@@ -559,7 +559,6 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         mapkey: str | None = None,
         mapvalue: str | None = None,
     ) -> None:
-        # pylint: disable=assigning-non-slot # false-positive
         self._model = model
         self._elements = elements
         if elemclass is not None:
@@ -666,11 +665,10 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
     def __getitem__(self, idx: int | slice | str) -> t.Any:
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
-        if isinstance(idx, int):
-            return self._elemclass.from_model(self._model, self._elements[idx])
-
-        obj = self._map_find(idx)
-        return self._map_getvalue(obj)
+        if isinstance(idx, str):
+            obj = self._map_find(idx)
+            return self._map_getvalue(obj)
+        return self._elemclass.from_model(self._model, self._elements[idx])
 
     @t.overload
     def __setitem__(self, index: int, value: T) -> None:

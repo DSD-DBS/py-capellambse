@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
 # pylint: disable=redefined-outer-name
@@ -209,25 +209,14 @@ class FakeEntrypoint:
 
         return filehandler
 
-    if sys.version_info < (3, 10):
+    @classmethod
+    def patch(cls, monkeypatch, expected_name, expected_url):
+        def entry_points(group, name):
+            assert group == "capellambse.filehandler"
+            assert name == expected_name
+            return (cls(expected_name, expected_url),)
 
-        @classmethod
-        def patch(cls, monkeypatch, expected_name, expected_url):
-            eps = {
-                "capellambse.filehandler": (cls(expected_name, expected_url),)
-            }
-            monkeypatch.setattr(metadata, "entry_points", lambda: eps)
-
-    else:
-
-        @classmethod
-        def patch(cls, monkeypatch, expected_name, expected_url):
-            def entry_points(group, name):
-                assert group == "capellambse.filehandler"
-                assert name == expected_name
-                return (cls(expected_name, expected_url),)
-
-            monkeypatch.setattr(metadata, "entry_points", entry_points)
+        monkeypatch.setattr(metadata, "entry_points", entry_points)
 
 
 def test_a_single_protocol_is_not_swallowed_by_get_filehandler(

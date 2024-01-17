@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Common classes used by all MelodyModel functions.
 
@@ -83,7 +83,7 @@ def set_self_references(*args: tuple[type[ModelObject], str]) -> None:
         set_accessor(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
 
 
-def xtype_handler(  # pylint: disable=keyword-arg-before-vararg  # PEP-570
+def xtype_handler(
     arch: str | None = None, /, *xtypes: str
 ) -> cabc.Callable[[type[T]], type[T]]:
     """Register a class as handler for a specific ``xsi:type``.

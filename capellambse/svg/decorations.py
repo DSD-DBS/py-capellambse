@@ -1,12 +1,12 @@
-# SPDX-FileCopyrightText: Copyright DB Netz AG and the capellambse contributors
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """The decoration factories for svg elements."""
 from __future__ import annotations
 
 import collections.abc as cabc
+import dataclasses
 import logging
 import re
-import typing as t
 
 logger = logging.getLogger(__name__)
 
@@ -55,17 +55,32 @@ always_top_label = needs_feature_line | {
 }
 
 
-class DecoFactories(t.Dict[str, cabc.Callable]):
-    def __call__(self, func: cabc.Callable) -> cabc.Callable:
-        symbol_name = re.sub(
-            "(?:^|_)([a-z])",
-            lambda m: m.group(1).capitalize(),
-            func.__name__,
-        )
-        self[symbol_name] = func
-        return func
+@dataclasses.dataclass
+class DecoFactory:
+    function: cabc.Callable
+    dependencies: tuple[str, ...]
 
-    def __missing__(self, class_: str) -> cabc.Callable:
+
+class DecoFactories(dict[str, DecoFactory]):
+    def __call__(
+        self,
+        func: cabc.Callable | None = None,
+        dependencies: cabc.Iterable[str] = (),
+    ) -> cabc.Callable:
+        def decorator(func: cabc.Callable) -> cabc.Callable:
+            symbol_name = re.sub(
+                "(?:^|_)([a-z])",
+                lambda m: m.group(1).capitalize(),
+                func.__name__,
+            )
+            self[symbol_name] = DecoFactory(func, tuple(dependencies))
+            return func
+
+        if func is None:
+            return decorator
+        return decorator(func)
+
+    def __missing__(self, class_: str) -> DecoFactory:
         logger.error("%s wasn't found in factories.", class_)
         assert "ErrorSymbol" in self
         return self["ErrorSymbol"]
