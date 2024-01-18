@@ -193,7 +193,8 @@ def load_font(fonttype: str, size: int) -> ImageFont.FreeTypeFont:
         except OSError:
             pass
 
-    with imr.open_binary("capellambse", FALLBACK_FONT) as fallback_font:
+    fontfile = imr.files(capellambse).joinpath(FALLBACK_FONT)
+    with fontfile.open("rb") as fallback_font:
         return ImageFont.truetype(fallback_font, size)
 
 
