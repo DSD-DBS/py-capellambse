@@ -87,7 +87,7 @@ class MelodyModel:
     )
     name = common.AttributeProperty("name", __doc__="The name of this model.")
 
-    _diagram_cache: filehandler.FileHandler
+    diagram_cache: filehandler.FileHandler | None
     _diagram_cache_subdir: pathlib.PurePosixPath
     _constructed: bool
 
@@ -274,20 +274,20 @@ class MelodyModel:
 
         if diagram_cache:
             if diagram_cache == path:
-                self._diagram_cache = self._loader.filehandler
+                self.diagram_cache = self._loader.filehandler
             elif isinstance(diagram_cache, filehandler.FileHandler):
-                self._diagram_cache = diagram_cache
+                self.diagram_cache = diagram_cache
             elif isinstance(diagram_cache, cabc.Mapping):
-                self._diagram_cache = filehandler.get_filehandler(
+                self.diagram_cache = filehandler.get_filehandler(
                     **diagram_cache
                 )
             else:
-                self._diagram_cache = filehandler.get_filehandler(
-                    diagram_cache
-                )
+                self.diagram_cache = filehandler.get_filehandler(diagram_cache)
             self._diagram_cache_subdir = pathlib.PurePosixPath(
                 diagram_cache_subdir or "."
             )
+        else:
+            self.diagram_cache = None
 
         self._constructed = True
 
@@ -597,7 +597,7 @@ class MelodyModel:
         ...     "capella/cli:{VERSION}-latest"
         ... )
         """
-        if not hasattr(self, "_diagram_cache"):
+        if self.diagram_cache is None:
             raise TypeError(
                 "Cannot update: No diagram_cache was specified for this model"
             )
