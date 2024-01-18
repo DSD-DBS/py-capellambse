@@ -67,9 +67,9 @@ def export(
     background: bool,
     refresh: bool = False,
 ) -> None:
-    if not isinstance(
-        getattr(model, "_diagram_cache", None), local.LocalFileHandler
-    ):
+    if model.diagram_cache is None:
+        raise TypeError("No diagram cache configured for the model")
+    if not isinstance(model.diagram_cache, local.LocalFileHandler):
         raise TypeError(
             "Diagram cache updates are only supported for local paths"
         )
@@ -81,7 +81,7 @@ def export(
             f"Invalid image format {format!r}, supported are {supported}"
         )
 
-    diag_cache_dir = pathlib.Path(model._diagram_cache.path)
+    diag_cache_dir = pathlib.Path(model.diagram_cache.path)
     try:
         shutil.rmtree(diag_cache_dir)
     except FileNotFoundError:
