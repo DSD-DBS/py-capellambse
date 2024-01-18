@@ -102,7 +102,6 @@ class MelodyModel:
             | dict[str, t.Any]
             | None
         ) = None,
-        diagram_cache_subdir: str | pathlib.PurePosixPath | None = None,
         jupyter_untrusted: bool | None = None,
         fallback_render_aird: bool = False,
         **kwargs: t.Any,
@@ -236,6 +235,17 @@ class MelodyModel:
             A simple ``http(s)://`` file handler.
         """
         import warnings
+
+        if "diagram_cache_subdir" in kwargs:
+            warnings.warn(
+                (
+                    "The 'diagram_cache_subdir' argument is deprecated,"
+                    " use a FileHandler / dict with a 'subdir' instead."
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        diagram_cache_subdir = kwargs.pop("diagram_cache_subdir", None)
 
         if jupyter_untrusted is not None:
             warnings.warn(
