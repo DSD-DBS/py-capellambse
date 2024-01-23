@@ -15,7 +15,7 @@ import enum
 import itertools
 import logging
 import operator
-import os.path
+import os
 import pathlib
 import re
 import shutil
@@ -1051,9 +1051,7 @@ class MelodyLoader:
         if include_target_type is None:
             include_target_type = from_fragment.suffix not in VISUAL_EXTS
 
-        to_fragment = pathlib.PurePosixPath(
-            os.path.relpath(to_fragment, from_fragment.parent)
-        )
+        to_fragment = to_fragment.relative_to(from_fragment.parent)
         link = urllib.parse.quote(str(to_fragment))
         if not include_target_type:
             return f"{link}#{to_uuid}"
