@@ -67,6 +67,16 @@ def test_model_loading_via_GitFileHandler():
     assert not pathlib.Path.cwd().joinpath("capellambse.lock").exists()
 
 
+def test_model_loading_via_GitFileHandler_invalid_uri():
+    path = "git+not-a-valid-uri"
+    with pytest.raises(subprocess.CalledProcessError):
+        capellambse.MelodyModel(
+            path,
+            entrypoint="tests/data/melodymodel/5_0/Melody Model Test.aird",
+        )
+    assert path
+
+
 def test_GitFileHandler_locks_repo_during_tasks(monkeypatch, caplog):
     did_ls_files = False
 

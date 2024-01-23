@@ -11,6 +11,7 @@ __all__ = [
 
 import abc
 import collections.abc as cabc
+import fnmatch
 import importlib.abc as iabc
 import os
 import pathlib
@@ -250,6 +251,25 @@ class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
     @property
     def name(self) -> str:
         return self._path.name
+
+    @property
+    def suffix(self) -> str:
+        return self._path.suffix
+
+    @property
+    def stem(self) -> str:
+        return self._path.stem
+
+    @property
+    def parent(self) -> te.Self:
+        return type(self)(self._parent, self._path.parent)
+
+    def rglob(self, pattern: str) -> cabc.Iterator[te.Self]:
+        for f in self.iterdir():
+            if fnmatch.fnmatch(f.name, pattern):
+                yield f
+            if f.is_dir():
+                yield from f.rglob(pattern)
 
     def open(  # type: ignore[override]
         self,
