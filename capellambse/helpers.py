@@ -143,6 +143,28 @@ def normalize_pure_path(
     return pathlib.PurePosixPath(*parts)
 
 
+def relpath_pure(
+    path: pathlib.PurePosixPath, start: pathlib.PurePosixPath
+) -> pathlib.PurePosixPath:
+    """Calculate the relative path between two pure paths.
+
+    Unlike :func:`pathlib.PurePath.relative_to`, this function can cope
+    with ``path`` not being a subpath of ``start``. And unlike
+    :func:`posixpath.relpath`, it does not involve any filesystem access.
+    """
+    parts = list(reversed(path.parts))
+    prefix = True
+    for part in start.parts:
+        if prefix:
+            if parts and parts[-1] == part:
+                parts.pop()
+            else:
+                prefix = False
+        else:
+            parts.append("..")
+    return pathlib.PurePosixPath(*reversed(parts))
+
+
 if sys.platform.startswith("win"):
 
     @contextlib.contextmanager

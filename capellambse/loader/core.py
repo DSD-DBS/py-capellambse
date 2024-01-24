@@ -1051,7 +1051,7 @@ class MelodyLoader:
         if include_target_type is None:
             include_target_type = from_fragment.suffix not in VISUAL_EXTS
 
-        to_fragment = to_fragment.relative_to(from_fragment.parent)
+        to_fragment = helpers.relpath_pure(to_fragment, from_fragment)
         link = urllib.parse.quote(str(to_fragment))
         if not include_target_type:
             return f"{link}#{to_uuid}"
