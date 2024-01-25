@@ -705,20 +705,25 @@ class GitFileHandler(abc.FileHandler):
         return git_env, git_cmd
 
     def __init_cache_dir(self) -> None:
-        if str(self.path).startswith("file://"):
+        if (
+            isinstance(self.path, pathlib.Path)
+            or str(self.path).startswith("file://")
+            or pathlib.Path(self.path).is_absolute()
+        ):
             self.__init_cache_dir_local()
         else:
             self.__init_cache_dir_remote()
 
     def __init_cache_dir_local(self) -> None:
-        parts = urllib.parse.urlparse(str(self.path))
-        if parts.netloc and parts.netloc != "localhost":
-            raise ValueError(f"Unsupported file:// URL netloc: {parts.netloc}")
-
-        path = pathlib.Path(urllib.parse.unquote(parts.path))
-        if isinstance(path, pathlib.WindowsPath):
-            path = pathlib.Path(str(path)[1:])
-        assert path.is_absolute()
+        if isinstance(self.path, pathlib.Path):
+            path = self.path
+        elif str(self.path).startswith("file://"):
+            urlpath = urllib.parse.urlparse(str(self.path)).path
+            urlpath = urllib.parse.unquote(urlpath)
+            windows = isinstance(pathlib.Path(), pathlib.WindowsPath)
+            path = pathlib.Path(urlpath[1:] if windows else urlpath)
+        else:
+            path = pathlib.Path(self.path)
         self.cache_dir = path.resolve()
         gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
         assert isinstance(gitdir, str)
