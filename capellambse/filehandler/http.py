@@ -19,6 +19,7 @@ import typing as t
 import urllib.parse
 
 import requests
+import typing_extensions as te
 
 from capellambse import helpers, loader
 
@@ -205,4 +206,12 @@ class HTTPFileHandler(abc.FileHandler):
     def write_transaction(self, **kw: t.Any) -> t.NoReturn:
         raise NotImplementedError(
             "Write transactions for HTTP(S) are not implemented"
+        )
+
+    def iterdir(  # pragma: no cover
+        self, path: str | pathlib.PurePosixPath = ".", /
+    ) -> cabc.Iterator[abc.AbstractFilePath[te.Self]]:
+        raise TypeError(
+            "Cannot list files on raw HTTP sources."
+            " Maybe you forgot a 'git+' prefix?"
         )
