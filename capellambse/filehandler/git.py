@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import errno
 import functools
 import hashlib
 import io
@@ -34,6 +35,7 @@ from capellambse.loader import modelinfo
 from . import abc
 
 LOGGER = logging.getLogger(__name__)
+CACHEBASE = pathlib.Path(capellambse.dirs.user_cache_dir, "models")
 
 _git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
 
@@ -724,16 +726,26 @@ class GitFileHandler(abc.FileHandler):
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1f\x7f"*/:<>?\\|]+'
-        path_hash = hashlib.sha256(
-            str(self.path).encode("utf-8", errors="surrogatepass")
-        ).hexdigest()
         path_slug = re.sub(slug_pattern, "-", str(self.path))
-        self.__repo = self.cache_dir = pathlib.Path(
-            capellambse.dirs.user_cache_dir,
-            "models",
-            path_hash,
-            path_slug,
-        )
+        hashpath = str(self.path).encode("utf-8", errors="surrogatepass")
+
+        path_hash = hashlib.sha256(hashpath, usedforsecurity=False).hexdigest()
+        old_dir = CACHEBASE.joinpath(path_hash, path_slug)
+
+        path_hash = hashlib.blake2s(
+            hashpath, digest_size=12, usedforsecurity=False
+        ).hexdigest()
+        self.__repo = self.cache_dir = CACHEBASE.joinpath(path_hash, path_slug)
+
+        if old_dir.exists():
+            LOGGER.debug("Moving cache from %s to %s", old_dir, self.cache_dir)
+            self.cache_dir.parent.mkdir(parents=True, exist_ok=True)
+            os.rename(old_dir, self.cache_dir)
+            try:
+                old_dir.parent.rmdir()
+            except OSError as err:
+                if err.errno != errno.ENOTEMPTY:
+                    raise
 
         if self.cache_dir.exists() and self.disable_cache:
             shutil.rmtree(str(self.cache_dir))
