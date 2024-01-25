@@ -787,10 +787,13 @@ class GitFileHandler(abc.FileHandler):
             return ref, ref
         refs = [i.split("\t") for i in listing.strip().split("\n")]
         if len(refs) > 1:
-            raise ValueError(
-                f"Ambiguous ref name {ref}, found {len(refs)}:"
-                f" {', '.join(i[1] for i in refs)}"
-            )
+            exact = [i for i in refs if i[1] == ref]
+            if len(exact) != 1:
+                raise ValueError(
+                    f"Ambiguous ref name {ref}, found {len(refs)}:"
+                    f" {', '.join(i[1] for i in refs)}"
+                )
+            refs = exact
 
         hash, refname = refs[0]
         LOGGER.debug(
