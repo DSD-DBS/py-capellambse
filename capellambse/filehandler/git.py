@@ -11,6 +11,7 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import errno
 import functools
 import hashlib
 import io
@@ -34,6 +35,7 @@ from capellambse.loader import modelinfo
 from . import abc
 
 LOGGER = logging.getLogger(__name__)
+CACHEBASE = pathlib.Path(capellambse.dirs.user_cache_dir, "models")
 
 _git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
 
@@ -703,20 +705,25 @@ class GitFileHandler(abc.FileHandler):
         return git_env, git_cmd
 
     def __init_cache_dir(self) -> None:
-        if str(self.path).startswith("file://"):
+        if (
+            isinstance(self.path, pathlib.Path)
+            or str(self.path).startswith("file://")
+            or pathlib.Path(self.path).is_absolute()
+        ):
             self.__init_cache_dir_local()
         else:
             self.__init_cache_dir_remote()
 
     def __init_cache_dir_local(self) -> None:
-        parts = urllib.parse.urlparse(str(self.path))
-        if parts.netloc and parts.netloc != "localhost":
-            raise ValueError(f"Unsupported file:// URL netloc: {parts.netloc}")
-
-        path = pathlib.Path(urllib.parse.unquote(parts.path))
-        if isinstance(path, pathlib.WindowsPath):
-            path = pathlib.Path(str(path)[1:])
-        assert path.is_absolute()
+        if isinstance(self.path, pathlib.Path):
+            path = self.path
+        elif str(self.path).startswith("file://"):
+            urlpath = urllib.parse.urlparse(str(self.path)).path
+            urlpath = urllib.parse.unquote(urlpath)
+            windows = isinstance(pathlib.Path(), pathlib.WindowsPath)
+            path = pathlib.Path(urlpath[1:] if windows else urlpath)
+        else:
+            path = pathlib.Path(self.path)
         self.cache_dir = path.resolve()
         gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
         assert isinstance(gitdir, str)
@@ -724,16 +731,26 @@ class GitFileHandler(abc.FileHandler):
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1f\x7f"*/:<>?\\|]+'
-        path_hash = hashlib.sha256(
-            str(self.path).encode("utf-8", errors="surrogatepass")
-        ).hexdigest()
         path_slug = re.sub(slug_pattern, "-", str(self.path))
-        self.__repo = self.cache_dir = pathlib.Path(
-            capellambse.dirs.user_cache_dir,
-            "models",
-            path_hash,
-            path_slug,
-        )
+        hashpath = str(self.path).encode("utf-8", errors="surrogatepass")
+
+        path_hash = hashlib.sha256(hashpath, usedforsecurity=False).hexdigest()
+        old_dir = CACHEBASE.joinpath(path_hash, path_slug)
+
+        path_hash = hashlib.blake2s(
+            hashpath, digest_size=12, usedforsecurity=False
+        ).hexdigest()
+        self.__repo = self.cache_dir = CACHEBASE.joinpath(path_hash, path_slug)
+
+        if old_dir.exists():
+            LOGGER.debug("Moving cache from %s to %s", old_dir, self.cache_dir)
+            self.cache_dir.parent.mkdir(parents=True, exist_ok=True)
+            os.rename(old_dir, self.cache_dir)
+            try:
+                old_dir.parent.rmdir()
+            except OSError as err:
+                if err.errno != errno.ENOTEMPTY:
+                    raise
 
         if self.cache_dir.exists() and self.disable_cache:
             shutil.rmtree(str(self.cache_dir))
@@ -770,10 +787,13 @@ class GitFileHandler(abc.FileHandler):
             return ref, ref
         refs = [i.split("\t") for i in listing.strip().split("\n")]
         if len(refs) > 1:
-            raise ValueError(
-                f"Ambiguous ref name {ref}, found {len(refs)}:"
-                f" {', '.join(i[1] for i in refs)}"
-            )
+            exact = [i for i in refs if i[1] == ref]
+            if len(exact) != 1:
+                raise ValueError(
+                    f"Ambiguous ref name {ref}, found {len(refs)}:"
+                    f" {', '.join(i[1] for i in refs)}"
+                )
+            refs = exact
 
         hash, refname = refs[0]
         LOGGER.debug(
