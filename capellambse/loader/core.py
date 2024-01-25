@@ -622,16 +622,19 @@ class MelodyLoader:
         str
             The new UUID.
         """
-
-        def idstream() -> t.Iterator[str]:
-            if want and RE_VALID_ID.fullmatch(want):
-                yield want
-            while True:
-                yield str(uuid.uuid4())
-
         _, tree = self._find_fragment(parent)
 
-        for new_id in idstream():
+        if want:
+            try:
+                self[want]
+            except KeyError:
+                tree.idcache_reserve(want)
+                return want
+            else:
+                raise ValueError(f"UUID {want!r} is already in use")
+
+        while True:
+            new_id = str(uuid.uuid4())
             try:
                 self[new_id]
             except KeyError:
