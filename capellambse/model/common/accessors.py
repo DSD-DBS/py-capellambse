@@ -875,7 +875,13 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         if obj is None:  # pragma: no cover
             return self
 
-        elems = [self.__follow_ref(obj, i) for i in self.__find_refs(obj)]
+        elems: list[etree._Element] = []
+        seen: set[etree._Element] = set()
+        for i in self.__find_refs(obj):
+            e = self.__follow_ref(obj, i)
+            if e not in seen:
+                elems.append(e)
+                seen.add(e)
         rv = self._make_list(obj, elems)
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
