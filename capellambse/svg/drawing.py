@@ -666,9 +666,8 @@ class Drawing:
             children=bool(children_),
         )
         if context_:
-            grp.add(
-                container.Group(class_="context-" + " context-".join(context_))
-            )
+            gcls = " ".join(f"context-{i}" for i in context_)
+            grp.add(container.Group(class_=gcls))
         return self.__drawing.add(grp)
 
     def _draw_box_symbol(
@@ -732,10 +731,12 @@ class Drawing:
         labels_: t.Sequence[LabelDict] = (),
         id_: str,
         class_: str,
+        context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw,
     ):
+        del kw
         points: list = [(x + 0.5, y + 0.5) for x, y in points_]
         grp = self.__drawing.g(class_=f"Edge {class_}", id_=id_)
         grp.add(
@@ -744,10 +745,9 @@ class Drawing:
             )
         )
 
-        if context := kw.get("context_", []):
-            grp.add(
-                container.Group(class_="context-" + " context-".join(context))
-            )
+        if context_:
+            gcls = " ".join(f"context-{i}" for i in context_)
+            grp.add(container.Group(class_=gcls))
 
         # Received text space doesn't allow for anything else than the text
         for label_ in labels_:
