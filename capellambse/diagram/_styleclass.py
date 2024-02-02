@@ -71,6 +71,14 @@ def _functional_chain_involvement(obj: model.ModelObject) -> str:
     return styleclass
 
 
+def _functional_exchange(obj: model.ModelObject) -> str:
+    assert isinstance(obj, model.fa.FunctionalExchange)
+    styleclass = _default(obj)
+    if get_styleclass(obj.target) == "OperationalActivity":
+        return styleclass.replace("Functional", "Operational")
+    return styleclass
+
+
 def _generic_component(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.cs.Component)
     styleclass = _default(obj)
@@ -131,6 +139,7 @@ _STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
     "ControlNode": _control_node,
     "FunctionalChainInvolvementFunction": _functional_chain_involvement,
     "FunctionalChainInvolvementLink": _functional_chain_involvement,
+    "FunctionalExchange": _functional_exchange,
     "FunctionInputPort": lambda _: "FIP",
     "FunctionOutputPort": lambda _: "FOP",
     "LogicalComponent": _generic_component,

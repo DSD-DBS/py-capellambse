@@ -699,7 +699,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "marker-end": "ArrowMark",
             "stroke": COLORS["dark_gray"],
         },
-        "Edge.FunctionalExchange": {
+        "Edge.OperationalExchange": {
             "marker-end": "ArrowMark",
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
         },
@@ -717,6 +717,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Edge.OperationalActor": {
             "marker-end": "FineArrowMark",
             "stroke": COLORS["gray"],
+        },
+        "Edge.OperationalExchange": {
+            "marker-end": "ArrowMark",
+            "stroke-width": 2,
+            "stroke": COLORS["_CAP_Activity_Border_Orange"],
         },
     },
     "Operational Process Description": {
@@ -746,7 +751,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["black"],
             "text_fill": COLORS["black"],
         },
-        "Edge.FunctionalExchange": {
+        "Edge.OperationalExchange": {
             "marker-end": "ArrowMark",
             "stroke-width": 2,
             "stroke": COLORS["_CAP_Activity_Border_Orange"],

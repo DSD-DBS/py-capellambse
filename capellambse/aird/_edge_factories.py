@@ -544,6 +544,15 @@ def eie_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     return edge
 
 
+def fex_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
+    """Create a functional exhcange."""
+    edge = generic_factory(seb)
+    assert edge.styleclass is not None and edge.target is not None
+    if edge.target.styleclass == "OperationalActivity":
+        edge.styleclass = "OperationalExchange"
+    return edge
+
+
 def _guard_condition(seb: C.SemanticElementBuilder, attr: str) -> str:
     """Extract the guard condition's text from the XML."""
     try:
