@@ -260,17 +260,6 @@ currently there is no plan to implement this. If there is a genuine usecase for
 that we may re-consider it - feel free to create an issue or add comments to an
 existing one.
 
-Render diagrams in untrusted jupyter notebooks
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The SVG format relies on a stylesheet, however in untrusted notebooks any
-stylesheets are stripped. As a workaround we support the PNG format. For this
-the `cairosvg`__ library is needed which depends on additional libraries. See
-the official `CairoSVG documentation`__ for detailed instructions.
-
-__ https://pypi.org/project/CairoSVG/
-__ https://cairosvg.org/documentation/#installation
-
 Contributing
 ------------
 
