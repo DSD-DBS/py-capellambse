@@ -14,10 +14,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           cache: pip
           cache-dependency-path: pyproject.toml
@@ -32,14 +32,11 @@ jobs:
         run: make -C docs apidoc
       - name: Create docs
         run: make -C docs html
-      - name: Archive the docs
-        # https://github.com/actions/upload-artifact#too-many-uploads-resulting-in-429-responses
-        run: (cd docs/build/html && zip -Xr ../html.zip .)
       - name: Upload built docs as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Documentation
-          path: docs/build/html.zip
+          path: docs/build/html
           if-no-files-found: error
           retention-days: 5
       - name: Deploy
