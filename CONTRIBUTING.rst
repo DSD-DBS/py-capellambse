@@ -27,9 +27,9 @@ correctly:
 
 __ README.rst#installation
 
-.. code::
+.. code:: bash
 
-    pytest
+   pytest
 
 We additionally recommend that you set up your editor / IDE as follows.
 
@@ -46,11 +46,11 @@ We additionally recommend that you set up your editor / IDE as follows.
 
   .. code:: json
 
-      "[python]": {
-          "editor.codeActionsOnSave": {
-              "source.organizeImports": true
-          }
-      }
+     "[python]": {
+         "editor.codeActionsOnSave": {
+             "source.organizeImports": true
+         }
+     }
 
   Note that the Pylance language server is not recommended, as it occasionally
   causes false-positive errors for perfectly valid code.
@@ -61,9 +61,9 @@ We additionally recommend that you set up your editor / IDE as follows.
 
   __ https://github.com/python-lsp/python-lsp-server
 
-  .. code::
+  .. code:: bash
 
-      pip install "python-lsp-server[pylint]" python-lsp-black pyls-isort pylsp-mypy
+     pip install "python-lsp-server[pylint]" python-lsp-black pyls-isort pylsp-mypy
 
   This will provide as-you-type linting as well as automatic formatting on
   save. Language server clients are available for a wide range of editors, from
