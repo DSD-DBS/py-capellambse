@@ -234,7 +234,10 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
         cls,
         "super",
         c.LinkAccessor(
-            "ownedGeneralizations", capellacore.Generalization, attr="super"
+            "ownedGeneralizations",
+            capellacore.Generalization,
+            attr="super",
+            backattr="sub",
         ),
     )
     c.set_accessor(
