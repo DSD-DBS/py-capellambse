@@ -72,9 +72,17 @@ We additionally recommend that you set up your editor / IDE as follows.
 Quality controls
 ----------------
 
-We rely on pre-commit__ to perform basic quality control / self assessment.
+We use the pre-commit__ framework to perform some basic code checks at commit
+time. Before you commit your changes, make sure it is installed and set up, as
+described in the `installation instructions`__:
+
+.. code:: bash
+
+   pip install pre-commit
+   pre-commit install
 
 __ https://pre-commit.com/
+__ README.rst#installation
 
 Commit message format
 ---------------------
