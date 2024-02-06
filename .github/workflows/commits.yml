@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
+# SPDX-License-Identifier: CC0-1.0
+
+name: Commits
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  conventional-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install commitlint
+        run: npm install -g @commitlint/cli @commitlint/config-conventional
+      - name: Validate commit messages
+        id: conventional-commits
+        env:
+          SHA_FROM: ${{ github.event.pull_request.base.sha }}
+          SHA_TO: ${{ github.event.pull_request.head.sha }}
+        run: |
+          delim="_EOF_$(uuidgen)"
+          echo "validation-result<<$delim" >> "$GITHUB_OUTPUT"
+          r=0
+          commitlint --from "$SHA_FROM" --to "$SHA_TO" >> "$GITHUB_OUTPUT" 2>&1 || r=$?
+          echo "$delim" >> "$GITHUB_OUTPUT"
+          exit $r
+      - name: Post comment if validation failed
+        if: steps.conventional-commits.outcome == 'failure'
+        uses: actions/github-script@v7
+        env:
+          TEXT: |-
+            The pull request does not conform to the conventional commit specification. Please ensure that your commit messages follow the spec: <https://www.conventionalcommits.org/>.
+            We also strongly recommend that you set up your development environment with pre-commit, as described in our [Contributing guidelines](https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.rst#quality-controls). This will run all the important checks right before you commit your changes, and avoids lengthy CI wait time and round trips.
+
+            This is the commit validation log:
+            ```
+            ${{ steps.conventional-commits.outputs.validation-result }}
+            ```
+
+            Here are some examples of valid commit messages:
+            ```
+            feat(model): Add realized_states to State and Mode
+            fix(aird): Prevent creating circles with r=0
+            docs(readme): Update project description
+            ```
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: process.env.TEXT
+            })
