@@ -188,6 +188,7 @@ STYLECLASS_LOOKUP = {
             _box_factories.generic_factory, _edge_factories.labelless_factory
         ),
     ),
+    "FunctionalExchange": ("FunctionalExchange", _edge_factories.fex_factory),
     "FunctionInputPort": ("FIP", _GENERIC_FACTORIES),
     "FunctionOutputPort": ("FOP", _GENERIC_FACTORIES),
     "ForkPseudoState": (
