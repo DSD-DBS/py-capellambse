@@ -609,7 +609,8 @@ class PNGFormat:
                 " Please see the README for instructions."
             ) from error
 
-        return cairosvg.svg2png(SVGFormat.convert(dg))
+        scale = float(os.getenv("CAPELLAMBSE_PNG_SCALE", "1"))
+        return cairosvg.svg2png(SVGFormat.convert(dg), scale=scale)
 
     @staticmethod
     def from_cache(cache: bytes) -> bytes:
