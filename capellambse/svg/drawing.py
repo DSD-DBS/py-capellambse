@@ -50,17 +50,14 @@ class Drawing:
     """The main container that stores all svg elements."""
 
     def __init__(self, metadata: generate.DiagramMetadata):
-        base_css = (
-            "shape-rendering: geometricPrecision;"
-            " font-family: 'Segoe UI';"
-            " font-size: 8pt;"
-            " cursor: pointer;"
-        )
+        base_css = "shape-rendering: geometricPrecision; cursor: pointer;"
         superparams = {
             "filename": f"{metadata.name}.svg",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
             "style": base_css,
+            "font-size": "8px",
+            "font-family": "Open Sans",
         }
         if metadata.class_:
             superparams["class_"] = re.sub(r"\s+", "", metadata.class_)
@@ -151,7 +148,7 @@ class Drawing:
         if description is not None and label is not None:
             new_label: LabelDict = copy.deepcopy(label)
             new_label["text"] = description
-            self._draw_box_label(
+            self._draw_label(
                 LabelBuilder(
                     new_label,
                     grp,
@@ -178,7 +175,7 @@ class Drawing:
             if children or class_ in decorations.always_top_label:
                 y_margin = 5
 
-            self._draw_box_label(
+            self._draw_label(
                 LabelBuilder(
                     label,
                     grp,
@@ -260,7 +257,7 @@ class Drawing:
                 chelpers.flatten_html_string(feat) for feat in features
             ),
         }
-        self._draw_box_label(
+        self._draw_label(
             LabelBuilder(
                 label,
                 group,
@@ -272,17 +269,35 @@ class Drawing:
             )
         )
 
-    def _draw_box_label(self, builder: LabelBuilder) -> container.Group:
-        """Draw label text on given object and return the label's group."""
-        self._draw_label(builder)
-        return builder.group
-
     def _draw_label(self, builder: LabelBuilder) -> None:
+        """Draw label text on given object and return the label's group."""
         assert isinstance(builder.label["x"], (int, float))
         assert isinstance(builder.label["y"], (int, float))
         assert isinstance(builder.label["width"], (int, float))
         assert isinstance(builder.label["height"], (int, float))
         assert isinstance(builder.label.get("text", ""), str)
+
+        text = self._make_text(builder)
+        builder.icon &= f"{builder.class_}Symbol" in decorations.deco_factories
+        if not text.elements:
+            lines = render_hbounded_lines(builder, builder.icon)
+            x, y = get_label_position(builder, lines)
+            for line in lines.lines:
+                params = {
+                    "insert": (x, y),
+                    "text": line,
+                    "xml:space": "preserve",
+                }
+                text.add(svgtext.TSpan(**params))
+                y += lines.line_height
+
+            if builder.icon:
+                icon_pos = get_label_icon_position(builder, lines)
+                self.add_label_image(builder, icon_pos)
+        return builder.group
+
+    def _make_text(self, builder: LabelBuilder) -> svgtext.Text:
+        """Return a text element and add it to the builder group."""
         textattrs = {
             "text": "",
             "insert": (builder.label["x"], builder.label["y"]),
@@ -312,12 +327,6 @@ class Drawing:
             textattrs["style"] = labelstyle
 
         text = self.__drawing.text(**textattrs)
-        builder.group.add(text)
-
-        render_icon = (
-            f"{builder.class_}Symbol" in decorations.deco_factories
-            and builder.icon
-        )
         if transform:
             params = {
                 "insert": (x, y),
@@ -325,23 +334,8 @@ class Drawing:
                 "xml:space": "preserve",
             }
             text.add(svgtext.TSpan(**params))
-        else:
-            lines = render_hbounded_lines(builder, render_icon)
-            x, icon_x = get_label_position_x(builder, lines, render_icon)
-            y = get_label_position_y(builder, lines)
-            for line in lines.lines:
-                text.add(
-                    svgtext.TSpan(
-                        insert=(x, y), text=line, **{"xml:space": "preserve"}
-                    )
-                )
-                y += lines.line_height
-
-            if render_icon:
-                icon_pos = get_label_icon_position(
-                    builder, lines.text_height, icon_x
-                )
-                self.add_label_image(builder, icon_pos)
+        builder.group.add(text)
+        return text
 
     def add_label_image(
         self, builder: LabelBuilder, pos: tuple[float, float]
@@ -886,6 +880,7 @@ class LinesData(t.NamedTuple):
 def render_hbounded_lines(
     builder: LabelBuilder, render_icon: bool
 ) -> LinesData:
+    """Return Lines data to render a label."""
     (
         lines,
         label_margin,
@@ -911,57 +906,36 @@ def render_hbounded_lines(
     )
 
 
-def get_label_position_x(
-    builder: LabelBuilder, lines: LinesData, render_icon: bool
+def get_label_position(
+    builder: LabelBuilder, lines: LinesData
 ) -> tuple[float, float]:
-    """Return x-coordinate of label-text and icon."""
-    icon_size = (builder.icon_size + decorations.icon_padding) * render_icon
-    sh_icon_size = (
-        builder.icon_size + decorations.icon_padding / 2
-    ) * render_icon
+    """Return the initial label position (x, y)."""
+    icon_size = (builder.icon_size + decorations.icon_padding) * builder.icon
     if builder.text_anchor == "start":
-        x = builder.label["x"] + lines.margin + icon_size
-        return x, x - sh_icon_size
-    x = builder.label["x"] + (builder.label["width"] + icon_size) / 2
-    return x, x - (lines.max_line_width / 2 + sh_icon_size)
+        builder.label["x"] += lines.margin + icon_size
+    else:
+        builder.label["x"] += (builder.label["width"] + icon_size) / 2
 
-
-def get_label_position_y(builder: LabelBuilder, lines: LinesData) -> float:
-    """Return y-coordinate of label-text."""
     dominant_baseline_adjust = chelpers.extent_func(lines.lines[0])[1] / 2
     if builder.y_margin is None:
         builder.y_margin = (builder.label["height"] - lines.text_height) / 2
-    return builder.label["y"] + builder.y_margin + dominant_baseline_adjust
+    builder.label["y"] += builder.y_margin + dominant_baseline_adjust
+    return builder.label["x"], builder.label["y"]
 
 
 def get_label_icon_position(
-    builder: LabelBuilder, text_height: int | float, icon_x: int | float
+    builder: LabelBuilder, lines: LinesData
 ) -> tuple[float, float]:
-    """Calculate the position of the icon relative to the label.
+    """Calculate the icon's position."""
+    icon_y = builder.label["y"] - builder.icon_size / 2
+    if lines.text_height > lines.line_height:
+        icon_y += lines.text_height / 2 - decorations.icon_padding * 2
+        if builder.label["class"] == "Annotation":
+            icon_y -= decorations.icon_padding
 
-    Parameters
-    ----------
-    builder : LabelBuilder
-        LabelBuilder
-    text_height : int | float
-        The height of the text in the label.
-    icon_x : int | float
-        The x position of the icon.
-
-    Returns
-    -------
-    icon_coords : tuple[float, float]
-        The x and y coordinates of the icon.
-    """
-    assert builder.y_margin is not None
-    icon_y = (
-        builder.label["y"]
-        + builder.y_margin
-        + (text_height - builder.icon_size) / 2
+    icon_x = (
+        builder.label["x"] - builder.icon_size - decorations.icon_padding * 2
     )
-    if (
-        icon_x < builder.label["x"] - decorations.icon_padding
-        and builder.label["class"] != "Annotation"
-    ):
-        icon_x = builder.label["x"] - decorations.icon_padding
-    return icon_x, icon_y
+    if builder.text_anchor == "middle":
+        icon_x -= lines.max_line_width / 3
+    return (icon_x, icon_y)

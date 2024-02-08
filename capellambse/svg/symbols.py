@@ -532,7 +532,7 @@ def function_symbol(
             insert=(42.2, 38),
             text_anchor="middle",
             style=(
-                'font-family: "Segoe UI"; font-size: 12pt; font-weight: '
+                'font-family: "Segoe UI"; font-size: 16px; font-weight: '
                 "bold; fill: black; stroke: none;"
             ),
         )
