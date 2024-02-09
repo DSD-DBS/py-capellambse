@@ -9,7 +9,6 @@ import typing as t
 from svgwrite import container, gradients, path, shapes, text
 
 from . import decorations
-from . import style as style_
 
 Gradient = t.Union[gradients.LinearGradient, gradients.RadialGradient]
 
@@ -59,11 +58,11 @@ def _make_edge_symbol(
         )
     )
 
-    grp = container.Group(style="stroke:#000;stroke-width:2;")
+    grp = container.Group(stroke="#000", stroke_width=2)
     grp.add(
         path.Path(
             d="M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z",
-            style=f'fill: url(#{grad_id + "reverse"})',
+            fill=f"url(#{grad_id + 'reverse'})",
         )
     )
     grp.add(
@@ -73,7 +72,7 @@ def _make_edge_symbol(
                 " 1.836022,1.274509 2.268178,5 -0.208657,2.812473"
                 " -0.954601,4.503809 -2.273297,5 H 14.296948"
             ),
-            style=f"fill: {middle_color}",
+            fill=middle_color,
         )
     )
     grp.add(
@@ -84,7 +83,7 @@ def _make_edge_symbol(
                 " 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c"
                 " -2.2179509,0 -4.5908341,0 -6.9286892,0 z"
             ),
-            style=f"fill: url(#{grad_id})",
+            fill=f"url(#{grad_id})",
         )
     )
     symb.add(grp)
@@ -131,7 +130,7 @@ def _make_lgradient(
     start=(0, 0),
     end=(0, 1),
     translate=None,
-    stop_colors=("white", "black"),
+    stop_colors=("#fff", "#000"),
     stop_opacity=(1, 1),
     offsets=None,
     **kw,
@@ -170,7 +169,7 @@ def _make_rgradient(
     r=1,
     focal=(0, 0),
     transform=None,
-    stop_colors=("white", "black"),
+    stop_colors=("#fff", "#000"),
     offsets=("0", "1"),
     **kw,
 ) -> Gradient:
@@ -197,7 +196,6 @@ def _make_marker(
     *,
     id_: str,
     d: str,
-    style: style_.Styling,
     **kwargs: t.Any,
 ) -> container.Marker:
     marker = container.Marker(
@@ -207,34 +205,27 @@ def _make_marker(
         orient="auto",
         markerUnits="userSpaceOnUse",
     )
-    style._marker = True
-    marker.add(path.Path(d=d, style=str(style), **kwargs))
+    marker.add(path.Path(d=d, **kwargs))
     return marker
 
 
 def _make_icon_frame(id_: str, color: str) -> container.Symbol:
     symb = container.Symbol(
-        id=id_, viewBox="0 0 79 79", style="stroke: #000; stroke-width: 2;"
+        id=id_, viewBox="0 0 79 79", stroke="#000", stroke_width=2
     )
     symb.add(
         path.Path(
-            d="M18 237h46v43H18z",
-            transform="translate(0 -218)",
-            style=f"fill: {color}",
+            d="M18 237h46v43H18z", transform="translate(0 -218)", fill=color
         )
     )
     symb.add(
         path.Path(
-            d="M12 247h11v8H12z",
-            transform="translate(0 -218)",
-            style=f"fill: {color}",
+            d="M12 247h11v8H12z", transform="translate(0 -218)", fill=color
         )
     )
     symb.add(
         path.Path(
-            d="M12 261h11v8H12z",
-            transform="translate(0 -218)",
-            style=f"fill: {color}",
+            d="M12 261h11v8H12z", transform="translate(0 -218)", fill=color
         )
     )
     return symb
@@ -264,7 +255,8 @@ def _make_physical_component_symbol(id_: str, color: str) -> container.Symbol:
                 " 0.669621,-0.683867 1.139781,-1.403353 1.410478,-2.15846"
                 " 0.284946,-0.7551 0.427419,-1.60281 0.427419,-2.54313 z"
             ),
-            style="fill: #000;stroke-width: 0.1;",
+            fill="#000",
+            stroke_width=0.1,
         )
     )
     return symb
@@ -285,7 +277,7 @@ def entity_symbol(id_: str = "EntitySymbol") -> container.Symbol:
                 " 0.693953,1.734882 z M 38.644107,55.321681 V 26.717802 h"
                 " -8.305751 v 28.603879 z"
             ),
-            style="fill:black;",
+            fill="#000",
         )
     )
     symb.add(
@@ -295,7 +287,7 @@ def entity_symbol(id_: str = "EntitySymbol") -> container.Symbol:
                 " 2.667382 H 50.11602 v 12.664644 h 5.091614 l"
                 " 0.09145,2.616665 -5.183068,0.09409 v 13.228481 h 8.132263 z"
             ),
-            style="fill:black;",
+            fill="#000",
         )
     )
     return symb
@@ -313,7 +305,8 @@ def logical_component_symbol(
                 "m 37.427456,20.821353 h 4.221475 V 50.90971 H 37.427456 Z M"
                 " 39.538194,46.89517 H 56.75519 v 4.01454 H 39.538194 Z"
             ),
-            style="fill: #000;stroke-width: 0.1;",
+            fill="#000",
+            stroke_width=0.1,
         )
     )
     symb.add(letter)
@@ -339,41 +332,29 @@ def stick_figure_symbol(
         transformations = _get_transformation(transform)
         kw["transform"] = f"matrix({transformations})"
 
+    kw.setdefault("stroke", "#000")
+    kw.setdefault("stroke_width", 2)
     symb = container.Symbol(
         id=id_,
         viewBox="362.861 210.892 75 75",
-        style="stroke: #000; stroke-width: 2;",
         **kw,
     )
     grp = container.Group(
         transform="matrix(1.0611338,0,0,1.0611338,-24.47665,-12.241673)",
-        style="stroke-width: 2.4944; stroke: #000;",
+        stroke="#000",
+        stroke_width=2.4944,
     )
+    grp.add(shapes.Line((400.362, 232.586), (400.362, 257.534), fill="none"))
+    grp.add(shapes.Line((400.83401, 254.299), (388.423, 275.009), fill="none"))
     grp.add(
-        shapes.Line(
-            (400.362, 232.586), (400.362, 257.534), style="fill: none;"
-        )
+        shapes.Line((400.25201, 254.46001), (413.97, 274.987), fill="none")
     )
-    grp.add(
-        shapes.Line(
-            (400.83401, 254.299), (388.423, 275.009), style="fill: none;"
-        )
-    )
-    grp.add(
-        shapes.Line(
-            (400.25201, 254.46001), (413.97, 274.987), style="fill: none;"
-        )
-    )
-    grp.add(
-        shapes.Line(
-            (385.634, 244.569), (415.703, 244.49699), style="fill: none;"
-        )
-    )
+    grp.add(shapes.Line((385.634, 244.569), (415.703, 244.49699), fill="none"))
     grp.add(
         shapes.Ellipse(
             center=(400.53201, 223.35899),
             r=(9.2180004, 8.5080004),
-            style=f"fill:{head_color};",
+            fill=head_color,
         )
     )
     symb.add(grp)
@@ -385,7 +366,7 @@ def standalone_stick_figure_symbol(
     id_: str = "StandaloneStickFigureSymbol",
 ) -> container.Symbol:
     symb = container.Symbol(
-        id=id_, viewBox="0 0 79 79", style="stroke: #000; stroke-width: 2;"
+        id=id_, viewBox="0 0 79 79", stroke="#000", stroke_width=2
     )
     symb.add(
         container.Use(
@@ -402,8 +383,7 @@ def standalone_stick_figure_symbol(
 def logical_actor_symbol(id_: str = "LogicalActorSymbol") -> container.Symbol:
     symb = _make_icon_frame(id_=id_, color="#dbe6f4")
     letters = container.Group(
-        transform="scale(0.83010896,1.2046611)",
-        style="fill: #000;stroke-width: 0.1;",
+        transform="scale(0.83010896,1.2046611)", fill="#000", stroke_width=0.1
     )
     letters.add(  # Upper-Case L
         path.Path(
@@ -513,7 +493,7 @@ def operational_activity_symbol(
     id_: str = "OperationalActivitySymbol",
 ) -> container.Symbol:
     return function_symbol(
-        id_, colors=("#f4901d", "white"), gradient_url="OA_orange", label="OA"
+        id_, colors=("#f4901d", "#fff"), gradient_url="OA_orange", label="OA"
     )
 
 
@@ -531,10 +511,11 @@ def function_symbol(
             text=label,
             insert=(42.2, 38),
             text_anchor="middle",
-            style=(
-                'font-family: "Segoe UI"; font-size: 16px; font-weight: '
-                "bold; fill: black; stroke: none;"
-            ),
+            font_family="Open Sans",
+            font_size="16px",
+            font_weight="bold",
+            fill="#000",
+            stroke="none",
         )
     )
     return symb
@@ -561,10 +542,9 @@ def _make_function_symbol(
         shapes.Ellipse(
             center=center,
             r=(22.5, 15.5),
-            style=(
-                f"fill: url(#{gradient.get_id()}); stroke: #000;"
-                " stroke-width: 2;"
-            ),
+            fill=f"url(#{gradient.get_id()})",
+            stroke="#000",
+            stroke_width=2,
         )
     )
     return symb
@@ -578,7 +558,8 @@ def operational_capability_symbol(id_="OperationalCapabilitySymbol"):
     )
     letters = container.Group(
         transform="matrix(1.1032581,0,0,0.63735306,-10.659712,-9.548313)",
-        style="fill: black; stroke: none;",
+        fill="#000",
+        stroke="none",
     )
     letters.add(
         path.Path(
@@ -625,9 +606,7 @@ def _control_node_symbol(id_="ControlNode"):
     symb = container.Symbol(id=id_, viewBox="-1 -1 52 52")
     symb.add(
         shapes.Circle(
-            center=(25, 25),
-            r=25,
-            style="stroke:black;stroke-width:2px;fill: white;",
+            center=(25, 25), r=25, stroke="#000", stroke_width=2, fill="#fff"
         )
     )
     return symb
@@ -638,7 +617,7 @@ def and_control_node_symbol(id_="AndControlNodeSymbol"):
     symb = _control_node_symbol(id_=id_)
     letters = container.Group(
         transform="matrix(1.5022395,0,0,2.1293615,-5.360383,-20.771755)",
-        style="fill:black;",
+        fill="#000",
     )
     letters.add(
         path.Path(
@@ -687,7 +666,7 @@ def or_control_node_symbol(id_="OrControlNodeSymbol"):
     symb = _control_node_symbol(id_=id_)
     letters = container.Group(
         transform="matrix(2.1611566,0,0,2.4212253,-19.677936,-29.516726)",
-        style="fill:black;",
+        fill="#000",
     )
     letters.add(
         path.Path(
@@ -739,7 +718,8 @@ def or_control_node_symbol(id_="OrControlNodeSymbol"):
 def iterate_control_node_symbol(id_="IterateControlNodeSymbol"):
     symb = _control_node_symbol(id_=id_)
     letters = container.Group(
-        transform="scale(1.0393759,0.9621158)", style="fill:black;"
+        transform="scale(1.0393759,0.9621158)",
+        fill="#000",
     )
     letters.add(
         path.Path(
@@ -761,11 +741,9 @@ def iterate_control_node_symbol(id_="IterateControlNodeSymbol"):
 @decorations.deco_factories
 def operational_actor_box_symbol(id_="OperationalActorBoxSymbol"):
     symb = container.Symbol(
-        id=id_,
-        viewBox="-10 -10 79 79",
-        style="stroke: #000000; stroke-width: 2;",
+        id=id_, viewBox="-10 -10 79 79", stroke="#000", stroke_width=2
     )
-    symb.add(shapes.Circle(center=(6.8, 7.75), r=5, style="fill:none;"))
+    symb.add(shapes.Circle(center=(6.8, 7.75), r=5, fill="none"))
     symb.add(
         path.Path(
             d=(
@@ -774,7 +752,7 @@ def operational_actor_box_symbol(id_="OperationalActorBoxSymbol"):
                 " -6.2942242,-6.012678 -0.092832,-6.050988 6.2026382,0.033"
                 " -12.3973765,0.02992"
             ),
-            style="fill: none;",
+            fill="none",
         )
     )
     return symb
@@ -783,7 +761,7 @@ def operational_actor_box_symbol(id_="OperationalActorBoxSymbol"):
 @decorations.deco_factories
 def operational_actor_symbol(id_="OperationalActorSymbol"):
     symb = container.Symbol(
-        id=id_, viewBox="0 0 50 50", style="stroke: #000000; stroke-width: 2;"
+        id=id_, viewBox="0 0 50 50", stroke="#000", stroke_width=2
     )
     center = (25.8, 9.965)
     symb.add(
@@ -792,10 +770,10 @@ def operational_actor_symbol(id_="OperationalActorSymbol"):
             center=center,
             focal=center,
             r=8.06,
-            stop_colors=("white", "#9aaab9"),
+            stop_colors=("#fff", "#9aaab9"),
         )
     )
-    symb.add(shapes.Circle(center=center, r=7.445, style="fill:url(#gray);"))
+    symb.add(shapes.Circle(center=center, r=7.445, fill="url(#gray)"))
     symb.add(
         path.Path(
             d=(
@@ -803,7 +781,7 @@ def operational_actor_symbol(id_="OperationalActorSymbol"):
                 " 9.691951,-8.97218 9.207354,8.838931 -9.345812,-8.927765 "
                 "-0.137836,-8.984648 9.209822,0.04899 -18.407914,0.04443"
             ),
-            style="fill: none;",
+            fill="none",
         )
     )
     return symb
@@ -817,7 +795,7 @@ def mode_symbol(id_="ModeSymbol"):
             "mode-grey",
             start=(1, 0),
             end=(0, 1),
-            stop_colors=("black", "white"),
+            stop_colors=("#000", "#fff"),
             stop_opacity=(0.45, 0),
         )
     )
@@ -826,7 +804,9 @@ def mode_symbol(id_="ModeSymbol"):
             insert=(0, 0),
             size=(2.6327, 2.6327),
             ry=0.25474,
-            style="fill: url(#mode-grey); stroke: #000; stroke-width: .005",
+            fill="url(#mode-grey)",
+            stroke="#000",
+            stroke_width=0.005,
         )
     )
     symb.add(
@@ -834,10 +814,9 @@ def mode_symbol(id_="ModeSymbol"):
             "M",
             insert=(0, 2.6458),
             transform="scale(1.3907 .71906)",
-            style=(
-                "fill: #000000; font-size: 2.4821px; "
-                "stroke-width: .062; line-height:1.25;"
-            ),
+            fill="#000",
+            font_size="2.4821px",
+            stroke_width=0.062,
         )
     )
     return symb
@@ -851,7 +830,7 @@ def state_symbol(id_="StateSymbol"):
             "state-grey",
             start=(1, 0),
             end=(0, 1),
-            stop_colors=("black", "white"),
+            stop_colors=("#000", "#fff"),
             stop_opacity=(0.45, 0),
         )
     )
@@ -860,7 +839,9 @@ def state_symbol(id_="StateSymbol"):
             insert=(0, 0),
             size=(2.6327, 2.6327),
             ry=0.25474,
-            style="fill: url(#state-grey); stroke: #000; stroke-width: .005",
+            fill="url(#state-grey)",
+            stroke="#000",
+            stroke_width=0.005,
         )
     )
     symb.add(
@@ -868,10 +849,9 @@ def state_symbol(id_="StateSymbol"):
             "S",
             insert=(0, 2.6458),
             transform="scale(1.2578 .79502)",
-            style=(
-                "fill:#000000;font-size:3.274px;"
-                "stroke-width:.082;line-height:1.25;"
-            ),
+            fill="#000",
+            font_size="3.274px",
+            stroke_width=0.082,
         )
     )
     return symb
@@ -879,15 +859,15 @@ def state_symbol(id_="StateSymbol"):
 
 @decorations.deco_factories
 def terminate_pseudo_state_symbol(
-    id_="TerminatePseudoStateSymbol", stroke="black", stroke_width=0.165
+    id_="TerminatePseudoStateSymbol", stroke="#000", stroke_width=0.165
 ):
     symb = container.Symbol(id=id_, viewBox="0 0 2.6458 2.6458")
     symb.add(
         path.Path(
             d="M 0,0 2.6458333,2.6458333 M 0,2.6458333 2.6458333,0",
-            style=(
-                f"fill: none; stroke: {stroke}; stroke-width: {stroke_width};"
-            ),
+            fill="none",
+            stroke=stroke,
+            stroke_width=stroke_width,
         )
     )
     return symb
@@ -895,7 +875,7 @@ def terminate_pseudo_state_symbol(
 
 @decorations.deco_factories
 def requirement_symbol(id_: str = "RequirementSymbol") -> container.Symbol:
-    symb = container.Symbol(id=id_, viewBox="0 0 50 50", style="stroke: none;")
+    symb = container.Symbol(id=id_, viewBox="0 0 50 50", stroke="none")
     symb.add(
         path.Path(  # Circle
             d=(
@@ -905,7 +885,7 @@ def requirement_symbol(id_: str = "RequirementSymbol") -> container.Symbol:
                 " 6.5624342,0.75890827 6.244379,5.8113241 0 0 1"
                 " 12.806813,6.5702324 Z"
             ),
-            style="fill: #431964",
+            fill="#431964",
         )
     )
     symb.add(
@@ -925,7 +905,7 @@ def requirement_symbol(id_: str = "RequirementSymbol") -> container.Symbol:
                 " 3.7396407 Z M 6.3906636,6.9592213 7.8516718,6.6882279"
                 " 10.102096,10.759021 H 8.4113322 Z"
             ),
-            style="fill:#ffffff;",
+            fill="#fff",
         )
     )
     return symb
@@ -941,32 +921,40 @@ def system_component_symbol(
     )
     box_grp = container.Group(
         transform="matrix(0.92548165,0,0,0.92249056,-32.422011,-1.2909536)",
-        style="fill:#e3ebf8;stroke-width:1.33145",
+        fill="#e3ebf8",
+        stroke_width=1.33145,
     )
     box_grp.add(
         path.Path(
             d="m 160.03785,180.47519 h 280.8845 v 200.68502 h -280.8845 z",
-            style="stroke:#000000;stroke-width:7;",
+            stroke="#000",
+            stroke_width=7,
         )
     )
     grp.add(box_grp)
     grp.add(
         path.Path(
             d="m 81.854696,210.17533 h 66.250264 v 35.37025 H 81.854696 Z",
-            style="fill:#e7efff;stroke:#000000;stroke-width:7;",
+            fill="#e7efff",
+            stroke="#000",
+            stroke_width=7,
         )
     )
     grp.add(
         path.Path(
             d="m 83.588316,268.94271 h 66.250254 v 35.37024 H 83.588316 Z",
-            style="fill:#e7efff;stroke:#000000;stroke-width:7;",
+            fill="#e7efff",
+            stroke="#000",
+            stroke_width=7,
         )
     )
 
     # Black connected boxes
     params = {
         "size": (5, 5),
-        "style": "fill:#000000;stroke:#000000;stroke-width:54.1038;",
+        "fill": "#000",
+        "stroke": "#000",
+        "stroke_width": 54.1038,
     }
     grp.add(shapes.Rect(insert=(214.8075, 236.39), **params))
     grp.add(shapes.Rect(insert=(297.44, 298.36), **params))
@@ -974,7 +962,9 @@ def system_component_symbol(
     grp.add(
         path.Path(
             d="m 219.70896,218.22099 h 79.0257 v 85.9132 h -80.34135 z",
-            style="fill:none;stroke:#000000;stroke-width:4.29901px;",
+            fill="none",
+            stroke="#000",
+            stroke_width="4.29901px",
         )
     )
     symb.add(grp)
@@ -992,24 +982,28 @@ def system_actor_symbol(
     grp.add(
         path.Path(
             d="M 17.819891,20.041161 H 65.286364 V 64.242623 H 17.819891 Z",
-            style="fill:#bdf7ff; stroke:#454647;",
+            fill="#bdf7ff",
+            stroke="#454647",
         ),
     )
     grp.add(
         path.Path(
             d="m 12.064948,25.832262 h 11.521155 v 6.687244 H 12.064948 Z",
-            style="fill:#e3ebf8;stroke:#454647;",
+            fill="#e3ebf8",
+            stroke="#454647",
         )
     )
     grp.add(
         path.Path(
             d="m 12.050427,34.529197 h 11.455007 v 6.635451 H 12.050427 Z",
-            style="fill:#e3ebf8;stroke:#454647;",
+            fill="#e3ebf8",
+            stroke="#454647",
         )
     )
     grp1 = container.Group(
         transform="matrix(0.83129224,0,0,0.89544642,8.0334318,11.729573)",
-        style="fill: black; stroke: none;",
+        fill="#000",
+        stroke="none",
     )
     grp1.add(
         path.Path(
@@ -1082,7 +1076,8 @@ def mission_symbol(id_: str = "MissionSymbol") -> container.Symbol:
                 " 4.672287 z"
             ),
             transform="matrix(0.86023492,0,0,0.64311175,6.4177697,4.9887121)",
-            style="fill: black; stroke: none;",
+            fill="#000",
+            stroke="none",
         )
     )
     return symb
@@ -1108,7 +1103,8 @@ def capability_symbol(id_: str = "CapabilitySymbol") -> container.Symbol:
                 " 2.479942,0 4.54,-1.207167 z"
             ),
             transform="scale(1.1743865,0.85150843)",
-            style="fill: black; stroke: none;",
+            fill="#000",
+            stroke="none",
         )
     )
     symb.add(grp)
@@ -1140,7 +1136,9 @@ def _brown_oval(id_: str) -> container.Symbol:
         shapes.Ellipse(
             center=(25.017874, 18.64205),
             r=(24.564632, 17.453819),
-            style="fill: url(#brown_oval); stroke: #563b18; stroke-width: 1;",
+            fill="url(#brown_oval)",
+            stroke="#563b18",
+            stroke_width=1,
         )
     )
     return symb
@@ -1158,20 +1156,10 @@ def class_symbol(id_: str = "ClassSymbol") -> container.Symbol:
     symb = container.Symbol(id=id_, viewBox="0 0 25 25")
     grad_id = id_ + "-gradient"
     symb.add(_make_lgradient(grad_id, stop_colors=("#cfa6a5", "#f1e2e3")))
-    grp = symb.add(container.Group(style="stroke:#913734;"))
-    grp.add(
-        shapes.Rect(insert=(5, 17), size=(15, 3), style="fill:#eedcdd;"),
-    )
-    grp.add(
-        shapes.Rect(insert=(5, 14), size=(15, 3), style="fill:#eedcdd;"),
-    )
-    grp.add(
-        shapes.Rect(
-            insert=(5, 4),
-            size=(15, 10),
-            style=f"fill:url(#{grad_id});",
-        )
-    )
+    grp = symb.add(container.Group(stroke="#913734"))
+    grp.add(shapes.Rect(insert=(5, 17), size=(15, 3), fill="#eedcdd"))
+    grp.add(shapes.Rect(insert=(5, 14), size=(15, 3), fill="#eedcdd"))
+    grp.add(shapes.Rect(insert=(5, 4), size=(15, 10), fill=f"url(#{grad_id})"))
     return symb
 
 
@@ -1180,13 +1168,14 @@ def representation_link_symbol(
     id_: str = "RepresentationLinkSymbol",
 ) -> container.Symbol:
     symb = container.Symbol(id=id_, viewBox="0 0 16 16")
-    grp = symb.add(container.Group(style="stroke-width:0.5;"))
+    grp = symb.add(container.Group(stroke_width=0.5))
     grp.add(
         shapes.Rect(
             insert=(5.95, 2.96),
             size=(4.98, 2.7),
             rx=0.5,
-            style="fill:#d9d297;stroke:#a48a44;",
+            fill="#d9d297",
+            stroke="#a48a44",
         )
     )
     grp.add(
@@ -1194,7 +1183,8 @@ def representation_link_symbol(
             insert=(1.66, 10.1),
             size=(4.98, 2.7),
             rx=0.5,
-            style="fill:#abc0c9;stroke:#557099;",
+            fill="#abc0c9",
+            stroke="#557099",
         )
     )
     grp.add(
@@ -1202,7 +1192,8 @@ def representation_link_symbol(
             insert=(10.12, 10.1),
             size=(4.98, 2.7),
             rx=0.5,
-            style="fill:#acbd57;stroke:#326f46;",
+            fill="#acbd57",
+            stroke="#326f46",
         )
     )
     grp.add(
@@ -1212,13 +1203,15 @@ def representation_link_symbol(
                 "2.2573969 m 4.3112023,-2.250294 4.3161128,-0.00711 "
                 "-0.0049,2.2573968"
             ),
-            style="fill:none;stroke:#557099;",
+            fill="none",
+            stroke="#557099",
         )
     )
     grp.add(
         path.Path(
             d="m 8.5000114,5.7276095 0.00519,2.0502552",
-            style="fill:none;stroke:#557099;",
+            fill="none",
+            stroke="#557099",
         )
     )
     return symb
@@ -1271,7 +1264,9 @@ def physical_behavior_actor_symbol(
                 " h -4.295541 l 11.583005,-31.82123 h 5.641907 z m"
                 " -8.933021,-12.50195 -5.577791,-15.6221 -5.599169,15.6221 z"
             ),
-            style="white-space: pre; inline-size: 15.4494; stroke-width: 0.1;",
+            white_space="pre",
+            inline_size=15.4494,
+            stroke_width=0.1,
         )
     )
     symb.add(letter)
@@ -1339,7 +1334,9 @@ def physical_node_actor_symbol(
                 " h -4.295541 l 11.583005,-31.82123 h 5.641907 z m"
                 " -8.933021,-12.50195 -5.577791,-15.6221 -5.599169,15.6221 z"
             ),
-            style="white-space: pre; inline-size: 15.4494; stroke-width: 0.1;",
+            white_space="pre",
+            inline_size=15.4494,
+            stroke_width=0.1,
         )
     )
     symb.add(letter)
@@ -1354,9 +1351,7 @@ def physical_node_human_actor_symbol(
 
 
 @decorations.deco_factories
-def fine_arrow_mark(
-    id_: str = "FineArrow", *, style: style_.Styling, **kw
-) -> container.Marker:
+def fine_arrow_mark(id_: str = "FineArrow", **kw) -> container.Marker:
     return _make_marker(
         (7, 3.75),
         (7.5, 7.5),
@@ -1365,60 +1360,43 @@ def fine_arrow_mark(
             "M 0.4535,0.107 7.309,3.621 0.492,7.407 "
             "0.144,7.407 6.414,3.63 0.136,0.479 Z"
         ),
-        style=style,
         **kw,
     )
 
 
 @decorations.deco_factories
-def arrow_mark(
-    id_: str = "Arrow", *, style: style_.Styling, **kw
-) -> container.Marker:
+def arrow_mark(id_: str = "Arrow", **kw) -> container.Marker:
     return _make_marker(
-        (5, 2.5), (5.5, 5.5), id_=id_, d="M 0,0 5,2.5 0,5", style=style, **kw
+        (5, 2.5), (5.5, 5.5), id_=id_, d="M 0,0 5,2.5 0,5", **kw
     )
 
 
-def _make_diamond_marker(
-    id_: str, *, style: style_.Styling, fill: str, **kw
-) -> container.Marker:
-    if not hasattr(style, "fill"):
-        style.fill = fill
+def _make_diamond_marker(id_: str, **kw) -> container.Marker:
     return _make_marker(
-        (0, 3),
-        (11, 6),
-        id_=id_,
-        d="M 0,3 5,0.5 10,3 5,5.5 Z",
-        style=style,
-        **kw,
+        (0, 3), (11, 6), id_=id_, d="M 0,3 5,0.5 10,3 5,5.5 Z", **kw
     )
 
 
 @decorations.deco_factories
-def diamond_mark(
-    id_: str = "Diamond", *, style: style_.Styling, **kw
-) -> container.Marker:
-    return _make_diamond_marker(id_, style=style, fill="white", **kw)
+def diamond_mark(id_: str = "Diamond", **kw) -> container.Marker:
+    kw["fill"] = "#fff"
+    return _make_diamond_marker(id_, **kw)
 
 
 @decorations.deco_factories
-def filled_diamond_mark(
-    id_: str = "FilledDiamond", *, style: style_.Styling, **kw
-) -> container.Marker:
-    return _make_diamond_marker(id_, style=style, fill="black", **kw)
+def filled_diamond_mark(id_: str = "FilledDiamond", **kw) -> container.Marker:
+    kw["fill"] = kw.get("stroke", "#000")
+    return _make_diamond_marker(id_, **kw)
 
 
 @decorations.deco_factories
-def generalization_mark(
-    id_: str = "Generalization", *, style: style_.Styling, **kw
-) -> container.Marker:
-    style.fill = "#fff"
+def generalization_mark(id_: str = "Generalization", **kw) -> container.Marker:
+    kw["fill"] = "#fff"
     return _make_marker(
         (7, 4),
         (7.5, 7.5),
         id_=id_,
         d="M 0.1275,7.5 7.5,3.75 0,0 Z",
-        style=style,
         **kw,
     )
 

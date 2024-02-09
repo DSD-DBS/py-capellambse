@@ -67,7 +67,7 @@ def apply_style_overrides(
     if linestyle == "dash":
         styleoverrides["stroke-dasharray"] = "5"
     elif linestyle == "dot":
-        styleoverrides["stroke-dasharray"] = "1, 3"
+        styleoverrides["stroke-dasharray"] = "1 3"
     elif linestyle is not None:
         LOGGER.warning("Ignoring unknown line style %s", linestyle)
 

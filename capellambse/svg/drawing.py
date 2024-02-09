@@ -50,14 +50,14 @@ class Drawing:
     """The main container that stores all svg elements."""
 
     def __init__(self, metadata: generate.DiagramMetadata):
-        base_css = "shape-rendering: geometricPrecision; cursor: pointer;"
         superparams = {
+            "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
+            "font-family": "Open Sans",
+            "font-size": "8px",
+            "shape-rendering": "geometricPrecision",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
-            "style": base_css,
-            "font-size": "8px",
-            "font-family": "Open Sans",
         }
         if metadata.class_:
             superparams["class_"] = re.sub(r"\s+", "", metadata.class_)
@@ -98,7 +98,7 @@ class Drawing:
         self.__backdrop = self.__drawing.rect(
             insert=pos,
             size=size,
-            fill="white",
+            fill="#fff",
             stroke="none",
         )
         self.__drawing.add(self.__backdrop)
@@ -132,17 +132,10 @@ class Drawing:
             "class_": class_,
             **transform,
         }
-        if rx := getattr(rect_style, "rx", None):
-            rectparams["rx"] = rx
-            delattr(rect_style, "rx")
-        if ry := getattr(rect_style, "ry", None):
-            rectparams["ry"] = ry
-            delattr(rect_style, "ry")
 
-        if rect_style:
-            rectparams["style"] = rect_style[""]
-
-        rect: shapes.Rect = self.__drawing.rect(**rectparams)
+        rect: shapes.Rect = self.__drawing.rect(
+            **rectparams, **rect_style._to_dict()
+        )
         grp.add(rect)
 
         if description is not None and label is not None:
@@ -207,9 +200,7 @@ class Drawing:
             )
 
         if DEBUG:
-            helping_lines = self._draw_rect_helping_lines(pos, size)
-            for line in helping_lines:
-                grp.add(line)
+            self._draw_rect_helping_lines(grp, pos, size)
 
         return grp
 
@@ -222,14 +213,11 @@ class Drawing:
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
-        css: str | None = None
-        if objstyle is not None:
-            css = objstyle["stroke"] if "stroke" in objstyle else None
 
         line = self.__drawing.line(
             start=(x, y + decorations.feature_space),
             end=(x + w, y + decorations.feature_space),
-            style=css,
+            stroke=getattr(objstyle, "stroke", None),
         )
         if group is None:
             return line
@@ -323,10 +311,9 @@ class Drawing:
             textattrs["transform"] = transform
             delattr(builder.labelstyle, "transform")
 
-        if labelstyle := builder.labelstyle[""]:
-            textattrs["style"] = labelstyle
-
-        text = self.__drawing.text(**textattrs)
+        text = self.__drawing.text(
+            **textattrs, **builder.labelstyle._to_dict()
+        )
         if transform:
             params = {
                 "insert": (x, y),
@@ -410,7 +397,7 @@ class Drawing:
                         pos, size, class_, parent_id
                     ),
                     class_=class_,
-                    style=obj_style,
+                    **obj_style._to_dict(),
                 )
             )
         else:
@@ -422,7 +409,7 @@ class Drawing:
                     transform=self.get_port_transformation(
                         pos, size, class_, parent_id
                     ),
-                    style=obj_style,
+                    **obj_style._to_dict(),
                 )
             )
 
@@ -533,17 +520,19 @@ class Drawing:
             stroke_width = str(getstyleattr(styling, "stroke-width"))
             marker_id = styling._generate_id(marker, [stroke])
             if marker_id not in defs_ids:
+                factory = decorations.deco_factories[marker]
+                markstyle = style.Styling(
+                    self.diagram_class,
+                    styling._class,
+                    _prefix=styling._prefix,
+                    _markers=False,
+                    stroke=stroke,
+                    stroke_width=stroke_width,
+                )._to_dict()
+                markstyle.pop("marker-start", None)
+                markstyle.pop("marker-end", None)
                 self.__drawing.defs.add(
-                    decorations.deco_factories[marker].function(
-                        marker_id,
-                        style=style.Styling(
-                            self.diagram_class,
-                            styling._class,
-                            _prefix=styling._prefix,
-                            stroke=stroke,
-                            stroke_width=stroke_width,
-                        ),
-                    )
+                    factory.function(marker_id, **markstyle)
                 )
                 defs_ids.add(marker_id)
 
@@ -593,7 +582,7 @@ class Drawing:
                     insert=pos,
                     size=size,
                     class_=class_,
-                    style=obj_style,
+                    **obj_style._to_dict(),
                 )
             )
 
@@ -711,11 +700,10 @@ class Drawing:
         obj_style.fill = obj_style.stroke or diagram.RGB(0, 0, 0)
         del obj_style.stroke
         grp = self.__drawing.g(class_=f"Circle {class_}", id_=id_)
-        grp.add(
-            self.__drawing.circle(
-                center=center_, r=radius_, style=obj_style[""]
-            )
+        circle = self.__drawing.circle(
+            center=center_, r=radius_, **obj_style._to_dict()
         )
+        grp.add(circle)
         self.__drawing.add(grp)
 
     def _draw_edge(
@@ -733,11 +721,10 @@ class Drawing:
         del kw
         points: list = [(x + 0.5, y + 0.5) for x, y in points_]
         grp = self.__drawing.g(class_=f"Edge {class_}", id_=id_)
-        grp.add(
-            self.__drawing.path(
-                d=["M"] + points, class_="Edge", style=obj_style[""]
-            )
+        path = self.__drawing.path(
+            d=["M"] + points, class_="Edge", **obj_style._to_dict()
         )
+        grp.add(path)
 
         if context_:
             gcls = " ".join(f"context-{i}" for i in context_)
@@ -790,57 +777,40 @@ class Drawing:
     def _draw_line(
         self,
         data: dict[str, float | int],
-        group: container.Group | None = None,
-        obj_style: style.Styling | None = None,
+        *,
+        obj_style: style.Styling,
     ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x1, y1 = data["x"], data["y"]
         x2 = data.get("x1") or data["x"] + data["width"]
         y2 = data.get("y1") or data["y"]
         line = self.__drawing.line(
-            start=(x1, y1), end=(x2, y2), style=obj_style
+            start=(x1, y1), end=(x2, y2), **obj_style._to_dict()
         )
-        if group is None:
-            return line
-
-        return group.add(line)
+        return line
 
     def _draw_rect_helping_lines(
         self,
-        rect_pos: tuple[float, float],
-        rect_size: tuple[float, float],
-    ):
+        grp: container.Group,
+        pos: tuple[float, float],
+        size: tuple[float, float],
+    ) -> None:
         linestyle = style.Styling(
             self.diagram_class,
             "Edge",
-            **{
-                "stroke": "rgb(239, 41, 41)",
-                "stroke-dasharray": "5",
-            },
+            stroke="rgb(239, 41, 41)",
+            **{"stroke-dasharray": "5"},
         )
-        lines = []
-        lines.append(
-            self._draw_line(
-                {
-                    "x": rect_pos[0] + rect_size[0] / 2,
-                    "y": rect_pos[1],
-                    "x1": rect_pos[0] + rect_size[0] / 2,
-                    "y1": rect_pos[1] + rect_size[1],
-                },
-                obj_style=linestyle,
-            )
-        )
-        lines.append(
-            self._draw_line(
-                {
-                    "x": rect_pos[0],
-                    "y": rect_pos[1] + rect_size[1] / 2,
-                    "width": rect_size[0],
-                },
-                obj_style=linestyle,
-            )
-        )
-        return lines
+        start = (pos[0] + size[0] / 2, pos[1])
+        end = (pos[0] + size[0] / 2, pos[1] + size[1])
+        ln = self.__drawing.line(start=start, end=end, **linestyle._to_dict())
+        grp.add(ln)
+
+        y = pos[1] + size[1] / 2
+        start = (pos[0], y)
+        end = (pos[0] + size[0], y)
+        ln = self.__drawing.line(start=start, end=end, **linestyle._to_dict())
+        grp.add(ln)
 
     def _add_decofactory(self, name: str) -> None:
         factory = decorations.deco_factories[f"{name}Symbol"]

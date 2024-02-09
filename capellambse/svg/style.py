@@ -26,8 +26,6 @@ class Styling:
     subscripting syntax, due to Python identifier naming rules.
     """
 
-    _marker: bool = False
-
     def __init__(
         self, diagram_class: str | None, class_: str, prefix: str = "", **attr
     ):
@@ -74,22 +72,13 @@ class Styling:
         defaultstyles = diagram.get_style(self._diagram_class, self._class)
         for attr in ("marker-start", "marker-end"):
             if (
-                not self._marker
-                and not getattr(super(), attr, None)
+                not getattr(super(), attr, None)
                 and self._style_name(attr) in defaultstyles
             ):
                 yield attr
 
         yield from itertools.filterfalse(
             operator.methodcaller("startswith", "_"), dir(self)
-        )
-
-    def __getitem__(self, attrs: str | cabc.Iterable[str]) -> str | None:
-        if isinstance(attrs, str):
-            attrs = (attrs,) if attrs else self
-        return (
-            "; ".join(f"{a}: {self._to_css(getattr(self, a))}" for a in attrs)
-            or None
         )
 
     @classmethod
@@ -106,6 +95,30 @@ class Styling:
             return f'url("#{cls._generate_id("CustomGradient", value)}")'
         raise ValueError(f"Invalid styling value: {value!r}")
 
+    def _to_dict(self) -> dict[str, float | int | str]:
+        """Convert this styling to a dictionary.
+
+        The returned dict also includes the built-in default styles for
+        the diagram class and object class given to the constructor.
+
+        :meta public:
+        """
+        styles = diagram.get_style(self._diagram_class, self._class)
+        if self._prefix:
+            styles = {
+                k[len(self._prefix) + 1 :]: v
+                for k, v in styles.items()
+                if k.startswith(f"{self._prefix}_")
+            }
+        else:
+            styles = {k: v for k, v in styles.items() if "_" not in k}
+        styles.update(
+            (attr, getattr(self, attr))
+            for attr in dir(self)
+            if not attr.startswith("_")
+        )
+        return {k: self._to_css(v) for k, v in styles.items()}
+
     @staticmethod
     def _generate_id(
         name: str, value: cabc.Iterable[str | diagram.RGB]
@@ -117,9 +130,6 @@ class Styling:
                 (diagram.RGB.fromcss(v).tohex() for v in value),
             ),
         )
-
-    def __str__(self) -> str:
-        return self[""] or ""
 
     def _style_name(self, attr: str) -> str:
         if not self._prefix:

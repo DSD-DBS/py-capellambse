@@ -123,8 +123,14 @@ class TestSVG:
         tree = etree.fromstring(
             SVGDiagram.from_json_path(tmp_json).to_string()
         )
-        style_ = tree.get("style")
-        assert style_
+
+        assert tree.get("font-family")
+        assert tree.get("font-size")
+        assert tree.get("height")
+        assert tree.get("viewBox")
+        assert tree.get("width")
+        assert not tree.get("filename")
+        assert not tree.get("size")
 
     @pytest.mark.parametrize("diagram_name", TEST_DIAGS)
     def test_diagram_decorations(
