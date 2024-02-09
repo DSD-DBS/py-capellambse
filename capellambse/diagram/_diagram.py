@@ -56,6 +56,8 @@ class Box:
     minsize = diagram.Vec2Property()
     maxsize = diagram.Vec2Property()
 
+    context: set[str]
+
     def __init__(
         self,
         pos: diagram.Vec2ish,
@@ -548,6 +550,8 @@ class Edge(diagram.Vec2List):
     hidelabel = False
     port = False
 
+    context: set[str]
+
     def __init__(
         self,
         points: cabc.Iterable[diagram.Vec2ish],
@@ -767,6 +771,8 @@ class Circle:
     port = False
 
     center = diagram.Vec2Property()
+
+    context: set[str]
 
     def __init__(
         self,

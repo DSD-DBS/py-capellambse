@@ -71,25 +71,25 @@ class TestSVG:
             SVGDiagram.from_json_path(tmp_json).to_string()
         )
 
-        cp_in_exists: bool = False
-        cp_inout_exists: bool = False
-        cp_out_exists: bool = False
-        cp_unset_exists: bool = False
-        cp_reference_exists: bool = False
+        cp_in_exists = False
+        cp_inout_exists = False
+        cp_out_exists = False
+        cp_unset_exists = False
+        cp_reference_exists = False
 
         for item in tree.iter():
             # The class CP should not exist anymore as it has been replaced
             # with CP_IN, CP_OUT, CP_UNSET or CP_INOUT
-            assert item.get("class") != "Box CP"
+            assert not item.get("class", "").startswith("Box CP ")
 
             # Check that the classes CP_IN, CP_OUT, CP_UNSET and CP_INOUT exist
-            if item.get("class") == "Box CP_IN":
+            if item.get("class", "").startswith("Box CP_IN "):
                 cp_in_exists = True
-            elif item.get("class") == "Box CP_OUT":
+            elif item.get("class", "").startswith("Box CP_OUT "):
                 cp_out_exists = True
-            elif item.get("class") == "Box CP_INOUT":
+            elif item.get("class", "").startswith("Box CP_INOUT "):
                 cp_inout_exists = True
-            elif item.get("class") == "Box CP_UNSET":
+            elif item.get("class", "").startswith("Box CP_UNSET "):
                 cp_unset_exists = True
 
             # Check that reference symbol for CP exists

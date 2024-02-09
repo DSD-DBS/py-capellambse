@@ -92,6 +92,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
             "class": o.styleclass,
             "points": [[_intround(x), _intround(y)] for x, y in o.points],
             "labels": [_encode_label(i) for i in o.labels if not i.hidden],
+            "context": sorted(o.context),
         }
 
         if o.styleoverrides:
@@ -106,6 +107,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
             "class": o.styleclass,
             "center": [_intround(p) for p in o.center],
             "radius": _intround(o.radius),
+            "context": sorted(o.context),
         }
         if o.styleoverrides:
             jsonobj["style"] = _encode_styleoverrides(o.styleoverrides)

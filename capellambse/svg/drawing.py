@@ -113,6 +113,7 @@ class Drawing:
         rectstyle: cabc.Mapping[str, style.Styling],
         *,
         class_: str = "",
+        context_: cabc.Sequence[str] = (),
         label: LabelDict | None = None,
         description: str | None = None,
         features: cabc.Sequence[str] = (),
@@ -120,8 +121,9 @@ class Drawing:
         children: bool = False,
     ) -> container.Group:
         """Add a rectangle with auto-aligned text to the group."""
+        gcls = "".join(f" context-{i}" for i in context_)
         grp: container.Group = self.__drawing.g(
-            class_=f"Box {class_}", id_=id_
+            class_=f"Box {class_}{gcls}", id_=id_
         )
         text_style = rectstyle["text_style"]
         rect_style = rectstyle["obj_style"]
@@ -373,11 +375,13 @@ class Drawing:
         parent_id: str | None,
         *,
         class_: str,
+        context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         label: LabelDict | None = None,
         id_: str | None = None,
     ) -> container.Group:
-        grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
         if class_ in decorations.all_directed_ports:
             port_id = "Error"
             if class_ in decorations.function_ports:
@@ -552,7 +556,6 @@ class Drawing:
         text_style: style.Styling,
         **kw: t.Any,
     ):
-        del context_  # FIXME Add context to SVG
         del kw  # Dismiss additional info from json
         assert isinstance(label_, (dict, type(None)))
         pos = (x_ + 0.5, y_ + 0.5)
@@ -570,12 +573,14 @@ class Drawing:
                 text_style,
                 parent_,
                 class_=class_,
+                context_=context_,
                 obj_style=obj_style,
                 label=label_,
                 id_=id_,
             )
         else:
-            grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
+            gcls = "".join(f" context-{i}" for i in context_)
+            grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
             grp.add(
                 self.__drawing.use(
                     href=f"#{class_}Symbol",
@@ -642,15 +647,13 @@ class Drawing:
             size,
             rect_style,
             class_=class_,
+            context_=context_,
             id_=id_,
             label=label,
             description=description_,
             features=features_,
             children=bool(children_),
         )
-        if context_:
-            gcls = " ".join(f"context-{i}" for i in context_)
-            grp.add(container.Group(class_=gcls))
         return self.__drawing.add(grp)
 
     def _draw_box_symbol(
@@ -663,10 +666,11 @@ class Drawing:
         label_: LabelDict,
         id_: str,
         class_: str,
+        context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw: t.Any,
-    ) -> None:
+    ) -> container.Group:
         del kw
 
         grp = self._draw_box(
@@ -676,6 +680,7 @@ class Drawing:
             height_=height_,
             id_=id_,
             class_=class_,
+            context_=context_,
             obj_style=obj_style,
             text_style=text_style,
         )
@@ -691,20 +696,30 @@ class Drawing:
                 icon=False,
             )
         )
+        return grp
 
     def _draw_circle(
-        self, *, center_, radius_, id_=None, class_=None, obj_style, text_style
-    ):
+        self,
+        *,
+        center_: tuple[float, float],
+        radius_: float,
+        id_: str | None = None,
+        class_: str | None = None,
+        context_: cabc.Sequence[str] = (),
+        obj_style: style.Styling,
+        text_style: style.Styling,
+    ) -> container.Group:
         del text_style  # No label for circles
-        center_ = tuple(i + 0.5 for i in center_)
+        center_ = (center_[0] + 0.5, center_[1] + 0.5)
         obj_style.fill = obj_style.stroke or diagram.RGB(0, 0, 0)
         del obj_style.stroke
-        grp = self.__drawing.g(class_=f"Circle {class_}", id_=id_)
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Circle {class_}{gcls}", id_=id_)
         circle = self.__drawing.circle(
             center=center_, r=radius_, **obj_style._to_dict()
         )
         grp.add(circle)
-        self.__drawing.add(grp)
+        return self.__drawing.add(grp)
 
     def _draw_edge(
         self,
@@ -717,18 +732,15 @@ class Drawing:
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw,
-    ):
+    ) -> container.Group:
         del kw
         points: list = [(x + 0.5, y + 0.5) for x, y in points_]
-        grp = self.__drawing.g(class_=f"Edge {class_}", id_=id_)
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Edge {class_}{gcls}", id_=id_)
         path = self.__drawing.path(
             d=["M"] + points, class_="Edge", **obj_style._to_dict()
         )
         grp.add(path)
-
-        if context_:
-            gcls = " ".join(f"context-{i}" for i in context_)
-            grp.add(container.Group(class_=gcls))
 
         # Received text space doesn't allow for anything else than the text
         for label_ in labels_:
@@ -741,8 +753,7 @@ class Drawing:
                 class_=class_,
                 y_margin=0,
             )
-
-        self.__drawing.add(grp)
+        return self.__drawing.add(grp)
 
     def _draw_edge_label(
         self,
