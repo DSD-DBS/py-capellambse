@@ -186,7 +186,7 @@ class Drawing:
                 pos[0] + (size[0] - icon_size / 4) / 2,
                 pos[1] + (decorations.feature_space - 15) / 2,
             )
-            label = {  # XXX: Instead of allowing None > more asserts
+            label = {
                 "x": labelpos[0],
                 "y": labelpos[1],
                 "width": 0.0,
