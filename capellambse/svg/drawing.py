@@ -50,17 +50,14 @@ class Drawing:
     """The main container that stores all svg elements."""
 
     def __init__(self, metadata: generate.DiagramMetadata):
-        base_css = (
-            "shape-rendering: geometricPrecision;"
-            " font-family: 'Segoe UI';"
-            " font-size: 8pt;"
-            " cursor: pointer;"
-        )
         superparams = {
+            "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
+            "font-family": "Open Sans",
+            "font-size": "8px",
+            "shape-rendering": "geometricPrecision",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
-            "style": base_css,
         }
         if metadata.class_:
             superparams["class_"] = re.sub(r"\s+", "", metadata.class_)
@@ -101,7 +98,7 @@ class Drawing:
         self.__backdrop = self.__drawing.rect(
             insert=pos,
             size=size,
-            fill="white",
+            fill="#fff",
             stroke="none",
         )
         self.__drawing.add(self.__backdrop)
@@ -116,6 +113,7 @@ class Drawing:
         rectstyle: cabc.Mapping[str, style.Styling],
         *,
         class_: str = "",
+        context_: cabc.Sequence[str] = (),
         label: LabelDict | None = None,
         description: str | None = None,
         features: cabc.Sequence[str] = (),
@@ -123,8 +121,9 @@ class Drawing:
         children: bool = False,
     ) -> container.Group:
         """Add a rectangle with auto-aligned text to the group."""
+        gcls = "".join(f" context-{i}" for i in context_)
         grp: container.Group = self.__drawing.g(
-            class_=f"Box {class_}", id_=id_
+            class_=f"Box {class_}{gcls}", id_=id_
         )
         text_style = rectstyle["text_style"]
         rect_style = rectstyle["obj_style"]
@@ -135,23 +134,16 @@ class Drawing:
             "class_": class_,
             **transform,
         }
-        if rx := getattr(rect_style, "rx", None):
-            rectparams["rx"] = rx
-            delattr(rect_style, "rx")
-        if ry := getattr(rect_style, "ry", None):
-            rectparams["ry"] = ry
-            delattr(rect_style, "ry")
 
-        if rect_style:
-            rectparams["style"] = rect_style[""]
-
-        rect: shapes.Rect = self.__drawing.rect(**rectparams)
+        rect: shapes.Rect = self.__drawing.rect(
+            **rectparams, **rect_style._to_dict()
+        )
         grp.add(rect)
 
         if description is not None and label is not None:
             new_label: LabelDict = copy.deepcopy(label)
             new_label["text"] = description
-            self._draw_box_label(
+            self._draw_label(
                 LabelBuilder(
                     new_label,
                     grp,
@@ -178,7 +170,7 @@ class Drawing:
             if children or class_ in decorations.always_top_label:
                 y_margin = 5
 
-            self._draw_box_label(
+            self._draw_label(
                 LabelBuilder(
                     label,
                     grp,
@@ -194,7 +186,7 @@ class Drawing:
                 pos[0] + (size[0] - icon_size / 4) / 2,
                 pos[1] + (decorations.feature_space - 15) / 2,
             )
-            label = {  # XXX: Instead of allowing None > more asserts
+            label = {
                 "x": labelpos[0],
                 "y": labelpos[1],
                 "width": 0.0,
@@ -210,9 +202,7 @@ class Drawing:
             )
 
         if DEBUG:
-            helping_lines = self._draw_rect_helping_lines(pos, size)
-            for line in helping_lines:
-                grp.add(line)
+            self._draw_rect_helping_lines(grp, pos, size)
 
         return grp
 
@@ -225,14 +215,11 @@ class Drawing:
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
-        css: str | None = None
-        if objstyle is not None:
-            css = objstyle["stroke"] if "stroke" in objstyle else None
 
         line = self.__drawing.line(
             start=(x, y + decorations.feature_space),
             end=(x + w, y + decorations.feature_space),
-            style=css,
+            stroke=getattr(objstyle, "stroke", None),
         )
         if group is None:
             return line
@@ -260,7 +247,7 @@ class Drawing:
                 chelpers.flatten_html_string(feat) for feat in features
             ),
         }
-        self._draw_box_label(
+        self._draw_label(
             LabelBuilder(
                 label,
                 group,
@@ -272,17 +259,35 @@ class Drawing:
             )
         )
 
-    def _draw_box_label(self, builder: LabelBuilder) -> container.Group:
-        """Draw label text on given object and return the label's group."""
-        self._draw_label(builder)
-        return builder.group
-
     def _draw_label(self, builder: LabelBuilder) -> None:
+        """Draw label text on given object and return the label's group."""
         assert isinstance(builder.label["x"], (int, float))
         assert isinstance(builder.label["y"], (int, float))
         assert isinstance(builder.label["width"], (int, float))
         assert isinstance(builder.label["height"], (int, float))
         assert isinstance(builder.label.get("text", ""), str)
+
+        text = self._make_text(builder)
+        builder.icon &= f"{builder.class_}Symbol" in decorations.deco_factories
+        if not text.elements:
+            lines = render_hbounded_lines(builder, builder.icon)
+            x, y = get_label_position(builder, lines)
+            for line in lines.lines:
+                params = {
+                    "insert": (x, y),
+                    "text": line,
+                    "xml:space": "preserve",
+                }
+                text.add(svgtext.TSpan(**params))
+                y += lines.line_height
+
+            if builder.icon:
+                icon_pos = get_label_icon_position(builder, lines)
+                self.add_label_image(builder, icon_pos)
+        return builder.group
+
+    def _make_text(self, builder: LabelBuilder) -> svgtext.Text:
+        """Return a text element and add it to the builder group."""
         textattrs = {
             "text": "",
             "insert": (builder.label["x"], builder.label["y"]),
@@ -308,15 +313,8 @@ class Drawing:
             textattrs["transform"] = transform
             delattr(builder.labelstyle, "transform")
 
-        if labelstyle := builder.labelstyle[""]:
-            textattrs["style"] = labelstyle
-
-        text = self.__drawing.text(**textattrs)
-        builder.group.add(text)
-
-        render_icon = (
-            f"{builder.class_}Symbol" in decorations.deco_factories
-            and builder.icon
+        text = self.__drawing.text(
+            **textattrs, **builder.labelstyle._to_dict()
         )
         if transform:
             params = {
@@ -325,23 +323,8 @@ class Drawing:
                 "xml:space": "preserve",
             }
             text.add(svgtext.TSpan(**params))
-        else:
-            lines = render_hbounded_lines(builder, render_icon)
-            x, icon_x = get_label_position_x(builder, lines, render_icon)
-            y = get_label_position_y(builder, lines)
-            for line in lines.lines:
-                text.add(
-                    svgtext.TSpan(
-                        insert=(x, y), text=line, **{"xml:space": "preserve"}
-                    )
-                )
-                y += lines.line_height
-
-            if render_icon:
-                icon_pos = get_label_icon_position(
-                    builder, lines.text_height, icon_x
-                )
-                self.add_label_image(builder, icon_pos)
+        builder.group.add(text)
+        return text
 
     def add_label_image(
         self, builder: LabelBuilder, pos: tuple[float, float]
@@ -392,11 +375,13 @@ class Drawing:
         parent_id: str | None,
         *,
         class_: str,
+        context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         label: LabelDict | None = None,
         id_: str | None = None,
     ) -> container.Group:
-        grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
         if class_ in decorations.all_directed_ports:
             port_id = "Error"
             if class_ in decorations.function_ports:
@@ -416,7 +401,7 @@ class Drawing:
                         pos, size, class_, parent_id
                     ),
                     class_=class_,
-                    style=obj_style,
+                    **obj_style._to_dict(),
                 )
             )
         else:
@@ -428,7 +413,7 @@ class Drawing:
                     transform=self.get_port_transformation(
                         pos, size, class_, parent_id
                     ),
-                    style=obj_style,
+                    **obj_style._to_dict(),
                 )
             )
 
@@ -539,17 +524,19 @@ class Drawing:
             stroke_width = str(getstyleattr(styling, "stroke-width"))
             marker_id = styling._generate_id(marker, [stroke])
             if marker_id not in defs_ids:
+                factory = decorations.deco_factories[marker]
+                markstyle = style.Styling(
+                    self.diagram_class,
+                    styling._class,
+                    _prefix=styling._prefix,
+                    _markers=False,
+                    stroke=stroke,
+                    stroke_width=stroke_width,
+                )._to_dict()
+                markstyle.pop("marker-start", None)
+                markstyle.pop("marker-end", None)
                 self.__drawing.defs.add(
-                    decorations.deco_factories[marker].function(
-                        marker_id,
-                        style=style.Styling(
-                            self.diagram_class,
-                            styling._class,
-                            _prefix=styling._prefix,
-                            stroke=stroke,
-                            stroke_width=stroke_width,
-                        ),
-                    )
+                    factory.function(marker_id, **markstyle)
                 )
                 defs_ids.add(marker_id)
 
@@ -569,7 +556,6 @@ class Drawing:
         text_style: style.Styling,
         **kw: t.Any,
     ):
-        del context_  # FIXME Add context to SVG
         del kw  # Dismiss additional info from json
         assert isinstance(label_, (dict, type(None)))
         pos = (x_ + 0.5, y_ + 0.5)
@@ -587,19 +573,21 @@ class Drawing:
                 text_style,
                 parent_,
                 class_=class_,
+                context_=context_,
                 obj_style=obj_style,
                 label=label_,
                 id_=id_,
             )
         else:
-            grp = self.__drawing.g(class_=f"Box {class_}", id_=id_)
+            gcls = "".join(f" context-{i}" for i in context_)
+            grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
             grp.add(
                 self.__drawing.use(
                     href=f"#{class_}Symbol",
                     insert=pos,
                     size=size,
                     class_=class_,
-                    style=obj_style,
+                    **obj_style._to_dict(),
                 )
             )
 
@@ -659,15 +647,13 @@ class Drawing:
             size,
             rect_style,
             class_=class_,
+            context_=context_,
             id_=id_,
             label=label,
             description=description_,
             features=features_,
             children=bool(children_),
         )
-        if context_:
-            gcls = " ".join(f"context-{i}" for i in context_)
-            grp.add(container.Group(class_=gcls))
         return self.__drawing.add(grp)
 
     def _draw_box_symbol(
@@ -680,10 +666,11 @@ class Drawing:
         label_: LabelDict,
         id_: str,
         class_: str,
+        context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw: t.Any,
-    ) -> None:
+    ) -> container.Group:
         del kw
 
         grp = self._draw_box(
@@ -693,6 +680,7 @@ class Drawing:
             height_=height_,
             id_=id_,
             class_=class_,
+            context_=context_,
             obj_style=obj_style,
             text_style=text_style,
         )
@@ -708,21 +696,30 @@ class Drawing:
                 icon=False,
             )
         )
+        return grp
 
     def _draw_circle(
-        self, *, center_, radius_, id_=None, class_=None, obj_style, text_style
-    ):
+        self,
+        *,
+        center_: tuple[float, float],
+        radius_: float,
+        id_: str | None = None,
+        class_: str | None = None,
+        context_: cabc.Sequence[str] = (),
+        obj_style: style.Styling,
+        text_style: style.Styling,
+    ) -> container.Group:
         del text_style  # No label for circles
-        center_ = tuple(i + 0.5 for i in center_)
+        center_ = (center_[0] + 0.5, center_[1] + 0.5)
         obj_style.fill = obj_style.stroke or diagram.RGB(0, 0, 0)
         del obj_style.stroke
-        grp = self.__drawing.g(class_=f"Circle {class_}", id_=id_)
-        grp.add(
-            self.__drawing.circle(
-                center=center_, r=radius_, style=obj_style[""]
-            )
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Circle {class_}{gcls}", id_=id_)
+        circle = self.__drawing.circle(
+            center=center_, r=radius_, **obj_style._to_dict()
         )
-        self.__drawing.add(grp)
+        grp.add(circle)
+        return self.__drawing.add(grp)
 
     def _draw_edge(
         self,
@@ -735,19 +732,15 @@ class Drawing:
         obj_style: style.Styling,
         text_style: style.Styling,
         **kw,
-    ):
+    ) -> container.Group:
         del kw
         points: list = [(x + 0.5, y + 0.5) for x, y in points_]
-        grp = self.__drawing.g(class_=f"Edge {class_}", id_=id_)
-        grp.add(
-            self.__drawing.path(
-                d=["M"] + points, class_="Edge", style=obj_style[""]
-            )
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Edge {class_}{gcls}", id_=id_)
+        path = self.__drawing.path(
+            d=["M"] + points, class_="Edge", **obj_style._to_dict()
         )
-
-        if context_:
-            gcls = " ".join(f"context-{i}" for i in context_)
-            grp.add(container.Group(class_=gcls))
+        grp.add(path)
 
         # Received text space doesn't allow for anything else than the text
         for label_ in labels_:
@@ -760,8 +753,7 @@ class Drawing:
                 class_=class_,
                 y_margin=0,
             )
-
-        self.__drawing.add(grp)
+        return self.__drawing.add(grp)
 
     def _draw_edge_label(
         self,
@@ -796,57 +788,40 @@ class Drawing:
     def _draw_line(
         self,
         data: dict[str, float | int],
-        group: container.Group | None = None,
-        obj_style: style.Styling | None = None,
+        *,
+        obj_style: style.Styling,
     ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x1, y1 = data["x"], data["y"]
         x2 = data.get("x1") or data["x"] + data["width"]
         y2 = data.get("y1") or data["y"]
         line = self.__drawing.line(
-            start=(x1, y1), end=(x2, y2), style=obj_style
+            start=(x1, y1), end=(x2, y2), **obj_style._to_dict()
         )
-        if group is None:
-            return line
-
-        return group.add(line)
+        return line
 
     def _draw_rect_helping_lines(
         self,
-        rect_pos: tuple[float, float],
-        rect_size: tuple[float, float],
-    ):
+        grp: container.Group,
+        pos: tuple[float, float],
+        size: tuple[float, float],
+    ) -> None:
         linestyle = style.Styling(
             self.diagram_class,
             "Edge",
-            **{
-                "stroke": "rgb(239, 41, 41)",
-                "stroke-dasharray": "5",
-            },
+            stroke="rgb(239, 41, 41)",
+            **{"stroke-dasharray": "5"},
         )
-        lines = []
-        lines.append(
-            self._draw_line(
-                {
-                    "x": rect_pos[0] + rect_size[0] / 2,
-                    "y": rect_pos[1],
-                    "x1": rect_pos[0] + rect_size[0] / 2,
-                    "y1": rect_pos[1] + rect_size[1],
-                },
-                obj_style=linestyle,
-            )
-        )
-        lines.append(
-            self._draw_line(
-                {
-                    "x": rect_pos[0],
-                    "y": rect_pos[1] + rect_size[1] / 2,
-                    "width": rect_size[0],
-                },
-                obj_style=linestyle,
-            )
-        )
-        return lines
+        start = (pos[0] + size[0] / 2, pos[1])
+        end = (pos[0] + size[0] / 2, pos[1] + size[1])
+        ln = self.__drawing.line(start=start, end=end, **linestyle._to_dict())
+        grp.add(ln)
+
+        y = pos[1] + size[1] / 2
+        start = (pos[0], y)
+        end = (pos[0] + size[0], y)
+        ln = self.__drawing.line(start=start, end=end, **linestyle._to_dict())
+        grp.add(ln)
 
     def _add_decofactory(self, name: str) -> None:
         factory = decorations.deco_factories[f"{name}Symbol"]
@@ -886,6 +861,7 @@ class LinesData(t.NamedTuple):
 def render_hbounded_lines(
     builder: LabelBuilder, render_icon: bool
 ) -> LinesData:
+    """Return Lines data to render a label."""
     (
         lines,
         label_margin,
@@ -911,57 +887,36 @@ def render_hbounded_lines(
     )
 
 
-def get_label_position_x(
-    builder: LabelBuilder, lines: LinesData, render_icon: bool
+def get_label_position(
+    builder: LabelBuilder, lines: LinesData
 ) -> tuple[float, float]:
-    """Return x-coordinate of label-text and icon."""
-    icon_size = (builder.icon_size + decorations.icon_padding) * render_icon
-    sh_icon_size = (
-        builder.icon_size + decorations.icon_padding / 2
-    ) * render_icon
+    """Return the initial label position (x, y)."""
+    icon_size = (builder.icon_size + decorations.icon_padding) * builder.icon
     if builder.text_anchor == "start":
-        x = builder.label["x"] + lines.margin + icon_size
-        return x, x - sh_icon_size
-    x = builder.label["x"] + (builder.label["width"] + icon_size) / 2
-    return x, x - (lines.max_line_width / 2 + sh_icon_size)
+        builder.label["x"] += lines.margin + icon_size
+    else:
+        builder.label["x"] += (builder.label["width"] + icon_size) / 2
 
-
-def get_label_position_y(builder: LabelBuilder, lines: LinesData) -> float:
-    """Return y-coordinate of label-text."""
     dominant_baseline_adjust = chelpers.extent_func(lines.lines[0])[1] / 2
     if builder.y_margin is None:
         builder.y_margin = (builder.label["height"] - lines.text_height) / 2
-    return builder.label["y"] + builder.y_margin + dominant_baseline_adjust
+    builder.label["y"] += builder.y_margin + dominant_baseline_adjust
+    return builder.label["x"], builder.label["y"]
 
 
 def get_label_icon_position(
-    builder: LabelBuilder, text_height: int | float, icon_x: int | float
+    builder: LabelBuilder, lines: LinesData
 ) -> tuple[float, float]:
-    """Calculate the position of the icon relative to the label.
+    """Calculate the icon's position."""
+    icon_y = builder.label["y"] - builder.icon_size / 2
+    if lines.text_height > lines.line_height:
+        icon_y += lines.text_height / 2 - decorations.icon_padding * 2
+        if builder.label["class"] == "Annotation":
+            icon_y -= decorations.icon_padding
 
-    Parameters
-    ----------
-    builder : LabelBuilder
-        LabelBuilder
-    text_height : int | float
-        The height of the text in the label.
-    icon_x : int | float
-        The x position of the icon.
-
-    Returns
-    -------
-    icon_coords : tuple[float, float]
-        The x and y coordinates of the icon.
-    """
-    assert builder.y_margin is not None
-    icon_y = (
-        builder.label["y"]
-        + builder.y_margin
-        + (text_height - builder.icon_size) / 2
+    icon_x = (
+        builder.label["x"] - builder.icon_size - decorations.icon_padding * 2
     )
-    if (
-        icon_x < builder.label["x"] - decorations.icon_padding
-        and builder.label["class"] != "Annotation"
-    ):
-        icon_x = builder.label["x"] - decorations.icon_padding
-    return icon_x, icon_y
+    if builder.text_anchor == "middle":
+        icon_x -= lines.max_line_width / 3
+    return (icon_x, icon_y)

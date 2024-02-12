@@ -264,7 +264,7 @@ CSSdef = t.Union[int, str, RGB, t.List[RGB], None]
 STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
     "__GLOBAL__": {  # Global defaults
         "Box": {
-            "fill": "transparent",
+            "fill": "none",
             "stroke": COLORS["black"],
             "stroke-width": 1,
         },
@@ -306,13 +306,13 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
         "Edge.Constraint": {
             "stroke": COLORS["black"],
-            "stroke-dasharray": "1, 3",
+            "stroke-dasharray": "1 3",
             "marker-end": "FineArrowMark",
             "stroke-linecap": "round",
         },
         "Edge.Note": {
             "stroke": COLORS["black"],
-            "stroke-dasharray": "1, 3",
+            "stroke-dasharray": "1 3",
         },
         "Edge.RequirementRelation": {  # ReqVP_IncomingRelation
             "stroke": COLORS["dark_purple"],
