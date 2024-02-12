@@ -41,8 +41,8 @@ def _association(obj: model.ModelObject) -> str:
     assert isinstance(obj.roles, model.ElementList)
     for member in obj.roles:
         if member.kind != default_kind:
-            kind = member.kind.name.capitalize()
-    return kind
+            kind = member.kind.name
+    return kind.capitalize()
 
 
 def _component_port(obj: model.ModelObject) -> str:
