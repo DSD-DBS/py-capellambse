@@ -97,7 +97,7 @@ basedir = pathlib.Path(__file__).parent.resolve()
 logger = logging.getLogger("capellambse.repl")
 
 
-def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
+def _parse_args() -> dict[str, t.Any] | None:
     known_models = {
         i.name[: -len(".json")]: i
         for i in capellambse.enumerate_known_models()
@@ -106,8 +106,8 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
     parser = argparse.ArgumentParser("capellambse/repl.py")
     parser.add_argument(
         "model",
-        default="test-5.0",
-        nargs=1,
+        default=None,
+        nargs="?",
         help=(
             "A model name from known_models, an AIRD file, or the path to or"
             " contents of a JSON file describing the model. The following"
@@ -143,9 +143,13 @@ def _parse_args(args: list[str] | None = None) -> dict[str, t.Any]:
         help="Wipe the cache (disable_cache=True)",
     )
 
-    pargs = parser.parse_args(args or sys.argv[1:])
-    assert len(pargs.model) == 1
-    modelinfo = cli_helpers.loadinfo(pargs.model[0])
+    pargs = parser.parse_args(sys.argv[1:])
+    if pargs.model is None:
+        if pargs.dump:
+            raise SystemExit("No model specified, cannot dump")
+        return None
+
+    modelinfo = cli_helpers.loadinfo(pargs.model)
 
     if pargs.hold:
         modelinfo["update_cache"] = False
@@ -254,10 +258,6 @@ def main() -> None:
     """Launch a simple Python REPL with a Capella model."""
     os.chdir(pathlib.Path(capellambse.__file__).parents[1])
 
-    modelinfo = _parse_args()
-    logger.debug("Loading model: %r", modelinfo)
-    model = capellambse.MelodyModel(**modelinfo)
-
     interactive_locals = {
         "__doc__": None,
         "__name__": "__console__",
@@ -266,7 +266,6 @@ def main() -> None:
         "imm": importlib.import_module("importlib.metadata"),
         "imr": importlib.import_module("importlib.resources"),
         "logtee": logtee,
-        "model": model,
         "pprint": importlib.import_module("pprint").pprint,
         "showxml": showxml,
         "suppress": suppress,
@@ -275,13 +274,28 @@ def main() -> None:
     for m in ("capellambse", "inspect", "logging", "os", "pathlib"):
         interactive_locals[m] = importlib.import_module(m)
 
-    banner = textwrap.dedent(
-        f"""\
+    modelinfo = _parse_args()
+    if modelinfo is not None:
+        logger.debug("Loading model: %r", modelinfo)
+        model = capellambse.MelodyModel(**modelinfo)
+        interactive_locals["model"] = model
+        banner = textwrap.dedent(
+            f"""\
 
-        {' Model exploration ':=^80}
-        `model` is {model.info.title!r} from {modelinfo['path']}
-        """
-    )
+            {' Model exploration ':=^80}
+            `model` is {model.info.title!r}
+            from {modelinfo['path']}
+            """
+        )
+    else:
+        banner = textwrap.dedent(
+            f"""\
+
+            {' Model exploration ':=^80}
+            Load a model with `model = capellambse.loadcli("model-name")`
+            or `model = capellambse.MelodyModel("uri", arg=...)`.
+            """
+        )
 
     history_file = capellambse.dirs.user_state_path / "model_exploration.hist"
     with _ReadlineHistory(history_file), suppress(BrokenPipeError):
