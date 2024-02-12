@@ -41,9 +41,7 @@ E = builder.ElementMaker(namespace=NS)
 
 
 class _AttributeDefinition(t.NamedTuple):
-    modelobj: (
-        rq.AttributeDefinition | rq.AttributeDefinitionEnumeration | None
-    )
+    modelobj: rq.AttributeDefinition | rq.AttributeDefinitionEnumeration | None
     type: str
 
     def __hash__(self) -> int:

@@ -92,7 +92,11 @@ class Styling:
         elif isinstance(value, diagram.RGB):
             return f"#{value.tohex()}"
         elif isinstance(value, cabc.Iterable):
-            return f'url("#{cls._generate_id("CustomGradient", value)}")'
+            grad_id = cls._generate_id(
+                "CustomGradient",
+                value,  # type: ignore[arg-type]  # false-positive
+            )
+            return f'url("#{grad_id}")'
         raise ValueError(f"Invalid styling value: {value!r}")
 
     def _to_dict(self) -> dict[str, float | int | str]:

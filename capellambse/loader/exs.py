@@ -34,8 +34,7 @@ ALWAYS_EXPANDED_TAGS = frozenset({"bodies"})
 
 @t.runtime_checkable
 class _HasWrite(t.Protocol):
-    def write(self, chunk: bytes) -> int:
-        ...
+    def write(self, chunk: bytes) -> int: ...
 
 
 def to_string(tree: lxml.etree._Element, /) -> str:

@@ -70,7 +70,7 @@ repos:
           - --comment-style
           - "..|  |"
   - repo: https://github.com/PyCQA/isort
-    rev: 5.12.0
+    rev: 5.13.2
     hooks:
       - id: isort
   - repo: https://github.com/PyCQA/docformatter
@@ -88,7 +88,7 @@ repos:
         args:
           - --add-ignore=D1
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 23.9.1
+    rev: 24.1.1
     hooks:
       - id: black
   - repo: local # mypy
@@ -101,7 +101,7 @@ repos:
         pass_filenames: false
         args: [capellambse, tests]
         additional_dependencies:
-          - mypy==1.6.0
+          - mypy==1.8.0
           - capellambse[cli,decl,docs,httpfiles,png,termgraphics,test]
           # click 8.1.4 breaks mypy, see <https://github.com/pallets/click/issues/2558>
           - click!=8.1.4
@@ -122,10 +122,10 @@ repos:
         language: python
         types: [python]
         additional_dependencies:
-          - pylint==3.0.1
+          - pylint==3.0.3
         args: [-rn, -sn, -dfixme, -dduplicate-code]
   - repo: https://github.com/fsfe/reuse-tool
-    rev: v2.1.0
+    rev: v3.0.1
     hooks:
       - id: reuse
   - repo: local # commitlint

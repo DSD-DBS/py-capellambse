@@ -106,14 +106,12 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         )
 
     @t.overload
-    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
-        ...
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
 
     @t.overload
     def __get__(
         self, obj: element.ModelObject, objtype: type[t.Any] | None = ...
-    ) -> T | element.ElementList[T]:
-        ...
+    ) -> T | element.ElementList[T]: ...
 
     @abc.abstractmethod
     def __get__(
@@ -156,16 +154,14 @@ class DeprecatedAccessor(Accessor[T]):
         self.alternative = alternative
 
     @t.overload
-    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
-        ...
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
 
     @t.overload
     def __get__(
         self,
         obj: element.ModelObject,
         objtype: type[t.Any] | None = ...,
-    ) -> T | element.ElementList[T]:
-        ...
+    ) -> T | element.ElementList[T]: ...
 
     def __get__(
         self,
@@ -1216,12 +1212,10 @@ class IndexAccessor(Accessor[T]):
         self.wrapped = wrapped
 
     @t.overload
-    def __get__(self, obj: None, objtype=None) -> te.Self:
-        ...
+    def __get__(self, obj: None, objtype=None) -> te.Self: ...
 
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]:
-        ...
+    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]: ...
 
     def __get__(
         self,
@@ -1615,14 +1609,12 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self.attr = attr
 
     @t.overload
-    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self:
-        ...
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
 
     @t.overload
     def __get__(
         self, obj: element.ModelObject, objtype: type[t.Any] | None = None
-    ) -> element.ElementList[T]:
-        ...
+    ) -> element.ElementList[T]: ...
 
     def __get__(
         self,
@@ -1881,16 +1873,13 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         self.fixed_length = fixed_length
 
     @t.overload
-    def __setitem__(self, index: int, value: T) -> None:
-        ...
+    def __setitem__(self, index: int, value: T) -> None: ...
 
     @t.overload
-    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None:
-        ...
+    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
 
     @t.overload
-    def __setitem__(self, index: str, value: t.Any) -> None:
-        ...
+    def __setitem__(self, index: str, value: t.Any) -> None: ...
 
     def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         assert self._parent is not None

@@ -29,19 +29,16 @@ class DiagramFormat(t.Protocol):
     filename_extension: str
 
     @classmethod
-    def convert(cls, dg: diagram.Diagram) -> t.Any:
-        ...
+    def convert(cls, dg: diagram.Diagram) -> t.Any: ...
 
     @classmethod
-    def from_cache(cls, cache: bytes) -> t.Any:
-        ...
+    def from_cache(cls, cache: bytes) -> t.Any: ...
 
 
 @t.runtime_checkable
 class PrettyDiagramFormat(DiagramFormat, t.Protocol):
     @classmethod
-    def convert_pretty(cls, dg: diagram.Diagram) -> t.Any:
-        ...
+    def convert_pretty(cls, dg: diagram.Diagram) -> t.Any: ...
 
 
 DiagramConverter = t.Union[
@@ -80,8 +77,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     if t.TYPE_CHECKING:
 
         @property
-        def _allow_render(self) -> bool:
-            ...
+        def _allow_render(self) -> bool: ...
 
     else:
         _allow_render: bool = True
@@ -236,14 +232,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return c.MixedElementList(self._model, elems, c.GenericElement)
 
     @t.overload
-    def render(self, fmt: None, /, **params) -> diagram.Diagram:
-        ...
+    def render(self, fmt: None, /, **params) -> diagram.Diagram: ...
 
     @t.overload
     def render(
         self, fmt: str, /, *, pretty_print: bool = ..., **params
-    ) -> t.Any:
-        ...
+    ) -> t.Any: ...
 
     def render(
         self,

@@ -380,9 +380,9 @@ class AppliedPropertyValueGroup(XMLDictProxy):
                 ]
             )
         else:
-            xml_element.attrib[
-                "appliedPropertyValueGroups"
-            ] = f'#{groupelem.attrib["id"]}'
+            xml_element.attrib["appliedPropertyValueGroups"] = (
+                f'#{groupelem.attrib["id"]}'
+            )
         return groupelem
 
     @staticmethod

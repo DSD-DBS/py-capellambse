@@ -202,23 +202,21 @@ class StackingBox(diagram.Box):
             return iter(self.__list)
 
         @t.overload
-        def __getitem__(self, index: int) -> str:
-            ...
+        def __getitem__(self, index: int) -> str: ...
 
         @t.overload
-        def __getitem__(self, index: slice) -> list[str]:
-            ...
+        def __getitem__(self, index: slice) -> list[str]: ...
 
         def __getitem__(self, index: int | slice) -> str | list[str]:
             return self.__list[index]
 
         @t.overload
-        def __setitem__(self, index: int, value: str) -> None:
-            ...
+        def __setitem__(self, index: int, value: str) -> None: ...
 
         @t.overload
-        def __setitem__(self, index: slice, value: cabc.Iterable[str]) -> None:
-            ...
+        def __setitem__(
+            self, index: slice, value: cabc.Iterable[str]
+        ) -> None: ...
 
         def __setitem__(
             self,
@@ -262,12 +260,12 @@ class StackingBox(diagram.Box):
             return iter(self.__list)
 
         @t.overload
-        def __getitem__(self, index: int) -> diagram.DiagramElement:
-            ...
+        def __getitem__(self, index: int) -> diagram.DiagramElement: ...
 
         @t.overload
-        def __getitem__(self, index: slice) -> list[diagram.DiagramElement]:
-            ...
+        def __getitem__(
+            self, index: slice
+        ) -> list[diagram.DiagramElement]: ...
 
         def __getitem__(
             self, index: int | slice
@@ -277,20 +275,19 @@ class StackingBox(diagram.Box):
         @t.overload
         def __setitem__(
             self, index: int, value: diagram.DiagramElement
-        ) -> None:
-            ...
+        ) -> None: ...
 
         @t.overload
         def __setitem__(
             self, index: slice, value: cabc.Iterable[diagram.DiagramElement]
-        ) -> None:
-            ...
+        ) -> None: ...
 
         def __setitem__(
             self,
             index: int | slice,
-            value: diagram.DiagramElement
-            | cabc.Iterable[diagram.DiagramElement],
+            value: (
+                diagram.DiagramElement | cabc.Iterable[diagram.DiagramElement]
+            ),
         ) -> None:
             self.__list[index] = value  # type: ignore[index, assignment]
             self._restack()

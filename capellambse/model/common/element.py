@@ -96,16 +96,13 @@ class ModelObject(t.Protocol):
     """
 
     @property
-    def _model(self) -> capellambse.MelodyModel:
-        ...
+    def _model(self) -> capellambse.MelodyModel: ...
 
     @property
-    def _element(self) -> etree._Element:
-        ...
+    def _element(self) -> etree._Element: ...
 
     @property
-    def _constructed(self) -> bool:
-        ...
+    def _constructed(self) -> bool: ...
 
     def __init__(
         self,
@@ -570,6 +567,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             raise TypeError(
                 "mapkey and mapvalue must both either be set or unset"
             )
+        # pylint: disable=assigning-non-slot  # false-positive
         if not mapkey or not mapvalue:
             self.__mapkey: cabc.Callable[[T], t.Any] | None = None
             self.__mapvalue: str | None = None
@@ -651,16 +649,13 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return len(self._elements)
 
     @t.overload
-    def __getitem__(self, idx: int) -> T:
-        ...
+    def __getitem__(self, idx: int) -> T: ...
 
     @t.overload
-    def __getitem__(self, idx: slice) -> ElementList[T]:
-        ...
+    def __getitem__(self, idx: slice) -> ElementList[T]: ...
 
     @t.overload
-    def __getitem__(self, idx: str) -> t.Any:
-        ...
+    def __getitem__(self, idx: str) -> t.Any: ...
 
     def __getitem__(self, idx: int | slice | str) -> t.Any:
         if isinstance(idx, slice):
@@ -671,16 +666,13 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return self._elemclass.from_model(self._model, self._elements[idx])
 
     @t.overload
-    def __setitem__(self, index: int, value: T) -> None:
-        ...
+    def __setitem__(self, index: int, value: T) -> None: ...
 
     @t.overload
-    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None:
-        ...
+    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
 
     @t.overload
-    def __setitem__(self, index: str, value: t.Any) -> None:
-        ...
+    def __setitem__(self, index: str, value: t.Any) -> None: ...
 
     def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         if isinstance(index, slice):
@@ -826,12 +818,10 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         return type(self)
 
     @t.overload
-    def get(self, key: str) -> T | None:
-        ...
+    def get(self, key: str) -> T | None: ...
 
     @t.overload
-    def get(self, key: str, default: U) -> T | U:
-        ...
+    def get(self, key: str, default: U) -> T | U: ...
 
     def get(self, key: str, default: t.Any = None) -> t.Any:
         try:
@@ -1020,12 +1010,10 @@ class ElementListMapKeyView(cabc.Sequence):
         self.__parent = parent
 
     @t.overload
-    def __getitem__(self, idx: int) -> t.Any:
-        ...
+    def __getitem__(self, idx: int) -> t.Any: ...
 
     @t.overload
-    def __getitem__(self, idx: slice) -> list:
-        ...
+    def __getitem__(self, idx: slice) -> list: ...
 
     def __getitem__(self, idx):
         if isinstance(idx, slice):
@@ -1044,12 +1032,10 @@ class ElementListMapItemsView(t.Sequence[t.Tuple[t.Any, t.Any]], t.Generic[T]):
         self.__parent = parent
 
     @t.overload
-    def __getitem__(self, idx: int) -> tuple[t.Any, T]:
-        ...
+    def __getitem__(self, idx: int) -> tuple[t.Any, T]: ...
 
     @t.overload
-    def __getitem__(self, idx: slice) -> list[tuple[t.Any, T]]:
-        ...
+    def __getitem__(self, idx: slice) -> list[tuple[t.Any, T]]: ...
 
     def __getitem__(self, idx):
         if isinstance(idx, slice):

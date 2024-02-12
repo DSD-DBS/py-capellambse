@@ -29,9 +29,9 @@ they represent. ``build_xtype`` and related functions/classes can then
 use this information to automatically derive an ``xsi:type`` from any
 class that is defined in such an anchor module (or a submodule of one).
 """
-XTYPE_HANDLERS: dict[
-    str | None, dict[str, type[t.Any]]
-] = collections.defaultdict(dict)
+XTYPE_HANDLERS: dict[str | None, dict[str, type[t.Any]]] = (
+    collections.defaultdict(dict)
+)
 r"""Defines a mapping between ``xsi:type``\ s and wrapper classes.
 
 The first layer's keys can be either ``None`` or the ``xsi:type`` of the

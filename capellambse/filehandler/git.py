@@ -872,8 +872,7 @@ class GitFileHandler(abc.FileHandler):
         env: cabc.Mapping[str, str] | None = ...,
         silent: bool = ...,
         **kw: t.Any,
-    ) -> str:
-        ...
+    ) -> str: ...
 
     @t.overload
     def _git(
@@ -883,8 +882,7 @@ class GitFileHandler(abc.FileHandler):
         env: cabc.Mapping[str, str] | None = ...,
         silent: bool = ...,
         **kw: t.Any,
-    ) -> bytes:
-        ...
+    ) -> bytes: ...
 
     def _git(
         self,

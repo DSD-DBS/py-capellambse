@@ -100,12 +100,10 @@ class AttributeProperty:
         return f"{self.__objclass__.__name__}.{self.__name__}"
 
     @t.overload
-    def __get__(self, obj: None, objtype: type) -> AttributeProperty:
-        ...
+    def __get__(self, obj: None, objtype: type) -> AttributeProperty: ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any:
-        ...
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any: ...
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -286,12 +284,10 @@ class BooleanAttributeProperty(AttributeProperty):
         )
 
     @t.overload
-    def __get__(self, obj: None, objtype: type) -> AttributeProperty:
-        ...
+    def __get__(self, obj: None, objtype: type) -> AttributeProperty: ...
 
     @t.overload
-    def __get__(self, obj: t.Any, objtype: type | None = None) -> bool:
-        ...
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> bool: ...
 
     def __get__(self, obj, objtype=None):
         if obj is None:
@@ -341,14 +337,14 @@ class DatetimeAttributeProperty(AttributeProperty):
         )
 
     @t.overload
-    def __get__(self, obj: None, objtype: type) -> DatetimeAttributeProperty:
-        ...
+    def __get__(
+        self, obj: None, objtype: type
+    ) -> DatetimeAttributeProperty: ...
 
     @t.overload
     def __get__(
         self, obj: t.Any, objtype: type | None = None
-    ) -> datetime.datetime | None:
-        ...
+    ) -> datetime.datetime | None: ...
 
     def __get__(self, obj, objtype=None):
         if obj is None:

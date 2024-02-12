@@ -271,16 +271,13 @@ class RelationsList(c.ElementList["rq.AbstractRequirementsRelation"]):
         self._source = source
 
     @t.overload
-    def __getitem__(self, idx: int) -> rq.AbstractRequirementsRelation:
-        ...
+    def __getitem__(self, idx: int) -> rq.AbstractRequirementsRelation: ...
 
     @t.overload
-    def __getitem__(self, idx: slice) -> RelationsList:
-        ...
+    def __getitem__(self, idx: slice) -> RelationsList: ...
 
     @t.overload
-    def __getitem__(self, idx: str) -> t.Any:
-        ...
+    def __getitem__(self, idx: str) -> t.Any: ...
 
     def __getitem__(self, idx: int | slice | str) -> t.Any:
         rel = super().__getitem__(idx)

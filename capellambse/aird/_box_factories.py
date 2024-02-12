@@ -22,8 +22,7 @@ _T = t.TypeVar("_T", bound=diagram.Box)
 @t.overload
 def generic_factory(
     seb: C.SemanticElementBuilder, *, minsize: diagram.Vector2D = ...
-) -> diagram.Box:
-    ...
+) -> diagram.Box: ...
 
 
 @t.overload
@@ -32,16 +31,15 @@ def generic_factory(
     *,
     boxtype: type[_T] | functools.partial[_T],
     minsize: diagram.Vector2D = ...,
-) -> _T:
-    ...
+) -> _T: ...
 
 
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,
-    boxtype: type[diagram.Box]
-    | type[_T]
-    | functools.partial[_T] = diagram.Box,
+    boxtype: (
+        type[diagram.Box] | type[_T] | functools.partial[_T]
+    ) = diagram.Box,
     minsize: diagram.Vector2D = diagram.Vector2D(148, 69),
 ) -> _T:
     """Construct a Box from the diagram XML."""

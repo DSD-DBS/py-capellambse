@@ -603,8 +603,7 @@ def xpath_fetch_unique(
     elm_uid: str | None = None,
     *,
     optional: t.Literal[False] = ...,
-) -> etree._Element:
-    ...
+) -> etree._Element: ...
 
 
 @t.overload
@@ -615,8 +614,7 @@ def xpath_fetch_unique(
     elm_uid: str | None = None,
     *,
     optional: t.Literal[True],
-) -> etree._Element | None:
-    ...
+) -> etree._Element | None: ...
 
 
 def xpath_fetch_unique(
@@ -725,15 +723,13 @@ def xtype_of(elem: etree._Element) -> str | None:
 @t.overload
 def ntuples(
     num: int, iterable: cabc.Iterable[_T], *, pad: t.Literal[False] = ...
-) -> cabc.Iterator[tuple[_T, ...]]:
-    ...
+) -> cabc.Iterator[tuple[_T, ...]]: ...
 
 
 @t.overload
 def ntuples(
     num: int, iterable: cabc.Iterable[_T], *, pad: t.Literal[True]
-) -> cabc.Iterator[tuple[_T | None, ...]]:
-    ...
+) -> cabc.Iterator[tuple[_T | None, ...]]: ...
 
 
 def ntuples(

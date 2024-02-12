@@ -346,11 +346,13 @@ class MelodyLoader:
         path: str | os.PathLike | filehandler.FileHandler,
         entrypoint: str | pathlib.PurePosixPath | None = None,
         *,
-        resources: cabc.Mapping[
-            str,
-            filehandler.FileHandler | str | os.PathLike | dict[str, t.Any],
-        ]
-        | None = None,
+        resources: (
+            cabc.Mapping[
+                str,
+                filehandler.FileHandler | str | os.PathLike | dict[str, t.Any],
+            ]
+            | None
+        ) = None,
         ignore_duplicate_uuids_and_void_all_warranties: bool = False,
         **kwargs: t.Any,
     ) -> None:

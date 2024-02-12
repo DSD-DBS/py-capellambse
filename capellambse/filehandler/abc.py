@@ -235,12 +235,10 @@ class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
         return type(self)(self._parent, newpath)
 
     @abc.abstractmethod
-    def is_dir(self) -> bool:
-        ...
+    def is_dir(self) -> bool: ...
 
     @abc.abstractmethod
-    def is_file(self) -> bool:
-        ...
+    def is_file(self) -> bool: ...
 
     def iterdir(
         self, path: str | pathlib.PurePosixPath = "."

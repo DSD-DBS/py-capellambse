@@ -41,12 +41,10 @@ class Vector2D(t.NamedTuple):
         return self.__map2(operator.sub, other, True)
 
     @t.overload  # type: ignore
-    def __mul__(self, other: Vec2ish) -> Vec2Element:
-        ...
+    def __mul__(self, other: Vec2ish) -> Vec2Element: ...
 
     @t.overload
-    def __mul__(self, other: Vec2Element) -> Vector2D:
-        ...
+    def __mul__(self, other: Vec2Element) -> Vector2D: ...
 
     def __mul__(self, other: Vec2Element | Vec2ish) -> Vector2D | Vec2Element:
         result = self.__map2(operator.mul, other)
@@ -55,12 +53,10 @@ class Vector2D(t.NamedTuple):
         return sum(result)
 
     @t.overload  # type: ignore[override]
-    def __rmul__(self, other: Vec2ish) -> Vec2Element:
-        ...
+    def __rmul__(self, other: Vec2ish) -> Vec2Element: ...
 
     @t.overload
-    def __rmul__(self, other: Vec2Element) -> Vector2D:
-        ...
+    def __rmul__(self, other: Vec2Element) -> Vector2D: ...
 
     def __rmul__(self, other: Vec2Element | Vec2ish) -> Vector2D | Vec2Element:
         result = self.__map2(operator.mul, other, True)
@@ -244,14 +240,12 @@ class Vec2Property:
             self.default = Vector2D(*default)
 
     @t.overload
-    def __get__(self, obj: None, objtype: type[t.Any]) -> Vec2Property:
-        ...
+    def __get__(self, obj: None, objtype: type[t.Any]) -> Vec2Property: ...
 
     @t.overload
     def __get__(
         self, obj: t.Any, objtype: type[t.Any] | None = ...
-    ) -> Vector2D:
-        ...
+    ) -> Vector2D: ...
 
     def __get__(
         self, obj: t.Any | None, objtype: type[t.Any] | None = None
@@ -290,12 +284,10 @@ class Vec2List(t.MutableSequence[Vector2D]):
         return len(self.__list)
 
     @t.overload
-    def __getitem__(self, index: int) -> Vector2D:
-        ...
+    def __getitem__(self, index: int) -> Vector2D: ...
 
     @t.overload
-    def __getitem__(self, index: slice) -> cabc.MutableSequence[Vector2D]:
-        ...
+    def __getitem__(self, index: slice) -> cabc.MutableSequence[Vector2D]: ...
 
     def __getitem__(
         self, index: int | slice
@@ -307,16 +299,14 @@ class Vec2List(t.MutableSequence[Vector2D]):
         self,
         index: int,
         value: Vec2ish,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @t.overload
     def __setitem__(
         self,
         index: slice,
         value: cabc.Iterable[Vec2ish],
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def __setitem__(
         self,
