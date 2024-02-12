@@ -296,7 +296,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def save(
         self,
-        file: str | os.PathLike | t.IO[bytes],
+        file: str | os.PathLike | t.IO[bytes] | None,
         fmt: str,
         /,
         *,
@@ -313,6 +313,10 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
             Text-based formats that render to a :class:`str` will always
             be encoded as UTF-8.
+
+            If None is passed, and the selected format has a known
+            filename extension, a filename will be generated from the
+            diagram's name and the extension.
         fmt
             The output format to use.
         pretty_print
@@ -323,6 +327,15 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             Additional render parameters to pass to the :meth:`render`
             call.
         """
+        if file is None:
+            conv = _find_format_converter(fmt)
+            if ext := getattr(conv, "filename_extension", None):
+                file = f"{self.name} ({self.uuid}){ext}"
+            else:
+                raise ValueError(
+                    f"No known extension for format {fmt!r},"
+                    " specify a file name explicitly"
+                )
         data = self.render(fmt, pretty_print=pretty_print, **params)
         if isinstance(data, str):
             data = data.encode("utf-8")
@@ -609,7 +622,8 @@ class PNGFormat:
                 " Please see the README for instructions."
             ) from error
 
-        return cairosvg.svg2png(SVGFormat.convert(dg))
+        scale = float(os.getenv("CAPELLAMBSE_PNG_SCALE", "1"))
+        return cairosvg.svg2png(SVGFormat.convert(dg), scale=scale)
 
     @staticmethod
     def from_cache(cache: bytes) -> bytes:
