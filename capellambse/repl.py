@@ -109,8 +109,8 @@ def _parse_args() -> dict[str, t.Any] | None:
         default=None,
         nargs="?",
         help=(
-            "A model name from known_models, an AIRD file, or the path to or"
-            " contents of a JSON file describing the model. The following"
+            "A model name from known_models, an AIRD file, or the path to (or"
+            " contents of) a JSON file describing the model. The following"
             " models are known: " + ", ".join(f"``{i}``" for i in known_models)
         ),
     )
@@ -296,6 +296,21 @@ def main() -> None:
             or `model = capellambse.MelodyModel("uri", arg=...)`.
             """
         )
+
+    banner += textwrap.dedent(
+        """\
+
+        Convenience imports:
+        - `capellambse`, `inspect`, `logging`, `os`, `pathlib`
+        - `im` = importlib (`imm` = .metadata, `imr` = .resources)
+        - `etree` = lxml.etree, `pprint` = pprint.pprint
+
+        Helpful functions and context managers:
+        - `logtee`: CM that redirects log messages to a file
+        - `showxml`: Print the XML representation of a model object
+        - `suppress`: CM that suppresses exceptions of given type
+        """
+    )
 
     history_file = capellambse.dirs.user_state_path / "model_exploration.hist"
     with _ReadlineHistory(history_file), suppress(BrokenPipeError):
