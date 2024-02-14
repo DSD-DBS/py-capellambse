@@ -170,6 +170,7 @@ add-select = [
   "D417",  # Missing argument descriptions in the docstring
 ]
 add-ignore = [
+  "D1",    # Missing docstring in [...]
   "D201",  # No blank lines allowed before function docstring  # auto-formatting
   "D202",  # No blank lines allowed after function docstring  # auto-formatting
   "D203",  # 1 blank line required before class docstring  # auto-formatting
