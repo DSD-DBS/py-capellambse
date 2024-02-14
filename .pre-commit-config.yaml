@@ -122,8 +122,8 @@ repos:
         additional_dependencies:
           - pylint==3.0.3
         args: [-rn, -sn, -dfixme, -dduplicate-code]
-  - repo: https://github.com/fsfe/reuse-tool
-    rev: v3.0.1
+  - repo: https://github.com/Wuestengecko/reuse-tool
+    rev: f5b09b55a0f63d87fadb2a3146752c5217c6030c
     hooks:
       - id: reuse
   - repo: local # commitlint
