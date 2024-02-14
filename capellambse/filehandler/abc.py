@@ -54,7 +54,7 @@ class FileHandler(metaclass=abc.ABCMeta):
     ) -> None:
         super().__init__(**kw)
         self.path = path
-        self.subdir = subdir
+        self.subdir = helpers.normalize_pure_path(subdir)
 
     @abc.abstractmethod
     def get_model_info(self) -> modelinfo.ModelInfo:
