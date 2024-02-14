@@ -1264,8 +1264,6 @@ def physical_behavior_actor_symbol(
                 " h -4.295541 l 11.583005,-31.82123 h 5.641907 z m"
                 " -8.933021,-12.50195 -5.577791,-15.6221 -5.599169,15.6221 z"
             ),
-            white_space="pre",
-            inline_size=15.4494,
             stroke_width=0.1,
         )
     )
@@ -1334,8 +1332,6 @@ def physical_node_actor_symbol(
                 " h -4.295541 l 11.583005,-31.82123 h 5.641907 z m"
                 " -8.933021,-12.50195 -5.577791,-15.6221 -5.599169,15.6221 z"
             ),
-            white_space="pre",
-            inline_size=15.4494,
             stroke_width=0.1,
         )
     )
