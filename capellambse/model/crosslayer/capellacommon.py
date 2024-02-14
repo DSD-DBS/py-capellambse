@@ -8,6 +8,10 @@ XT_TRAFO = "org.polarsys.capella.core.data.capellacommon:TransfoLink"
 XT_ABSTRACT_STATE_REAL = (
     "org.polarsys.capella.core.data.capellacommon:AbstractStateRealization"
 )
+XT_CAPABILITY_REALIZATION_INVOLVEMENT = (
+    "org.polarsys.capella.core.data.capellacommon"
+    ":CapabilityRealizationInvolvement"
+)
 
 
 @c.xtype_handler(None)

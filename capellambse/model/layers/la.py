@@ -97,8 +97,8 @@ class CapabilityRealization(c.GenericElement):
         attr="involved",
     )
     involved_components = c.LinkAccessor[LogicalComponent](
-        "ownedCapabilityInvolvements",
-        ctx.CapabilityInvolvement,
+        "ownedCapabilityRealizationInvolvements",
+        capellacommon.XT_CAPABILITY_REALIZATION_INVOLVEMENT,
         aslist=c.MixedElementList,
         attr="involved",
     )
