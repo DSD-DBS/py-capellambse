@@ -313,7 +313,7 @@ def logical_component_symbol(
     return symb
 
 
-@decorations.deco_factories
+@decorations.deco_factories(dependencies=("StickFigure",))
 def logical_human_actor_symbol(
     id_: str = "LogicalHumanActorSymbol",
 ) -> container.Symbol:
