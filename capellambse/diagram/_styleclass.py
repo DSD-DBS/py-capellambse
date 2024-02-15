@@ -131,10 +131,16 @@ def _property(obj: model.ModelObject) -> str:
     return obj.kind.name.capitalize()
 
 
+def _class(obj: model.ModelObject) -> str:
+    assert isinstance(obj, model.information.Class)
+    return "Primitive" * obj.is_primitive + "Class"
+
+
 _STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
     "Association": _association,
     "CapellaIncomingRelation": lambda _: "RequirementRelation",
     "CapellaOutgoingRelation": lambda _: "RequirementRelation",
+    "Class": _class,
     "ComponentPort": _component_port,
     "ControlNode": _control_node,
     "FunctionalChainInvolvementFunction": _functional_chain_involvement,
