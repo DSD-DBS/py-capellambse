@@ -330,6 +330,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Class_Border_Brown"],
             "text_fill": COLORS["black"],
         },
+        "Box.PrimitiveClass": {
+            "fill": COLORS["_CAP_Class_Brown"],
+            "stroke": COLORS["_CAP_Datatype_Border_Gray"],
+            "text_fill": COLORS["black"],
+        },
         "Box.DataPkg": {  # DT_DataPkg
             "fill": [
                 COLORS["white"],

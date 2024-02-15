@@ -35,6 +35,7 @@ PatchClass = str
 needs_feature_line = {
     "BooleanType",
     "Class",
+    "PrimitiveClass",
     "Enumeration",
     "NumericType",
     "PhysicalQuantity",
