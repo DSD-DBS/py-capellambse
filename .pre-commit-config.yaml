@@ -112,15 +112,11 @@ repos:
           - types-requests==2.25.11
           - types-setuptools==68.0.0.1
           - types-six==1.16.21.8
-  - repo: local # pylint
+  - repo: https://github.com/pylint-dev/pylint
+    rev: v3.0.3
     hooks:
       - id: pylint
-        name: pylint
-        entry: pylint
-        language: python
-        types: [python]
-        additional_dependencies:
-          - pylint==3.0.3
+        require_serial: false
         args: [-rn, -sn, -dfixme, -dduplicate-code]
   - repo: https://github.com/Wuestengecko/reuse-tool
     rev: f5b09b55a0f63d87fadb2a3146752c5217c6030c
