@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 __all__ = [
+    "CorruptModelError",
     "FragmentType",
     "MelodyLoader",
+    "ModelFile",
 ]
 
 import collections
@@ -386,15 +388,15 @@ class MelodyLoader:
 
             It is possible to ignore this error and load the model
             anyways by setting the keyword-only argument
-            :kw:`ignore_duplicate_uuids_and_void_all_warranties` to
+            *ignore_duplicate_uuids_and_void_all_warranties* to
             ``True``. However, this *will* lead to strange behavior like
             random exceptions when searching or filtering, or
             accidentally working with the wrong object. If you try to
             make changes to the model, always make sure that you have an
             up to date backup ready. In order to prevent accidental
             overwrites with an even corrupter model, you must therefore
-            also set the :kw:`i_have_a_recent_backup` keyword argument
-            to ``True`` when calling :meth:`save`.
+            also set the *i_have_a_recent_backup* keyword argument to
+            ``True`` when calling :meth:`save`.
         """
         self.__ignore_uuid_dups: bool = (
             ignore_duplicate_uuids_and_void_all_warranties
@@ -478,15 +480,15 @@ class MelodyLoader:
 
         See Also
         --------
-        capellambse.filehandler.localfilehandler.LocalFileHandler.write_transaction :
+        capellambse.filehandler.local.LocalFileHandler.write_transaction :
             Accepted ``**kw`` when using local directories
-        capellambse.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+        capellambse.filehandler.git.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
 
         Notes
         -----
         With a :attr:`filehandler` that contacts a remote location (such
-        as the :class:`filehandler.gitfilehandler.GitFileHandler` with
+        as the :class:`capellambse.filehandler.git.GitFileHandler` with
         non-local repositories), saving might fail if the local state
         has gone out of sync with the remote state. To avoid this,
         always leave the ``update_cache`` parameter at its default value
@@ -559,7 +561,7 @@ class MelodyLoader:
         tree.idcache_remove(subtree)
 
     def idcache_rebuild(self) -> None:
-        r"""Rebuild the ID caches of all :class:`ModelFile`\ s."""
+        """Rebuild the ID caches of all loaded :class:`ModelFile` instances."""
         for tree in self.trees.values():
             tree.idcache_rebuild()
 
@@ -725,7 +727,7 @@ class MelodyLoader:
 
         Returns
         -------
-        list[etree._Element]
+        list[lxml.etree._Element]
             A list of all matching elements.
         """
         return list(
@@ -763,7 +765,7 @@ class MelodyLoader:
 
         Returns
         -------
-        list[tuple[pathlib.PurePosixPath, etree._Element]]
+        list[tuple[pathlib.PurePosixPath, lxml.etree._Element]]
             A list of 2-tuples, containing:
 
             1. The fragment name where the match was found.

@@ -125,7 +125,7 @@ def normalize_pure_path(
 
     Returns
     -------
-    path
+    pathlib.PurePosixPath
         The normalized path.
     """
     path = pathlib.PurePosixPath("/", base, path)
@@ -148,9 +148,10 @@ def relpath_pure(
 ) -> pathlib.PurePosixPath:
     """Calculate the relative path between two pure paths.
 
-    Unlike :func:`pathlib.PurePath.relative_to`, this function can cope
-    with ``path`` not being a subpath of ``start``. And unlike
-    :func:`posixpath.relpath`, it does not involve any filesystem access.
+    Unlike :meth:`pathlib.PurePath.relative_to`, this method can cope
+    with ``path`` not being a subpath of ``start``. And unlike the
+    :func:`os.path.relpath` function, it does not involve any filesystem
+    access.
     """
     parts = list(reversed(path.parts))
     prefix = True
@@ -282,7 +283,7 @@ def ssvparse(
     parens: cabc.Sequence[str] = ("", ""),
     sep: str = ",",
     num: int = 0,
-) -> cabc.Sequence[_T]:
+) -> list[_T]:
     """Parse a string of ``sep``-separated values wrapped in ``parens``.
 
     Parameters
@@ -301,8 +302,8 @@ def ssvparse(
 
     Returns
     -------
-    values
-        List of values cast into given type.
+    list[_T]
+        A list of values cast into the given type.
 
     Raises
     ------
@@ -322,7 +323,7 @@ def ssvparse(
     return values
 
 
-def word_wrap(text: str, width: float | int) -> cabc.Sequence[str]:
+def word_wrap(text: str, width: float | int) -> list[str]:
     """Perform word wrapping for proportional fonts.
 
     Whitespace at the beginning of input lines is preserved, but other
@@ -337,7 +338,7 @@ def word_wrap(text: str, width: float | int) -> cabc.Sequence[str]:
 
     Returns
     -------
-    lines
+    list[str]
         A list of strings, one for each line, after wrapping.
     """
 
@@ -402,7 +403,7 @@ def repair_html(markup: str) -> markupsafe.Markup:
 
     Returns
     -------
-    markup
+    markupsafe.Markup
         The repaired markup.
     """
 
@@ -475,7 +476,7 @@ def resolve_namespace(tag: str) -> str:
 
     Returns
     -------
-    tag
+    str
         Tag string in canonical form.
     """
     if ":" in tag:
@@ -645,7 +646,7 @@ def xpath_fetch_unique(
 
     Returns
     -------
-    element
+    lxml.etree._Element | None
         The Element found by given ``xpath``.
 
     Raises
@@ -692,14 +693,14 @@ def xtype_of(elem: etree._Element) -> str | None:
 
     Raises
     ------
-    UnsupportedPluginError
+    capellambse.UnsupportedPluginError
         If the plugin is unknown and therefore not supported.
-    UnsupportedPluginVersionError
+    capellambse.UnsupportedPluginVersionError
         If the plugin's version is not supported.
 
     Returns
     -------
-    xtype
+    str | None
         The ``xsi:type`` string of the provided element or ``None`` if
         the type could not be determined.
     """

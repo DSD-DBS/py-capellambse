@@ -25,7 +25,8 @@ class PropertyValueProxy:
 
     .. note::
         Access is only given if the PVMT Extension is successfully
-        loaded on loading the model with the :class:`MelodyModel`.
+        loaded on loading the model with the
+        :class:`~capellambse.model.MelodyModel`.
     """
     # pylint: enable=line-too-long
 

@@ -10,6 +10,8 @@ __all__ = [
     "parse_diagrams",
     "parse_diagram",
     "iter_visible",
+    "GLOBAL_FILTERS",
+    "GlobalFilter",
 ]
 
 import collections.abc as cabc
@@ -25,7 +27,7 @@ from capellambse import diagram, helpers, loader
 
 from . import _common as C
 from . import _filters, _semantic, _visual
-from ._filters import ActiveFilters
+from ._filters import GLOBAL_FILTERS, ActiveFilters, GlobalFilter
 
 DIAGRAM_ROOTS = {
     f"{{{_n.NAMESPACES['sequence']}}}SequenceDDiagram",

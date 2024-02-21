@@ -40,7 +40,6 @@ class DiagramType(_StringyEnumMixin, _enum.Enum):
 
     UNKNOWN = "(Unknown Diagram Type)"
     # Common
-    vars()["M&S"] = "Modes & States"
     MSM = "Mode State Machine"
     # Capella Architecture?
     CDI = "Contextual Component Detailed Interfaces"

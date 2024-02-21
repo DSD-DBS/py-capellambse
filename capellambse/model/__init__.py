@@ -183,10 +183,11 @@ class MelodyModel:
             - A path to a local directory.
             - A URL just like for the ``path`` argument.
             - A dictionary with the arguments to a
-              :py:class:`~capellambse.FileHandler`. The dict's ``path``
-              key will be analyzed to determine the correct FileHandler
-              class.
-            - An instance of :py:class:`~capellambse.FileHandler`, which
+              :py:class:`~capellambse.filehandler.abc.FileHandler`. The
+              dict's ``path`` key will be analyzed to determine the
+              correct FileHandler class.
+            - An instance of
+              :class:`~capellambse.filehandler.abc.FileHandler`, which
               will be used directly.
 
             .. warning:: When using the diagram cache, always make sure
@@ -326,13 +327,13 @@ class MelodyModel:
         --------
         capellambse.filehandler.localfilehandler.LocalFileHandler.write_transaction :
             Accepted ``**kw`` when using local directories
-        capellambse.filehandler.gitfilehandler.GitFileHandler.write_transaction :
+        capellambse.filehandler.git.GitFileHandler.write_transaction :
             Accepted ``**kw`` when using ``git://`` and similar URLs
 
         Notes
         -----
         With a file handler that contacts a remote location (such as the
-        :class:`~capellambse.filehandler.gitfilehandler.GitFileHandler`
+        :class:`~capellambse.filehandler.git.GitFileHandler`
         with non-local repositories), saving might fail if the local
         state has gone out of sync with the remote state. To avoid this,
         always leave the ``update_cache`` parameter at its default value
@@ -348,8 +349,9 @@ class MelodyModel:
         r"""Search for all elements with any of the given ``xsi:type``\ s.
 
         If only one xtype is given, the return type will be
-        :class:`common.ElementList`, otherwise it will be
-        :class:`common.MixedElementList`.
+        :class:`~capellambse.model.common.element.ElementList`,
+        otherwise it will be
+        :class:`~capellambse.model.common.element.MixedElementList`.
 
         If no ``xtypes`` are given at all, this method will return an
         exhaustive list of all (semantic) model objects that have an

@@ -260,10 +260,10 @@ def _extract_filter_type(flt_elm: etree._Element) -> str:
 
 
 class ActiveFilters(t.MutableSet[str]):
-    """A set of active filters on a :class:`diag.Diagram`.
+    """A set of active filters on a Diagram.
 
     Enable access to set, add and remove active filters on a
-    :class:`diag.Diagram`.
+    :class:`~capellambse.diagram.Diagram`.
     """
 
     __slots__ = ("_model", "_target", "_diagram")
@@ -307,7 +307,7 @@ class ActiveFilters(t.MutableSet[str]):
 
         Writes a new ``<activatedFilters>`` XML element to the
         ``<diagram:DSemanticDiagram>`` XML element. If the ``value`` is
-        not apparent in :data:`capellambse.aird.GLOBAL_FILTERS` as a key
+        not apparent in :any:`capellambse.aird.GLOBAL_FILTERS` as a key
         it can not be applied when rendering. It should still be visible
         in the GUI.
         """

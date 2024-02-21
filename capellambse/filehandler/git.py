@@ -627,13 +627,13 @@ class GitFileHandler(abc.FileHandler):
     write_transaction.__doc__ = _GitTransaction.__init__.__doc__
 
     @property
-    def rootdir(self) -> _GitPath:
+    def rootdir(self) -> GitPath:
         """The root directory of the repository."""
-        return _GitPath(self, pathlib.PurePosixPath("."), "tree")
+        return GitPath(self, pathlib.PurePosixPath("."), "tree")
 
     def iterdir(
         self, path: str | pathlib.PurePosixPath = "."
-    ) -> t.Iterator[_GitPath]:
+    ) -> t.Iterator[GitPath]:
         """Iterate over the files in the given directory.
 
         Parameters
@@ -654,7 +654,7 @@ class GitFileHandler(abc.FileHandler):
         )
         for line in tree:
             _, type, _, name = line.split(maxsplit=3)
-            yield _GitPath(self, pathlib.PurePosixPath(path, name), type)
+            yield GitPath(self, pathlib.PurePosixPath(path, name), type)
 
     @staticmethod
     def __cleanup_worktree(
@@ -938,7 +938,7 @@ class GitFileHandler(abc.FileHandler):
             LOGGER.log(level, "Exit status: %d", returncode)
 
 
-class _GitPath(abc.AbstractFilePath[GitFileHandler]):
+class GitPath(abc.AbstractFilePath[GitFileHandler]):
     def __init__(
         self,
         parent: GitFileHandler,

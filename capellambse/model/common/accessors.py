@@ -24,6 +24,7 @@ __all__ = [
     "ElementListCouplingMixin",
     "RoleTagAccessor",
     "TypecastAccessor",
+    "PhysicalAccessor",
 ]
 
 import abc
@@ -595,7 +596,8 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         single_attr
             If objects can be created with only a single attribute
             specified, this argument is the name of that attribute. This
-            allows using :meth:`create_singleattr`.
+            :meth:`~capellambse.model.common.accessors\
+            .WritableAccessor.create_singleattr`.
         """
         super().__init__(
             class_,
@@ -1972,9 +1974,9 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
         See Also
         --------
-        capellambse.model.common.accessor.ElementListCouplingMixin.create :
+        :meth:`ElementListCouplingMixin.create` :
             More details on how elements are created.
-        capellambse.model.common.accessor.WritableAccessor.create_singleattr :
+        :meth:`WritableAccessor.create_singleattr` :
             The method to override in Accessors in order to implement
             this operation.
         """

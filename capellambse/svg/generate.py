@@ -35,7 +35,7 @@ class SVGDiagram:
     SVG diagram object that takes the ``metadata`` of a diagram via the
     :class:`DiagramMetadata` and a list of objects that are dictionaries
     describing the components to be drawn on the diagram canvas of type
-    :class:`Drawing`.
+    :class:`.Drawing`.
 
     Example of expected json-file/string::
 
@@ -81,7 +81,7 @@ class SVGDiagram:
 
         Returns
         -------
-        diagram
+        SVGDiagram
             SVG diagram object
         """
         jsondict = json.loads(jsonstring)
@@ -99,7 +99,7 @@ class SVGDiagram:
 
         Returns
         -------
-        diagram
+        SVGDiagram
             SVG diagram object
         """
         conf = pathlib.Path(path).read_text(encoding="utf-8")

@@ -12,6 +12,8 @@ from __future__ import annotations
 
 __all__ = [
     "MemoryFileHandler",
+    "MemoryFilePath",
+    "MemoryFile",
 ]
 
 import collections.abc as cabc

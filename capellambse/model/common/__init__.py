@@ -100,9 +100,10 @@ def xtype_handler(
     under the architectural layer given in ``arch``.
 
     Handler classes' ``__init__`` methods must accept two positional
-    arguments. The first argument is the :class:`MelodyModel` instance
-    which loaded the corresponding model, and the second one is the LXML
-    element that needs to be handled.
+    arguments. The first argument is the
+    :class:`~capellambse.model.MelodyModel` instance which loaded the
+    corresponding model, and the second one is
+    the LXML element that needs to be handled.
 
     Example::
 

@@ -68,10 +68,8 @@ is provided by ``ContextArchitecture.ecore``.
 
 Even though the default tree-view (triggered by double-click on a ``.core``) is
 already giving us something there are much better ways to review the models.
-We'll talk about that in the `Visualizing ECores`__ chapter. But first we
+We'll talk about that in the `Visualizing ECores`_ chapter. But first we
 should have a look into the package structure and interdependencies.
-
-__ #visualizing-ecores
 
 Quick intro to package structure
 ################################
@@ -191,6 +189,8 @@ other useful things that a Component (or LogicalComponent) can do.
 .. image:: ../_static/img/2021-05-12_20-06.jpg
 
 .. image:: ../_static/img/2021-05-12_19-12.jpg
+
+.. _Visualizing ECores:
 
 Appendix: Visualizing ECores
 ############################

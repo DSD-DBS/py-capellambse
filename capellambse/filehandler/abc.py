@@ -83,7 +83,7 @@ class FileHandler(metaclass=abc.ABCMeta):
             reading, or ``"w"`` or ``"wb"`` for writing a new file. Be
             aware that this method may refuse to open a file for writing
             unless a transaction was started with
-            :meth:`write_transaction()` first.
+            :meth:`write_transaction` first.
         """
 
     def write_file(
