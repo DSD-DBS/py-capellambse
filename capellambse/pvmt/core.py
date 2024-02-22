@@ -36,7 +36,7 @@ class Generic:
 
 
 class XMLDictProxy(Generic, XMLDictProxy_):  # pylint: disable=abstract-method
-    """Facilitates usage of the :class:`capellambse.loader.XMLDictProxy`."""
+    """Makes using XMLDictProxy with PVMT easier."""
 
     def __init__(self, xml_element: etree._Element, *args, **kwargs) -> None:
         # pylint: disable=arguments-out-of-order

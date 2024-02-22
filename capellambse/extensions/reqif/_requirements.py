@@ -196,7 +196,7 @@ class StringValueAttribute(AbstractRequirementsAttribute):
 @c.xtype_handler(None)
 @c.attr_equal("long_name")
 class EnumValue(ReqIFElement):
-    """An enumeration value for :class:`EnumDataTypeDefinition`."""
+    """An enumeration value for :class:`.EnumerationDataTypeDefinition`."""
 
     _xmltag = "specifiedValues"
 

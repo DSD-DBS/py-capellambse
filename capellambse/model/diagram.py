@@ -254,7 +254,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         fmt
             The output format to use.
 
-            If ``None``, the :class:`diagram.Diagram` is returned
+            If ``None``, the :class:`~capellambse.diagram.Diagram` is returned
             without format conversion.
         pretty_print
             Whether to pretty-print the output. Only applies to
@@ -348,12 +348,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     def _create_diagram(self, params: dict[str, t.Any]) -> diagram.Diagram:
         """Perform the actual rendering of the diagram.
 
-        This method is called by :meth:`render` to perform the actual
+        This method is called by :meth:`.render` to perform the actual
         rendering of the diagram. It is passed the parameters that were
-        passed to :meth:`render` as a dictionary.
+        passed to :meth:`.render` as a dictionary.
 
         Subclasses override this method to implement their rendering
-        logic. Do not call this method directly, use :meth:`render`
+        logic. Do not call this method directly, use :meth:`.render`
         instead - it will take care of caching and properly converting
         the render output.
 

@@ -283,7 +283,8 @@ class AppliedPropertyValueGroup(XMLDictProxy):
         Parameters
         ----------
         pvmt_ext
-            The :class:`PVMTExtension` object of the model.
+            The :class:`capellambse.pvmt.model.PVMTExtension` object of
+            the model.
         """
         super().__init__(
             *args, childtag="ownedPropertyValues", keyattr="name", **kwargs
@@ -340,7 +341,7 @@ class AppliedPropertyValueGroup(XMLDictProxy):
 
         Returns
         -------
-        element
+        lxml.etree._Element
             The newly created XML element, a child of xml_element.
         """
         groupdef = cls._get_named_pv_group(pvmt_ext, groupname)

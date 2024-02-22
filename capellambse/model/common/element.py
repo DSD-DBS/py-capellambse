@@ -7,6 +7,8 @@ __all__ = [
     "ModelObject",
     "GenericElement",
     "ElementList",
+    "ElementListMapKeyView",
+    "ElementListMapItemsView",
     "CachedElementList",
     "MixedElementList",
     "attr_equal",
@@ -179,7 +181,7 @@ class GenericElement:
 
         Returns
         -------
-        obj
+        GenericElement
             An instance of GenericElement (or a more appropriate
             subclass, if any) that wraps the given XML element.
         """

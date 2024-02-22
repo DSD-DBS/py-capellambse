@@ -88,11 +88,7 @@ class HTTPFileHandler(abc.FileHandler):
         username: str | None = None,
         password: str | None = None,
         *,
-        headers: (
-            dict[str, str]
-            | requests.structures.CaseInsensitiveDict[str]
-            | None
-        ) = None,
+        headers: cabc.Mapping[str, str] | None = None,
         subdir: str | pathlib.PurePosixPath = "/",
     ) -> None:
         """Connect to a remote server through HTTP or HTTPS.
