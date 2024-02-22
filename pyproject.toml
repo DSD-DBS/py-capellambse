@@ -33,10 +33,13 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
+  "diskcache>=5.0",
   "lxml>=4.5.0",
   "markupsafe>=1.1",
   "Pillow>=7.0.0",
   "platformdirs>=1.4.1",
+  "pyyaml>=6.0",
+  "requests>=2.25.0",
   "svgwrite>=1.3.1",
   "typing_extensions >=4.0.0, <5",
 ]
@@ -51,7 +54,6 @@ docs = [
   "ipython",
   "jinja2",
   "nbsphinx",
-  "pyyaml>=6.0",
   "sphinx!=7.2.0,!=7.2.1,!=7.2.2",
   "sphinx-argparse-cli",
   "tomli; python_version<'3.11'",
@@ -59,11 +61,8 @@ docs = [
 
 test = [
   "click",
-  "cssutils",
-  "diskcache>=5.0",
   "pytest",
   "pytest-cov",
-  "pyyaml>=6.0",
   "requests-mock",
 ]
 
@@ -71,14 +70,8 @@ cli = [
   "click",
 ]
 
-decl = [
-  "pyyaml>=6.0",
-]
-
-httpfiles = [
-  "diskcache>=5.0",
-  "requests>=2.25.0",
-]
+decl = []
+httpfiles = []
 
 png = [
   "cairosvg>=2.5.2",
