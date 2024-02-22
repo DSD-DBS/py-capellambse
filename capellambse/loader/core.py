@@ -431,9 +431,13 @@ class MelodyLoader:
 
     @property
     def filehandler(self) -> filehandler.FileHandler:
+        r"""The file handler containing the original model.
+
+        This is a shorthand for ``self.resources["\0"]``.
+        """
         return self.resources["\0"]
 
-    def check_duplicate_uuids(self):
+    def check_duplicate_uuids(self) -> None:
         seen_ids = set[str]()
         has_dups = False
         for fragment, tree in self.trees.items():

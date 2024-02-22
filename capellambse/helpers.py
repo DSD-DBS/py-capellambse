@@ -113,7 +113,7 @@ def normalize_pure_path(
     *,
     base: str | pathlib.PurePosixPath = "/",
 ) -> pathlib.PurePosixPath:
-    """Make a PurePosixPath relative to ``/`` and collapse ``..`` components.
+    """Make a PurePosixPath relative to *base* and collapse ``..`` components.
 
     Parameters
     ----------
@@ -308,9 +308,8 @@ def ssvparse(
     Raises
     ------
     ValueError
-        *   If the parentheses are missing around the input string.
-        *   If the expected number of values doesn't match the actual
-            number.
+        If the parentheses are missing around the input string, or if
+        the expected number of values doesn't match the actual number.
     """
     if not string.startswith(parens[0]) or not string.endswith(parens[1]):
         raise ValueError(f"Missing {parens} around string: {string}")
@@ -652,9 +651,8 @@ def xpath_fetch_unique(
     Raises
     ------
     ValueError
-        *   If more than one element was found matching the ``xpath``.
-        *   If ``optional`` is ``False`` and no element was found
-            matching the ``xpath``.
+        If more than one element was found matching the ``xpath``, or if
+        ``optional`` is ``False`` and no matching element was found.
     """
     if isinstance(xpath, str):
         xpath = etree.XPath(
@@ -782,7 +780,7 @@ class EverythingContainer(t.Container[t.Any]):
 
         Returns
         -------
-        is_contained
+        bool
             Always ``True``.
         """
         return True
