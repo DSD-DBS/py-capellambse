@@ -25,7 +25,11 @@ help:
 
 # Auto-generate API documentation
 apidoc:
-	sphinx-apidoc --module-first --output-dir source/code --force .. ../capellambse/sphinx.py ../capellambse/repl.py
+	sphinx-apidoc --module-first --output-dir source/code --force .. \
+		../capellambse/aird/diagram.py \
+		../capellambse/extensions/reqif/elements.py \
+		../capellambse/repl.py \
+		../capellambse/sphinx.py
 
 clean-apidoc:
 	rm -rfv source/code
