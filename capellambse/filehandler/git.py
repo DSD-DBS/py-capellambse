@@ -484,12 +484,6 @@ class GitFileHandler(abc.FileHandler):
         non-shallow caches will be made shallow. However, when it is set
         to ``False``, shallow caches will not be unshallowed.
 
-    Attributes
-    ----------
-    cache_dir
-        The path to the temporary work tree created by instances of this
-        file handler.
-
     See Also
     --------
     capellambse.filehandler.abc.FileHandler :
@@ -501,6 +495,7 @@ class GitFileHandler(abc.FileHandler):
     identity_file: str
     known_hosts_file: str
     cache_dir: pathlib.Path
+    """Path to the temporary work tree created by this file handler."""
     shallow: bool
 
     __fnz: object
