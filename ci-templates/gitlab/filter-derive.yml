@@ -4,7 +4,7 @@
 
 derive:
   image:
-    name: $DOCKER_REGISTRY/capella/cli:${CAPELLA_DOCKER_IMAGES_TAG}
+    name: $DOCKER_REGISTRY/capella/base:${CAPELLA_DOCKER_IMAGES_TAG}
     entrypoint: [""]
 
   script:
