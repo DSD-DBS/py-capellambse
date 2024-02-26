@@ -3,6 +3,7 @@
 
 default_install_hook_types: [commit-msg, pre-commit]
 default_stages: [commit, merge-commit]
+minimum_pre_commit_version: 3.2.0
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
