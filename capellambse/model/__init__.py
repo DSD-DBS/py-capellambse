@@ -593,10 +593,11 @@ class MelodyModel:
         ...     "/Applications/Capella_{VERSION}.app/Contents/MacOS/capella"
         ... )
 
-        **Running a Capella CLI container**
+        **Running a Capella container**
 
         >>> model.update_diagram_cache(
-        ...     "capella/cli:{VERSION}-latest"
+        ...     "ghcr.io/dsd-dbs/capella-dockerimages/capella/base"
+        ...     ":{VERSION}-selected-dropins-main"
         ... )
         """
         if self.diagram_cache is None:
