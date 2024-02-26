@@ -206,7 +206,6 @@ else:
                 results, item_show_func=lambda i: getattr(i, "name", "")
             ) as progress,
         ):
-            assert cli.workspace
             for result in progress:
                 derived_name = name_pattern.format(model=model_, result=result)
                 output_sub = output / derived_name

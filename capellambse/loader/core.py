@@ -34,6 +34,7 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
+E = builder.ElementMaker()
 LOGGER = logging.getLogger(__name__)
 PROJECT_NATURE = "org.polarsys.capella.project.nature"
 VISUAL_EXTS = frozenset(
@@ -1268,58 +1269,55 @@ class MelodyLoader:
 
     @contextlib.contextmanager
     def write_tmp_project_dir(self) -> cabc.Iterator[pathlib.Path]:
-        """Write relevant Capella project files into a temp. directory.
+        """Create a temporary directory with this model as Capella project.
 
-        This method writes the loaded project files (model and, if
-        given, library files) into a temporary directory. This is of
-        interest when one wants the Capella CLI to import the project
-        for instance. For the Capella model project this method ensures
-        that a ``.project`` file will be created, which contains the
-        hard coded project name "main_model". The model files will be
-        located in a subdirectory named `main_model` to separate them
-        from library files.
+        This method writes the loaded project files (model and library
+        files, if any) into a temporary directory. The main model is
+        always placed in a subdirectory called "main_model"; any library
+        models are placed in subdirectories named after the resource
+        that the library was loaded from. Additionally, a ``.project``
+        file is generated in each subdirectory to allow direct import
+        into Capella.
+
+        The directory yielded from this method can be directly used as
+        the workspace of a Capella instance.
         """
-        E = builder.ElementMaker()
-        paths = list(self.trees.keys())
-        modelfiles = [
-            p.relative_to(p.parts[0]) for p in paths if p.parts[0] == "\x00"
-        ]
-        assert modelfiles
-        libfiles = [
-            p.relative_to(p.parts[0]) for p in paths if p.parts[0] != "\x00"
-        ]
-        tmp_model_dir: pathlib.Path | str
-        with tempfile.TemporaryDirectory() as tmp_model_dir:
-            tmp_model_dir = pathlib.Path(tmp_model_dir)
-            main_model_dir = tmp_model_dir / "main_model"
-            main_model_dir.mkdir()
+        with tempfile.TemporaryDirectory(prefix="workspace.") as tmp_dir_:
+            workspace = pathlib.Path(tmp_dir_)
+            LOGGER.debug("Writing project files to: %s", workspace)
 
-            # write .project file
-            ele = next(self.iterall("ownedModelRoots"), None)
-            assert ele is not None
             xml = E.projectDescription(
-                E.name("main_model"),
+                nameobj := E.name("-"),
                 E.comment(),
                 E.projects(),
                 E.buildSpec(),
                 E.natures(E.nature(PROJECT_NATURE)),
             )
-            pathlib.Path(main_model_dir / ".project").write_bytes(
-                etree.tostring(
-                    xml,
-                    xml_declaration=True,
-                    pretty_print=True,
-                    encoding="utf-8",
-                ),
-            )
-            for dst, paths in (
-                (main_model_dir, modelfiles),
-                (tmp_model_dir, libfiles),
-            ):
-                for path in paths:
-                    with self.filehandler.open(path) as fsrc:
-                        dstpath = dst / path
-                        dstpath.parent.mkdir(parents=True, exist_ok=True)
-                        with open(dstpath, "wb") as fdst:
-                            shutil.copyfileobj(fsrc, fdst)
-            yield tmp_model_dir
+            for res in self.resources:
+                LOGGER.debug("Generating .project file for resource %r", res)
+                if res == "\x00":
+                    res = "main_model"
+                nameobj.text = res
+                workspace.joinpath(res).mkdir()
+                workspace.joinpath(res, ".project").write_bytes(
+                    etree.tostring(xml, xml_declaration=True, encoding="utf-8")
+                )
+            for path in self.trees:
+                if path.parts[0] == "\x00":
+                    resname = "\x00"
+                    dirname = "main_model"
+                else:
+                    resname = dirname = path.parts[0]
+                path = pathlib.PurePosixPath(*path.parts[1:])
+
+                dest_path = workspace.joinpath(dirname, path)
+                LOGGER.debug(
+                    "Copying file %s (%r) to %s", path, resname, dest_path
+                )
+                dest_path.parent.mkdir(parents=True, exist_ok=True)
+                with (
+                    self.resources[resname].open(path, "rb") as fsrc,
+                    dest_path.open("wb") as fdst,
+                ):
+                    shutil.copyfileobj(fsrc, fdst)
+            yield workspace
