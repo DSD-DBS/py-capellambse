@@ -17,7 +17,6 @@ import random
 import shutil
 import string
 import subprocess
-import tempfile
 import typing as t
 
 import capellambse
@@ -89,14 +88,8 @@ def native_capella(
     cleanup calls as well. However, the CompletedProcess object returned
     in case of success always belongs to the Capella process.
     """
-    with contextlib.ExitStack() as stack:
-        workspace = tempfile.TemporaryDirectory(prefix="workspace.")
-        workspace_path = pathlib.Path(stack.enter_context(workspace))
-        _LOGGER.debug("Creating workspace at %s", workspace_path)
-
-        project = model._loader.write_tmp_project_dir()
-        project_path = stack.enter_context(project)
-        _LOGGER.debug("Project files written to %s", project_path)
+    with model._loader.write_tmp_project_dir() as workspace:
+        _LOGGER.debug("Project files written to %s", workspace)
 
         assert model.info.capella_version
         if exe:
@@ -109,12 +102,11 @@ def native_capella(
         else:
             assert False
 
-        yield _NativeCapella(project_path, workspace_path, runner)
+        yield _NativeCapella(workspace, runner)
 
 
 @dataclasses.dataclass
 class _NativeCapella:
-    project: pathlib.Path
     workspace: pathlib.Path
     __runner: _Runner
 
@@ -122,7 +114,7 @@ class _NativeCapella:
         self, *args: str | pathlib.Path
     ) -> subprocess.CompletedProcess:
         try:
-            return self.__runner(self.workspace, self.project, *args)
+            return self.__runner(self.workspace, *args)
         except subprocess.CalledProcessError as err:
             _LOGGER.error(
                 "Native Capella failed with code %d\n%s",
@@ -156,12 +148,11 @@ class _SimpleRunner:
     def __call__(
         self,
         workspace: pathlib.Path,
-        project: pathlib.Path,
         /,
         *args: str | pathlib.Path,
     ) -> subprocess.CompletedProcess:
         env = os.environ | {
-            "CAPELLA_PROJECT": str(project),
+            "CAPELLA_PROJECT": str(workspace / "main_model"),
             "CAPELLA_WORKSPACE": str(workspace),
             "CAPELLA_VERSION": self.capella_version,
         }
@@ -171,7 +162,7 @@ class _SimpleRunner:
             _ARG_WORKSPACE,
             workspace,
             _ARG_PROJECT,
-            project / "main_model",
+            workspace / "main_model",
             *args,
         ]
         _LOGGER.debug("Running native Capella with command %r", cmd)
@@ -189,12 +180,11 @@ class _SimpleRunner:
 class _DockerRunner:
     def __init__(self, image: str) -> None:
         self.image = image
-        self.entrypoint = self.get_entrypoint()
+        self.username, self.entrypoint = self.get_metadata()
 
     def __call__(
         self,
         workspace: pathlib.Path,
-        project: pathlib.Path,
         /,
         *args: str | pathlib.Path,
     ) -> subprocess.CompletedProcess:
@@ -205,20 +195,19 @@ class _DockerRunner:
             self.copy_files_to_container(
                 workspace, "/workspace", container_name
             )
-            self.copy_files_to_container(project, "/model", container_name)
 
             capella = self.run_capella_in_container(
                 container_name, self.entrypoint, *args
             )
 
             self.copy_files_from_container(
-                "/workspace/.", workspace, container_name
+                "/workspace", workspace, container_name
             )
-            self.copy_files_from_container("/model/.", project, container_name)
 
         return capella
 
-    def get_entrypoint(self) -> list[str]:
+    def get_metadata(self) -> tuple[str, list[str]]:
+        """Find the username and entrypoint of the Docker image."""
         subprocess.run(["docker", "pull", self.image], check=True)
         proc = subprocess.run(
             ["docker", "inspect", self.image],
@@ -230,7 +219,9 @@ class _DockerRunner:
         ep = parsed_output["Config"]["Entrypoint"]
         if not ep:
             raise ValueError(f"Docker image has no entrypoint: {self.image}")
-        return ep
+
+        username = parsed_output["Config"]["User"]
+        return username, ep
 
     @contextlib.contextmanager
     def start_container(self, name: str) -> cabc.Iterator[None]:
@@ -275,13 +266,13 @@ class _DockerRunner:
             [
                 "docker",
                 "exec",
-                f"{container_name}",
+                container_name,
                 *entrypoint,
                 *_COMMON_ARGS,
                 _ARG_WORKSPACE,
                 "/workspace",
                 _ARG_PROJECT,
-                "/model/main_model",
+                "/workspace/main_model",
                 *args,
             ],
             check=True,
@@ -294,8 +285,20 @@ class _DockerRunner:
             [
                 "docker",
                 "cp",
-                f"{directory}",
+                f"{directory}/.",
                 f"{container_name}:{destination}",
+            ],
+        )
+        subprocess.check_call(
+            [
+                "docker",
+                "exec",
+                "--user=root",
+                container_name,
+                "chown",
+                "-R",
+                self.username,
+                "/workspace",
             ],
         )
 
@@ -306,7 +309,7 @@ class _DockerRunner:
             [
                 "docker",
                 "cp",
-                f"{container_name}:{directory}",
+                f"{container_name}:{directory}/.",
                 f"{destination}",
             ],
         )
