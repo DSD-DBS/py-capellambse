@@ -29,7 +29,6 @@ import dataclasses
 import os
 import sys
 import typing as t
-import warnings
 
 import yaml
 
@@ -139,7 +138,6 @@ def _operate_create(
     parent: capellambse.ModelObject,
     creations: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
-    warnings.warn("Use 'extend' instead of 'create' in declarative YAML")
     yield from _operate_extend(promises, parent, creations)
 
 
