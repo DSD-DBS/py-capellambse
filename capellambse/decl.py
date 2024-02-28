@@ -238,6 +238,45 @@ def _operate_modify(
             setattr(parent, attr, value)
 
 
+def _operate_sync(
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    modifications: dict[str, t.Any],
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
+    for attr, value in modifications.items():
+        if not isinstance(value, cabc.Iterable):
+            raise TypeError("values below `extend:*:` must be lists")
+
+        for obj in value:
+            try:
+                find_args = obj.pop("find")
+            except KeyError:
+                raise ValueError(
+                    "Expected `find` key in sync object"
+                ) from None
+
+            try:
+                candidate = _resolve_findby(parent, attr, FindBy(find_args))
+            except _NoObjectFoundError:
+                candidate = None
+
+            if candidate is not None:
+                if mods := obj.pop("set", None):
+                    yield from _operate_modify(promises, candidate, mods)
+                promise: str | Promise | None = obj.get("promise_id")
+                if promise is not None:
+                    if isinstance(promise, str):
+                        promise = Promise(promise)
+                    yield (promise, candidate)
+            else:
+                newobj_props = find_args | obj.get("set", {})
+                if "promise_id" in obj:
+                    newobj_props["promise_id"] = obj["promise_id"]
+                yield from _create_complex_objects(
+                    promises, parent, attr, [newobj_props]
+                )
+
+
 def _resolve(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject | capellambse.MelodyModel,
@@ -317,11 +356,17 @@ def _resolve_findby(
             + candidates._short_repr_()
         )
     if not candidates:
-        raise ValueError(f"No object found for !find {value.attributes!r}")
+        raise _NoObjectFoundError(
+            f"No object found for !find {value.attributes!r}"
+        )
     return candidates[0]
 
 
 class _UnresolvablePromise(BaseException):
+    pass
+
+
+class _NoObjectFoundError(ValueError):
     pass
 
 
@@ -330,6 +375,7 @@ _OPERATIONS = collections.OrderedDict(
         ("create", _operate_create),
         ("extend", _operate_extend),
         ("modify", _operate_modify),
+        ("sync", _operate_sync),
         ("delete", _operate_delete),
     )
 )
