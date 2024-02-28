@@ -13,6 +13,7 @@ import pytest
 
 import capellambse
 from capellambse import decl, helpers
+from capellambse.extensions import reqif
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import (  # type: ignore[import-untyped]
@@ -571,6 +572,153 @@ class TestApplyDelete:
         decl.apply(model, io.StringIO(yml))
 
         assert len(root_function.functions) == 0
+
+
+class TestApplySync:
+    @staticmethod
+    def test_sync_operation_without_find_key_raises_an_error(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = f"""\
+        - parent: !uuid {ROOT_FUNCTION}
+          sync:
+            functions:
+              - set:
+                  name: "The new name"
+        """
+        with pytest.raises(ValueError, match="find"):
+            decl.apply(model, io.StringIO(yml))
+
+    @staticmethod
+    def test_sync_operation_finds_and_modifies_existing_objects_in_the_list(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        new_description = "This is a function."
+        assert root_function.functions[0].description != new_description
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {root_function.functions[0].name}
+                    set:
+                      description: {new_description!r}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert root_function.functions[0].description == new_description
+
+    @staticmethod
+    def test_sync_operation_honors_type_hints(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = """\
+            - parent: !uuid 3c2d312c-37c9-41b5-8c32-67578fa52dc3
+              sync:
+                attributes:
+                  - find:
+                      _type: StringValueAttribute
+                    promise_id: obj
+            """
+
+        promises = decl.apply(model, io.StringIO(yml))
+
+        assert decl.Promise("obj") in promises
+        obj = promises[decl.Promise("obj")]
+        assert isinstance(obj, reqif.StringValueAttribute)
+        assert obj.uuid == "ee8a69ef-61b9-4db9-9a0f-628e5d4704e1"
+
+    @staticmethod
+    def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        new_name = "The new function"
+        new_description = "This is a new function."
+        assert new_name not in root_function.functions.by_name
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {new_name}
+                    set:
+                      description: {new_description!r}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert new_name in root_function.functions.by_name
+        func = root_function.functions.by_name(new_name, single=True)
+        assert func.description == new_description
+
+    @staticmethod
+    def test_sync_operation_resolves_promises_with_newly_created_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        newname = "The new function"
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {newname}
+                    promise_id: my_function
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert resolved
+        assert decl.Promise("my_function") in resolved
+        new_func = resolved[decl.Promise("my_function")]
+        assert isinstance(new_func, capellambse.model.la.LogicalFunction)
+        assert new_func.name == newname
+
+    @staticmethod
+    def test_sync_operation_resolves_promises_with_existing_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {root_function.functions[0].name}
+                    promise_id: my_function
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert resolved == {
+            decl.Promise("my_function"): root_function.functions[0]
+        }
+
+    @staticmethod
+    def test_sync_operation_can_resolve_multiple_promises_with_one_object(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        function = model.by_uuid(ROOT_FUNCTION).functions[0]
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {function.name}
+                    promise_id: promise-1
+                  - find:
+                      name: {function.name}
+                    promise_id: promise-2
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert resolved == {
+            decl.Promise("promise-1"): function,
+            decl.Promise("promise-2"): function,
+        }
 
 
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])
