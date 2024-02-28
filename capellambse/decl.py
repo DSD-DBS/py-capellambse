@@ -11,6 +11,7 @@ documentation about declarative modelling <declarative-modelling>`.
 from __future__ import annotations
 
 __all__ = [
+    "NewObject",
     "Promise",
     "UUIDReference",
     "UnfulfilledPromisesError",
@@ -35,6 +36,7 @@ import yaml
 import capellambse
 from capellambse import helpers
 from capellambse.model import common
+from capellambse.model import new_object as NewObject
 
 FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
 _FutureAction = dict[str, t.Any]
@@ -383,9 +385,19 @@ class YDMDumper(yaml.SafeDumper):
         assert isinstance(data, UUIDReference)
         return self.represent_scalar("!uuid", data.uuid)
 
+    def represent_newobj(self, data: t.Any) -> yaml.Node:
+        assert isinstance(data, NewObject)
+        attrs = dict(data._kw)
+        if len(data._type_hint) > 1:
+            raise TypeError("Cannot use more than one type hint")
+        if len(data._type_hint) == 1:
+            attrs["_type"] = data._type_hint[0]
+        return self.represent_mapping("!new_object", attrs)
+
 
 YDMDumper.add_representer(Promise, YDMDumper.represent_promise)
 YDMDumper.add_representer(UUIDReference, YDMDumper.represent_uuidref)
+YDMDumper.add_representer(NewObject, YDMDumper.represent_newobj)
 
 
 class YDMLoader(yaml.SafeLoader):
@@ -407,9 +419,20 @@ class YDMLoader(yaml.SafeLoader):
             raise ValueError(f"Not a well-formed UUID string: {data}")
         return UUIDReference(data)
 
+    def construct_newobj(self, node: yaml.Node) -> NewObject:
+        if not isinstance(node, yaml.MappingNode):
+            raise TypeError("!new_object only accepts mapping nodes")
+        data = self.construct_mapping(node)
+        try:
+            _type = data.pop("_type")
+        except KeyError:
+            raise ValueError("!new_object requires a _type key") from None
+        return NewObject(_type, **data)
+
 
 YDMLoader.add_constructor("!promise", YDMLoader.construct_promise)
 YDMLoader.add_constructor("!uuid", YDMLoader.construct_uuidref)
+YDMLoader.add_constructor("!new_object", YDMLoader.construct_newobj)
 
 
 try:
