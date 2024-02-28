@@ -107,9 +107,23 @@ def apply(
 
     while instructions:
         instruction = instructions.popleft()
+
         parent = instruction.pop("parent")
         if isinstance(parent, UUIDReference):
             parent = model.by_uuid(parent.uuid)
+        elif isinstance(parent, Promise):
+            if parent in promises:
+                parent = promises[parent]
+            else:
+                deferred[parent].append({"parent": parent, **instruction})
+                continue
+
+        if not isinstance(parent, capellambse.model.GenericElement):
+            raise TypeError(
+                "Expected a model object as parent, found "
+                f"{type(parent).__name__}"
+            )
+
         for op_type, apply_op in _OPERATIONS.items():
             try:
                 op = instruction.pop(op_type)

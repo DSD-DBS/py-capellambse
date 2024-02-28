@@ -427,6 +427,31 @@ class TestApplyPromises:
         with pytest.raises(decl.UnfulfilledPromisesError, match="^pass-test$"):
             decl.apply(model, io.StringIO(yml))
 
+    @staticmethod
+    def test_promises_are_resolved_for_parent_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = f"""\
+            - parent: !promise pass-test
+              modify:
+                name: pass the unit test
+            - parent: !uuid {ROOT_FUNCTION}
+              extend:
+                functions:
+                  - promise_id: pass-test
+            - parent: !promise pass-test
+              modify:
+                description: Makes sure that the test passes.
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert decl.Promise("pass-test") in resolved
+        func = resolved[decl.Promise("pass-test")]
+        assert isinstance(func, capellambse.model.la.LogicalFunction)
+        assert func.name == "pass the unit test"
+        assert func.description == "Makes sure that the test passes."
+
 
 class TestApplyModify:
     @staticmethod
