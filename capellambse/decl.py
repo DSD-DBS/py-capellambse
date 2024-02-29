@@ -263,6 +263,8 @@ def _operate_sync(
             if candidate is not None:
                 if mods := obj.pop("set", None):
                     yield from _operate_modify(promises, candidate, mods)
+                if ext := obj.pop("extend", None):
+                    yield from _operate_extend(promises, candidate, ext)
                 promise: str | Promise | None = obj.get("promise_id")
                 if promise is not None:
                     if isinstance(promise, str):
