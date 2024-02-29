@@ -631,6 +631,54 @@ class TestApplySync:
         assert obj.uuid == "ee8a69ef-61b9-4db9-9a0f-628e5d4704e1"
 
     @staticmethod
+    def test_sync_set_overwrites_iterables(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        subfunc = root_function.functions[0]
+        old_port = subfunc.inputs.create(name="Water port")
+        new_port_name = "Power port"
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {root_function.functions[0].name}
+                    set:
+                      inputs:
+                        - name: {new_port_name}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert new_port_name in subfunc.inputs.by_name
+        assert old_port not in subfunc.inputs
+
+    @staticmethod
+    def test_sync_extend_does_not_overwrite_iterables(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        subfunc = root_function.functions[0]
+        old_port = subfunc.inputs.create(name="Water port")
+        new_port_name = "Power port"
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {subfunc.name}
+                    extend:
+                      inputs:
+                        - name: {new_port_name}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert new_port_name in subfunc.inputs.by_name
+        assert old_port in subfunc.inputs
+
+    @staticmethod
     def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
         model: capellambse.MelodyModel,
     ) -> None:
