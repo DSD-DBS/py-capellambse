@@ -26,16 +26,16 @@ class PropertyValueProxy:
     .. note::
         Access is only given if the PVMT Extension is successfully
         loaded on loading the model with the
-        :class:`~capellambse.model.MelodyModel`.
+        :class:`~capellambse.model.Model`.
     """
     # pylint: enable=line-too-long
 
-    _model: capellambse.MelodyModel
+    _model: capellambse.Model
     _element: etree._Element
 
     @classmethod
     def from_model(
-        cls, model: capellambse.MelodyModel, element: etree._Element
+        cls, model: capellambse.Model, element: etree._Element
     ) -> PropertyValueProxy:
         """Create a PropertyValueProxy for an element."""
         if not hasattr(model, "_pvext") or model._pvext is None:
@@ -72,7 +72,7 @@ class PropertyValueProxy:
 class _PVMTDomain:
     def __init__(
         self,
-        model: capellambse.MelodyModel,
+        model: capellambse.Model,
         element: etree._Element,
         domain: str,
     ):

@@ -21,7 +21,7 @@ import requests.exceptions
 import urllib3.exceptions
 
 import capellambse
-from capellambse import helpers, loader
+from capellambse import helpers
 
 from . import abc
 
@@ -30,6 +30,11 @@ RE_LINK_NEXT = re.compile("<(http.*)>; rel=(?P<quote>[\"']?)next(?P=quote)")
 MAX_SEARCHED_JOBS = (
     int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", 1000)) or sys.maxsize
 )
+
+
+class GlartInfo(abc.HandlerInfo):
+    project: str | int
+    job: int
 
 
 class GitlabArtifactsFiles(abc.FileHandler):
@@ -316,8 +321,14 @@ class GitlabArtifactsFiles(abc.FileHandler):
                 break
             next_url = match.group(1)
 
-    def get_model_info(self) -> loader.ModelInfo:
-        return loader.ModelInfo(branch=self.__branch, url=self.__path)
+    def get_info(self) -> GlartInfo:
+        return {
+            "path": self.__path,
+            "subdir": self.subdir,
+            "branch": self.__branch,
+            "project": self.__project,
+            "job": self.__job,
+        }
 
     def open(
         self,

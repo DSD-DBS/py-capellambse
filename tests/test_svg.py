@@ -41,7 +41,7 @@ FREE_SYMBOLS = {
 
 @pytest.fixture(name="tmp_json")
 def tmp_json_fixture(
-    model: capellambse.MelodyModel, tmp_path: pathlib.Path
+    model: capellambse.Model, tmp_path: pathlib.Path
 ) -> pathlib.Path:
     """Return tmp path of diagram json file."""
     dest = tmp_path / (TEST_LAB + ".json")
@@ -134,7 +134,7 @@ class TestSVG:
 
     @pytest.mark.parametrize("diagram_name", TEST_DIAGS)
     def test_diagram_decorations(
-        self, model: capellambse.MelodyModel, diagram_name: str
+        self, model: capellambse.Model, diagram_name: str
     ):
         """Test diagrams get rendered successfully."""
         diag = model.diagrams.by_name(diagram_name)

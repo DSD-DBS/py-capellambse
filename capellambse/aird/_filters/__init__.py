@@ -11,6 +11,7 @@ import urllib.parse
 
 from lxml import etree
 
+import capellambse
 import capellambse.loader
 from capellambse import diagram, model
 
@@ -271,7 +272,7 @@ class ActiveFilters(t.MutableSet[str]):
 
     def __init__(
         self,
-        model: model.MelodyModel,  # pylint: disable=redefined-outer-name
+        model: capellambse.Model,  # pylint: disable=redefined-outer-name
         diagram: model.diagram.Diagram,  # pylint: disable=redefined-outer-name
     ) -> None:
         self._model = model

@@ -22,7 +22,7 @@ have.
 In order to add custom models for the :ref:`model <repl.py-model>`
 argument, add a JSON file to the ``capellambse/known_models`` directory.
 This file defines the instantiation parameters for the
-:class:`capellambse.model.MelodyModel`:
+:class:`capellambse.Model`:
 
 .. literalinclude:: ../../../capellambse/known_models/test-lib.json
    :language: json
@@ -45,11 +45,8 @@ import sys
 import textwrap
 import typing as t
 
-from lxml import etree
-
 import capellambse
-from capellambse import cli_helpers
-from capellambse.loader import exs
+from capellambse import cli_helpers, exs
 
 try:
     import readline
@@ -130,6 +127,11 @@ def _parse_args() -> dict[str, t.Any] | None:
         action="version",
         version=f"capellambse {capellambse.__version__}",
     )
+    parser.add_argument(
+        "--xenophobia",
+        action="store_true",
+        help="Enable 'xenophobia' mode (fail if the model contains Aliens)",
+    )
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
@@ -158,6 +160,9 @@ def _parse_args() -> dict[str, t.Any] | None:
 
     if pargs.disable_diagram_cache and "diagram_cache" in modelinfo:
         del modelinfo["diagram_cache"]
+
+    if pargs.xenophobia:
+        modelinfo["xenophobia"] = True
 
     if pargs.dump:
         print(json.dumps(modelinfo, indent=2))
@@ -246,12 +251,8 @@ def suppress(
             logging.info("Exception suppressed", exc_info=True)
 
 
-def showxml(obj: capellambse.ModelObject | etree._Element) -> None:
-    if isinstance(obj, etree._Element):
-        elm = obj
-    else:
-        elm = obj._element
-    print(exs.to_string(elm), end="")
+def showxml(obj: capellambse.ModelElement) -> None:
+    print(exs.to_string(obj).rstrip())
 
 
 def main() -> None:
@@ -261,11 +262,12 @@ def main() -> None:
     interactive_locals = {
         "__doc__": None,
         "__name__": "__console__",
-        "etree": etree,
+        "etree": importlib.import_module("lxml.etree"),
         "im": importlib,
         "imm": importlib.import_module("importlib.metadata"),
         "imr": importlib.import_module("importlib.resources"),
         "logtee": logtee,
+        "M": importlib.import_module("capellambse.metamodel"),
         "pprint": importlib.import_module("pprint").pprint,
         "showxml": showxml,
         "suppress": suppress,
@@ -277,13 +279,18 @@ def main() -> None:
     modelinfo = _parse_args()
     if modelinfo is not None:
         logger.debug("Loading model: %r", modelinfo)
-        model = capellambse.MelodyModel(**modelinfo)
+        model = capellambse.Model(**modelinfo)
         interactive_locals["model"] = model
+        try:
+            modelname = repr(model.root.name)
+        except (AttributeError, RuntimeError) as err:
+            print(f"{type(err).__name__}: {err}", file=sys.stderr)
+            modelname = "<unknown>"
         banner = textwrap.dedent(
             f"""\
 
             {' Model exploration ':=^80}
-            `model` is {model.info.title!r}
+            `model` is {modelname!r}
             from {modelinfo['path']}
             """
         )
@@ -302,6 +309,7 @@ def main() -> None:
 
         Convenience imports:
         - `capellambse`, `inspect`, `logging`, `os`, `pathlib`
+        - `M` = capellambse.metamodel
         - `im` = importlib (`imm` = .metadata, `imr` = .resources)
         - `etree` = lxml.etree, `pprint` = pprint.pprint
 

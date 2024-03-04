@@ -8,10 +8,11 @@ __all__ = ["get_styleclass"]
 import collections.abc as cabc
 import re
 
-from capellambse import model
+from capellambse import metamodel as M
+from capellambse import model as m
 
 
-def get_styleclass(obj: model.ModelObject) -> str:
+def get_styleclass(obj: m.ModelElement) -> str:
     """Return the styleclass for an individual model object.
 
     Parameters
@@ -29,58 +30,56 @@ def get_styleclass(obj: model.ModelObject) -> str:
     return styleclass_factory(obj)
 
 
-def _default(obj: model.ModelObject) -> str:
-    if isinstance(obj, model.GenericElement):
-        return obj.xtype.split(":")[-1]
+def _default(obj: m.ModelElement) -> str:
     return type(obj).__name__
 
 
-def _association(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.Association)
+def _association(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.information.Association)
     default_kind = kind = "ASSOCIATION"
-    assert isinstance(obj.roles, model.ElementList)
+    assert isinstance(obj.roles, m.ElementList)
     for member in obj.roles:
         if member.kind != default_kind:
             kind = member.kind.name
     return kind.capitalize()
 
 
-def _component_port(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.fa.ComponentPort)
+def _component_port(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.fa.ComponentPort)
     if obj.direction is None:
         return "CP_UNSET"
     return f"CP_{obj.direction}"
 
 
-def _control_node(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.fa.ControlNode)
+def _control_node(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.fa.ControlNode)
     return "".join((obj.kind.name.capitalize(), _default(obj)))
 
 
-def _functional_chain_involvement(obj: model.ModelObject) -> str:
+def _functional_chain_involvement(obj: m.ModelElement) -> str:
     assert isinstance(
         obj,
         (
-            model.fa.FunctionalChainInvolvementLink,
-            model.fa.FunctionalChainInvolvementFunction,
+            M.fa.FunctionalChainInvolvementLink,
+            M.fa.FunctionalChainInvolvementFunction,
         ),
     )
     styleclass = _default(obj)
-    if isinstance(obj.parent, model.oa.OperationalProcess):
+    if isinstance(obj.parent, M.oa.OperationalProcess):
         return styleclass.replace("Functional", "Operational")
     return styleclass
 
 
-def _functional_exchange(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.fa.FunctionalExchange)
+def _functional_exchange(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.fa.FunctionalExchange)
     styleclass = _default(obj)
     if get_styleclass(obj.target) == "OperationalActivity":
         return styleclass.replace("Functional", "Operational")
     return styleclass
 
 
-def _generic_component(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.cs.Component)
+def _generic_component(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.cs.Component)
     styleclass = _default(obj)
     return "".join(
         (
@@ -91,17 +90,17 @@ def _generic_component(obj: model.ModelObject) -> str:
     )
 
 
-def _physical_component(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.pa.PhysicalComponent)
+def _physical_component(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.pa.PhysicalComponent)
     styleclass = _generic_component(obj)
     ptrn = re.compile("^(.*)(Component|Actor)$")
     nature = [obj.nature.name, ""][obj.nature.name == "UNSET"]
     return ptrn.sub(rf"\1{nature.capitalize()}\2", styleclass)
 
 
-def _part(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.cs.Part)
-    assert not isinstance(obj.type, model.ElementList)
+def _part(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.cs.Part)
+    assert not isinstance(obj.type, m.ElementList)
     xclass = _default(obj.type)
     if xclass == "PhysicalComponent":
         return _physical_component(obj)
@@ -110,33 +109,33 @@ def _part(obj: model.ModelObject) -> str:
     return _generic_component(obj.type)
 
 
-def _port_allocation(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.PortAllocation)
+def _port_allocation(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.information.PortAllocation)
     styleclasses = set(
         get_styleclass(p)
         for p in (obj.source, obj.target)
-        if not isinstance(p, (model.fa.ComponentPort, model.ElementList))
+        if not isinstance(p, (M.fa.ComponentPort, m.ElementList))
     )
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 
 
-def _region(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.capellacommon.Region)
+def _region(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.capellacommon.Region)
     parent_xclass = _default(obj.parent)
     return f"{parent_xclass}{_default(obj)}"
 
 
-def _property(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.Property)
+def _property(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.information.Property)
     return obj.kind.name.capitalize()
 
 
-def _class(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.Class)
+def _class(obj: m.ModelElement) -> str:
+    assert isinstance(obj, M.information.Class)
     return "Primitive" * obj.is_primitive + "Class"
 
 
-_STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
+_STYLECLASSES: dict[str, cabc.Callable[[m.ModelElement], str]] = {
     "Association": _association,
     "CapellaIncomingRelation": lambda _: "RequirementRelation",
     "CapellaOutgoingRelation": lambda _: "RequirementRelation",

@@ -7,8 +7,8 @@ import pathlib
 import pytest
 
 import capellambse
-import capellambse.model as metamodel
 import capellambse.model.common as c
+from capellambse import metamodel as M
 
 # pylint: disable-next=relative-beyond-top-level, unused-import
 from .conftest import model as model50  # type: ignore[import-untyped]
@@ -21,21 +21,21 @@ XPATH_UUID = "//*[@id={!r}]"
 
 @pytest.fixture
 def model():
-    return capellambse.MelodyModel(TEST_ROOT / TEST_MODEL)
+    return capellambse.Model(TEST_ROOT / TEST_MODEL)
 
 
 def test_created_elements_can_be_accessed_in_model(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ):
     newobj = model.la.root_component.components.create(name="TestComponent")
 
     assert newobj is not None
-    assert isinstance(newobj, capellambse.model.layers.la.LogicalComponent)
+    assert isinstance(newobj, M.la.LogicalComponent)
     assert newobj in model.la.root_component.components
 
 
 def test_created_elements_show_up_in_xml_after_adding_them(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ):
     newobj = model.la.root_component.components.create(name="TestComponent")
 
@@ -56,7 +56,7 @@ def test_created_elements_show_up_in_xml_after_adding_them(
     [0, slice(None, 1)],
 )
 def test_deleted_elements_are_removed(
-    model: capellambse.MelodyModel, deletion_target
+    model: capellambse.Model, deletion_target
 ):
     comps = model.la.root_component.components
     assert len(comps) == 2, "Precondition not met: Bad list length"
@@ -74,7 +74,7 @@ def test_deleted_elements_are_removed(
     ), "Element is still present in tree after deleting"
 
 
-def test_delete_all_deletes_matching_objects(model: capellambse.MelodyModel):
+def test_delete_all_deletes_matching_objects(model: capellambse.Model):
     comps = model.la.root_component.components
     assert len(comps) == 2
 
@@ -84,7 +84,7 @@ def test_delete_all_deletes_matching_objects(model: capellambse.MelodyModel):
 
 
 def test_create_adds_missing_namespace_to_fragment(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ) -> None:
     assert "Requirements" not in model._element.nsmap, "Precondition failed"
     module = model.by_uuid("85a31dd7-7755-486b-b803-1df8915e2cf9")
@@ -95,7 +95,7 @@ def test_create_adds_missing_namespace_to_fragment(
 
 
 def test_adding_a_namespace_preserves_the_capella_version_comment(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ) -> None:
     assert "Requirements" not in model._element.nsmap, "Precondition failed"
     prev_elements = list(model._element.itersiblings(preceding=True))
@@ -109,10 +109,10 @@ def test_adding_a_namespace_preserves_the_capella_version_comment(
 
 
 def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
-    model: capellambse.MelodyModel, caplog
+    model: capellambse.Model, caplog
 ) -> None:
     part = model.by_uuid("1bd59e23-3d45-4e39-88b4-33a11c56d4e3")
-    assert isinstance(part, metamodel.cs.Part)
+    assert isinstance(part, M.cs.Part)
     assert isinstance(type(part).type, c.AttrProxyAccessor)
     component = model.by_uuid("ea5f09e6-a0ec-46b2-bd3e-b572f9bf99d6")
 
@@ -124,10 +124,10 @@ def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
 
 
 def test_deleting_an_object_purges_references_from_LinkAccessor(
-    model50: capellambse.MelodyModel, caplog
+    model50: capellambse.Model, caplog
 ) -> None:
     entity = model50.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
-    assert isinstance(entity, metamodel.oa.Entity)
+    assert isinstance(entity, M.oa.Entity)
     assert isinstance(type(entity).activities, c.LinkAccessor)
     activity = model50.by_uuid("f1cb9586-ce85-4862-849c-2eea257f706b")
 
@@ -139,10 +139,10 @@ def test_deleting_an_object_purges_references_from_LinkAccessor(
 
 
 def test_deleting_an_entire_list_purges_references_to_all_list_members(
-    model50: capellambse.MelodyModel, caplog
+    model50: capellambse.Model, caplog
 ) -> None:
     component = model50.by_uuid("ff7b8672-84db-4b93-9fea-22a410907fb1")
-    assert isinstance(component, metamodel.la.LogicalComponent)
+    assert isinstance(component, M.la.LogicalComponent)
     p1 = model50.by_uuid("db5681e4-4245-4207-a429-e89979f6ac71")
     p2 = model50.by_uuid("7c61d723-3658-47ff-9b0c-7b016ac4cb76")
     current_ports = [i.uuid for i in component.ports]
@@ -158,7 +158,7 @@ def test_deleting_an_entire_list_purges_references_to_all_list_members(
 
 
 def test_deleting_an_object_purges_references_to_children(
-    model50: capellambse.MelodyModel, caplog
+    model50: capellambse.Model, caplog
 ) -> None:
     component = model50.by_uuid("a8c46457-a702-41c4-a971-c815c4c5a674")
     port = model50.by_uuid("e0dcf8c2-2283-4456-98a2-146e78ba5f26")
@@ -171,7 +171,7 @@ def test_deleting_an_object_purges_references_to_children(
     assert len(current_refs) > 1, "Port has no references before test"
     assert (exchange_id, "target") in current_refs
 
-    model50.la.component_package.components.remove(component)
+    model50.la.component_pkg.components.remove(component)
 
     assert not list(model50.find_references(port))
     assert model50.by_uuid(exchange_id).target is None

@@ -43,14 +43,14 @@ try:
 
            @click.command()
            @click.option("-m", "--model", type=capellambse.ModelCLI())
-           def main(model: capellambse.MelodyModel) -> None:
+           def main(model: capellambse.Model) -> None:
                ...
         """
 
         name = "CAPELLA_MODEL"
 
-        def convert(self, value: t.Any, param, ctx) -> capellambse.MelodyModel:
-            if isinstance(value, capellambse.MelodyModel):
+        def convert(self, value: t.Any, param, ctx) -> capellambse.Model:
+            if isinstance(value, capellambse.Model):
                 return value
 
             try:
@@ -79,7 +79,7 @@ try:
            def main(modelinfo: dict[str, t.Any]) -> None:
                # change any options, for example:
                modelinfo["diagram_cache"] = "/tmp/diagrams"
-               model = capellambse.MelodyModel(**modelinfo)
+               model = capellambse.Model(**modelinfo)
         """
 
         name = "CAPELLA_MODEL"
@@ -122,7 +122,7 @@ def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
 
     In order to make a custom model known, place a JSON file in one of
     these *known_models* folders. It should contain a dictionary with
-    the keyword arguments to :class:`~capellambse.model.MelodyModel` -
+    the keyword arguments to :class:`~capellambse.model.Model` -
     specifically it needs a ``path``, optionally an ``entrypoint``, and
     any additional arguments that the underlying
     :class:`~capellambse.filehandler.FileHandler` might need to gain
@@ -152,7 +152,7 @@ def enumerate_known_models() -> cabc.Iterator[importlib.abc.Traversable]:
             yield i
 
 
-def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
+def loadcli(value: str | os.PathLike[str]) -> capellambse.Model:
     """Load a model from a file or JSON string.
 
     This function works like :func:`loadinfo`, and also loads the model
@@ -165,7 +165,7 @@ def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
 
     Returns
     -------
-    ~capellambse.model.MelodyModel
+    ~capellambse.model.Model
         The loaded model, as described by the *value*.
 
     Examples
@@ -177,7 +177,7 @@ def loadcli(value: str | os.PathLike[str]) -> capellambse.MelodyModel:
     """
     modelinfo = loadinfo(value)
     LOGGER.info("Loading model from %s", modelinfo["path"])
-    return capellambse.MelodyModel(**modelinfo)
+    return capellambse.Model(**modelinfo)
 
 
 def loadinfo(value: str | os.PathLike[str]) -> dict[str, t.Any]:
@@ -198,7 +198,7 @@ def loadinfo(value: str | os.PathLike[str]) -> dict[str, t.Any]:
     -------
     dict[str, ~typing.Any]
         A dict with information about how to load a
-        :class:`~capellambse.model.MelodyModel`.
+        :class:`~capellambse.model.Model`.
 
     Raises
     ------
@@ -216,7 +216,7 @@ def loadinfo(value: str | os.PathLike[str]) -> dict[str, t.Any]:
            modelinfo = capellambse.loadinfo(sys.argv[1])
            # change any options, for example:
            modelinfo["diagram_cache"] = "/tmp/diagrams"
-           model = MelodyModel(**modelinfo)
+           model = capellambse.Model(**modelinfo)
     """
     if isinstance(value, str):
         if value.endswith((".aird", ".json")):

@@ -291,15 +291,14 @@ def _build_specification_type(
 
 
 def _build_spec_object_types(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
     reqtypes: cabc.Iterable[tuple[str | None, set[_AttributeDefinition]]],
     timestamp: str,
 ) -> cabc.Iterable[etree._Element]:
     for reqtype, attr_defs in reqtypes:
         modelobj: rq.RequirementType | None
         if reqtype:
-            modelobj = model.by_uuid(reqtype)  # type: ignore[assignment]
-            assert isinstance(modelobj, rq.RequirementType)
+            modelobj = model.by_uuid(reqtype, rq.RequirementType)
             reqtype = reqtype.upper()
         else:
             modelobj = None

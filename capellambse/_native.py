@@ -43,7 +43,7 @@ ARGS_CMDLINE: t.Final = (
 
 @contextlib.contextmanager
 def native_capella(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
     *,
     exe: str | pathlib.Path | None = None,
     docker: str | None = None,

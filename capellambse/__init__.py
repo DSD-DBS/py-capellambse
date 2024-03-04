@@ -15,11 +15,9 @@ except metadata.PackageNotFoundError:
 del metadata
 
 from ._namespaces import *
-from .auditing import *
 from .cli_helpers import *
 from .filehandler import *
-from .model import MelodyModel
-from .model.common import ModelObject, new_object
+from .model import Model, ModelElement, new_object
 
 _has_loaded_extensions = False
 
@@ -30,9 +28,9 @@ def load_model_extensions() -> None:
     This function loads all entry points in the group
     ``capellambse.model_extensions`` and executes them.
 
-    Note that this function must be placed at the end of the top-level
-    ``__init__.py``, in order to ensure that all submodules were
-    initialized before loading any extensions.
+    It is automatically called when loading a model. Calling it more
+    than once has no effect, so it is safe (although not necessary) to
+    explicitly call this function before loading a model.
     """
     # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
     import importlib.metadata as imm  # pylint: disable=reimported

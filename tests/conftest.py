@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Global fixtures for pytest."""
+from __future__ import annotations
+
 import collections.abc as cabc
 import io
 import pathlib
@@ -19,7 +21,7 @@ capellambse.load_model_extensions()
 
 
 @pytest.fixture(scope="session")
-def session_shared_model() -> cabc.Iterator[capellambse.MelodyModel]:
+def session_shared_model() -> cabc.Iterator[capellambse.Model]:
     """Load the standard test model.
 
     Unlike the ``model`` fixture, this fixture is shared across the
@@ -29,20 +31,20 @@ def session_shared_model() -> cabc.Iterator[capellambse.MelodyModel]:
     This fixture exists as a speed optimization for tests that only read
     from the model.
     """
-    loaded = capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    loaded = capellambse.Model(TEST_ROOT / "5_0" / TEST_MODEL)
     with capellambse.WriteProtector(loaded):
         yield loaded
 
 
 @pytest.fixture
-def model(monkeypatch) -> capellambse.MelodyModel:
+def model(monkeypatch) -> capellambse.Model:
     """Return the Capella 5.0 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    return capellambse.Model(TEST_ROOT / "5_0" / TEST_MODEL)
 
 
 @pytest.fixture
-def model_5_2(monkeypatch) -> capellambse.MelodyModel:
+def model_5_2(monkeypatch) -> capellambse.Model:
     """Return the Capella 5.2 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_2" / TEST_MODEL)
+    return capellambse.Model(TEST_ROOT / "5_2" / TEST_MODEL)

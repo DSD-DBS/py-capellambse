@@ -110,7 +110,7 @@ class ComposedFilteringResult(c.GenericElement):
 
 def init() -> None:
     c.set_accessor(
-        model.MelodyModel,
+        model.Model,
         "filtering_model",
         c.DirectProxyAccessor(FilteringModel, rootelem=model.XT_SYSENG),
     )
@@ -175,7 +175,7 @@ else:
     @click.option("--docker", help="Name of a Docker image containing Capella")
     def _main(
         command: str,
-        model_: capellambse.MelodyModel,
+        model_: capellambse.Model,
         result_strings: list[str],
         output: pathlib.Path,
         name_pattern: str,
@@ -239,7 +239,7 @@ else:
                 shutil.copytree(derived, output_sub)
 
     def _find_results(
-        loaded_model: capellambse.MelodyModel, result_strings: list[str]
+        loaded_model: capellambse.Model, result_strings: list[str]
     ) -> cabc.Sequence[FilteringResult | ComposedFilteringResult]:
         all_results: c.ElementList[FilteringResult | ComposedFilteringResult]
         all_results = loaded_model.search(

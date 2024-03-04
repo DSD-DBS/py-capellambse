@@ -42,7 +42,7 @@ OBJECTS_OF_INTEREST = [
 
 
 def quantify_model_layers(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ) -> tuple[list[int], list[int]]:
     """Count objects of interest and diagrams on model layers.
 

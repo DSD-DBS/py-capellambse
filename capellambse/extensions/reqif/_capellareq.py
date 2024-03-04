@@ -260,7 +260,7 @@ class RequirementsRelationAccessor(
 class RelationsList(c.ElementList["rq.AbstractRequirementsRelation"]):
     def __init__(
         self,
-        model: capellambse.MelodyModel,
+        model: capellambse.Model,
         elements: list[etree._Element],
         elemclass: type[t.Any] | None = None,
         *,

@@ -30,7 +30,6 @@ import urllib.parse
 import weakref
 
 import capellambse.helpers
-from capellambse.loader import modelinfo
 
 from . import abc
 
@@ -593,7 +592,7 @@ class GitFileHandler(abc.FileHandler):
         self._transaction.record_pending_update(path, file)
         return file
 
-    def get_model_info(self) -> modelinfo.ModelInfo:
+    def get_info(self) -> abc.HandlerInfo:
         def revparse(*args: str) -> str:
             return (
                 self._git("rev-parse", *args, silent=True)
@@ -605,13 +604,13 @@ class GitFileHandler(abc.FileHandler):
         if title.endswith(".git"):
             title = title[: -len(".git")]
 
-        return modelinfo.ModelInfo(
-            branch=revparse("--abbrev-ref", self.revision),
-            title=title,
-            url=str(self.path),
-            revision=self.revision,
-            rev_hash=revparse(self.revision),
-        )
+        return {
+            "path": str(self.path),
+            "subdir": self.subdir,
+            "branch": revparse("--abbrev-ref", self.revision),
+            "revision": self.revision,
+            "revision_id": revparse(self.revision),
+        }
 
     def write_transaction(
         self, **kw: t.Any

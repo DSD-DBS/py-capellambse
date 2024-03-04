@@ -25,7 +25,7 @@ def test_enumerate_known_models_contains_known_test_models():
 
 
 def test_climodel_is_idempotent(
-    session_shared_model: capellambse.MelodyModel,
+    session_shared_model: capellambse.Model,
 ) -> None:
     paramtype = capellambse.ModelCLI()
 
@@ -50,7 +50,7 @@ def test_climodel_loads_model(value):
 
     converted = paramtype.convert(value, None, None)
 
-    assert isinstance(converted, capellambse.MelodyModel)
+    assert isinstance(converted, capellambse.Model)
 
 
 @pytest.mark.parametrize(
@@ -67,4 +67,4 @@ def test_climodel_loads_model(value):
 def test_loadcli_loads_model(value):
     model = capellambse.loadcli(value)
 
-    assert isinstance(model, capellambse.MelodyModel)
+    assert isinstance(model, capellambse.Model)

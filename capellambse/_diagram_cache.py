@@ -59,7 +59,7 @@ class IndexEntry(t.TypedDict):
 
 def export(
     capella: str,
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
     *,
     format: str,
     index: bool,
@@ -120,7 +120,7 @@ def export(
 
 
 def _find_executor(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
     capella: str,
     force: t.Literal["exe", "docker", None],
 ) -> dict[str, str]:
@@ -147,7 +147,7 @@ def _find_executor(
 
 
 def _copy_images(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
     srcdir: pathlib.Path,
     destdir: pathlib.Path,
     extension: str,
@@ -250,7 +250,7 @@ def _copy_and_sanitize_svg(
 
 
 def _write_index(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
     extension: str,
     dest: pathlib.Path,
     index: list[IndexEntry],

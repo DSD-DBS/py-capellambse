@@ -11,7 +11,6 @@ import subprocess
 import typing as t
 
 from capellambse import helpers
-from capellambse.loader.modelinfo import ModelInfo
 
 from . import abc
 
@@ -49,17 +48,6 @@ class LocalFileHandler(abc.FileHandler):
         self.__transaction.add(normpath)
         tmppath = _tmpname(normpath)
         return (self.path / tmppath).open("wb")
-
-    def get_model_info(self) -> ModelInfo:
-        assert isinstance(self.path, pathlib.Path)
-        if (self.path / ".git").exists():
-            return ModelInfo(
-                branch=self.__git_rev_parse("--abbrev-ref", "HEAD"),
-                title=self.path.name,
-                url=self.__git_get_remote_url(),
-                rev_hash=self.__git_rev_parse("HEAD"),
-            )
-        return ModelInfo(title=self.path.name)
 
     @contextlib.contextmanager
     def write_transaction(

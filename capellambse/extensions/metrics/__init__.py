@@ -8,7 +8,7 @@ from .collector import quantify_model_layers
 from .composer import draw_summary_badge
 
 
-def get_summary_badge(model: capellambse.MelodyModel) -> str:
+def get_summary_badge(model: capellambse.Model) -> str:
     """Provide visual summary of model contents."""
     objects, diagrams = quantify_model_layers(model)
     return draw_summary_badge(objects, diagrams)

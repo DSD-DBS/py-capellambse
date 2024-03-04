@@ -40,7 +40,7 @@ FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
 _FutureAction = dict[str, t.Any]
 _OperatorResult = tuple[
     "Promise",
-    t.Union[capellambse.ModelObject, _FutureAction],
+    t.Union[capellambse.ModelElement, _FutureAction],
 ]
 
 
@@ -70,8 +70,8 @@ def load(file: FileOrPath) -> list[dict[str, t.Any]]:
 
 
 def apply(
-    model: capellambse.MelodyModel, file: FileOrPath
-) -> dict[Promise, capellambse.ModelObject]:
+    model: capellambse.Model, file: FileOrPath
+) -> dict[Promise, capellambse.ModelElement]:
     """Apply a declarative modelling file to the given model.
 
     Parameters
@@ -101,7 +101,7 @@ def apply(
     are used in an input document.
     """
     instructions = collections.deque(load(file))
-    promises = dict[Promise, capellambse.ModelObject]()
+    promises = dict[Promise, capellambse.ModelElement]()
     deferred = collections.defaultdict[Promise, list[_FutureAction]](list)
 
     while instructions:
@@ -133,8 +133,8 @@ def apply(
 
 
 def _operate_create(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     creations: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     warnings.warn("Use 'extend' instead of 'create' in declarative YAML")
@@ -142,8 +142,8 @@ def _operate_create(
 
 
 def _operate_extend(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     extensions: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in extensions.items():
@@ -154,8 +154,8 @@ def _operate_extend(
 
 
 def _operate_delete(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     deletions: dict[str, t.Any],
 ) -> cabc.Iterable[_OperatorResult]:
     del promises
@@ -198,8 +198,8 @@ def _operate_delete(
 
 
 def _operate_modify(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in modifications.items():
@@ -222,8 +222,8 @@ def _operate_modify(
 
 
 def _resolve(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     value: t.Any,
 ) -> t.Any:
     if isinstance(value, Promise):
@@ -256,8 +256,8 @@ _OPERATIONS = collections.OrderedDict(
 
 
 def _create_complex_objects(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     attr: str,
     objs: cabc.Iterable[dict[str, t.Any] | Promise | str],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
@@ -297,8 +297,8 @@ def _create_complex_objects(
 
 
 def _create_complex_object(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    promises: dict[Promise, capellambse.ModelElement],
+    parent: capellambse.ModelElement,
     attr: str,
     target: common.ElementListCouplingMixin,
     obj_desc: dict[str, t.Any],
@@ -426,7 +426,7 @@ else:
     @click.command()
     @click.option("-m", "--model", type=capellambse.ModelCLI(), required=True)
     @click.argument("file", type=click.File("r"))
-    def _main(model: capellambse.MelodyModel, file: t.IO[str]) -> None:
+    def _main(model: capellambse.Model, file: t.IO[str]) -> None:
         """Apply a declarative modelling YAML file to a model."""
         apply(model, file)
         model.save()

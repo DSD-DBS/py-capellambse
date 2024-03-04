@@ -21,11 +21,50 @@ import typing_extensions as te
 
 from capellambse import helpers
 
-if t.TYPE_CHECKING:
-    from capellambse.loader import modelinfo
-
-
 _F = t.TypeVar("_F", bound="FileHandler")
+
+
+class HandlerInfo(te.TypedDict, total=False):
+    """Information about a file handler.
+
+    If a data point is not implemented or does not make sense for a
+    particular file handler, it must be omitted from the dictionary.
+    Contrary, if a data point is implemented but not currently
+    available (for example because the file handler is not on a branch,
+    but the VCS backend does support branches in principle), it must be
+    set to ``None``.
+
+    The only two data points that are always required are ``path`` and
+    ``subdir``, which must exist and not be ``None``.
+    """
+
+    path: te.Required[str]
+    """The path used to instantiate the file handler.
+
+    This may be different from the path that was passed to the
+    constructor, for example due to path normalization. However, the
+    path contained here must always be equivalent to the original one.
+    """
+
+    subdir: te.Required[pathlib.PurePosixPath]
+    """The subdirectory used to instantiate the file handler.
+
+    This field always contains the normalized path.
+    """
+
+    branch: str | None
+    """The name of the branch in use."""
+
+    revision: str | None
+    """The revision that was passed to the file handler."""
+
+    revision_id: str | None
+    """The revision in use.
+
+    This field contains the revision in the native format of the
+    underlying version control system. For example, for Git, it contains
+    the full 40-character SHA-1 hash of the commit object.
+    """
 
 
 class FileHandler(metaclass=abc.ABCMeta):
@@ -56,9 +95,14 @@ class FileHandler(metaclass=abc.ABCMeta):
         self.path = path
         self.subdir = helpers.normalize_pure_path(subdir)
 
-    @abc.abstractmethod
-    def get_model_info(self) -> modelinfo.ModelInfo:
-        pass
+    def get_info(self) -> HandlerInfo:
+        """Get information about the file handler.
+
+        Subclasses should override this method to provide additional
+        information about the file handler. The default implementation
+        only returns the required fields ``path`` and ``subdir``.
+        """
+        return {"path": str(self.path), "subdir": self.subdir}
 
     @abc.abstractmethod
     def open(

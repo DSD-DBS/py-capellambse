@@ -92,7 +92,7 @@ class TestAIRDBasicFunctionality:
 
 
 def test_airdparser_msm_produces_valid_json_without_error(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ):
     diag_name = "[MSM] States of Functional Human Being"
     all_diagrams = aird.enumerate_diagrams(model._loader)

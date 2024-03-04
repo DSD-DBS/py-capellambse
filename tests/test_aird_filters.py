@@ -21,7 +21,7 @@ NAME_AND_EX_ITEMS_FILTER = "show.functional.exchanges.exchange.items.filter"
 
 
 def test_diagram_has_activated_filters(
-    model_5_2: capellambse.MelodyModel,
+    model_5_2: capellambse.Model,
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG
@@ -31,7 +31,7 @@ def test_diagram_has_activated_filters(
 
 
 def test_add_activated_filter_to_diagram(
-    model_5_2: capellambse.MelodyModel,
+    model_5_2: capellambse.Model,
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG
@@ -44,7 +44,7 @@ def test_add_activated_filter_to_diagram(
 
 @pytest.mark.parametrize("filter_name", DEFAULT_ACTIVATED_FILTERS)
 def test_remove_activated_filter_on_diagram(
-    model_5_2: capellambse.MelodyModel, filter_name: str
+    model_5_2: capellambse.Model, filter_name: str
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG
@@ -56,7 +56,7 @@ def test_remove_activated_filter_on_diagram(
 
 
 def test_remove_activated_filter_fails_if_not_active(
-    model_5_2: capellambse.MelodyModel,
+    model_5_2: capellambse.Model,
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG
@@ -67,7 +67,7 @@ def test_remove_activated_filter_fails_if_not_active(
 
 
 def test_component_ports_filter_is_applied(
-    model: capellambse.MelodyModel,
+    model: capellambse.Model,
 ) -> None:
     diag: model_.diagram.Diagram = model.diagrams.by_name(
         COMP_PORT_FILTER_DIAG
@@ -83,7 +83,7 @@ def test_component_ports_filter_is_applied(
 
 
 def test_fex_exchangeitems_filter_is_applied(
-    model_5_2: capellambse.MelodyModel,
+    model_5_2: capellambse.Model,
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG
@@ -116,7 +116,7 @@ def test_fex_exchangeitems_filter_is_applied(
     ],
 )
 def test_fex_exchangeitems_filter_with_name_is_applied(
-    model_5_2: capellambse.MelodyModel, sort: bool, expected_label: str
+    model_5_2: capellambse.Model, sort: bool, expected_label: str
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG

@@ -26,9 +26,6 @@ from capellambse import helpers
 
 from . import abc
 
-if t.TYPE_CHECKING:
-    from capellambse.loader.modelinfo import ModelInfo
-
 
 class MemoryFileHandler(abc.FileHandler):
     """A file handler that stores data in memory."""
@@ -55,9 +52,6 @@ class MemoryFileHandler(abc.FileHandler):
         super().__init__(path, subdir=subdir)
 
         self._data: dict[pathlib.PurePosixPath, bytearray] = {}
-
-    def get_model_info(self) -> ModelInfo:
-        return ModelInfo(url="memory:")
 
     def open(
         self,

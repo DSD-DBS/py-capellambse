@@ -12,11 +12,11 @@ To render a diagram in your documentation, simply define a diagram directive.
 
 .. code::
 
-    .. diagram:: [CDB] BaseLayer ORM
-        :alt: Base layer diagram
-        :height: 480
-        :width: 640
-        :align: center -- can be left/right/center
+   .. diagram:: [CDB] BaseLayer ORM
+      :alt: Base layer diagram
+      :height: 480
+      :width: 640
+      :align: center -- can be left/right/center
 
 The options are optional.
 
@@ -98,7 +98,7 @@ def load_model(
         raise ValueError("Cannot load model: No confdir defined for Sphinx")
 
     env.capellambse_loaded_model = (  # type: ignore[attr-defined]
-        capellambse.MelodyModel(
+        capellambse.Model(
             pathlib.Path(app.confdir, app.config.capellambse_model)
         )
     )

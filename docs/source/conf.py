@@ -46,6 +46,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx_argparse_cli",
 ]
+nitpicky = True
 
 # Enable nitpicky mode
 nitpicky = True
