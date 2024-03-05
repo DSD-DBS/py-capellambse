@@ -76,13 +76,44 @@ different operations is applied to it:
 - ``modify``-ing the object itself, or
 - ``delete``-ing one or more children.
 
-Parents can be selected by their universally unique ID (UUID), using the
-``!uuid`` YAML tag. The following query selects the root logical function in
-our test model:
+Selecting a parent
+------------------
+
+There are a few ways to select a parent object from the model.
+
+The most straight-forward way is to use the universally unique ID (UUID), using
+the ``!uuid`` YAML tag. The following query selects the root logical function
+in our test model:
 
 .. code-block:: yaml
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
+
+A more versatile way involves the ``!find`` YAML tag, which allows specifying a
+set of attributes in order to filter down to a single model element. This tag
+simply takes a mapping of all the attributes to select for. This usually also
+involves the element's type (or class), which is selectable with the ``_type``
+attribute:
+
+.. code-block:: yaml
+
+   - parent: !find
+       _type: LogicalFunction
+     # ^-- note the leading underscore, to disambiguate from the "type"
+     # property that exists on some model elements
+       name: Root Logical Function
+     modify: [...]
+
+The ``!find`` tag also supports dot-notation for filtering on nested
+attributes.
+
+.. code-block:: yaml
+
+   - parent: !find
+       _type: FunctionOutputPort
+       name: FOP 1
+       owner.name: manage the school
+     modify: [...]
 
 Extending objects
 -----------------

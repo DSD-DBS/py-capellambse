@@ -26,6 +26,7 @@ MODELPATH = pathlib.Path(TEST_ROOT / "5_0")
 
 ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
+TEACH_POTIONS_FUNC = helpers.UUIDString("83ba0220-54f2-48f7-bca1-cd87e39639f2")
 
 
 class TestDumpLoad:
@@ -85,18 +86,19 @@ class TestApplyExtend:
 
     @staticmethod
     @pytest.mark.parametrize(
-        ["parent_str", "parent_getter"],
+        ["parent_str"],
         [
+            pytest.param(f"!uuid {TEACH_POTIONS_FUNC}", id="!uuid"),
             pytest.param(
-                f"!uuid {ROOT_FUNCTION}",
-                lambda m: m.by_uuid(ROOT_FUNCTION),
-                id="!uuid",
+                "!find {_type: LogicalFunction, name: teach Potions}",
+                id="!find",
             ),
         ],
     )
     def test_decl_finds_parent_to_act_on(
-        model: capellambse.MelodyModel, parent_str, parent_getter
+        model: capellambse.MelodyModel, parent_str
     ) -> None:
+        parent = model.by_uuid(TEACH_POTIONS_FUNC)
         funcname = "pass the unit test"
         yml = f"""\
             - parent: {parent_str}
@@ -105,13 +107,13 @@ class TestApplyExtend:
                   - name: {funcname!r}
             """
         expected_len = len(model.search()) + 1
-        assert funcname not in parent_getter(model).functions.by_name
+        assert funcname not in parent.functions.by_name
 
         decl.apply(model, io.StringIO(yml))
 
         actual_len = len(model.search())
         assert actual_len == expected_len
-        assert funcname in parent_getter(model).functions.by_name
+        assert funcname in parent.functions.by_name
 
     @staticmethod
     def test_decl_creates_each_object_in_a_list(
