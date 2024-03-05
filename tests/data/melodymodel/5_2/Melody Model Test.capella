@@ -2189,7 +2189,7 @@ The predator is far away</bodies>
             <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
                 id="24d3e25a-5399-4374-aa85-8a4fd2b2a815" name="teach Care of Magical Creatures"/>
             <ownedFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
-                id="83ba0220-54f2-48f7-bca1-cd87e39639f2" name="teach  Potions">
+                id="83ba0220-54f2-48f7-bca1-cd87e39639f2" name="teach Potions">
               <outputs xsi:type="org.polarsys.capella.core.data.fa:FunctionOutputPort"
                   id="a88ff724-b8af-4609-8142-550a9aaabc78" name="FOP 1"/>
             </ownedFunctions>

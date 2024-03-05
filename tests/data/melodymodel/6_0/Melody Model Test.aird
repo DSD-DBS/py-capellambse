@@ -5383,7 +5383,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/logical.odesign#//@ownedViewpoints[name='Logical%20Architecture']/@ownedRepresentations[name='Logical%20Function%20Breakdown']/@defaultLayer/@nodeMappings[name='LFB_LogicalFunction']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNode" uid="_24ZiJ2weEe6E1o-WT31uyg" name="teach  Potions" outgoingEdges="_24b-amweEe6E1o-WT31uyg" width="7" height="7" resizeKind="NSEW">
+    <ownedDiagramElements xmi:type="diagram:DNode" uid="_24ZiJ2weEe6E1o-WT31uyg" name="teach Potions" outgoingEdges="_24b-amweEe6E1o-WT31uyg" width="7" height="7" resizeKind="NSEW">
       <target xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#83ba0220-54f2-48f7-bca1-cd87e39639f2"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#83ba0220-54f2-48f7-bca1-cd87e39639f2"/>
       <ownedStyle xmi:type="diagram:Square" uid="_24ZiKGweEe6E1o-WT31uyg" borderSize="1" borderSizeComputationExpression="1" borderColor="9,92,46" labelPosition="node" color="197,255,166">
@@ -12532,7 +12532,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Functional%20Chain%20Description']/@defaultLayer/@nodeMappings[name='FC_AbstractFunction']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNode" uid="_TmY_o3PIEeyW3OIB4qRWZA" name="teach  Potions" visible="false" width="10" height="5" resizeKind="NSEW">
+    <ownedDiagramElements xmi:type="diagram:DNode" uid="_TmY_o3PIEeyW3OIB4qRWZA" name="teach Potions" visible="false" width="10" height="5" resizeKind="NSEW">
       <target xmi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction" href="Melody%20Model%20Test.capella#8d80bc57-be92-47db-8a53-0dd2b518f6f6"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction" href="Melody%20Model%20Test.capella#8d80bc57-be92-47db-8a53-0dd2b518f6f6"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
