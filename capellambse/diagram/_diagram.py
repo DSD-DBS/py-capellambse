@@ -674,14 +674,10 @@ class Edge(diagram.Vec2List):
             maxx = maxy = -math.inf
 
         for point in self.points:
-            if point.x < minx:
-                minx = point.x
-            if point.y < miny:
-                miny = point.y
-            if point.x > maxx:
-                maxx = point.x
-            if point.y > maxy:
-                maxy = point.y
+            minx = min(minx, point.x)
+            miny = min(miny, point.y)
+            maxx = max(maxx, point.x)
+            maxy = max(maxy, point.y)
 
         topleft = diagram.Vector2D(minx, miny)
         bottomright = diagram.Vector2D(maxx, maxy)
