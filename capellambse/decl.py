@@ -11,6 +11,7 @@ documentation about declarative modelling <declarative-modelling>`.
 from __future__ import annotations
 
 __all__ = [
+    "FindBy",
     "NewObject",
     "Promise",
     "UUIDReference",
@@ -26,6 +27,7 @@ import collections
 import collections.abc as cabc
 import contextlib
 import dataclasses
+import operator
 import os
 import sys
 import typing as t
@@ -109,13 +111,12 @@ def apply(
         instruction = instructions.popleft()
 
         parent = instruction.pop("parent")
-        if isinstance(parent, UUIDReference):
-            parent = model.by_uuid(parent.uuid)
-        elif isinstance(parent, Promise):
-            if parent in promises:
-                parent = promises[parent]
-            else:
-                deferred[parent].append({"parent": parent, **instruction})
+        if isinstance(parent, (Promise, _ObjectFinder)):
+            try:
+                parent = _resolve(promises, model, parent)
+            except _UnresolvablePromise as p:
+                d = {"parent": parent, **instruction}
+                deferred[p.args[0]].append(d)
                 continue
 
         if not isinstance(parent, capellambse.model.GenericElement):
@@ -192,20 +193,22 @@ def _operate_delete(
                 "Cannot delete object:"
                 f" {type(parent).__name__}.{attr} is not model-coupled"
             )
-        uuids = list(t.cast(cabc.Iterable[str], target.by_uuid))
         for obj in objs:
-            if isinstance(obj, UUIDReference):
-                obj = obj.uuid
-            if not isinstance(obj, str):
-                raise TypeError("Values in `delete:*:` must be UUIDs")
+            if isinstance(obj, Promise):
+                raise ValueError("Cannot use !promise in `delete:*:`")
+            if isinstance(obj, str):
+                obj = UUIDReference(helpers.UUIDString(obj))
+            obj = _resolve({}, parent, obj)
             try:
-                idx = uuids.index(obj)
-            except IndexError:
-                puuid = getattr(parent, "uuid", None)
+                idx = target.index(obj)
+            except ValueError:
+                if hasattr(parent, "_short_repr_"):
+                    p_repr = parent._short_repr_()
+                else:
+                    p_repr = repr(getattr(parent, "uuid", "<unknown>"))
                 raise ValueError(
-                    f"No object with UUID {obj!r} in {attr!r} of {puuid!r}"
+                    f"No object {obj._short_repr_()} in {attr!r} of {p_repr}"
                 ) from None
-            del uuids[idx]
             del target[idx]
 
     return ()
@@ -217,7 +220,7 @@ def _operate_modify(
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in modifications.items():
-        if isinstance(value, (list, Promise, UUIDReference)):
+        if isinstance(value, (list, Promise, _ObjectFinder)):
             try:
                 value = _resolve(promises, parent, value)
             except _UnresolvablePromise as p:
@@ -237,7 +240,7 @@ def _operate_modify(
 
 def _resolve(
     promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
+    parent: capellambse.ModelObject | capellambse.MelodyModel,
     value: t.Any,
 ) -> t.Any:
     if isinstance(value, Promise):
@@ -247,12 +250,75 @@ def _resolve(
             raise _UnresolvablePromise(value) from None
     elif isinstance(value, UUIDReference):
         return parent._model.by_uuid(value.uuid)
+    elif isinstance(value, FindBy):
+        return _resolve_findby(parent, None, value)
     elif isinstance(value, list):
         for i, v in enumerate(value):
             newv = _resolve(promises, parent, v)
             if newv is not v:
                 value[i] = newv
     return value
+
+
+def _resolve_findby(
+    parent: capellambse.ModelObject | capellambse.MelodyModel,
+    attr: str | None,
+    value: FindBy,
+) -> capellambse.ModelObject:
+    attrs = dict(value.attributes)
+    typehint = attrs.pop("_type", None)
+    if not isinstance(typehint, (str, type(None))):
+        raise TypeError(
+            f"Expected a string for !find {{_type: ...}},"
+            f" got {type(typehint)}: {typehint!r}"
+        )
+    if typehint is None:
+        wanted_types: tuple[type[t.Any], ...] = ()
+    else:
+        wanted_types = common.find_wrapper(typehint)
+        if not wanted_types:
+            raise ValueError(f"Unknown type: {typehint}")
+
+    if isinstance(parent, capellambse.MelodyModel):
+        candidates = parent.search(*wanted_types)
+    elif attr is not None:
+        candidates = getattr(parent, attr)
+        if wanted_types:
+            candidates = candidates.filter(
+                lambda i: isinstance(i, wanted_types)
+            )
+    else:
+        candidates = parent._model.search()
+
+    if attrs:
+        if len(attrs) > 1:
+            expected_values = tuple(attrs.values())
+        else:
+            (expected_values,) = attrs.values()
+        getter = operator.attrgetter(*attrs)
+
+        def do_filter(obj):
+            try:
+                real_values = getter(obj)
+            except AttributeError:
+                return False
+            return real_values == expected_values
+
+        candidates = candidates.filter(do_filter)
+
+    if len(candidates) > 1:
+        hint = "(Hint: did you mean '_type' instead of 'type'?)\n" * (
+            "type" in value.attributes and "_type" not in value.attributes
+        )
+        raise ValueError(
+            f"Ambiguous match directive: !find {value.attributes!r}\n"
+            + hint
+            + f"Found {len(candidates)} matches:\n"
+            + candidates._short_repr_()
+        )
+    if not candidates:
+        raise ValueError(f"No object found for !find {value.attributes!r}")
+    return candidates[0]
 
 
 class _UnresolvablePromise(BaseException):
@@ -294,7 +360,7 @@ def _create_complex_objects(
         )
     for child in objs:
         if isinstance(
-            child, (common.GenericElement, list, Promise, UUIDReference)
+            child, (common.GenericElement, list, Promise, _ObjectFinder)
         ):
             try:
                 obj = _resolve(promises, parent, child)
@@ -386,6 +452,19 @@ class UUIDReference:
             raise ValueError(f"Malformed `!uuid`: {self.uuid!r}")
 
 
+@dataclasses.dataclass(frozen=True)
+class FindBy:
+    """Find an object by specific attributes."""
+
+    attributes: cabc.Mapping[str, t.Any]
+
+
+_ObjectFinder: tuple[type, ...] = (
+    UUIDReference,
+    FindBy,
+)
+
+
 class YDMDumper(yaml.SafeDumper):
     """A YAML dumper with extensions for declarative modelling."""
 
@@ -406,10 +485,16 @@ class YDMDumper(yaml.SafeDumper):
             attrs["_type"] = data._type_hint[0]
         return self.represent_mapping("!new_object", attrs)
 
+    def represent_findby(self, data: t.Any) -> yaml.Node:
+        assert isinstance(data, FindBy)
+        attrs = dict(data.attributes)
+        return self.represent_mapping("!find", attrs)
+
 
 YDMDumper.add_representer(Promise, YDMDumper.represent_promise)
 YDMDumper.add_representer(UUIDReference, YDMDumper.represent_uuidref)
 YDMDumper.add_representer(NewObject, YDMDumper.represent_newobj)
+YDMDumper.add_representer(FindBy, YDMDumper.represent_findby)
 
 
 class YDMLoader(yaml.SafeLoader):
@@ -441,10 +526,17 @@ class YDMLoader(yaml.SafeLoader):
             raise ValueError("!new_object requires a _type key") from None
         return NewObject(_type, **data)
 
+    def construct_findby(self, node: yaml.Node) -> FindBy:
+        if not isinstance(node, yaml.MappingNode):
+            raise TypeError("!find only accepts mapping nodes")
+        data = self.construct_mapping(node)
+        return FindBy(data)
+
 
 YDMLoader.add_constructor("!promise", YDMLoader.construct_promise)
 YDMLoader.add_constructor("!uuid", YDMLoader.construct_uuidref)
 YDMLoader.add_constructor("!new_object", YDMLoader.construct_newobj)
+YDMLoader.add_constructor("!find", YDMLoader.construct_findby)
 
 
 try:
