@@ -679,6 +679,30 @@ class TestApplySync:
         assert old_port in subfunc.inputs
 
     @staticmethod
+    def test_sync_operation_recursive(model: capellambse.MelodyModel) -> None:
+        root_package = model.la.data_package
+        package_name = "The new package"
+        subpackage_name = "The new subpackage"
+        assert package_name not in root_package.packages.by_name
+        yml = f"""\
+            - parent: !uuid {root_package.uuid}
+              sync:
+                packages:
+                  - find:
+                      name: "{package_name}"
+                    sync:
+                      packages:
+                        - find:
+                            name: {subpackage_name}
+
+            """
+
+        decl.apply(model, io.StringIO(yml))
+        assert package_name in root_package.packages.by_name
+        package = root_package.packages.by_name(package_name)
+        assert subpackage_name in package.packages.by_name
+
+    @staticmethod
     def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
         model: capellambse.MelodyModel,
     ) -> None:
