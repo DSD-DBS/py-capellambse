@@ -249,7 +249,7 @@ def _operate_sync(
 
         for obj in value:
             try:
-                find_args = obj.pop("find")
+                find_args = obj["find"]
             except KeyError:
                 raise ValueError(
                     "Expected `find` key in sync object"
@@ -261,6 +261,8 @@ def _operate_sync(
                 candidate = None
 
             if candidate is not None:
+                if sync := obj.pop("sync", None):
+                    yield from _operate_sync(promises, candidate, sync)
                 if mods := obj.pop("set", None):
                     yield from _operate_modify(promises, candidate, mods)
                 if ext := obj.pop("extend", None):
@@ -271,12 +273,15 @@ def _operate_sync(
                         promise = Promise(promise)
                     yield (promise, candidate)
             else:
-                newobj_props = find_args | obj.get("set", {})
+                newobj_props = (
+                    find_args | obj.pop("set", {}) | obj.pop("extend", {})
+                )
                 if "promise_id" in obj:
-                    newobj_props["promise_id"] = obj["promise_id"]
+                    newobj_props["promise_id"] = obj.pop("promise_id")
                 yield from _create_complex_objects(
                     promises, parent, attr, [newobj_props]
                 )
+                yield from _operate_sync(promises, parent, {attr: [obj]})
 
 
 def _resolve(
