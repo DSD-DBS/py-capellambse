@@ -63,7 +63,7 @@ class Box:
         pos: diagram.Vec2ish,
         size: diagram.Vec2ish,
         *,
-        label: Box | str | None = None,
+        labels: cabc.MutableSequence[Box | str] | None = None,
         description: str | None = None,
         uuid: str | None = None,
         parent: Box | None = None,
@@ -88,7 +88,7 @@ class Box:
             A Vector2D describing the box' size. If one or both of its
             components are 0, it/they will be calculated based on the
             Box' label text and contained children.
-        label
+        labels
             This box' label text.
         description
             Optional label text used only by Representation Links.
@@ -128,7 +128,7 @@ class Box:
         self.size = diagram.Vector2D(*size)
         self.minsize = minsize
         self.maxsize = maxsize
-        self.label: Box | str | None = label
+        self.labels: cabc.MutableSequence[Box | str] = labels or []
         self.description: str | None = description
         self.collapsed: bool = collapsed
         self.features: cabc.MutableSequence[str] | None = features
@@ -182,7 +182,7 @@ class Box:
             self.size.x + margin if leftside else -text_extent.x - margin,
             (self.size.y - text_extent.y) // 2,
         )
-        self.label = type(self)(text_pos, text_extent, label=labeltext)
+        self.labels = [type(self)(text_pos, text_extent, labels=[labeltext])]
 
     def snap_to_parent(self) -> None:
         """Snap this Box into the constraints set by its parent.
@@ -226,7 +226,7 @@ class Box:
                 newsize = diagram.Vector2D(0, 0)
                 LOGGER.warning(
                     "Box %r (%s) has zero size after snapping",
-                    self.label,
+                    self.labels,
                     self.uuid,
                 )
             self.size = diagram.Vector2D(
@@ -369,8 +369,9 @@ class Box:
             of children need to be adjusted separately.
         """
         self.pos += offset
-        if isinstance(self.label, Box):
-            self.label.move(offset, children=children)
+        for label in self.labels:
+            if isinstance(label, Box):
+                label.move(offset, children=children)
 
         if children:
             for child in self.children:
@@ -385,25 +386,26 @@ class Box:
         if not needwidth and not needheight:
             return self._size
 
-        if isinstance(self.label, str):
-            pad_w, pad_h = self.padding * 2  # Pad on all four sides
+        for label in self.labels:
+            if isinstance(label, str):
+                pad_w, pad_h = self.padding * 2  # Pad on all four sides
 
-            # Fill in missing box size fields based on label text extent
-            label_extent = helpers.get_text_extent(
-                (
-                    self.label + "\n" + "\n".join(self.features)
-                    if self.features
-                    else self.label
-                ),
-                self.maxsize.x if needwidth else width - pad_w,
-            )
-
-            if needwidth:
-                width = math.ceil(label_extent[0]) + pad_w
-            if needheight:
-                height = min(
-                    self.maxsize.y, math.ceil(label_extent[1]) + pad_h
+                # Fill in missing box size fields based on label text extent
+                label_extent = helpers.get_text_extent(
+                    (
+                        label + "\n" + "\n".join(self.features)
+                        if self.features
+                        else label
+                    ),
+                    self.maxsize.x if needwidth else width - pad_w,
                 )
+
+                if needwidth:
+                    width = math.ceil(label_extent[0]) + pad_w
+                if needheight:
+                    height = min(
+                        self.maxsize.y, math.ceil(label_extent[1]) + pad_h
+                    )
         for child in self.children:
             if not child.hidden:
                 cbound = child.bounds
@@ -452,11 +454,12 @@ class Box:
         """Calculate the bounding box of this Box."""
         minx, miny = self.pos
         maxx, maxy = self.pos + self.size
-        if isinstance(self.label, Box) and not self.hidelabel:
-            minx = min(minx, self.label.pos.x)
-            miny = min(miny, self.label.pos.y)
-            maxx = max(maxx, self.label.pos.x + self.label.size.x)
-            maxy = max(maxy, self.label.pos.y + self.label.size.y)
+        for label in self.labels:
+            if isinstance(label, Box) and not self.hidelabel:
+                minx = min(minx, label.pos.x)
+                miny = min(miny, label.pos.y)
+                maxx = max(maxx, label.pos.x + label.size.x)
+                maxy = max(maxy, label.pos.y + label.size.y)
         return Box((minx, miny), (maxx - minx, maxy - miny))
 
     @property
@@ -499,17 +502,19 @@ class Box:
         self.snap_to_parent()
 
     def __str__(self) -> str:
-        if self.label is None:
-            label = ""
-        elif isinstance(self.label, str):
-            label = self.label
-        else:
-            assert isinstance(self.label.label, str)
-            label = self.label.label
-        if label:
-            label = " " + repr(label)
+        labels = ""
+        for label in self.labels:
+            if isinstance(label, str):
+                labels = label
+            else:
+                for l in label.labels:
+                    assert isinstance(l, str)
+                labels = "\n".join(label.labels)  # type: ignore[arg-type]
+
+        if labels:
+            labels = " " + repr(labels)
         return (
-            f"{self.styleclass if self.styleclass else 'Box'}{label}"
+            f"{self.styleclass if self.styleclass else 'Box'}{labels}"
             f" at {self.pos}, size {self.size}"
             + (f" with {len(self.features)} features" if self.features else "")
         )
@@ -519,7 +524,7 @@ class Box:
         return "".join(
             [
                 f"{type(self).__name__}({self.pos!r}, {self.size!r}",
-                f", label={self.label!r}" if self.label else "",
+                f", labels={self.labels!r}" if self.labels else "",
                 f", uuid={self.uuid!r}" if self.uuid is not None else "",
                 (
                     f", parent=<UUID={self.parent.uuid}>"
@@ -728,7 +733,7 @@ class Edge(diagram.Vec2List):
     def __str__(self) -> str:
         numpoints = len(self.points)
         if self.labels:
-            label = self.labels[0].label or ""
+            label = self.labels[0].labels or ""
         else:
             label = ""
         return (

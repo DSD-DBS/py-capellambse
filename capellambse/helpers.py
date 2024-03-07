@@ -225,7 +225,7 @@ def load_font(fonttype: str, size: int) -> ImageFont.FreeTypeFont:
 def extent_func(
     text: str,
     fonttype: str = "segoeui.ttf",
-    size: int = 8,
+    size: int = 11,
 ) -> tuple[float, float]:
     """Calculate the display size of the given text.
 

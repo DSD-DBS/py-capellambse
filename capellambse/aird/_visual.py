@@ -116,7 +116,7 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
     return diagram.Box(
         pos,
         size,
-        label=label,
+        labels=[label] if label else None,
         description=description,
         uuid=uid,
         parent=parent,

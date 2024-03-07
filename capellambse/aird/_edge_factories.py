@@ -386,7 +386,7 @@ def _construct_labels(
             C.CenterAnchoredBox(
                 labelanchor + label_pos,
                 label_size,
-                label=labeltext,
+                labels=[labeltext],
                 styleclass="EdgeAnnotation",
             )
         )
@@ -489,7 +489,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
             )
             label = f"{label} / {effects_str}"
 
-        edge.labels[0].label = label
+        edge.labels[0].labels = [label]
     return edge
 
 
@@ -502,7 +502,7 @@ def sequence_link_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     edge = generic_factory(seb)
     guard = _guard_condition(seb, "condition")
     if guard and edge.labels:
-        edge.labels[0].label = guard
+        edge.labels[0].labels = [guard]
     return edge
 
 
@@ -516,9 +516,7 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     capellambse.aird._box_factories.constraint_factory :
         The accompanying box factory.
     """
-    edge = generic_factory(seb)
-    edge.labels = []
-    return edge
+    return labelless_factory(seb)
 
 
 def fcil_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
@@ -545,7 +543,7 @@ def eie_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
 
 
 def fex_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
-    """Create a functional exhcange."""
+    """Create a functional exchange."""
     edge = generic_factory(seb)
     assert edge.styleclass is not None and edge.target is not None
     if edge.target.styleclass == "OperationalActivity":
