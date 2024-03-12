@@ -20,6 +20,7 @@ U = t.TypeVar("U")
 XTYPE_ANCHORS = {
     "capellambse.model": "org.polarsys.capella.core.data.capellamodeller",
     "capellambse.model.crosslayer": "org.polarsys.capella.core.data",
+    "capellambse.model.diagram": "viewpoint",
     "capellambse.model.layers": "org.polarsys.capella.core.data",
 }
 """A mapping from anchor modules to Capella packages.

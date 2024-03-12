@@ -1099,7 +1099,7 @@ class TestArchitectureLayers:
 def test_diagram_attributes(
     model: capellambse.MelodyModel, attr: str, value: t.Any
 ) -> None:
-    diagram = model.diagrams.by_uuid("_7FWu4KrxEeqOgqWuHJrXFA")
+    diagram = model.diagrams.by_uuid("_7Ft7QKrxEeqOgqWuHJrXFA")
     get_attribute_under_test = operator.attrgetter(attr)
 
     actual = get_attribute_under_test(diagram)
@@ -1107,11 +1107,11 @@ def test_diagram_attributes(
     assert actual == value
 
 
-def test_diagram_without_documentation_has_None_description(
+def test_diagram_without_documentation_has_empty_description(
     model: capellambse.MelodyModel,
 ) -> None:
-    diagram = model.diagrams.by_uuid("_KK2wcKyJEeqCdMaqCWkrKg")
-    expected = None
+    diagram = model.diagrams.by_uuid("_KLGoEKyJEeqCdMaqCWkrKg")
+    expected = ""
 
     actual = diagram.description
 
