@@ -511,7 +511,7 @@ def function_symbol(
             text=label,
             insert=(42.2, 38),
             text_anchor="middle",
-            font_family="Open Sans",
+            font_family="'Open Sans','Segoe UI',Arial,sans-serif",
             font_size="16px",
             font_weight="bold",
             fill="#000",

@@ -53,7 +53,7 @@ class Drawing:
         superparams = {
             "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
-            "font-family": "Open Sans",
+            "font-family": "'Open Sans','Segoe UI',Arial,sans-serif",
             "font-size": "8px",
             "shape-rendering": "geometricPrecision",
             "size": metadata.size,
