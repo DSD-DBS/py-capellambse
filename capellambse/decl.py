@@ -228,7 +228,7 @@ def _operate_modify(
                 continue
 
         if isinstance(value, list):
-            delattr(parent, attr)
+            getattr(parent, attr).clear()
             yield from _create_complex_objects(promises, parent, attr, value)
         elif isinstance(value, dict):
             obj = getattr(parent, attr)
