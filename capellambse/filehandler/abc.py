@@ -5,6 +5,7 @@ from __future__ import annotations
 
 __all__ = [
     "FileHandler",
+    "FilePath",
     "AbstractFilePath",
     "TransactionClosedError",
 ]
@@ -200,8 +201,28 @@ class FileHandler(metaclass=abc.ABCMeta):
             f"{type(self).__name__} does not support listing files"
         )
 
+    def is_dir(self, path: str | pathlib.PurePosixPath, /):
+        try:
+            fpath = self.rootdir.joinpath(path)
+        except TypeError:
+            raise TypeError(
+                f"{type(self).__name__} does not support is_dir()"
+            ) from None
 
-class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
+        return fpath.is_dir()
+
+    def is_file(self, path: str | pathlib.PurePosixPath, /):
+        try:
+            fpath = self.rootdir.joinpath(path)
+        except TypeError:
+            raise TypeError(
+                f"{type(self).__name__} does not support is_file()"
+            ) from None
+
+        return fpath.is_file()
+
+
+class FilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
     """A path to a file in a file handler.
 
     This is an abstract class with FileHandler-agnostic implementations
@@ -215,6 +236,26 @@ class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
     """
 
     def __init__(self, parent: _F, path: pathlib.PurePosixPath):
+        ptype = type(parent)
+        if (
+            type(self).is_dir is FilePath.is_dir
+            and ptype.is_dir is FileHandler.is_dir
+            or type(self).is_file is FilePath.is_file
+            and ptype.is_file is FileHandler.is_file
+        ):
+            raise TypeError(
+                f"{ptype.__name__} does not support FilePath:"
+                f" is_dir and is_file must both be implemented,"
+                " either on the FileHandler or a FilePath subclass"
+            )
+
+        for method in ("iterdir", "rootdir"):
+            if getattr(ptype, method) is getattr(FileHandler, method):
+                raise TypeError(
+                    f"{ptype.__name__} does not support FilePath:"
+                    f" {ptype.__name__}.{method} is not implemented"
+                )
+
         self._parent = parent
         self._path = path
 
@@ -234,11 +275,11 @@ class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
         newpath = helpers.normalize_pure_path(path, base=self._path)
         return type(self)(self._parent, newpath)
 
-    @abc.abstractmethod
-    def is_dir(self) -> bool: ...
+    def is_dir(self) -> bool:
+        return self._parent.is_dir(self._path)
 
-    @abc.abstractmethod
-    def is_file(self) -> bool: ...
+    def is_file(self) -> bool:
+        return self._parent.is_file(self._path)
 
     def iterdir(
         self, path: str | pathlib.PurePosixPath = "."
@@ -302,6 +343,9 @@ class AbstractFilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
     def read_text(self, encoding: str | None = None) -> str:
         with self.open("rb") as f:
             return f.read().decode(encoding or "utf-8")
+
+
+AbstractFilePath = FilePath
 
 
 class TransactionClosedError(RuntimeError):

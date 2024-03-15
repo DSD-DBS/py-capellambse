@@ -211,7 +211,7 @@ class HTTPFileHandler(abc.FileHandler):
 
     def iterdir(  # pragma: no cover
         self, path: str | pathlib.PurePosixPath = ".", /
-    ) -> cabc.Iterator[abc.AbstractFilePath[te.Self]]:
+    ) -> cabc.Iterator[abc.FilePath[te.Self]]:
         raise TypeError(
             "Cannot list files on raw HTTP sources."
             " Maybe you forgot a 'git+' prefix?"
