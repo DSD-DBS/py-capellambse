@@ -66,7 +66,7 @@ class FileHandler(metaclass=abc.ABCMeta):
         self,
         filename: str | pathlib.PurePosixPath,
         mode: t.Literal["r", "rb", "w", "wb"] = "rb",
-    ) -> t.BinaryIO:
+    ) -> t.IO[bytes]:
         """Open the model file for reading or writing.
 
         A "file" in this context does not necessarily refer to a
@@ -317,7 +317,7 @@ class FilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
         encoding: str | None = None,
         errors: str | None = None,
         newline: str | None = None,
-    ) -> t.BinaryIO:
+    ) -> t.IO[bytes]:
         del buffering, errors
 
         if "b" not in mode:
