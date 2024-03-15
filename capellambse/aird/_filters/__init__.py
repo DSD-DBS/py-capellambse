@@ -12,7 +12,7 @@ import urllib.parse
 from lxml import etree
 
 import capellambse.loader
-from capellambse import diagram, model
+from capellambse import aird, diagram, model
 
 from .. import _common as c
 
@@ -276,7 +276,8 @@ class ActiveFilters(t.MutableSet[str]):
     ) -> None:
         self._model = model
         self._diagram = diagram
-        self._target = self._model._loader[diagram._element.uid]
+        assert isinstance(diagram._element, etree._Element)
+        self._target = self._model._loader[diagram._element.attrib["repPath"]]
 
     @property
     def _elements(self) -> t.Iterator[etree._Element]:
@@ -314,7 +315,9 @@ class ActiveFilters(t.MutableSet[str]):
         if value in self:
             return
 
-        diag_descriptor = self._diagram._element
+        diag_descriptor = aird._build_descriptor(
+            self._model._loader, self._diagram._element
+        )
         viewpoint = urllib.parse.quote(diag_descriptor.viewpoint)
         assert diag_descriptor.styleclass is not None
         diagclass = urllib.parse.quote(diag_descriptor.styleclass)

@@ -20,6 +20,7 @@ import os
 import typing as t
 
 import capellambse
+from capellambse import filehandler
 
 LOGGER = logging.getLogger(__name__)
 
@@ -224,7 +225,8 @@ def loadinfo(value: str | os.PathLike[str]) -> dict[str, t.Any]:
         try:
             return json.loads(value)
         except json.JSONDecodeError:
-            return _load_from_file(value)
+            pass
+        return _load_from_file(value)
 
     if isinstance(value, os.PathLike):
         value = os.fspath(value)
@@ -250,8 +252,14 @@ def _load_from_file(value: str) -> dict[str, t.Any]:
     if os.path.exists(value):
         return {"path": value}
 
+    proto, _ = filehandler.split_protocol(value)
+    if proto != "file":
+        return {"path": capellambse.get_filehandler(value)}
+
     raise ValueError(
-        "value is not a known model nor contains valid JSON"
+        "value is not a known model,"
+        " nor contains valid JSON,"
+        " nor is a valid FileHandler URL"
     ) from None
 
 

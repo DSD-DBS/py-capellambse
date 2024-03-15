@@ -284,6 +284,17 @@ class _DockerRunner:
         subprocess.check_call(
             [
                 "docker",
+                "exec",
+                "--user=root",
+                container_name,
+                "rm",
+                "-rfv",
+                destination,
+            ],
+        )
+        subprocess.check_call(
+            [
+                "docker",
                 "cp",
                 f"{directory}/.",
                 f"{container_name}:{destination}",

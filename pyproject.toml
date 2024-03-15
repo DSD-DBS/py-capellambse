@@ -251,6 +251,7 @@ addopts = """
   --import-mode=importlib
   --strict-config
   --strict-markers
+  --tb=short
 """
 testpaths = ["tests"]
 xfail_strict = true

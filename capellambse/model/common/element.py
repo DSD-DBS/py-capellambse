@@ -148,7 +148,7 @@ class GenericElement:
     summary = properties.AttributeProperty("summary", optional=True)
     diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
     diagrams = property(  # type: ignore[assignment]
-        lambda self: self._model.diagrams.by_target_uuid(self.uuid)
+        lambda self: self._model.diagrams.by_target(self)
     )
 
     constraints: accessors.Accessor

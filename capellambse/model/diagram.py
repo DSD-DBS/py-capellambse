@@ -9,7 +9,6 @@ import collections.abc as cabc
 import importlib.metadata as imm
 import io
 import logging
-import operator
 import os
 import traceback
 import typing as t
@@ -454,36 +453,35 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             pass
 
 
+@c.xtype_handler(None, "viewpoint:DRepresentationDescriptor")
 class Diagram(AbstractDiagram):
     """Provides access to a single diagram."""
 
-    uuid: str = property(
-        operator.attrgetter("_element.uid")
-    )  # type: ignore[assignment]
-    xtype = "viewpoint:DRepresentationDescriptor"
-    name: str = property(
-        operator.attrgetter("_element.name")
-    )  # type: ignore[assignment]
-    viewpoint: str = property(
-        operator.attrgetter("_element.viewpoint")
-    )  # type: ignore[assignment]
-    target_uuid: str = property(
-        lambda self: self.target.uuid
-    )  # type: ignore[assignment]
-    """Obsolete."""
+    uuid: str = c.properties.AttributeProperty(  # type: ignore[assignment]
+        "uid", writable=False
+    )
+    xtype = property(lambda self: helpers.xtype_of(self._element))
+    name: str = c.properties.AttributeProperty(  # type: ignore[assignment]
+        "name", optional=True, default=""
+    )
+    description = c.properties.HTMLAttributeProperty(
+        "documentation", optional=True
+    )
 
-    _element: aird.DiagramDescriptor
+    _element: aird.DRepresentationDescriptor
+    _constructed: bool
 
     @classmethod
     def from_model(
         cls,
         model: capellambse.MelodyModel,
-        descriptor: aird.DiagramDescriptor,
+        descriptor: aird.DRepresentationDescriptor,
     ) -> Diagram:
         """Wrap a diagram already defined in the Capella AIRD."""
         self = cls.__new__(cls)
         self._model = model
         self._element = descriptor
+        self._constructed = True
         return self
 
     def __init__(self, **kw: t.Any) -> None:
@@ -509,19 +507,18 @@ class Diagram(AbstractDiagram):
         return self._model._fallback_render_aird
 
     @property
-    def description(self) -> str | None:
-        """Return the diagram description."""
-        desc = self._element.descriptor.get("documentation")
-        return desc and helpers.repair_html(desc)
+    def viewpoint(self) -> str:
+        return aird.viewpoint_of(self._element)
 
     @property
     def target(self) -> c.GenericElement:  # type: ignore[override]
-        return c.GenericElement.from_model(self._model, self._element.target)
+        target = aird.find_target(self._model._loader, self._element)
+        return c.GenericElement.from_model(self._model, target)
 
     @property
     def type(self) -> modeltypes.DiagramType:
         """Return the type of this diagram."""
-        sc = self._element.styleclass
+        sc = aird.get_styleclass(self._element)
         try:
             return modeltypes.DiagramType(sc)
         except ValueError:  # pragma: no cover
@@ -561,17 +558,12 @@ class DiagramAccessor(c.Accessor):
         if obj is None:  # pragma: no cover
             return self
 
-        if self.viewpoint is None:
-            descriptors = list(aird.enumerate_diagrams(obj._model._loader))
-        else:
-            descriptors = [
-                d
-                for d in aird.enumerate_diagrams(obj._model._loader)
-                if d.viewpoint == self.viewpoint
-            ]
+        descriptors = aird.enumerate_descriptors(
+            obj._model._loader, viewpoint=self.viewpoint
+        )
         return c.CachedElementList(
             obj._model,
-            descriptors,
+            list(descriptors),
             Diagram,
             cacheattr=self.cacheattr,
         )
