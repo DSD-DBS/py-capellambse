@@ -933,7 +933,7 @@ class GitFileHandler(abc.FileHandler):
             LOGGER.log(level, "Exit status: %d", returncode)
 
 
-class GitPath(abc.AbstractFilePath[GitFileHandler]):
+class GitPath(abc.FilePath[GitFileHandler]):
     def __init__(
         self,
         parent: GitFileHandler,

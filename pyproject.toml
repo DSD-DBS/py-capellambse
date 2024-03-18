@@ -96,6 +96,7 @@ git = "capellambse.filehandler.git:GitFileHandler"
 glart = "capellambse.filehandler.gitlab_artifacts:GitlabArtifactsFiles"
 http = "capellambse.filehandler.http:HTTPFileHandler"
 https = "capellambse.filehandler.http:HTTPFileHandler"
+zip = "capellambse.filehandler.zip:ZipFileHandler"
 
 [project.entry-points."capellambse.model_extensions"]
 filtering = "capellambse.extensions.filtering:init"
