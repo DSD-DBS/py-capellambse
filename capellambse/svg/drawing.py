@@ -50,12 +50,19 @@ LabelDict = t.TypedDict(
 class Drawing:
     """The main container that stores all svg elements."""
 
-    def __init__(self, metadata: generate.DiagramMetadata):
+    def __init__(
+        self,
+        metadata: generate.DiagramMetadata,
+        *,
+        font_family: str = "Open Sans",
+        font_size: int = 11,
+        transparent_background: bool = False,
+    ):
         superparams = {
             "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
-            "font-family": "Open Sans",
-            "font-size": "11px",
+            "font-family": font_family,
+            "font-size": font_size,
             "shape-rendering": "geometricPrecision",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
@@ -66,7 +73,8 @@ class Drawing:
         self.__drawing = drawing.Drawing(**superparams)
         self.diagram_class = metadata.class_
         self.deco_cache: set[str] = set()
-        self._add_backdrop(pos=metadata.pos, size=metadata.size)
+        if not transparent_background:
+            self._add_backdrop(pos=metadata.pos, size=metadata.size)
 
         self.obj_cache: dict[str | None, t.Any] = {}
 

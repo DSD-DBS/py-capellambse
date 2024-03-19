@@ -888,6 +888,7 @@ class Diagram:
         *,
         uuid: str | None = None,
         styleclass: str | None = None,
+        params: dict[str, t.Any] | None = None,
     ):
         """Construct a new diagram.
 
@@ -903,10 +904,13 @@ class Diagram:
             The unique ID of this diagram.
         styleclass
             The diagram class.
+        params
+            Additional parameters.
         """
         self.name = name
         self.uuid = uuid
         self.styleclass = styleclass
+        self.params = params or {}
 
         self.viewport = None
         self.__elements: list[DiagramElement] = []

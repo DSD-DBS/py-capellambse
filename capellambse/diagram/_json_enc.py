@@ -47,6 +47,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
                 _intround(o.viewport.size.y) if o.viewport is not None else 0
             ),
             "contents": [e for e in o if not e.hidden],
+            "params": o.params,
         }
 
     @staticmethod
