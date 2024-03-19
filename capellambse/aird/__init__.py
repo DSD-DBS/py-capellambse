@@ -110,7 +110,7 @@ def _viewpoint_of(view: etree._Element) -> str:
     assert viewname is not None
     viewname = C.RE_VIEWPOINT.search(viewname.attrib["href"])
     if viewname is not None:
-        return viewname.group(1)
+        return urllib.parse.unquote(viewname.group(1))
     return ""
 
 
