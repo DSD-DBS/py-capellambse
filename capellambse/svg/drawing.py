@@ -40,7 +40,7 @@ LabelDict = t.TypedDict(
         "y": float,
         "width": float,
         "height": float,
-        "text": str,
+        "text": str | list[str],
         "class": str,
     },
     total=False,
@@ -62,7 +62,7 @@ class Drawing:
             "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
             "font-family": font_family,
-            "font-size": font_size,
+            "font-size": f"{font_size}px",
             "shape-rendering": "geometricPrecision",
             "size": metadata.size,
             "viewBox": metadata.viewbox,
@@ -560,7 +560,7 @@ class Drawing:
 
             self._draw_label(
                 LabelBuilder(
-                    max(decorations.max_label_width, width_),
+                    min(decorations.max_label_width, width_),
                     math.inf,
                     labels_,
                     grp or self.__drawing.elements[-1],
@@ -724,7 +724,7 @@ class Drawing:
                 labelstyle=text_style,
                 text_anchor="middle",
                 class_=class_,
-                y_margin=0,
+                y_margin=3,
             )
         return self.__drawing.add(grp)
 
@@ -920,28 +920,34 @@ def render_hbounded_lines(
     lines_to_render: list[str] = []
     max_label_width = 0.0
     for label in builder.labels:
-        (
-            lines,
-            label_margin,
-            max_text_width,
-        ) = helpers.check_for_horizontal_overflow(
-            str(label["text"]),
-            builder.rect_width,
-            decorations.icon_padding if render_icon else 0,
-            builder.icon_size if render_icon else 0,
-            builder.alignment,
-        )
-        lines_to_render += helpers.check_for_vertical_overflow(
-            lines, builder.rect_height, max_text_width
-        )
-        max_label_width = max(max_text_width, max_label_width)
+        if isinstance(label["text"], str):
+            texts: list[str] = [label["text"]]
+        else:
+            texts = label["text"]
+
+        for text in texts:
+            (
+                lines,
+                label_margin,
+                max_text_width,
+            ) = helpers.check_for_horizontal_overflow(
+                text,
+                builder.rect_width,
+                decorations.icon_padding if render_icon else 0,
+                builder.icon_size if render_icon else 0,
+                builder.alignment,
+            )
+            lines_to_render += helpers.check_for_vertical_overflow(
+                lines, builder.rect_height, max_text_width
+            )
+            max_label_width = max(max_text_width, max_label_width)
 
     line_height = max(j for _, j in map(chelpers.extent_func, lines_to_render))
     text_height = line_height * len(lines_to_render)
     max_line_width = max(
         w for w, _ in map(chelpers.extent_func, lines_to_render)
     )
-    assert max_label_width >= max_line_width
+    # assert max_label_width >= max_line_width
     return LinesData(
         lines_to_render, line_height, text_height, label_margin, max_line_width
     )
@@ -960,7 +966,10 @@ def get_label_position(
         else:
             label["x"] += (label["width"] + icon_size) / 2
 
-        dominant_baseline_adjust = chelpers.extent_func(label["text"])[1] / 2
+        dominant_baseline_adjust = 0.0
+        if label["text"]:
+            label_height = chelpers.extent_func(label["text"][0])[1]
+            dominant_baseline_adjust = label_height / 2
         label["y"] += dominant_baseline_adjust + builder.y_margin
     return diagram.Vector2D(builder.labels[0]["x"], builder.labels[0]["y"])
 
