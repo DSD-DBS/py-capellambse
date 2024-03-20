@@ -22,6 +22,9 @@ from capellambse import aird, diagram, helpers, svg
 from . import common as c
 from . import modeltypes
 
+if t.TYPE_CHECKING:
+    from lxml import etree
+
 
 @t.runtime_checkable
 class DiagramFormat(t.Protocol):
@@ -471,6 +474,8 @@ class Diagram(AbstractDiagram):
     _element: aird.DRepresentationDescriptor
     _constructed: bool
 
+    __nodes: list[etree._Element] | None
+
     @classmethod
     def from_model(
         cls,
@@ -482,6 +487,7 @@ class Diagram(AbstractDiagram):
         self._model = model
         self._element = descriptor
         self._constructed = True
+        self.__nodes = None
         return self
 
     def __init__(self, **kw: t.Any) -> None:
@@ -495,11 +501,12 @@ class Diagram(AbstractDiagram):
 
     @property
     def nodes(self) -> c.MixedElementList:
-        diagram_elements = list(
-            aird.iter_visible(self._model._loader, self._element)
-        )
+        if self.__nodes is None:
+            self.__nodes = list(
+                aird.iter_visible(self._model._loader, self._element)
+            )
         return c.MixedElementList(
-            self._model, diagram_elements, c.GenericElement
+            self._model, self.__nodes.copy(), c.GenericElement
         )
 
     @property
@@ -538,6 +545,11 @@ class Diagram(AbstractDiagram):
 
     def _create_diagram(self, params: dict[str, t.Any]) -> diagram.Diagram:
         return aird.parse_diagram(self._model._loader, self._element, **params)
+
+    def invalidate_cache(self) -> None:
+        """Reset internal diagram cache."""
+        self.__nodes = None
+        super().invalidate_cache()
 
 
 class DiagramAccessor(c.Accessor):
