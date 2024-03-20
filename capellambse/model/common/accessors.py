@@ -1811,7 +1811,28 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         elmlist: ElementListCouplingMixin,
         obj: element.ModelObject,
     ) -> None:
-        raise NotImplementedError("NYI")
+        assert obj._model is elmlist._model
+        model = obj._model
+        all_elements = list(model._loader.iterdescendants_xt(obj._element)) + [
+            obj._element
+        ]
+        with contextlib.ExitStack() as stack:
+            for elm in all_elements:
+                if elm.get("id") is None:
+                    continue
+
+                obj = element.GenericElement.from_model(model, elm)
+                for ref, attr, _ in model.find_references(obj):
+                    acc = getattr(type(ref), attr)
+                    if acc is self or not isinstance(acc, WritableAccessor):
+                        continue
+                    stack.enter_context(acc.purge_references(ref, obj))
+
+            elm = obj._element
+            parent = elm.getparent()
+            assert parent is not None
+            model._loader.idcache_remove(elm)
+            parent.remove(elm)
 
     @contextlib.contextmanager
     def purge_references(
