@@ -13,6 +13,7 @@ import pytest
 
 import capellambse
 from capellambse import decl, helpers
+from capellambse.extensions import reqif
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import (  # type: ignore[import-untyped]
@@ -26,6 +27,7 @@ MODELPATH = pathlib.Path(TEST_ROOT / "5_0")
 
 ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
+TEACH_POTIONS_FUNC = helpers.UUIDString("83ba0220-54f2-48f7-bca1-cd87e39639f2")
 
 
 class TestDumpLoad:
@@ -85,18 +87,19 @@ class TestApplyExtend:
 
     @staticmethod
     @pytest.mark.parametrize(
-        ["parent_str", "parent_getter"],
+        ["parent_str"],
         [
+            pytest.param(f"!uuid {TEACH_POTIONS_FUNC}", id="!uuid"),
             pytest.param(
-                f"!uuid {ROOT_FUNCTION}",
-                lambda m: m.by_uuid(ROOT_FUNCTION),
-                id="!uuid",
+                "!find {_type: LogicalFunction, name: teach Potions}",
+                id="!find",
             ),
         ],
     )
     def test_decl_finds_parent_to_act_on(
-        model: capellambse.MelodyModel, parent_str, parent_getter
+        model: capellambse.MelodyModel, parent_str
     ) -> None:
+        parent = model.by_uuid(TEACH_POTIONS_FUNC)
         funcname = "pass the unit test"
         yml = f"""\
             - parent: {parent_str}
@@ -105,13 +108,13 @@ class TestApplyExtend:
                   - name: {funcname!r}
             """
         expected_len = len(model.search()) + 1
-        assert funcname not in parent_getter(model).functions.by_name
+        assert funcname not in parent.functions.by_name
 
         decl.apply(model, io.StringIO(yml))
 
         actual_len = len(model.search())
         assert actual_len == expected_len
-        assert funcname in parent_getter(model).functions.by_name
+        assert funcname in parent.functions.by_name
 
     @staticmethod
     def test_decl_creates_each_object_in_a_list(
@@ -427,6 +430,31 @@ class TestApplyPromises:
         with pytest.raises(decl.UnfulfilledPromisesError, match="^pass-test$"):
             decl.apply(model, io.StringIO(yml))
 
+    @staticmethod
+    def test_promises_are_resolved_for_parent_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = f"""\
+            - parent: !promise pass-test
+              modify:
+                name: pass the unit test
+            - parent: !uuid {ROOT_FUNCTION}
+              extend:
+                functions:
+                  - promise_id: pass-test
+            - parent: !promise pass-test
+              modify:
+                description: Makes sure that the test passes.
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert decl.Promise("pass-test") in resolved
+        func = resolved[decl.Promise("pass-test")]
+        assert isinstance(func, capellambse.model.la.LogicalFunction)
+        assert func.name == "pass the unit test"
+        assert func.description == "Makes sure that the test passes."
+
 
 class TestApplyModify:
     @staticmethod
@@ -544,6 +572,225 @@ class TestApplyDelete:
         decl.apply(model, io.StringIO(yml))
 
         assert len(root_function.functions) == 0
+
+
+class TestApplySync:
+    @staticmethod
+    def test_sync_operation_without_find_key_raises_an_error(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = f"""\
+        - parent: !uuid {ROOT_FUNCTION}
+          sync:
+            functions:
+              - set:
+                  name: "The new name"
+        """
+        with pytest.raises(ValueError, match="find"):
+            decl.apply(model, io.StringIO(yml))
+
+    @staticmethod
+    def test_sync_operation_finds_and_modifies_existing_objects_in_the_list(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        new_description = "This is a function."
+        assert root_function.functions[0].description != new_description
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {root_function.functions[0].name}
+                    set:
+                      description: {new_description!r}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert root_function.functions[0].description == new_description
+
+    @staticmethod
+    def test_sync_operation_honors_type_hints(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        yml = """\
+            - parent: !uuid 3c2d312c-37c9-41b5-8c32-67578fa52dc3
+              sync:
+                attributes:
+                  - find:
+                      _type: StringValueAttribute
+                    promise_id: obj
+            """
+
+        promises = decl.apply(model, io.StringIO(yml))
+
+        assert decl.Promise("obj") in promises
+        obj = promises[decl.Promise("obj")]
+        assert isinstance(obj, reqif.StringValueAttribute)
+        assert obj.uuid == "ee8a69ef-61b9-4db9-9a0f-628e5d4704e1"
+
+    @staticmethod
+    def test_sync_set_overwrites_iterables(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        subfunc = root_function.functions[0]
+        old_port = subfunc.inputs.create(name="Water port")
+        new_port_name = "Power port"
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {root_function.functions[0].name}
+                    set:
+                      inputs:
+                        - name: {new_port_name}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert new_port_name in subfunc.inputs.by_name
+        assert old_port not in subfunc.inputs
+
+    @staticmethod
+    def test_sync_extend_does_not_overwrite_iterables(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        subfunc = root_function.functions[0]
+        old_port = subfunc.inputs.create(name="Water port")
+        new_port_name = "Power port"
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {subfunc.name}
+                    extend:
+                      inputs:
+                        - name: {new_port_name}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert new_port_name in subfunc.inputs.by_name
+        assert old_port in subfunc.inputs
+
+    @staticmethod
+    def test_sync_operation_recursive(model: capellambse.MelodyModel) -> None:
+        root_package = model.la.data_package
+        package_name = "The new package"
+        subpackage_name = "The new subpackage"
+        assert package_name not in root_package.packages.by_name
+        yml = f"""\
+            - parent: !uuid {root_package.uuid}
+              sync:
+                packages:
+                  - find:
+                      name: "{package_name}"
+                    sync:
+                      packages:
+                        - find:
+                            name: {subpackage_name}
+
+            """
+
+        decl.apply(model, io.StringIO(yml))
+        assert package_name in root_package.packages.by_name
+        package = root_package.packages.by_name(package_name)
+        assert subpackage_name in package.packages.by_name
+
+    @staticmethod
+    def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        new_name = "The new function"
+        new_description = "This is a new function."
+        assert new_name not in root_function.functions.by_name
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {new_name}
+                    set:
+                      description: {new_description!r}
+            """
+
+        decl.apply(model, io.StringIO(yml))
+
+        assert new_name in root_function.functions.by_name
+        func = root_function.functions.by_name(new_name, single=True)
+        assert func.description == new_description
+
+    @staticmethod
+    def test_sync_operation_resolves_promises_with_newly_created_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        newname = "The new function"
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {newname}
+                    promise_id: my_function
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert resolved
+        assert decl.Promise("my_function") in resolved
+        new_func = resolved[decl.Promise("my_function")]
+        assert isinstance(new_func, capellambse.model.la.LogicalFunction)
+        assert new_func.name == newname
+
+    @staticmethod
+    def test_sync_operation_resolves_promises_with_existing_objects(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_function = model.by_uuid(ROOT_FUNCTION)
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {root_function.functions[0].name}
+                    promise_id: my_function
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert resolved == {
+            decl.Promise("my_function"): root_function.functions[0]
+        }
+
+    @staticmethod
+    def test_sync_operation_can_resolve_multiple_promises_with_one_object(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        function = model.by_uuid(ROOT_FUNCTION).functions[0]
+        yml = f"""\
+            - parent: !uuid {ROOT_FUNCTION}
+              sync:
+                functions:
+                  - find:
+                      name: {function.name}
+                    promise_id: promise-1
+                  - find:
+                      name: {function.name}
+                    promise_id: promise-2
+            """
+
+        resolved = decl.apply(model, io.StringIO(yml))
+
+        assert resolved == {
+            decl.Promise("promise-1"): function,
+            decl.Promise("promise-2"): function,
+        }
 
 
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])

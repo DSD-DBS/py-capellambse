@@ -73,16 +73,48 @@ object that already exists in the model) is selected, and one or more of three
 different operations is applied to it:
 
 - ``extend``-ing the object on list attributes,
-- ``modify``-ing the object itself, or
+- ``modify``-ing the object itself,
+- ``sync``-ing objects into the model, or
 - ``delete``-ing one or more children.
 
-Parents can be selected by their universally unique ID (UUID), using the
-``!uuid`` YAML tag. The following query selects the root logical function in
-our test model:
+Selecting a parent
+------------------
+
+There are a few ways to select a parent object from the model.
+
+The most straight-forward way is to use the universally unique ID (UUID), using
+the ``!uuid`` YAML tag. The following query selects the root logical function
+in our test model:
 
 .. code-block:: yaml
 
    - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
+
+A more versatile way involves the ``!find`` YAML tag, which allows specifying a
+set of attributes in order to filter down to a single model element. This tag
+simply takes a mapping of all the attributes to select for. This usually also
+involves the element's type (or class), which is selectable with the ``_type``
+attribute:
+
+.. code-block:: yaml
+
+   - parent: !find
+       _type: LogicalFunction
+     # ^-- note the leading underscore, to disambiguate from the "type"
+     # property that exists on some model elements
+       name: Root Logical Function
+     modify: [...]
+
+The ``!find`` tag also supports dot-notation for filtering on nested
+attributes.
+
+.. code-block:: yaml
+
+   - parent: !find
+       _type: FunctionOutputPort
+       name: FOP 1
+       owner.name: manage the school
+     modify: [...]
 
 Extending objects
 -----------------
@@ -248,6 +280,42 @@ e.g. numeric properties. This example changes the ``min_card`` property of an
      modify:
        min_card: 0
        max_card: .inf
+
+Synchronizing objects
+---------------------
+
+The ``sync:`` key is a combination of the above ``extend:`` and ``modify:``
+keys. Using it, it is possible to modify objects that already exist, or create
+new objects if they don't exist yet.
+
+Unlike the other keys however, ``sync:`` takes two sets of attributs: one that
+is used to find a matching object (using the ``find:`` key), and one that is
+only used to set values once the object of interest was found (using the
+``set:`` key).
+
+This operation also supports Promise IDs, which are resolved either using the
+found existing object or the newly created one.
+
+The following snippet ensures that the root LogicalFunction contains a
+subfunction "brew coffee" with the given description. A function named "brew
+coffee" will be used if it already exists, but if not, a new one will be
+created. In either case, the used function will resolve the "brew-coffee"
+promise, which can be used to reference it elsewhere:
+
+.. code-block:: yaml
+
+   - parent: !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d  # the root function
+     sync:
+       functions:
+         - find:
+             name: brew coffee
+           set:
+             description: This function brews coffee.
+           promise_id: brew-coffee
+   - parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440  # the root component
+     extend:
+       allocated_functions:
+         - !promise brew-coffee
 
 Deleting objects
 ----------------
