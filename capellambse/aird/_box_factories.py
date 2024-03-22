@@ -92,7 +92,7 @@ def generic_factory(
         seb.target_diagram.styleclass, f"Box.{seb.styleclass}", ostyle
     )
 
-    label = seb.melodyobjs[0].attrib.get("name")
+    label = seb.melodyobjs[0].attrib.get("name", "")
     pos += (
         int(seb.diag_element.attrib.get("width", (5, -1)[box_is_port])),
         int(seb.diag_element.attrib.get("height", (5, -1)[box_is_port])),
@@ -101,20 +101,23 @@ def generic_factory(
     if box_is_port and parent is not None:
         parent.add_context(seb.data_element.attrib["element"])
 
-    labels: list[diagram.Box | str] | None = None
+    floating_labels: list[diagram.Box] = []
     if label:
         if box_is_port:
-            labels = [_make_portlabel(pos, size, label, seb)]
+            floating_labels.append(_make_portlabel(pos, size, label, seb))
         elif box_is_symbol:
-            labels = [_make_free_floating_label(pos, size, label, seb)]
-        else:
-            assert isinstance(label, str)
-            labels = [label]
+            floating_labels.append(
+                _make_free_floating_label(pos, size, label, seb)
+            )
+
+    if floating_labels:
+        label = ""
 
     box = boxtype(
         pos,
         size,
-        labels=labels,
+        label=label,
+        floating_labels=floating_labels,
         collapsed=_is_collapsed(seb),
         port=box_is_port,
         uuid=seb.data_element.attrib["element"],
@@ -243,11 +246,11 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
         The accompanying edge factory.
     """
     box = generic_factory(seb)
-    label = C.get_spec_text(seb) or seb.melodyobjs[0].attrib.get("name")
+    label = C.get_spec_text(seb) or seb.melodyobjs[0].attrib.get("name", "")
     if isinstance(label, markupsafe.Markup):
-        box.labels = [label.striptags()]
+        box.label = label.striptags()
     else:
-        box.labels = [label]
+        box.label = label
     return box
 
 
@@ -347,7 +350,7 @@ def requirements_box_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
 
     box = generic_factory(seb, minsize=diagram.Vector2D(0, 0))
     box.features = [f"- {i}" for i in text if i is not None]
-    if not (box.labels or box.features):
+    if not (box.floating_labels or box.features):
         sdata_element = seb.data_element.attrib["element"]
         raise ValueError(f"Requirements text is empty for {sdata_element!r}")
     return box
@@ -370,15 +373,9 @@ def region_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
         seb.styleclass = f'{parent.styleclass or ""}Region'
 
     box = generic_factory(seb)
-    labels: list[diagram.Box | str] = []
-    for label in box.labels:
-        if isinstance(label, str):
-            labels.append(f"[{label}]")
-        else:
-            label.labels = [f"[{l}]" for l in label.labels]
-            labels.append(label)
+    if box.label:
+        box.label = f"[{box.label}]"
 
-    box.labels = labels
     box.minsize = (27, 21)
     box.size = diagram.Vector2D(box._size.x or 55, box._size.y or 41)
     return box
@@ -544,7 +541,7 @@ def _make_free_floating_label(
             ppos, psize, text, diagram.Vector2D(0, -1)
         )
     pos = ppos + (float(loc_elm.get("x", "0")), float(loc_elm.get("y", "0")))
-    return diagram.Box(pos, (0, 0), labels=[text], styleclass="BoxAnnotation")
+    return diagram.Box(pos, (0, 0), label=text, styleclass="BoxAnnotation")
 
 
 def _make_snapped_floating_label(
@@ -562,7 +559,7 @@ def _make_snapped_floating_label(
     if snapside.x == snapside.y == 0:
         raise ValueError("snapside must have one non-zero value")
     labelbox = diagram.Box(
-        (0, 0), (0, 0), labels=[text], styleclass="BoxAnnotation"
+        (0, 0), (0, 0), label=text, styleclass="BoxAnnotation"
     )
     lsize = labelbox.size
     labelbox.pos = (

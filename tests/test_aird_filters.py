@@ -97,7 +97,7 @@ def test_fex_exchangeitems_filter_is_applied(
 
     assert isinstance(fex_edge, diagram.Edge)
     assert len(fex_edge.labels) == 1
-    assert fex_edge.labels[0].labels == ["[ExchangeItem 1, Example]"]
+    assert fex_edge.labels[0].label == "[ExchangeItem 1, Example]"
 
 
 @pytest.mark.parametrize(
@@ -105,12 +105,12 @@ def test_fex_exchangeitems_filter_is_applied(
     [
         pytest.param(
             False,
-            ["Test fex [ExchangeItem 1, Example]"],
+            "Test fex [ExchangeItem 1, Example]",
             id="Keep Capella order",
         ),
         pytest.param(
             True,
-            ["Test fex [Example, ExchangeItem 1]"],
+            "Test fex [Example, ExchangeItem 1]",
             id="With sorted ExchangeItems",
         ),
     ],
@@ -128,4 +128,4 @@ def test_fex_exchangeitems_filter_with_name_is_applied(
 
     assert isinstance(fex_edge, diagram.Edge)
     assert len(fex_edge.labels) == 1
-    assert fex_edge.labels[0].labels == expected_labels
+    assert fex_edge.labels[0].label == expected_labels

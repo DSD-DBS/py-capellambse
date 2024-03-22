@@ -63,7 +63,8 @@ class Box:
         pos: diagram.Vec2ish,
         size: diagram.Vec2ish,
         *,
-        labels: cabc.MutableSequence[Box | str] | None = None,
+        label: str = "",
+        floating_labels: cabc.MutableSequence[Box] | None = None,
         description: str | None = None,
         uuid: str | None = None,
         parent: Box | None = None,
@@ -88,8 +89,10 @@ class Box:
             A Vector2D describing the box' size. If one or both of its
             components are 0, it/they will be calculated based on the
             Box' label text and contained children.
-        labels
+        label
             This box' label text.
+        floating_labels
+            Additional box labels.
         description
             Optional label text used only by Representation Links.
         uuid
@@ -128,7 +131,9 @@ class Box:
         self.size = diagram.Vector2D(*size)
         self.minsize = minsize
         self.maxsize = maxsize
-        self.labels: cabc.MutableSequence[Box | str] = labels or []
+        self.label = label
+        assert isinstance(self.label, str)
+        self.floating_labels: cabc.MutableSequence[Box] = floating_labels or []
         self.description: str | None = description
         self.collapsed: bool = collapsed
         self.features: cabc.MutableSequence[str] | None = features
@@ -182,7 +187,9 @@ class Box:
             self.size.x + margin if leftside else -text_extent.x - margin,
             (self.size.y - text_extent.y) // 2,
         )
-        self.labels = [type(self)(text_pos, text_extent, labels=[labeltext])]
+        self.floating_labels = [
+            type(self)(text_pos, text_extent, label=labeltext)
+        ]
 
     def snap_to_parent(self) -> None:
         """Snap this Box into the constraints set by its parent.
@@ -226,7 +233,7 @@ class Box:
                 newsize = diagram.Vector2D(0, 0)
                 LOGGER.warning(
                     "Box %r (%s) has zero size after snapping",
-                    self.labels,
+                    self.floating_labels,
                     self.uuid,
                 )
             self.size = diagram.Vector2D(
@@ -369,9 +376,8 @@ class Box:
             of children need to be adjusted separately.
         """
         self.pos += offset
-        for label in self.labels:
-            if isinstance(label, Box):
-                label.move(offset, children=children)
+        for label in self.floating_labels:
+            label.move(offset, children=children)
 
         if children:
             for child in self.children:
@@ -386,26 +392,25 @@ class Box:
         if not needwidth and not needheight:
             return self._size
 
-        for label in self.labels:
-            if isinstance(label, str):
-                pad_w, pad_h = self.padding * 2  # Pad on all four sides
+        if self.label:
+            pad_w, pad_h = self.padding * 2  # Pad on all four sides
 
-                # Fill in missing box size fields based on label text extent
-                label_extent = helpers.get_text_extent(
-                    (
-                        label + "\n" + "\n".join(self.features)
-                        if self.features
-                        else label
-                    ),
-                    self.maxsize.x if needwidth else width - pad_w,
+            # Fill in missing box size fields based on label text extent
+            label_extent = helpers.get_text_extent(
+                (
+                    self.label + "\n" + "\n".join(self.features)
+                    if self.features
+                    else self.label
+                ),
+                self.maxsize.x if needwidth else width - pad_w,
+            )
+
+            if needwidth:
+                width = math.ceil(label_extent[0]) + pad_w
+            if needheight:
+                height = min(
+                    self.maxsize.y, math.ceil(label_extent[1]) + pad_h
                 )
-
-                if needwidth:
-                    width = math.ceil(label_extent[0]) + pad_w
-                if needheight:
-                    height = min(
-                        self.maxsize.y, math.ceil(label_extent[1]) + pad_h
-                    )
         for child in self.children:
             if not child.hidden:
                 cbound = child.bounds
@@ -454,7 +459,7 @@ class Box:
         """Calculate the bounding box of this Box."""
         minx, miny = self.pos
         maxx, maxy = self.pos + self.size
-        for label in self.labels:
+        for label in self.floating_labels:
             if isinstance(label, Box) and not self.hidelabel:
                 minx = min(minx, label.pos.x)
                 miny = min(miny, label.pos.y)
@@ -502,15 +507,7 @@ class Box:
         self.snap_to_parent()
 
     def __str__(self) -> str:
-        labels = ""
-        for label in self.labels:
-            if isinstance(label, str):
-                labels = label
-            else:
-                for l in label.labels:
-                    assert isinstance(l, str)
-                labels = "\n".join(label.labels)  # type: ignore[arg-type]
-
+        labels = self.label or "\n".join(b.label for b in self.floating_labels)
         if labels:
             labels = " " + repr(labels)
         return (
@@ -524,7 +521,12 @@ class Box:
         return "".join(
             [
                 f"{type(self).__name__}({self.pos!r}, {self.size!r}",
-                f", labels={self.labels!r}" if self.labels else "",
+                f", label={self.label!r}",
+                (
+                    f", labels={self.floating_labels!r}"
+                    if self.floating_labels
+                    else ""
+                ),
                 f", uuid={self.uuid!r}" if self.uuid is not None else "",
                 (
                     f", parent=<UUID={self.parent.uuid}>"
@@ -733,7 +735,7 @@ class Edge(diagram.Vec2List):
     def __str__(self) -> str:
         numpoints = len(self.points)
         if self.labels:
-            label = self.labels[0].labels or ""
+            label = self.labels[0].floating_labels or ""
         else:
             label = ""
         return (

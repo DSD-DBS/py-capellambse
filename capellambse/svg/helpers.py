@@ -30,7 +30,7 @@ def check_for_horizontal_overflow(
         label_margin = 0
     else:
         label_margin = width - label_margin
-    return (lines, label_margin, max_text_width)
+    return (lines, label_margin, text_width)
 
 
 def check_for_vertical_overflow(

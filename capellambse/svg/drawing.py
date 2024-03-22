@@ -40,7 +40,7 @@ LabelDict = t.TypedDict(
         "y": float,
         "width": float,
         "height": float,
-        "text": str | list[str],
+        "text": str,
         "class": str,
     },
     total=False,
@@ -173,7 +173,7 @@ class Drawing:
                 )
 
         if labels:
-            y_margin = 0
+            y_margin = 1
             if children or class_ in decorations.always_top_label:
                 y_margin = 3
 
@@ -305,7 +305,7 @@ class Drawing:
         assert isinstance(first_label["y"], (int, float))
         assert isinstance(first_label["width"], (int, float))
         assert isinstance(first_label["height"], (int, float))
-        assert isinstance(first_label.get("text", ""), (str, list))
+        assert isinstance(first_label["text"], str)
         textattrs = {
             "text": "",
             "insert": (first_label["x"], first_label["y"]),
@@ -511,15 +511,15 @@ class Drawing:
         height_: int | float,
         context_: cabc.Sequence[str] = (),
         parent_: str | None = None,
-        labels_: list[LabelDict] | None = None,
+        label_: str = "",
+        floating_labels_: list[LabelDict] | None = None,
         id_: str | None = None,
         class_: str,
         obj_style: style.Styling,
         text_style: style.Styling,
-        **kw: t.Any,
     ):
-        del kw  # Dismiss additional info from json
-        assert isinstance(labels_, (list, dict, type(None)))
+        del label_  # Symbol labels always in floating_labels!
+        assert isinstance(floating_labels_, (list, dict, type(None)))
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
         if (
@@ -537,7 +537,7 @@ class Drawing:
                 class_=class_,
                 context_=context_,
                 obj_style=obj_style,
-                labels=labels_,
+                labels=floating_labels_,
                 id_=id_,
             )
         else:
@@ -554,15 +554,15 @@ class Drawing:
             )
 
         self.__drawing.add(grp)
-        if labels_:
-            for label in labels_:
+        if floating_labels_:
+            for label in floating_labels_:
                 label["class"] = "Annotation"
 
             self._draw_label(
                 LabelBuilder(
                     min(decorations.max_label_width, width_),
                     math.inf,
-                    labels_,
+                    floating_labels_,
                     grp or self.__drawing.elements[-1],
                     labelstyle=text_style,
                     class_=class_,
@@ -582,7 +582,8 @@ class Drawing:
         context_: cabc.Sequence[str] = (),
         children_: cabc.Sequence[str] = (),
         features_: cabc.Sequence[str] = (),
-        labels_: list[str | LabelDict] | None = None,
+        label_: str = "",
+        floating_labels_: list[LabelDict] | None = None,
         description_: str | None = None,
         id_: str,
         class_: str,
@@ -595,21 +596,21 @@ class Drawing:
         size = (width_, height_)
         rect_style = {"text_style": text_style, "obj_style": obj_style}
         labels: list[LabelDict] = []
-        for label in labels_ or []:
-            if isinstance(label, str):
-                labels.append(
-                    {
-                        "x": x_,
-                        "y": y_,
-                        "width": width_,
-                        "height": height_,
-                        "text": label,
-                        "class": class_ or "Box",
-                    }
-                )
-            else:
-                label["class"] = class_ or "Box"
-                labels.append(label)
+        if label_:
+            labels.append(
+                {
+                    "x": x_,
+                    "y": y_,
+                    "width": width_,
+                    "height": height_,
+                    "text": label_,
+                    "class": class_ or "Box",
+                }
+            )
+
+        for label in floating_labels_ or []:
+            label["class"] = class_ or "Box"
+            labels.append(label)
 
         grp = self._add_rect(
             pos,
@@ -632,35 +633,34 @@ class Drawing:
         y_: int | float,
         width_: int | float,
         height_: int | float,
-        labels_: list[LabelDict],
+        label_: str,
+        floating_labels_: list[LabelDict],
         id_: str,
         class_: str,
         context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         text_style: style.Styling,
-        **kw: t.Any,
     ) -> container.Group:
-        del kw
-
         grp = self._draw_box(
             x_=x_,
             y_=y_,
             width_=width_,
             height_=height_,
+            label_=label_,
             id_=id_,
             class_=class_,
             context_=context_,
             obj_style=obj_style,
             text_style=text_style,
         )
-        for label in labels_:
+        for label in floating_labels_:
             label["class"] = "Annotation"
 
         self._draw_label(
             LabelBuilder(
                 width_,
                 height_,
-                labels_,
+                floating_labels_,
                 grp or self.__drawing.elements[-1],
                 labelstyle=text_style,
                 class_=class_,
@@ -783,7 +783,7 @@ class Drawing:
     ) -> None:
         linestyle = style.Styling(
             self.diagram_class,
-            "Edge",
+            "Edge.Debug",
             stroke="rgb(239, 41, 41)",
             **{"stroke-dasharray": "5"},
         )
@@ -918,38 +918,26 @@ def render_hbounded_lines(
 ) -> LinesData:
     """Return Lines data to render a label."""
     lines_to_render: list[str] = []
-    max_label_width = 0.0
     for label in builder.labels:
-        if isinstance(label["text"], str):
-            texts: list[str] = [label["text"]]
-        else:
-            texts = label["text"]
-
-        for text in texts:
-            (
-                lines,
-                label_margin,
-                max_text_width,
-            ) = helpers.check_for_horizontal_overflow(
-                text,
-                builder.rect_width,
-                decorations.icon_padding if render_icon else 0,
-                builder.icon_size if render_icon else 0,
-                builder.alignment,
-            )
-            lines_to_render += helpers.check_for_vertical_overflow(
-                lines, builder.rect_height, max_text_width
-            )
-            max_label_width = max(max_text_width, max_label_width)
+        (
+            lines,
+            label_margin,
+            max_text_width,
+        ) = helpers.check_for_horizontal_overflow(
+            label["text"],
+            builder.rect_width,
+            decorations.icon_padding if render_icon else 0,
+            builder.icon_size if render_icon else 0,
+            builder.alignment,
+        )
+        lines_to_render += helpers.check_for_vertical_overflow(
+            lines, builder.rect_height, max_text_width
+        )
 
     line_height = max(j for _, j in map(chelpers.extent_func, lines_to_render))
     text_height = line_height * len(lines_to_render)
-    max_line_width = max(
-        w for w, _ in map(chelpers.extent_func, lines_to_render)
-    )
-    # assert max_label_width >= max_line_width
     return LinesData(
-        lines_to_render, line_height, text_height, label_margin, max_line_width
+        lines_to_render, line_height, text_height, label_margin, max_text_width
     )
 
 
@@ -960,17 +948,25 @@ def get_label_position(
     icon_size = (builder.icon_size + decorations.icon_padding) * builder.icon
     assert builder.labels
     assert lines
+
     for label in builder.labels:
+        label_height = chelpers.extent_func(label["text"])[1]
+        dominant_baseline_adjust = label_height / 2
         if builder.text_anchor == "start":
             label["x"] += lines.margin + icon_size
         else:
             label["x"] += (label["width"] + icon_size) / 2
 
-        dominant_baseline_adjust = 0.0
-        if label["text"]:
-            label_height = chelpers.extent_func(label["text"][0])[1]
-            dominant_baseline_adjust = label_height / 2
         label["y"] += dominant_baseline_adjust + builder.y_margin
+
+    if DEBUG:
+        builder.group.add(
+            shapes.Circle(
+                center=(builder.labels[0]["x"], builder.labels[0]["y"]),
+                r=3,
+                fill="red",
+            ),
+        )
     return diagram.Vector2D(builder.labels[0]["x"], builder.labels[0]["y"])
 
 
@@ -982,12 +978,24 @@ def get_label_icon_position(
     icon_y = label["y"] - builder.icon_size / 2
     if lines.text_height > lines.line_height:
         offset = lines.text_height if len(lines) > 2 else lines.line_height
-        icon_y += offset / 3
+        icon_y += offset / 2.75
         if label["class"] == "Annotation":
             icon_y -= decorations.icon_padding
 
     assert lines.min_x is not None
-    icon_x = lines.min_x - builder.icon_size - decorations.icon_padding * 2
+    icon_x = lines.min_x - builder.icon_size - decorations.icon_padding
     if builder.text_anchor == "middle":
         icon_x -= lines.max_line_width / 3
+
+    if label["class"] == "Annotation":
+        icon_x -= decorations.icon_padding
+
+    if DEBUG:
+        builder.group.add(
+            shapes.Circle(
+                center=(icon_x, icon_y),
+                r=3,
+                fill="blue",
+            ),
+        )
     return diagram.Vector2D(icon_x, icon_y)

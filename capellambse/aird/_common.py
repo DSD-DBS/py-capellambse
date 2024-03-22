@@ -112,13 +112,9 @@ class StackingBox(diagram.Box):
         except ValueError:
             width = 0
         pad_x, pad_y = self.padding * 2
-        label = self.labels[0]
-        if isinstance(label, str):
-            label_extent = helpers.get_text_extent(
-                label, width - pad_x if width else math.inf
-            )
-        else:
-            label_extent = (0, 0)
+        label_extent = helpers.get_text_extent(
+            self.label, width - pad_x if width else math.inf
+        )
         width = width or label_extent[0] + pad_x
         if self.features:
             features_height = helpers.get_text_extent(

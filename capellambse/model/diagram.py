@@ -380,7 +380,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         err_box = diagram.Box(
             (200, 0),
             (350, 0),
-            labels=[err_name],
+            label=err_name,
             uuid="error",
             styleclass="Note",
             styleoverrides={
@@ -392,7 +392,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         info_box = diagram.Box(
             (200, err_box.pos.y + err_box.size.y + 10),
             (350, 0),
-            labels=[err_msg],
+            label=err_msg,
             uuid="info",
             styleclass="Note",
         )
@@ -400,7 +400,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         trace_box = diagram.Box(
             (0, info_box.pos.y + info_box.size.y + 10),
             (750, 0),
-            labels=[err_trace],
+            label=err_trace,
             uuid="trace",
             styleclass="Note",
         )

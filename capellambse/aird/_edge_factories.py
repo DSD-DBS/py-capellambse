@@ -386,7 +386,7 @@ def _construct_labels(
             C.CenterAnchoredBox(
                 labelanchor + label_pos,
                 label_size,
-                labels=[labeltext],
+                label=labeltext,
                 styleclass="EdgeAnnotation",
             )
         )
@@ -489,7 +489,7 @@ def state_transition_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
             )
             label = f"{label} / {effects_str}"
 
-        edge.labels[0].labels = [label]
+        edge.labels[0].label = label
     return edge
 
 
@@ -502,7 +502,7 @@ def sequence_link_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     edge = generic_factory(seb)
     guard = _guard_condition(seb, "condition")
     if guard and edge.labels:
-        edge.labels[0].labels = [guard]
+        edge.labels[0].label = guard
     return edge
 
 
