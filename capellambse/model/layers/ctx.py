@@ -314,6 +314,13 @@ c.set_accessor(
         SystemFunction, "realized_operational_activities", aslist=c.ElementList
     ),
 )
+c.set_accessor(
+    SystemFunction,
+    "involved_in",
+    c.ReferenceSearchingAccessor(
+        Capability, "involved_functions", aslist=c.ElementList
+    ),
+)
 c.set_self_references(
     (MissionPkg, "packages"),
     (SystemComponent, "components"),
