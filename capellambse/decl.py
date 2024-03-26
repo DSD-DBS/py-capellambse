@@ -219,6 +219,17 @@ def _operate_modify(
     parent: capellambse.ModelObject,
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
+    import warnings
+
+    warnings.warn("The 'modify' key has been deprecated, use 'set' instead")
+    yield from _operate_set(promises, parent, modifications)
+
+
+def _operate_set(
+    promises: dict[Promise, capellambse.ModelObject],
+    parent: capellambse.ModelObject,
+    modifications: dict[str, t.Any],
+) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in modifications.items():
         if isinstance(value, (list, Promise, _ObjectFinder)):
             try:
@@ -264,7 +275,7 @@ def _operate_sync(
                 if sync := obj.pop("sync", None):
                     yield from _operate_sync(promises, candidate, sync)
                 if mods := obj.pop("set", None):
-                    yield from _operate_modify(promises, candidate, mods)
+                    yield from _operate_set(promises, candidate, mods)
                 if ext := obj.pop("extend", None):
                     yield from _operate_extend(promises, candidate, ext)
                 promise: str | Promise | None = obj.get("promise_id")
@@ -382,6 +393,7 @@ _OPERATIONS = collections.OrderedDict(
         ("create", _operate_create),
         ("extend", _operate_extend),
         ("modify", _operate_modify),
+        ("set", _operate_set),
         ("sync", _operate_sync),
         ("delete", _operate_delete),
     )
