@@ -260,10 +260,18 @@ def _operate_sync(
             except _NoObjectFoundError:
                 candidate = None
 
+            if obj.get("set"):
+                import warnings
+
+                warnings.warn(
+                    "The `set` key in a sync object is deprecated. "
+                    "Use `modify` instead.",
+                    DeprecationWarning,
+                )
             if candidate is not None:
                 if sync := obj.pop("sync", None):
                     yield from _operate_sync(promises, candidate, sync)
-                if mods := obj.pop("set", None):
+                if mods := (obj.pop("set", {}) | obj.pop("modify", {})):
                     yield from _operate_modify(promises, candidate, mods)
                 if ext := obj.pop("extend", None):
                     yield from _operate_extend(promises, candidate, ext)
@@ -274,7 +282,10 @@ def _operate_sync(
                     yield (promise, candidate)
             else:
                 newobj_props = (
-                    find_args | obj.pop("set", {}) | obj.pop("extend", {})
+                    find_args
+                    | obj.pop("set", {})
+                    | obj.pop("modify", {})
+                    | obj.pop("extend", {})
                 )
                 if "promise_id" in obj:
                     newobj_props["promise_id"] = obj.pop("promise_id")
