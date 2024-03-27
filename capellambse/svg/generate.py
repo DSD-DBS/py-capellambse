@@ -65,8 +65,9 @@ class SVGDiagram:
         self,
         metadata: DiagramMetadata,
         objects: cabc.Sequence[ContentsDict],
+        params: dict[str, t.Any] | None = None,
     ) -> None:
-        self.drawing = Drawing(metadata)
+        self.drawing = Drawing(metadata, **(params or {}))
         for obj in objects:
             self.draw_object(obj)
 
@@ -86,7 +87,7 @@ class SVGDiagram:
         """
         jsondict = json.loads(jsonstring)
         metadata = DiagramMetadata.from_dict(jsondict)
-        return cls(metadata, jsondict["contents"])
+        return cls(metadata, jsondict["contents"], jsondict.get("params"))
 
     @classmethod
     def from_json_path(cls, path: str | os.PathLike) -> SVGDiagram:

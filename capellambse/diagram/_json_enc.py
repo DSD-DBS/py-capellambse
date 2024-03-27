@@ -47,6 +47,7 @@ class DiagramJSONEncoder(json.JSONEncoder):
                 _intround(o.viewport.size.y) if o.viewport is not None else 0
             ),
             "contents": [e for e in o if not e.hidden],
+            "params": o.params,
         }
 
     @staticmethod
@@ -65,10 +66,13 @@ class DiagramJSONEncoder(json.JSONEncoder):
             "y": _intround(o.pos.y),
             "width": _intround(o.size.x),
             "height": _intround(o.size.y),
+            "label": o.label,  # type: ignore[has-type]
             "context": sorted(o.context),
         }
-        if o.label is not None and not o.hidelabel:
-            jsonobj["label"] = _encode_label(o.label)
+        if o.floating_labels is not None and not o.hidelabel:
+            jsonobj["floating_labels"] = [
+                _encode_label(label) for label in o.floating_labels
+            ]
         if o.description is not None:
             jsonobj["description"] = o.description
         if o.styleoverrides:
@@ -122,7 +126,7 @@ def _encode_label(o: diagram.Box | str) -> object:
         "y": _intround(o.pos.y),
         "width": _intround(o.size.x),
         "height": _intround(o.size.y),
-        "text": o.label,
+        "text": o.label,  # type: ignore[has-type]
     }
 
 

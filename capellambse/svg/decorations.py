@@ -16,6 +16,8 @@ icon_padding = 2
 """Default icon padding (left/right side)."""
 feature_space = 24
 """Default margins/padding (top/bot and left/right) for feature text."""
+max_label_width = 1500
+"""Maximum width for a label."""
 
 function_ports = {"FIP", "FOP"}
 directed_component_ports = {"CP_IN", "CP_OUT"}

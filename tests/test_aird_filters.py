@@ -101,7 +101,7 @@ def test_fex_exchangeitems_filter_is_applied(
 
 
 @pytest.mark.parametrize(
-    "sort,expected_label",
+    "sort,expected_labels",
     [
         pytest.param(
             False,
@@ -116,7 +116,7 @@ def test_fex_exchangeitems_filter_is_applied(
     ],
 )
 def test_fex_exchangeitems_filter_with_name_is_applied(
-    model_5_2: capellambse.MelodyModel, sort: bool, expected_label: str
+    model_5_2: capellambse.MelodyModel, sort: bool, expected_labels: str
 ) -> None:
     diag: model_.diagram.Diagram = model_5_2.diagrams.by_name(
         EX_ITEMS_FILTER_DIAG
@@ -128,4 +128,4 @@ def test_fex_exchangeitems_filter_with_name_is_applied(
 
     assert isinstance(fex_edge, diagram.Edge)
     assert len(fex_edge.labels) == 1
-    assert fex_edge.labels[0].label == expected_label
+    assert fex_edge.labels[0].label == expected_labels

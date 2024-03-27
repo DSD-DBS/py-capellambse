@@ -24,15 +24,13 @@ def check_for_horizontal_overflow(
     lines = helpers.word_wrap(text, max_text_width)
     text_width = max(w for w, _ in map(helpers.extent_func, lines))
     label_width = text_width + icon_size + 2 * icon_padding
-    assert text_width <= max_text_width
-    assert label_width <= width
     if alignment == "center":
         label_margin = (width - label_width) / 2
     elif alignment == "left":
         label_margin = 0
     else:
         label_margin = width - label_margin
-    return (lines, label_margin, max_text_width)
+    return (lines, label_margin, text_width)
 
 
 def check_for_vertical_overflow(

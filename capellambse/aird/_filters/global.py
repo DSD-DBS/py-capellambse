@@ -58,17 +58,16 @@ def show_name_and_exchangeitems_fex(
         if not isinstance(obj, diagram.Edge):
             continue
 
-        label = _get_primary_edge_label(obj, "FunctionalExchange")
-        if label is None:
+        label_box = _get_primary_edge_label(obj, "FunctionalExchange")
+        if label_box is None:
             continue
 
-        assert isinstance(label.label, str)
         sort_items = args.params.get("sorted_exchangedItems", False)
         ex_items = _stringify_exchange_items(
             obj, args.melodyloader, sort_items
         )
         if ex_items:
-            label.label += " " + ex_items
+            label_box.label += " " + ex_items
 
 
 @global_filter("show.exchange.items.filter")
@@ -81,16 +80,16 @@ def show_exchangeitems_fex(
         if not isinstance(obj, diagram.Edge):
             continue
 
-        label = _get_primary_edge_label(obj, "FunctionalExchange")
-        if label is None:
+        label_box = _get_primary_edge_label(obj, "FunctionalExchange")
+        if label_box is None:
             continue
 
-        assert isinstance(label.label, str)
         sort_items = args.params.get("sorted_exchangedItems", False)
         exchange_items_label = _stringify_exchange_items(
             obj, args.melodyloader, sort_items
         )
-        label.label = exchange_items_label or label.label
+        if exchange_items_label:
+            label_box.label = exchange_items_label
 
 
 @global_filter("Show Exchange Items on Component Exchanges")
@@ -102,8 +101,8 @@ def show_exchangeitems_cex(
     for obj in args.target_diagram:
         if not isinstance(obj, diagram.Edge):
             continue
-        label = _get_primary_edge_label(obj, "ComponentExchange")
-        if label is None:
+        label_box = _get_primary_edge_label(obj, "ComponentExchange")
+        if label_box is None:
             continue
 
         assert obj.uuid is not None
@@ -122,7 +121,7 @@ def show_exchangeitems_cex(
                 alloc_attr="exchangedItems",
                 melodyloader=args.melodyloader,
             )[1]
-        label.label = ", ".join(items)
+        label_box.label = ", ".join(items)
 
 
 @global_filter(
@@ -136,8 +135,8 @@ def show_exchangeitems_cex_no_fex(
     for obj in args.target_diagram:
         if not isinstance(obj, diagram.Edge):
             continue
-        label = _get_primary_edge_label(obj, "ComponentExchange")
-        if label is None:
+        label_box = _get_primary_edge_label(obj, "ComponentExchange")
+        if label_box is None:
             continue
 
         assert obj.uuid is not None
@@ -146,7 +145,7 @@ def show_exchangeitems_cex_no_fex(
             alloc_attr="convoyedInformations",
             melodyloader=args.melodyloader,
         )
-        label.label = ", ".join(items)
+        label_box.label = ", ".join(items)
 
 
 @global_filter("Hide Component Ports without Exchanges")
@@ -242,6 +241,4 @@ def _get_primary_edge_label(
         return None
     if not obj.labels:
         return None
-    label = obj.labels[0]
-    assert isinstance(label, diagram.Box)
-    return label
+    return obj.labels[0]

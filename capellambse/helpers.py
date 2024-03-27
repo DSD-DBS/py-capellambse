@@ -3,7 +3,6 @@
 """Miscellaneous utility functions used throughout the modules."""
 from __future__ import annotations
 
-import collections
 import collections.abc as cabc
 import contextlib
 import errno
@@ -225,8 +224,8 @@ def load_font(fonttype: str, size: int) -> ImageFont.FreeTypeFont:
 @functools.lru_cache(maxsize=256)
 def extent_func(
     text: str,
-    fonttype: str = "segoeui.ttf",
-    size: int = 8,
+    fonttype: str = "OpenSans-Regular.ttf",
+    size: int = 12,
 ) -> tuple[float, float]:
     """Calculate the display size of the given text.
 
@@ -255,6 +254,8 @@ def extent_func(
 def get_text_extent(
     text: str,
     width: float | int = math.inf,
+    fonttype: str = "OpenSans-Regular.ttf",
+    fontsize: int = 12,
 ) -> tuple[float, float]:
     """Calculate the bounding box size of ``text`` after line wrapping.
 
@@ -264,6 +265,10 @@ def get_text_extent(
         Text to calculate the size for.
     width
         Maximum line length (px).
+    fonttype
+        The font type / face
+    fontsize
+        Font size (px)
 
     Returns
     -------
@@ -272,7 +277,8 @@ def get_text_extent(
     height
         The height of the text after word wrapping (px).
     """
-    lines = [*map(extent_func, word_wrap(text, width))]
+    ex_func = functools.partial(extent_func, fonttype=fonttype, size=fontsize)
+    lines = [*map(ex_func, word_wrap(text, width))]
     line_height = max(l[1] for l in lines)
     return max(l[0] for l in lines), line_height * len(lines)
 
@@ -327,7 +333,8 @@ def word_wrap(text: str, width: float | int) -> list[str]:
     """Perform word wrapping for proportional fonts.
 
     Whitespace at the beginning of input lines is preserved, but other
-    whitespace is collapsed to single spaces.
+    whitespace is collapsed to single spaces. Words are kept as a whole,
+    possibly leading to exceeding width bound.
 
     Parameters
     ----------
@@ -342,52 +349,39 @@ def word_wrap(text: str, width: float | int) -> list[str]:
         A list of strings, one for each line, after wrapping.
     """
 
-    def rejoin(words: cabc.Iterable[str], start: int, stop: int | None) -> str:
-        return " ".join(itertools.islice(words, start, stop))
-
-    def splitline(line: str) -> list[str]:
-        match = re.search(r"^\s*", line)
-        assert match is not None
+    def split_into_lines(line: str, width: float | int) -> list[str]:
         words = line.split()
-
-        if words:
-            words[0] = match.group(0) + words[0]
-        return words
-
-    output_lines = []
-    input_lines = collections.deque(text.splitlines())
-    while input_lines:
-        words = collections.deque(splitline(input_lines.popleft()))
         if not words:
-            output_lines.append("")
-            continue
+            return [line]
 
-        words_count = len(words)
-        while (
-            extent_func(rejoin(words, 0, words_count))[0] > width
-            and words_count > 0
-        ):
-            words_count -= 1
+        current_line = ""
+        lines = []
+        for word in words:
+            test_line = word if not current_line else f"{current_line} {word}"
+            if extent_func(test_line)[0] <= width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+        return lines
 
-        if words_count > 0:
-            output_lines.append(rejoin(words, 0, words_count))
-            if words_count < len(words):
-                input_lines.appendleft(rejoin(words, words_count, None))
+    special_chars = ("•", "-")
+    output_lines = []
+    input_lines = text.splitlines()
+    for i, line in enumerate(input_lines):
+        leading_whitespace = ""
+        if i == 0:
+            leading_whitespace = line[: len(line) - len(line.lstrip())]
+        elif line.lstrip().startswith(special_chars):
+            leading_whitespace = " "
 
-        else:
-            word = words.popleft()
-            letters_count = len(word)
-            while (
-                extent_func(word[:letters_count])[0] > width
-                and letters_count > 1
-            ):
-                letters_count -= 1
-
-            output_lines.append(word[:letters_count])
-            if letters_count < len(word):
-                words.appendleft(word[letters_count:])
-
-            input_lines.appendleft(" ".join(words))
+        wrapped_lines = split_into_lines(line.lstrip(), width)
+        if wrapped_lines:
+            output_lines.append(f"{leading_whitespace}{wrapped_lines[0]}")
+            output_lines.extend(wrapped_lines[1:])
 
     return output_lines or [""]
 
