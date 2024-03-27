@@ -1,0 +1,50 @@
+capellambse.pvmt package
+========================
+
+.. automodule:: capellambse.pvmt
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.pvmt.core module
+----------------------------
+
+.. automodule:: capellambse.pvmt.core
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.pvmt.exceptions module
+----------------------------------
+
+.. automodule:: capellambse.pvmt.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.pvmt.model module
+-----------------------------
+
+.. automodule:: capellambse.pvmt.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.pvmt.types module
+-----------------------------
+
+.. automodule:: capellambse.pvmt.types
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.pvmt.validation module
+----------------------------------
+
+.. automodule:: capellambse.pvmt.validation
+   :members:
+   :undoc-members:
+   :show-inheritance:

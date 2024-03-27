@@ -1,0 +1,34 @@
+capellambse.model.common package
+================================
+
+.. automodule:: capellambse.model.common
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.model.common.accessors module
+-----------------------------------------
+
+.. automodule:: capellambse.model.common.accessors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.common.element module
+---------------------------------------
+
+.. automodule:: capellambse.model.common.element
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.common.properties module
+------------------------------------------
+
+.. automodule:: capellambse.model.common.properties
+   :members:
+   :undoc-members:
+   :show-inheritance:

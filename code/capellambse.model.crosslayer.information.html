@@ -1,0 +1,1240 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="capellambse.model.layers package" href="capellambse.model.layers.html" /><link rel="prev" title="capellambse.model.crosslayer package" href="capellambse.model.crosslayer.html" />
+
+    <!-- Generated with Sphinx 7.2.6 and Furo 2024.01.29 -->
+        <title>capellambse.model.crosslayer.information package - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/audit-events.html">Audit events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">9. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">10. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">11. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">py-capellambse</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="capellambse.html">capellambse package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.common.html">capellambse.model.common package</a></li>
+<li class="toctree-l4 current has-children"><a class="reference internal" href="capellambse.model.crosslayer.html">capellambse.model.crosslayer package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of capellambse.model.crosslayer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l5 current current-page"><a class="current reference internal" href="#">capellambse.model.crosslayer.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html">capellambse.model.layers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-capellambse.model.crosslayer.information">
+<span id="capellambse-model-crosslayer-information-package"></span><h1>capellambse.model.crosslayer.information package<a class="headerlink" href="#module-capellambse.model.crosslayer.information" title="Link to this heading">#</a></h1>
+<p>Objects and relations for information capture and data modelling.</p>
+<p>Information objects inheritance tree (taxonomy):</p>
+<img alt="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY3Vyc29yPSJwb2ludGVyIiBmb250LWZhbWlseT0iJ09wZW4gU2FucycsJ1NlZ29lIFVJJyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjExcHgiIGhlaWdodD0iMTI0MSIgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIHZlcnNpb249IjEuMSIgdmlld0JveD0iLTEwIC0xMCA3NzAgMTI0MSIgd2lkdGg9Ijc3MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpldj0iaHR0cDovL3d3dy53My5vcmcvMjAwMS94bWwtZXZlbnRzIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGRlZnMgLz48cmVjdCBmaWxsPSIjZmZmIiBoZWlnaHQ9IjEyNDEiIHN0cm9rZT0ibm9uZSIgd2lkdGg9Ijc3MCIgeD0iLTEwIiB5PSItMTAiIC8+PGcgY2xhc3M9IkJveCBOb3RlIiBpZD0iZXJyb3IiPjxyZWN0IGNsYXNzPSJOb3RlIiBmaWxsPSIjRkYwMDAwIiBoZWlnaHQ9Ijg1IiBzdHJva2U9IiNGRkNDNjYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjM1MCIgeD0iMjAwLjUiIHk9IjAuNSIgLz48dGV4dCBjbGFzcz0iTm90ZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjAwIiB5PSIwIj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEyLjI4NTcxNDI4NTcxNDI4NiI+QW4gZXJyb3Igb2NjdXJlZCB3aGlsZSByZW5kZXJpbmcgZGlhZ3JhbTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMC44NTcxNDI4NTcxNDI4NiI+J1tDREJdIEluZm9ybWF0aW9uIFtUYXhvbm9teV0nPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ5LjQyODU3MTQyODU3MTQzIj4oaW4gc3RhZ2UgJ3BhcnNlJyk8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBOb3RlIiBpZD0iaW5mbyI+PHJlY3QgY2xhc3M9Ik5vdGUiIGZpbGw9IiNGRkZGQ0IiIGhlaWdodD0iNjYiIHN0cm9rZT0iI0ZGQ0M2NiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMzUwIiB4PSIyMDAuNSIgeT0iOTUuNSIgLz48dGV4dCBjbGFzcz0iTm90ZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjAwIiB5PSI5NSI+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDcuMjg1NzE0Mjg1NzE0MjkiPlBsZWFzZSByZXBvcnQgdGhpcyBlcnJvciB0byB5b3VyIHRvb2xzIGFuZDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMjUuODU3MTQyODU3MTQyODYiPm1ldGhvZHMgdGVhbSwgYW5kIGF0dGFjaCB0aGUgZm9sbG93aW5nPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE0NC40Mjg1NzE0Mjg1NzE0NCI+aW5mb3JtYXRpb246PC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggTm90ZSIgaWQ9InRyYWNlIj48cmVjdCBjbGFzcz0iTm90ZSIgZmlsbD0iI0ZGRkZDQiIgaGVpZ2h0PSIxMDUwIiBzdHJva2U9IiNGRkNDNjYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9Ijc1MCIgeD0iMC41IiB5PSIxNzEuNSIgLz48dGV4dCBjbGFzcz0iTm90ZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMCIgeT0iMTcxIj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE4My4yODU3MTQyODU3MTQyOCI+VHJhY2ViYWNrIChtb3N0IHJlY2VudCBjYWxsIGxhc3QpOjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMDEuODU3MTQyODU3MTQyODYiPkZpbGUgIi9ob21lL3J1bm5lci93b3JrL3B5LWNhcGVsbGFtYnNlL3B5LWNhcGVsbGFtYnNlL2NhcGVsbGFtYnNlL21vZGVsL2RpYWdyYW0ucHkiLDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMjAuNDI4NTcxNDI4NTcxNDQiPmxpbmUgNDM3LCBpbiBfX3JlbmRlcl9mcmVzaDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMzkuMDAwMDAwMDAwMDAwMDMiPnNlbGYuX3JlbmRlciA9IHNlbGYuX2NyZWF0ZV9kaWFncmFtKHBhcmFtcyk8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjU3LjU3MTQyODU3MTQyODYiPl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl48L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjc2LjE0Mjg1NzE0Mjg1NzE3Ij5GaWxlICIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9tb2RlbC9kaWFncmFtLnB5Iiw8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjk0LjcxNDI4NTcxNDI4NTciPmxpbmUgNTQ3LCBpbiBfY3JlYXRlX2RpYWdyYW08L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzEzLjI4NTcxNDI4NTcxNDMiPnJldHVybiBhaXJkLnBhcnNlX2RpYWdyYW0oc2VsZi5fbW9kZWwuX2xvYWRlciwgc2VsZi5fZWxlbWVudCwgKipwYXJhbXMpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMzMS44NTcxNDI4NTcxNDI4MyI+Xl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNTAuNDI4NTcxNDI4NTcxNCI+RmlsZSAiL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fX2luaXRfXy5weSIsIGxpbmU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzY4Ljk5OTk5OTk5OTk5OTk0Ij4yNTMsIGluIHBhcnNlX2RpYWdyYW08L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzg3LjU3MTQyODU3MTQyODUiPmVsbSA9IF9lbGVtZW50X2Zyb21feG1sKDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MDYuMTQyODU3MTQyODU3MDUiPl5eXl5eXl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MjQuNzE0Mjg1NzE0Mjg1NiI+RmlsZSAiL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fX2luaXRfXy5weSIsIGxpbmU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDQzLjI4NTcxNDI4NTcxNDE2Ij4yODcsIGluIF9lbGVtZW50X2Zyb21feG1sPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ2MS44NTcxNDI4NTcxNDI3Ij5yZXR1cm4gZmFjdG9yeShlYmQpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ4MC40Mjg1NzE0Mjg1NzEzIj5eXl5eXl5eXl5eXl48L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDk4Ljk5OTk5OTk5OTk5OTgzIj5GaWxlICIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9haXJkL19zZW1hbnRpYy5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUxNy41NzE0Mjg1NzE0Mjg0Ij5saW5lIDk2LCBpbiBmcm9tX3htbDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MzYuMTQyODU3MTQyODU3Ij5yZXR1cm4gZHJhd3R5cGUoc2ViKTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1NTQuNzE0Mjg1NzE0Mjg1NiI+Xl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1NzMuMjg1NzE0Mjg1NzE0MSI+RmlsZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1OTEuODU3MTQyODU3MTQyNyI+Ii9ob21lL3J1bm5lci93b3JrL3B5LWNhcGVsbGFtYnNlL3B5LWNhcGVsbGFtYnNlL2NhcGVsbGFtYnNlL2FpcmQvX2VkZ2VfZmFjdG9yaWVzLnB5Iiw8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNjEwLjQyODU3MTQyODU3MTIiPmxpbmUgNTk2LCBpbiBhc3NvY2lhdGlvbl9mYWN0b3J5PC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjYyOC45OTk5OTk5OTk5OTk4Ij5lZGdlID0gZ2VuZXJpY19mYWN0b3J5KHNlYik8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNjQ3LjU3MTQyODU3MTQyODMiPl5eXl5eXl5eXl5eXl5eXl5eXl5ePC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjY2Ni4xNDI4NTcxNDI4NTY5Ij5GaWxlPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjY4NC43MTQyODU3MTQyODU0Ij4iL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fZWRnZV9mYWN0b3JpZXMucHkiLDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI3MDMuMjg1NzE0Mjg1NzE0Ij5saW5lIDY1LCBpbiBnZW5lcmljX2ZhY3Rvcnk8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzIxLjg1NzE0Mjg1NzE0MjUiPnNuYXB0YXJnZXQoZWRnZSwgLTEsIC0yLCB0YXJnZXRwb3J0LCBub3QgZWRnZS5oaWRkZW4sIHJvdXRpbmdzdHlsZSk8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzQwLjQyODU3MTQyODU3MTEiPkZpbGU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzU4Ljk5OTk5OTk5OTk5OTciPiIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9haXJkL19lZGdlX2ZhY3Rvcmllcy5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijc3Ny41NzE0Mjg1NzE0MjgyIj5saW5lIDI5MywgaW4gc25hcHRhcmdldDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI3OTYuMTQyODU3MTQyODU2OCI+c25hcF9vYmxpcXVlKHBvaW50cywgaSwgbmV4dF9pLCB0YXJnZXQpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjgxNC43MTQyODU3MTQyODUzIj5GaWxlPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjgzMy4yODU3MTQyODU3MTM5Ij4iL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fZWRnZV9mYWN0b3JpZXMucHkiLDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI4NTEuODU3MTQyODU3MTQyNCI+bGluZSAzMDMsIGluIHNuYXBfb2JsaXF1ZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI4NzAuNDI4NTcxNDI4NTcxIj5wb2ludHNbaV0gPSB0YXJnZXQudmVjdG9yX3NuYXAoPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijg4OC45OTk5OTk5OTk5OTk1Ij5eXl5eXl5eXl5eXl5eXl5eXl5ePC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjkwNy41NzE0Mjg1NzE0MjgxIj5GaWxlPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjkyNi4xNDI4NTcxNDI4NTY3Ij4iL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvZGlhZ3JhbS9fZGlhZ3JhbS5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijk0NC43MTQyODU3MTQyODUyIj5saW5lIDI3NCwgaW4gdmVjdG9yX3NuYXA8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iOTYzLjI4NTcxNDI4NTcxMzgiPnJldHVybiBzZWxmLl9fdmVjdG9yX3NuYXBfb2JsaXF1ZShzb3VyY2UpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijk4MS44NTcxNDI4NTcxNDIzIj5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5ePC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEwMDAuNDI4NTcxNDI4NTcwOSI+RmlsZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDE4Ljk5OTk5OTk5OTk5OTQiPiIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9kaWFncmFtL19kaWFncmFtLnB5Iiw8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTAzNy41NzE0Mjg1NzE0MjgiPmxpbmUgMjkwLCBpbiBfX3ZlY3Rvcl9zbmFwX29ibGlxdWU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA1Ni4xNDI4NTcxNDI4NTY3Ij5yZXR1cm4gZGlhZ3JhbS5saW5lX2ludGVyc2VjdCg8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA3NC43MTQyODU3MTQyODUzIj5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDkzLjI4NTcxNDI4NTcxNCI+RmlsZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMTExLjg1NzE0Mjg1NzE0MjciPiIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9kaWFncmFtL192ZWN0b3IyZC5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjExMzAuNDI4NTcxNDI4NTcxMyI+bGluZSAzNjUsIGluIGxpbmVfaW50ZXJzZWN0PC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjExNDkuMCI+cmFpc2UgVmFsdWVFcnJvcigiTGluZXMgYXJlIHBhcmFsbGVsIik8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTE2Ny41NzE0Mjg1NzE0Mjg3Ij5WYWx1ZUVycm9yOiBMaW5lcyBhcmUgcGFyYWxsZWw8L3RzcGFuPjwvdGV4dD48L2c+PC9zdmc+" src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY3Vyc29yPSJwb2ludGVyIiBmb250LWZhbWlseT0iJ09wZW4gU2FucycsJ1NlZ29lIFVJJyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjExcHgiIGhlaWdodD0iMTI0MSIgc2hhcGUtcmVuZGVyaW5nPSJnZW9tZXRyaWNQcmVjaXNpb24iIHZlcnNpb249IjEuMSIgdmlld0JveD0iLTEwIC0xMCA3NzAgMTI0MSIgd2lkdGg9Ijc3MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpldj0iaHR0cDovL3d3dy53My5vcmcvMjAwMS94bWwtZXZlbnRzIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGRlZnMgLz48cmVjdCBmaWxsPSIjZmZmIiBoZWlnaHQ9IjEyNDEiIHN0cm9rZT0ibm9uZSIgd2lkdGg9Ijc3MCIgeD0iLTEwIiB5PSItMTAiIC8+PGcgY2xhc3M9IkJveCBOb3RlIiBpZD0iZXJyb3IiPjxyZWN0IGNsYXNzPSJOb3RlIiBmaWxsPSIjRkYwMDAwIiBoZWlnaHQ9Ijg1IiBzdHJva2U9IiNGRkNDNjYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjM1MCIgeD0iMjAwLjUiIHk9IjAuNSIgLz48dGV4dCBjbGFzcz0iTm90ZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjAwIiB5PSIwIj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEyLjI4NTcxNDI4NTcxNDI4NiI+QW4gZXJyb3Igb2NjdXJlZCB3aGlsZSByZW5kZXJpbmcgZGlhZ3JhbTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMC44NTcxNDI4NTcxNDI4NiI+J1tDREJdIEluZm9ybWF0aW9uIFtUYXhvbm9teV0nPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ5LjQyODU3MTQyODU3MTQzIj4oaW4gc3RhZ2UgJ3BhcnNlJyk8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBOb3RlIiBpZD0iaW5mbyI+PHJlY3QgY2xhc3M9Ik5vdGUiIGZpbGw9IiNGRkZGQ0IiIGhlaWdodD0iNjYiIHN0cm9rZT0iI0ZGQ0M2NiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMzUwIiB4PSIyMDAuNSIgeT0iOTUuNSIgLz48dGV4dCBjbGFzcz0iTm90ZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjAwIiB5PSI5NSI+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDcuMjg1NzE0Mjg1NzE0MjkiPlBsZWFzZSByZXBvcnQgdGhpcyBlcnJvciB0byB5b3VyIHRvb2xzIGFuZDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMjUuODU3MTQyODU3MTQyODYiPm1ldGhvZHMgdGVhbSwgYW5kIGF0dGFjaCB0aGUgZm9sbG93aW5nPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE0NC40Mjg1NzE0Mjg1NzE0NCI+aW5mb3JtYXRpb246PC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggTm90ZSIgaWQ9InRyYWNlIj48cmVjdCBjbGFzcz0iTm90ZSIgZmlsbD0iI0ZGRkZDQiIgaGVpZ2h0PSIxMDUwIiBzdHJva2U9IiNGRkNDNjYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9Ijc1MCIgeD0iMC41IiB5PSIxNzEuNSIgLz48dGV4dCBjbGFzcz0iTm90ZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMCIgeT0iMTcxIj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE4My4yODU3MTQyODU3MTQyOCI+VHJhY2ViYWNrIChtb3N0IHJlY2VudCBjYWxsIGxhc3QpOjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMDEuODU3MTQyODU3MTQyODYiPkZpbGUgIi9ob21lL3J1bm5lci93b3JrL3B5LWNhcGVsbGFtYnNlL3B5LWNhcGVsbGFtYnNlL2NhcGVsbGFtYnNlL21vZGVsL2RpYWdyYW0ucHkiLDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMjAuNDI4NTcxNDI4NTcxNDQiPmxpbmUgNDM3LCBpbiBfX3JlbmRlcl9mcmVzaDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMzkuMDAwMDAwMDAwMDAwMDMiPnNlbGYuX3JlbmRlciA9IHNlbGYuX2NyZWF0ZV9kaWFncmFtKHBhcmFtcyk8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjU3LjU3MTQyODU3MTQyODYiPl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl48L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjc2LjE0Mjg1NzE0Mjg1NzE3Ij5GaWxlICIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9tb2RlbC9kaWFncmFtLnB5Iiw8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjk0LjcxNDI4NTcxNDI4NTciPmxpbmUgNTQ3LCBpbiBfY3JlYXRlX2RpYWdyYW08L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzEzLjI4NTcxNDI4NTcxNDMiPnJldHVybiBhaXJkLnBhcnNlX2RpYWdyYW0oc2VsZi5fbW9kZWwuX2xvYWRlciwgc2VsZi5fZWxlbWVudCwgKipwYXJhbXMpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMzMS44NTcxNDI4NTcxNDI4MyI+Xl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNTAuNDI4NTcxNDI4NTcxNCI+RmlsZSAiL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fX2luaXRfXy5weSIsIGxpbmU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzY4Ljk5OTk5OTk5OTk5OTk0Ij4yNTMsIGluIHBhcnNlX2RpYWdyYW08L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzg3LjU3MTQyODU3MTQyODUiPmVsbSA9IF9lbGVtZW50X2Zyb21feG1sKDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MDYuMTQyODU3MTQyODU3MDUiPl5eXl5eXl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MjQuNzE0Mjg1NzE0Mjg1NiI+RmlsZSAiL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fX2luaXRfXy5weSIsIGxpbmU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDQzLjI4NTcxNDI4NTcxNDE2Ij4yODcsIGluIF9lbGVtZW50X2Zyb21feG1sPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ2MS44NTcxNDI4NTcxNDI3Ij5yZXR1cm4gZmFjdG9yeShlYmQpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ4MC40Mjg1NzE0Mjg1NzEzIj5eXl5eXl5eXl5eXl48L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDk4Ljk5OTk5OTk5OTk5OTgzIj5GaWxlICIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9haXJkL19zZW1hbnRpYy5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUxNy41NzE0Mjg1NzE0Mjg0Ij5saW5lIDk2LCBpbiBmcm9tX3htbDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MzYuMTQyODU3MTQyODU3Ij5yZXR1cm4gZHJhd3R5cGUoc2ViKTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1NTQuNzE0Mjg1NzE0Mjg1NiI+Xl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1NzMuMjg1NzE0Mjg1NzE0MSI+RmlsZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1OTEuODU3MTQyODU3MTQyNyI+Ii9ob21lL3J1bm5lci93b3JrL3B5LWNhcGVsbGFtYnNlL3B5LWNhcGVsbGFtYnNlL2NhcGVsbGFtYnNlL2FpcmQvX2VkZ2VfZmFjdG9yaWVzLnB5Iiw8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNjEwLjQyODU3MTQyODU3MTIiPmxpbmUgNTk2LCBpbiBhc3NvY2lhdGlvbl9mYWN0b3J5PC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjYyOC45OTk5OTk5OTk5OTk4Ij5lZGdlID0gZ2VuZXJpY19mYWN0b3J5KHNlYik8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNjQ3LjU3MTQyODU3MTQyODMiPl5eXl5eXl5eXl5eXl5eXl5eXl5ePC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjY2Ni4xNDI4NTcxNDI4NTY5Ij5GaWxlPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjY4NC43MTQyODU3MTQyODU0Ij4iL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fZWRnZV9mYWN0b3JpZXMucHkiLDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI3MDMuMjg1NzE0Mjg1NzE0Ij5saW5lIDY1LCBpbiBnZW5lcmljX2ZhY3Rvcnk8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzIxLjg1NzE0Mjg1NzE0MjUiPnNuYXB0YXJnZXQoZWRnZSwgLTEsIC0yLCB0YXJnZXRwb3J0LCBub3QgZWRnZS5oaWRkZW4sIHJvdXRpbmdzdHlsZSk8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzQwLjQyODU3MTQyODU3MTEiPkZpbGU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzU4Ljk5OTk5OTk5OTk5OTciPiIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9haXJkL19lZGdlX2ZhY3Rvcmllcy5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijc3Ny41NzE0Mjg1NzE0MjgyIj5saW5lIDI5MywgaW4gc25hcHRhcmdldDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI3OTYuMTQyODU3MTQyODU2OCI+c25hcF9vYmxpcXVlKHBvaW50cywgaSwgbmV4dF9pLCB0YXJnZXQpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjgxNC43MTQyODU3MTQyODUzIj5GaWxlPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjgzMy4yODU3MTQyODU3MTM5Ij4iL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvYWlyZC9fZWRnZV9mYWN0b3JpZXMucHkiLDwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI4NTEuODU3MTQyODU3MTQyNCI+bGluZSAzMDMsIGluIHNuYXBfb2JsaXF1ZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI4NzAuNDI4NTcxNDI4NTcxIj5wb2ludHNbaV0gPSB0YXJnZXQudmVjdG9yX3NuYXAoPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijg4OC45OTk5OTk5OTk5OTk1Ij5eXl5eXl5eXl5eXl5eXl5eXl5ePC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjkwNy41NzE0Mjg1NzE0MjgxIj5GaWxlPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjkyNi4xNDI4NTcxNDI4NTY3Ij4iL2hvbWUvcnVubmVyL3dvcmsvcHktY2FwZWxsYW1ic2UvcHktY2FwZWxsYW1ic2UvY2FwZWxsYW1ic2UvZGlhZ3JhbS9fZGlhZ3JhbS5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijk0NC43MTQyODU3MTQyODUyIj5saW5lIDI3NCwgaW4gdmVjdG9yX3NuYXA8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iOTYzLjI4NTcxNDI4NTcxMzgiPnJldHVybiBzZWxmLl9fdmVjdG9yX3NuYXBfb2JsaXF1ZShzb3VyY2UpPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9Ijk4MS44NTcxNDI4NTcxNDIzIj5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5ePC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEwMDAuNDI4NTcxNDI4NTcwOSI+RmlsZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDE4Ljk5OTk5OTk5OTk5OTQiPiIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9kaWFncmFtL19kaWFncmFtLnB5Iiw8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTAzNy41NzE0Mjg1NzE0MjgiPmxpbmUgMjkwLCBpbiBfX3ZlY3Rvcl9zbmFwX29ibGlxdWU8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA1Ni4xNDI4NTcxNDI4NTY3Ij5yZXR1cm4gZGlhZ3JhbS5saW5lX2ludGVyc2VjdCg8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA3NC43MTQyODU3MTQyODUzIj5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXjwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDkzLjI4NTcxNDI4NTcxNCI+RmlsZTwvdHNwYW4+PHRzcGFuIHg9IjM3NS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMTExLjg1NzE0Mjg1NzE0MjciPiIvaG9tZS9ydW5uZXIvd29yay9weS1jYXBlbGxhbWJzZS9weS1jYXBlbGxhbWJzZS9jYXBlbGxhbWJzZS9kaWFncmFtL192ZWN0b3IyZC5weSIsPC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjExMzAuNDI4NTcxNDI4NTcxMyI+bGluZSAzNjUsIGluIGxpbmVfaW50ZXJzZWN0PC90c3Bhbj48dHNwYW4geD0iMzc1LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjExNDkuMCI+cmFpc2UgVmFsdWVFcnJvcigiTGluZXMgYXJlIHBhcmFsbGVsIik8L3RzcGFuPjx0c3BhbiB4PSIzNzUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTE2Ny41NzE0Mjg1NzE0Mjg3Ij5WYWx1ZUVycm9yOiBMaW5lcyBhcmUgcGFyYWxsZWw8L3RzcGFuPjwvdGV4dD48L2c+PC9zdmc+" />
+<p>Information object-relations map (ontology):</p>
+<img alt="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IkNsYXNzRGlhZ3JhbUJsYW5rIiBjdXJzb3I9InBvaW50ZXIiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTFweCIgaGVpZ2h0PSI2MTciIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9Ii0xNyAxNSAxNDcxIDYxNyIgd2lkdGg9IjE0NzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNsYXNzU3ltYm9sIiB2aWV3Qm94PSIwIDAgMjUgMjUiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ2xhc3NTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI2NmYTZhNSIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjZjFlMmUzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZyBzdHJva2U9IiM5MTM3MzQiPjxyZWN0IGZpbGw9IiNlZWRjZGQiIGhlaWdodD0iMyIgd2lkdGg9IjE1IiB4PSI1IiB5PSIxNyIgLz48cmVjdCBmaWxsPSIjZWVkY2RkIiBoZWlnaHQ9IjMiIHdpZHRoPSIxNSIgeD0iNSIgeT0iMTQiIC8+PHJlY3QgZmlsbD0idXJsKCNDbGFzc1N5bWJvbC1ncmFkaWVudCkiIGhlaWdodD0iMTAiIHdpZHRoPSIxNSIgeD0iNSIgeT0iNCIgLz48L2c+PC9zeW1ib2w+PGxpbmVhckdyYWRpZW50IGlkPSJDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyIiB4MT0iMCIgeDI9IjAiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiNGRkZGRkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI0U4RTBEMiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJDdXN0b21HcmFkaWVudF9GRkZGRkZfRkFGQUZBIiB4MT0iMCIgeDI9IjAiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiNGRkZGRkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI0ZBRkFGQSIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PG1hcmtlciBpZD0iRmluZUFycm93TWFya18wMDAwMDAiIG1hcmtlckhlaWdodD0iNy41IiBtYXJrZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIG1hcmtlcldpZHRoPSI3LjUiIG9yaWVudD0iYXV0byIgcmVmWD0iNyIgcmVmWT0iMy43NSI+PHBhdGggZD0iTSAwLjQ1MzUsMC4xMDcgNy4zMDksMy42MjEgMC40OTIsNy40MDcgMC4xNDQsNy40MDcgNi40MTQsMy42MyAwLjEzNiwwLjQ3OSBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L21hcmtlcj48bWFya2VyIGlkPSJHZW5lcmFsaXphdGlvbk1hcmtfMDAwMDAwIiBtYXJrZXJIZWlnaHQ9IjcuNSIgbWFya2VyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBtYXJrZXJXaWR0aD0iNy41IiBvcmllbnQ9ImF1dG8iIHJlZlg9IjciIHJlZlk9IjQiPjxwYXRoIGQ9Ik0gMC4xMjc1LDcuNSA3LjUsMy43NSAwLDAgWiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9tYXJrZXI+PC9kZWZzPjxyZWN0IGZpbGw9IiNmZmYiIGhlaWdodD0iNjE3IiBzdHJva2U9Im5vbmUiIHdpZHRoPSIxNDcxIiB4PSItMTciIHk9IjE1IiAvPjxnIGNsYXNzPSJCb3ggQ2xhc3MiIGlkPSJfaFBEVk1GNjFFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9FOEUwRDImcXVvdDspIiBoZWlnaHQ9IjUzIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzdCNjk0RiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAyIiB4PSI1MDUuNSIgeT0iNTE1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNTA1LjUiIHgyPSI2MDcuNSIgeTE9IjUzOS41IiB5Mj0iNTM5LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1MDUiIHk9IjUxNSI+PHRzcGFuIHg9IjU2Ny4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MjcuMjg1NzE0Mjg1NzE0MyI+RXhjaGFuZ2VJdGVtPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjUwNy4zODA5NTIzODA5NTI0IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjUxNy4yODU3MTQyODU3MTQzIiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX0Rob3NnR01IRWV5OGVybGp2a1MtcFEgY29udGV4dC1fSU91czBHd1NFZXl3ektIUmtlejkwUSBjb250ZXh0LV9KOHk2T0Y2MkVleThlcmxqdmtTLXBRIGNvbnRleHQtX1IxQWVjRjk0RWV5OGVybGp2a1MtcFEgY29udGV4dC1fZDI3MjZGLUdFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV96ellNQUY2MUVleThlcmxqdmtTLXBRIiBpZD0iX2hyMEpzRjYxRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSIyMDIiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNTEiIHg9IjE4NS41IiB5PSIyMjUuNSIgLz48bGluZSBzdHJva2U9IiM3QjY5NEYiIHgxPSIxODUuNSIgeDI9IjMzNi41IiB5MT0iMjQ5LjUiIHkyPSIyNDkuNSIgLz48dGV4dCBjbGFzcz0iRmVhdHVyZXMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTk3LjUiIHk9IjI0OS41Ij48dHNwYW4geD0iMTk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI2My43ODU3MTQyODU3MTQzIj5pc19hYnN0cmFjdCA6PC90c3Bhbj48dHNwYW4geD0iMTk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI4Mi4zNTcxNDI4NTcxNDI4MyI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjE5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMDAuOTI4NTcxNDI4NTcxNCI+aXNfZmluYWwgOiBCb29sZWFuPC90c3Bhbj48dHNwYW4geD0iMTk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMxOS40OTk5OTk5OTk5OTk5NCI+aXNfcHJpbWl0aXZlIDo8L3RzcGFuPjx0c3BhbiB4PSIxOTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzM4LjA3MTQyODU3MTQyODUiPkJvb2xlYW48L3RzcGFuPjx0c3BhbiB4PSIxOTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzU2LjY0Mjg1NzE0Mjg1NzA1Ij52aXNpYmlsaXR5IDo8L3RzcGFuPjx0c3BhbiB4PSIxOTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzc1LjIxNDI4NTcxNDI4NTYiPlZpc2liaWxpdHlLaW5kPC90c3Bhbj48L3RleHQ+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxODUiIHk9IjIyNSI+PHRzcGFuIHg9IjI3MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMzUuMTQyODU3MTQyODU3MTQiPkNsYXNzPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjIzNS42OTA0NzYxOTA0NzYyIiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjIyNS4xNDI4NTcxNDI4NTcxNCIgLz48L2c+PGcgY2xhc3M9IkJveCBEYXRhUGtnIiBpZD0iX3BZVWlZVjYxRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJEYXRhUGtnIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9GQUZBRkEmcXVvdDspIiBoZWlnaHQ9IjgxIiBzdHJva2U9IiM0NTQ1NDUiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEzMSIgeD0iMTc1LjUiIHk9Ijk1LjUiIC8+PHRleHQgY2xhc3M9IkRhdGFQa2ciIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE3NSIgeT0iOTUiPjx0c3BhbiB4PSIyNDAuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA3LjI4NTcxNDI4NTcxNDI5Ij5jYXBlbGxhY29tbW9uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fenpZTUFGNjFFZXk4ZXJsanZrUy1wUSIgaWQ9Il9xaE9yTUY2MUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iNDkiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxMTEiIHg9IjE4NS41IiB5PSIxMjQuNSIgLz48bGluZSBzdHJva2U9IiM3QjY5NEYiIHgxPSIxODUuNSIgeDI9IjI5Ni41IiB5MT0iMTQ4LjUiIHkyPSIxNDguNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE4NSIgeT0iMTI0Ij48dHNwYW4geD0iMjUxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEzNC4xNDI4NTcxNDI4NTcxNCI+U3RhdGVNYWNoaW5lPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjE5Mi44MzMzMzMzMzMzMzMzNCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIxMjQuMTQyODU3MTQyODU3MTQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fUjFBZWNGOTRFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9vd05pWUd3UEVleXd6S0hSa2V6OTBRIGNvbnRleHQtX3B0SWRyR3dQRWV5d3pLSFJrZXo5MFEiIGlkPSJfWGVSQ2NGOTNFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjY1IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTIxIiB4PSIxODUuNSIgeT0iMzU5LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTg1LjUiIHgyPSIzMDYuNSIgeTE9IjM4My41IiB5Mj0iMzgzLjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjE5Ny41IiB5PSIzODMuNSI+PHRzcGFuIHg9IjE5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzOTUuNjQyODU3MTQyODU3MTciPmtpbmQgOjwvdHNwYW4+PHRzcGFuIHg9IjE5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MDkuOTI4NTcxNDI4NTcxNDQiPlVuaW9uS2luZDwvdHNwYW4+PC90ZXh0Pjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTg1IiB5PSIzNTkiPjx0c3BhbiB4PSIyNTYuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzY4LjQyODU3MTQyODU3MTQ0Ij5VbmlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIyMTguMzA5NTIzODA5NTIzOCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIzNTguNDI4NTcxNDI4NTcxNDQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ29sbGVjdGlvbiBjb250ZXh0LV91aVoxd0dBaUVleThlcmxqdmtTLXBRIiBpZD0iX2t2Y3ZNRjk0RWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDb2xsZWN0aW9uIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9FOEUwRDImcXVvdDspIiBoZWlnaHQ9IjY5IiBzdHJva2U9IiM3QjY5NEYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjE0OCIgeD0iMTIxOS41IiB5PSI0NS41IiAvPjx0ZXh0IGNsYXNzPSJDb2xsZWN0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjE5IiB5PSI0NSI+PHRzcGFuIHg9IjEyOTMuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTIuNDI4NTcxNDI4NTcxNDMiPl9lbnVtPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fMk5jMTRHQWlFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9JcGxBOUYtSkVleThlcmxqdmtTLXBRIGNvbnRleHQtX2xxcFlWR3dTRWV5d3pLSFJrZXo5MFEiIGlkPSJfLWZwVzBGOTRFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9Ijc3IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTQxIiB4PSI4MzMuNSIgeT0iMjIyLjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iODMzLjUiIHgyPSI5NzQuNSIgeTE9IjI0Ni41IiB5Mj0iMjQ2LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9Ijg0NS41IiB5PSIyNDYuNSI+PHRzcGFuIHg9Ijg0NS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyNTguNjQyODU3MTQyODU3MTciPmtpbmQgOjwvdHNwYW4+PHRzcGFuIHg9Ijg0NS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyNzIuOTI4NTcxNDI4NTcxNDQiPkNvbGxlY3Rpb25LaW5kPC90c3Bhbj48L3RleHQ+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI4MzMiIHk9IjIyMiI+PHRzcGFuIHg9IjkxNC41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMzIuMTQyODU3MTQyODU3MTQiPkNvbGxlY3Rpb248L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iODY2LjMwOTUyMzgwOTUyMzkiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMjIyLjE0Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IFVuaW9uIiBpZD0iX1pJXzBBRjk1RWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJVbmlvbiIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSI2OSIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDgiIHg9IjEyODUuNSIgeT0iNTUzLjUiIC8+PHRleHQgY2xhc3M9IlVuaW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjg1IiB5PSI1NTMiPjx0c3BhbiB4PSIxMzU5LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjU2MC40Mjg1NzE0Mjg1NzE0Ij5VbmlvbiAxNTwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX0lwbEE5Ri1KRWV5OGVybGp2a1MtcFEgY29udGV4dC1fT0J2dmdHQTVFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9XTFE0TUdKWkVleThlcmxqdmtTLXBRIGNvbnRleHQtX1lCczE2R0ViRWV5OGVybGp2a1MtcFEgY29udGV4dC1fYlpyZVRHRWJFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9jLVpaV0dFYkVleThlcmxqdmtTLXBRIGNvbnRleHQtX2NCN3dxR0paRWV5OGVybGp2a1MtcFEgY29udGV4dC1fZDI3MjZGLUdFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9pajRiT0dFYkVleThlcmxqdmtTLXBRIGNvbnRleHQtX293TmlZR3dQRWV5d3pLSFJrZXo5MFEgY29udGV4dC1fcHRJZHJHd1BFZXl3ektIUmtlejkwUSIgaWQ9Il9RRzRBVUYtR0VleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iMjYxIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzdCNjk0RiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTUxIiB4PSI0OTUuNSIgeT0iMjI1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNDk1LjUiIHgyPSI2NDYuNSIgeTE9IjI0OS41IiB5Mj0iMjQ5LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjUwNy41IiB5PSIyNDkuNSI+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyNjMuNzg1NzE0Mjg1NzE0MyI+aXNfb3JkZXJlZCA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI4Mi4zNTcxNDI4NTcxNDI4MyI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMDAuOTI4NTcxNDI4NTcxNCI+aXNfdW5pcXVlIDo8L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzE5LjQ5OTk5OTk5OTk5OTk0Ij5Cb29sZWFuPC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMzOC4wNzE0Mjg1NzE0Mjg1Ij5pc19hYnN0cmFjdCA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM1Ni42NDI4NTcxNDI4NTcwNSI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNzUuMjE0Mjg1NzE0Mjg1NiI+aXNfc3RhdGljIDogQm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzOTMuNzg1NzE0Mjg1NzE0MTYiPmlzX3BhcnRfb2Zfa2V5IDo8L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDEyLjM1NzE0Mjg1NzE0MjciPkJvb2xlYW48L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDMwLjkyODU3MTQyODU3MTMiPmlzX2Rlcml2ZWQgOjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0NDkuNDk5OTk5OTk5OTk5ODMiPkJvb2xlYW48L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDY4LjA3MTQyODU3MTQyODQiPmlzX3JlYWRfb25seSA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ4Ni42NDI4NTcxNDI4NTY5NCI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MDUuMjE0Mjg1NzE0Mjg1NSI+dmlzaWJpbGl0eSA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUyMy43ODU3MTQyODU3MTQxIj5WaXNpYmlsaXR5S2luZDwvdHNwYW4+PC90ZXh0Pjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDk1IiB5PSIyMjUiPjx0c3BhbiB4PSI1ODEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjM2LjU3MTQyODU3MTQyODU4Ij5Qcm9wZXJ0eTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI1MzUuNjkwNDc2MTkwNDc2MSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyMjYuNTcxNDI4NTcxNDI4NTgiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MiIGlkPSJfYnluSFVGLUpFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjUzIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAxIiB4PSIxNTUuNSIgeT0iNTA1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTU1LjUiIHgyPSIyNTYuNSIgeTE9IjUyOS41IiB5Mj0iNTI5LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxNTUiIHk9IjUwNSI+PHRzcGFuIHg9IjIxNi41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MTcuMjg1NzE0Mjg1NzE0MyI+Q29tcGxleFZhbHVlPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjE1NS45Mjg1NzE0Mjg1NzE0NCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSI1MDcuMjg1NzE0Mjg1NzE0MzMiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ29tcGxleFZhbHVlIiBpZD0iX2UtN1NVRi1KRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDb21wbGV4VmFsdWUiIGZpbGw9IiNGRUZERkEiIGhlaWdodD0iNTAiIHN0cm9rZT0iIzY3Njc2NyIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAwIiB4PSIxMzAwLjUiIHk9IjQ1NC41IiAvPjx0ZXh0IGNsYXNzPSJDb21wbGV4VmFsdWUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEzMDAiIHk9IjQ1NCI+PHRzcGFuIHg9IjEzNTAuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDY0LjI4NTcxNDI4NTcxNDMiPkNvbXBsZXhWYWx1ZTwvdHNwYW4+PHRzcGFuIHg9IjEzNTAuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDgyLjg1NzE0Mjg1NzE0MjgzIj4xPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggU3RyaW5nVHlwZSIgaWQ9Il9lcWRGb0dBaUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iU3RyaW5nVHlwZSIgZmlsbD0iI0U4RTBEMiIgaGVpZ2h0PSI2OSIgc3Ryb2tlPSIjNjc2NzY3IiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDgiIHg9IjEyOTUuNSIgeT0iMzg1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjNjc2NzY3IiB4MT0iMTI5NS41IiB4Mj0iMTQ0My41IiB5MT0iNDA5LjUiIHkyPSI0MDkuNSIgLz48dGV4dCBjbGFzcz0iU3RyaW5nVHlwZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTI5NSIgeT0iMzg1Ij48dHNwYW4geD0iMTM2OS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzOTYuNTcxNDI4NTcxNDI4NTYiPlN0cmluZ1R5cGUgOTwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IENvbGxlY3Rpb24gY29udGV4dC1fdWlaMXdHQWlFZXk4ZXJsanZrUy1wUSIgaWQ9Il90OFY3VUdBaUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ29sbGVjdGlvbiIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSI2OSIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDgiIHg9IjEyMzUuNSIgeT0iMTk1LjUiIC8+PHRleHQgY2xhc3M9IkNvbGxlY3Rpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEyMzUiIHk9IjE5NSI+PHRzcGFuIHg9IjEzMDkuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjAzLjE0Mjg1NzE0Mjg1NzE0Ij5Db2xsZWN0aW9uIDI8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBEYXRhUGtnIiBpZD0iX192WWZJV0FpRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJEYXRhUGtnIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9GQUZBRkEmcXVvdDspIiBoZWlnaHQ9IjgxIiBzdHJva2U9IiM0NTQ1NDUiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjgxIiB4PSI3MDUuNSIgeT0iMTg1LjUiIC8+PHRleHQgY2xhc3M9IkRhdGFQa2ciIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjcwNSIgeT0iMTg1Ij48dHNwYW4geD0iNzQ1LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE5Ny4yODU3MTQyODU3MTQyOCI+Y2FwZWxsYWNvcmU8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV8yTmMxNEdBaUVleThlcmxqdmtTLXBRIGNvbnRleHQtX09CdnZnR0E1RWV5OGVybGp2a1MtcFEgY29udGV4dC1fUmtYYmRHRWFFZXk4ZXJsanZrUy1wUSIgaWQ9Il96SmM1WUdBaUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iNTIiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSI2MSIgeD0iNzE1LjUiIHk9IjIxNC41IiAvPjxsaW5lIHN0cm9rZT0iIzdCNjk0RiIgeDE9IjcxNS41IiB4Mj0iNzc2LjUiIHkxPSIyMzguNSIgeTI9IjIzOC41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgZm9udC1zdHlsZT0iaXRhbGljIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3MTUiIHk9IjIxNCI+PHRzcGFuIHg9Ijc1Ni41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMjUuNTcxNDI4NTcxNDI4NTgiPlR5cGU8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNzIxLjY0Mjg1NzE0Mjg1NzEiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMjE1LjU3MTQyODU3MTQyODU4IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX1JrWGJkR0VhRWV5OGVybGp2a1MtcFEgY29udGV4dC1fVThMMllHRWJFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9XTFE0TUdKWkVleThlcmxqdmtTLXBRIGNvbnRleHQtX1lCczE2R0ViRWV5OGVybGp2a1MtcFEgY29udGV4dC1fYlpyZVRHRWJFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9jLVpaV0dFYkVleThlcmxqdmtTLXBRIGNvbnRleHQtX2NCN3dxR0paRWV5OGVybGp2a1MtcFEgY29udGV4dC1faWo0Yk9HRWJFZXk4ZXJsanZrUy1wUSIgaWQ9Il96Mnh4TUdFWkVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iMTk1IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzdCNjk0RiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTQxIiB4PSI3NTUuNSIgeT0iMjkxLjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNzU1LjUiIHgyPSI4OTYuNSIgeTE9IjMxNS41IiB5Mj0iMzE1LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9Ijc2Ny41IiB5PSIzMTUuNSI+PHRzcGFuIHg9Ijc2Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMjkuNzg1NzE0Mjg1NzE0MyI+dmFsdWUgOiBWYWx1ZVR5cGU8L3RzcGFuPjwvdGV4dD48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijc1NSIgeT0iMjkxIj48dHNwYW4geD0iODM2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMwMS4xNDI4NTcxNDI4NTcxNyI+TGl0ZXJhbFZhbHVlPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9Ijc4My4wNzE0Mjg1NzE0Mjg2IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjI5MS4xNDI4NTcxNDI4NTcxNyIgLz48L2c+PGcgY2xhc3M9IkJveCBOdW1lcmljVHlwZSIgaWQ9Il8tX2FkRUdFYUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iTnVtZXJpY1R5cGUiIGZpbGw9IiNFOEUwRDIiIGhlaWdodD0iNjkiIHN0cm9rZT0iIzY3Njc2NyIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTExIiB4PSIxMjgwLjUiIHk9IjMzNi41IiAvPjxsaW5lIHN0cm9rZT0iIzY3Njc2NyIgeDE9IjEyODAuNSIgeDI9IjEzOTEuNSIgeTE9IjM2MC41IiB5Mj0iMzYwLjUiIC8+PHRleHQgY2xhc3M9Ik51bWVyaWNUeXBlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjgwIiB5PSIzMzYiPjx0c3BhbiB4PSIxMzM1LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM0OC4yODU3MTQyODU3MTQzIj5WYWx1ZVR5cGU8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV9VOEwyWUdFYkVleThlcmxqdmtTLXBRIiBpZD0iX1RJeW1JR0ViRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSI0NyIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiM3QjY5NEYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjYxIiB4PSI2NzUuNSIgeT0iNTE1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNjc1LjUiIHgyPSI3MzYuNSIgeTE9IjUzOS41IiB5Mj0iNTM5LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NzUiIHk9IjUxNSI+PHRzcGFuIHg9IjcxNi41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MjQuNDI4NTcxNDI4NTcxNCI+VW5pdDwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI2ODMuNTQ3NjE5MDQ3NjE5IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjUxNC40Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIiBpZD0iX3BGRlZNR01HRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI0NyIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNGRjA5MDkiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEwMCIgeD0iMTYuNSIgeT0iNDU0LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTYuNSIgeDI9IjExNi41IiB5MT0iNDc4LjUiIHkyPSI0NzguNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRjA5MDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE2IiB5PSI0NTQiPjx0c3BhbiB4PSI3Ny4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0NjMuNDI4NTcxNDI4NTcxNDQiPkVudW1lcmF0aW9uPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjIwLjIzODA5NTIzODA5NTIzNCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSI0NTMuNDI4NTcxNDI4NTcxNDQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MiIGlkPSJfckdZZWtHTUdFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ5IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTMxIiB4PSIxNS41IiB5PSI1MDUuNSIgLz48bGluZSBzdHJva2U9IiNGRjA5MDkiIHgxPSIxNS41IiB4Mj0iMTQ2LjUiIHkxPSI1MjkuNSIgeTI9IjUyOS41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTUiIHk9IjUwNSI+PHRzcGFuIHg9IjkxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUxNS4xNDI4NTcxNDI4NTcxIj5FbnVtZXJhdGlvbkxpdGVyYWw8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMTguMDcxNDI4NTcxNDI4NTc3IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjUwNS4xNDI4NTcxNDI4NTcxIiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX0Rob3NnR01IRWV5OGVybGp2a1MtcFEiIGlkPSJfMlB1eGtHTUdFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ5IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAxIiB4PSIxNS41IiB5PSIxNDcuNSIgLz48bGluZSBzdHJva2U9IiNGRjA5MDkiIHgxPSIxNS41IiB4Mj0iMTE2LjUiIHkxPSIxNzEuNSIgeTI9IjE3MS41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTUiIHk9IjE0NyI+PHRzcGFuIHg9Ijc2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE1Ny4xNDI4NTcxNDI4NTcxNCI+R2VuZXJhbGl6YXRpb248L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMTUuOTI4NTcxNDI4NTcxNDMiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMTQ3LjE0Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIiBpZD0iX2stQmp3R01IRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI0OSIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNGRjA5MDkiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjkxIiB4PSIxMjUuNSIgeT0iNDU0LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTI1LjUiIHgyPSIyMTYuNSIgeTE9IjQ3OC41IiB5Mj0iNDc4LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjUiIHk9IjQ1NCI+PHRzcGFuIHg9IjE4MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0NjQuMTQyODU3MTQyODU3MTciPlZhbHVlUGFydDwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIxMzMuNzg1NzE0Mjg1NzE0MjgiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iNDU0LjE0Mjg1NzE0Mjg1NzE3IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIiBpZD0iX3VGZWZ3R053RWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI0OSIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNGRjA5MDkiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjExMSIgeD0iMjY1LjUiIHk9IjUwMy41IiAvPjxsaW5lIHN0cm9rZT0iI0ZGMDkwOSIgeDE9IjI2NS41IiB4Mj0iMzc2LjUiIHkxPSI1MjcuNSIgeTI9IjUyNy41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjY1IiB5PSI1MDMiPjx0c3BhbiB4PSIzMzEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTEzLjE0Mjg1NzE0Mjg1NzEiPkNvbGxlY3Rpb25WYWx1ZTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIyNjguNTQ3NjE5MDQ3NjE5MDQiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iNTAzLjE0Mjg1NzE0Mjg1NzEiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fSU91czBHd1NFZXl3ektIUmtlejkwUSBjb250ZXh0LV9scXBZVkd3U0VleXd6S0hSa2V6OTBRIGNvbnRleHQtX3lNaXluR3dTRWV5d3pLSFJrZXo5MFEiIGlkPSJfXzN3YTBHd1JFZXl3ektIUmtlejkwUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjkwIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTUxIiB4PSI0MTUuNSIgeT0iMTAzLjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iNDE1LjUiIHgyPSI1NjYuNSIgeTE9IjEyNy41IiB5Mj0iMTI3LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQyNy41IiB5PSIxMjcuNSI+PHRzcGFuIHg9IjQyNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNDEuNzg1NzE0Mjg1NzE0MjgiPnZpc2liaWxpdHkgOjwvdHNwYW4+PHRzcGFuIHg9IjQyNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNjAuMzU3MTQyODU3MTQyODYiPlZpc2liaWxpdHlLaW5kPC90c3Bhbj48L3RleHQ+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0MTUiIHk9IjEwMyI+PHRzcGFuIHg9IjUwMS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMTQuNTcxNDI4NTcxNDI4NTciPk9wZXJhdGlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0NTIuMzU3MTQyODU3MTQyODMiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMTA0LjU3MTQyODU3MTQyODU3IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX3lNaXluR3dTRWV5d3pLSFJrZXo5MFEiIGlkPSJfdnh5bllHd1NFZXl3ektIUmtlejkwUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ3IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iOTAiIHg9IjQxNi41IiB5PSIyNS41IiAvPjxsaW5lIHN0cm9rZT0iI0ZGMDkwOSIgeDE9IjQxNi41IiB4Mj0iNTA2LjUiIHkxPSI0OS41IiB5Mj0iNDkuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRjA5MDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQxNiIgeT0iMjUiPjx0c3BhbiB4PSI0NzIuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzQuNDI4NTcxNDI4NTcxNDMiPlBhcmFtZXRlcjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0MjEuOTA0NzYxOTA0NzYxOSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyNC40Mjg1NzE0Mjg1NzE0MyIgLz48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyIgaWQ9Il9ELW96d0d6YUVleXd6S0hSa2V6OTBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iNDciIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRkYwOTA5IiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxMDEiIHg9IjIyNS41IiB5PSI0NTQuNSIgLz48bGluZSBzdHJva2U9IiNGRjA5MDkiIHgxPSIyMjUuNSIgeDI9IjMyNi41IiB5MT0iNDc4LjUiIHkyPSI0NzguNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRjA5MDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIyNSIgeT0iNDU0Ij48dHNwYW4geD0iMjg2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ2My40Mjg1NzE0Mjg1NzE0NCI+QXNzb2NpYXRpb248L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMjM0LjAyMzgwOTUyMzgwOTUyIiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjQ1My40Mjg1NzE0Mjg1NzE0NCIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQXNzb2NpYXRpb24iIGlkPSJfenpZTUFGNjFFZXk4ZXJsanZrUy1wUSI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMTk1LjUgMjI1LjUgMTk1LjUgMTczLjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjRmluZUFycm93TWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQXNzb2NpYXRpb24iIGlkPSJfSjh5Nk9GNjJFZXk4ZXJsanZrUy1wUSI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMzM2LjUgMzQwLjUgMzc2LjUgMzQwLjUgMzc2LjUgMzYwLjUgMzM2LjUgMzYwLjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjRmluZUFycm93TWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgR2VuZXJhbGl6YXRpb24iIGlkPSJfUjFBZWNGOTRFZXk4ZXJsanZrUy1wUSI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMTk1LjUgNDI0LjUgMTk1LjUgNDI3LjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjR2VuZXJhbGl6YXRpb25NYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9kMjcyNkYtR0VleThlcmxqdmtTLXBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMzYuNSAyNjYuNSA0OTUuNSAyNjYuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9JcGxBOUYtSkVleThlcmxqdmtTLXBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA4NDUuNSAyMjIuNSA4NDUuNSAxODEuNSA2MzUuNSAxODEuNSA2MzUuNSAyMjUuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBDb2xsZWN0aW9uIiBpZD0iX3VpWjF3R0FpRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDEyMzUuNSAyMTMuNSAxMTY2LjUgMjEzLjUgMTE2Ni41IDY3LjUgMTIxOS41IDY3LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWRhc2hhcnJheT0iNSIgc3Ryb2tlLXdpZHRoPSIxIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTEwIiB5PSIxNzkiPjx0c3BhbiB4PSIxMTU2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE4OS4xNDI4NTcxNDI4NTcxNCI+Q29sbGVjdGlvbiAyPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iXzJOYzE0R0FpRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDgzMy41IDI0NC41IDc3Ni41IDI0NC41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX09CdnZnR0E1RWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDIzNi41IDcxNS41IDIzNi41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1JrWGJkR0VhRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDc1NS41IDMwNS41IDczNS41IDMwNS41IDczNS41IDI2Ni41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1U4TDJZR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDgyNS41IDQ4Ni41IDgyNS41IDU0My41IDczNi41IDU0My41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1lCczE2R0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDQxNS41IDc1NS41IDQxNS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2JacmVUR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDM4NS41IDc1NS41IDM4NS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2MtWlpXR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDM2My41IDc1NS41IDM2My41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2lqNGJPR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDMzNS41IDc1NS41IDMzNS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1dMUTRNR0paRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDQzNS41IDY4NS41IDQzNS41IDc1NS41IDQzNS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2NCN3dxR0paRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDQ2NS41IDc1NS41IDQ2NS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX0Rob3NnR01IRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDE4NS41IDI3Mi41IDM1LjUgMjcyLjUgMzUuNSAxOTYuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9vd05pWUd3UEVleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMDYuNSAzNzUuNSA0OTUuNSAzNzUuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9wdElkckd3UEVleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMDYuNSA0MDQuNSA0OTUuNSA0MDQuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9JT3VzMEd3U0VleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMjUuNSAyMjUuNSAzMjUuNSAyMzguNSA0MjYuNSAyMzguNSA0MjYuNSAxOTMuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9scXBZVkd3U0VleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA4NjYuNSAyMjIuNSA4NjYuNSAxNDIuNSA1NjYuNSAxNDIuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il95TWl5bkd3U0VleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA0NjcuNSAxMDMuNSA0NTEuNSA3Mi41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjwvc3ZnPg==" src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IkNsYXNzRGlhZ3JhbUJsYW5rIiBjdXJzb3I9InBvaW50ZXIiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTFweCIgaGVpZ2h0PSI2MTciIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9Ii0xNyAxNSAxNDcxIDYxNyIgd2lkdGg9IjE0NzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNsYXNzU3ltYm9sIiB2aWV3Qm94PSIwIDAgMjUgMjUiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ2xhc3NTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI2NmYTZhNSIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjZjFlMmUzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZyBzdHJva2U9IiM5MTM3MzQiPjxyZWN0IGZpbGw9IiNlZWRjZGQiIGhlaWdodD0iMyIgd2lkdGg9IjE1IiB4PSI1IiB5PSIxNyIgLz48cmVjdCBmaWxsPSIjZWVkY2RkIiBoZWlnaHQ9IjMiIHdpZHRoPSIxNSIgeD0iNSIgeT0iMTQiIC8+PHJlY3QgZmlsbD0idXJsKCNDbGFzc1N5bWJvbC1ncmFkaWVudCkiIGhlaWdodD0iMTAiIHdpZHRoPSIxNSIgeD0iNSIgeT0iNCIgLz48L2c+PC9zeW1ib2w+PGxpbmVhckdyYWRpZW50IGlkPSJDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyIiB4MT0iMCIgeDI9IjAiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiNGRkZGRkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI0U4RTBEMiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJDdXN0b21HcmFkaWVudF9GRkZGRkZfRkFGQUZBIiB4MT0iMCIgeDI9IjAiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiNGRkZGRkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI0ZBRkFGQSIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PG1hcmtlciBpZD0iRmluZUFycm93TWFya18wMDAwMDAiIG1hcmtlckhlaWdodD0iNy41IiBtYXJrZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIG1hcmtlcldpZHRoPSI3LjUiIG9yaWVudD0iYXV0byIgcmVmWD0iNyIgcmVmWT0iMy43NSI+PHBhdGggZD0iTSAwLjQ1MzUsMC4xMDcgNy4zMDksMy42MjEgMC40OTIsNy40MDcgMC4xNDQsNy40MDcgNi40MTQsMy42MyAwLjEzNiwwLjQ3OSBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L21hcmtlcj48bWFya2VyIGlkPSJHZW5lcmFsaXphdGlvbk1hcmtfMDAwMDAwIiBtYXJrZXJIZWlnaHQ9IjcuNSIgbWFya2VyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBtYXJrZXJXaWR0aD0iNy41IiBvcmllbnQ9ImF1dG8iIHJlZlg9IjciIHJlZlk9IjQiPjxwYXRoIGQ9Ik0gMC4xMjc1LDcuNSA3LjUsMy43NSAwLDAgWiIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9tYXJrZXI+PC9kZWZzPjxyZWN0IGZpbGw9IiNmZmYiIGhlaWdodD0iNjE3IiBzdHJva2U9Im5vbmUiIHdpZHRoPSIxNDcxIiB4PSItMTciIHk9IjE1IiAvPjxnIGNsYXNzPSJCb3ggQ2xhc3MiIGlkPSJfaFBEVk1GNjFFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9FOEUwRDImcXVvdDspIiBoZWlnaHQ9IjUzIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzdCNjk0RiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAyIiB4PSI1MDUuNSIgeT0iNTE1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNTA1LjUiIHgyPSI2MDcuNSIgeTE9IjUzOS41IiB5Mj0iNTM5LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1MDUiIHk9IjUxNSI+PHRzcGFuIHg9IjU2Ny4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MjcuMjg1NzE0Mjg1NzE0MyI+RXhjaGFuZ2VJdGVtPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjUwNy4zODA5NTIzODA5NTI0IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjUxNy4yODU3MTQyODU3MTQzIiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX0Rob3NnR01IRWV5OGVybGp2a1MtcFEgY29udGV4dC1fSU91czBHd1NFZXl3ektIUmtlejkwUSBjb250ZXh0LV9KOHk2T0Y2MkVleThlcmxqdmtTLXBRIGNvbnRleHQtX1IxQWVjRjk0RWV5OGVybGp2a1MtcFEgY29udGV4dC1fZDI3MjZGLUdFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV96ellNQUY2MUVleThlcmxqdmtTLXBRIiBpZD0iX2hyMEpzRjYxRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSIyMDIiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNTEiIHg9IjE4NS41IiB5PSIyMjUuNSIgLz48bGluZSBzdHJva2U9IiM3QjY5NEYiIHgxPSIxODUuNSIgeDI9IjMzNi41IiB5MT0iMjQ5LjUiIHkyPSIyNDkuNSIgLz48dGV4dCBjbGFzcz0iRmVhdHVyZXMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJzdGFydCIgeD0iMTk3LjUiIHk9IjI0OS41Ij48dHNwYW4geD0iMTk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI2My43ODU3MTQyODU3MTQzIj5pc19hYnN0cmFjdCA6PC90c3Bhbj48dHNwYW4geD0iMTk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI4Mi4zNTcxNDI4NTcxNDI4MyI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjE5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMDAuOTI4NTcxNDI4NTcxNCI+aXNfZmluYWwgOiBCb29sZWFuPC90c3Bhbj48dHNwYW4geD0iMTk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMxOS40OTk5OTk5OTk5OTk5NCI+aXNfcHJpbWl0aXZlIDo8L3RzcGFuPjx0c3BhbiB4PSIxOTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzM4LjA3MTQyODU3MTQyODUiPkJvb2xlYW48L3RzcGFuPjx0c3BhbiB4PSIxOTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzU2LjY0Mjg1NzE0Mjg1NzA1Ij52aXNpYmlsaXR5IDo8L3RzcGFuPjx0c3BhbiB4PSIxOTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzc1LjIxNDI4NTcxNDI4NTYiPlZpc2liaWxpdHlLaW5kPC90c3Bhbj48L3RleHQ+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxODUiIHk9IjIyNSI+PHRzcGFuIHg9IjI3MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMzUuMTQyODU3MTQyODU3MTQiPkNsYXNzPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjIzNS42OTA0NzYxOTA0NzYyIiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjIyNS4xNDI4NTcxNDI4NTcxNCIgLz48L2c+PGcgY2xhc3M9IkJveCBEYXRhUGtnIiBpZD0iX3BZVWlZVjYxRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJEYXRhUGtnIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9GQUZBRkEmcXVvdDspIiBoZWlnaHQ9IjgxIiBzdHJva2U9IiM0NTQ1NDUiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEzMSIgeD0iMTc1LjUiIHk9Ijk1LjUiIC8+PHRleHQgY2xhc3M9IkRhdGFQa2ciIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE3NSIgeT0iOTUiPjx0c3BhbiB4PSIyNDAuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA3LjI4NTcxNDI4NTcxNDI5Ij5jYXBlbGxhY29tbW9uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fenpZTUFGNjFFZXk4ZXJsanZrUy1wUSIgaWQ9Il9xaE9yTUY2MUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iNDkiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxMTEiIHg9IjE4NS41IiB5PSIxMjQuNSIgLz48bGluZSBzdHJva2U9IiM3QjY5NEYiIHgxPSIxODUuNSIgeDI9IjI5Ni41IiB5MT0iMTQ4LjUiIHkyPSIxNDguNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE4NSIgeT0iMTI0Ij48dHNwYW4geD0iMjUxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEzNC4xNDI4NTcxNDI4NTcxNCI+U3RhdGVNYWNoaW5lPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjE5Mi44MzMzMzMzMzMzMzMzNCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIxMjQuMTQyODU3MTQyODU3MTQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fUjFBZWNGOTRFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9vd05pWUd3UEVleXd6S0hSa2V6OTBRIGNvbnRleHQtX3B0SWRyR3dQRWV5d3pLSFJrZXo5MFEiIGlkPSJfWGVSQ2NGOTNFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjY1IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTIxIiB4PSIxODUuNSIgeT0iMzU5LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTg1LjUiIHgyPSIzMDYuNSIgeTE9IjM4My41IiB5Mj0iMzgzLjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjE5Ny41IiB5PSIzODMuNSI+PHRzcGFuIHg9IjE5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzOTUuNjQyODU3MTQyODU3MTciPmtpbmQgOjwvdHNwYW4+PHRzcGFuIHg9IjE5Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MDkuOTI4NTcxNDI4NTcxNDQiPlVuaW9uS2luZDwvdHNwYW4+PC90ZXh0Pjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTg1IiB5PSIzNTkiPjx0c3BhbiB4PSIyNTYuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzY4LjQyODU3MTQyODU3MTQ0Ij5VbmlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIyMTguMzA5NTIzODA5NTIzOCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIzNTguNDI4NTcxNDI4NTcxNDQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ29sbGVjdGlvbiBjb250ZXh0LV91aVoxd0dBaUVleThlcmxqdmtTLXBRIiBpZD0iX2t2Y3ZNRjk0RWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDb2xsZWN0aW9uIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9FOEUwRDImcXVvdDspIiBoZWlnaHQ9IjY5IiBzdHJva2U9IiM3QjY5NEYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjE0OCIgeD0iMTIxOS41IiB5PSI0NS41IiAvPjx0ZXh0IGNsYXNzPSJDb2xsZWN0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjE5IiB5PSI0NSI+PHRzcGFuIHg9IjEyOTMuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTIuNDI4NTcxNDI4NTcxNDMiPl9lbnVtPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fMk5jMTRHQWlFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9JcGxBOUYtSkVleThlcmxqdmtTLXBRIGNvbnRleHQtX2xxcFlWR3dTRWV5d3pLSFJrZXo5MFEiIGlkPSJfLWZwVzBGOTRFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9Ijc3IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTQxIiB4PSI4MzMuNSIgeT0iMjIyLjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iODMzLjUiIHgyPSI5NzQuNSIgeTE9IjI0Ni41IiB5Mj0iMjQ2LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9Ijg0NS41IiB5PSIyNDYuNSI+PHRzcGFuIHg9Ijg0NS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyNTguNjQyODU3MTQyODU3MTciPmtpbmQgOjwvdHNwYW4+PHRzcGFuIHg9Ijg0NS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyNzIuOTI4NTcxNDI4NTcxNDQiPkNvbGxlY3Rpb25LaW5kPC90c3Bhbj48L3RleHQ+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI4MzMiIHk9IjIyMiI+PHRzcGFuIHg9IjkxNC41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMzIuMTQyODU3MTQyODU3MTQiPkNvbGxlY3Rpb248L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iODY2LjMwOTUyMzgwOTUyMzkiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMjIyLjE0Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IFVuaW9uIiBpZD0iX1pJXzBBRjk1RWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJVbmlvbiIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSI2OSIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDgiIHg9IjEyODUuNSIgeT0iNTUzLjUiIC8+PHRleHQgY2xhc3M9IlVuaW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjg1IiB5PSI1NTMiPjx0c3BhbiB4PSIxMzU5LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjU2MC40Mjg1NzE0Mjg1NzE0Ij5VbmlvbiAxNTwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX0lwbEE5Ri1KRWV5OGVybGp2a1MtcFEgY29udGV4dC1fT0J2dmdHQTVFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9XTFE0TUdKWkVleThlcmxqdmtTLXBRIGNvbnRleHQtX1lCczE2R0ViRWV5OGVybGp2a1MtcFEgY29udGV4dC1fYlpyZVRHRWJFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9jLVpaV0dFYkVleThlcmxqdmtTLXBRIGNvbnRleHQtX2NCN3dxR0paRWV5OGVybGp2a1MtcFEgY29udGV4dC1fZDI3MjZGLUdFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9pajRiT0dFYkVleThlcmxqdmtTLXBRIGNvbnRleHQtX293TmlZR3dQRWV5d3pLSFJrZXo5MFEgY29udGV4dC1fcHRJZHJHd1BFZXl3ektIUmtlejkwUSIgaWQ9Il9RRzRBVUYtR0VleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iMjYxIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzdCNjk0RiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTUxIiB4PSI0OTUuNSIgeT0iMjI1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNDk1LjUiIHgyPSI2NDYuNSIgeTE9IjI0OS41IiB5Mj0iMjQ5LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjUwNy41IiB5PSIyNDkuNSI+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyNjMuNzg1NzE0Mjg1NzE0MyI+aXNfb3JkZXJlZCA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI4Mi4zNTcxNDI4NTcxNDI4MyI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMDAuOTI4NTcxNDI4NTcxNCI+aXNfdW5pcXVlIDo8L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzE5LjQ5OTk5OTk5OTk5OTk0Ij5Cb29sZWFuPC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMzOC4wNzE0Mjg1NzE0Mjg1Ij5pc19hYnN0cmFjdCA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM1Ni42NDI4NTcxNDI4NTcwNSI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNzUuMjE0Mjg1NzE0Mjg1NiI+aXNfc3RhdGljIDogQm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzOTMuNzg1NzE0Mjg1NzE0MTYiPmlzX3BhcnRfb2Zfa2V5IDo8L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDEyLjM1NzE0Mjg1NzE0MjciPkJvb2xlYW48L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDMwLjkyODU3MTQyODU3MTMiPmlzX2Rlcml2ZWQgOjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0NDkuNDk5OTk5OTk5OTk5ODMiPkJvb2xlYW48L3RzcGFuPjx0c3BhbiB4PSI1MDcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDY4LjA3MTQyODU3MTQyODQiPmlzX3JlYWRfb25seSA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ4Ni42NDI4NTcxNDI4NTY5NCI+Qm9vbGVhbjwvdHNwYW4+PHRzcGFuIHg9IjUwNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MDUuMjE0Mjg1NzE0Mjg1NSI+dmlzaWJpbGl0eSA6PC90c3Bhbj48dHNwYW4geD0iNTA3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUyMy43ODU3MTQyODU3MTQxIj5WaXNpYmlsaXR5S2luZDwvdHNwYW4+PC90ZXh0Pjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDk1IiB5PSIyMjUiPjx0c3BhbiB4PSI1ODEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjM2LjU3MTQyODU3MTQyODU4Ij5Qcm9wZXJ0eTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI1MzUuNjkwNDc2MTkwNDc2MSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyMjYuNTcxNDI4NTcxNDI4NTgiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MiIGlkPSJfYnluSFVGLUpFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjUzIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAxIiB4PSIxNTUuNSIgeT0iNTA1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTU1LjUiIHgyPSIyNTYuNSIgeTE9IjUyOS41IiB5Mj0iNTI5LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxNTUiIHk9IjUwNSI+PHRzcGFuIHg9IjIxNi41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MTcuMjg1NzE0Mjg1NzE0MyI+Q29tcGxleFZhbHVlPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjE1NS45Mjg1NzE0Mjg1NzE0NCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSI1MDcuMjg1NzE0Mjg1NzE0MzMiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ29tcGxleFZhbHVlIiBpZD0iX2UtN1NVRi1KRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDb21wbGV4VmFsdWUiIGZpbGw9IiNGRUZERkEiIGhlaWdodD0iNTAiIHN0cm9rZT0iIzY3Njc2NyIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAwIiB4PSIxMzAwLjUiIHk9IjQ1NC41IiAvPjx0ZXh0IGNsYXNzPSJDb21wbGV4VmFsdWUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEzMDAiIHk9IjQ1NCI+PHRzcGFuIHg9IjEzNTAuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDY0LjI4NTcxNDI4NTcxNDMiPkNvbXBsZXhWYWx1ZTwvdHNwYW4+PHRzcGFuIHg9IjEzNTAuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDgyLjg1NzE0Mjg1NzE0MjgzIj4xPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggU3RyaW5nVHlwZSIgaWQ9Il9lcWRGb0dBaUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iU3RyaW5nVHlwZSIgZmlsbD0iI0U4RTBEMiIgaGVpZ2h0PSI2OSIgc3Ryb2tlPSIjNjc2NzY3IiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDgiIHg9IjEyOTUuNSIgeT0iMzg1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjNjc2NzY3IiB4MT0iMTI5NS41IiB4Mj0iMTQ0My41IiB5MT0iNDA5LjUiIHkyPSI0MDkuNSIgLz48dGV4dCBjbGFzcz0iU3RyaW5nVHlwZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTI5NSIgeT0iMzg1Ij48dHNwYW4geD0iMTM2OS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzOTYuNTcxNDI4NTcxNDI4NTYiPlN0cmluZ1R5cGUgOTwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IENvbGxlY3Rpb24gY29udGV4dC1fdWlaMXdHQWlFZXk4ZXJsanZrUy1wUSIgaWQ9Il90OFY3VUdBaUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ29sbGVjdGlvbiIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSI2OSIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDgiIHg9IjEyMzUuNSIgeT0iMTk1LjUiIC8+PHRleHQgY2xhc3M9IkNvbGxlY3Rpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEyMzUiIHk9IjE5NSI+PHRzcGFuIHg9IjEzMDkuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjAzLjE0Mjg1NzE0Mjg1NzE0Ij5Db2xsZWN0aW9uIDI8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBEYXRhUGtnIiBpZD0iX192WWZJV0FpRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJEYXRhUGtnIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZGRl9GQUZBRkEmcXVvdDspIiBoZWlnaHQ9IjgxIiBzdHJva2U9IiM0NTQ1NDUiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjgxIiB4PSI3MDUuNSIgeT0iMTg1LjUiIC8+PHRleHQgY2xhc3M9IkRhdGFQa2ciIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjcwNSIgeT0iMTg1Ij48dHNwYW4geD0iNzQ1LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE5Ny4yODU3MTQyODU3MTQyOCI+Y2FwZWxsYWNvcmU8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV8yTmMxNEdBaUVleThlcmxqdmtTLXBRIGNvbnRleHQtX09CdnZnR0E1RWV5OGVybGp2a1MtcFEgY29udGV4dC1fUmtYYmRHRWFFZXk4ZXJsanZrUy1wUSIgaWQ9Il96SmM1WUdBaUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iNTIiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjN0I2OTRGIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSI2MSIgeD0iNzE1LjUiIHk9IjIxNC41IiAvPjxsaW5lIHN0cm9rZT0iIzdCNjk0RiIgeDE9IjcxNS41IiB4Mj0iNzc2LjUiIHkxPSIyMzguNSIgeTI9IjIzOC41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwMDAwMCIgZm9udC1zdHlsZT0iaXRhbGljIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3MTUiIHk9IjIxNCI+PHRzcGFuIHg9Ijc1Ni41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMjUuNTcxNDI4NTcxNDI4NTgiPlR5cGU8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNzIxLjY0Mjg1NzE0Mjg1NzEiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMjE1LjU3MTQyODU3MTQyODU4IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX1JrWGJkR0VhRWV5OGVybGp2a1MtcFEgY29udGV4dC1fVThMMllHRWJFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9XTFE0TUdKWkVleThlcmxqdmtTLXBRIGNvbnRleHQtX1lCczE2R0ViRWV5OGVybGp2a1MtcFEgY29udGV4dC1fYlpyZVRHRWJFZXk4ZXJsanZrUy1wUSBjb250ZXh0LV9jLVpaV0dFYkVleThlcmxqdmtTLXBRIGNvbnRleHQtX2NCN3dxR0paRWV5OGVybGp2a1MtcFEgY29udGV4dC1faWo0Yk9HRWJFZXk4ZXJsanZrUy1wUSIgaWQ9Il96Mnh4TUdFWkVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iMTk1IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzdCNjk0RiIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTQxIiB4PSI3NTUuNSIgeT0iMjkxLjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNzU1LjUiIHgyPSI4OTYuNSIgeTE9IjMxNS41IiB5Mj0iMzE1LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9Ijc2Ny41IiB5PSIzMTUuNSI+PHRzcGFuIHg9Ijc2Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMjkuNzg1NzE0Mjg1NzE0MyI+dmFsdWUgOiBWYWx1ZVR5cGU8L3RzcGFuPjwvdGV4dD48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijc1NSIgeT0iMjkxIj48dHNwYW4geD0iODM2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMwMS4xNDI4NTcxNDI4NTcxNyI+TGl0ZXJhbFZhbHVlPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9Ijc4My4wNzE0Mjg1NzE0Mjg2IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjI5MS4xNDI4NTcxNDI4NTcxNyIgLz48L2c+PGcgY2xhc3M9IkJveCBOdW1lcmljVHlwZSIgaWQ9Il8tX2FkRUdFYUVleThlcmxqdmtTLXBRIj48cmVjdCBjbGFzcz0iTnVtZXJpY1R5cGUiIGZpbGw9IiNFOEUwRDIiIGhlaWdodD0iNjkiIHN0cm9rZT0iIzY3Njc2NyIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTExIiB4PSIxMjgwLjUiIHk9IjMzNi41IiAvPjxsaW5lIHN0cm9rZT0iIzY3Njc2NyIgeDE9IjEyODAuNSIgeDI9IjEzOTEuNSIgeTE9IjM2MC41IiB5Mj0iMzYwLjUiIC8+PHRleHQgY2xhc3M9Ik51bWVyaWNUeXBlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjgwIiB5PSIzMzYiPjx0c3BhbiB4PSIxMzM1LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM0OC4yODU3MTQyODU3MTQzIj5WYWx1ZVR5cGU8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV9VOEwyWUdFYkVleThlcmxqdmtTLXBRIiBpZD0iX1RJeW1JR0ViRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRThFMEQyJnF1b3Q7KSIgaGVpZ2h0PSI0NyIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiM3QjY5NEYiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjYxIiB4PSI2NzUuNSIgeT0iNTE1LjUiIC8+PGxpbmUgc3Ryb2tlPSIjN0I2OTRGIiB4MT0iNjc1LjUiIHgyPSI3MzYuNSIgeTE9IjUzOS41IiB5Mj0iNTM5LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjMDAwMDAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NzUiIHk9IjUxNSI+PHRzcGFuIHg9IjcxNi41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MjQuNDI4NTcxNDI4NTcxNCI+VW5pdDwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI2ODMuNTQ3NjE5MDQ3NjE5IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjUxNC40Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIiBpZD0iX3BGRlZNR01HRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI0NyIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNGRjA5MDkiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEwMCIgeD0iMTYuNSIgeT0iNDU0LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTYuNSIgeDI9IjExNi41IiB5MT0iNDc4LjUiIHkyPSI0NzguNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRjA5MDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE2IiB5PSI0NTQiPjx0c3BhbiB4PSI3Ny4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0NjMuNDI4NTcxNDI4NTcxNDQiPkVudW1lcmF0aW9uPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjIwLjIzODA5NTIzODA5NTIzNCIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSI0NTMuNDI4NTcxNDI4NTcxNDQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MiIGlkPSJfckdZZWtHTUdFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ5IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTMxIiB4PSIxNS41IiB5PSI1MDUuNSIgLz48bGluZSBzdHJva2U9IiNGRjA5MDkiIHgxPSIxNS41IiB4Mj0iMTQ2LjUiIHkxPSI1MjkuNSIgeTI9IjUyOS41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTUiIHk9IjUwNSI+PHRzcGFuIHg9IjkxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUxNS4xNDI4NTcxNDI4NTcxIj5FbnVtZXJhdGlvbkxpdGVyYWw8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMTguMDcxNDI4NTcxNDI4NTc3IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjUwNS4xNDI4NTcxNDI4NTcxIiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX0Rob3NnR01IRWV5OGVybGp2a1MtcFEiIGlkPSJfMlB1eGtHTUdFZXk4ZXJsanZrUy1wUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ5IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTAxIiB4PSIxNS41IiB5PSIxNDcuNSIgLz48bGluZSBzdHJva2U9IiNGRjA5MDkiIHgxPSIxNS41IiB4Mj0iMTE2LjUiIHkxPSIxNzEuNSIgeTI9IjE3MS41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTUiIHk9IjE0NyI+PHRzcGFuIHg9Ijc2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE1Ny4xNDI4NTcxNDI4NTcxNCI+R2VuZXJhbGl6YXRpb248L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMTUuOTI4NTcxNDI4NTcxNDMiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMTQ3LjE0Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIiBpZD0iX2stQmp3R01IRWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI0OSIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNGRjA5MDkiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjkxIiB4PSIxMjUuNSIgeT0iNDU0LjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iMTI1LjUiIHgyPSIyMTYuNSIgeTE9IjQ3OC41IiB5Mj0iNDc4LjUiIC8+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMjUiIHk9IjQ1NCI+PHRzcGFuIHg9IjE4MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0NjQuMTQyODU3MTQyODU3MTciPlZhbHVlUGFydDwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIxMzMuNzg1NzE0Mjg1NzE0MjgiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iNDU0LjE0Mjg1NzE0Mjg1NzE3IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIiBpZD0iX3VGZWZ3R053RWV5OGVybGp2a1MtcFEiPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0iI0ZGRkZGRiIgaGVpZ2h0PSI0OSIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNGRjA5MDkiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjExMSIgeD0iMjY1LjUiIHk9IjUwMy41IiAvPjxsaW5lIHN0cm9rZT0iI0ZGMDkwOSIgeDE9IjI2NS41IiB4Mj0iMzc2LjUiIHkxPSI1MjcuNSIgeTI9IjUyNy41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0ZGMDkwOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMjY1IiB5PSI1MDMiPjx0c3BhbiB4PSIzMzEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTEzLjE0Mjg1NzE0Mjg1NzEiPkNvbGxlY3Rpb25WYWx1ZTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIyNjguNTQ3NjE5MDQ3NjE5MDQiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iNTAzLjE0Mjg1NzE0Mjg1NzEiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fSU91czBHd1NFZXl3ektIUmtlejkwUSBjb250ZXh0LV9scXBZVkd3U0VleXd6S0hSa2V6OTBRIGNvbnRleHQtX3lNaXluR3dTRWV5d3pLSFJrZXo5MFEiIGlkPSJfXzN3YTBHd1JFZXl3ektIUmtlejkwUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjkwIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTUxIiB4PSI0MTUuNSIgeT0iMTAzLjUiIC8+PGxpbmUgc3Ryb2tlPSIjRkYwOTA5IiB4MT0iNDE1LjUiIHgyPSI1NjYuNSIgeTE9IjEyNy41IiB5Mj0iMTI3LjUiIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQyNy41IiB5PSIxMjcuNSI+PHRzcGFuIHg9IjQyNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNDEuNzg1NzE0Mjg1NzE0MjgiPnZpc2liaWxpdHkgOjwvdHNwYW4+PHRzcGFuIHg9IjQyNy41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNjAuMzU3MTQyODU3MTQyODYiPlZpc2liaWxpdHlLaW5kPC90c3Bhbj48L3RleHQ+PHRleHQgY2xhc3M9IkNsYXNzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjRkYwOTA5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0MTUiIHk9IjEwMyI+PHRzcGFuIHg9IjUwMS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMTQuNTcxNDI4NTcxNDI4NTciPk9wZXJhdGlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0NTIuMzU3MTQyODU3MTQyODMiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMTA0LjU3MTQyODU3MTQyODU3IiAvPjwvZz48ZyBjbGFzcz0iQm94IENsYXNzIGNvbnRleHQtX3lNaXluR3dTRWV5d3pLSFJrZXo5MFEiIGlkPSJfdnh5bllHd1NFZXl3ektIUmtlejkwUSI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSIjRkZGRkZGIiBoZWlnaHQ9IjQ3IiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iI0ZGMDkwOSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iOTAiIHg9IjQxNi41IiB5PSIyNS41IiAvPjxsaW5lIHN0cm9rZT0iI0ZGMDkwOSIgeDE9IjQxNi41IiB4Mj0iNTA2LjUiIHkxPSI0OS41IiB5Mj0iNDkuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRjA5MDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQxNiIgeT0iMjUiPjx0c3BhbiB4PSI0NzIuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzQuNDI4NTcxNDI4NTcxNDMiPlBhcmFtZXRlcjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0MjEuOTA0NzYxOTA0NzYxOSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyNC40Mjg1NzE0Mjg1NzE0MyIgLz48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyIgaWQ9Il9ELW96d0d6YUVleXd6S0hSa2V6OTBRIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9IiNGRkZGRkYiIGhlaWdodD0iNDciIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRkYwOTA5IiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxMDEiIHg9IjIyNS41IiB5PSI0NTQuNSIgLz48bGluZSBzdHJva2U9IiNGRjA5MDkiIHgxPSIyMjUuNSIgeDI9IjMyNi41IiB5MT0iNDc4LjUiIHkyPSI0NzguNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNGRjA5MDkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIyNSIgeT0iNDU0Ij48dHNwYW4geD0iMjg2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ2My40Mjg1NzE0Mjg1NzE0NCI+QXNzb2NpYXRpb248L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMjM0LjAyMzgwOTUyMzgwOTUyIiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjQ1My40Mjg1NzE0Mjg1NzE0NCIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQXNzb2NpYXRpb24iIGlkPSJfenpZTUFGNjFFZXk4ZXJsanZrUy1wUSI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMTk1LjUgMjI1LjUgMTk1LjUgMTczLjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjRmluZUFycm93TWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQXNzb2NpYXRpb24iIGlkPSJfSjh5Nk9GNjJFZXk4ZXJsanZrUy1wUSI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMzM2LjUgMzQwLjUgMzc2LjUgMzQwLjUgMzc2LjUgMzYwLjUgMzM2LjUgMzYwLjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjRmluZUFycm93TWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgR2VuZXJhbGl6YXRpb24iIGlkPSJfUjFBZWNGOTRFZXk4ZXJsanZrUy1wUSI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMTk1LjUgNDI0LjUgMTk1LjUgNDI3LjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjR2VuZXJhbGl6YXRpb25NYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9kMjcyNkYtR0VleThlcmxqdmtTLXBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMzYuNSAyNjYuNSA0OTUuNSAyNjYuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9JcGxBOUYtSkVleThlcmxqdmtTLXBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA4NDUuNSAyMjIuNSA4NDUuNSAxODEuNSA2MzUuNSAxODEuNSA2MzUuNSAyMjUuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBDb2xsZWN0aW9uIiBpZD0iX3VpWjF3R0FpRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDEyMzUuNSAyMTMuNSAxMTY2LjUgMjEzLjUgMTE2Ni41IDY3LjUgMTIxOS41IDY3LjUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLWRhc2hhcnJheT0iNSIgc3Ryb2tlLXdpZHRoPSIxIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIxMTEwIiB5PSIxNzkiPjx0c3BhbiB4PSIxMTU2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE4OS4xNDI4NTcxNDI4NTcxNCI+Q29sbGVjdGlvbiAyPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iXzJOYzE0R0FpRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDgzMy41IDI0NC41IDc3Ni41IDI0NC41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX09CdnZnR0E1RWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDIzNi41IDcxNS41IDIzNi41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1JrWGJkR0VhRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDc1NS41IDMwNS41IDczNS41IDMwNS41IDczNS41IDI2Ni41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1U4TDJZR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDgyNS41IDQ4Ni41IDgyNS41IDU0My41IDczNi41IDU0My41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1lCczE2R0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDQxNS41IDc1NS41IDQxNS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2JacmVUR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDM4NS41IDc1NS41IDM4NS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2MtWlpXR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDM2My41IDc1NS41IDM2My41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2lqNGJPR0ViRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDMzNS41IDc1NS41IDMzNS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX1dMUTRNR0paRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDQzNS41IDY4NS41IDQzNS41IDc1NS41IDQzNS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX2NCN3dxR0paRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0Ni41IDQ2NS41IDc1NS41IDQ2NS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEFzc29jaWF0aW9uIiBpZD0iX0Rob3NnR01IRWV5OGVybGp2a1MtcFEiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDE4NS41IDI3Mi41IDM1LjUgMjcyLjUgMzUuNSAxOTYuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9vd05pWUd3UEVleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMDYuNSAzNzUuNSA0OTUuNSAzNzUuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9wdElkckd3UEVleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMDYuNSA0MDQuNSA0OTUuNSA0MDQuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9JT3VzMEd3U0VleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMjUuNSAyMjUuNSAzMjUuNSAyMzguNSA0MjYuNSAyMzguNSA0MjYuNSAxOTMuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il9scXBZVkd3U0VleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA4NjYuNSAyMjIuNSA4NjYuNSAxNDIuNSA1NjYuNSAxNDIuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNGaW5lQXJyb3dNYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBBc3NvY2lhdGlvbiIgaWQ9Il95TWl5bkd3U0VleXd6S0hSa2V6OTBRIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA0NjcuNSAxMDMuNSA0NTEuNSA3Mi41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0ZpbmVBcnJvd01hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjwvc3ZnPg==" />
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Association">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">Association</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Association" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>An Association.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Association.members">
+<span class="sig-name descname"><span class="pre">members</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Property" title="capellambse.model.crosslayer.information.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Association.members" title="Link to this definition">#</a></dt>
+<dd><p>The members of this Association.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Association.navigable_members">
+<span class="sig-name descname"><span class="pre">navigable_members</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Property" title="capellambse.model.crosslayer.information.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Association.navigable_members" title="Link to this definition">#</a></dt>
+<dd><p>The navigable members of this Association.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Association.roles">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">roles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Property" title="capellambse.model.crosslayer.information.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Association.roles" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Association.source_role">
+<span class="sig-name descname"><span class="pre">source_role</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Property" title="capellambse.model.crosslayer.information.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Association.source_role" title="Link to this definition">#</a></dt>
+<dd><p>The source role of this Association.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">Class</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A Class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.generalizations">
+<span class="sig-name descname"><span class="pre">generalizations</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.generalizations" title="Link to this definition">#</a></dt>
+<dd><p>The generalizations of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.is_abstract">
+<span class="sig-name descname"><span class="pre">is_abstract</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.is_abstract" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if class is abstract</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.is_final">
+<span class="sig-name descname"><span class="pre">is_final</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.is_final" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if class is final</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.is_primitive">
+<span class="sig-name descname"><span class="pre">is_primitive</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.is_primitive" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if class is primitive</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.owned_properties">
+<span class="sig-name descname"><span class="pre">owned_properties</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.owned_properties" title="Link to this definition">#</a></dt>
+<dd><p>The owned properties of this Class.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.properties">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">properties</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Property" title="capellambse.model.crosslayer.information.Property"><span class="pre">Property</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.properties" title="Link to this definition">#</a></dt>
+<dd><p>Return all owned and inherited properties.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.realizations">
+<span class="sig-name descname"><span class="pre">realizations</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.realizations" title="Link to this definition">#</a></dt>
+<dd><p>The realizations of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.realized_by">
+<span class="sig-name descname"><span class="pre">realized_by</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.realized_by" title="Link to this definition">#</a></dt>
+<dd><p>The realized by of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.realized_classes">
+<span class="sig-name descname"><span class="pre">realized_classes</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.realized_classes" title="Link to this definition">#</a></dt>
+<dd><p>The realized classes of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.state_machines">
+<span class="sig-name descname"><span class="pre">state_machines</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.state_machines" title="Link to this definition">#</a></dt>
+<dd><p>The state machines of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.sub">
+<span class="sig-name descname"><span class="pre">sub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.sub" title="Link to this definition">#</a></dt>
+<dd><p>The sub of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.super">
+<span class="sig-name descname"><span class="pre">super</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Class" title="capellambse.model.crosslayer.information.Class"><span class="pre">Class</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.super" title="Link to this definition">#</a></dt>
+<dd><p>The super of this Class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Class.visibility">
+<span class="sig-name descname"><span class="pre">visibility</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Class.visibility" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Collection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">Collection</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Collection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A Collection.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Collection.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Collection.kind" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Collection.sub">
+<span class="sig-name descname"><span class="pre">sub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Collection.sub" title="Link to this definition">#</a></dt>
+<dd><p>The sub of this Collection.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Collection.super">
+<span class="sig-name descname"><span class="pre">super</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Collection" title="capellambse.model.crosslayer.information.Collection"><span class="pre">Collection</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Collection.super" title="Link to this definition">#</a></dt>
+<dd><p>The super of this Collection.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">DataPkg</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A data package that can hold classes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.classes">
+<span class="sig-name descname"><span class="pre">classes</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.classes" title="Link to this definition">#</a></dt>
+<dd><p>The classes of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.collections">
+<span class="sig-name descname"><span class="pre">collections</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.collections" title="Link to this definition">#</a></dt>
+<dd><p>The collections of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.complex_values">
+<span class="sig-name descname"><span class="pre">complex_values</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.complex_values" title="Link to this definition">#</a></dt>
+<dd><p>The complex values of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.datatypes">
+<span class="sig-name descname"><span class="pre">datatypes</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.datatypes" title="Link to this definition">#</a></dt>
+<dd><p>The datatypes of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.enumerations">
+<span class="sig-name descname"><span class="pre">enumerations</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.enumerations" title="Link to this definition">#</a></dt>
+<dd><p>The enumerations of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.owned_associations">
+<span class="sig-name descname"><span class="pre">owned_associations</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.owned_associations" title="Link to this definition">#</a></dt>
+<dd><p>The owned associations of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.packages" title="Link to this definition">#</a></dt>
+<dd><p>The packages of this DataPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.DataPkg.unions">
+<span class="sig-name descname"><span class="pre">unions</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.DataPkg.unions" title="Link to this definition">#</a></dt>
+<dd><p>The unions of this DataPkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">ExchangeItem</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItem" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>An item that can be exchanged on an Exchange.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItem.elements">
+<span class="sig-name descname"><span class="pre">elements</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItem.elements" title="Link to this definition">#</a></dt>
+<dd><p>The elements of this ExchangeItem.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItem.exchanges">
+<span class="sig-name descname"><span class="pre">exchanges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><span class="pre">c.GenericElement</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItem.exchanges" title="Link to this definition">#</a></dt>
+<dd><p>The exchanges of this ExchangeItem.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItem.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItem.type" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItemElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">ExchangeItemElement</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItemElement" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>An ExchangeItemElement (proxy link).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItemElement.abstract_type">
+<span class="sig-name descname"><span class="pre">abstract_type</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItemElement.abstract_type" title="Link to this definition">#</a></dt>
+<dd><p>The abstract type of this ExchangeItemElement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItemElement.max_card">
+<span class="sig-name descname"><span class="pre">max_card</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItemElement.max_card" title="Link to this definition">#</a></dt>
+<dd><p>The max card of this ExchangeItemElement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItemElement.min_card">
+<span class="sig-name descname"><span class="pre">min_card</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItemElement.min_card" title="Link to this definition">#</a></dt>
+<dd><p>The min card of this ExchangeItemElement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.ExchangeItemElement.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.ExchangeItemElement.owner" title="Link to this definition">#</a></dt>
+<dd><p>The owner of this ExchangeItemElement.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.InformationRealization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">InformationRealization</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.InformationRealization" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.crosslayer.html#capellambse.model.crosslayer.modellingcore.TraceableElement" title="capellambse.model.crosslayer.modellingcore.TraceableElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">TraceableElement</span></code></a></p>
+<p>A realization for a Class.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.PortAllocation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">PortAllocation</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.PortAllocation" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.crosslayer.html#capellambse.model.crosslayer.modellingcore.TraceableElement" title="capellambse.model.crosslayer.modellingcore.TraceableElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">TraceableElement</span></code></a></p>
+<p>An exchange between a ComponentPort and FunctionalPort.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">Property</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A Property of a Class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.association">
+<span class="sig-name descname"><span class="pre">association</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.association" title="Link to this definition">#</a></dt>
+<dd><p>The association of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.default_value">
+<span class="sig-name descname"><span class="pre">default_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.default_value" title="Link to this definition">#</a></dt>
+<dd><p>The default value of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_abstract">
+<span class="sig-name descname"><span class="pre">is_abstract</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_abstract" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is abstract</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_derived">
+<span class="sig-name descname"><span class="pre">is_derived</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_derived" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is abstract</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_ordered">
+<span class="sig-name descname"><span class="pre">is_ordered</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_ordered" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is ordered</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_part_of_key">
+<span class="sig-name descname"><span class="pre">is_part_of_key</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_part_of_key" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is part of key</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_read_only">
+<span class="sig-name descname"><span class="pre">is_read_only</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_read_only" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is read-only</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_static">
+<span class="sig-name descname"><span class="pre">is_static</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_static" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is static</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.is_unique">
+<span class="sig-name descname"><span class="pre">is_unique</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.is_unique" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is unique</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.kind" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.max">
+<span class="sig-name descname"><span class="pre">max</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.max" title="Link to this definition">#</a></dt>
+<dd><p>The max of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.max_card">
+<span class="sig-name descname"><span class="pre">max_card</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.max_card" title="Link to this definition">#</a></dt>
+<dd><p>The max card of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.max_value">
+<span class="sig-name descname"><span class="pre">max_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.max_value" title="Link to this definition">#</a></dt>
+<dd><p>The max value of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.min">
+<span class="sig-name descname"><span class="pre">min</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.min" title="Link to this definition">#</a></dt>
+<dd><p>The min of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.min_card">
+<span class="sig-name descname"><span class="pre">min_card</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.min_card" title="Link to this definition">#</a></dt>
+<dd><p>The min card of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.min_value">
+<span class="sig-name descname"><span class="pre">min_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.min_value" title="Link to this definition">#</a></dt>
+<dd><p>The min value of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.null_value">
+<span class="sig-name descname"><span class="pre">null_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.null_value" title="Link to this definition">#</a></dt>
+<dd><p>The null value of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.type" title="Link to this definition">#</a></dt>
+<dd><p>The type of this Property.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Property.visibility">
+<span class="sig-name descname"><span class="pre">visibility</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Property.visibility" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Union">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">Union</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Union" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.Class" title="capellambse.model.crosslayer.information.Class"><code class="xref py py-class docutils literal notranslate"><span class="pre">Class</span></code></a></p>
+<p>A Union.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Union.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Union.kind" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Union.sub">
+<span class="sig-name descname"><span class="pre">sub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Union.sub" title="Link to this definition">#</a></dt>
+<dd><p>The sub of this Union.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Union.super">
+<span class="sig-name descname"><span class="pre">super</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.Class" title="capellambse.model.crosslayer.information.Class"><span class="pre">Class</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.Union.super" title="Link to this definition">#</a></dt>
+<dd><p>The super of this Union.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.Unit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">Unit</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.Unit" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>Unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.cls">
+<span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.</span></span><span class="sig-name descname"><span class="pre">cls</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.cls" title="Link to this definition">#</a></dt>
+<dd><p>alias of <a class="reference internal" href="#capellambse.model.crosslayer.information.Collection" title="capellambse.model.crosslayer.information.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Collection</span></code></a></p>
+</dd></dl>
+
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
+</section>
+<section id="module-capellambse.model.crosslayer.information.datatype">
+<span id="capellambse-model-crosslayer-information-datatype-module"></span><h2>capellambse.model.crosslayer.information.datatype module<a class="headerlink" href="#module-capellambse.model.crosslayer.information.datatype" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.BooleanType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datatype.</span></span><span class="sig-name descname"><span class="pre">BooleanType</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.BooleanType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType" title="capellambse.model.crosslayer.information.datatype.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.BooleanType.default">
+<span class="sig-name descname"><span class="pre">default</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.BooleanType.default" title="Link to this definition">#</a></dt>
+<dd><p>The default of this BooleanType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.BooleanType.literals">
+<span class="sig-name descname"><span class="pre">literals</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.BooleanType.literals" title="Link to this definition">#</a></dt>
+<dd><p>The literals of this BooleanType.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.DataType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datatype.</span></span><span class="sig-name descname"><span class="pre">DataType</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.DataType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.DataType.is_discrete">
+<span class="sig-name descname"><span class="pre">is_discrete</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.DataType.is_discrete" title="Link to this definition">#</a></dt>
+<dd><p>Specifies whether or not this data type characterizes a discrete value (versus continuous value)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.DataType.max_inclusive">
+<span class="sig-name descname"><span class="pre">max_inclusive</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.DataType.max_inclusive" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.DataType.min_inclusive">
+<span class="sig-name descname"><span class="pre">min_inclusive</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.DataType.min_inclusive" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.DataType.pattern">
+<span class="sig-name descname"><span class="pre">pattern</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.DataType.pattern" title="Link to this definition">#</a></dt>
+<dd><p>Textual specification of a constraint associated to this data type</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.DataType.visibility">
+<span class="sig-name descname"><span class="pre">visibility</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.DataType.visibility" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.Enumeration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datatype.</span></span><span class="sig-name descname"><span class="pre">Enumeration</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.Enumeration" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType" title="capellambse.model.crosslayer.information.datatype.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+<p>An Enumeration.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.Enumeration.literals">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">literals</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral" title="capellambse.model.crosslayer.information.datavalue.EnumerationLiteral"><span class="pre">EnumerationLiteral</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.Enumeration.literals" title="Link to this definition">#</a></dt>
+<dd><p>Return all owned and inherited literals.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.Enumeration.owned_literals">
+<span class="sig-name descname"><span class="pre">owned_literals</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.Enumeration.owned_literals" title="Link to this definition">#</a></dt>
+<dd><p>The owned literals of this Enumeration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.Enumeration.sub">
+<span class="sig-name descname"><span class="pre">sub</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.Enumeration.sub" title="Link to this definition">#</a></dt>
+<dd><p>The sub of this Enumeration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.Enumeration.super">
+<span class="sig-name descname"><span class="pre">super</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.Enumeration" title="capellambse.model.crosslayer.information.datatype.Enumeration"><span class="pre">Enumeration</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.Enumeration.super" title="Link to this definition">#</a></dt>
+<dd><p>The super of this Enumeration.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.NumericType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datatype.</span></span><span class="sig-name descname"><span class="pre">NumericType</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.NumericType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType" title="capellambse.model.crosslayer.information.datatype.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.NumericType.default_value">
+<span class="sig-name descname"><span class="pre">default_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.NumericType.default_value" title="Link to this definition">#</a></dt>
+<dd><p>The default value of this NumericType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.NumericType.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.NumericType.kind" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.NumericType.max_value">
+<span class="sig-name descname"><span class="pre">max_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.NumericType.max_value" title="Link to this definition">#</a></dt>
+<dd><p>The max value of this NumericType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.NumericType.min_value">
+<span class="sig-name descname"><span class="pre">min_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.NumericType.min_value" title="Link to this definition">#</a></dt>
+<dd><p>The min value of this NumericType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.NumericType.null_value">
+<span class="sig-name descname"><span class="pre">null_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.NumericType.null_value" title="Link to this definition">#</a></dt>
+<dd><p>The null value of this NumericType.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.PhysicalQuantity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datatype.</span></span><span class="sig-name descname"><span class="pre">PhysicalQuantity</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.PhysicalQuantity" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType" title="capellambse.model.crosslayer.information.datatype.NumericType"><code class="xref py py-class docutils literal notranslate"><span class="pre">NumericType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.PhysicalQuantity.unit">
+<span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.PhysicalQuantity.unit" title="Link to this definition">#</a></dt>
+<dd><p>The unit of this PhysicalQuantity.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.StringType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datatype.</span></span><span class="sig-name descname"><span class="pre">StringType</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.StringType" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType" title="capellambse.model.crosslayer.information.datatype.DataType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataType</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.StringType.default_value">
+<span class="sig-name descname"><span class="pre">default_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.StringType.default_value" title="Link to this definition">#</a></dt>
+<dd><p>The default value of this StringType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.StringType.max_length">
+<span class="sig-name descname"><span class="pre">max_length</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.StringType.max_length" title="Link to this definition">#</a></dt>
+<dd><p>The max length of this StringType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.StringType.min_length">
+<span class="sig-name descname"><span class="pre">min_length</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.StringType.min_length" title="Link to this definition">#</a></dt>
+<dd><p>The min length of this StringType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datatype.StringType.null_value">
+<span class="sig-name descname"><span class="pre">null_value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datatype.StringType.null_value" title="Link to this definition">#</a></dt>
+<dd><p>The null value of this StringType.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-capellambse.model.crosslayer.information.datavalue">
+<span id="capellambse-model-crosslayer-information-datavalue-module"></span><h2>capellambse.model.crosslayer.information.datavalue module<a class="headerlink" href="#module-capellambse.model.crosslayer.information.datavalue" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.ComplexValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">ComplexValue</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.ComplexValue" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A Complex Value.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.ComplexValue.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.ComplexValue.type" title="Link to this definition">#</a></dt>
+<dd><p>The type of this ComplexValue.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.ComplexValue.value_parts">
+<span class="sig-name descname"><span class="pre">value_parts</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.ComplexValue.value_parts" title="Link to this definition">#</a></dt>
+<dd><p>The value parts of this ComplexValue.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationLiteral">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">EnumerationLiteral</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>An EnumerationLiteral (proxy link).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.Accessor" title="capellambse.model.common.accessors.Accessor"><span class="pre">Accessor</span></a></em><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.owner" title="Link to this definition">#</a></dt>
+<dd><p>The owner of this EnumerationLiteral.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.value" title="Link to this definition">#</a></dt>
+<dd><p>The value of this EnumerationLiteral.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationReference">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">EnumerationReference</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationReference.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationReference.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference.type" title="Link to this definition">#</a></dt>
+<dd><p>The type of this EnumerationReference.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.EnumerationReference.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference.value" title="Link to this definition">#</a></dt>
+<dd><p>The value of this EnumerationReference.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralBooleanValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">LiteralBooleanValue</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralBooleanValue" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A Literal Boolean Value.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralBooleanValue.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralBooleanValue.value" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralNumericValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">LiteralNumericValue</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralNumericValue" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue" title="capellambse.model.crosslayer.information.datavalue.LiteralValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">LiteralValue</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralNumericValue.unit">
+<span class="sig-name descname"><span class="pre">unit</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralNumericValue.unit" title="Link to this definition">#</a></dt>
+<dd><p>The unit of this LiteralNumericValue.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralNumericValue.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralNumericValue.value" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralStringValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">LiteralStringValue</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralStringValue" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue" title="capellambse.model.crosslayer.information.datavalue.LiteralValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">LiteralValue</span></code></a></p>
+<p>A Literal String Value.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">LiteralValue</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralValue.is_abstract">
+<span class="sig-name descname"><span class="pre">is_abstract</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue.is_abstract" title="Link to this definition">#</a></dt>
+<dd><p>Indicates if property is abstract</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralValue.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue.type" title="Link to this definition">#</a></dt>
+<dd><p>The type of this LiteralValue.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.LiteralValue.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue.value" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.ValuePart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.model.crosslayer.information.datavalue.</span></span><span class="sig-name descname"><span class="pre">ValuePart</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.ValuePart" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>A Value Part of a Complex Value.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.ValuePart.referenced_property">
+<span class="sig-name descname"><span class="pre">referenced_property</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.ValuePart.referenced_property" title="Link to this definition">#</a></dt>
+<dd><p>The referenced property of this ValuePart.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.model.crosslayer.information.datavalue.ValuePart.value">
+<span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.model.crosslayer.information.datavalue.ValuePart.value" title="Link to this definition">#</a></dt>
+<dd><p>The value of this ValuePart.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="capellambse.model.layers.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">capellambse.model.layers package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="capellambse.model.crosslayer.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">capellambse.model.crosslayer package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="/_static/img/github-logo.svg"/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">capellambse.model.crosslayer.information package</a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Association"><code class="docutils literal notranslate"><span class="pre">Association</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Association.members"><code class="docutils literal notranslate"><span class="pre">Association.members</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Association.navigable_members"><code class="docutils literal notranslate"><span class="pre">Association.navigable_members</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Association.roles"><code class="docutils literal notranslate"><span class="pre">Association.roles</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Association.source_role"><code class="docutils literal notranslate"><span class="pre">Association.source_role</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class"><code class="docutils literal notranslate"><span class="pre">Class</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.generalizations"><code class="docutils literal notranslate"><span class="pre">Class.generalizations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.is_abstract"><code class="docutils literal notranslate"><span class="pre">Class.is_abstract</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.is_final"><code class="docutils literal notranslate"><span class="pre">Class.is_final</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.is_primitive"><code class="docutils literal notranslate"><span class="pre">Class.is_primitive</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.owned_properties"><code class="docutils literal notranslate"><span class="pre">Class.owned_properties</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.properties"><code class="docutils literal notranslate"><span class="pre">Class.properties</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.realizations"><code class="docutils literal notranslate"><span class="pre">Class.realizations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.realized_by"><code class="docutils literal notranslate"><span class="pre">Class.realized_by</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.realized_classes"><code class="docutils literal notranslate"><span class="pre">Class.realized_classes</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.state_machines"><code class="docutils literal notranslate"><span class="pre">Class.state_machines</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.sub"><code class="docutils literal notranslate"><span class="pre">Class.sub</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.super"><code class="docutils literal notranslate"><span class="pre">Class.super</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Class.visibility"><code class="docutils literal notranslate"><span class="pre">Class.visibility</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Collection"><code class="docutils literal notranslate"><span class="pre">Collection</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Collection.kind"><code class="docutils literal notranslate"><span class="pre">Collection.kind</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Collection.sub"><code class="docutils literal notranslate"><span class="pre">Collection.sub</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Collection.super"><code class="docutils literal notranslate"><span class="pre">Collection.super</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg"><code class="docutils literal notranslate"><span class="pre">DataPkg</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.classes"><code class="docutils literal notranslate"><span class="pre">DataPkg.classes</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.collections"><code class="docutils literal notranslate"><span class="pre">DataPkg.collections</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.complex_values"><code class="docutils literal notranslate"><span class="pre">DataPkg.complex_values</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.datatypes"><code class="docutils literal notranslate"><span class="pre">DataPkg.datatypes</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.enumerations"><code class="docutils literal notranslate"><span class="pre">DataPkg.enumerations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.owned_associations"><code class="docutils literal notranslate"><span class="pre">DataPkg.owned_associations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.packages"><code class="docutils literal notranslate"><span class="pre">DataPkg.packages</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.DataPkg.unions"><code class="docutils literal notranslate"><span class="pre">DataPkg.unions</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItem"><code class="docutils literal notranslate"><span class="pre">ExchangeItem</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItem.elements"><code class="docutils literal notranslate"><span class="pre">ExchangeItem.elements</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItem.exchanges"><code class="docutils literal notranslate"><span class="pre">ExchangeItem.exchanges</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItem.type"><code class="docutils literal notranslate"><span class="pre">ExchangeItem.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItemElement"><code class="docutils literal notranslate"><span class="pre">ExchangeItemElement</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItemElement.abstract_type"><code class="docutils literal notranslate"><span class="pre">ExchangeItemElement.abstract_type</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItemElement.max_card"><code class="docutils literal notranslate"><span class="pre">ExchangeItemElement.max_card</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItemElement.min_card"><code class="docutils literal notranslate"><span class="pre">ExchangeItemElement.min_card</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.ExchangeItemElement.owner"><code class="docutils literal notranslate"><span class="pre">ExchangeItemElement.owner</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.InformationRealization"><code class="docutils literal notranslate"><span class="pre">InformationRealization</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.PortAllocation"><code class="docutils literal notranslate"><span class="pre">PortAllocation</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property"><code class="docutils literal notranslate"><span class="pre">Property</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.association"><code class="docutils literal notranslate"><span class="pre">Property.association</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.default_value"><code class="docutils literal notranslate"><span class="pre">Property.default_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_abstract"><code class="docutils literal notranslate"><span class="pre">Property.is_abstract</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_derived"><code class="docutils literal notranslate"><span class="pre">Property.is_derived</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_ordered"><code class="docutils literal notranslate"><span class="pre">Property.is_ordered</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_part_of_key"><code class="docutils literal notranslate"><span class="pre">Property.is_part_of_key</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_read_only"><code class="docutils literal notranslate"><span class="pre">Property.is_read_only</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_static"><code class="docutils literal notranslate"><span class="pre">Property.is_static</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.is_unique"><code class="docutils literal notranslate"><span class="pre">Property.is_unique</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.kind"><code class="docutils literal notranslate"><span class="pre">Property.kind</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.max"><code class="docutils literal notranslate"><span class="pre">Property.max</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.max_card"><code class="docutils literal notranslate"><span class="pre">Property.max_card</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.max_value"><code class="docutils literal notranslate"><span class="pre">Property.max_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.min"><code class="docutils literal notranslate"><span class="pre">Property.min</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.min_card"><code class="docutils literal notranslate"><span class="pre">Property.min_card</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.min_value"><code class="docutils literal notranslate"><span class="pre">Property.min_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.null_value"><code class="docutils literal notranslate"><span class="pre">Property.null_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.type"><code class="docutils literal notranslate"><span class="pre">Property.type</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Property.visibility"><code class="docutils literal notranslate"><span class="pre">Property.visibility</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Union"><code class="docutils literal notranslate"><span class="pre">Union</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Union.kind"><code class="docutils literal notranslate"><span class="pre">Union.kind</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Union.sub"><code class="docutils literal notranslate"><span class="pre">Union.sub</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Union.super"><code class="docutils literal notranslate"><span class="pre">Union.super</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.Unit"><code class="docutils literal notranslate"><span class="pre">Unit</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.cls"><code class="docutils literal notranslate"><span class="pre">cls</span></code></a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-capellambse.model.crosslayer.information.datatype">capellambse.model.crosslayer.information.datatype module</a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.BooleanType"><code class="docutils literal notranslate"><span class="pre">BooleanType</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.BooleanType.default"><code class="docutils literal notranslate"><span class="pre">BooleanType.default</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.BooleanType.literals"><code class="docutils literal notranslate"><span class="pre">BooleanType.literals</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType"><code class="docutils literal notranslate"><span class="pre">DataType</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType.is_discrete"><code class="docutils literal notranslate"><span class="pre">DataType.is_discrete</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType.max_inclusive"><code class="docutils literal notranslate"><span class="pre">DataType.max_inclusive</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType.min_inclusive"><code class="docutils literal notranslate"><span class="pre">DataType.min_inclusive</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType.pattern"><code class="docutils literal notranslate"><span class="pre">DataType.pattern</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.DataType.visibility"><code class="docutils literal notranslate"><span class="pre">DataType.visibility</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.Enumeration"><code class="docutils literal notranslate"><span class="pre">Enumeration</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.Enumeration.literals"><code class="docutils literal notranslate"><span class="pre">Enumeration.literals</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.Enumeration.owned_literals"><code class="docutils literal notranslate"><span class="pre">Enumeration.owned_literals</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.Enumeration.sub"><code class="docutils literal notranslate"><span class="pre">Enumeration.sub</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.Enumeration.super"><code class="docutils literal notranslate"><span class="pre">Enumeration.super</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType"><code class="docutils literal notranslate"><span class="pre">NumericType</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType.default_value"><code class="docutils literal notranslate"><span class="pre">NumericType.default_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType.kind"><code class="docutils literal notranslate"><span class="pre">NumericType.kind</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType.max_value"><code class="docutils literal notranslate"><span class="pre">NumericType.max_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType.min_value"><code class="docutils literal notranslate"><span class="pre">NumericType.min_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.NumericType.null_value"><code class="docutils literal notranslate"><span class="pre">NumericType.null_value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.PhysicalQuantity"><code class="docutils literal notranslate"><span class="pre">PhysicalQuantity</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.PhysicalQuantity.unit"><code class="docutils literal notranslate"><span class="pre">PhysicalQuantity.unit</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.StringType"><code class="docutils literal notranslate"><span class="pre">StringType</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.StringType.default_value"><code class="docutils literal notranslate"><span class="pre">StringType.default_value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.StringType.max_length"><code class="docutils literal notranslate"><span class="pre">StringType.max_length</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.StringType.min_length"><code class="docutils literal notranslate"><span class="pre">StringType.min_length</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datatype.StringType.null_value"><code class="docutils literal notranslate"><span class="pre">StringType.null_value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-capellambse.model.crosslayer.information.datavalue">capellambse.model.crosslayer.information.datavalue module</a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.ComplexValue"><code class="docutils literal notranslate"><span class="pre">ComplexValue</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.ComplexValue.type"><code class="docutils literal notranslate"><span class="pre">ComplexValue.type</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.ComplexValue.value_parts"><code class="docutils literal notranslate"><span class="pre">ComplexValue.value_parts</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral"><code class="docutils literal notranslate"><span class="pre">EnumerationLiteral</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.name"><code class="docutils literal notranslate"><span class="pre">EnumerationLiteral.name</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.owner"><code class="docutils literal notranslate"><span class="pre">EnumerationLiteral.owner</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationLiteral.value"><code class="docutils literal notranslate"><span class="pre">EnumerationLiteral.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference"><code class="docutils literal notranslate"><span class="pre">EnumerationReference</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference.name"><code class="docutils literal notranslate"><span class="pre">EnumerationReference.name</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference.type"><code class="docutils literal notranslate"><span class="pre">EnumerationReference.type</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.EnumerationReference.value"><code class="docutils literal notranslate"><span class="pre">EnumerationReference.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralBooleanValue"><code class="docutils literal notranslate"><span class="pre">LiteralBooleanValue</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralBooleanValue.value"><code class="docutils literal notranslate"><span class="pre">LiteralBooleanValue.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralNumericValue"><code class="docutils literal notranslate"><span class="pre">LiteralNumericValue</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralNumericValue.unit"><code class="docutils literal notranslate"><span class="pre">LiteralNumericValue.unit</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralNumericValue.value"><code class="docutils literal notranslate"><span class="pre">LiteralNumericValue.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralStringValue"><code class="docutils literal notranslate"><span class="pre">LiteralStringValue</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue"><code class="docutils literal notranslate"><span class="pre">LiteralValue</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue.is_abstract"><code class="docutils literal notranslate"><span class="pre">LiteralValue.is_abstract</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue.type"><code class="docutils literal notranslate"><span class="pre">LiteralValue.type</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.LiteralValue.value"><code class="docutils literal notranslate"><span class="pre">LiteralValue.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.ValuePart"><code class="docutils literal notranslate"><span class="pre">ValuePart</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.ValuePart.referenced_property"><code class="docutils literal notranslate"><span class="pre">ValuePart.referenced_property</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.model.crosslayer.information.datavalue.ValuePart.value"><code class="docutils literal notranslate"><span class="pre">ValuePart.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
