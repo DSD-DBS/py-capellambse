@@ -39,13 +39,6 @@ XP_ANNOTATION_ENTRIES = etree.XPath(
     ),
     namespaces=_n.NAMESPACES,
 )
-XP_DESCRIPTORS = etree.XPath(
-    (
-        "./ownedRepresentationDescriptors"
-        "[@xmi:type='viewpoint:DRepresentationDescriptor']"
-    ),
-    namespaces=_n.NAMESPACES,
-)
 XP_VIEWS = etree.XPath(
     "/xmi:XMI/viewpoint:DAnalysis/ownedViews[viewpoint]",
     namespaces=_n.NAMESPACES,

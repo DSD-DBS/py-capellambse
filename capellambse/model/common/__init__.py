@@ -20,6 +20,7 @@ U = t.TypeVar("U")
 XTYPE_ANCHORS = {
     "capellambse.model": "org.polarsys.capella.core.data.capellamodeller",
     "capellambse.model.crosslayer": "org.polarsys.capella.core.data",
+    "capellambse.model.diagram": "viewpoint",
     "capellambse.model.layers": "org.polarsys.capella.core.data",
 }
 """A mapping from anchor modules to Capella packages.
@@ -57,6 +58,23 @@ def build_xtype(class_: type[ModelObject]) -> str:
     module = class_.__module__[len(anchor) :]
     clsname = class_.__name__
     return f"{package}{module}:{clsname}"
+
+
+def find_wrapper(typehint: str) -> tuple[type[ModelObject], ...]:
+    """Find the possible wrapper classes for the hinted type.
+
+    The typehint is either a single class name, or a namespace prefix
+    and class name separated by ``:``. This function searches for all
+    known wrapper classes that match the given namespace prefix (if any)
+    and which have the given name, and returns them as a tuple. If no
+    matching wrapper classes are found, an empty tuple is returned.
+    """
+    return tuple(
+        v
+        for i in XTYPE_HANDLERS.values()
+        for k, v in i.items()
+        if k.endswith(f":{typehint}") or k == typehint
+    )
 
 
 def enumliteral(

@@ -123,7 +123,7 @@ class MemoryFile(t.BinaryIO):
         return bytes(result)
 
 
-class MemoryFilePath(abc.AbstractFilePath[MemoryFileHandler]):
+class MemoryFilePath(abc.FilePath[MemoryFileHandler]):
     def is_dir(self) -> bool:
         return not self.is_file()
 

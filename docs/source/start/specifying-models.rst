@@ -50,6 +50,28 @@ case as well:
 Make sure to escape any special characters such as whitespace or backslashes
 when specifying paths on the command line.
 
+Remote URLs
+===========
+
+Models can also be loaded from various remote locations by specifying a URL in
+the form of ``protocol://host.name/path/to/model.aird``. Out of the box,
+|project| supports the following protocols:
+
+- :class:`file:///local/folder
+  <capellambse.filehandler.local.LocalFileHandler>`
+- :class:`git://host.name/repo.git
+  <capellambse.filehandler.git.GitFileHandler>` and variants, like:
+  ``git+https://host.name/repo``, ``git@host.name:repo``
+- :class:`http:// and https:// <capellambse.filehandler.http.HTTPFileHandler>`,
+  example: ``https://host.name/path/%s?param=arg``
+- :class:`zip://, zip+https:// etc.
+  <capellambse.filehandler.zip.ZipFileHandler>`, examples:
+  ``zip:///local/file.zip``, ``zip+https://host.name/remote/file.zip``,
+  ``zip+https://host.name/remote/%s?param=arg!file.zip``
+
+Click on a protocol to get to the detailed documentation including supported
+additional arguments, which can be passed in using JSON (see below).
+
 JSON
 ====
 

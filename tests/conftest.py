@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Global fixtures for pytest."""
 import collections.abc as cabc
+import importlib.metadata as imm
 import io
 import pathlib
 import sys
@@ -16,6 +17,15 @@ TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
 TEST_MODEL = "Melody Model Test.aird"
 
 capellambse.load_model_extensions()
+
+if not any(
+    i.module.startswith("capellambse.extensions.")
+    for i in imm.entry_points(group="capellambse.model_extensions")
+):
+    raise RuntimeError(
+        "Built-in model extensions are not loaded,"
+        " is capellambse installed properly?"
+    )
 
 
 @pytest.fixture(scope="session")

@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 import collections.abc as cabc
+import itertools
 import logging
 import os
 import pathlib
@@ -23,7 +24,7 @@ from lxml import etree
 import capellambse
 import capellambse.helpers
 import capellambse.pvmt
-from capellambse import _diagram_cache, filehandler, loader
+from capellambse import _diagram_cache, aird, filehandler, loader
 
 from . import common, diagram  # isort:skip
 
@@ -385,12 +386,20 @@ class MelodyModel:
                 xtypes_.extend(matching_types)
 
         cls = (common.MixedElementList, common.ElementList)[len(xtypes_) == 1]
+
         trees = {
             k
             for k, v in self._loader.trees.items()
             if v.fragment_type is loader.FragmentType.SEMANTIC
         }
         matches = self._loader.iterall_xt(*xtypes_, trees=trees)
+
+        if not xtypes_ or "viewpoint:DRepresentationDescriptor" in xtypes_:
+            matches = itertools.chain(
+                matches,
+                aird.enumerate_descriptors(self._loader),
+            )
+
         if below is not None:
             matches = (
                 i for i in matches if below._element in i.iterancestors()

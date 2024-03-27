@@ -70,6 +70,10 @@ RE_VALID_ID = re.compile(
 )
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
 METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
+ROOT_XT = (
+    "org.polarsys.capella.core.data.capellamodeller:Project",
+    "org.polarsys.capella.core.data.capellamodeller:Library",
+)
 
 
 def _derive_entrypoint(
@@ -1261,6 +1265,8 @@ class MelodyLoader:
     def get_model_info(self) -> ModelInfo:
         """Return information about the loaded model."""
         info = self.filehandler.get_model_info()
+        modelroot = next(self.iterall_xt(*ROOT_XT), None)
+        info.title = getattr(modelroot, "attrib", {}).get("name")
         info.viewpoints = dict(self.referenced_viewpoints())
         info.capella_version = info.viewpoints.get(
             "org.polarsys.capella.core.viewpoint", "UNKNOWN"

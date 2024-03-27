@@ -172,7 +172,7 @@ def _tmpname(filename: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
     return filename.with_name(f"{prefix}{name}{suffix}")
 
 
-class LocalFilePath(abc.AbstractFilePath[LocalFileHandler]):
+class LocalFilePath(abc.FilePath[LocalFileHandler]):
     def is_dir(self) -> bool:
         base = t.cast(pathlib.Path, self._parent.path)
         path = base.joinpath(self._path).resolve()

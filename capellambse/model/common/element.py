@@ -148,7 +148,7 @@ class GenericElement:
     summary = properties.AttributeProperty("summary", optional=True)
     diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
     diagrams = property(  # type: ignore[assignment]
-        lambda self: self._model.diagrams.by_target_uuid(self.uuid)
+        lambda self: self._model.diagrams.by_target(self)
     )
 
     constraints: accessors.Accessor
@@ -690,6 +690,12 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
 
     def __delitem__(self, index: int | slice) -> None:
         del self._elements[index]
+
+    def __contains__(self, obj: t.Any) -> bool:
+        elem = getattr(obj, "_element", None)
+        if isinstance(elem, etree._Element):
+            return obj._element in self._elements
+        return any(i == obj for i in self)
 
     def __getattr__(
         self,

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import collections.abc as cabc
 import itertools
+import logging
 import os
 import pathlib
 import re
@@ -25,6 +26,8 @@ from capellambse import helpers, loader
 
 from . import abc
 
+LOGGER = logging.getLogger(__name__)
+
 
 class DownloadStream(t.BinaryIO):
     __stream: cabc.Iterator[bytes]
@@ -33,10 +36,12 @@ class DownloadStream(t.BinaryIO):
     def __init__(
         self, session: requests.Session, url: str, chunk_size: int = 1024**2
     ) -> None:
+        LOGGER.debug("Opening HTTP download stream from %s", url)
         self.url = url
         self.chunk_size = chunk_size
 
         response = session.get(self.url, stream=True)
+        LOGGER.debug("Status: %d %s", response.status_code, response.reason)
         if response.status_code == 404:
             raise FileNotFoundError(url)
         response.raise_for_status()
@@ -206,7 +211,7 @@ class HTTPFileHandler(abc.FileHandler):
 
     def iterdir(  # pragma: no cover
         self, path: str | pathlib.PurePosixPath = ".", /
-    ) -> cabc.Iterator[abc.AbstractFilePath[te.Self]]:
+    ) -> cabc.Iterator[abc.FilePath[te.Self]]:
         raise TypeError(
             "Cannot list files on raw HTTP sources."
             " Maybe you forgot a 'git+' prefix?"

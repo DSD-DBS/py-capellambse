@@ -54,7 +54,7 @@ class Drawing:
         self,
         metadata: generate.DiagramMetadata,
         *,
-        font_family: str = "Open Sans",
+        font_family: str = "'Open Sans','Segoe UI',Arial,sans-serif",
         font_size: int = 11,
         transparent_background: bool = False,
     ):

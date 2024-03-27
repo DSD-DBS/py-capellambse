@@ -3215,7 +3215,7 @@
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/logical.odesign#//@ownedViewpoints[name='Logical%20Architecture']/@ownedRepresentations[name='Logical%20Architecture%20Blank']/@defaultLayer/@containerMappings[name='LAB%20Logical%20Component']/@conditionnalStyles.0/@style"/>
       </ownedStyle>
       <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/logical.odesign#//@ownedViewpoints[name='Logical%20Architecture']/@ownedRepresentations[name='Logical%20Architecture%20Blank']/@defaultLayer/@containerMappings[name='LAB%20Logical%20Component']"/>
-      <ownedDiagramElements xmi:type="diagram:DNode" uid="_aDTsMrCBEeqLtsTDMgEHBw" name="teach  Potions" width="5" height="5" resizeKind="NSEW">
+      <ownedDiagramElements xmi:type="diagram:DNode" uid="_aDTsMrCBEeqLtsTDMgEHBw" name="teach Potions" width="5" height="5" resizeKind="NSEW">
         <target xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
         <ownedBorderedNodes xmi:type="diagram:DNode" uid="_gQ9V8MEDEeqW8_YksX3uDg" name="FOP 1" outgoingEdges="_RmRSwMTrEeqlbN5fRfdrWQ" incomingEdges="_E2dxpUhREeyVkeSUJyVgbw" width="1" height="1">
@@ -5388,7 +5388,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/logical.odesign#//@ownedViewpoints[name='Logical%20Architecture']/@ownedRepresentations[name='Logical%20Function%20Breakdown']/@defaultLayer/@nodeMappings[name='LFB_LogicalFunction']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNode" uid="_fbhgxEybEeyns9TdzUL1Ow" name="teach  Potions" outgoingEdges="_CPCP_OMeEeyfMuvLtydCpg" width="7" height="7" resizeKind="NSEW">
+    <ownedDiagramElements xmi:type="diagram:DNode" uid="_fbhgxEybEeyns9TdzUL1Ow" name="teach Potions" outgoingEdges="_CPCP_OMeEeyfMuvLtydCpg" width="7" height="7" resizeKind="NSEW">
       <target xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
       <ownedStyle xmi:type="diagram:Square" uid="_CPBB2-MeEeyfMuvLtydCpg" borderSize="1" borderSizeComputationExpression="1" borderColor="39,76,114" labelPosition="node" color="198,230,255">
@@ -5494,7 +5494,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:EdgeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/logical.odesign#//@ownedViewpoints[name='Logical%20Architecture']/@ownedRepresentations[name='Logical%20Function%20Breakdown']/@defaultLayer/@edgeMappings[name='LFB_LogicalFunction_subFunctions']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNode" uid="__dHVZtZLEeqiU8uzTY0Puw" name="teach  Potions" outgoingEdges="_QXRX0EhQEeyVkeSUJyVgbw" width="7" height="7" resizeKind="NSEW">
+    <ownedDiagramElements xmi:type="diagram:DNode" uid="__dHVZtZLEeqiU8uzTY0Puw" name="teach Potions" outgoingEdges="_QXRX0EhQEeyVkeSUJyVgbw" width="7" height="7" resizeKind="NSEW">
       <target xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
       <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
@@ -8557,7 +8557,7 @@
         </ownedStyle>
         <actualMapping xmi:type="description_1:ContainerMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/logical.odesign#//@ownedViewpoints[name='Logical%20Architecture']/@ownedRepresentations[name='Logical%20Data%20Flow%20Blank']/@defaultLayer/@containerMappings[name='LDFB_Function']"/>
       </ownedDiagramElements>
-      <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_Y4_NcgATEeykFulkDFvkrg" name="teach  Potions">
+      <ownedDiagramElements xmi:type="diagram:DNodeContainer" uid="_Y4_NcgATEeykFulkDFvkrg" name="teach Potions">
         <target xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
         <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>
         <ownedBorderedNodes xmi:type="diagram:DNode" uid="_Y4_NdQATEeykFulkDFvkrg" name="FOP 1" width="1" height="1">
@@ -12497,7 +12497,7 @@
       </ownedStyle>
       <actualMapping xmi:type="description_1:NodeMapping" href="platform:/plugin/org.polarsys.capella.core.sirius.analysis/description/common.odesign#//@ownedViewpoints[name='Common']/@ownedRepresentations[name='Functional%20Chain%20Description']/@defaultLayer/@nodeMappings[name='FC_AbstractFunction']"/>
     </ownedDiagramElements>
-    <ownedDiagramElements xmi:type="diagram:DNode" uid="_TmY_o3PIEeyW3OIB4qRWZA" name="teach  Potions" visible="false" width="10" height="5" resizeKind="NSEW">
+    <ownedDiagramElements xmi:type="diagram:DNode" uid="_TmY_o3PIEeyW3OIB4qRWZA" name="teach Potions" visible="false" width="10" height="5" resizeKind="NSEW">
       <target xmi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction" href="Melody%20Model%20Test.capella#8d80bc57-be92-47db-8a53-0dd2b518f6f6"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementFunction" href="Melody%20Model%20Test.capella#8d80bc57-be92-47db-8a53-0dd2b518f6f6"/>
       <semanticElements xmi:type="org.polarsys.capella.core.data.la:LogicalFunction" href="Melody%20Model%20Test.capella#a7acb298-d14b-4707-a419-fea272434541"/>

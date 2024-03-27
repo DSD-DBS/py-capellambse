@@ -13,6 +13,8 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
+import typing as t
+
 from ... import common as c
 from ... import modeltypes
 from .. import capellacommon, capellacore, modellingcore
@@ -90,12 +92,15 @@ class Property(c.GenericElement):
     )
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     default_value = c.RoleTagAccessor("ownedDefaultValue")
-    min = c.RoleTagAccessor("ownedMinValue")
-    max = c.RoleTagAccessor("ownedMaxValue")
+    min_value = c.RoleTagAccessor("ownedMinValue")
+    max_value = c.RoleTagAccessor("ownedMaxValue")
     null_value = c.RoleTagAccessor("ownedNullValue")
     min_card = c.RoleTagAccessor("ownedMinCard")
     max_card = c.RoleTagAccessor("ownedMaxCard")
     association = c.ReferenceSearchingAccessor(Association, "roles")
+
+    min = c.DeprecatedAccessor[t.Any]("min_value")
+    max = c.DeprecatedAccessor[t.Any]("max_value")
 
 
 @c.xtype_handler(None)

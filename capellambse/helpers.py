@@ -36,6 +36,7 @@ else:
 LOGGER = logging.getLogger(__name__)
 
 ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
+ATT_XMT = f"{{{_n.NAMESPACES['xmi']}}}type"
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
 RE_VALID_UUID = re.compile(
@@ -696,8 +697,9 @@ def xtype_of(elem: etree._Element) -> str | None:
         The ``xsi:type`` string of the provided element or ``None`` if
         the type could not be determined.
     """
-    xtype = elem.get(ATT_XT)
-    if xtype:
+    if xtype := elem.get(ATT_XT):
+        return xtype
+    if xtype := elem.get(ATT_XMT):
         return xtype
 
     tagmatch = RE_TAG_NS.fullmatch(elem.tag)
