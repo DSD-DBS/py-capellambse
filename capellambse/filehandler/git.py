@@ -768,8 +768,30 @@ class GitFileHandler(abc.FileHandler):
                 shallow_opts = ("--depth=1", fetchspec)
             self._git("fetch", self.path, *shallow_opts)
 
+    def __resolve_default_branch(self) -> tuple[str, str]:
+        """Resolve the default branch name and its hash on the remote."""
+        LOGGER.debug("Resolving default branch on remote %s", self.path)
+        listing = self.__git_nolock(
+            "ls-remote", "--symref", self.path, "HEAD", encoding="utf-8"
+        )
+        assert isinstance(listing, str)
+        match = re.search(
+            r"ref: (refs/heads/.*)\s+HEAD\s+([0-9a-fA-F]+)", listing
+        )
+        if match:
+            refname = match.group(1)
+            hash = match.group(2)
+            return hash, refname
+        else:
+            raise ValueError("Failed to resolve default branch on remote")
+
     def __resolve_remote_ref(self, ref: str) -> tuple[str, str]:
         """Resolve the given ``ref`` on the remote."""
+        if ref == "HEAD":
+            try:
+                return self.__resolve_default_branch()
+            except ValueError:
+                pass
         LOGGER.debug("Resolving ref %r on remote %s", ref, self.path)
         listing = self.__git_nolock(
             "ls-remote", self.path, ref, encoding="utf-8"

@@ -86,7 +86,7 @@ def test_GitFileHandler_locks_repo_during_tasks(monkeypatch, caplog):
         if len(cmd) >= 2 and cmd[1] == "ls-remote":
             assert not did_ls_files
             did_ls_files = True
-            data = "0123456789abcdef0123456789abcdef01234567\tHEAD"
+            data = "0123456789abcdef0123456789abcdef01234567\thello"
             mock_return = mock.Mock()
             mock_return.stdout = data if encoding else data.encode("ascii")
             mock_return.stderr = "" if encoding else b""
@@ -112,7 +112,9 @@ def test_GitFileHandler_locks_repo_during_tasks(monkeypatch, caplog):
     caplog.clear()
 
     with pytest.raises(FileNotFoundError, match="--mocked end of test--$"):
-        capellambse.get_filehandler("git+https://domain.invalid/demo.git")
+        capellambse.get_filehandler(
+            "git+https://domain.invalid/demo.git", revision="somebranch"
+        )
 
     assert did_ls_files
     assert did_flock
