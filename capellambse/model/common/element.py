@@ -405,6 +405,43 @@ class GenericElement:
     def _repr_html_(self) -> str:
         return self.__html__()
 
+    def get_children(self) -> MixedElementList:
+        """Return all model elements that are children of this one.
+
+        .... seealso::
+
+            :meth:`iter_children`
+        """
+        return MixedElementList(
+            self._model, [ele._element for ele in self.iter_children()]
+        )
+
+    def has_children(self) -> bool:
+        return next(self.iter_children(), None) is not None
+
+    def iter_children(self) -> t.Iterator[GenericElement]:
+        """Yield model elements that are children of this one.
+
+        The elements yielded from this generator are the direct
+        descendants of this element, with regard to the XML hierarchy
+        (usually referred to as "owned objects" in the metamodel).
+        """
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            acc = getattr(type(self), attr, None)
+            if (
+                # pylint: disable-next=unidiomatic-typecheck
+                type(acc) is accessors.DirectProxyAccessor
+                and not acc.rootelem
+                or isinstance(acc, accessors.RoleTagAccessor)
+            ):
+                if acc.aslist is None:
+                    if getattr(self, attr) is not None:
+                        yield getattr(self, attr)
+                else:
+                    yield from getattr(self, attr)
+
     if t.TYPE_CHECKING:
 
         def __getattr__(self, attr: str) -> t.Any:
@@ -759,7 +796,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
             return markupsafe.Markup("<p><em>(Empty list)</em></p>")
 
         fragments = ['<ol start="0" style="text-align: left;">']
-        for i in self:
+        for i in [i for i in self if i is not None]:
             fragments.append(f"<li>{i._short_html_()}</li>")
         fragments.append("</ol>")
         return markupsafe.Markup("".join(fragments))
