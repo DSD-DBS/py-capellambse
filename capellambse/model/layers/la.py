@@ -230,6 +230,13 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+c.set_accessor(
+    LogicalFunction,
+    "involved_in",
+    c.ReferenceSearchingAccessor(
+        CapabilityRealization, "involved_functions", aslist=c.ElementList
+    ),
+)
 c.set_self_references(
     (LogicalComponent, "components"),
     (LogicalComponentPkg, "packages"),
