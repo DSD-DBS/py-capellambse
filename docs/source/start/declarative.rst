@@ -73,7 +73,7 @@ object that already exists in the model) is selected, and one or more of three
 different operations is applied to it:
 
 - ``extend``-ing the object on list attributes,
-- ``modify``-ing the object itself,
+- ``set``-ting properties on the object itself,
 - ``sync``-ing objects into the model, or
 - ``delete``-ing one or more children.
 
@@ -103,7 +103,7 @@ attribute:
      # ^-- note the leading underscore, to disambiguate from the "type"
      # property that exists on some model elements
        name: Root Logical Function
-     modify: [...]
+     set: [...]
 
 The ``!find`` tag also supports dot-notation for filtering on nested
 attributes.
@@ -114,7 +114,7 @@ attributes.
        _type: FunctionOutputPort
        name: FOP 1
        owner.name: manage the school
-     modify: [...]
+     set: [...]
 
 Extending objects
 -----------------
@@ -250,12 +250,12 @@ since the ``functions`` attribute has a parent/children relationship (i.e. the
        functions:
          - !uuid 8833d2dc-b862-4a50-b26c-6f7e0f17faef
 
-Modifying objects
------------------
+Setting properties
+------------------
 
 After selecting a parent, it is also possible to directly change its properties
 without introducing new objects into the model. This happens by specifying the
-attributes in the ``modify:`` key.
+attributes in the ``set:`` key.
 
 The following example would change the ``name`` of the root
 :py:class:`~capellambse.model.layers.la.LogicalComponent` to "Coffee Machine"
@@ -265,7 +265,7 @@ The following example would change the ``name`` of the root
    :emphasize-lines: 2
 
    - parent: !uuid 0d2edb8f-fa34-4e73-89ec-fb9a63001440
-     modify:
+     set:
        name: Coffee Machine
 
 This is not limited to string attributes; it is just as well possible to change
@@ -277,16 +277,16 @@ e.g. numeric properties. This example changes the ``min_card`` property of an
    :emphasize-lines: 3-
 
    - parent: !uuid 81b87fcc-03cf-434b-ad5b-ef18266c5a3e
-     modify:
+     set:
        min_card: 0
        max_card: .inf
 
 Synchronizing objects
 ---------------------
 
-The ``sync:`` key is a combination of the above ``extend:`` and ``modify:``
-keys. Using it, it is possible to modify objects that already exist, or create
-new objects if they don't exist yet.
+The ``sync:`` key is a combination of the above ``extend:`` and ``set:`` keys.
+Using it, it is possible to modify objects that already exist, or create new
+objects if they don't exist yet.
 
 Unlike the other keys however, ``sync:`` takes two sets of attributs: one that
 is used to find a matching object (using the ``find:`` key), and one that is
