@@ -1768,10 +1768,9 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
                 raise NotImplementedError(
                     "Moving model objects is not supported yet"
                 )
-            if self.__get__(obj) is not None:
-                raise NotImplementedError(
-                    "Replacing model objects is not supported yet"
-                )
+            if (elem := self.__get__(obj)) is not None:
+                obj._model._loader.idcache_remove(elem._element)
+                obj._element.remove(elem._element)
             self._create(obj, self.role_tag, *value._type_hint, **value._kw)
 
     def create(
