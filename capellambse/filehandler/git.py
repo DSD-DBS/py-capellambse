@@ -27,6 +27,7 @@ import tempfile
 import textwrap
 import typing as t
 import urllib.parse
+import warnings
 import weakref
 
 import capellambse.helpers
@@ -38,6 +39,8 @@ LOGGER = logging.getLogger(__name__)
 CACHEBASE = pathlib.Path(capellambse.dirs.user_cache_dir, "models")
 
 _git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
+
+_NOT_SPECIFIED = object()
 
 
 class _TreeEntry(t.NamedTuple):
@@ -475,14 +478,14 @@ class GitFileHandler(abc.FileHandler):
         initial "fetch" operation. Later operations may still require to
         access the server, for example to download Git-LFS files.
     shallow
-        Make a shallow clone. This can drastically reduce network and
-        disk usage when cloning large models, by only downloading the
-        latest ``revision`` and not downloading the history that leads
-        up to it.
+        Make a shallow clone.
 
-        Note that, when this is set to ``True`` (the default), existing
-        non-shallow caches will be made shallow. However, when it is set
-        to ``False``, shallow caches will not be unshallowed.
+        .. deprecated:: 0.5.57
+
+        All cache repos are now using tree-less partial clones. This
+        reduces server load during subsequent fetches without
+        significantly impacting cache size. Existing shallow clones will
+        be unshallowed during the next fetch.
 
     See Also
     --------
@@ -496,7 +499,7 @@ class GitFileHandler(abc.FileHandler):
     known_hosts_file: str
     cache_dir: pathlib.Path
     """Path to the temporary work tree created by this file handler."""
-    shallow: bool
+    shallow: t.Final = False
 
     __fnz: object
     __has_lfs: bool
@@ -515,8 +518,17 @@ class GitFileHandler(abc.FileHandler):
         update_cache: bool = True,
         *,
         subdir: str | pathlib.PurePosixPath = "/",
-        shallow: bool = True,
+        shallow: bool = _NOT_SPECIFIED,  # type: ignore[assignment]
     ) -> None:
+        if shallow is not _NOT_SPECIFIED:
+            warnings.warn(
+                (
+                    "Shallow clones are no longer supported,"
+                    " please remove the `shallow` parameter."
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
         super().__init__(path, subdir=subdir)
         self.disable_cache = disable_cache
 
@@ -528,7 +540,6 @@ class GitFileHandler(abc.FileHandler):
         self.identity_file = identity_file
         self.known_hosts_file = known_hosts_file
         self.update_cache = update_cache
-        self.shallow = shallow
 
         self.cache_dir = None  # type: ignore[assignment]
         self.__hash, self.revision = self.__resolve_remote_ref(revision)
@@ -760,13 +771,13 @@ class GitFileHandler(abc.FileHandler):
 
         if update_cache:
             LOGGER.debug("Updating cache at %s", self.cache_dir)
-            shallow_opts: tuple[str, ...] = ()
-            if self.shallow:
-                fetchspec = f"+{self.revision}"
-                if not _git_object_name.search(self.revision):
-                    fetchspec += f":{self.revision}"
-                shallow_opts = ("--depth=1", fetchspec)
-            self._git("fetch", self.path, *shallow_opts)
+            fetchopts = ["--filter=tree:0"]
+            if (self.cache_dir / "shallow").exists():
+                fetchopts.append("--unshallow")
+            fetchspec = f"+{self.revision}"
+            if not _git_object_name.search(self.revision):
+                fetchspec += f":{self.revision}"
+            self._git("fetch", *fetchopts, self.path, fetchspec)
 
     def __resolve_default_branch(self) -> tuple[str, str]:
         """Resolve the default branch name and its hash on the remote."""
