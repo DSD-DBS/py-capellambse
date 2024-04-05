@@ -72,16 +72,19 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
     else:
         label = ebd.data_element.get("description", "")
         description = None
-    parent = ebd.data_element.getparent()
-    while parent.tag == "children":
-        parent_uid = parent.attrib.get("element") or parent.attrib.get(
-            c.ATT_XMID
+    parent_elm = ebd.data_element.getparent()
+    while parent_elm is not None and parent_elm.tag == "children":
+        parent_uid = (
+            parent_elm.attrib.get("element")
+            or parent_elm.attrib.get(c.ATT_XMID)
+            or ""
         )
         try:
             parent = ebd.target_diagram[parent_uid]
         except KeyError:
-            parent = parent.getparent()
+            parent_elm = parent_elm.getparent()
         else:
+            assert isinstance(parent, diagram.Box)
             refpos = parent.pos
             break
     else:

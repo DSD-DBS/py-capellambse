@@ -43,8 +43,10 @@ def generic_factory(
     minsize: diagram.Vector2D = diagram.Vector2D(148, 69),
 ) -> _T:
     """Construct a Box from the diagram XML."""
-    if seb.diag_element.getparent() is not seb.diagram_tree:
-        parent_uid = seb.diag_element.getparent().attrib.get("uid")
+    diag_parent = seb.diag_element.getparent()
+    assert diag_parent is not None
+    if diag_parent is not seb.diagram_tree:
+        parent_uid = diag_parent.get("uid")
     else:
         parent_uid = None
 
@@ -164,11 +166,13 @@ def class_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
         feat_name = feature.attrib["name"]
         feat_type = feature.attrib[C.ATT_XST].split(":")[-1]
 
-        abstract_type = feature.attrib.get("abstractType")
-        if abstract_type is not None:
+        abstract_type_link = feature.get("abstractType")
+        if abstract_type_link is not None:
             abstract_type = seb.melodyloader.follow_link(
-                seb.melodyobjs[0], abstract_type
+                seb.melodyobjs[0], abstract_type_link
             )
+        else:
+            abstract_type = None
 
         if feat_type == "Property":
             if feature.attrib.get("aggregationKind") is not None:
@@ -194,13 +198,13 @@ def class_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
                     )
                     continue
                 param_name = param.attrib["name"]
-                param_abstrtype = param.attrib.get("abstractType")
-                if param_abstrtype is not None:
+                param_abstrtype_link = param.get("abstractType")
+                if param_abstrtype_link is not None:
                     param_abstrtype = seb.melodyloader.follow_link(
-                        seb.melodyobjs[0], param_abstrtype
+                        seb.melodyobjs[0], param_abstrtype_link
                     )
                     param_name += f":{param_abstrtype.attrib['name']}"
-                param_dir = param.attrib.get("direction", "IN")
+                param_dir = param.get("direction", "IN")
                 if param_dir == "RETURN":
                     ret.append(param_name)
                 elif param_dir == "EXCEPTION":
@@ -365,8 +369,10 @@ def region_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     *   Set the Region's specific minimum / default size (because
         they're different from the usual values)
     """
+    parent_elm = seb.diag_element.getparent()
+    assert parent_elm is not None
     try:
-        parent = seb.target_diagram[seb.diag_element.getparent().attrib["uid"]]
+        parent = seb.target_diagram[parent_elm.attrib["uid"]]
     except KeyError:
         pass
     else:
@@ -402,7 +408,9 @@ def statemode_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
 
 def statemode_activities_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     """Attach the activities to a State or Mode as features."""
-    parent_id = seb.diag_element.getparent().attrib["uid"]
+    parent_elm = seb.diag_element.getparent()
+    assert parent_elm is not None
+    parent_id = parent_elm.attrib["uid"]
     try:
         parent = seb.target_diagram[parent_id]
     except KeyError:
@@ -416,29 +424,29 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     for elm in seb.diag_element.iterchildren("ownedElements"):
         elm_id = elm.get("uid")
         try:
-            target = next(elm.iterchildren("target")).attrib
-            target = " ".join((target[C.ATT_XMT], target["href"]))
-            target = seb.melodyloader[target]
-            mapping = next(elm.iterchildren("actualMapping")).attrib["href"]
+            target_id = next(elm.iterchildren("target")).attrib["href"]
+            target = seb.melodyloader[target_id]
+            mapping_id = next(elm.iterchildren("actualMapping")).attrib["href"]
         except (KeyError, StopIteration):
             C.LOGGER.error("No usable target or mapping for %r", elm_id)
             continue
 
         mapping = re.search(
-            "@subNodeMappings\\[name=(?P<q>[\"'])(?P<n>.*?)(?P=q)\\]$", mapping
+            "@subNodeMappings\\[name=(?P<q>[\"'])(?P<n>.*?)(?P=q)\\]$",
+            mapping_id,
         )
         if mapping is not None:
-            mapping = mapping.group("n")
+            mapping_name = mapping.group("n")
         try:
             act_list = {
                 "MSM_DoActivity": do,
                 "MSM_Entry": entry,
                 "MSM_Exit": exit,
-            }[mapping]
+            }[mapping_name]
         except KeyError:
-            C.LOGGER.error("Unknown activity mapping type %r", mapping)
+            C.LOGGER.error("Unknown activity mapping type %r", mapping_name)
             continue
-        act_list.append(target.get("name"))
+        act_list.append(target.attrib["name"])
 
     parent.features = list(
         itertools.chain(
@@ -459,7 +467,7 @@ def fcif_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     element for constructing the actual box.
     """
     seb.melodyobjs[0] = seb.melodyloader.follow_link(
-        seb.melodyobjs[0], seb.melodyobjs[0].get("involved")
+        seb.melodyobjs[0], seb.melodyobjs[0].attrib["involved"]
     )
     xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None
@@ -509,7 +517,7 @@ def _make_portlabel(
             diagram.Vector2D(
                 int(loc_elm.get("x", "0")), int(loc_elm.get("y", "0"))
             )
-            @ snapsides[child_elm.get("type")]
+            @ snapsides[child_elm.attrib["type"]]
         )
         if snapside == (0, 0):
             snapside = diagram.Vector2D(1, 0)

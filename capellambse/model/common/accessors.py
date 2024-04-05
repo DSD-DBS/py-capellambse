@@ -924,7 +924,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __find_refs(
         self, obj: element.ModelObject
     ) -> cabc.Iterator[etree._Element]:
-        for refelm in obj._element.iterchildren(self.tag):
+        for refelm in obj._element.iterchildren(tag=self.tag):
             if helpers.xtype_of(refelm) in self.xtypes:
                 yield refelm
 

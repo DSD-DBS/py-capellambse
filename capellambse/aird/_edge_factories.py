@@ -8,6 +8,8 @@ import dataclasses
 import math
 import typing as t
 
+from lxml import etree
+
 from capellambse import diagram, helpers
 
 from . import _common as C
@@ -96,45 +98,53 @@ def extract_bendpoints(
         or seb.data_element.attrib[C.ATT_XMID]
     )
     sourceport, targetport = get_end_ports(seb)
-    sourcebounds = sourceport.bounds
 
     try:
         bendpoints_elm = next(seb.data_element.iterchildren("bendpoints"))
     except StopIteration:
         raise ValueError(f"No bendpoints definition for {uid!r}") from None
 
-    bendpoints = []
     bendpoint_type = bendpoints_elm.attrib.get(C.ATT_XMT)
 
     if bendpoint_type == "notation:RelativeBendpoints":
-        # Translate relative to absolute coordinates
-        try:
-            sourceanchor = next(
-                seb.data_element.iterchildren("sourceAnchor")
-            ).attrib["id"]
-        except (StopIteration, KeyError):
-            sourceanchor = "(0.5, 0.5)"
-        if sourceanchor.endswith(" custom"):
-            sourceanchor = sourceanchor[: -len(" custom")]
-        sourceanchor = helpers.ssvparse(
-            sourceanchor, float, parens="()", num=2
+        bendpoints = _extract_relative_bendpoints(
+            seb, sourceport, bendpoints_elm
         )
-        refpos = sourcebounds.pos + sourcebounds.size @ sourceanchor
-
-        bendpoints_attrib = bendpoints_elm.attrib.get(
-            "points", "[0, 0, 0, 0]$[0, 0, 0, 0]"
-        )
-        for point in bendpoints_attrib.split("$"):
-            bendpoints.append(
-                refpos + helpers.ssvparse(point, int, parens="[]", num=4)[:2]
-            )
-
-        if len(bendpoints) == 1 or all(b == bendpoints[0] for b in bendpoints):
-            bendpoints = []
     else:
         raise ValueError(f"Unknown bendpoint type {bendpoint_type}")
 
     return bendpoints, sourceport, targetport
+
+
+def _extract_relative_bendpoints(
+    seb: C.ElementBuilder,
+    sourceport: diagram.DiagramElement,
+    bendpoints_elm: etree._Element,
+):
+    bendpoints = []
+    sourcebounds = sourceport.bounds
+    try:
+        sourceanchor = next(
+            seb.data_element.iterchildren("sourceAnchor")
+        ).attrib["id"]
+    except (StopIteration, KeyError):
+        sourceanchor = "(0.5, 0.5)"
+    if sourceanchor.endswith(" custom"):
+        sourceanchor = sourceanchor[: -len(" custom")]
+    anchorpoint = helpers.ssvparse(sourceanchor, float, parens="()", num=2)
+    refpos = sourcebounds.pos + sourcebounds.size @ anchorpoint
+
+    bendpoints_attrib = bendpoints_elm.attrib.get(
+        "points", "[0, 0, 0, 0]$[0, 0, 0, 0]"
+    )
+    for point in bendpoints_attrib.split("$"):
+        bendpoints.append(
+            refpos + helpers.ssvparse(point, int, parens="[]", num=4)[:2]
+        )
+
+    if len(bendpoints) == 1 or all(b == bendpoints[0] for b in bendpoints):
+        return []
+    return bendpoints
 
 
 def get_end_ports(
@@ -178,7 +188,6 @@ def route_manhattan(
     target
         A Box or Edge to point to
     """
-
     source_point = source.vector_snap(
         source.center,
         source=target.center,
@@ -522,7 +531,7 @@ def constraint_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
 def fcil_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a FunctionalChainInvolvementLinks."""
     seb.melodyobjs[0] = seb.melodyloader.follow_link(
-        seb.melodyobjs[0], seb.melodyobjs[0].get("involved")
+        seb.melodyobjs[0], seb.melodyobjs[0].attrib["involved"]
     )
     xtype = helpers.xtype_of(seb.melodyobjs[0])
     assert xtype is not None

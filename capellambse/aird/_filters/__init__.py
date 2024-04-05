@@ -252,11 +252,11 @@ def _extract_filter_type(flt_elm: etree._Element) -> str:
     except KeyError:
         raise ValueError("Filter element has no href") from None
 
-    flttype = c.RE_COMPOSITE_FILTER.search(flttype)
-    if not flttype or not flttype.group(1):
+    compfilter = c.RE_COMPOSITE_FILTER.search(flttype)
+    if not compfilter or not compfilter.group(1):
         raise ValueError("Filter href does not match known pattern") from None
 
-    return urllib.parse.unquote(flttype.group(1))
+    return urllib.parse.unquote(compfilter.group(1))
 
 
 class ActiveFilters(t.MutableSet[str]):

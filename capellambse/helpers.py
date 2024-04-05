@@ -74,9 +74,11 @@ def flatten_html_string(text: str) -> str:
 
     text_container: list[str] = []
     if isinstance(frags[0], str):
-        text_container.append(frags.pop(0))
+        text_container.append(frags[0])
+        frags.pop(0)
 
     for frag in frags:
+        assert isinstance(frag, lxml.html.HtmlElement)
         text_container.extend(_flatten_subtree(frag))
 
     return "".join(text_container).rstrip()
@@ -440,13 +442,13 @@ def process_html_fragments(
     markupsafe.Markup
         The processed markup.
     """
-    nodes: list[str | lxml.html._Element]
-    nodes = lxml.html.fragments_fromstring(markup)
-    if nodes and isinstance(nodes[0], str):
-        firstnode: str = html.escape(nodes.pop(0))
+    rawnodes = lxml.html.fragments_fromstring(markup)
+    if rawnodes and isinstance(rawnodes[0], str):
+        firstnode = html.escape(rawnodes[0])
+        nodes = t.cast(list[etree._Element], rawnodes[1:])
     else:
         firstnode = ""
-    assert all(isinstance(i, etree._Element) for i in nodes)
+        nodes = t.cast(list[etree._Element], rawnodes)
 
     for node in itertools.chain.from_iterable(
         map(operator.methodcaller("iter"), nodes)
@@ -485,7 +487,7 @@ def unescape_linked_text(
     """Transform the ``linkedText`` into regular HTML."""
 
     def flatten_element(
-        elm: str | lxml.html.HTMLElement,
+        elm: str | lxml.html.HtmlElement,
     ) -> cabc.Iterator[str]:
         if isinstance(elm, str):
             yield html.escape(elm)
@@ -531,13 +533,13 @@ def escape_linked_text(
     del loader
 
     def flatten_element(
-        elm: str | lxml.html.HTMLElement,
+        elm: str | lxml.html.HtmlElement,
     ) -> cabc.Iterator[str]:
         if isinstance(elm, str):
             yield html.escape(elm)
         elif elm.tag == "a":
             href = elm.get("href")
-            if not (href or "").startswith("hlink://"):
+            if href is None or not href.startswith("hlink://"):
                 yield html.escape(elm.text or "")
             else:
                 yield '<a href="'

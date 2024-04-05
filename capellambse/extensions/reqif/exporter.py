@@ -138,13 +138,13 @@ def _build_content(module: cr.CapellaModule, timestamp: str) -> etree._Element:
     attr_definitions = itertools.chain.from_iterable(reqtypes.values())
     children = list(_synthesize_standard_datatypes(timestamp))
     children.extend(_build_datatypes(attr_definitions, timestamp))
-    children = sorted(children, key=lambda i: i.get("IDENTIFIER"))
+    children = sorted(children, key=lambda i: i.get("IDENTIFIER", ""))
     datatypes.extend(children)
 
     children = list(
         _build_spec_object_types(module._model, reqtypes.items(), timestamp)
     )
-    children = sorted(children, key=lambda i: i.get("IDENTIFIER"))
+    children = sorted(children, key=lambda i: i.get("IDENTIFIER", ""))
     spec_types.extend(children)
 
     spec_types.append(_build_specification_type(module, timestamp))

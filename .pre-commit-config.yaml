@@ -100,14 +100,14 @@ repos:
         pass_filenames: false
         args: [capellambse, tests]
         additional_dependencies:
-          - mypy==1.8.0
+          - mypy==1.9.0
           - capellambse[cli,decl,docs,httpfiles,png,termgraphics,test]
-          # click 8.1.4 breaks mypy, see <https://github.com/pallets/click/issues/2558>
-          - click!=8.1.4
+          - click==8.1.7
           - sphinx
           - types-Pygments==2.15.0.1
           - types-colorama==0.4.15.11
           - types-docutils==0.20.0.1
+          - types-lxml @ git+https://github.com/abelcheung/types-lxml@1249b441bdefc5f911e22bef961fbd58a9b7eda0
           - types-pytz==2023.3.0.0
           - types-pyyaml==6.0.11
           - types-requests==2.25.11

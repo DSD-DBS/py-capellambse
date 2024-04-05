@@ -54,7 +54,8 @@ def from_xml(ebd: c.ElementBuilder) -> diagram.DiagramElement:
         )
         raise c.SkipObject()
 
-    styleclass = target.attrib[c.ATT_XMT]
+    styleclass = target.get(c.ATT_XMT)
+    assert isinstance(styleclass, str)
     try:
         styleclass = styleclass.split(":")[1]
     except IndexError:

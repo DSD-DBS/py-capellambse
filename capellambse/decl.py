@@ -589,13 +589,13 @@ class YDMLoader(yaml.SafeLoader):
             _type = data.pop("_type")
         except KeyError:
             raise ValueError("!new_object requires a _type key") from None
-        return NewObject(_type, **data)
+        return NewObject(_type, **t.cast(t.Any, data))
 
     def construct_findby(self, node: yaml.Node) -> FindBy:
         if not isinstance(node, yaml.MappingNode):
             raise TypeError("!find only accepts mapping nodes")
         data = self.construct_mapping(node)
-        return FindBy(data)
+        return FindBy(t.cast(t.Any, data))
 
 
 YDMLoader.add_constructor("!promise", YDMLoader.construct_promise)
