@@ -518,6 +518,18 @@ class Diagram(AbstractDiagram):
         return aird.viewpoint_of(self._element)
 
     @property
+    def representation_path(self) -> str:
+        """The ID of the representation, i.e. the actual diagram.
+
+        Capella distinguishes between the representation (which contains
+        all visual data) and a representation descriptor, which only
+        contains a handful of metadata like the diagram name and
+        description. Both have their own IDs, and the descriptor
+        contains a link to the representation.
+        """
+        return self._element.attrib["repPath"]
+
+    @property
     def target(self) -> c.GenericElement:  # type: ignore[override]
         target = aird.find_target(self._model._loader, self._element)
         return c.GenericElement.from_model(self._model, target)
