@@ -36,9 +36,9 @@ def apply_style_overrides(
         ostyle: lxml.etree._Element, attrib: str
     ) -> diagram.RGB | None:
         color = ostyle.get(attrib)
-        if color is not None:
-            color = diagram.RGB.fromcsv(color)
-        return color
+        if color is None:
+            return None
+        return diagram.RGB.fromcsv(color)
 
     if diagram_class is None:
         return {}

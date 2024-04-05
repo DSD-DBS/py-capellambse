@@ -33,7 +33,9 @@ from . import _common as C
 from . import _filters, _semantic, _visual
 from ._filters import GLOBAL_FILTERS, ActiveFilters, GlobalFilter
 
-DRepresentationDescriptor = t.NewType("DRepresentationDescriptor", object)
+DRepresentationDescriptor = t.NewType(
+    "DRepresentationDescriptor", etree._Element
+)
 r"""A representation descriptor.
 
 These are specific :class:`~lxml.etree._Element`\ s found in AIRD files,
@@ -83,7 +85,7 @@ def enumerate_descriptors(
         for d in view.iterchildren("ownedRepresentationDescriptors"):
             if d.get(helpers.ATT_XMT) != "viewpoint:DRepresentationDescriptor":
                 continue
-            rep_path = d.get("repPath")
+            rep_path = d.attrib["repPath"]
             if not rep_path.startswith("#"):
                 raise RuntimeError(
                     f"Malformed diagram reference: {rep_path!r}"
@@ -104,14 +106,13 @@ def viewpoint_of(descriptor: DRepresentationDescriptor) -> str:
 
 
 def _viewpoint_of(view: etree._Element) -> str:
-    viewname = helpers.xpath_fetch_unique(
+    viewpoint = helpers.xpath_fetch_unique(
         "./viewpoint", view, "viewpoint description"
     )
-    assert viewname is not None
-    viewname = C.RE_VIEWPOINT.search(viewname.attrib["href"])
-    if viewname is not None:
-        return urllib.parse.unquote(viewname.group(1))
-    return ""
+    viewname = C.RE_VIEWPOINT.search(viewpoint.attrib["href"])
+    if not viewname:
+        return ""
+    return urllib.parse.unquote(viewname.group(1))
 
 
 def enumerate_diagrams(
@@ -170,7 +171,7 @@ def _build_descriptor(
 
     return DiagramDescriptor(
         fragment=model.find_fragment(descriptor),
-        name=descriptor.get("name"),
+        name=descriptor.attrib["name"],
         styleclass=styleclass,
         uid=diag_root.attrib["uid"],
         viewpoint=viewpoint_of(descriptor),
@@ -199,16 +200,13 @@ def get_styleclass(descriptor: DRepresentationDescriptor) -> str | None:
     styledescription = helpers.xpath_fetch_unique(
         "./description[@href]", descriptor, "style description"
     )
-    assert styledescription is not None
-    styledescription = styledescription.attrib["href"]
     # This style description is something resembling XPath, e.g.
     #     platform:/[...]#//[...]/@ownedRepresentations[name='$$$']
     # The thing we're interested in is denoted as $$$ above.
-    styleclass_match = C.RE_STYLECLASS.search(styledescription)
-    if styleclass_match:
-        return urllib.parse.unquote(styleclass_match.group(1))
-    else:
+    styleclass_match = C.RE_STYLECLASS.search(styledescription.attrib["href"])
+    if not styleclass_match:
         return None
+    return urllib.parse.unquote(styleclass_match.group(1))
 
 
 def parse_diagram(

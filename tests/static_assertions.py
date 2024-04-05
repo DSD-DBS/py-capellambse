@@ -14,3 +14,4 @@ def protocol_ModelObject_compliance():
     mobj = model.GenericElement()  # type: ignore[call-arg]
     mobj = model.MelodyModel()  # type: ignore[call-arg]
     mobj = model.common.accessors._Specification()  # type: ignore[call-arg]
+    mobj = model.diagram.Diagram()

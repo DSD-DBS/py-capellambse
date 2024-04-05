@@ -164,7 +164,7 @@ class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
     __xtypecache: dict[str, set[etree._Element]]
-    __idcache: dict[str, etree._Element]
+    __idcache: dict[str, etree._Element | None]
     __hrefsources: dict[str, etree._Element]
 
     @property
@@ -207,7 +207,10 @@ class ModelFile:
         self.idcache_rebuild()
 
     def __getitem__(self, key: str) -> etree._Element:
-        return self.__idcache[key]
+        e = self.__idcache.get(key)
+        if e is None:
+            raise KeyError(key)
+        return e
 
     def enumerate_uuids(self) -> set[str]:
         """Enumerate all UUIDs used in this fragment."""
@@ -342,7 +345,7 @@ class ModelFile:
         If the given UUID is not linked to from this file, None is
         returned.
         """
-        return self.__hrefsources.get(element_id)
+        return self.__hrefsources[element_id]
 
 
 class MelodyLoader:
@@ -795,11 +798,11 @@ class MelodyLoader:
             query = etree.XPath(query, namespaces=namespaces)
 
         if roots is None:
-            roots = [(k, t.root) for k, t in self.trees.items()]
+            roottrees = [(k, t.root) for k, t in self.trees.items()]
         elif isinstance(roots, etree._Element):
-            roots = [(self._find_fragment(roots)[0], roots)]
+            roottrees = [(self._find_fragment(roots)[0], roots)]
         elif isinstance(roots, cabc.Iterable):
-            roots = [(self._find_fragment(r)[0], r) for r in roots]
+            roottrees = [(self._find_fragment(r)[0], r) for r in roots]
         else:
             raise TypeError(
                 "`roots` must be an XML element or a list thereof,"
@@ -807,14 +810,14 @@ class MelodyLoader:
             )
 
         ret = []
-        for fragment, tree in roots:
+        for fragment, tree in roottrees:
             ret += [follow_href(fragment, elem) for elem in query(tree)]
         return ret
 
     def find_by_xsi_type(
         self,
         *xsi_types: str,
-        roots: etree._Element | cabc.Iterable[etree._Element] = None,
+        roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[etree._Element]:
         r"""Find all elements matching any of the given ``xsi:type``\ s.
 
@@ -979,9 +982,10 @@ class MelodyLoader:
                     except KeyError:
                         pass
                 assert 0 <= len(possible_sources) <= 1
-                if possible_sources:
-                    parent = possible_sources[0].getparent()
-                else:
+                if not possible_sources:
+                    break
+                parent = possible_sources[0].getparent()
+                if parent is None:
                     break
             element = parent
 
@@ -1055,7 +1059,7 @@ class MelodyLoader:
             raise ValueError(
                 "to_element does not have a known ID attribute"
             ) from None
-        to_uuid = to_element.get(to_uuid)
+        to_uuid = to_element.attrib[to_uuid]
 
         from_fragment, _ = self._find_fragment(from_element)
         to_fragment, _ = self._find_fragment(to_element)

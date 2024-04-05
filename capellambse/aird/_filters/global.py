@@ -179,9 +179,9 @@ def hide_alloc_func_exch(
         for fex in args.melodyloader[cex.uuid].iterchildren(
             "ownedComponentExchangeFunctionalExchangeAllocations"
         ):
-            fex = fex.attrib["targetElement"].split("#")[-1]
+            target = fex.attrib["targetElement"].rsplit("#", 1)[-1]
             try:
-                args.target_diagram[fex].hidden = True
+                args.target_diagram[target].hidden = True
             except KeyError:
                 pass  # not in this diagram
 
@@ -222,7 +222,7 @@ def _get_allocated_exchangeitem_names(
 
     if elm.tag == "ownedDiagramElements":
         targetlink = next(elm.iterchildren("target"))
-        elm = melodyloader[targetlink.get("href")]
+        elm = melodyloader[targetlink.attrib["href"]]
 
     names = []
     for elem in melodyloader.follow_links(

@@ -150,7 +150,9 @@ class RequirementsRelationAccessor(
             sys.audit("capellambse.setattr", obj, self.__name__, value)
 
         for i in self._find_relations(obj):
-            i.getparent().remove(i)
+            ip = i.getparent()
+            assert ip is not None
+            ip.remove(i)
         obj._element.extend(value)
 
     def __delete__(self, obj) -> None:

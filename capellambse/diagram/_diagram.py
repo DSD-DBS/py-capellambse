@@ -1009,7 +1009,7 @@ class Diagram:
         """
         if isinstance(offset, diagram.Vector2D):
             offsetvec = offset
-        elif isinstance(offset, (list, tuple)):
+        elif isinstance(offset, cabc.Sequence):
             offsetvec = diagram.Vector2D(*offset)
         else:
             offsetvec = diagram.Vector2D(offset, offset)

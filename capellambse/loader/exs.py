@@ -94,7 +94,7 @@ def to_bytes(
 
 
 def write(
-    tree: lxml.etree._Element,
+    tree: lxml.etree._Element | lxml.etree._ElementTree,
     /,
     file: _HasWrite | os.PathLike | str | bytes,
     *,
@@ -173,8 +173,8 @@ def serialize(
     """
     buffer = io.BytesIO()
     root: lxml.etree._Element
-    preceding_siblings: cabc.Iterable[lxml.etree._Comment]
-    following_siblings: cabc.Iterable[lxml.etree._Comment]
+    preceding_siblings: cabc.Iterable[lxml.etree._Element]
+    following_siblings: cabc.Iterable[lxml.etree._Element]
     if isinstance(tree, lxml.etree._ElementTree):
         if siblings is None:
             siblings = True
@@ -193,6 +193,7 @@ def serialize(
 
     pos = 0
     for i in preceding_siblings:
+        assert isinstance(i, lxml.etree._Comment), "Non-comment before tree"
         pos = _serialize_comment(
             buffer, i, encoding=encoding, errors=errors, pos=pos, indent=0
         )
@@ -217,6 +218,7 @@ def serialize(
         )
 
     for i in following_siblings:
+        assert isinstance(i, lxml.etree._Comment), "Non-comment after tree"
         pos = _serialize_comment(
             buffer, i, encoding=encoding, errors=errors, pos=pos, indent=0
         )
@@ -253,10 +255,11 @@ def _escape_char(
 def _unmapped_attrs(
     nsmap: cabc.Mapping[str, str], element: lxml.etree._Element
 ) -> cabc.Iterator[tuple[str, str]]:
-    if element.getparent() is None:
+    parent = element.getparent()
+    if parent is None:
         parent_ns = set()
     else:
-        parent_ns = set(element.getparent().nsmap)
+        parent_ns = set(parent.nsmap)
 
     attribs = dict(element.items())
     for attr in ("version", "type", "id"):
@@ -268,10 +271,11 @@ def _unmapped_attrs(
         except KeyError:
             pass
 
-    for attr, value in element.nsmap.items():
-        if attr in parent_ns:
+    assert None not in element.nsmap
+    for nsname, value in element.nsmap.items():
+        if nsname in parent_ns:
             continue
-        yield (f"xmlns:{attr}", value)
+        yield (f"xmlns:{nsname}", value)
 
     for attr, value in attribs.items():
         yield (_unmap_namespace(nsmap, attr), _escape(value))
@@ -324,7 +328,8 @@ def _serialize_element(
     line_length: float | int,
 ) -> int:
     assert isinstance(element, lxml.etree._Element)
-    nsmap = dict((v, k) for k, v in element.nsmap.items())
+    assert None not in element.nsmap
+    nsmap = dict((v, k) for k, v in element.nsmap.items() if k)
     buffer.write(b"<")
     tag = _unmap_namespace(nsmap, element.tag).encode(encoding, errors)
     buffer.write(tag)
@@ -410,7 +415,7 @@ def _serialize_element(
 
 def _serialize_text(
     buffer: _HasWrite,
-    text: str,
+    text: str | None,
     /,
     *,
     encoding: str,
@@ -419,6 +424,8 @@ def _serialize_text(
     multiline: bool = False,
     pattern: re.Pattern[str] = P_ESCAPE_TEXT,
 ) -> int:
+    if not text:
+        return pos
     i, line = 0, ""
     for i, line in enumerate(text.split("\n")):
         if multiline and i:

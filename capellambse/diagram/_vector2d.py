@@ -19,7 +19,7 @@ import operator
 import typing as t
 
 Vec2Element = t.Union[float, int]
-Vec2ish = t.Tuple[Vec2Element, Vec2Element]
+Vec2ish = tuple[Vec2Element, Vec2Element] | cabc.Sequence[Vec2Element]
 
 
 class Vector2D(t.NamedTuple):
