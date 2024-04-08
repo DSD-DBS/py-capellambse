@@ -33,6 +33,9 @@ if sys.platform.startswith("win"):
 else:
     import fcntl
 
+if t.TYPE_CHECKING:
+    from capellambse import model as modelmod
+
 LOGGER = logging.getLogger(__name__)
 
 ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
@@ -407,6 +410,59 @@ def repair_html(markup: str) -> markupsafe.Markup:
         for k in list(node.keys()):
             if ":" in k:
                 del node.attrib[k]
+
+    return process_html_fragments(markup, cb)
+
+
+def replace_hlinks(
+    markup: str,
+    model: capellambse.model.MelodyModel,
+    make_href: cabc.Callable[[capellambse.model.GenericElement], str | None],
+    *,
+    broken_link_css: str = "color: red; text-decoration: line-through;",
+) -> markupsafe.Markup:
+    """Replace hlink:// links with arbitrary other links.
+
+    Parameters
+    ----------
+    markup
+        The markup to process.
+    model
+        The model to use for resolving UUIDs.
+    make_href
+        A function that maps objects to URLs. This function is called
+        once for each link (possibly multiple times for the same
+        object), and must return a URL to be inserted in place of the
+        original ``hlink://...`` URL.
+    broken_link_css
+        Broken links (links to objects that have been deleted, and links
+        where the ``make_href`` callback returned None or an empty
+        string) are indicated by a ``<span>`` element with this CSS
+        style applied to it.
+    """
+
+    def cb(el: etree._Element) -> None:
+        if (
+            el.tag != "a"
+            or "href" not in el.attrib
+            or not el.attrib["href"].startswith("hlink://")
+        ):
+            return
+        target = el.attrib["href"][8:]
+
+        try:
+            obj = model.by_uuid(target)
+        except KeyError:
+            pass
+        else:
+            if href := make_href(obj):
+                el.attrib["href"] = href
+                return
+
+        el.tag = "span"
+        el.attrib["style"] = broken_link_css
+        del el.attrib["href"]
+        return
 
     return process_html_fragments(markup, cb)
 
