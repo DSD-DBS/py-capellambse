@@ -25,6 +25,18 @@ from . import modeltypes
 if t.TYPE_CHECKING:
     from lxml import etree
 
+LEGACY_DIAGRAM_IDS = bool(os.getenv("CAPELLAMBSE_LEGACY_DIAGRAM_IDS"))
+"""Report the representation ID as diagram UUID instead of the descriptor.
+
+This mostly matches the behavior of capellambse pre 0.5.52, except that
+the correct (new) IDs are used for lookups in the diagram cache.
+
+This is a temporary stop-gap measure to aid in the migration of code
+that relied on the old IDs. Do not write new code that expects this
+variable to be set, as it will eventually be removed again in a future
+release.
+"""
+
 
 @t.runtime_checkable
 class DiagramFormat(t.Protocol):
@@ -463,6 +475,18 @@ class Diagram(AbstractDiagram):
     uuid: str = c.properties.AttributeProperty(  # type: ignore[assignment]
         "uid", writable=False
     )
+
+    __real_uuid = c.properties.AttributeProperty("uid", writable=False)
+    if LEGACY_DIAGRAM_IDS:
+
+        @property  # type: ignore[no-redef]
+        def uuid(self) -> str:
+            return self.representation_path.rsplit("#", 1)[-1]
+
+        @uuid.setter
+        def uuid(self, value: str) -> None:
+            raise TypeError("The uuid is read-only")
+
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name: str = c.properties.AttributeProperty(  # type: ignore[assignment]
         "name", optional=True, default=""
@@ -562,6 +586,25 @@ class Diagram(AbstractDiagram):
         """Reset internal diagram cache."""
         self.__nodes = None
         super().invalidate_cache()
+
+    def _AbstractDiagram__load_cache(self, converter: DiagramConverter):
+        cache_handler = self._model.diagram_cache
+        cachedir = getattr(self._model, "_diagram_cache_subdir", None)
+        if cache_handler is None or cachedir is None:
+            raise KeyError(self.uuid)
+
+        if not isinstance(converter, DiagramFormat):
+            raise KeyError(self.uuid)
+
+        try:
+            ext = converter.filename_extension
+            with cache_handler.open(cachedir / (self.__real_uuid + ext)) as f:
+                cache = f.read()
+        except FileNotFoundError:
+            LOGGER.debug("Diagram not in cache: %s (%s)", self.uuid, self.name)
+            raise KeyError(self.__real_uuid) from None
+
+        return converter.from_cache(cache)
 
 
 class DiagramAccessor(c.Accessor):
