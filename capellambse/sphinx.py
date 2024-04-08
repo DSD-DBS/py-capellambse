@@ -118,7 +118,7 @@ def unload_model(_: t.Any, env: sphinx.environment.BuildEnvironment) -> None:
 class DiagramDirective(sphinx.util.docutils.SphinxDirective):
     """The ``diagram`` reST directive."""
 
-    has_content = ...
+    has_content = True
     required_arguments = 1
     final_argument_whitespace = True
     option_spec = {

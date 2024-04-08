@@ -140,8 +140,8 @@ python_version = "3.10"
 
 [[tool.mypy.overrides]]
 module = ["tests.*"]
-allow_incomplete_defs = true
-allow_untyped_defs = true
+disallow_incomplete_defs = false
+disallow_untyped_defs = false
 
 [[tool.mypy.overrides]]
 # Untyped third party libraries
@@ -185,7 +185,7 @@ max-line-length = 79
 
 [tool.pylint.messages_control]
 disable = [
-  "broad-except",
+  "broad-exception-caught",
   "cyclic-import",
   "global-statement",
   "import-outside-toplevel",
