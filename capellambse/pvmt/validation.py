@@ -74,7 +74,7 @@ def _validate_group_scope_arch(pvmt_ext, scopedesc, xml_element):
         helpers.xtype_of(i) for i in pvmt_ext.model.iterancestors(xml_element)
     }
     return bool(
-        arch_candidates & set(SCOPE_ARCH_MAP[a] for a in scopedesc.split(";"))
+        arch_candidates & {SCOPE_ARCH_MAP[a] for a in scopedesc.split(";")}
     )
 
 

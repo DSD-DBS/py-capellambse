@@ -65,9 +65,9 @@ class TestPVMTBase:
         assert {k: v.name for k, v in model_enums.items()} == self.enum_names
 
         for enum_uuid, vals in self.enum_values.items():
-            actual_vals = set(
+            actual_vals = {
                 v["name"] for _, v in model_enums[enum_uuid].items()
-            )
+            }
             assert actual_vals == set(vals)
 
     def test_enum_defaults(self, pvext):
@@ -78,7 +78,7 @@ class TestPVMTBase:
 
     def test_groups(self, pvext):
         model_groups = pvext[self.domain_uuid].groups
-        assert set(g.name for g in model_groups) == {
+        assert {g.name for g in model_groups} == {
             "Components",
             "Cables",
             "Physical Cables",

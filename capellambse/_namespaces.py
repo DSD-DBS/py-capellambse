@@ -56,7 +56,7 @@ class Plugin:
             raise AttributeError(f"Plugin '{self.name}' has no version")
 
         if isinstance(other.version, tuple):
-            assert all((isinstance(o, str) for o in other.version))
+            assert all(isinstance(o, str) for o in other.version)
             vmin, vmax = tuple(map(_tofloat, other.version))
             if isinstance(self.version, tuple):
                 vsmin, vsmax = tuple(map(_tofloat, self.version))

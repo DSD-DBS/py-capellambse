@@ -629,10 +629,10 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         base: cabc.Sequence[t.Any]
         if not reflected:
             base = self
-            excluded = set(i.uuid for i in other)
+            excluded = {i.uuid for i in other}
         else:
             base = other
-            excluded = set(i.uuid for i in self)
+            excluded = {i.uuid for i in self}
 
         return ElementList(
             self._model,

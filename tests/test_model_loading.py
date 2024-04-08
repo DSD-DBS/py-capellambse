@@ -309,7 +309,7 @@ def test_http_file_handler_hands_auth_to_server(
     username = "testuser"
     password = "testpassword"
     auth_header = base64.standard_b64encode(
-        f"{username}:{password}".encode("utf-8")
+        f"{username}:{password}".encode()
     ).decode("ascii")
     expected_headers = {"Authorization": f"Basic {auth_header}"}
     endpoint = requests_mock.get(

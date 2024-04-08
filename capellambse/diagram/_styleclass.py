@@ -112,11 +112,11 @@ def _part(obj: model.ModelObject) -> str:
 
 def _port_allocation(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.information.PortAllocation)
-    styleclasses = set(
+    styleclasses = {
         get_styleclass(p)
         for p in (obj.source, obj.target)
         if not isinstance(p, (model.fa.ComponentPort, model.ElementList))
-    )
+    }
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 
 

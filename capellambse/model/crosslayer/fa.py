@@ -122,10 +122,10 @@ class Function(AbstractFunction):
     inputs = c.DirectProxyAccessor(FunctionInputPort, aslist=c.ElementList)
     outputs = c.DirectProxyAccessor(FunctionOutputPort, aslist=c.ElementList)
 
-    exchanges: c.Accessor["FunctionalExchange"]
+    exchanges: c.Accessor[FunctionalExchange]
     functions: c.Accessor
     packages: c.Accessor
-    related_exchanges: c.Accessor["FunctionalExchange"]
+    related_exchanges: c.Accessor[FunctionalExchange]
 
     realized_functions = c.LinkAccessor[AbstractFunction](
         "ownedFunctionRealizations",
@@ -155,7 +155,7 @@ class FunctionalExchange(AbstractExchange):
         attr="targetElement",
         backattr="sourceElement",
     )
-    realizing_functional_exchanges: c.Accessor["FunctionalExchange"]
+    realizing_functional_exchanges: c.Accessor[FunctionalExchange]
 
     @property
     def owner(self) -> ComponentExchange | None:
@@ -227,7 +227,7 @@ class FunctionalChain(c.GenericElement):
         attr="involved",
         aslist=c.ElementList,
     )
-    involving_chains: c.Accessor["FunctionalChain"]
+    involving_chains: c.Accessor[FunctionalChain]
 
     realized_chains = c.LinkAccessor["FunctionalChain"](
         "ownedFunctionalChainRealizations",
@@ -236,7 +236,7 @@ class FunctionalChain(c.GenericElement):
         backattr="sourceElement",
         aslist=c.ElementList,
     )
-    realizing_chains: c.Accessor["FunctionalChain"]
+    realizing_chains: c.Accessor[FunctionalChain]
 
     control_nodes = c.DirectProxyAccessor(ControlNode, aslist=c.ElementList)
 

@@ -329,7 +329,7 @@ def _serialize_element(
 ) -> int:
     assert isinstance(element, lxml.etree._Element)
     assert None not in element.nsmap
-    nsmap = dict((v, k) for k, v in element.nsmap.items() if k)
+    nsmap = {v: k for k, v in element.nsmap.items() if k}
     buffer.write(b"<")
     tag = _unmap_namespace(nsmap, element.tag).encode(encoding, errors)
     buffer.write(tag)

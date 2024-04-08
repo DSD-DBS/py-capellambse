@@ -70,6 +70,11 @@ repos:
           - LICENSES/.license_header.txt
           - --comment-style
           - "..|  |"
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.2
+    hooks:
+      - id: pyupgrade
+        args: ['--py310-plus']
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
