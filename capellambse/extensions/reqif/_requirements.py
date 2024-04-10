@@ -33,6 +33,7 @@ import re
 import markupsafe
 
 import capellambse.model.common as c
+from capellambse import helpers
 
 c.XTYPE_ANCHORS[__name__] = "Requirements"
 
@@ -74,8 +75,8 @@ class ReqIFElement(c.GenericElement):
         return f"<{mytype} {name!r} ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
-        name = markupsafe.Markup.escape(self.name or self.long_name)
-        return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
+        name = self.name or self.long_name
+        return helpers.make_short_html(type(self).__name__, self.uuid, name)
 
 
 @c.xtype_handler(None)
@@ -114,10 +115,10 @@ class AbstractRequirementsAttribute(c.GenericElement):
 
     def _short_html_(self) -> markupsafe.Markup:
         if self.definition is not None:
-            name = markupsafe.Markup.escape(self.definition.long_name)
+            name = self.definition.long_name
         else:
-            name = markupsafe.Markup.escape("None")
-        return markupsafe.Markup(self._wrap_short_html(f" &quot;{name}&quot;"))
+            name = "None"
+        return helpers.make_short_html(type(self).__name__, self.uuid, name)
 
     def _repr_value(self) -> str:
         return repr(self.value)

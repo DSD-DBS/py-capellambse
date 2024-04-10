@@ -23,6 +23,7 @@ import lxml.html
 import markupsafe
 import typing_extensions as te
 from lxml import etree
+from markupsafe import escape as e
 from PIL import ImageFont
 
 import capellambse
@@ -286,6 +287,26 @@ def get_text_extent(
     lines = [*map(ex_func, word_wrap(text, width))]
     line_height = max(l[1] for l in lines)
     return max(l[0] for l in lines), line_height * len(lines)
+
+
+def make_short_html(
+    clsname: str,
+    uuid: str,
+    name: str = "",
+    value: str = "",
+) -> markupsafe.Markup:
+    if not name:
+        link = f'<a href="hlink://{e(uuid)}"><strong>{e(clsname)}</strong></a>'
+    else:
+        link = (
+            f"<strong>{e(clsname)}</strong>"
+            f' <a href="hlink://{e(uuid)}">&quot;{e(name)}&quot;</a>'
+        )
+
+    if not value:
+        return markupsafe.Markup(f"{link} ({uuid})")
+    else:
+        return markupsafe.Markup(f"{link}: {value} ({uuid})")
 
 
 def ssvparse(

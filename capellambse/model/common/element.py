@@ -391,15 +391,12 @@ class GenericElement:
         return markupsafe.Markup("".join(fragments))
 
     def _short_html_(self) -> markupsafe.Markup:
-        return self._wrap_short_html(
-            f" &quot;{markupsafe.Markup.escape(self.name)}&quot;"
-            f"{(': ' + str(self.value)) if hasattr(self, 'value') else ''}"
-        )
-
-    def _wrap_short_html(self, content: str) -> markupsafe.Markup:
-        return markupsafe.Markup(
-            f"<strong>{markupsafe.Markup.escape(type(self).__name__)}</strong>"
-            f"{content} ({markupsafe.Markup.escape(self.uuid)})"
+        if hasattr(self, "value"):
+            return helpers.make_short_html(
+                type(self).__name__, self.uuid, self.name, self.value
+            )
+        return helpers.make_short_html(
+            type(self).__name__, self.uuid, self.name
         )
 
     def _repr_html_(self) -> str:
