@@ -19,8 +19,6 @@ XT_ARCH = "org.polarsys.capella.core.data.ctx:SystemAnalysis"
 class SystemFunction(fa.Function):
     """A system function."""
 
-    _xmltag = "ownedFunctions"
-
     realized_operational_activities = c.TypecastAccessor(
         oa.OperationalActivity, "realized_functions"
     )
@@ -34,7 +32,9 @@ class SystemFunctionPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = c.DirectProxyAccessor(SystemFunction, aslist=c.ElementList)
+    functions = c.RoleTagAccessor(
+        "ownedSystemFunctions", SystemFunction, aslist=c.ElementList
+    )
     packages: c.Accessor
 
 

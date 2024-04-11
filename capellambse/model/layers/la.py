@@ -18,8 +18,6 @@ XT_ARCH = "org.polarsys.capella.core.data.la:LogicalArchitecture"
 class LogicalFunction(fa.Function):
     """A logical function on the Logical Architecture layer."""
 
-    _xmltag = "ownedLogicalFunctions"
-
     realized_system_functions = c.TypecastAccessor(
         ctx.SystemFunction, "realized_functions"
     )
@@ -32,7 +30,9 @@ class LogicalFunctionPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = c.DirectProxyAccessor(LogicalFunction, aslist=c.ElementList)
+    functions = c.RoleTagAccessor(
+        "ownedLogicalFunctions", LogicalFunction, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
