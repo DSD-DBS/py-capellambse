@@ -49,6 +49,7 @@ class SystemComponent(cs.Component):
         fa.XT_FCALLOC,
         aslist=c.ElementList,
         attr="targetElement",
+        backattr="sourceElement",
     )
     realized_entities = c.TypecastAccessor(
         oa.Entity,

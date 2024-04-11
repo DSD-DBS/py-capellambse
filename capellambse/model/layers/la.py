@@ -48,6 +48,7 @@ class LogicalComponent(cs.Component):
         fa.XT_FCALLOC,
         aslist=c.ElementList,
         attr="targetElement",
+        backattr="sourceElement",
     )
     realized_system_components = c.TypecastAccessor(
         ctx.SystemComponent,

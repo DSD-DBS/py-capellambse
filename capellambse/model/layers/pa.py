@@ -59,6 +59,7 @@ class PhysicalComponent(cs.Component):
         fa.XT_FCALLOC,
         aslist=c.ElementList,
         attr="targetElement",
+        backattr="sourceElement",
     )
     realized_logical_components = c.TypecastAccessor(
         la.LogicalComponent,
