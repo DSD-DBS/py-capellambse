@@ -113,6 +113,8 @@ class FunctionOutputPort(FunctionPort):
 class Function(AbstractFunction):
     """Common Code for Function's."""
 
+    _xmltag = "ownedFunctions"
+
     kind = c.EnumAttributeProperty(
         "kind", modeltypes.FunctionKind, default="FUNCTION"
     )

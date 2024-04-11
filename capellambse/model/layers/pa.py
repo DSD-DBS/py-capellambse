@@ -22,8 +22,6 @@ XT_LA_COMP_REAL = (
 class PhysicalFunction(fa.Function):
     """A physical function on the Physical Architecture layer."""
 
-    _xmltag = "ownedPhysicalFunctions"
-
     owner: c.Accessor[PhysicalComponent]
     realized_logical_functions = c.TypecastAccessor(
         la.LogicalFunction, "realized_functions"
@@ -36,7 +34,9 @@ class PhysicalFunctionPkg(c.GenericElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = c.DirectProxyAccessor(PhysicalFunction, aslist=c.ElementList)
+    functions = c.RoleTagAccessor(
+        "ownedPhysicalFunctions", PhysicalFunction, aslist=c.ElementList
+    )
 
     packages: c.Accessor
 
