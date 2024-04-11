@@ -378,6 +378,9 @@ class MelodyModel:
                 xtypes_.append(common.build_xtype(i))
             elif ":" in i:
                 xtypes_.append(i)
+            elif i in ("GenericElement", "ModelObject"):
+                xtypes_.clear()
+                break
             else:
                 suffix = ":" + i
                 matching_types: list[str] = []
