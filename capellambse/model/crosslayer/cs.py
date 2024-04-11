@@ -168,8 +168,12 @@ c.set_accessor(
 c.set_accessor(
     Part,
     "deployed_parts",
-    c.LinkAccessor(  # FIXME fill in tag
-        None, XT_DEPLOY_LINK, aslist=c.ElementList, attr="deployedElement"
+    c.LinkAccessor(
+        "ownedDeploymentLinks",
+        XT_DEPLOY_LINK,
+        aslist=c.ElementList,
+        attr="deployedElement",
+        backattr="location",
     ),
 )
 c.set_accessor(

@@ -38,9 +38,12 @@ import contextlib
 import importlib
 import json
 import logging
+import operator
 import os
 import os.path
 import pathlib
+import shutil
+import subprocess
 import sys
 import textwrap
 import typing as t
@@ -254,6 +257,54 @@ def showxml(obj: capellambse.ModelObject | etree._Element) -> None:
     print(exs.to_string(elm), end="")
 
 
+def fzf(
+    elements: cabc.Iterable[capellambse.ModelObject],
+    attr: str = "name",
+) -> capellambse.ModelObject | None:
+    """Interactively select an element using fzf.
+
+    Examples
+    --------
+    >>> # Select a LogicalComponent by name
+    >>> obj = fzf("name", model.search("LogicalComponent"))
+
+    >>> # Select a ComponentExchange by the name of its target component
+    >>> obj = fzf("target.parent.name", model.search("ComponentExchange"))
+    """
+
+    def repr(obj):
+        return getattr(obj, "_short_repr_", obj.__repr__)()
+
+    binary = shutil.which("fzf")
+    if not binary:
+        raise RuntimeError("fzf is not installed")
+    elements = list(elements)
+
+    getter = operator.attrgetter(attr)
+
+    entries = [(str(getter(i)).replace("\0", ""), repr(i)) for i in elements]
+    maxlen = max(l if (l := len(i[0])) < 40 else 1 for i in entries)
+    fzf_input = "\0".join(
+        f"{i} \x1B[97m{s:{maxlen}}  \x1B[36m{e}"
+        for i, (s, e) in enumerate(entries)
+    )
+
+    try:
+        proc = subprocess.run(
+            [binary, "--ansi", "--read0", "--with-nth=2.."],
+            check=True,
+            input=fzf_input,
+            text=True,
+            stdout=subprocess.PIPE,
+        )
+    except (Exception, KeyboardInterrupt):
+        return None
+    else:
+        selected = elements[int(proc.stdout.strip().split(" ", 1)[0])]
+        print(repr(selected))
+        return selected
+
+
 def main() -> None:
     """Launch a simple Python REPL with a Capella model."""
     os.chdir(pathlib.Path(capellambse.__file__).parents[1])
@@ -262,6 +313,7 @@ def main() -> None:
         "__doc__": None,
         "__name__": "__console__",
         "etree": etree,
+        "fzf": fzf,
         "im": importlib,
         "imm": importlib.import_module("importlib.metadata"),
         "imr": importlib.import_module("importlib.resources"),
@@ -305,7 +357,13 @@ def main() -> None:
         - `im` = importlib (`imm` = .metadata, `imr` = .resources)
         - `etree` = lxml.etree, `pprint` = pprint.pprint
 
-        Helpful functions and context managers:
+        Helpful functions and context managers (use `help(name)`):
+        """
+    )
+    if shutil.which("fzf") is not None:
+        banner += "- `fzf`: Select a model element interactively from a list\n"
+    banner += textwrap.dedent(
+        """\
         - `logtee`: CM that redirects log messages to a file
         - `showxml`: Print the XML representation of a model object
         - `suppress`: CM that suppresses exceptions of given type

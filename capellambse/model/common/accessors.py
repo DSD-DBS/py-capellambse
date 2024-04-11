@@ -317,16 +317,11 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     def _match_xtype(
         self,
-        type_1: str | object | None = _NOT_SPECIFIED,
+        type_1: str | None,
         type_2: str | object = _NOT_SPECIFIED,
         /,
     ) -> tuple[type[T], str]:
         r"""Find the right class for the given ``xsi:type``\ (s)."""
-        if type_1 is _NOT_SPECIFIED and type_2 is _NOT_SPECIFIED:
-            elmclass = getattr(self, "elmclass", None)
-            if elmclass is not None and elmclass is not element.GenericElement:
-                return elmclass, build_xtype(elmclass)
-            raise TypeError("No object type specified")
 
         def match_xt(xtp: S, itr: cabc.Iterable[S]) -> S:
             matches: list[S] = []
@@ -1712,7 +1707,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
 
 class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
-    __slots__ = ("role_tag",)
+    __slots__ = ("classes", "role_tag")
 
     aslist: type[ElementListCouplingMixin] | None
     class_: type[element.GenericElement]
@@ -1720,6 +1715,10 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     def __init__(
         self,
         role_tag: str,
+        classes: (
+            type[element.GenericElement]
+            | cabc.Iterable[type[element.GenericElement]]
+        ) = (),
         *,
         aslist: type[element.ElementList[T]] | None = None,
         list_extra_args: dict[str, t.Any] | None = None,
@@ -1731,6 +1730,10 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             list_extra_args=list_extra_args,
         )
         self.role_tag = role_tag
+        if not isinstance(classes, type):
+            self.classes = tuple(classes)
+        else:
+            self.classes = (classes,)
 
     def __get__(self, obj, objtype=None):
         del objtype
@@ -1742,7 +1745,9 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        if not self.classes:
+            return rv
+        return rv.filter(lambda i: isinstance(i, self.classes))
 
     def __set__(
         self,
@@ -1838,6 +1843,38 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         self, obj: element.ModelObject, target: element.ModelObject
     ) -> cabc.Iterator[None]:
         yield
+
+    def _match_xtype(
+        self,
+        type_1: str | None,
+        type_2: str | object = _NOT_SPECIFIED,
+        /,
+    ) -> tuple[type[element.GenericElement], str]:
+        if not self.classes:
+            return super()._match_xtype(type_1, type_2)
+
+        if type_2 is not _NOT_SPECIFIED:
+            raise TypeError(
+                f"Only a single type hint is allowed for {self._qualname},"
+                f" got ({type_1!r}, {type_2!r})"
+            )
+
+        cls = next((i for i in self.classes if i.__name__ == type_1), None)
+        if cls is None:
+            raise ValueError(f"Invalid class for {self._qualname}: {type_1}")
+        return cls, build_xtype(cls)
+
+    def _guess_xtype(self) -> tuple[type[element.GenericElement], str]:
+        if len(self.classes) == 1:
+            return self.classes[0], build_xtype(self.classes[0])
+
+        if len(self.classes) > 1:
+            hint = ", valid values: " + ", ".join(
+                i.__name__ for i in self.classes
+            )
+        else:
+            hint = ""
+        raise ValueError(f"{self._qualname} requires a type hint{hint}")
 
 
 def no_list(

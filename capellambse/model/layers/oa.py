@@ -148,6 +148,7 @@ class AbstractEntity(cs.Component):
         fa.XT_FCALLOC,
         aslist=c.ElementList,
         attr="targetElement",
+        backattr="sourceElement",
     )
     capabilities = c.ReferenceSearchingAccessor(
         OperationalCapability, "involved_entities", aslist=c.ElementList
