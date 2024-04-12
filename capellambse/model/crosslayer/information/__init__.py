@@ -36,17 +36,12 @@ class Association(c.GenericElement):
 
     members: c.Accessor[Property]
     navigable_members: c.Accessor[Property]
-    source_role: c.Accessor[Property]
 
     @property
     def roles(self) -> c.ElementList[Property]:
-        roles = []
-        if self.source_role:
-            assert isinstance(self.source_role, c.GenericElement)
-            roles.append(self.source_role._element)
-
+        assert isinstance(self.members, c.ElementList)
         assert isinstance(self.navigable_members, c.ElementList)
-        roles.extend(prop._element for prop in self.navigable_members)
+        roles = [i._element for i in self.members + self.navigable_members]
         return c.ElementList(self._model, roles, Property)
 
 
@@ -270,7 +265,6 @@ c.set_accessor(
     "navigable_members",
     c.AttrProxyAccessor(Property, "navigableMembers", aslist=c.ElementList),
 )
-c.set_accessor(Association, "source_role", c.DirectProxyAccessor(Property))
 c.set_accessor(
     Class,
     "realized_classes",
