@@ -11,23 +11,58 @@ this script uses a separate readline history. It is located in
 ``$XDG_STATE_HOME/capellambse`` on proper operating systems and in the
 ``capellambse`` cache directory on others.
 
-Normally this script is run with something like ``python -Xdev -m
-capellambse.repl test-5.0``. However, as that can become quite unwieldy,
-it is also possible to run it as ``./capellambse/repl.py 5.0`` from the
-source tree – on Unix-like operating systems, this will automatically
-enable ``-Xdev`` on the Python interpreter. Requirement is a
-sufficiently recent version of ``env``, which by now even Debian should
-have.
+Normally this script is run with something like:
 
-In order to add custom models for the :ref:`model <repl.py-model>`
-argument, add a JSON file to the ``capellambse/known_models`` directory.
-This file defines the instantiation parameters for the
+.. code-block:: bash
+
+   python -Xdev -m capellambse.repl test-5.0
+
+However, as that can become quite unwieldy, it is also possible to run
+it directly from the source tree with:
+
+.. code-block:: bash
+
+    ./capellambse/repl.py test-5.0
+
+On Unix-like operating systems, this will automatically enable ``-Xdev``
+on the Python interpreter.
+
+In order to add custom models for the :ref:`--model <repl.py-model>`
+argument, add a JSON file to your user ``known_models`` directory. This
+file defines the instantiation parameters for the
 :class:`capellambse.model.MelodyModel`:
 
 .. literalinclude:: ../../../capellambse/known_models/test-lib.json
    :language: json
    :lineno-start: 1
    :linenos:
+
+Use the following command to view the path of your ``known_models``
+directory, and to see which models are currently available:
+
+.. code-block:: bash
+
+   python -m capellambse.cli_helpers
+
+In addition to the standard Python builtins, he environment in the REPL
+also provides the following convenience imports:
+
+- The Python packages ``capellambse``, ``inspect``, ``logging``, ``os``,
+  ``pathlib``
+- ``importlib`` as ``im``, with its submodules ``importlib.metadata`` as
+  ``imm`` and ``importlib.resources`` as ``imr``
+- The ``etree`` module from ``lxml``
+- The ``pprint`` function from the ``pprint`` module
+
+A few helpful functions specific to working interactively with models
+are also available. Use the ``help`` builtin inside the REPL to get more
+information and usage examples.
+
+- ``fzf``: Wrapper around the ``fzf`` binary (must be in the PATH) which
+  makes it easy to select a model element interactively from a list
+- ``logtee``: Context manager that redirects log messages to a file
+- ``showxml``: Print the XML representation of a model object
+- ``suppress``: Context manager that suppresses exceptions of given type
 """
 from __future__ import annotations
 
@@ -241,6 +276,15 @@ def suppress(
         will also be suppressed.
     log
         Print a short warning about the exception to stderr.
+
+    Examples
+    --------
+    >>> with suppress(ValueError):
+    ...     print("Hello")
+    ...     raise ValueError("oops")
+    ...     print("World")
+    ...
+    Hello
     """
     try:
         yield
@@ -250,6 +294,16 @@ def suppress(
 
 
 def showxml(obj: capellambse.ModelObject | etree._Element) -> None:
+    """Show the XML representation of a model object.
+
+    Examples
+    --------
+    >>> my_obj = model.search("LogicalComponent").by_name("My Component")
+    >>> showxml(my_obj)
+    <ownedLogicalComponents name="My Component">
+      ...
+    </ownedLogicalComponents>
+    """
     if isinstance(obj, etree._Element):
         elm = obj
     else:
@@ -263,13 +317,16 @@ def fzf(
 ) -> capellambse.ModelObject | None:
     """Interactively select an element using fzf.
 
+    This function requires the ``fzf`` binary to be installed and in the
+    ``$PATH``.
+
     Examples
     --------
     >>> # Select a LogicalComponent by name
-    >>> obj = fzf("name", model.search("LogicalComponent"))
+    >>> obj = fzf(model.search("LogicalComponent"))
 
     >>> # Select a ComponentExchange by the name of its target component
-    >>> obj = fzf("target.parent.name", model.search("ComponentExchange"))
+    >>> obj = fzf(model.search("ComponentExchange"), "target.parent.name")
     """
 
     def repr(obj):
@@ -358,12 +415,7 @@ def main() -> None:
         - `etree` = lxml.etree, `pprint` = pprint.pprint
 
         Helpful functions and context managers (use `help(name)`):
-        """
-    )
-    if shutil.which("fzf") is not None:
-        banner += "- `fzf`: Select a model element interactively from a list\n"
-    banner += textwrap.dedent(
-        """\
+        - `fzf`: Select a model element interactively from a list
         - `logtee`: CM that redirects log messages to a file
         - `showxml`: Print the XML representation of a model object
         - `suppress`: CM that suppresses exceptions of given type
