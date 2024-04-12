@@ -165,19 +165,14 @@ class Drawing:
                 )
             )
 
-        if features or class_ in decorations.needs_feature_line:
-            self._draw_feature_line(rect, grp, rect_style)
-            if features:
-                self._draw_feature_text(
-                    rect, features, class_, grp, text_style
-                )
-
+        lines = None
         if labels:
             y_margin = 1
             if children or class_ in decorations.always_top_label:
-                y_margin = 3
+                if class_ not in decorations.needs_feature_line:
+                    y_margin = 3
 
-            self._draw_label(
+            lines = self._draw_label(
                 LabelBuilder(
                     *size,
                     labels,
@@ -216,6 +211,13 @@ class Drawing:
                 labelpos,
             )
 
+        if features or class_ in decorations.needs_feature_line:
+            feature_y = self._draw_feature_line(rect, grp, rect_style, lines)
+            if features:
+                self._draw_feature_text(
+                    rect, features, class_, grp, text_style, feature_y
+                )
+
         if DEBUG:
             self._draw_rect_helping_lines(grp, pos, size)
 
@@ -226,20 +228,25 @@ class Drawing:
         obj: base.BaseElement,
         group: container.Group | None,
         objstyle: style.Styling | None,
+        lines_data: LinesData | None = None,
     ) -> shapes.Line | None:
         """Draw a Line on the given object."""
         x, y = obj.attribs["x"], obj.attribs["y"]
         w = obj.attribs["width"]
 
+        if lines_data is None:
+            height_level: float | int = decorations.feature_space
+        else:
+            height_level = lines_data.text_height + 10.0
+
         line = self.__drawing.line(
-            start=(x, y + decorations.feature_space),
-            end=(x + w, y + decorations.feature_space),
+            start=(x, y + height_level),
+            end=(x + w, y + height_level),
             stroke=getattr(objstyle, "stroke", None),
         )
-        if group is None:
-            return line
-
-        return group.add(line)
+        if group is not None:
+            group.add(line)
+        return y + height_level
 
     def _draw_feature_text(
         self,
@@ -248,13 +255,15 @@ class Drawing:
         class_: str,
         group: container.Group,
         labelstyle: style.Styling,
+        y: int | float | None = None,
     ) -> None:
         """Draw features text on given object."""
-        x, y = obj.attribs["x"], obj.attribs["y"]
+        x = obj.attribs["x"]
+        y = y or obj.attribs["y"] + decorations.feature_space
         w, h = obj.attribs["width"], obj.attribs["height"]
         label: LabelDict = {
             "x": x + decorations.feature_space / 2,
-            "y": y + decorations.feature_space,
+            "y": y,
             "width": w - decorations.feature_space / 2,
             "height": h - decorations.feature_space,
             "class": "Features",
@@ -276,10 +285,11 @@ class Drawing:
             )
         )
 
-    def _draw_label(self, builder: LabelBuilder) -> None:
+    def _draw_label(self, builder: LabelBuilder) -> LinesData | None:
         """Draw label text on given object and return the label's group."""
         builder.icon &= f"{builder.class_}Symbol" in decorations.deco_factories
         text = self._make_text(builder)
+        lines = None
         if not text.elements:
             lines = render_hbounded_lines(builder, builder.icon)
             x, y = get_label_position(builder, lines)
@@ -296,7 +306,7 @@ class Drawing:
             if builder.icon:
                 icon_pos = get_label_icon_position(builder, lines)
                 self._add_label_image(builder, icon_pos)
-        return builder.group
+        return lines
 
     def _make_text(self, builder: LabelBuilder) -> svgtext.Text:
         """Return a text element and add it to the builder group."""
