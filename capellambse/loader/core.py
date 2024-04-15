@@ -283,22 +283,53 @@ class ModelFile:
         """Reserve the given ID for an element to be inserted later."""
         self.__idcache[new_id] = None
 
-    def add_namespace(self, name: str, uri: str) -> None:
-        """Add the given namespace to this tree's root element."""
-        fragroot = self.root
-        olduri = fragroot.nsmap.get(name)
-        if olduri is not None and olduri != uri:
-            LOGGER.warning(
-                "Namespace %r already registered with URI %r", name, olduri
-            )
-            return
-        if uri == olduri:
+    def update_namespaces(self, viewpoints: cabc.Mapping[str, str]) -> None:
+        """Update the current namespace map.
+
+        Parameters
+        ----------
+        viewpoints
+            A mapping from viewpoint names to the version activated in
+            the model.
+
+            If an element from a versioned Plugin is encountered, but
+            the Plugin's viewpoint is not activated in the model, an
+            error is raised and no update is performed.
+        """
+        new_nsmap: dict[str, str] = {
+            "xmi": _n.NAMESPACES["xmi"],
+            "xsi": _n.NAMESPACES["xsi"],
+        }
+        for elem in self.root.iter():
+            xtype = helpers.xtype_of(elem)
+            if xtype is None:
+                continue
+            ns, _, _ = xtype.partition(":")
+            plugin = _n.NAMESPACES_PLUGINS.get(ns)
+            if plugin is None:
+                continue
+
+            uri = plugin.name.rstrip("/")
+            if plugin.version is not None:
+                assert plugin.viewpoint is not None
+                vp_version = viewpoints.get(plugin.viewpoint)
+                if not vp_version:
+                    raise CorruptModelError(
+                        f"Viewpoint not activated: {plugin.viewpoint}"
+                    )
+                uri += f"/{vp_version}"
+
+            assert new_nsmap.get(ns) in (None, uri)
+            new_nsmap[ns] = uri
+
+        assert new_nsmap
+        if self.root.nsmap == new_nsmap:
             return
 
         new_root = self.root.makeelement(
             self.root.tag,
             attrib=self.root.attrib,
-            nsmap={**self.root.nsmap, name: uri},
+            nsmap=dict(sorted(new_nsmap.items())),
         )
         new_root.extend(self.root.getchildren())
 
@@ -515,6 +546,8 @@ class MelodyLoader:
                 " (hint: pass i_have_a_recent_backup=True)"
             )
 
+        self.update_namespaces()
+
         LOGGER.debug("Saving model %r", self.get_model_info().title)
         with self.filehandler.write_transaction(**kw) as unsupported_kws:
             if unsupported_kws:
@@ -531,6 +564,21 @@ class MelodyLoader:
                 LOGGER.debug("Saving tree %r to file %s", tree, fname)
                 with self.resources[resname].open(fname, "wb") as f:
                     tree.write_xml(f)
+
+    def update_namespaces(self) -> None:
+        """Update the namespace definitions on each fragment root.
+
+        This method is automatically called while saving to ensure that
+        all namespaces necessary for the current model elements are
+        registered on the fragment roots.
+        """
+        vp = dict(self.referenced_viewpoints())
+        for fname, fragment in self.trees.items():
+            if fragment.fragment_type != FragmentType.SEMANTIC:
+                continue
+
+            LOGGER.debug("Updating namespaces on fragment %s", fname)
+            fragment.update_namespaces(vp)
 
     def idcache_index(self, subtree: etree._Element) -> None:
         """Index the IDs of ``subtree``.
@@ -576,44 +624,6 @@ class MelodyLoader:
         """Rebuild the ID caches of all loaded :class:`ModelFile` instances."""
         for tree in self.trees.values():
             tree.idcache_rebuild()
-
-    def add_namespace(
-        self,
-        fragment: str | pathlib.PurePosixPath | etree._Element,
-        name: str,
-        uri: str | None = None,
-        /,
-    ) -> None:
-        """Add the given namespace to the given tree's root element.
-
-        Parameters
-        ----------
-        fragment
-            Either the name of a fragment (as
-            :class:`~pathlib.PurePosixPath` or :class:`str`), or a model
-            element. In the latter case, the fragment that contains this
-            element is used.
-        name
-            The canonical name of this namespace. This typically uses
-            reverse DNS notation in Capella.
-        uri
-            The namespace URI. If not specified, the canonical name will
-            be used to look up the URI in the list of known namespaces.
-        """
-        if isinstance(fragment, etree._Element):
-            fragment = self.find_fragment(fragment)
-        elif isinstance(fragment, str):
-            fragment = pathlib.PurePosixPath(fragment)
-        elif not isinstance(fragment, pathlib.PurePosixPath):
-            raise TypeError(f"Invalid fragment specifier {fragment!r}")
-
-        if not uri:
-            try:
-                uri = _n.NAMESPACES[name]
-            except KeyError:
-                raise ValueError(f"Unknown namespace {name!r}") from None
-
-        self.trees[fragment].add_namespace(name, uri)
 
     def generate_uuid(
         self, parent: etree._Element, *, want: str | None = None
@@ -1238,33 +1248,52 @@ class MelodyLoader:
         except TypeError:
             return tags
 
+    def __find_metadata(self) -> etree._Element:
+        afm = next(
+            (
+                f
+                for p, f in self.trees.items()
+                if p.parts[0] == "\x00" and p.suffix == ".afm"
+            ),
+            None,
+        )
+        if afm is None:
+            raise RuntimeError("Cannot find .afm file in primary resource")
+        metadata = next(afm.root.iter(METADATA_TAG), None)
+        if metadata is None:
+            raise RuntimeError("Cannot find <Metadata> in primary .afm file")
+        LOGGER.debug("Found <Metadata> with ID %s", metadata.get("id"))
+        return metadata
+
     def referenced_viewpoints(self) -> cabc.Iterator[tuple[str, str]]:
-        try:
-            metatree = next(i for i in self.trees if i.suffix == ".afm")
-        except StopIteration:
-            LOGGER.warning("Cannot list viewpoints: No .afm file loaded")
-            return
-
-        metadata = self.trees[metatree].root
-        if metadata.tag == f"{{{_n.NAMESPACES['xmi']}}}XMI":
-            try:
-                metadata = next(metadata.iterchildren(METADATA_TAG))
-            except StopIteration as error:
-                raise CorruptModelError(
-                    "Cannot list viewpoints: No metadata element found in"
-                    f" {metatree}"
-                ) from error
-        assert metadata.tag == METADATA_TAG
-
+        metadata = self.__find_metadata()
         for i in metadata.iterchildren("viewpointReferences"):
-            id = i.get("vpId")
-            version = i.get("version")
-            if not id or not version:
-                LOGGER.warning(
-                    "vpId or version missing on viewpoint reference %r", i
-                )
+            yield (i.attrib["vpId"], i.attrib["version"])
+
+    def activate_viewpoint(self, name: str, version: str) -> None:
+        """Activate (reference) a viewpoint in the model."""
+        metadata = self.__find_metadata()
+        for vpref in metadata.iterchildren("viewpointReferences"):
+            if vpref.get("vpId") != name:
                 continue
-            yield (id, version)
+
+            vpver = vpref.get("version")
+            if vpver == version:
+                LOGGER.debug("Viewpoint %r v%s already active", name, version)
+                return
+
+            raise ValueError(
+                f"Viewpoint {name} already active with version {vpver}"
+                f" (requested: {version})"
+            )
+
+        with self.new_uuid(metadata) as new_id:
+            vpref = metadata.makeelement(
+                "viewpointReferences",
+                attrib={"id": new_id, "vpId": name, "version": version},
+            )
+            metadata.append(vpref)
+            self.idcache_index(vpref)
 
     def get_model_info(self) -> ModelInfo:
         """Return information about the loaded model."""

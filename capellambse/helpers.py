@@ -788,8 +788,7 @@ def xtype_of(elem: etree._Element) -> str | None:
     if not ns:
         return None
 
-    nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
-    _n.check_plugin(nskey, plugin)
+    nskey = _n.get_namespace_prefix(ns)
     return f"{nskey}:{tag}"
 
 

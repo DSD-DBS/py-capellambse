@@ -244,9 +244,6 @@ class GenericElement:
             for key, val in kw.items():
                 if key == "xtype":
                     self._element.set(helpers.ATT_XT, val)
-                    self._model._loader.add_namespace(
-                        parent, val.split(":", maxsplit=1)[0]
-                    )
                 elif not isinstance(
                     getattr(type(self), key),
                     (accessors.Accessor, properties.AttributeProperty),

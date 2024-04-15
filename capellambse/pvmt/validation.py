@@ -83,9 +83,7 @@ def _validate_group_scope_class(pvmt_ext, scopedesc, xml_element):
     match = SCOPE_CLASS_RE.match(scopedesc)
     assert match is not None
 
-    ns = match.group(1)
-    nskey, plugin = _n.get_keys_and_plugins_from_namespaces_by_url(ns)
-    _n.check_plugin(nskey, plugin)
+    nskey = _n.get_namespace_prefix(match.group(1))
     return (
         xml_element.get(f"{{{_n.NAMESPACES['xsi']}}}type", "")
         == f"{nskey}:{match.group(2)}"
