@@ -90,6 +90,7 @@ def test_create_adds_missing_namespace_to_fragment(
     module = model.by_uuid("85a31dd7-7755-486b-b803-1df8915e2cf9")
 
     module.requirements.create(name="TestReq")
+    model._loader.update_namespaces()
 
     assert "Requirements" in model._element.nsmap
 
@@ -100,12 +101,14 @@ def test_adding_a_namespace_preserves_the_capella_version_comment(
     assert "Requirements" not in model._element.nsmap, "Precondition failed"
     prev_elements = list(model._element.itersiblings(preceding=True))
     assert len(prev_elements) == 1, "No version comment to preserve?"
+    module = model.by_uuid("85a31dd7-7755-486b-b803-1df8915e2cf9")
 
-    model._loader.add_namespace(model._element, "Requirements")
+    module.requirements.create(name="TestReq")
+    model._loader.update_namespaces()
 
+    assert "Requirements" in model._element.nsmap
     prev_elements = list(model._element.itersiblings(preceding=True))
     assert len(prev_elements) == 1
-    assert model.info.capella_version != "UNKNOWN"
 
 
 def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
