@@ -644,6 +644,12 @@ class MelodyModel:
 
         return metrics.get_summary_badge(self)
 
+    def referenced_viewpoints(self) -> dict[str, str]:
+        return dict(self._loader.referenced_viewpoints())
+
+    def activate_viewpoint(self, name: str, version: str) -> None:
+        self._loader.activate_viewpoint(name, version)
+
     if t.TYPE_CHECKING:
 
         def __getattr__(self, attr: str) -> t.Any:

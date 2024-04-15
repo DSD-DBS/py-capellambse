@@ -1238,33 +1238,52 @@ class MelodyLoader:
         except TypeError:
             return tags
 
+    def __find_metadata(self) -> etree._Element:
+        afm = next(
+            (
+                f
+                for p, f in self.trees.items()
+                if p.parts[0] == "\x00" and p.suffix == ".afm"
+            ),
+            None,
+        )
+        if afm is None:
+            raise RuntimeError("Cannot find .afm file in primary resource")
+        metadata = next(afm.root.iter(METADATA_TAG), None)
+        if metadata is None:
+            raise RuntimeError("Cannot find <Metadata> in primary .afm file")
+        LOGGER.debug("Found <Metadata> with ID %s", metadata.get("id"))
+        return metadata
+
     def referenced_viewpoints(self) -> cabc.Iterator[tuple[str, str]]:
-        try:
-            metatree = next(i for i in self.trees if i.suffix == ".afm")
-        except StopIteration:
-            LOGGER.warning("Cannot list viewpoints: No .afm file loaded")
-            return
-
-        metadata = self.trees[metatree].root
-        if metadata.tag == f"{{{_n.NAMESPACES['xmi']}}}XMI":
-            try:
-                metadata = next(metadata.iterchildren(METADATA_TAG))
-            except StopIteration as error:
-                raise CorruptModelError(
-                    "Cannot list viewpoints: No metadata element found in"
-                    f" {metatree}"
-                ) from error
-        assert metadata.tag == METADATA_TAG
-
+        metadata = self.__find_metadata()
         for i in metadata.iterchildren("viewpointReferences"):
-            id = i.get("vpId")
-            version = i.get("version")
-            if not id or not version:
-                LOGGER.warning(
-                    "vpId or version missing on viewpoint reference %r", i
-                )
+            yield (i.attrib["vpId"], i.attrib["version"])
+
+    def activate_viewpoint(self, name: str, version: str) -> None:
+        """Activate (reference) a viewpoint in the model."""
+        metadata = self.__find_metadata()
+        for vpref in metadata.iterchildren("viewpointReferences"):
+            if vpref.get("vpId") != name:
                 continue
-            yield (id, version)
+
+            vpver = vpref.get("version")
+            if vpver == version:
+                LOGGER.debug("Viewpoint %r v%s already active", name, version)
+                return
+
+            raise ValueError(
+                f"Viewpoint {name} already active with version {vpver}"
+                f" (requested: {version})"
+            )
+
+        with self.new_uuid(metadata) as new_id:
+            vpref = metadata.makeelement(
+                "viewpointReferences",
+                attrib={"id": new_id, "vpId": name, "version": version},
+            )
+            metadata.append(vpref)
+            self.idcache_index(vpref)
 
     def get_model_info(self) -> ModelInfo:
         """Return information about the loaded model."""
