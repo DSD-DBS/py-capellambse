@@ -200,8 +200,9 @@ jupyter-notebook
 If your browser did not open automatically, follow the instructions in the
 terminal to start it manually.
 
-Once in the browser, simply click on the [01 Introduction.ipynb] notebook to
-start!
+Once in the browser, simply click on the [01
+Introduction.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/01%20Introduction.html)
+notebook to start!
 
 Current limitations
 -------------------
