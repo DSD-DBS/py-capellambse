@@ -330,13 +330,16 @@ class GitlabArtifactsFiles(abc.FileHandler):
             raise TypeError("Cannot write to Gitlab artifacts")
 
         cachekey = f"{self.__path}|{self.__project}|{self.__job}|{path}"
-        if cachekey in self.__cache:
+        try:
             content = self.__cache[cachekey]
+        except KeyError:
+            pass
+        else:
             if content is None:
                 LOGGER.debug("Negative cache hit for %r", path)
                 raise FileNotFoundError(errno.ENOENT, filename)
             LOGGER.debug("Opening cached file %r for reading", path)
-            return io.BytesIO(self.__cache[cachekey])
+            return io.BytesIO(content)
 
         try:
             response = self.__rawget(
