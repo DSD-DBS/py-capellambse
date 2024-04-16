@@ -235,7 +235,7 @@ def _operate_set(
             try:
                 value = _resolve(promises, parent, value)
             except _UnresolvablePromise as p:
-                yield p.args[0], {"parent": parent, "modify": {attr: value}}
+                yield p.args[0], {"parent": parent, "set": {attr: value}}
                 continue
 
         if isinstance(value, list):
@@ -267,9 +267,14 @@ def _operate_sync(
                 ) from None
 
             try:
-                candidate = _resolve_findby(parent, attr, FindBy(find_args))
+                candidate = _resolve_findby(
+                    promises, parent, attr, FindBy(find_args)
+                )
             except _NoObjectFoundError:
                 candidate = None
+            except _UnresolvablePromise as p:
+                yield p.args[0], {"parent": parent, "sync": {attr: [obj]}}
+                continue
 
             if candidate is not None:
                 if sync := obj.pop("sync", None):
@@ -308,7 +313,7 @@ def _resolve(
     elif isinstance(value, UUIDReference):
         return parent._model.by_uuid(value.uuid)
     elif isinstance(value, FindBy):
-        return _resolve_findby(parent, None, value)
+        return _resolve_findby(promises, parent, None, value)
     elif isinstance(value, list):
         for i, v in enumerate(value):
             newv = _resolve(promises, parent, v)
@@ -318,6 +323,7 @@ def _resolve(
 
 
 def _resolve_findby(
+    promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject | capellambse.MelodyModel,
     attr: str | None,
     value: FindBy,
@@ -348,6 +354,10 @@ def _resolve_findby(
         candidates = parent._model.search()
 
     if attrs:
+        for k, v in attrs.items():
+            if isinstance(v, (Promise, _ObjectFinder)):
+                attrs[k] = _resolve(promises, parent, v)
+
         if len(attrs) > 1:
             expected_values = tuple(attrs.values())
         else:

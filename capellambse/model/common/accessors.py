@@ -1774,9 +1774,17 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
                     "Moving model objects is not supported yet"
                 )
             if (elem := self.__get__(obj)) is not None:
-                obj._model._loader.idcache_remove(elem._element)
-                obj._element.remove(elem._element)
-            self._create(obj, self.role_tag, *value._type_hint, **value._kw)
+                valueclass, _ = self._match_xtype(*value._type_hint)
+                elemclass = elem.__class__
+                if elemclass is not valueclass:
+                    obj._model._loader.idcache_remove(elem._element)
+                    obj._element.remove(elem._element)
+                    self._create(
+                        obj, self.role_tag, *value._type_hint, **value._kw
+                    )
+                else:
+                    for k, v in value._kw.items():
+                        setattr(elem, k, v)
 
     def create(
         self,
