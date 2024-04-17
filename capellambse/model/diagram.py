@@ -69,20 +69,32 @@ class UnknownOutputFormat(ValueError):
 class AbstractDiagram(metaclass=abc.ABCMeta):
     """Abstract superclass of model diagrams."""
 
-    uuid: str
-    """Unique ID of this diagram."""
-    name: str
-    """Human-readable name for this diagram."""
-    target: c.GenericElement
-    """This diagram's "target".
+    if t.TYPE_CHECKING:
 
-    The target of a diagram is usually:
+        @property
+        def uuid(self) -> str: ...
+        @property
+        def name(self) -> str: ...
+        @property
+        def target(self) -> c.GenericElement: ...
 
-    *   The model element which is the direct parent of all visible
-        nodes **OR**
-    *   The only top-level element in the diagram **OR**
-    *   The element which is considered to be the "element of interest".
-    """
+    else:
+
+        uuid: str
+        """Unique ID of this diagram."""
+        name: str
+        """Human-readable name for this diagram."""
+        target: c.GenericElement
+        """This diagram's "target".
+
+        The target of a diagram is usually:
+
+        *   The model element which is the direct parent of all visible
+            nodes **OR**
+        *   The only top-level element in the diagram **OR**
+        *   The element which is considered to be the "element of interest".
+        """
+
     filters: cabc.MutableSet[str]
     """The filters that are activated for this diagram."""
 
@@ -482,13 +494,9 @@ class Diagram(AbstractDiagram):
     __real_uuid = c.properties.AttributeProperty("uid", writable=False)
     if LEGACY_DIAGRAM_IDS:
 
-        @property  # type: ignore[no-redef]
+        @property
         def uuid(self) -> str:
             return self.representation_path.rsplit("#", 1)[-1]
-
-        @uuid.setter
-        def uuid(self, value: str) -> None:
-            raise TypeError("The uuid is read-only")
 
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name: str = c.properties.AttributeProperty(  # type: ignore[assignment]
@@ -565,7 +573,7 @@ class Diagram(AbstractDiagram):
         return self._element.attrib["repPath"]
 
     @property
-    def target(self) -> c.GenericElement:  # type: ignore[override]
+    def target(self) -> c.GenericElement:
         target = aird.find_target(self._model._loader, self._element)
         return c.GenericElement.from_model(self._model, target)
 
