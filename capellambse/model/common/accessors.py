@@ -872,6 +872,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         seen: set[etree._Element] = set()
         for i in self.__find_refs(obj):
             e = self.__follow_ref(obj, i)
+            if e is None:
+                continue
             if e not in seen:
                 elems.append(e)
                 seen.add(e)
@@ -908,12 +910,10 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def __follow_ref(
         self, obj: element.ModelObject, refelm: etree._Element
-    ) -> etree._Element:
+    ) -> etree._Element | None:
         link = refelm.get(self.follow)
         if not link:
-            raise RuntimeError(
-                f"Broken XML: Reference without {self.follow!r}"
-            )
+            return None
         return obj._model._loader.follow_link(obj._element, link)
 
     def __find_refs(
