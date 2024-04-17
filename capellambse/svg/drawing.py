@@ -565,13 +565,17 @@ class Drawing:
 
         self.__drawing.add(grp)
         if floating_labels_:
+            label_width: int | float = decorations.min_symbol_width
+            label_height = 35.0
             for label in floating_labels_:
                 label["class"] = "Annotation"
+                label_width = max(label_width, label["width"])
+                label_height = max(label_height, label["height"])
 
             self._draw_label(
                 LabelBuilder(
-                    min(decorations.max_label_width, width_),
-                    math.inf,
+                    label_width,
+                    label_height,
                     floating_labels_,
                     grp or self.__drawing.elements[-1],
                     labelstyle=text_style,

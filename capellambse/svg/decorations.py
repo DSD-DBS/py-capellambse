@@ -18,6 +18,8 @@ feature_space = 24
 """Default margins/padding (top/bot and left/right) for feature text."""
 max_label_width = 1500
 """Maximum width for a label."""
+min_symbol_width = 200
+"""Minimum width (available horizontal space) for a symbol."""
 
 function_ports = {"FIP", "FOP"}
 directed_component_ports = {"CP_IN", "CP_OUT"}
