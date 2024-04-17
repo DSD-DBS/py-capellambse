@@ -31,15 +31,15 @@ class OperationalActivity(fa.AbstractFunction):
     exchanges = c.DirectProxyAccessor(
         fa.FunctionalExchange, aslist=c.ElementList
     )
+
+    inputs = c.ReferenceSearchingAccessor(
+        fa.FunctionalExchange, "target", aslist=c.ElementList
+    )
+    outputs = c.ReferenceSearchingAccessor(
+        fa.FunctionalExchange, "source", aslist=c.ElementList
+    )
+
     owner: c.Accessor[Entity]
-
-    @property
-    def inputs(self) -> c.ElementList[fa.FunctionalExchange]:
-        return self._model.oa.all_activity_exchanges.by_target(self)
-
-    @property
-    def outputs(self) -> c.ElementList[fa.FunctionalExchange]:
-        return self._model.oa.all_activity_exchanges.by_source(self)
 
     @property
     def related_exchanges(self) -> c.ElementList[fa.FunctionalExchange]:
