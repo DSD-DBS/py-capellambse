@@ -378,6 +378,12 @@ def iter_visible(
             visited.add(elem.attrib["id"])
 
 
+def is_representation_descriptor(
+    e: etree._Element, /
+) -> t.TypeGuard[DRepresentationDescriptor]:
+    return helpers.xtype_of(e) == "viewpoint:DRepresentationDescriptor"
+
+
 if not t.TYPE_CHECKING:
 
     def __getattr__(key: str) -> t.Any:

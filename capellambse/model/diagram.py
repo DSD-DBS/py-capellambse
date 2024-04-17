@@ -15,15 +15,13 @@ import typing as t
 import uuid
 
 import markupsafe
+from lxml import etree
 
 import capellambse
 from capellambse import aird, diagram, helpers, svg
 
 from . import common as c
 from . import modeltypes
-
-if t.TYPE_CHECKING:
-    from lxml import etree
 
 LEGACY_DIAGRAM_IDS = bool(os.getenv("CAPELLAMBSE_LEGACY_DIAGRAM_IDS"))
 """Report the representation ID as diagram UUID instead of the descriptor.
@@ -468,7 +466,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             pass
 
 
-@c.xtype_handler(None, "viewpoint:DRepresentationDescriptor")
+@c.xtype_handler(
+    None,
+    "viewpoint:DRepresentationDescriptor",
+    "diagram:DSemanticDiagram",
+    "sequence:SequenceDDiagram",
+)
 class Diagram(AbstractDiagram):
     """Provides access to a single diagram."""
 
@@ -503,16 +506,24 @@ class Diagram(AbstractDiagram):
     @classmethod
     def from_model(
         cls,
-        model: capellambse.MelodyModel,
-        descriptor: aird.DRepresentationDescriptor,
+        model: capellambse.model.MelodyModel,
+        element: etree._Element,
     ) -> Diagram:
         """Wrap a diagram already defined in the Capella AIRD."""
-        self = cls.__new__(cls)
-        self._model = model
-        self._element = descriptor
-        self._constructed = True
-        self.__nodes = None
-        return self
+        if aird.is_representation_descriptor(element):
+            self = cls.__new__(cls)
+            self._model = model
+            self._element = element
+            self._constructed = True
+            self.__nodes = None
+            return self
+
+        target_id = element.get("uid")
+        if not target_id:
+            raise RuntimeError(f"No uid defined on {element!r}")
+        return model.diagrams.by_representation_path(
+            f"#{target_id}", single=True
+        )
 
     def __init__(self, **kw: t.Any) -> None:
         # pylint: disable=super-init-not-called
