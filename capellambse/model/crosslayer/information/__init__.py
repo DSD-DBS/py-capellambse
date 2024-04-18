@@ -220,7 +220,7 @@ class ExchangeItem(c.GenericElement):
     _xmltag = "ownedExchangeItems"
 
     type = c.EnumAttributeProperty(
-        "exchangeMechanism", modeltypes.ExchangeItemType, default="UNSET"
+        "exchangeMechanism", modeltypes.ExchangeMechanism, default="UNSET"
     )
     elements = c.DirectProxyAccessor(ExchangeItemElement, aslist=c.ElementList)
     exchanges: c.Accessor[c.GenericElement]
