@@ -454,7 +454,7 @@ class EnumAttributeProperty(AttributeProperty):
 
         if rawvalue is None:
             return None
-        return self.enumcls[rawvalue]
+        return self.enumcls(rawvalue)
 
     def __set__(self, obj: t.Any, value: str | enum.Enum) -> None:
         assert self.__objclass__ is not None
@@ -470,4 +470,5 @@ class EnumAttributeProperty(AttributeProperty):
                 f"Expected str or member of {self.enumcls}, not {value!r}"
             )
 
-        return super().__set__(obj, value.name)
+        assert isinstance(value.value, str)
+        return super().__set__(obj, value.value)
