@@ -254,7 +254,7 @@ class ComponentPort(c.GenericElement):
     _xmltag = "ownedFeatures"
 
     direction = c.EnumAttributeProperty(
-        "orientation", modeltypes.FPortDir, writable=False
+        "orientation", modeltypes.OrientationPortKind, writable=False
     )
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
