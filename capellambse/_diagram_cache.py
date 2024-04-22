@@ -9,6 +9,7 @@ import datetime
 import itertools
 import json
 import logging
+import os
 import pathlib
 import re
 import shutil
@@ -17,6 +18,7 @@ import typing as t
 import lxml
 from lxml import etree
 
+import capellambse.helpers
 import capellambse.model.diagram
 from capellambse import _native
 from capellambse.filehandler import local
@@ -28,7 +30,18 @@ BAD_FILENAMES = frozenset(
     | {f"COM{i}" for i in range(1, 10)}
     | {f"LPT{i}" for i in range(1, 10)}
 )
+CROP_MARGIN = 10.0
 LOGGER = logging.getLogger(__name__)
+
+SVG_CROP_FLAG_NAME = "CAPELLAMBSE_EXPERIMENTAL_CROP_SVG_DIAGRAM_CACHE_VIEWPORT"
+"""Flag environment variable that enables experimental SVG cropping.
+
+If set to 1, the viewBox and width/height of produced SVG images will be
+cropped in order to minimize the amount of whitespace around the visible
+contents.
+"""
+
+
 VALID_FORMATS = frozenset(
     {
         "bmp",
@@ -45,6 +58,32 @@ VIEWPOINT_ORDER = (
     "Logical Architecture",
     "Physical Architecture",
 )
+
+
+class _NoBoundingBoxFound(Exception):
+    pass
+
+
+class _NoExtentsFound(Exception):
+    pass
+
+
+class ViewBox(t.NamedTuple):
+    """Bounding box of an SVG shape."""
+
+    x_min: float
+    y_min: float
+    width: float
+    height: float
+
+
+class Extents(t.NamedTuple):
+    """Extents of an SVG shape."""
+
+    x_min: float
+    x_max: float
+    y_min: float
+    y_max: float
 
 
 class IndexEntry(t.TypedDict):
@@ -180,7 +219,7 @@ def _copy_images(
             source = srcdir / files[name]
             destination = destdir / f"{i.uuid}.{extension}"
             if extension == "svg":
-                _copy_and_sanitize_svg(source, destination, background)
+                _copy_and_postprocess_svg(source, destination, background)
             else:
                 shutil.copyfile(source, destination)
 
@@ -219,7 +258,181 @@ def _sanitize_filename(fname: str) -> str:
     return fname
 
 
-def _copy_and_sanitize_svg(
+def _circle_extents(element: etree._Element) -> Extents:
+    """Compute extents for a circle."""
+    cx = float(element.get("cx", 0))
+    cy = float(element.get("cy", 0))
+    r = float(element.get("r", 0))
+    return Extents(cx - r, cx + r, cy - r, cy + r)
+
+
+def _ellipse_extents(element: etree._Element) -> Extents:
+    """Compute extents for an ellipse."""
+    cx = float(element.get("cx", 0))
+    cy = float(element.get("cy", 0))
+    rx = float(element.get("rx", 0))
+    ry = float(element.get("ry", 0))
+    return Extents(cx - rx, cx + rx, cy - ry, cy + ry)
+
+
+def _image_extents(element: etree._Element) -> Extents:
+    """Compute extents for an image."""
+    x = float(element.get("x", 0))
+    y = float(element.get("y", 0))
+    width = float(element.get("width", 0))
+    height = float(element.get("height", 0))
+    return Extents(x, x + width, y, y + height)
+
+
+def _line_extents(element: etree._Element) -> Extents:
+    """Compute extents for a line."""
+    x1 = float(element.get("x1", 0))
+    y1 = float(element.get("y1", 0))
+    x2 = float(element.get("x2", 0))
+    y2 = float(element.get("y2", 0))
+    return Extents(min(x1, x2), max(x1, x2), min(y1, y2), max(y1, y2))
+
+
+def _polyline_extents(element: etree._Element) -> Extents:
+    """Compute extents for a polyline or polygon."""
+    points = [
+        tuple(map(float, p.split(",")))
+        for p in element.get("points", "").strip().split()
+    ]
+    x_coords, y_coords = zip(*points)
+    return Extents(min(x_coords), max(x_coords), min(y_coords), max(y_coords))
+
+
+def _rect_extents(element: etree._Element) -> Extents:
+    """Compute extents for a rectangle."""
+    width_str = element.get("width", "0")
+    height_str = element.get("height", "0")
+    try:
+        width = float(width_str)
+        height = float(height_str)
+    except ValueError:
+        raise _NoExtentsFound() from None
+    x = float(element.get("x", 0))
+    y = float(element.get("y", 0))
+    width = float(element.get("width", 0))
+    height = float(element.get("height", 0))
+    return Extents(x, x + width, y, y + height)
+
+
+def _text_extents(element: etree._Element) -> Extents:
+    """Compute extents for text."""
+    x = float(element.get("x", 0))
+    y = float(element.get("y", 0))
+    text = element.text or ""
+    font_size_str = element.get("font-size", "12").strip().lower()
+    if "px" in font_size_str:
+        font_size_str = font_size_str[:-2]
+    font_size = float(font_size_str)
+    width = len(text) * font_size * 0.6  # Simplistic width estimation
+    return Extents(x, x + width, y - font_size, y)
+
+
+def _use_extents(element: etree._Element) -> Extents:
+    """Compute extents for use."""
+    x = float(element.get("x", 0))
+    y = float(element.get("y", 0))
+    width = float(element.get("width", 0))
+    height = float(element.get("height", 0))
+    return Extents(x, x + width, y, y + height)
+
+
+EXTENT_FUNCTIONS: dict[str, t.Callable[[etree._Element], Extents]] = {
+    "circle": _circle_extents,
+    "ellipse": _ellipse_extents,
+    "image": _image_extents,
+    "line": _line_extents,
+    # ``polyline`` and ``polygon`` only differ in whether the shape is
+    # implicitly closed (the first and the last point are connected).
+    # For the purpose of calculating the extents, this is irrelevant, so
+    # we can simply use the same algorithm here.
+    "polygon": _polyline_extents,
+    "polyline": _polyline_extents,
+    "rect": _rect_extents,
+    "text": _text_extents,
+    "use": _use_extents,
+}
+
+
+def _calculate_svg_viewbox(root: etree._Element) -> ViewBox:
+    """Compute bounding box of graphical content for SVG file."""
+    x_min = y_min = float("inf")
+    x_max = y_max = float("-inf")
+    for element in root.iter():
+        if (
+            isinstance(element, etree._Comment)
+            or not hasattr(element, "tag")
+            or element.get("transform")
+        ):
+            continue
+        tag = etree.QName(element.tag).localname
+        func = EXTENT_FUNCTIONS.get(tag)
+        if func is None:
+            continue
+        try:
+            shape_x_min, shape_x_max, shape_y_min, shape_y_max = func(element)
+        except (_NoExtentsFound, ValueError):
+            continue
+        x_min = min(x_min, shape_x_min)
+        y_min = min(y_min, shape_y_min)
+        x_max = max(x_max, shape_x_max)
+        y_max = max(y_max, shape_y_max)
+
+    x_min -= CROP_MARGIN
+    y_min -= CROP_MARGIN
+    x_max += CROP_MARGIN
+    y_max += CROP_MARGIN
+    if any(abs(i) == float("inf") for i in (x_min, x_max, y_min, y_max)):
+        raise _NoBoundingBoxFound() from None
+    return ViewBox(x_min, y_min, x_max - x_min, y_max - y_min)
+
+
+def _crop_svg_viewbox(src: pathlib.Path, root: etree._Element):
+    try:
+        min_x, min_y, new_width, new_height = _calculate_svg_viewbox(root)
+    except _NoBoundingBoxFound:
+        LOGGER.warning("Cannot determine bounding box in file: %s", src)
+        return
+
+    old_width = float(root.get("width", 0))
+    old_height = float(root.get("height", 0))
+    if new_width >= old_width and new_height >= old_height:
+        LOGGER.debug(
+            (
+                "Calculated viewbox for %s is larger than original, ignoring:"
+                " (w=%.1f, h=%.1f) > (w=%.1f, h=%.1f)"
+            ),
+            src,
+            new_width,
+            new_height,
+            old_width,
+            old_height,
+        )
+        return
+
+    old_viewbox_width = float(root.get("viewBox", "0 0 0 0").split()[2])
+    old_viewbox_height = float(root.get("viewBox", "0 0 0 0").split()[3])
+    if new_width < old_viewbox_width and new_height < old_viewbox_height:
+        root.set("viewBox", f"{min_x} {min_y} {new_width} {new_height}")
+    elif new_width < old_viewbox_width:
+        root.set(
+            "viewBox", f"{min_x} {min_y} {new_width} {old_viewbox_height}"
+        )
+    elif new_height < old_viewbox_height:
+        root.set(
+            "viewBox", f"{min_x} {min_y} {old_viewbox_width} {new_height}"
+        )
+    if new_width < old_width:
+        root.set("width", str(new_width))
+    if new_height < old_height:
+        root.set("height", str(new_height))
+
+
+def _copy_and_postprocess_svg(
     src: pathlib.Path, dest: pathlib.Path, background: bool
 ) -> None:
     """Copy ``src`` to ``dest`` and post process SVG diagram.
@@ -230,10 +443,18 @@ def _copy_and_sanitize_svg(
     deletes ``stroke- miterlimit``.
     """
     tree = etree.parse(src)
+    root = tree.getroot()
+    if os.getenv(SVG_CROP_FLAG_NAME) == "1":
+        _crop_svg_viewbox(src, root)
     if background:
-        root = tree.getroot()
+        viewbox = root.get("viewBox", "0 0 0 0").split()
         background_elem = etree.Element(
-            "rect", x="0", y="0", width="100%", height="100%", fill="white"
+            "rect",
+            x=viewbox[0],
+            y=viewbox[1],
+            width=viewbox[2],
+            height=viewbox[3],
+            fill="white",
         )
         root.insert(0, background_elem)
     for elm in tree.iter():
