@@ -26,19 +26,14 @@ from . import modeltypes
 
 @t.runtime_checkable
 class DiagramFormat(t.Protocol):
-    filename_extension: str
-
     @classmethod
-    def convert(cls, dg: diagram.Diagram) -> t.Any: ...
-
-    @classmethod
-    def from_cache(cls, cache: bytes) -> t.Any: ...
+    def convert(cls, dg: t.Any) -> t.Any: ...
 
 
 @t.runtime_checkable
 class PrettyDiagramFormat(DiagramFormat, t.Protocol):
     @classmethod
-    def convert_pretty(cls, dg: diagram.Diagram) -> t.Any: ...
+    def convert_pretty(cls, dg: t.Any) -> t.Any: ...
 
 
 DiagramConverter = t.Union[
@@ -143,10 +138,13 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                     err_img = self.__create_error_image("render", err)
                 assert err_img is not None
                 converter = _find_format_converter(fmt)
-                if isinstance(converter, DiagramFormat):
-                    return converter.convert(err_img)
-                else:
-                    return converter(err_img)
+                data: t.Any = err_img
+                for converter in reversed(list(_walk_converters(converter))):
+                    if isinstance(converter, DiagramFormat):
+                        data = converter.convert(data)
+                    else:
+                        data = converter(data)
+                return data
         return getattr(super(), attr)
 
     def __repr__(self) -> str:
@@ -292,13 +290,15 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             if not self._allow_render:
                 raise RuntimeError(f"Diagram not in cache: {self.name}")
 
-        render = self.__render_fresh(params)
-        if pretty_print and isinstance(conv, PrettyDiagramFormat):
-            return conv.convert_pretty(render)
-        elif isinstance(conv, DiagramFormat):
-            return conv.convert(render)
-        else:
-            return conv(render)
+        render: t.Any = self.__render_fresh(params)
+        for conv in reversed(list(_walk_converters(conv))):
+            if pretty_print and isinstance(conv, PrettyDiagramFormat):
+                render = conv.convert_pretty(render)
+            elif isinstance(conv, DiagramFormat):
+                render = conv.convert(render)
+            else:
+                render = conv(render)
+        return render
 
     def save(
         self,
@@ -426,18 +426,40 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         if cache_handler is None or cachedir is None:
             raise KeyError(self.uuid)
 
-        if not isinstance(converter, DiagramFormat):
+        data: t.Any = None
+        converter_stack: list[DiagramConverter] = []
+        for cv in _walk_converters(converter):
+            converter_stack.append(cv)
+
+            ext = getattr(cv, "filename_extension", None)
+            if not ext or not hasattr(cv, "from_cache"):
+                continue
+
+            filename = cachedir / (self.uuid + ext)
+            try:
+                with cache_handler.open(filename) as f:
+                    cache = f.read()
+            except FileNotFoundError:
+                LOGGER.debug("Not found in diagram cache: %s", filename)
+            else:
+                LOGGER.debug("Using file from diagram cache: %s", filename)
+                data = cv.from_cache(cache)
+                converter_stack.pop()
+                break
+        else:
+            LOGGER.debug(
+                "No usable cached format found for diagram %s (%r)",
+                self.uuid,
+                self.name,
+            )
             raise KeyError(self.uuid)
 
-        try:
-            ext = converter.filename_extension
-            with cache_handler.open(cachedir / (self.uuid + ext)) as f:
-                cache = f.read()
-        except FileNotFoundError:
-            LOGGER.debug("Diagram not in cache: %s (%s)", self.uuid, self.name)
-            raise KeyError(self.uuid) from None
-
-        return converter.from_cache(cache)
+        for cv in reversed(converter_stack):
+            if hasattr(cv, "convert"):
+                data = cv.convert(data)
+            else:
+                data = cv(data)
+        return data
 
     def __render_fresh(self, params: dict[str, t.Any]) -> diagram.Diagram:
         # pylint: disable=broad-except
@@ -616,21 +638,29 @@ class DiagramAccessor(c.Accessor):
         )
 
 
+def convert_svgdiagram(
+    dg: diagram.Diagram,
+) -> svg.generate.SVGDiagram:
+    """Convert the diagram to a SVGDiagram."""
+    jsondata = diagram.DiagramJSONEncoder().encode(dg)
+    return svg.generate.SVGDiagram.from_json(jsondata)
+
+
 class SVGFormat:
     """Convert the diagram to SVG."""
 
     filename_extension = ".svg"
     mimetype = "image/svg+xml"
+    depends = convert_svgdiagram
 
     @staticmethod
-    def convert(dg: diagram.Diagram) -> str:
-        return convert_svgdiagram(dg).to_string()
+    def convert(dg: svg.generate.SVGDiagram) -> str:
+        return dg.to_string()
 
     @staticmethod
-    def convert_pretty(dg: diagram.Diagram) -> str:
+    def convert_pretty(dg: svg.generate.SVGDiagram) -> str:
         buf = io.StringIO()
-        svgdg = convert_svgdiagram(dg).drawing
-        drawing = svgdg._Drawing__drawing  # type: ignore[attr-defined]
+        drawing = dg.drawing._Drawing__drawing  # type: ignore[attr-defined]
         drawing.write(buf, pretty=True)
         return buf.getvalue()
 
@@ -644,9 +674,10 @@ class PNGFormat:
 
     filename_extension = ".png"
     mimetype = "image/png"
+    depends = SVGFormat
 
     @staticmethod
-    def convert(dg: diagram.Diagram) -> bytes:
+    def convert(dg: str) -> bytes:
         try:
             import cairosvg
         except OSError as error:
@@ -656,25 +687,18 @@ class PNGFormat:
             ) from error
 
         scale = float(os.getenv("CAPELLAMBSE_PNG_SCALE", "1"))
-        return cairosvg.svg2png(SVGFormat.convert(dg), scale=scale)
+        return cairosvg.svg2png(dg, scale=scale)
 
     @staticmethod
     def from_cache(cache: bytes) -> bytes:
         return cache
 
 
-def convert_svgdiagram(
-    dg: diagram.Diagram,
-) -> svg.generate.SVGDiagram:
-    """Convert the diagram to a SVGDiagram."""
-    jsondata = diagram.DiagramJSONEncoder().encode(dg)
-    return svg.generate.SVGDiagram.from_json(jsondata)
-
-
 class ConfluenceSVGFormat:
     """Convert the diagram to Confluence-style SVG."""
 
-    filename_extension = ".svg"
+    depends = SVGFormat
+
     prefix = (
         f'<ac:structured-macro ac:macro-id="{uuid.uuid4()!s}" ac:name="html"'
         ' ac:schema-version="1">'
@@ -683,53 +707,31 @@ class ConfluenceSVGFormat:
     postfix = "]]></ac:plain-text-body></ac:structured-macro>"
 
     @classmethod
-    def convert(cls, dg: diagram.Diagram) -> str:
-        return "".join((cls.prefix, SVGFormat.convert(dg), cls.postfix))
+    def convert(cls, dg: str) -> str:
+        return "".join((cls.prefix, dg, cls.postfix))
 
     @classmethod
-    def convert_pretty(cls, dg: diagram.Diagram) -> str:
-        return (
-            cls.prefix
-            + "\n"
-            + SVGFormat.convert_pretty(dg)
-            + "\n"
-            + cls.postfix
-        )
-
-    @classmethod
-    def from_cache(cls, cache: bytes) -> str:
-        return "".join((cls.prefix, cache.decode("utf-8"), cls.postfix))
+    def convert_pretty(cls, dg: str) -> str:
+        return cls.prefix + "\n" + dg + "\n" + cls.postfix
 
 
 class SVGDataURIFormat:
-    filename_extension = ".svg"
+    depends = SVGFormat
+
     preamble = "data:image/svg+xml;base64,"
 
     @classmethod
-    def convert(cls, dg: diagram.Diagram) -> str:
-        payload = SVGFormat.convert(dg)
-        b64 = base64.standard_b64encode(payload.encode("utf-8"))
-        return "".join((cls.preamble, b64.decode("ascii")))
-
-    @classmethod
-    def from_cache(cls, cache: bytes) -> str:
-        b64 = base64.standard_b64encode(cache)
+    def convert(cls, dg: str) -> str:
+        b64 = base64.standard_b64encode(dg.encode("utf-8"))
         return "".join((cls.preamble, b64.decode("ascii")))
 
 
 class SVGInHTMLIMGFormat:
-    filename_extension = ".svg"
-    mimetype = "text/html"
+    depends = SVGDataURIFormat
 
     @staticmethod
-    def convert(dg: diagram.Diagram) -> markupsafe.Markup:
-        payload = SVGDataURIFormat.convert(dg)
-        return markupsafe.Markup(f'<img src="{payload}"/>')
-
-    @staticmethod
-    def from_cache(cache: bytes) -> str:
-        payload = SVGDataURIFormat.from_cache(cache)
-        return markupsafe.Markup(f'<img src="{payload}"/>')
+    def convert(dg: str) -> markupsafe.Markup:
+        return markupsafe.Markup(f'<img src="{dg}"/>')
 
 
 class TerminalGraphicsFormat:
@@ -741,19 +743,14 @@ class TerminalGraphicsFormat:
     __ https://sw.kovidgoyal.net/kitty/graphics-protocol/
     """
 
-    filename_extension = ".png"
+    depends = PNGFormat
 
     @classmethod
-    def convert(cls, dg: diagram.Diagram) -> bytes:
-        data: bytes = PNGFormat.convert(dg)
-        return cls.from_cache(data)
-
-    @staticmethod
-    def from_cache(cache: bytes) -> bytes:
+    def convert(cls, dg: bytes) -> bytes:
         container = b"\x1b_Ga=T,q=2,f=100,m=%d;%b\x1b\\"
 
         chunks: list[bytes] = []
-        png_b64 = base64.standard_b64encode(cache)
+        png_b64 = base64.standard_b64encode(dg)
         while png_b64:
             chunk, png_b64 = png_b64[:4096], png_b64[4096:]
             m = (0, 1)[bool(png_b64)]
@@ -791,3 +788,12 @@ def _iter_format_converters() -> t.Iterator[tuple[str, DiagramConverter]]:
             pass
         else:
             yield (ep.name, conv)
+
+
+def _walk_converters(
+    first: DiagramConverter,
+) -> cabc.Iterator[DiagramConverter]:
+    yield first
+    current: DiagramConverter | None = first
+    while (current := getattr(current, "depends", None)) is not None:
+        yield current
