@@ -715,7 +715,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 try:
                     obj_attrs = dir(obj)
                 except Exception:
-                    pass
+                    continue
                 for attr in obj_attrs:
                     if not no_dir_attr.search(attr) and isinstance(
                         getattr(obj, attr), str
