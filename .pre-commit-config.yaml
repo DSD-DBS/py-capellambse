@@ -112,7 +112,7 @@ repos:
           - types-Pygments==2.15.0.1
           - types-colorama==0.4.15.11
           - types-docutils==0.20.0.1
-          - types-lxml @ git+https://github.com/abelcheung/types-lxml@1249b441bdefc5f911e22bef961fbd58a9b7eda0
+          - types-lxml==2024.04.14
           - types-pytz==2023.3.0.0
           - types-pyyaml==6.0.11
           - types-requests==2.25.11
