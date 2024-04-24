@@ -456,15 +456,25 @@ class Box:
 
     @property
     def bounds(self) -> Box:
-        """Calculate the bounding box of this Box."""
+        """Calculate the bounding box of this Box.
+
+        Notes
+        -----
+        Labels with a `text_transform` in its `styleoverrides` are
+        ignored during bounds calculation.
+        """
         minx, miny = self.pos
         maxx, maxy = self.pos + self.size
+        if self.styleoverrides.get("text_transform") is not None:
+            return Box((minx, miny), (maxx - minx, maxy - miny))
+
         for label in self.floating_labels:
             if isinstance(label, Box) and not self.hidelabel:
                 minx = min(minx, label.pos.x)
                 miny = min(miny, label.pos.y)
                 maxx = max(maxx, label.pos.x + label.size.x)
                 maxy = max(maxy, label.pos.y + label.size.y)
+
         return Box((minx, miny), (maxx - minx, maxy - miny))
 
     @property
