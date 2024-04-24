@@ -297,7 +297,8 @@ def _operate_sync(
                 yield from _create_complex_objects(
                     promises, parent, attr, [newobj_props]
                 )
-                yield from _operate_sync(promises, parent, {attr: [obj]})
+                if "sync" in obj:
+                    yield from _operate_sync(promises, parent, {attr: [obj]})
 
 
 def _resolve(
@@ -355,7 +356,7 @@ def _resolve_findby(
 
     if attrs:
         for k, v in attrs.items():
-            if isinstance(v, (Promise, _ObjectFinder)):
+            if isinstance(v, (list, Promise, _ObjectFinder)):
                 attrs[k] = _resolve(promises, parent, v)
 
         if len(attrs) > 1:

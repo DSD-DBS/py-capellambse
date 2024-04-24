@@ -703,6 +703,45 @@ class TestApplySync:
         assert subpackage_name in package.packages.by_name
 
     @staticmethod
+    def test_sync_operation_no_duplicates(
+        model: capellambse.MelodyModel,
+    ) -> None:
+        root_package = model.la.data_package
+        class_name = "The new class"
+        property_name = "The new property"
+        assert class_name not in root_package.classes.by_name
+        yml = f"""\
+            - parent: !uuid {root_package.uuid}
+              sync:
+                classes:
+                  - find:
+                      name: "{class_name}"
+                    sync:
+                      properties:
+                        - find:
+                            name: "{property_name}"
+                          set:
+                            kind: COMPOSITION
+                            max_card: !new_object
+                              _type: LiteralNumericValue
+                              value: '1'
+                            min_card: !new_object
+                              _type: LiteralNumericValue
+                              value: '1'
+                            type: !promise 'datatype.string'
+                datatypes:
+                  - find:
+                      name: "String"
+                      _type: StringType
+                    promise_id: datatype.string
+            """
+
+        decl.apply(model, io.StringIO(yml))
+        actual_class = root_package.classes.by_name(class_name)
+
+        assert len(actual_class.properties) == 1
+
+    @staticmethod
     def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
         model: capellambse.MelodyModel,
     ) -> None:
