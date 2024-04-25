@@ -195,7 +195,9 @@ class ModelFile:
     ) -> None:
         self.filename = filename
         self.filehandler = handler
-        self.__ignore_uuid_dups = ignore_uuid_dups
+        self.__ignore_uuid_dups = (
+            ignore_uuid_dups or self.fragment_type is FragmentType.VISUAL
+        )
         _verify_extension(filename)
 
         with handler.open(filename) as f:
