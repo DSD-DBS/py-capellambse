@@ -761,23 +761,28 @@ class GitFileHandler(abc.FileHandler):
         if self.cache_dir.exists() and self.disable_cache:
             shutil.rmtree(str(self.cache_dir))
 
-        update_cache = self.update_cache
-        if not (self.cache_dir / "config").exists():
-            self.cache_dir.mkdir(parents=True, exist_ok=True)
-            LOGGER.debug("Creating a new git repo in %s", self.cache_dir)
-            self._git("-c", "init.defaultBranch=master", "init", "--bare")
-            self._git("remote", "add", "--mirror=fetch", "origin", self.path)
-            update_cache = True
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        with capellambse.helpers.flock(self.__repo / "capellambse.lock"):
+            update_cache = self.update_cache
+            if not self.cache_dir.joinpath("config").exists():
+                LOGGER.debug("Creating a new git repo in %s", self.cache_dir)
+                self.__git_nolock(
+                    "-c", "init.defaultBranch=master", "init", "--bare"
+                )
+                self.__git_nolock(
+                    "remote", "add", "--mirror=fetch", "origin", self.path
+                )
+                update_cache = True
 
-        if update_cache:
-            LOGGER.debug("Updating cache at %s", self.cache_dir)
-            fetchopts = ["--filter=tree:0"]
-            if (self.cache_dir / "shallow").exists():
-                fetchopts.append("--unshallow")
-            fetchspec = f"+{self.revision}"
-            if not _git_object_name.search(self.revision):
-                fetchspec += f":{self.revision}"
-            self._git("fetch", *fetchopts, self.path, fetchspec)
+            if update_cache:
+                LOGGER.debug("Updating cache at %s", self.cache_dir)
+                fetchopts = ["--filter=tree:0"]
+                if (self.cache_dir / "shallow").exists():
+                    fetchopts.append("--unshallow")
+                fetchspec = f"+{self.revision}"
+                if not _git_object_name.search(self.revision):
+                    fetchspec += f":{self.revision}"
+                self.__git_nolock("fetch", *fetchopts, self.path, fetchspec)
 
     def __resolve_default_branch(self) -> tuple[str, str]:
         """Resolve the default branch name and its hash on the remote."""
