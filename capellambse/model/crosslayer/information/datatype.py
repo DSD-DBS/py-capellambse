@@ -22,6 +22,7 @@ class DataType(c.GenericElement):
     max_inclusive = c.BooleanAttributeProperty("maxInclusive")
     pattern = c.AttributeProperty(
         "pattern",
+        default="",
         __doc__=(
             "Textual specification of a constraint associated to this data"
             " type"
