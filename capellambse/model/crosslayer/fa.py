@@ -380,7 +380,9 @@ c.set_accessor(
 c.set_accessor(
     FunctionalExchange,
     "involving_functional_chains",
-    c.ReferenceSearchingAccessor(FunctionalChain, "involved_links"),
+    c.ReferenceSearchingAccessor(
+        FunctionalChain, "involved_links", aslist=c.ElementList
+    ),
 )
 
 c.set_accessor(
