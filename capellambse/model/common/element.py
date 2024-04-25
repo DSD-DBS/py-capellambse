@@ -292,6 +292,10 @@ class GenericElement:
                 )
                 continue
 
+            if attr.startswith("all_"):
+                attrs.append(f".{attr} = ... # omitted")
+                continue
+
             try:
                 value = getattr(self, attr)
             except Exception:
