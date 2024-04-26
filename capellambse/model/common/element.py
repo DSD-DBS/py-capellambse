@@ -885,6 +885,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         if isinstance(attr, str):
             attr = operator.attrgetter(attr)
         newelems: list[etree._Element] = []
+        newuuids: set[str] = set()
         classes: set[type[GenericElement]] = set()
         for i in self:
             try:
@@ -899,6 +900,9 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
                 if v is None:
                     continue
                 if isinstance(v, GenericElement):
+                    if v.uuid in newuuids:
+                        continue
+                    newuuids.add(v.uuid)
                     newelems.append(v._element)
                     classes.add(type(v))
                 else:
