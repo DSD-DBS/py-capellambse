@@ -1779,12 +1779,11 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
                 if elemclass is not valueclass:
                     obj._model._loader.idcache_remove(elem._element)
                     obj._element.remove(elem._element)
-                    self._create(
-                        obj, self.role_tag, *value._type_hint, **value._kw
-                    )
                 else:
                     for k, v in value._kw.items():
                         setattr(elem, k, v)
+                    return
+            self._create(obj, self.role_tag, *value._type_hint, **value._kw)
 
     def create(
         self,
