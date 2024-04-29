@@ -346,6 +346,8 @@ class ElementRelationAccessor(
             rq.InternalRelation,
             CapellaOutgoingRelation,
         ):
+            if None in (relation.source, relation.target):
+                continue
             if obj in (relation.source, relation.target):
                 relations.append(relation._element)
         rv = self._make_list(obj, relations)

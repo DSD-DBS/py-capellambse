@@ -556,6 +556,7 @@ class ElementList(cabc.MutableSequence, t.Generic[T]):
         mapkey: str | None = None,
         mapvalue: str | None = None,
     ) -> None:
+        assert None not in elements
         self._model = model
         self._elements = elements
         if elemclass is not None:
