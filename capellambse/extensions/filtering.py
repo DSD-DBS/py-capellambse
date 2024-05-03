@@ -249,6 +249,7 @@ else:
             return all_results
 
         wanted: list[FilteringResult | ComposedFilteringResult] = []
+        obj: c.GenericElement
         for result in result_strings:
             if helpers.is_uuid_string(result):
                 try:

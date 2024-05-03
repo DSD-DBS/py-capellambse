@@ -2060,16 +2060,6 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
             raise
         return newobj
 
-    def delete_all(self, **kw: t.Any) -> None:
-        """Delete all matching objects from the model."""
-        indices: list[int] = []
-        for i, obj in enumerate(self):
-            if all(getattr(obj, k) == v for k, v in kw.items()):
-                indices.append(i)
-
-        for index in reversed(indices):
-            del self[index]
-
     def insert(self, index: int, value: T) -> None:
         if self.fixed_length and len(self) >= self.fixed_length:
             raise TypeError("Cannot insert into a fixed-length list")
