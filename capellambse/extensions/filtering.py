@@ -255,37 +255,24 @@ else:
                 try:
                     obj = loaded_model.by_uuid(result)
                 except KeyError:
-                    click.echo(
-                        f"Error: No model object with UUID {result} found!",
-                        err=True,
-                    )
-                    raise SystemExit(1) from None
-                if not isinstance(
-                    obj, (FilteringResult, ComposedFilteringResult)
-                ):
-                    click.echo(
-                        f"Error: Object {result} is of type"
-                        f" {type(obj).__name__}, expected a FilteringResult or"
-                        f" ComposedFilteringResult",
-                        err=True,
-                    )
-                    raise SystemExit(1)
-                wanted.append(obj)
-            else:
-                objs = all_results.by_name(result, single=False)
-                if len(objs) < 1:
-                    click.echo(
-                        f"Error: No result found with name: {result}", err=True
-                    )
-                    raise SystemExit(1)
-                if len(objs) > 1:
-                    click.echo(
-                        f"Error: Ambiguous result name, found {len(objs)}"
-                        f" objects: {result}",
-                        err=True,
-                    )
-                    raise SystemExit(1)
-                wanted.extend(objs)
+                    pass
+                else:
+                    if not isinstance(
+                        obj, (FilteringResult, ComposedFilteringResult)
+                    ):
+                        click.echo(
+                            f"Error: Object {obj._short_repr_()} is of type"
+                            f" {type(obj).__name__}, expected"
+                            f" a FilteringResult or ComposedFilteringResult",
+                            err=True,
+                        )
+                        raise SystemExit(1)
+                    wanted.append(obj)
+                    continue
+
+            obj = all_results.by_name(result, single=True)
+            assert isinstance(obj, (FilteringResult, ComposedFilteringResult))
+            wanted.append(obj)
         return wanted
 
 

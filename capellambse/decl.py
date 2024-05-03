@@ -589,7 +589,7 @@ class YDMLoader(yaml.SafeLoader):
             raise TypeError("!uuid only accepts scalar nodes")
         data = self.construct_scalar(node)
         if not helpers.is_uuid_string(data):
-            raise ValueError(f"Not a well-formed UUID string: {data}")
+            raise ValueError(f"Malformed UUID: {data}")
         return UUIDReference(data)
 
     def construct_newobj(self, node: yaml.Node) -> NewObject:

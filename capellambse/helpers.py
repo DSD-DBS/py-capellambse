@@ -43,10 +43,7 @@ ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
 ATT_XMT = f"{{{_n.NAMESPACES['xmi']}}}type"
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
-RE_VALID_UUID = re.compile(
-    r"[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}",
-    re.IGNORECASE,
-)
+RE_VALID_UUID = re.compile(r"[A-Za-z0-9_-]+")
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
 
