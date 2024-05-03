@@ -595,3 +595,15 @@ def test_model_diagram_visible_nodes_can_be_accessed_when_a_cache_was_specified(
     model = capellambse.MelodyModel(TEST_MODEL_5_0, diagram_cache=tmp_path)
 
     assert model.diagrams[0].nodes
+
+
+def test_updated_namespaces_use_rounded_versions(
+    model_5_2: capellambse.MelodyModel,
+):
+    model_5_2._loader.update_namespaces()
+
+    assert model_5_2.info.capella_version == "5.2.0"
+    nsver = model_5_2._element.nsmap[
+        "org.polarsys.capella.core.data.capellacommon"
+    ].rsplit("/", 1)[-1]
+    assert nsver == "5.0.0"

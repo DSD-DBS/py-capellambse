@@ -134,6 +134,34 @@ def _unquote_ref(ref: str) -> str:
     return ref
 
 
+def _round_version(v: str, prec: int) -> str:
+    """Round a version number.
+
+    Parameters
+    ----------
+    v
+        The version number.
+    prec
+        Precision to round to, i.e. the number of leading non-zero
+        parts. Remaining parts will be set to zero.
+
+    Returns
+    -------
+    str
+        The rounded version number.
+    """
+    assert prec > 0
+    pos = dots = 0
+    while pos < len(v) and dots < prec:
+        try:
+            pos = v.index(".", pos) + 1
+        except ValueError:
+            return v
+        else:
+            dots += 1
+    return v[:pos] + re.sub(r"[^.]+", "0", v[pos:])
+
+
 class FragmentType(enum.Enum):
     """The type of an XML fragment."""
 
@@ -319,6 +347,9 @@ class ModelFile:
                     raise CorruptModelError(
                         f"Viewpoint not activated: {plugin.viewpoint}"
                     )
+                vp_version = _round_version(
+                    vp_version, plugin.version_precision
+                )
                 uri += f"/{vp_version}"
 
             assert new_nsmap.get(ns) in (None, uri)

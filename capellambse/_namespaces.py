@@ -35,6 +35,20 @@ class Plugin:
     version: str | tuple[str, str] | None = None
     viewpoint: str | None = None
 
+    version_precision: int = 1
+    """Number of significant parts in the version number for namespaces.
+
+    When generating a versioned namespace URL from a Plugin, only this
+    many digits will be taken from the activated viewpoint. This allows
+    reusing the same namespace across subsequent minor plugin releases.
+
+    Example: A version of "1.2.3" with precision set to 2 will result in
+    the namespace version "1.2.0" being used.
+
+    Note that the used version number will always be padded with zeroes
+    to as many parts as there are in the original version number.
+    """
+
     def __post_init__(self) -> None:
         if self.version is not None and self.viewpoint is None:
             raise TypeError("Versioned plugins require a viewpoint")
