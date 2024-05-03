@@ -42,7 +42,6 @@ LOGGER = logging.getLogger(__name__)
 ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
 ATT_XMT = f"{{{_n.NAMESPACES['xmi']}}}type"
 FALLBACK_FONT = "OpenSans-Regular.ttf"
-RE_TAG_NS = re.compile(r"(?:\{(?P<ns>[^}]*)\})?(?P<tag>.*)")
 RE_VALID_UUID = re.compile(r"[A-Za-z0-9_-]+")
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
@@ -778,15 +777,12 @@ def xtype_of(elem: etree._Element) -> str | None:
     if xtype := elem.get(ATT_XMT):
         return xtype
 
-    tagmatch = RE_TAG_NS.fullmatch(elem.tag)
-    assert tagmatch is not None
-    ns = tagmatch.group("ns")
-    tag = tagmatch.group("tag")
-    if not ns:
+    tag = etree.QName(elem)
+    if not tag.namespace:
         return None
 
-    nskey = _n.get_namespace_prefix(ns)
-    return f"{nskey}:{tag}"
+    nskey = _n.get_namespace_prefix(tag.namespace)
+    return f"{nskey}:{tag.localname}"
 
 
 # More iteration tools
