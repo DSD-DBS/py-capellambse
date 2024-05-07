@@ -271,7 +271,7 @@ class ComponentExchange(AbstractExchange):
     )
 
     allocated_functional_exchanges = c.LinkAccessor[FunctionalExchange](
-        None,  # FIXME fill in tag
+        "ownedComponentExchangeFunctionalExchangeAllocations",
         XT_COMP_EX_FNC_EX_ALLOC,
         aslist=c.ElementList,
         attr="targetElement",
