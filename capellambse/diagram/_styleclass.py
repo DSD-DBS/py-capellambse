@@ -57,6 +57,13 @@ def _control_node(obj: model.ModelObject) -> str:
     return "".join((obj.kind.name.capitalize(), _default(obj)))
 
 
+def _entity(obj: model.ModelObject) -> str:
+    assert isinstance(obj, model.oa.Entity)
+    if obj.is_actor and obj.is_human:
+        return "OperationalActor"
+    return _default(obj)
+
+
 def _functional_chain_involvement(obj: model.ModelObject) -> str:
     assert isinstance(
         obj,
@@ -143,6 +150,7 @@ _STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
     "Class": _class,
     "ComponentPort": _component_port,
     "ControlNode": _control_node,
+    "Entity": _entity,
     "FunctionalChainInvolvementFunction": _functional_chain_involvement,
     "FunctionalChainInvolvementLink": _functional_chain_involvement,
     "FunctionalExchange": _functional_exchange,
