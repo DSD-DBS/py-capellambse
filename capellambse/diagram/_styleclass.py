@@ -45,18 +45,6 @@ def _association(obj: model.ModelObject) -> str:
     return kind.capitalize()
 
 
-def _component_port(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.fa.ComponentPort)
-    if obj.direction is None:
-        return "CP_UNSET"
-    return f"CP_{obj.direction}"
-
-
-def _control_node(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.fa.ControlNode)
-    return "".join((obj.kind.name.capitalize(), _default(obj)))
-
-
 def _functional_chain_involvement(obj: model.ModelObject) -> str:
     assert isinstance(
         obj,
@@ -120,29 +108,16 @@ def _port_allocation(obj: model.ModelObject) -> str:
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 
 
-def _region(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.capellacommon.Region)
-    parent_xclass = _default(obj.parent)
-    return f"{parent_xclass}{_default(obj)}"
-
-
-def _property(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.Property)
-    return obj.kind.name.capitalize()
-
-
-def _class(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.Class)
-    return "Primitive" * obj.is_primitive + "Class"
-
-
-_STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
+_STYLECLASSES: dict[str, cabc.Callable[..., str]] = {
     "Association": _association,
     "CapellaIncomingRelation": lambda _: "RequirementRelation",
     "CapellaOutgoingRelation": lambda _: "RequirementRelation",
-    "Class": _class,
-    "ComponentPort": _component_port,
-    "ControlNode": _control_node,
+    "Class": lambda o: "Primitive" * o.is_primitive + "Class",
+    "ComponentPort": lambda o: f"CP_{o.direction or 'UNSET'}",
+    "ControlNode": lambda o: o.kind.name.capitalize() + _default(o),
+    "Entity": lambda o: (
+        ("Entity", "OperationalActor")[o.is_actor and o.is_human]
+    ),
     "FunctionalChainInvolvementFunction": _functional_chain_involvement,
     "FunctionalChainInvolvementLink": _functional_chain_involvement,
     "FunctionalExchange": _functional_exchange,
@@ -152,8 +127,8 @@ _STYLECLASSES: dict[str, cabc.Callable[[model.ModelObject], str]] = {
     "Part": _part,
     "PhysicalComponent": _physical_component,
     "PhysicalPort": lambda _: "PP",
-    "Property": _property,
+    "Property": lambda o: o.kind.name.capitalize(),
     "PortAllocation": _port_allocation,
-    "Region": _region,
+    "Region": lambda o: _default(o.parent) + _default(o),
     "SystemComponent": _generic_component,
 }
