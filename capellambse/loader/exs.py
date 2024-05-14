@@ -272,13 +272,22 @@ def _unmapped_attrs(
             pass
 
     assert None not in element.nsmap
-    for nsname, value in element.nsmap.items():
+    for nsname, value in sorted(element.nsmap.items(), key=_ns_sortkey):
         if nsname in parent_ns:
             continue
         yield (f"xmlns:{nsname}", value)
 
     for attr, value in attribs.items():
         yield (_unmap_namespace(nsmap, attr), _escape(value))
+
+
+def _ns_sortkey(v: tuple[str | None, str]) -> tuple[int, str | None]:
+    ns, _ = v
+    if ns == "xmi":
+        return (0, ns)
+    if ns == "xsi":
+        return (1, ns)
+    return (2, ns)
 
 
 def _serialize_comment(

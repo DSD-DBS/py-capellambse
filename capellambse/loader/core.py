@@ -337,20 +337,24 @@ class ModelFile:
             ns, _, _ = xtype.partition(":")
             plugin = _n.NAMESPACES_PLUGINS.get(ns)
             if plugin is None:
-                continue
-
-            uri = plugin.name.rstrip("/")
-            if plugin.version is not None:
-                assert plugin.viewpoint is not None
-                vp_version = viewpoints.get(plugin.viewpoint)
-                if not vp_version:
-                    raise CorruptModelError(
-                        f"Viewpoint not activated: {plugin.viewpoint}"
+                try:
+                    uri = elem.nsmap[ns]
+                except KeyError:
+                    LOGGER.error("Undefined and unknown namespace %s", ns)
+                    continue
+            else:
+                uri = plugin.name.rstrip("/")
+                if plugin.version is not None:
+                    assert plugin.viewpoint is not None
+                    vp_version = viewpoints.get(plugin.viewpoint)
+                    if not vp_version:
+                        raise CorruptModelError(
+                            f"Viewpoint not activated: {plugin.viewpoint}"
+                        )
+                    vp_version = _round_version(
+                        vp_version, plugin.version_precision
                     )
-                vp_version = _round_version(
-                    vp_version, plugin.version_precision
-                )
-                uri += f"/{vp_version}"
+                    uri += f"/{vp_version}"
 
             assert new_nsmap.get(ns) in (None, uri)
             new_nsmap[ns] = uri
