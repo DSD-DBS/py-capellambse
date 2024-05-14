@@ -274,7 +274,11 @@ NAMESPACES_PLUGINS: t.Final[cabc.Mapping[str, Plugin]] = {
         ("5.0.0", "6.0.0"),
         "org.polarsys.capella.core.viewpoint",
     ),
-    "re": Plugin("http://www.polarsys.org/capella/common/re/1.3.0"),
+    "re": Plugin(
+        "http://www.polarsys.org/capella/common/re/",
+        ("5.0.0", "6.0.0"),
+        "org.polarsys.capella.core.viewpoint",
+    ),
     "sequence": Plugin("http://www.eclipse.org/sirius/diagram/sequence/2.0.0"),
     "style": Plugin(
         "http://www.eclipse.org/sirius/diagram/description/style/1.1.0"
