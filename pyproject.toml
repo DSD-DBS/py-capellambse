@@ -33,9 +33,11 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
+  "awesomeversion>=24.2.0",
   "diskcache>=5.0",
   "lxml>=4.5.0",
   "markupsafe>=1.1",
+  "ordered-set>=4.1.0",
   "Pillow>=7.0.0",
   "platformdirs>=1.4.1",
   "pyyaml>=6.0",
@@ -102,6 +104,29 @@ zip = "capellambse.filehandler.zip:ZipFileHandler"
 filtering = "capellambse.extensions.filtering:init"
 pvmt = "capellambse.extensions.pvmt:init"
 reqif = "capellambse.extensions.reqif:init"
+
+[project.entry-points."capellambse.namespaces"]
+activity = "capellambse.metamodel.activity:NS"
+behavior = "capellambse.metamodel.behavior:NS"
+capellacommon = "capellambse.metamodel.capellacommon:NS"
+capellacore = "capellambse.metamodel.capellacore:NS"
+capellamodeller = "capellambse.metamodel.capellamodeller:NS"
+cs = "capellambse.metamodel.cs:NS"
+epbs = "capellambse.metamodel.epbs:NS"
+fa = "capellambse.metamodel.fa:NS"
+information = "capellambse.metamodel.information:NS"
+information_communication = "capellambse.metamodel.information_communication:NS"
+information_datatype = "capellambse.metamodel.information_datatype:NS"
+information_datavalue = "capellambse.metamodel.information_datavalue:NS"
+interaction = "capellambse.metamodel.interaction:NS"
+la = "capellambse.metamodel.la:NS"
+libraries = "capellambse.metamodel.libraries:NS"
+metadata = "capellambse.modelv2._meta:NS"
+modellingcore = "capellambse.modelv2._obj:NS"
+oa = "capellambse.metamodel.oa:NS"
+pa = "capellambse.metamodel.pa:NS"
+pa_deployment = "capellambse.metamodel.pa_deployment:NS"
+sa = "capellambse.metamodel.sa:NS"
 
 [tool.black]
 line-length = 79
