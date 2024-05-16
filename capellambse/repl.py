@@ -89,6 +89,9 @@ import capellambse
 from capellambse import cli_helpers
 from capellambse.loader import exs
 
+if t.TYPE_CHECKING:
+    import capellambse.modelv2
+
 try:
     import readline
 
@@ -135,7 +138,7 @@ basedir = pathlib.Path(__file__).parent.resolve()
 logger = logging.getLogger("capellambse.repl")
 
 
-def _parse_args() -> dict[str, t.Any] | None:
+def _parse_args() -> tuple[dict[str, t.Any] | None, bool]:
     known_models = {
         i.name[: -len(".json")]: i
         for i in capellambse.enumerate_known_models()
@@ -168,6 +171,16 @@ def _parse_args() -> dict[str, t.Any] | None:
         action="version",
         version=f"capellambse {capellambse.__version__}",
     )
+    parser.add_argument(
+        "--v2",
+        action="store_true",
+        help="Use the experimental V2 API for loading the model",
+    )
+    parser.add_argument(
+        "--xenophobia",
+        action="store_true",
+        help="Enable xenophobia mode (v2 only)",
+    )
 
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
@@ -185,7 +198,7 @@ def _parse_args() -> dict[str, t.Any] | None:
     if pargs.model is None:
         if pargs.dump:
             raise SystemExit("No model specified, cannot dump")
-        return None
+        return None, pargs.v2
 
     modelinfo = cli_helpers.loadinfo(pargs.model)
 
@@ -197,10 +210,15 @@ def _parse_args() -> dict[str, t.Any] | None:
     if pargs.disable_diagram_cache and "diagram_cache" in modelinfo:
         del modelinfo["diagram_cache"]
 
+    if pargs.v2:
+        if pargs.xenophobia:
+            modelinfo["xenophobia"] = True
+        modelinfo.pop("ignore_duplicate_uuids_and_void_all_warranties", None)
+
     if pargs.dump:
         print(json.dumps(modelinfo, indent=2))
         raise SystemExit(0)
-    return modelinfo
+    return modelinfo, pargs.v2
 
 
 @contextlib.contextmanager
@@ -366,10 +384,10 @@ def main() -> None:
     """Launch a simple Python REPL with a Capella model."""
     os.chdir(pathlib.Path(capellambse.__file__).parents[1])
 
-    interactive_locals = {
+    ilocals = {
         "__doc__": None,
         "__name__": "__console__",
-        "etree": etree,
+        "etree": importlib.import_module("lxml.etree"),
         "fzf": fzf,
         "im": importlib,
         "imm": importlib.import_module("importlib.metadata"),
@@ -381,26 +399,53 @@ def main() -> None:
     }
 
     for m in ("capellambse", "inspect", "logging", "os", "pathlib"):
-        interactive_locals[m] = importlib.import_module(m)
+        ilocals[m] = importlib.import_module(m)
 
-    modelinfo = _parse_args()
+    modelinfo, v2 = _parse_args()
+
+    if v2:
+        import capellambse.modelv2 as _
+
+        ilocals["M"] = importlib.import_module("capellambse.metamodel")
+
+    banner = textwrap.dedent(
+        f"""\
+
+        {' Model exploration ':=^80}
+        """
+    )
     if modelinfo is not None:
         logger.debug("Loading model: %r", modelinfo)
-        model = capellambse.MelodyModel(**modelinfo)
-        interactive_locals["model"] = model
-        banner = textwrap.dedent(
-            f"""\
+        model: capellambse.model.MelodyModel | capellambse.modelv2.Model
+        modelname: str | None
+        if v2:
+            model = capellambse.modelv2.Model(**modelinfo)
+            try:
+                modelname = repr(getattr(model.root, "name"))
+            except (AttributeError, RuntimeError) as err:
+                print(f"{type(err).__name__}: {err}", file=sys.stderr)
+                modelname = "<unknown>"
+        else:
+            model = capellambse.MelodyModel(**modelinfo)
+            modelname = model.info.title
+        ilocals["model"] = model
 
-            {' Model exploration ':=^80}
-            `model` is {model.info.title!r}
+        banner += textwrap.dedent(
+            f"""\
+            `model` is {modelname!r}
             from {modelinfo['path']}
             """
         )
+    elif v2:
+        banner += textwrap.dedent(
+            """\
+            Load a model with:
+                model = capellambse.modelv2.Model("uri", arg=...)
+            """
+        )
     else:
-        banner = textwrap.dedent(
-            f"""\
-
-            {' Model exploration ':=^80}
+        banner += textwrap.dedent(
+            """\
             Load a model with `model = capellambse.loadcli("model-name")`
             or `model = capellambse.MelodyModel("uri", arg=...)`.
             """
@@ -411,6 +456,12 @@ def main() -> None:
 
         Convenience imports:
         - `capellambse`, `inspect`, `logging`, `os`, `pathlib`
+        """
+    )
+    if v2:
+        banner += "- `M` = capellambse.metamodel\n"
+    banner += textwrap.dedent(
+        """\
         - `im` = importlib (`imm` = .metadata, `imr` = .resources)
         - `etree` = lxml.etree, `pprint` = pprint.pprint
 
@@ -424,7 +475,7 @@ def main() -> None:
 
     history_file = capellambse.dirs.user_state_path / "model_exploration.hist"
     with _ReadlineHistory(history_file), suppress(BrokenPipeError):
-        code.interact(banner=banner, local=interactive_locals, exitmsg="")
+        code.interact(banner=banner, local=ilocals, exitmsg="")
 
 
 if __name__ == "__main__":

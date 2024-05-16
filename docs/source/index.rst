@@ -73,6 +73,8 @@ If you want a quickstart at how to use this package, head right into the
    development/low-level-api
    development/how-to-explore-capella-mm
    development/developing-docs
+   development/model-loading
+   development/extensions
    development/repl
 
 .. _Capella: https://www.eclipse.org/capella/
