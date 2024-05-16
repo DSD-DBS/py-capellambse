@@ -43,6 +43,7 @@ If you want a quickstart at how to use this package, head right into the
 
    start/installation
    start/specifying-models
+   start/envvars
    start/intro-to-api
    start/declarative
    start/audit-events
