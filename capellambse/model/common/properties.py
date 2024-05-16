@@ -15,6 +15,7 @@ import collections.abc as cabc
 import datetime
 import enum
 import math
+import os
 import re
 import sys
 import typing as t
@@ -199,6 +200,25 @@ class HTMLAttributeProperty(AttributeProperty):
             writable=writable,
             __doc__=__doc__,
         )
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type) -> AttributeProperty: ...
+    @t.overload
+    def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any: ...
+    def __get__(self, obj, objtype=None):
+        del objtype
+        if obj is None:
+            return self
+
+        rv = self._get(obj)
+
+        if os.getenv("CAPELLAMBSE_XHTML") == "1":
+            rv = helpers.repair_html(rv)
+
+        if obj._constructed:
+            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
+            sys.audit("capellambse.getattr", obj, self.__name__, rv)
+        return rv
 
     def __set__(self, obj: t.Any, value: str) -> None:
         if not isinstance(value, str):

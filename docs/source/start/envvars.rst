@@ -49,6 +49,14 @@ Debugging helpers
 Experimental features
 ---------------------
 
+- ``CAPELLAMBSE_XHTML``: If set to "1", content from attributes that contain
+  HTML markup will be cleaned up and made XHTML compliant before it is returned
+  when using the high-level model API. This means that content read with
+  capellambse no longer fully matches what is stored in the model.
+
+  Considered experimental, as it may be changed or removed without a preceding
+  deprecation period.
+
 - ``CAPELLAMBSE_EXPERIMENTAL_CROP_SVG_DIAGRAM_CACHE_VIEWPORT`` can be set to
   "1" to recalculate the viewport of SVG files exported by Capella. This can be
   used to reduce white borders in some cases.
