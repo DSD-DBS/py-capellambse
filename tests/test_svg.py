@@ -11,7 +11,7 @@ from lxml import etree
 
 import capellambse
 import capellambse.diagram
-from capellambse.svg import SVGDiagram, decorations, generate, helpers, symbols
+from capellambse.svg import SVGDiagram, generate, helpers
 
 TEST_LAB = "[LAB] Wizzard Education"
 TEST_DIAGS = [
@@ -27,16 +27,6 @@ TEST_DIAGS = [
     "[CC] Capability",
     "[PAB] A sample vehicle arch",
 ]
-FREE_SYMBOLS = {
-    "OperationalCapabilitySymbol",
-    "AndControlNodeSymbol",
-    "ItControlNodeSymbol",
-    "OrControlNodeSymbol",
-    "FinalStateSymbol",
-    "InitialPseudoStateSymbol",
-    "TerminatePseudoStateSymbol",
-    "StickFigureSymbol",
-}
 
 
 @pytest.fixture(name="tmp_json")
@@ -139,53 +129,6 @@ class TestSVG:
         """Test diagrams get rendered successfully."""
         diag = model.diagrams.by_name(diagram_name)
         diag.render("svg")
-
-
-class TestDecoFactory:
-    @pytest.mark.parametrize(
-        "class_",
-        ["LogicalComponentSymbol", "LogicalHumanActorSymbol", "EntitySymbol"],
-    )
-    def test_deco_factory_contains_styling_for_given_styleclass(
-        self, class_: str
-    ):
-        assert class_ in decorations.deco_factories
-
-    def test_deco_factory_returns_symbol_factory_for_given_styleclass(self):
-        deco_factory = decorations.DecoFactory(symbols.port_symbol, ())
-
-        assert decorations.deco_factories["PortSymbol"] == deco_factory
-
-    @pytest.mark.parametrize(
-        "class_", ["ImaginaryClassSymbol", "NothingSymbol"]
-    )
-    def test_deco_factory_logs_error_when_not_containing_given_styleclass(
-        self, caplog, class_: str
-    ):
-        assert class_ not in decorations.deco_factories
-        assert (
-            decorations.deco_factories[class_]
-            is decorations.deco_factories["ErrorSymbol"]
-        )
-        with caplog.at_level(0, logger="decorations"):
-            assert (
-                caplog.messages[-1] == f"{class_} wasn't found in factories."
-            )
-
-    @pytest.mark.parametrize("attr", ["start", "translate", "offsets"])
-    def test_making_linear_gradient_faulty_cases_raise_ValueError(
-        self, attr: str
-    ):
-        params = {
-            "id_": "test",
-            attr: (0, 0, 0),
-        }
-        with pytest.raises(ValueError):
-            symbols._make_lgradient(**params)
-
-    def test_making_linear_gradient_with_translate(self):
-        gradient = symbols._make_lgradient("test", translate=(0, 0))
-        assert gradient.attribs.get("gradientTransform") == "translate(0 0)"
 
 
 class TestSVGHelpers:

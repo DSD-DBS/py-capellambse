@@ -758,8 +758,8 @@ class TerminalGraphicsFormat:
 
 
 def convert_format(
-    from_: str | None,
-    to: str,
+    sourcefmt: str | None,
+    targetfmt: str,
     data: t.Any,
     /,
     *,
@@ -769,12 +769,13 @@ def convert_format(
 
     Parameters
     ----------
-    from_
-        The current format.
-    to
-        The target format.
+    sourcefmt
+        Name of the current format. If None, the current format is a
+        :class:`capellambse.diagram.Diagram` object.
+    targetfmt
+        Name of the target format.
     data
-        Image data in the format produced by the "from_" converter.
+        Image data in the format produced by the "sourcefmt" converter.
     pretty_print
         Whether to instruct the converters to pretty-print their output.
         Only relevant for text-based formats like SVG.
@@ -790,17 +791,17 @@ def convert_format(
         Raised if either format is not known, or if no converter chain
         could be built to convert between the two formats.
     """
-    if from_ is None:
+    if sourcefmt is None:
         source = None
     else:
-        source = _find_format_converter(from_)
+        source = _find_format_converter(sourcefmt)
     chain: list[DiagramConverter] = []
-    for i in _walk_converters(_find_format_converter(to)):
+    for i in _walk_converters(_find_format_converter(targetfmt)):
         if i is source:
             break
         chain.append(i)
     else:
-        raise ValueError(f"Cannot convert from {from_} to {to}")
+        raise ValueError(f"Cannot convert from {sourcefmt} to {targetfmt}")
 
     return _run_converter_chain(chain, data, pretty_print=pretty_print)
 

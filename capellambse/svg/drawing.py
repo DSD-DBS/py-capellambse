@@ -59,7 +59,6 @@ class Drawing:
         transparent_background: bool = False,
     ):
         superparams = {
-            "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
             "font-family": font_family,
             "font-size": f"{font_size}px",
@@ -472,7 +471,7 @@ class Drawing:
                 grad_id = styling._generate_id("CustomGradient", val)
                 if grad_id not in defs_ids:
                     gradient = symbols._make_lgradient(
-                        id_=grad_id, stop_colors=val
+                        grad_id, stop_colors=val
                     )
                     self.__drawing.defs.add(gradient)
                     defs_ids.add(grad_id)
@@ -497,6 +496,7 @@ class Drawing:
             marker_id = styling._generate_id(marker, [stroke])
             if marker_id not in defs_ids:
                 factory = decorations.deco_factories[marker]
+                assert isinstance(factory, decorations.DecoFactory)
                 markstyle = style.Styling(
                     self.diagram_class,
                     styling._class,

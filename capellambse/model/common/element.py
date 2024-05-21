@@ -405,6 +405,42 @@ class GenericElement:
     def _repr_html_(self) -> str:
         return self.__html__()
 
+    def _get_icon(self, format: str, /, *, size: int = 16) -> t.Any | None:
+        """Render a small icon for this object.
+
+        This is the same icon that is also used in diagrams.
+
+        Parameters
+        ----------
+        format
+            The format to use. Currently supported formats are:
+
+            - *html*: An HTML ``<img>`` tag, or an empty string if no
+              icon could be found. This is intended to be used in
+              templating environments that produce HTML.
+            - *datauri*: A ``data:`` URI that contains the icon data.
+            - *svg*: A string containing SVG data.
+
+        Returns
+        -------
+        Any | None
+            The icon, or None if no icon could be found.
+
+        :meta public:
+        """
+        from capellambse.diagram import get_icon, get_styleclass
+
+        try:
+            data: t.Any = get_icon(get_styleclass(self), size=size)
+        except ValueError:
+            return None
+
+        if format != "svg":
+            data = capellambse.model.diagram.convert_format(
+                "svg", format, data
+            )
+        return data
+
     if t.TYPE_CHECKING:
 
         def __getattr__(self, attr: str) -> t.Any:
