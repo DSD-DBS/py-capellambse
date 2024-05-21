@@ -201,7 +201,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         bundle: dict[str, t.Any] = {}
         for mime, conv in formats.items():
             try:
-                bundle[mime] = self.__load_cache(conv)
+                bundle[mime] = self.__load_cache([conv])
             except KeyError:
                 pass
 
@@ -270,31 +270,21 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             Additional render parameters. Which parameters are
             supported depends on the specific type of diagram.
         """
-        if fmt is not None:
-            conv = _find_format_converter(fmt)
+        if fmt is None:
+            chain: list[DiagramConverter] = [lambda i: i]
         else:
+            chain = list(_walk_converters(_find_format_converter(fmt)))
+            if self._model.diagram_cache is not None:
+                try:
+                    return self.__load_cache(chain)
+                except KeyError:
+                    pass
 
-            def conv(i: diagram.Diagram) -> diagram.Diagram:
-                return i
+                if not self._allow_render:
+                    raise RuntimeError(f"Diagram not in cache: {self.name}")
 
-        if fmt is not None and self._model.diagram_cache is not None:
-            try:
-                return self.__load_cache(conv)
-            except KeyError:
-                pass
-
-            if not self._allow_render:
-                raise RuntimeError(f"Diagram not in cache: {self.name}")
-
-        render: t.Any = self.__render_fresh(params)
-        for conv in reversed(list(_walk_converters(conv))):
-            if pretty_print and isinstance(conv, PrettyDiagramFormat):
-                render = conv.convert_pretty(render)
-            elif isinstance(conv, DiagramFormat):
-                render = conv.convert(render)
-            else:
-                render = conv(render)
-        return render
+        render = self.__render_fresh(params)
+        return _run_converter_chain(chain, render, pretty_print=pretty_print)
 
     def save(
         self,
@@ -416,7 +406,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         diag.calculate_viewport()
         return diag
 
-    def __load_cache(self, converter: DiagramConverter):
+    def __load_cache(self, chain: list[DiagramConverter]) -> t.Any:
         cache_handler = self._model.diagram_cache
         cachedir = getattr(self._model, "_diagram_cache_subdir", None)
         if cache_handler is None or cachedir is None:
@@ -424,9 +414,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
         data: t.Any = None
         converter_stack: list[DiagramConverter] = []
-        for cv in _walk_converters(converter):
-            converter_stack.append(cv)
-
+        for i, cv in enumerate(chain):
             ext = getattr(cv, "filename_extension", None)
             if not ext or not hasattr(cv, "from_cache"):
                 continue
@@ -440,7 +428,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             else:
                 LOGGER.debug("Using file from diagram cache: %s", filename)
                 data = cv.from_cache(cache)
-                converter_stack.pop()
+                chain = chain[:i]
                 break
         else:
             LOGGER.debug(
@@ -767,6 +755,69 @@ class TerminalGraphicsFormat:
             all(os.isatty(i) for i in range(3))
             and os.getenv("TERM") == "xterm-kitty"
         )
+
+
+def convert_format(
+    from_: str | None,
+    to: str,
+    data: t.Any,
+    /,
+    *,
+    pretty_print: bool = False,
+) -> t.Any:
+    """Convert between different image formats.
+
+    Parameters
+    ----------
+    from_
+        The current format.
+    to
+        The target format.
+    data
+        Image data in the format produced by the "from_" converter.
+    pretty_print
+        Whether to instruct the converters to pretty-print their output.
+        Only relevant for text-based formats like SVG.
+
+    Returns
+    -------
+    ~typing.Any
+        The converted image data.
+
+    Raises
+    ------
+    ValueError
+        Raised if either format is not known, or if no converter chain
+        could be built to convert between the two formats.
+    """
+    if from_ is None:
+        source = None
+    else:
+        source = _find_format_converter(from_)
+    chain: list[DiagramConverter] = []
+    for i in _walk_converters(_find_format_converter(to)):
+        if i is source:
+            break
+        chain.append(i)
+    else:
+        raise ValueError(f"Cannot convert from {from_} to {to}")
+
+    return _run_converter_chain(chain, data, pretty_print=pretty_print)
+
+
+def _run_converter_chain(
+    chain: list[DiagramConverter],
+    data: t.Any,
+    pretty_print: bool = False,
+) -> t.Any:
+    for conv in reversed(chain):
+        if pretty_print and isinstance(conv, PrettyDiagramFormat):
+            data = conv.convert_pretty(data)
+        elif isinstance(conv, DiagramFormat):
+            data = conv.convert(data)
+        else:
+            data = conv(data)
+    return data
 
 
 def _find_format_converter(fmt: str) -> DiagramConverter:
