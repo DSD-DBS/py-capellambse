@@ -42,7 +42,7 @@ DiagramConverter = t.Union[
 ]
 
 LOGGER = logging.getLogger(__name__)
-REPR_DRAW: bool | None = None
+REPR_DRAW: bool
 
 
 class UnknownOutputFormat(ValueError):
@@ -148,10 +148,6 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return getattr(super(), attr)
 
     def __repr__(self) -> str:
-        global REPR_DRAW
-        if REPR_DRAW is None:
-            REPR_DRAW = TerminalGraphicsFormat.is_supported()
-
         if not REPR_DRAW:
             return self._short_repr_()
 
@@ -797,3 +793,16 @@ def _walk_converters(
     current: DiagramConverter | None = first
     while (current := getattr(current, "depends", None)) is not None:
         yield current
+
+
+if not t.TYPE_CHECKING:
+
+    def __getattr__(name):
+        if name != "REPR_DRAW":
+            raise NameError(f"No name {name} in module {__name__}")
+        try:
+            return globals()["REPR_DRAW"]
+        except KeyError:
+            pass
+        globals()["REPR_DRAW"] = d = TerminalGraphicsFormat.is_supported()
+        return d
