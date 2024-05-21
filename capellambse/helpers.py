@@ -3,6 +3,7 @@
 """Miscellaneous utility functions used throughout the modules."""
 from __future__ import annotations
 
+import array
 import collections.abc as cabc
 import contextlib
 import errno
@@ -33,6 +34,7 @@ if sys.platform.startswith("win"):
     import msvcrt
 else:
     import fcntl
+    import termios
 
 if t.TYPE_CHECKING:
     from capellambse import model as modelmod
@@ -290,14 +292,60 @@ def make_short_html(
     uuid: str,
     name: str = "",
     value: str = "",
+    *,
+    icon: str = "",
+    iconsize: int | None = None,
 ) -> markupsafe.Markup:
-    if not name:
-        link = f'<a href="hlink://{e(uuid)}"><strong>{e(clsname)}</strong></a>'
+    """Make HTML that briefly describes an element.
+
+    The layout of the generated HTML string is:
+
+        [icon and/or clsname] [name]: [value] ([uuid])
+
+    If an icon is used, the clsname is used for its alt and hover text.
+
+    All values passed except for `icon` will be HTML-escaped.
+
+    Parameters
+    ----------
+    clsname
+        The name of the object's class.
+    uuid
+        The object's UUID.
+    name
+        The human-readable name of the object.
+    value
+        If the object contains a value of some sort, which is more
+        interesting to the end user than the fact that the object
+        exists, this parameter can be used to display the value.
+    icon
+        The icon to use, encoded as `data:` URI. Note that this value
+        must already be HTML-safe.
+    iconsize
+        Fix the width and height of the icon to this pixel value. Needed
+        if the client application has dumb CSS rules.
+    """
+    clsname = e(clsname)
+    uuid = e(uuid)
+    name = e(name)
+    value = e(value)
+    if icon:
+        icon_html = f'<img src="{icon}" alt="{clsname}" title="{clsname}"'
+        if iconsize:
+            icon_html += f' width="{iconsize}" height="{iconsize}"'
+        icon_html += ' style="display: inline-block">'
     else:
+        icon_html = f"<strong>{clsname}</strong>"
+
+    if icon and not name:
         link = (
-            f"<strong>{e(clsname)}</strong>"
-            f' <a href="hlink://{e(uuid)}">&quot;{e(name)}&quot;</a>'
+            f'<a href="hlink://{uuid}">'
+            f"{icon_html} <strong>{clsname}</strong></a>"
         )
+    elif not name:
+        link = f'<a href="hlink://{uuid}">{icon_html}</a>'
+    else:
+        link = f'{icon_html} <a href="hlink://{uuid}">&quot;{name}&quot;</a>'
 
     if not value:
         return markupsafe.Markup(f"{link} ({uuid})")
@@ -406,6 +454,43 @@ def word_wrap(text: str, width: float | int) -> list[str]:
             output_lines.extend(wrapped_lines[1:])
 
     return output_lines or [""]
+
+
+def get_term_cell_size(stream=None) -> tuple[int, int]:
+    """Get the cell size of the terminal.
+
+    Parameters
+    ----------
+    stream
+        The stream that the terminal is connected to. If None, the
+        stderr stream will be probed.
+
+    Returns
+    -------
+    tuple[int, int]
+        The width and height of a cell.
+
+    Raises
+    ------
+    ValueError
+        Raised if the cell size could not be determined.
+    """
+    if stream is None:
+        if not sys.stderr.isatty():
+            raise ValueError("No stream given and stderr is not a TTY")
+        stream = sys.stderr
+    elif not stream.isatty():
+        raise ValueError("Passed stream is not a TTY")
+
+    if sys.platform.startswith("win"):
+        raise ValueError("Not supported on Windows")
+
+    buf = array.array("H", [0, 0, 0, 0])
+    fcntl.ioctl(stream, termios.TIOCGWINSZ, buf)
+    if 0 in buf:
+        raise ValueError(f"Received invalid ioctl reply: {buf!r}")
+    rows, cols, screenwidth, screenheight = buf
+    return (screenwidth // cols, screenheight // rows)
 
 
 # XML tree modification and navigation
