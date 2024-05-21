@@ -200,13 +200,13 @@ def applyfilters(args: FilterArguments) -> None:
         try:
             fltname = _extract_filter_type(flt)
         except ValueError as err:
-            c.LOGGER.warning("Ignoring broken global filter: %s", err)
+            c.LOGGER.debug("Ignoring broken global filter: %s", err)
             continue
 
         try:
             fltfunc = GLOBAL_FILTERS[fltname]
         except KeyError:
-            c.LOGGER.warning("Unknown global filter %r", fltname)
+            c.LOGGER.debug("Ignoring unknown global filter %r", fltname)
             continue
 
         c.LOGGER.debug("Applying global filter %r", fltname)
@@ -223,7 +223,7 @@ def _set_composite_filter(
             next(flt.iterchildren("compositeFilterDescriptions"))
         )
     except (StopIteration, ValueError):
-        c.LOGGER.warning(
+        c.LOGGER.debug(
             "Ignoring unusable composite filter on object %r", dgobject.uuid
         )
         return
@@ -231,8 +231,10 @@ def _set_composite_filter(
     try:
         fltfunc = COMPOSITE_FILTERS[flttype]
     except KeyError:
-        c.LOGGER.warning(
-            "Unknown composite filter %r on object %r", flttype, dgobject.uuid
+        c.LOGGER.debug(
+            "Ignoring unknown composite filter %r on object %r",
+            flttype,
+            dgobject.uuid,
         )
         return
 
