@@ -59,7 +59,6 @@ class Drawing:
         transparent_background: bool = False,
     ):
         superparams = {
-            "cursor": "pointer",
             "filename": f"{metadata.name}.svg",
             "font-family": font_family,
             "font-size": f"{font_size}px",
@@ -287,7 +286,7 @@ class Drawing:
 
     def _draw_label(self, builder: LabelBuilder) -> LinesData | None:
         """Draw label text on given object and return the label's group."""
-        builder.icon &= f"{builder.class_}Symbol" in decorations.deco_factories
+        builder.icon &= diagram.has_icon(builder.class_ or "")
         text = self._make_text(builder)
         lines = None
         if not text.elements:
@@ -472,7 +471,7 @@ class Drawing:
                 grad_id = styling._generate_id("CustomGradient", val)
                 if grad_id not in defs_ids:
                     gradient = symbols._make_lgradient(
-                        id_=grad_id, stop_colors=val
+                        grad_id, stop_colors=val
                     )
                     self.__drawing.defs.add(gradient)
                     defs_ids.add(grad_id)
@@ -496,7 +495,8 @@ class Drawing:
             stroke_width = str(getstyleattr(styling, "stroke-width"))
             marker_id = styling._generate_id(marker, [stroke])
             if marker_id not in defs_ids:
-                factory = decorations.deco_factories[marker]
+                factory = decorations.marker_factories[marker]
+                assert isinstance(factory, decorations.MarkerFactory)
                 markstyle = style.Styling(
                     self.diagram_class,
                     styling._class,
@@ -752,7 +752,7 @@ class Drawing:
         text_anchor: str = "start",
         y_margin: int | float,
     ) -> container.Group:
-        if f"{class_}Symbol" in decorations.deco_factories:
+        if diagram.has_icon(class_):
             additional_space = (
                 decorations.icon_size + 2 * decorations.icon_padding
             )
@@ -813,9 +813,9 @@ class Drawing:
         grp.add(ln)
 
     def _add_decofactory(self, name: str) -> None:
-        factory = decorations.deco_factories[f"{name}Symbol"]
-        self.__drawing.defs.add(factory.function())
-        for dep in factory.dependencies:
+        symbol, dependencies = diagram.get_svg_symbol(name)
+        self.__drawing.defs.add(symbol)
+        for dep in dependencies:
             if dep not in self.deco_cache:
                 self._add_decofactory(dep)
 

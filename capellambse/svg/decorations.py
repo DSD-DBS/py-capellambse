@@ -61,12 +61,12 @@ always_top_label = needs_feature_line | {
 
 
 @dataclasses.dataclass
-class DecoFactory:
+class MarkerFactory:
     function: cabc.Callable
     dependencies: tuple[str, ...]
 
 
-class DecoFactories(dict[str, DecoFactory]):
+class MarkerFactories(dict[str, MarkerFactory]):
     def __call__(
         self,
         func: cabc.Callable | None = None,
@@ -78,17 +78,14 @@ class DecoFactories(dict[str, DecoFactory]):
                 lambda m: m.group(1).capitalize(),
                 func.__name__,
             )
-            self[symbol_name] = DecoFactory(func, tuple(dependencies))
+            if not symbol_name.endswith("Mark"):
+                raise RuntimeError(f"Invalid marker name: {symbol_name}")
+            self[symbol_name] = MarkerFactory(func, tuple(dependencies))
             return func
 
         if func is None:
             return decorator
         return decorator(func)
 
-    def __missing__(self, class_: str) -> DecoFactory:
-        logger.error("%s wasn't found in factories.", class_)
-        assert "ErrorSymbol" in self
-        return self["ErrorSymbol"]
 
-
-deco_factories = DecoFactories()
+marker_factories = MarkerFactories()

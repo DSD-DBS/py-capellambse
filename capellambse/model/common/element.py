@@ -41,6 +41,8 @@ _MapFunction: te.TypeAlias = (
     "cabc.Callable[[T], GenericElement | cabc.Iterable[GenericElement]]"
 )
 
+_TERMCELL: tuple[int, int] | None = None
+
 
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
     def add_wrapped_eq(cls: type[T]) -> type[T]:
@@ -328,26 +330,47 @@ class GenericElement:
             mytype = f"Model element ({self.xtype})"
         else:
             mytype = type(self).__name__
+
         if self.name:
             name = f" {self.name!r}"
         else:
             name = ""
-        return f"<{mytype}{name} ({self.uuid})>"
+
+        if capellambse.model.diagram.REPR_DRAW:
+            global _TERMCELL
+            if _TERMCELL is None:
+                try:
+                    _TERMCELL = helpers.get_term_cell_size()
+                except ValueError:
+                    _TERMCELL = (0, 0)
+            size = _TERMCELL[1] or 11
+            icon = self._get_icon("termgraphics", size=size) or b""
+            assert isinstance(icon, bytes)
+        else:
+            icon = b""
+        return f"<{icon.decode()}{mytype}{name} ({self.uuid})>"
 
     def __html__(self) -> markupsafe.Markup:
         fragments: list[str] = []
         escape = markupsafe.Markup.escape
 
-        # pylint: disable=unidiomatic-typecheck
-        if type(self) is GenericElement:
-            fragments.append("<h1>Model element")
+        try:
+            icon = self._get_icon("datauri_svg", size=20) or ""
+        except Exception:
+            icon = ""
         else:
-            fragments.append("<h1>")
+            icon = f'<img src="{icon}" alt="" width="20" height="20"> '
+
+        fragments.append("<h1>")
+        fragments.append(icon)
+        # pylint: disable-next=unidiomatic-typecheck
+        if type(self) is GenericElement:
+            fragments.append("Model element")
+        else:
             fragments.append(escape(self.name or type(self).__name__))
         fragments.append(' <span style="font-size: 70%;">(')
         fragments.append(escape(self.xtype))
-        fragments.append(")</span>")
-        fragments.append("</h1>")
+        fragments.append(")</span></h1>")
 
         fragments.append("<table>")
         for attr in dir(self):
@@ -394,16 +417,59 @@ class GenericElement:
         return markupsafe.Markup("".join(fragments))
 
     def _short_html_(self) -> markupsafe.Markup:
-        if hasattr(self, "value"):
-            return helpers.make_short_html(
-                type(self).__name__, self.uuid, self.name, self.value
-            )
+        try:
+            icon = self._get_icon("datauri_svg", size=15) or ""
+        except Exception:
+            icon = ""
+        else:
+            assert isinstance(icon, str)
         return helpers.make_short_html(
-            type(self).__name__, self.uuid, self.name
+            type(self).__name__,
+            self.uuid,
+            self.name,
+            getattr(self, "value", ""),
+            icon=icon,
+            iconsize=15,
         )
 
     def _repr_html_(self) -> str:
         return self.__html__()
+
+    def _get_icon(self, format: str, /, *, size: int = 16) -> t.Any | None:
+        """Render a small icon for this object.
+
+        This is the same icon that is also used in diagrams.
+
+        Parameters
+        ----------
+        format
+            The format to use. Currently supported formats are:
+
+            - *html*: An HTML ``<img>`` tag, or an empty string if no
+              icon could be found. This is intended to be used in
+              templating environments that produce HTML.
+            - *datauri*: A ``data:`` URI that contains the icon data.
+            - *svg*: A string containing SVG data.
+
+        Returns
+        -------
+        Any | None
+            The icon, or None if no icon could be found.
+
+        :meta public:
+        """
+        from capellambse.diagram import get_icon, get_styleclass
+
+        try:
+            data: t.Any = get_icon(get_styleclass(self), size=size)
+        except ValueError:
+            return None
+
+        if format != "svg":
+            data = capellambse.model.diagram.convert_format(
+                "svg", format, data
+            )
+        return data
 
     if t.TYPE_CHECKING:
 
