@@ -8,8 +8,6 @@ import dataclasses
 import logging
 import re
 
-from capellambse.diagram import _icons
-
 logger = logging.getLogger(__name__)
 
 icon_size = 20
@@ -63,17 +61,12 @@ always_top_label = needs_feature_line | {
 
 
 @dataclasses.dataclass
-class DecoFactory:
+class MarkerFactory:
     function: cabc.Callable
     dependencies: tuple[str, ...]
 
 
-class DecoFactories(
-    cabc.Mapping[str, DecoFactory | _icons._FactoryDefinition]
-):
-    def __init__(self) -> None:
-        self.__markers: dict[str, DecoFactory] = {}
-
+class MarkerFactories(dict[str, MarkerFactory]):
     def __call__(
         self,
         func: cabc.Callable | None = None,
@@ -85,40 +78,14 @@ class DecoFactories(
                 lambda m: m.group(1).capitalize(),
                 func.__name__,
             )
-            self.__markers[symbol_name] = DecoFactory(
-                func, tuple(dependencies)
-            )
+            if not symbol_name.endswith("Mark"):
+                raise RuntimeError(f"Invalid marker name: {symbol_name}")
+            self[symbol_name] = MarkerFactory(func, tuple(dependencies))
             return func
 
         if func is None:
             return decorator
         return decorator(func)
 
-    def __iter__(self) -> cabc.Iterator[str]:
-        yield from _icons._FACTORIES
-        yield from self.__markers
 
-    def __len__(self) -> int:
-        return len(_icons._FACTORIES) + len(self.__markers)
-
-    def __getitem__(self, k: str) -> DecoFactory | _icons._FactoryDefinition:
-        if k.endswith("Symbol"):
-            try:
-                return _icons._FACTORIES[k]
-            except KeyError:
-                pass
-
-        elif k.endswith("Mark"):
-            try:
-                return self.__markers[k]
-            except KeyError:
-                pass
-
-        logger.warning("Unknown symbol requested: %s", k)
-        return _icons._FACTORIES["ErrorSymbol"]
-
-    def __contains__(self, o: object) -> bool:
-        return o in _icons._FACTORIES or o in self.__markers
-
-
-deco_factories = DecoFactories()
+marker_factories = MarkerFactories()

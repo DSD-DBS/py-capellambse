@@ -34,7 +34,7 @@ def _make_marker(
     return marker
 
 
-@decorations.deco_factories
+@decorations.marker_factories
 def fine_arrow_mark(id_, /, **kw) -> container.Marker:
     d = (
         "M 0.4535,0.107 7.309,3.621 0.492,7.407 "
@@ -43,7 +43,7 @@ def fine_arrow_mark(id_, /, **kw) -> container.Marker:
     return _make_marker((7, 3.75), (7.5, 7.5), id_=id_, d=d, **kw)
 
 
-@decorations.deco_factories
+@decorations.marker_factories
 def arrow_mark(id_, /, **kw) -> container.Marker:
     return _make_marker(
         (5, 2.5), (5.5, 5.5), id_=id_, d="M 0,0 5,2.5 0,5", **kw
@@ -56,19 +56,19 @@ def _make_diamond_marker(id_: str, /, **kw) -> container.Marker:
     )
 
 
-@decorations.deco_factories
+@decorations.marker_factories
 def diamond_mark(id_, /, **kw) -> container.Marker:
     kw.setdefault("fill", "#fff")
     return _make_diamond_marker(id_, **kw)
 
 
-@decorations.deco_factories
+@decorations.marker_factories
 def filled_diamond_mark(id_, /, **kw) -> container.Marker:
     kw.setdefault("fill", "#000")
     return _make_diamond_marker(id_, **kw)
 
 
-@decorations.deco_factories
+@decorations.marker_factories
 def generalization_mark(id_, /, **kw) -> container.Marker:
     kw.setdefault("fill", "#fff")
     d = "M 0.1275,7.5 7.5,3.75 0,0 Z"
