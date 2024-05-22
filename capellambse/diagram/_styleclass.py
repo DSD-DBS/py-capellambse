@@ -6,7 +6,6 @@ from __future__ import annotations
 __all__ = ["get_styleclass"]
 
 import collections.abc as cabc
-import re
 
 from capellambse import model
 
@@ -67,13 +66,14 @@ def _functional_exchange(obj: model.ModelObject) -> str:
     return styleclass
 
 
-def _generic_component(obj: model.ModelObject) -> str:
+def _generic_component(obj: model.ModelObject, extra: str = "") -> str:
     assert isinstance(obj, model.cs.Component)
     styleclass = _default(obj)
     return "".join(
         (
             styleclass[: -len("Component")],
             "Human" * obj.is_human,
+            extra,
             ("Component", "Actor")[obj.is_actor],
         )
     )
@@ -81,10 +81,8 @@ def _generic_component(obj: model.ModelObject) -> str:
 
 def _physical_component(obj: model.ModelObject) -> str:
     assert isinstance(obj, model.pa.PhysicalComponent)
-    styleclass = _generic_component(obj)
-    ptrn = re.compile("^(.*)(Component|Actor)$")
-    nature = [obj.nature.name, ""][obj.nature.name == "UNSET"]
-    return ptrn.sub(rf"\1{nature.capitalize()}\2", styleclass)
+    nature = (obj.nature.name, "")[obj.nature.name == "UNSET"]
+    return _generic_component(obj, extra=nature.capitalize())
 
 
 def _part(obj: model.ModelObject) -> str:

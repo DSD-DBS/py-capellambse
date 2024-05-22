@@ -798,6 +798,14 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_Node_Yellow_Border"],
             "text_fill": COLORS["_CAP_Node_Yellow_Label"],
         },
+        "Box.PhysicalNodeActor": {
+            "fill": [
+                COLORS["_CAP_Actor_Blue_min"],
+                COLORS["_CAP_Actor_Blue"],
+            ],
+            "stroke": COLORS["_CAP_Actor_Border_Blue"],
+            "text_fill": COLORS["_CAP_Actor_Blue_label"],
+        },
         "Box.PhysicalBehaviorComponent": {
             "fill": [
                 COLORS["_CAP_Component_Blue_min"],
