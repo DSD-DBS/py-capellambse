@@ -355,14 +355,15 @@ class GenericElement:
         escape = markupsafe.Markup.escape
 
         try:
-            icon = self._get_icon("datauri_svg", size=20) or ""
+            icon = self._get_icon("datauri_svg", size=20)
         except Exception:
-            icon = ""
-        else:
-            icon = f'<img src="{icon}" alt="" width="20" height="20"> '
+            icon = None
 
         fragments.append("<h1>")
-        fragments.append(icon)
+        if icon:
+            fragments.append(
+                f'<img src="{icon}" alt="" width="20" height="20"> '
+            )
         # pylint: disable-next=unidiomatic-typecheck
         if type(self) is GenericElement:
             fragments.append("Model element")
