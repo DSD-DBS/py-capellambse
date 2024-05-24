@@ -24,30 +24,35 @@ class Region(c.GenericElement):
     modes: c.Accessor
     transitions: c.Accessor
 
+class AbstractPrimitiveState(c.GenericElement):
+    _xmltag = "ownedStates"
 
-class AbstractStateMode(c.GenericElement):
+    incoming_transitions: c.Accessor
+    outgoing_transitions: c.Accessor
+    related_states: c.Accessor
+
+
+class AbstractStateMode(AbstractPrimitiveState):
     """Common code for states and modes."""
 
     _xmltag = "ownedStates"
 
     regions = c.DirectProxyAccessor(Region, aslist=c.ElementList)
 
-
-@c.xtype_handler(None)
-class State(AbstractStateMode):
-    """A state."""
-
-    entries = c.AttrProxyAccessor(
+    entry = c.AttrProxyAccessor(
         c.GenericElement, "entry", aslist=c.MixedElementList
     )
     do_activity = c.AttrProxyAccessor(
         c.GenericElement, "doActivity", aslist=c.MixedElementList
     )
-    exits = c.AttrProxyAccessor(
+    exit = c.AttrProxyAccessor(
         c.GenericElement, "exit", aslist=c.MixedElementList
     )
 
-    functions: c.Accessor
+
+@c.xtype_handler(None)
+class State(AbstractStateMode):
+    """A state."""
 
 
 @c.xtype_handler(None)
@@ -56,37 +61,37 @@ class Mode(AbstractStateMode):
 
 
 @c.xtype_handler(None)
-class DeepHistoryPseudoState(AbstractStateMode):
+class DeepHistoryPseudoState(AbstractPrimitiveState):
     """A deep history pseudo state."""
 
 
 @c.xtype_handler(None)
-class FinalState(AbstractStateMode):
+class FinalState(AbstractPrimitiveState):
     """A final state."""
 
 
 @c.xtype_handler(None)
-class ForkPseudoState(AbstractStateMode):
+class ForkPseudoState(AbstractPrimitiveState):
     """A fork pseudo state."""
 
 
 @c.xtype_handler(None)
-class InitialPseudoState(AbstractStateMode):
+class InitialPseudoState(AbstractPrimitiveState):
     """An initial pseudo state."""
 
 
 @c.xtype_handler(None)
-class JoinPseudoState(AbstractStateMode):
+class JoinPseudoState(AbstractPrimitiveState):
     """A join pseudo state."""
 
 
 @c.xtype_handler(None)
-class ShallowHistoryPseudoState(AbstractStateMode):
+class ShallowHistoryPseudoState(AbstractPrimitiveState):
     """A shallow history pseudo state."""
 
 
 @c.xtype_handler(None)
-class TerminatePseudoState(AbstractStateMode):
+class TerminatePseudoState(AbstractPrimitiveState):
     """A terminate pseudo state."""
 
 
@@ -160,6 +165,27 @@ for cls in [
         ),
     )
 
+c.set_accessor(
+    AbstractPrimitiveState,
+    "incoming_transitions",
+    c.ReferenceSearchingAccessor(
+        StateTransition, "destination", aslist=c.ElementList
+    )
+)
+c.set_accessor(
+    AbstractPrimitiveState,
+    "outgoing_transitions",
+    c.ReferenceSearchingAccessor(
+        StateTransition, "source", aslist=c.ElementList
+    )
+)
+c.set_accessor(
+    AbstractPrimitiveState,
+    "related_transitions",
+    c.ReferenceSearchingAccessor(
+        StateTransition, "source", "destination", aslist=c.ElementList
+    )
+)
 c.set_accessor(
     Region,
     "states",
