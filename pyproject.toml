@@ -61,6 +61,7 @@ docs = [
 
 test = [
   "click",
+  "jinja2>=3.1.3",
   "pytest",
   "pytest-cov",
   "requests-mock",
@@ -68,6 +69,7 @@ test = [
 
 cli = [
   "click>=8.1.7",
+  "jinja2>=3.1.3",
 ]
 
 decl = []
@@ -97,6 +99,7 @@ zip = "capellambse.filehandler.zip:ZipFileHandler"
 filtering = "capellambse.extensions.filtering:init"
 pvmt = "capellambse.extensions.pvmt:init"
 reqif = "capellambse.extensions.reqif:init"
+validation = "capellambse.extensions.validation:init"
 
 [tool.black]
 line-length = 79
