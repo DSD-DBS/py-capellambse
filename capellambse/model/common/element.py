@@ -439,25 +439,25 @@ class GenericElement:
     def _get_icon(self, format: str, /, *, size: int = 16) -> t.Any | None:
         """Render a small icon for this object.
 
+        :meta public:
+
         This is the same icon that is also used in diagrams.
 
         Parameters
         ----------
         format
-            The format to use. Currently supported formats are:
+            The format to use.
 
-            - *html*: An HTML ``<img>`` tag, or an empty string if no
-              icon could be found. This is intended to be used in
-              templating environments that produce HTML.
-            - *datauri*: A ``data:`` URI that contains the icon data.
-            - *svg*: A string containing SVG data.
+            This uses the same format conversion machinery as diagrams, but
+            starts with the *svg* format. This means that *svg* and every
+            format directly or indirectly derived from it are supported,
+            including *png*, *datauri_svg* and others.
 
         Returns
         -------
         Any | None
-            The icon, or None if no icon could be found.
-
-        :meta public:
+            The icon (usually as str or bytes object), or None if no
+            icon could be found.
         """
         from capellambse.diagram import get_icon, get_styleclass
 
