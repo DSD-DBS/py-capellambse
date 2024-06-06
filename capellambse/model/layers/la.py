@@ -76,7 +76,7 @@ class LogicalComponentPkg(c.GenericElement):
     packages: c.Accessor
 
 
-@c.xtype_handler(XT_ARCH)
+@c.xtype_handler(None)
 class CapabilityRealization(c.GenericElement):
     """A capability."""
 

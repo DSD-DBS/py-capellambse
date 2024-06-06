@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import collections
 import collections.abc as cabc
+import operator
 import typing as t
 
 import capellambse
@@ -161,6 +162,26 @@ def xtype_handler(
         return cls
 
     return register_xtype_handler
+
+
+def resolve_handler(xtype: str) -> tuple[str, type[t.Any]]:
+    matches: list[tuple[str, type[t.Any]]] = []
+
+    if ":" in xtype:
+        ismatch: cabc.Callable[[str, str], bool] = operator.eq
+        searchname = xtype
+    else:
+        ismatch = str.endswith
+        searchname = ":" + xtype
+
+    for i in XTYPE_HANDLERS.values():
+        matches.extend(t for t in i.items() if ismatch(t[0], searchname))
+
+    if len(matches) < 1:
+        raise ValueError(f"No handlers found for xsi:type: {xtype}")
+    if len(matches) > 1:
+        raise RuntimeError(f"Multiple handlers for xsi:type: {xtype}")
+    return matches[0]
 
 
 from .accessors import *
