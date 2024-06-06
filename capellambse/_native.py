@@ -180,6 +180,8 @@ class _SimpleRunner:
 class _DockerRunner:
     def __init__(self, image: str) -> None:
         self.image = image
+        if not self.does_image_exist_locally():
+            subprocess.run(["docker", "pull", self.image], check=True)
         self.username, self.entrypoint = self.get_metadata()
 
     def __call__(
@@ -208,7 +210,6 @@ class _DockerRunner:
 
     def get_metadata(self) -> tuple[str, list[str]]:
         """Find the username and entrypoint of the Docker image."""
-        subprocess.run(["docker", "pull", self.image], check=True)
         proc = subprocess.run(
             ["docker", "inspect", self.image],
             check=True,
@@ -324,3 +325,16 @@ class _DockerRunner:
                 f"{destination}",
             ],
         )
+
+    def does_image_exist_locally(self) -> bool:
+        """Check if the Docker image exists locally on the system."""
+
+        result = subprocess.run(
+            ["docker", "images", "-q", self.image],
+            check=True,
+            stdout=subprocess.PIPE,
+        )
+
+        if result.stdout == b"":
+            return False
+        return True
