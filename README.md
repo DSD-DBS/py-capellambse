@@ -51,6 +51,10 @@ Related projects
 - [`capella-diff-tools`](https://github.com/DSD-DBS/capella-diff-tools) — A set
   of tools to compare Capella models.
 
+- [`capella-ros-tools`](https://github.com/DSD-DBS/capella-ros-tools) — Import
+  and export ROS `*.msg` files to/from Capella models, or transform `*.msg`
+  files into a declarative YAML file.
+
 Did you make something cool that is using or extending capellambse? [Tell us
 about it](https://github.com/DSD-DBS/py-capellambse/issues), so we can add it
 to this list!
