@@ -14,11 +14,17 @@ Functional Analysis object-relations map (ontology):
 from __future__ import annotations
 
 import collections.abc as cabc
+import sys
 import typing as t
 
 from .. import common as c
 from .. import modeltypes
 from . import capellacommon, capellacore, information, interaction
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 if t.TYPE_CHECKING:
     from . import cs
@@ -286,18 +292,12 @@ class ComponentExchange(AbstractExchange):
     )
 
     @property
+    @deprecated(
+        "allocating_physical_path is deprecated;"
+        " use allocating_physical_paths instead,"
+        " which supports multiple allocations"
+    )
     def allocating_physical_path(self) -> cs.PhysicalPath | None:
-        import warnings
-
-        warnings.warn(
-            (
-                "allocating_physical_path is deprecated; use"
-                " allocating_physical_paths instead, which supports multiple"
-                " allocations"
-            ),
-            DeprecationWarning,
-        )
-
         alloc = self.allocating_physical_paths
         if len(alloc) > 1:
             raise RuntimeError(

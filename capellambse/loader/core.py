@@ -34,6 +34,11 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 E = builder.ElementMaker()
 LOGGER = logging.getLogger(__name__)
 PROJECT_NATURE = "org.polarsys.capella.project.nature"
@@ -205,13 +210,8 @@ class ModelFile:
             return FragmentType.OTHER
 
     @property
+    @deprecated("ModelFile.tree is deprecated, use the 'root' directly")
     def tree(self) -> etree._ElementTree:
-        import warnings
-
-        warnings.warn(
-            "'ModelFile.tree' is deprecated, use the 'root' directly",
-            DeprecationWarning,
-        )
         return etree.ElementTree(self.root)
 
     def __init__(
@@ -861,6 +861,7 @@ class MelodyLoader:
             ret += [follow_href(fragment, elem) for elem in query(tree)]
         return ret
 
+    @deprecated("find_by_xsi_type is deprecated, use `iterall_xt` instead")
     def find_by_xsi_type(
         self,
         *xsi_types: str,
@@ -877,14 +878,6 @@ class MelodyLoader:
             A list of XML elements to use as roots for the query.
             Defaults to all tree roots.
         """
-        import warnings
-
-        warnings.warn(
-            "find_by_xsi_type is deprecated, use `iterall_xt` instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
         if roots is None:
             return list(self.iterall_xt(*xsi_types))
         elif isinstance(roots, etree._Element):

@@ -46,6 +46,11 @@ from capellambse import helpers
 
 from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
 
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
@@ -1298,6 +1303,10 @@ class ParentAccessor(PhysicalAccessor[T]):
         return rv
 
 
+@deprecated(
+    "CustomAccessor is deprecated,"
+    " create a specialized Accessor subclass instead"
+)
 class CustomAccessor(PhysicalAccessor[T]):
     """Customizable alternative to the DirectProxyAccessor.
 
@@ -1347,15 +1356,6 @@ class CustomAccessor(PhysicalAccessor[T]):
             Function that transforms a target so that it can be used by
             the matcher function.
         """
-        warnings.warn(
-            (
-                "CustomAccessor is deprecated,"
-                " create a specialized Accessor subclass instead"
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
         super().__init__(class_, aslist=aslist)
         self.elmfinders = elmfinders
         self.elmmatcher = elmmatcher
