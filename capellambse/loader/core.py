@@ -368,7 +368,7 @@ class ModelFile:
             attrib=self.root.attrib,
             nsmap=dict(sorted(new_nsmap.items())),
         )
-        new_root.extend(self.root.getchildren())
+        new_root.extend(self.root)
 
         siblings = self.root.itersiblings(preceding=True)
         for i in reversed(list(siblings)):
