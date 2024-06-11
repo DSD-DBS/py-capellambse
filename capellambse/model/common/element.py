@@ -74,9 +74,8 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
         # <https://github.com/DSD-DBS/py-capellambse/issues/52>
         @deprecated(
             (
-                "Hashing of this type is broken and will likely be"
-                " removed in the future. Please use the `.uuid` or"
-                f" `.{attr}` directly instead."
+                "Hashing of this type is broken and will be removed soon,"
+                f" use the `.uuid` or `.{attr}` directly instead"
             ),
             category=FutureWarning,
         )
@@ -278,6 +277,7 @@ class GenericElement:
             return NotImplemented
         return self._element is other._element
 
+    @deprecated("Hashing of elements is deprecated, use the '.uuid' instead")
     def __hash__(self):
         return hash(self._element)
 

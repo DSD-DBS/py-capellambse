@@ -326,7 +326,7 @@ def functional_exchange_allocated_to_component_exchange(
 def capability_involves_two_activities_from_different_entities(
     obj: oa.OperationalCapability,
 ) -> bool:
-    actors = {activity.owner for activity in obj.involved_activities}
+    actors = {activity.owner.uuid for activity in obj.involved_activities}
     return len(actors) > 1
 
 
