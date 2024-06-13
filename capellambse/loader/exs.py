@@ -262,14 +262,15 @@ def _unmapped_attrs(
         parent_ns = set(parent.nsmap)
 
     attribs = dict(element.items())
-    for attr in ("version", "type", "id"):
-        try:
-            yield (
-                _unmap_namespace(nsmap, f"xmi:{attr}"),
-                _escape(attribs.pop("{http://www.omg.org/XMI}" + attr)),
-            )
-        except KeyError:
-            pass
+    for attr in (
+        "{http://www.omg.org/XMI}version",
+        "{http://www.omg.org/XMI}type",
+        "{http://www.omg.org/XMI}id",
+        "{http://www.w3.org/2001/XMLSchema-instance}type",
+    ):
+        value = attribs.pop(attr, None)
+        if value is not None:
+            yield (_unmap_namespace(nsmap, attr), _escape(value))
 
     assert None not in element.nsmap
     for nsname, value in sorted(element.nsmap.items(), key=_ns_sortkey):
