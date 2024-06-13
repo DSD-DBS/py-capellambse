@@ -271,11 +271,12 @@ def _operate_sync(
                 raise ValueError(
                     "Expected `find` key in sync object"
                 ) from None
+            if isinstance(find_args, dict):
+                find_args = FindBy(find_args)
+            assert isinstance(find_args, FindBy)
 
             try:
-                candidate = _resolve_findby(
-                    promises, parent, attr, FindBy(find_args)
-                )
+                candidate = _resolve_findby(promises, parent, attr, find_args)
             except _NoObjectFoundError:
                 candidate = None
             except _UnresolvablePromise as p:
@@ -296,7 +297,9 @@ def _operate_sync(
                     yield (promise, candidate)
             else:
                 newobj_props = (
-                    find_args | obj.pop("set", {}) | obj.pop("extend", {})
+                    find_args.attributes
+                    | obj.pop("set", {})
+                    | obj.pop("extend", {})
                 )
                 if "promise_id" in obj:
                     newobj_props["promise_id"] = obj.pop("promise_id")
