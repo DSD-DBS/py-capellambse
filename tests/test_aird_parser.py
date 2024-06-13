@@ -30,7 +30,7 @@ class TestAIRDBasicFunctionality:
 
     @pytest.fixture
     def diagram_under_test(self, model):
-        descriptor = next(aird.enumerate_diagrams(model), None)
+        descriptor = next(aird.enumerate_descriptors(model), None)
         assert descriptor is not None
         yield aird.parse_diagram(model, descriptor)
 
@@ -85,19 +85,17 @@ class TestAIRDBasicFunctionality:
         actual = repr(diagram_under_test)
         assert actual == expected
 
-    def test_enumerate_diagrams_doesnt_crash_if_there_are_no_diagrams(self):
+    def test_enumerate_descriptors_doesnt_crash_if_there_are_no_diagrams(self):
         model = loader.MelodyLoader(EMPTY_MODEL)
-        for _ in aird.enumerate_diagrams(model):
+        for _ in aird.enumerate_descriptors(model):
             pass
 
 
 def test_airdparser_msm_produces_valid_json_without_error(
     model: capellambse.MelodyModel,
 ):
-    diag_name = "[MSM] States of Functional Human Being"
-    all_diagrams = aird.enumerate_diagrams(model._loader)
-    descriptor = next(i for i in all_diagrams if i.name == diag_name)
-    parsed = aird.parse_diagram(model._loader, descriptor)
+    dg = model.diagrams.by_name("[MSM] States of Functional Human Being")
+    parsed = aird.parse_diagram(model._loader, dg._element)
 
     generated_json = diagram.DiagramJSONEncoder(indent=4).encode(parsed)
     json.loads(generated_json)

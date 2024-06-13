@@ -236,7 +236,7 @@ class TestApplyExtend:
     ) -> None:
         root_component = model.by_uuid(ROOT_COMPONENT)
         fnc_name = "The promised one"
-        assert fnc_name not in root_component.functions.by_name
+        assert fnc_name not in root_component.allocated_functions.by_name
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
               extend:
@@ -245,13 +245,13 @@ class TestApplyExtend:
                     promise_id: promised-fnc
             - parent: !uuid {ROOT_COMPONENT}
               extend:
-                functions:
+                allocated_functions:
                   - !promise promised-fnc
             """
 
         decl.apply(model, io.StringIO(yml))
 
-        assert fnc_name in root_component.functions.by_name
+        assert fnc_name in root_component.allocated_functions.by_name
 
     @staticmethod
     def test_extend_operations_on_faulty_attribute_cause_an_exception(
@@ -436,14 +436,14 @@ class TestApplyPromises:
     ) -> None:
         yml = f"""\
             - parent: !promise pass-test
-              modify:
+              set:
                 name: pass the unit test
             - parent: !uuid {ROOT_FUNCTION}
               extend:
                 functions:
                   - promise_id: pass-test
             - parent: !promise pass-test
-              modify:
+              set:
                 description: Makes sure that the test passes.
             """
 
@@ -466,7 +466,7 @@ class TestApplyModify:
         assert root_component.name != newname
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
-              modify:
+              set:
                 name: {newname}
             """
 
@@ -481,7 +481,7 @@ class TestApplyModify:
         root_component = model.by_uuid(ROOT_COMPONENT)
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
-              modify:
+              set:
                 allocated_functions:
                   - !promise make-coffee
             - parent: !uuid {ROOT_FUNCTION}
@@ -504,7 +504,7 @@ class TestApplyModify:
         root_function = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
-              modify:
+              set:
                 allocated_functions:
                   - !uuid {ROOT_FUNCTION}
             """
@@ -521,7 +521,7 @@ class TestApplyModify:
         root_function = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
-              modify:
+              set:
                 functions:
                   - name: survive
             """

@@ -21,6 +21,7 @@ __all__ = [
 import collections.abc as cabc
 import logging
 import pathlib
+import sys
 import typing as t
 import urllib.parse
 
@@ -32,6 +33,11 @@ from capellambse import diagram, helpers, loader
 from . import _common as C
 from . import _filters, _semantic, _visual
 from ._filters import GLOBAL_FILTERS, ActiveFilters, GlobalFilter
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 DRepresentationDescriptor = t.NewType(
     "DRepresentationDescriptor", etree._Element
@@ -115,6 +121,7 @@ def _viewpoint_of(view: etree._Element) -> str:
     return urllib.parse.unquote(viewname.group(1))
 
 
+@deprecated("'enumerate_diagrams' is deprecated, use 'enumerate_descriptors'")
 def enumerate_diagrams(
     model: loader.MelodyLoader,
 ) -> cabc.Iterator[DiagramDescriptor]:
@@ -125,14 +132,6 @@ def enumerate_diagrams(
     model
         The MelodyLoader instance
     """
-    import warnings
-
-    warnings.warn(
-        "enumerate_diagrams is deprecated, use enumerate_descriptors instead",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-
     for descriptor in enumerate_descriptors(model):
         try:
             d = _build_descriptor(model, descriptor)

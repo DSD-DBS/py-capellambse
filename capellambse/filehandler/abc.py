@@ -13,14 +13,19 @@ __all__ = [
 import abc
 import collections.abc as cabc
 import fnmatch
-import importlib.abc as iabc
 import os
 import pathlib
+import sys
 import typing as t
 
 import typing_extensions as te
 
 from capellambse import helpers
+
+if sys.version_info >= (3, 11):
+    import importlib.resources.abc as ira
+else:
+    import importlib.abc as ira
 
 if t.TYPE_CHECKING:
     from capellambse.loader import modelinfo
@@ -222,7 +227,7 @@ class FileHandler(metaclass=abc.ABCMeta):
         return fpath.is_file()
 
 
-class FilePath(os.PathLike[str], iabc.Traversable, t.Generic[_F]):
+class FilePath(os.PathLike[str], ira.Traversable, t.Generic[_F]):
     """A path to a file in a file handler.
 
     This is an abstract class with FileHandler-agnostic implementations

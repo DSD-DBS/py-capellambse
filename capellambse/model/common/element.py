@@ -20,6 +20,7 @@ import functools
 import inspect
 import operator
 import re
+import sys
 import textwrap
 import typing as t
 
@@ -31,6 +32,11 @@ import capellambse
 from capellambse import helpers
 
 from . import XTYPE_HANDLERS, T, U, accessors, properties
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 _T = t.TypeVar("_T", bound="ModelObject")
 
@@ -65,21 +71,16 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
                     return result
             return orig_eq(self, other)
 
+        # <https://github.com/DSD-DBS/py-capellambse/issues/52>
+        @deprecated(
+            (
+                "Hashing of this type is broken and will be removed soon,"
+                f" use the `.uuid` or `.{attr}` directly instead"
+            ),
+            category=FutureWarning,
+        )
         @functools.wraps(orig_hash)
         def new_hash(self) -> int:
-            import warnings
-
-            # <https://github.com/DSD-DBS/py-capellambse/issues/52>
-            warnings.warn(
-                (
-                    "Hashing of this type is broken and will likely be"
-                    " removed in the future. Please use the `.uuid` or"
-                    f" `.{attr}` directly instead."
-                ),
-                category=FutureWarning,
-                stacklevel=2,
-            )
-
             return orig_hash(self)
 
         cls.__eq__ = new_eq  # type: ignore[method-assign]
@@ -276,6 +277,7 @@ class GenericElement:
             return NotImplemented
         return self._element is other._element
 
+    @deprecated("Hashing of elements is deprecated, use the '.uuid' instead")
     def __hash__(self):
         return hash(self._element)
 

@@ -969,34 +969,26 @@ class TestArchitectureLayers:
         app1 = model.by_uuid("b80a6fcc-8d35-4675-a2e6-60efcbd61e27")
         app2 = model.by_uuid("ca5af12c-5259-4844-aaac-9ca9f84aa90b")
 
-        assert set(vehicle.components) | {sensor_comp, equip_comp} == set(
-            vehicle.components
-        )
-        assert (
-            cam_ass in sensor_comp.components
-            and len(sensor_comp.components) == 1
-        )
-        assert set(equip_comp.components) | {net_switch, server} == set(
-            equip_comp.components
-        )
-        assert cam_fw in cam_ass.components and len(cam_ass.components) == 1
-        assert set(net_switch.components) | {switch_fw, switch_conf} == set(
-            net_switch.components
-        )
-        assert set(server.components) | {comp_card1, comp_card2} == set(
-            server.components
-        )
-        assert set(comp_card1.components) | {card_1_os, cool_fan} == set(
-            comp_card1.components
-        )
-        assert (
-            card_2_os in comp_card2.components
-            and len(comp_card2.components) == 1
-        )
-        assert set(card_1_os.components) | {cam_driver, app1} == set(
-            card_1_os.components
-        )
-        assert app2 in card_2_os.components and len(card_2_os.components) == 1
+        assert sensor_comp in vehicle.components
+        assert equip_comp in vehicle.components
+        assert len(sensor_comp.components) == 1
+        assert sensor_comp.components[0] == cam_ass
+        assert net_switch in equip_comp.components
+        assert server in equip_comp.components
+        assert len(cam_ass.components) == 1
+        assert cam_ass.components[0] == cam_fw
+        assert switch_fw in net_switch.components
+        assert switch_conf in net_switch.components
+        assert comp_card1 in server.components
+        assert comp_card2 in server.components
+        assert card_1_os in comp_card1.components
+        assert cool_fan in comp_card1.components
+        assert len(comp_card2.components) == 1
+        assert comp_card2.components[0] == card_2_os
+        assert cam_driver in card_1_os.components
+        assert app1 in card_1_os.components
+        assert len(card_2_os.components) == 1
+        assert card_2_os.components[0] == app2
 
     def test_PhysicalComponent_deploying_components(
         self, model: capellambse.MelodyModel

@@ -201,8 +201,8 @@ class TestClassProperty:
             pytest.param(
                 "default_value", "b6feec5b-3bba-4da9-b9fc-fbd3b72b287d"
             ),
-            pytest.param("min", "e615cba9-acc4-4a23-ab0c-777c8cabb8f3"),
-            pytest.param("max", "d543018f-5f44-4c03-8e2e-875457c8967e"),
+            pytest.param("min_value", "e615cba9-acc4-4a23-ab0c-777c8cabb8f3"),
+            pytest.param("max_value", "d543018f-5f44-4c03-8e2e-875457c8967e"),
             pytest.param("null_value", "9fbdec5d-12c5-4194-b58f-35bff3ee2c9a"),
             pytest.param("min_card", "5546324b-81e8-46db-acee-2f8c1c50afc0"),
             pytest.param("max_card", "581587dd-8301-4bc1-bab4-4f54224d3f6d"),
@@ -218,7 +218,7 @@ class TestClassProperty:
 
     def test_property_has_no_value(self, model: MelodyModel):
         obj = model.by_uuid(CLASS_TYPED_PROP_UUID)
-        assert getattr(obj, "min") is None
+        assert getattr(obj, "min_value") is None
 
 
 def test_complex_value(model: MelodyModel):
