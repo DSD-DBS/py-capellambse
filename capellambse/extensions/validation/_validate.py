@@ -156,7 +156,7 @@ class Result:
         return (
             f"{type(self).__name__}(rule={self.rule!r},"
             f" object={self.object._short_repr_()},"
-            f" value={self.passed!r})"
+            f" passed={self.passed!r})"
         )
 
 
