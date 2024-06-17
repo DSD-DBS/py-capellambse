@@ -44,7 +44,9 @@ class ExchangeItemAllocation(c.GenericElement):
 class Interface(c.GenericElement):
     """An interface."""
 
-    exchange_item_allocations = c.DirectProxyAccessor(ExchangeItemAllocation)
+    exchange_item_allocations = c.DirectProxyAccessor(
+        ExchangeItemAllocation, aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)
