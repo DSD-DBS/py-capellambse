@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 import collections.abc as cabc
+import dataclasses
 import itertools
 import logging
 import os
@@ -634,8 +635,17 @@ class MelodyModel:
         return model
 
     @property
-    def info(self) -> loader.ModelInfo:
-        return self._loader.get_model_info()
+    def info(self) -> ModelInfo:
+        upstream_info = self._loader.get_model_info()
+        if self.diagram_cache is not None:
+            dgcinfo = dataclasses.asdict(self.diagram_cache.get_model_info())
+            dgcinfo = {k: v for k, v in dgcinfo.items() if v is not None}
+        else:
+            dgcinfo = None
+        return ModelInfo(
+            **dataclasses.asdict(upstream_info),
+            diagram_cache=dgcinfo,
+        )
 
     @property
     def description_badge(self) -> str:
@@ -654,6 +664,11 @@ class MelodyModel:
 
         def __getattr__(self, attr: str) -> t.Any:
             """Account for extension attributes in static type checks."""
+
+
+@dataclasses.dataclass
+class ModelInfo(loader.ModelInfo):
+    diagram_cache: t.Mapping[str, t.Any] | None = None
 
 
 def _reference_attributes(objtype: type[ModelObject], /) -> tuple[str, ...]:
