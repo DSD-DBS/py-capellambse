@@ -42,6 +42,8 @@ else:
         default="./diagrams",
         help="Directory to store the rendered diagrams in",
         show_default=True,
+        envvar="DIAGRAM_CACHE_OUTPUT_DIR",
+        show_envvar=True,
     )
     @click.option(
         "-f",
@@ -50,12 +52,16 @@ else:
         default="svg",
         help="Image output format",
         show_default=True,
+        envvar="DIAGRAM_CACHE_OUTPUT_FORMAT",
+        show_envvar=True,
     )
     @click.option(
         "--index/--no-index",
         default=True,
         help="Generate index.json and index.html files",
         show_default=True,
+        envvar="DIAGRAM_CACHE_GENERATE_INDEX",
+        show_envvar=True,
     )
     @click.option(
         "--refresh / --no-refresh",
@@ -66,6 +72,8 @@ else:
             " disabled by default because it may take a long time."
             " NOTE: This may temporarily open a Capella window (see above)."
         ),
+        envvar="DIAGRAM_CACHE_REFRESH_DIAGRAMS",
+        show_envvar=True,
     )
     @click.option("--exe", help="Name or path of the Capella executable")
     @click.option("--docker", help="Name of a Docker image containing Capella")
@@ -74,6 +82,8 @@ else:
         help="Inserts a white background into the diagrams.",
         default=True,
         show_default=True,
+        envvar="DIAGRAM_CACHE_INSERT_BACKGROUND",
+        show_envvar=True,
     )
     def _main(
         modelinfo: dict[str, t.Any],
