@@ -173,7 +173,7 @@ add-ignore = [
 ]
 
 [tool.pylint.format]
-ignore-long-lines = '^\s*(?:(?:__ |\.\. __: )?https?://[^ ]+|def test_.*|[A-Za-z0-9_\.]+(?: ?:)?)$'
+ignore-long-lines = '^\s*(?:(?:__ |\.\. __: )?\w+(?:\+\w+)?://[^ ]+|def test_.*|[A-Za-z0-9_\.]+(?: ?:)?)$'
 
 [tool.pylint.master]
 extension-pkg-allow-list = [
