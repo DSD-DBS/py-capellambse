@@ -32,6 +32,8 @@ jobs:
       - name: Auto-generate APIDOC sources
         run: make -C docs apidoc
       - name: Create docs
+        env:
+          SPHINXOPTS: ${{ github.ref != 'refs/heads/master' && '-W' || '' }}
         run: make -C docs html
       - name: Upload built docs as artifact
         uses: actions/upload-artifact@v4
