@@ -197,6 +197,7 @@ disable = [
   "no-else-raise",
   "no-else-return",
   "protected-access",
+  "redefined-argument-from-local",
   "redefined-builtin",
   "too-few-public-methods",
   "too-many-ancestors",
