@@ -1,0 +1,36 @@
+capellambse.model package
+=========================
+
+.. automodule:: capellambse.model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse.model.common
+   capellambse.model.crosslayer
+   capellambse.model.layers
+
+Submodules
+----------
+
+capellambse.model.diagram module
+--------------------------------
+
+.. automodule:: capellambse.model.diagram
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.modeltypes module
+-----------------------------------
+
+.. automodule:: capellambse.model.modeltypes
+   :members:
+   :undoc-members:
+   :show-inheritance:

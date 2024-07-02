@@ -1,0 +1,66 @@
+capellambse.model.crosslayer package
+====================================
+
+.. automodule:: capellambse.model.crosslayer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse.model.crosslayer.information
+
+Submodules
+----------
+
+capellambse.model.crosslayer.capellacommon module
+-------------------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.capellacommon
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.crosslayer.capellacore module
+-----------------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.capellacore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.crosslayer.cs module
+--------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.cs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.crosslayer.fa module
+--------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.fa
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.crosslayer.interaction module
+-----------------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.interaction
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.crosslayer.modellingcore module
+-------------------------------------------------
+
+.. automodule:: capellambse.model.crosslayer.modellingcore
+   :members:
+   :undoc-members:
+   :show-inheritance:

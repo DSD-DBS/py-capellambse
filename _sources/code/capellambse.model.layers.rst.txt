@@ -1,0 +1,42 @@
+capellambse.model.layers package
+================================
+
+.. automodule:: capellambse.model.layers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.model.layers.ctx module
+-----------------------------------
+
+.. automodule:: capellambse.model.layers.ctx
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.layers.la module
+----------------------------------
+
+.. automodule:: capellambse.model.layers.la
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.layers.oa module
+----------------------------------
+
+.. automodule:: capellambse.model.layers.oa
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.model.layers.pa module
+----------------------------------
+
+.. automodule:: capellambse.model.layers.pa
+   :members:
+   :undoc-members:
+   :show-inheritance:

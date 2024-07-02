@@ -1,0 +1,601 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "1a1fe414",
+   "metadata": {},
+   "source": [
+    "# Data Types and Data Values\n",
+    "\n",
+    "This Jupyter notebook demonstrates how Data Values in Capella can be handled.\n",
+    "First, let's load the model again..."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "3e28d1c9",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Cannot load PVMT extension: ValueError: Provided model does not have a PropertyValuePkg\n",
+      "Property values are not available in this model\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "<capellambse.model.MelodyModel at 0x7f48dee48b80>"
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import capellambse\n",
+    "path_to_model = \"../../../tests/data/melodymodel/5_2/Melody Model Test.aird\"\n",
+    "model = capellambse.MelodyModel(path_to_model)\n",
+    "model"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "48ce0c1e",
+   "metadata": {},
+   "source": [
+    "As explained in the notebook 01, please ignore the warning about PVMT missing above."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7e68b88c-b4bc-4c20-a39f-48094c0eabdd",
+   "metadata": {
+    "tags": []
+   },
+   "source": [
+    "## Example 1: Look into the Data package of the Logical Architecture\n",
+    "\n",
+    "Let's have a look into the data package on the Logical Architecture. It works the same with the other architectures, just replace the `oa` accordingly. We can see the defined classes, collections, enuemrations, and so on."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "da8b86b7",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>Data <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information:DataPkg)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">classes</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Class</strong> &quot;Wand&quot; (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)</li><li><strong>Class</strong> &quot;Class 2&quot; (1adf8097-18f9-474e-b136-6c845fc6d9e9)</li><li><strong>Class</strong> &quot;Branch&quot; (2b34c799-769c-42f2-8a1b-4533dba209a0)</li></ol></td></tr><tr><th style=\"text-align: right;\">collections</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">complex_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><b>[CDB] Harry&#39;s Wand</b> (uuid: _kqdwsF9REe2rko4oG1H6IQ)</li></ol></td></tr><tr><th style=\"text-align: right;\">enumerations</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Enumeration</strong> &quot;Wand Core&quot; (546cd75a-c7ac-4e07-9d2d-8a1f93d82419)</li><li><strong>Enumeration</strong> &quot;Wand Wood&quot; (60314ce6-bc96-4b57-8965-7187241148ae)</li></ol></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">Data</td></tr><tr><th style=\"text-align: right;\">packages</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>DataPkg</strong> &quot;Wand Objects&quot; (880af86d-6fac-4fba-a559-2fffd036fa9a)</li></ol></td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>LogicalArchitecture</strong> &quot;Logical Architecture&quot; (853cb005-cba0-489b-8fe3-bb694ad4543b)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">unions</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">39e99d4a-a32c-4b70-b4b6-d03fec612e17</td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information:DataPkg</td></tr></table>"
+      ],
+      "text/plain": [
+       "<DataPkg 'Data' (39e99d4a-a32c-4b70-b4b6-d03fec612e17)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".classes = [0] <Class 'Wand' (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)>\n",
+       "           [1] <Class 'Class 2' (1adf8097-18f9-474e-b136-6c845fc6d9e9)>\n",
+       "           [2] <Class 'Branch' (2b34c799-769c-42f2-8a1b-4533dba209a0)>\n",
+       ".collections = []\n",
+       ".complex_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = [0] <Diagram \"[CDB] Harry's Wand\">\n",
+       ".enumerations = [0] <Enumeration 'Wand Core' (546cd75a-c7ac-4e07-9d2d-8a1f93d82419)>\n",
+       "                [1] <Enumeration 'Wand Wood' (60314ce6-bc96-4b57-8965-7187241148ae)>\n",
+       ".filtering_criteria = []\n",
+       ".name = 'Data'\n",
+       ".packages = [0] <DataPkg 'Wand Objects' (880af86d-6fac-4fba-a559-2fffd036fa9a)>\n",
+       ".parent = <LogicalArchitecture 'Logical Architecture' (853cb005-cba0-489b-8fe3-bb694ad4543b)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".unions = []\n",
+       ".uuid = '39e99d4a-a32c-4b70-b4b6-d03fec612e17'\n",
+       ".xtype = 'org.polarsys.capella.core.data.information:DataPkg'"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.la.data_package"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e01263c2",
+   "metadata": {},
+   "source": [
+    "For Enumerations we can see the Literals assigned to it. We can see both the literals that have been inherited by the specialized super class, and the literals that are defined within this model element (own_literals)."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "abcd8693",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>Wand Core <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information.datatype:Enumeration)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">literals</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>EnumerationLiteral</strong> &quot;Unicorn Hair&quot; (79263437-b45d-410d-a264-8aa28d7574d1)</li><li><strong>EnumerationLiteral</strong> &quot;Dragon Heartstring&quot; (6bb9876c-f3a7-4d59-a6d1-819372368fa0)</li><li><strong>EnumerationLiteral</strong> &quot;Pheonix Feather&quot; (492fd9ca-88cb-4e9d-b92e-df14a1c1543b)</li><li><strong>EnumerationLiteral</strong> &quot;Thestral Tail-Hair&quot; (1e73d13b-1c26-4537-834d-e467f993befe)</li></ol></td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">Wand Core</td></tr><tr><th style=\"text-align: right;\">owned_literals</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>EnumerationLiteral</strong> &quot;Unicorn Hair&quot; (79263437-b45d-410d-a264-8aa28d7574d1)</li><li><strong>EnumerationLiteral</strong> &quot;Dragon Heartstring&quot; (6bb9876c-f3a7-4d59-a6d1-819372368fa0)</li><li><strong>EnumerationLiteral</strong> &quot;Pheonix Feather&quot; (492fd9ca-88cb-4e9d-b92e-df14a1c1543b)</li><li><strong>EnumerationLiteral</strong> &quot;Thestral Tail-Hair&quot; (1e73d13b-1c26-4537-834d-e467f993befe)</li></ol></td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>DataPkg</strong> &quot;Data&quot; (39e99d4a-a32c-4b70-b4b6-d03fec612e17)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">sub</th><td style=\"text-align: left;\"><em>Backreference to Enumeration - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">super</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">546cd75a-c7ac-4e07-9d2d-8a1f93d82419</td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information.datatype:Enumeration</td></tr></table>"
+      ],
+      "text/plain": [
+       "<Enumeration 'Wand Core' (546cd75a-c7ac-4e07-9d2d-8a1f93d82419)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".literals = [0] <EnumerationLiteral 'Unicorn Hair' (79263437-b45d-410d-a264-8aa28d7574d1)>\n",
+       "            [1] <EnumerationLiteral 'Dragon Heartstring' (6bb9876c-f3a7-4d59-a6d1-819372368fa0)>\n",
+       "            [2] <EnumerationLiteral 'Pheonix Feather' (492fd9ca-88cb-4e9d-b92e-df14a1c1543b)>\n",
+       "            [3] <EnumerationLiteral 'Thestral Tail-Hair' (1e73d13b-1c26-4537-834d-e467f993befe)>\n",
+       ".name = 'Wand Core'\n",
+       ".owned_literals = [0] <EnumerationLiteral 'Unicorn Hair' (79263437-b45d-410d-a264-8aa28d7574d1)>\n",
+       "                  [1] <EnumerationLiteral 'Dragon Heartstring' (6bb9876c-f3a7-4d59-a6d1-819372368fa0)>\n",
+       "                  [2] <EnumerationLiteral 'Pheonix Feather' (492fd9ca-88cb-4e9d-b92e-df14a1c1543b)>\n",
+       "                  [3] <EnumerationLiteral 'Thestral Tail-Hair' (1e73d13b-1c26-4537-834d-e467f993befe)>\n",
+       ".parent = <DataPkg 'Data' (39e99d4a-a32c-4b70-b4b6-d03fec612e17)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".sub = ... # backreference to Enumeration - omitted: can be slow to compute\n",
+       ".summary = None\n",
+       ".super = None\n",
+       ".traces = []\n",
+       ".uuid = '546cd75a-c7ac-4e07-9d2d-8a1f93d82419'\n",
+       ".xtype = 'org.polarsys.capella.core.data.information.datatype:Enumeration'"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.la.data_package.enumerations[0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dfcbe9cf",
+   "metadata": {},
+   "source": [
+    "Let's do the same for a class. Again, we can see the properties of the super class and the properties of the own model element.\n",
+    "\n",
+    "![Harry's Wand](../_static/img/harrys_wand.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "a968821f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>Wand <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information:Class)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">is_abstract</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_final</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_primitive</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">Wand</td></tr><tr><th style=\"text-align: right;\">owned_properties</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Property</strong> &quot;owner&quot; (9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51)</li><li><strong>Property</strong> &quot;core&quot; (32f70910-a1fd-4ec9-8d22-4c585ceaf7b9)</li><li><strong>Property</strong> &quot;wood&quot; (df884a71-e774-49e1-8aee-0a675179c647)</li></ol></td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>DataPkg</strong> &quot;Data&quot; (39e99d4a-a32c-4b70-b4b6-d03fec612e17)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">properties</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Property</strong> &quot;owner&quot; (9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51)</li><li><strong>Property</strong> &quot;core&quot; (32f70910-a1fd-4ec9-8d22-4c585ceaf7b9)</li><li><strong>Property</strong> &quot;wood&quot; (df884a71-e774-49e1-8aee-0a675179c647)</li><li><strong>Property</strong> &quot;wood&quot; (87f356eb-c79e-4155-b297-8d733685621c)</li></ol></td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">realizations</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>InformationRealization</strong> &quot;&quot; (793520e1-acbf-4f93-a219-587840aa5a3b)</li></ol></td></tr><tr><th style=\"text-align: right;\">realized_by</th><td style=\"text-align: left;\"><em>Backreference to Class - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style=\"text-align: right;\">realized_classes</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Class</strong> &quot;SpecialTwist&quot; (0fef2887-04ce-4406-b1a1-a1b35e1ce0f3)</li></ol></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">state_machines</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">sub</th><td style=\"text-align: left;\"><em>Backreference to Class - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">super</th><td style=\"text-align: left;\"><strong>Class</strong> &quot;Branch&quot; (2b34c799-769c-42f2-8a1b-4533dba209a0)</td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">c710f1c2-ede6-444e-9e2b-0ff30d7fd040</td></tr><tr><th style=\"text-align: right;\">visibility</th><td style=\"text-align: left;\"><em>&lt;VisibilityKind.UNSET: 1&gt;</em></td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information:Class</td></tr></table>"
+      ],
+      "text/plain": [
+       "<Class 'Wand' (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".is_abstract = False\n",
+       ".is_final = False\n",
+       ".is_primitive = False\n",
+       ".name = 'Wand'\n",
+       ".owned_properties = [0] <Property 'owner' (9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51)>\n",
+       "                    [1] <Property 'core' (32f70910-a1fd-4ec9-8d22-4c585ceaf7b9)>\n",
+       "                    [2] <Property 'wood' (df884a71-e774-49e1-8aee-0a675179c647)>\n",
+       ".parent = <DataPkg 'Data' (39e99d4a-a32c-4b70-b4b6-d03fec612e17)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".properties = [0] <Property 'owner' (9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51)>\n",
+       "              [1] <Property 'core' (32f70910-a1fd-4ec9-8d22-4c585ceaf7b9)>\n",
+       "              [2] <Property 'wood' (df884a71-e774-49e1-8aee-0a675179c647)>\n",
+       "              [3] <Property 'wood' (87f356eb-c79e-4155-b297-8d733685621c)>\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".realizations = [0] <InformationRealization (793520e1-acbf-4f93-a219-587840aa5a3b)>\n",
+       ".realized_by = ... # backreference to Class - omitted: can be slow to compute\n",
+       ".realized_classes = [0] <Class 'SpecialTwist' (0fef2887-04ce-4406-b1a1-a1b35e1ce0f3)>\n",
+       ".requirements = []\n",
+       ".state_machines = []\n",
+       ".sub = ... # backreference to Class - omitted: can be slow to compute\n",
+       ".summary = None\n",
+       ".super = <Class 'Branch' (2b34c799-769c-42f2-8a1b-4533dba209a0)>\n",
+       ".traces = []\n",
+       ".uuid = 'c710f1c2-ede6-444e-9e2b-0ff30d7fd040'\n",
+       ".visibility = <VisibilityKind.UNSET: 1>\n",
+       ".xtype = 'org.polarsys.capella.core.data.information:Class'"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.la.data_package.classes[0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b7bc5a40",
+   "metadata": {},
+   "source": [
+    "We can investigate the properties of a Class"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "56bb4b44",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>owner <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information:Property)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">association</th><td style=\"text-align: left;\"><em>Backreference to Association - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">default_value</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">is_abstract</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_derived</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_ordered</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_part_of_key</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_read_only</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_static</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_unique</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">kind</th><td style=\"text-align: left;\"><em>&lt;AggregationKind.UNSET: 1&gt;</em></td></tr><tr><th style=\"text-align: right;\">max</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">max_card</th><td style=\"text-align: left;\"><strong>LiteralNumericValue</strong> &quot;&quot;: 1 (43e39098-ace4-47c4-8f1c-1df1986063e2)</td></tr><tr><th style=\"text-align: right;\">min</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">min_card</th><td style=\"text-align: left;\"><strong>LiteralNumericValue</strong> &quot;&quot;: 1 (95d6a6e5-6442-408d-afb2-d8f7a24c5f56)</td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">owner</td></tr><tr><th style=\"text-align: right;\">null_value</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>Class</strong> &quot;Wand&quot; (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">type</th><td style=\"text-align: left;\"><strong>GenericElement</strong> &quot;String&quot; (b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81)</td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51</td></tr><tr><th style=\"text-align: right;\">visibility</th><td style=\"text-align: left;\"><em>&lt;VisibilityKind.UNSET: 1&gt;</em></td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information:Property</td></tr></table>"
+      ],
+      "text/plain": [
+       "<Property 'owner' (9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".association = ... # backreference to Association - omitted: can be slow to compute\n",
+       ".constraints = []\n",
+       ".default_value = None\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".is_abstract = False\n",
+       ".is_derived = False\n",
+       ".is_ordered = False\n",
+       ".is_part_of_key = False\n",
+       ".is_read_only = False\n",
+       ".is_static = False\n",
+       ".is_unique = False\n",
+       ".kind = <AggregationKind.UNSET: 1>\n",
+       ".max = None\n",
+       ".max_card = <LiteralNumericValue (43e39098-ace4-47c4-8f1c-1df1986063e2)>\n",
+       ".min = None\n",
+       ".min_card = <LiteralNumericValue (95d6a6e5-6442-408d-afb2-d8f7a24c5f56)>\n",
+       ".name = 'owner'\n",
+       ".null_value = None\n",
+       ".parent = <Class 'Wand' (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".type = <Model element (org.polarsys.capella.core.data.information.datatype:StringType) 'String' (b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81)>\n",
+       ".uuid = '9b1f6d9c-58d6-4e5e-a0f1-822cb5440a51'\n",
+       ".visibility = <VisibilityKind.UNSET: 1>\n",
+       ".xtype = 'org.polarsys.capella.core.data.information:Property'"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.la.data_package.classes[0].properties[0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "36670ae2",
+   "metadata": {},
+   "source": [
+    "As you can see the `kind` attribute is `UNSET`. That means this property isn't modelled as an association. An example for a `COMPOSITION`:\n",
+    "\n",
+    "![Waypoint](../_static/img/waypoints.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "7ca2429b",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>waypoints <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information:Property)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">association</th><td style=\"text-align: left;\"><em>Backreference to Association - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">default_value</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">is_abstract</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_derived</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_ordered</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_part_of_key</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_read_only</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_static</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">is_unique</th><td style=\"text-align: left;\"><em>False</em></td></tr><tr><th style=\"text-align: right;\">kind</th><td style=\"text-align: left;\"><em>&lt;AggregationKind.COMPOSITION: 4&gt;</em></td></tr><tr><th style=\"text-align: right;\">max</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">max_card</th><td style=\"text-align: left;\"><strong>LiteralNumericValue</strong> &quot;&quot;: inf (57d146cf-6e40-42f4-9413-1cd0240d1431)</td></tr><tr><th style=\"text-align: right;\">min</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">min_card</th><td style=\"text-align: left;\"><strong>LiteralNumericValue</strong> &quot;&quot;: 1 (1df38231-5a0a-4c47-8c99-96119b8b8af8)</td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">waypoints</td></tr><tr><th style=\"text-align: right;\">null_value</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>Class</strong> &quot;Trajectory&quot; (c3c96805-d6f6-4092-b9f4-df7970651cdc)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">type</th><td style=\"text-align: left;\"><strong>Class</strong> &quot;Waypoint&quot; (c89849fd-0643-4708-a4da-74c9ea9ca7b1)</td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">424efd65-eaa9-4220-b61b-fb3340dbc19a</td></tr><tr><th style=\"text-align: right;\">visibility</th><td style=\"text-align: left;\"><em>&lt;VisibilityKind.UNSET: 1&gt;</em></td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information:Property</td></tr></table>"
+      ],
+      "text/plain": [
+       "<Property 'waypoints' (424efd65-eaa9-4220-b61b-fb3340dbc19a)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".association = ... # backreference to Association - omitted: can be slow to compute\n",
+       ".constraints = []\n",
+       ".default_value = None\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".is_abstract = False\n",
+       ".is_derived = False\n",
+       ".is_ordered = False\n",
+       ".is_part_of_key = False\n",
+       ".is_read_only = False\n",
+       ".is_static = False\n",
+       ".is_unique = False\n",
+       ".kind = <AggregationKind.COMPOSITION: 4>\n",
+       ".max = None\n",
+       ".max_card = <LiteralNumericValue (57d146cf-6e40-42f4-9413-1cd0240d1431)>\n",
+       ".min = None\n",
+       ".min_card = <LiteralNumericValue (1df38231-5a0a-4c47-8c99-96119b8b8af8)>\n",
+       ".name = 'waypoints'\n",
+       ".null_value = None\n",
+       ".parent = <Class 'Trajectory' (c3c96805-d6f6-4092-b9f4-df7970651cdc)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".type = <Class 'Waypoint' (c89849fd-0643-4708-a4da-74c9ea9ca7b1)>\n",
+       ".uuid = '424efd65-eaa9-4220-b61b-fb3340dbc19a'\n",
+       ".visibility = <VisibilityKind.UNSET: 1>\n",
+       ".xtype = 'org.polarsys.capella.core.data.information:Property'"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "prop = model.sa.all_classes.by_name(\"Trajectory\").properties[0]\n",
+    "prop"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7ab5f3a6",
+   "metadata": {},
+   "source": [
+    "The role name is exposed as the `name` attribute of the property. As you can see the only *navigable* role is `waypoints` and its min- and max-card are also accessible. The `Class` can be accessed via the `type` attribute and the `association` is there to receive information about the incoming role/property. Let's have a look at it:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "90c3cf8c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>waypoint association <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information:Association)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">members</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Property</strong> &quot;trajectory&quot; (c0e5b34c-297e-4b3c-8957-58bbe4d36199)</li></ol></td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">waypoint association</td></tr><tr><th style=\"text-align: right;\">navigable_members</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Property</strong> &quot;waypoints&quot; (424efd65-eaa9-4220-b61b-fb3340dbc19a)</li></ol></td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>DataPkg</strong> &quot;Data&quot; (814464a3-3278-48eb-b66c-e255ed11afa8)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">roles</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>Property</strong> &quot;trajectory&quot; (c0e5b34c-297e-4b3c-8957-58bbe4d36199)</li><li><strong>Property</strong> &quot;waypoints&quot; (424efd65-eaa9-4220-b61b-fb3340dbc19a)</li></ol></td></tr><tr><th style=\"text-align: right;\">source_role</th><td style=\"text-align: left;\"><strong>Property</strong> &quot;trajectory&quot; (c0e5b34c-297e-4b3c-8957-58bbe4d36199)</td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\">Find waypoints and you will finish consistently.</td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">3d738685-83e8-45f9-ade2-d5bcc6de1a0c</td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information:Association</td></tr></table>"
+      ],
+      "text/plain": [
+       "<Association 'waypoint association' (3d738685-83e8-45f9-ade2-d5bcc6de1a0c)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".members = [0] <Property 'trajectory' (c0e5b34c-297e-4b3c-8957-58bbe4d36199)>\n",
+       ".name = 'waypoint association'\n",
+       ".navigable_members = [0] <Property 'waypoints' (424efd65-eaa9-4220-b61b-fb3340dbc19a)>\n",
+       ".parent = <DataPkg 'Data' (814464a3-3278-48eb-b66c-e255ed11afa8)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".roles = [0] <Property 'trajectory' (c0e5b34c-297e-4b3c-8957-58bbe4d36199)>\n",
+       "         [1] <Property 'waypoints' (424efd65-eaa9-4220-b61b-fb3340dbc19a)>\n",
+       ".source_role = <Property 'trajectory' (c0e5b34c-297e-4b3c-8957-58bbe4d36199)>\n",
+       ".summary = 'Find waypoints and you will finish consistently.'\n",
+       ".traces = []\n",
+       ".uuid = '3d738685-83e8-45f9-ade2-d5bcc6de1a0c'\n",
+       ".xtype = 'org.polarsys.capella.core.data.information:Association'"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "prop.association"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "19c3fffc",
+   "metadata": {},
+   "source": [
+    "An `Association` has `navigable_members` which can be at most 2 (the source and target roles) and a `source_role`. Whenever the `is Navigable` option is ticked in Capella the property element will appear underneath the target `Class` of the `Association`."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "eb05ea54",
+   "metadata": {},
+   "source": [
+    "## Example 2: Complex Values (instances of Classes)\n",
+    "\n",
+    "Capella allows to create Complex Values which have the type of a class model element. Complex Values can contain Value Parts that instantiate the properties of the class. Let's have a look at Harry's wand:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "77a5dc04",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<h1>Harry&#39;s Wand <span style=\"font-size: 70%;\">(org.polarsys.capella.core.data.information.datavalue:ComplexValue)</span></h1><table><tr><th style=\"text-align: right;\">applied_property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">applied_property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">constraints</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">description</th><td style=\"text-align: left;\"></td></tr><tr><th style=\"text-align: right;\">diagrams</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">filtering_criteria</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">name</th><td style=\"text-align: left;\">Harry&#39;s Wand</td></tr><tr><th style=\"text-align: right;\">parent</th><td style=\"text-align: left;\"><strong>DataPkg</strong> &quot;Wand Objects&quot; (880af86d-6fac-4fba-a559-2fffd036fa9a)</td></tr><tr><th style=\"text-align: right;\">progress_status</th><td style=\"text-align: left;\">NOT_SET</td></tr><tr><th style=\"text-align: right;\">property_value_groups</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">property_values</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">requirements</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">summary</th><td style=\"text-align: left;\"><em>None</em></td></tr><tr><th style=\"text-align: right;\">traces</th><td style=\"text-align: left;\"><p><em>(Empty list)</em></p></td></tr><tr><th style=\"text-align: right;\">type</th><td style=\"text-align: left;\"><strong>Class</strong> &quot;Wand&quot; (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)</td></tr><tr><th style=\"text-align: right;\">uuid</th><td style=\"text-align: left;\">3a467d68-f53c-4d66-9d32-fe032a8cb2c5</td></tr><tr><th style=\"text-align: right;\">value_parts</th><td style=\"text-align: left;\"><ol start=\"0\" style=\"text-align: left;\"><li><strong>ValuePart</strong> &quot;&quot;: <LiteralStringValue 'LiteralStringValue' (f7b00d88-cf53-4ae0-a0e6-bb2049b4bdea)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".is_abstract = False\n",
+       ".name = 'LiteralStringValue'\n",
+       ".parent = <ValuePart (c996225b-5b1f-4d53-83cb-2bc72597e8ad)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".type = <Model element (org.polarsys.capella.core.data.information.datatype:StringType) 'String' (b2f035e6-78c8-4dfd-99f0-bf4a40ea3e81)>\n",
+       ".uuid = 'f7b00d88-cf53-4ae0-a0e6-bb2049b4bdea'\n",
+       ".value = 'Harry Potter'\n",
+       ".xtype = 'org.polarsys.capella.core.data.information.datavalue:LiteralStringValue' (c996225b-5b1f-4d53-83cb-2bc72597e8ad)</li><li><strong>ValuePart</strong> &quot;&quot;: <EnumerationReference 'EnumerationReference' (3406b669-4572-44e9-b703-1e319c350e9b)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".name = 'EnumerationReference'\n",
+       ".parent = <ValuePart (66da894f-6261-47ac-9ad7-217db04671d2)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".type = <Enumeration 'Wand Core' (546cd75a-c7ac-4e07-9d2d-8a1f93d82419)>\n",
+       ".uuid = '3406b669-4572-44e9-b703-1e319c350e9b'\n",
+       ".value = <EnumerationLiteral 'Pheonix Feather' (492fd9ca-88cb-4e9d-b92e-df14a1c1543b)>\n",
+       ".xtype = 'org.polarsys.capella.core.data.information.datavalue:EnumerationReference' (66da894f-6261-47ac-9ad7-217db04671d2)</li><li><strong>ValuePart</strong> &quot;&quot;: <EnumerationReference 'EnumerationReference' (9645687f-9485-45f0-a10b-01f8b9d24914)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".name = 'EnumerationReference'\n",
+       ".parent = <ValuePart (a10de770-c6de-43fc-8d9f-868efe5cd29f)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".type = <Enumeration 'Wand Wood' (60314ce6-bc96-4b57-8965-7187241148ae)>\n",
+       ".uuid = '9645687f-9485-45f0-a10b-01f8b9d24914'\n",
+       ".value = <EnumerationLiteral 'Holly' (bfd550cb-7038-48db-9d7b-57cd0ca29d03)>\n",
+       ".xtype = 'org.polarsys.capella.core.data.information.datavalue:EnumerationReference' (a10de770-c6de-43fc-8d9f-868efe5cd29f)</li></ol></td></tr><tr><th style=\"text-align: right;\">xtype</th><td style=\"text-align: left;\">org.polarsys.capella.core.data.information.datavalue:ComplexValue</td></tr></table>"
+      ],
+      "text/plain": [
+       "<ComplexValue \"Harry's Wand\" (3a467d68-f53c-4d66-9d32-fe032a8cb2c5)>\n",
+       ".applied_property_value_groups = []\n",
+       ".applied_property_values = []\n",
+       ".constraints = []\n",
+       ".description = ''\n",
+       ".diagrams = []\n",
+       ".filtering_criteria = []\n",
+       ".name = \"Harry's Wand\"\n",
+       ".parent = <DataPkg 'Wand Objects' (880af86d-6fac-4fba-a559-2fffd036fa9a)>\n",
+       ".progress_status = 'NOT_SET'\n",
+       ".property_value_groups = []\n",
+       ".property_values = []\n",
+       ".requirements = []\n",
+       ".summary = None\n",
+       ".traces = []\n",
+       ".type = <Class 'Wand' (c710f1c2-ede6-444e-9e2b-0ff30d7fd040)>\n",
+       ".uuid = '3a467d68-f53c-4d66-9d32-fe032a8cb2c5'\n",
+       ".value_parts = [0] <ValuePart (c996225b-5b1f-4d53-83cb-2bc72597e8ad)>\n",
+       "               [1] <ValuePart (66da894f-6261-47ac-9ad7-217db04671d2)>\n",
+       "               [2] <ValuePart (a10de770-c6de-43fc-8d9f-868efe5cd29f)>\n",
+       ".xtype = 'org.polarsys.capella.core.data.information.datavalue:ComplexValue'"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.la.data_package.packages[0].complex_values[0]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8e7b17c0",
+   "metadata": {},
+   "source": [
+    "and let's see what wood Harry's wand is made of:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "0557c2a5",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The owner of Harry's Wand is Harry Potter.\n",
+      "The core of Harry's Wand is Pheonix Feather.\n",
+      "The wood of Harry's Wand is Holly.\n"
+     ]
+    }
+   ],
+   "source": [
+    "from capellambse.model.crosslayer.information import datavalue\n",
+    "\n",
+    "instance = model.la.data_package.packages[0].complex_values[0]\n",
+    "for value_part in instance.value_parts:\n",
+    "    value = value_part.value.value\n",
+    "    if isinstance(value, datavalue.EnumerationLiteral):\n",
+    "        value = value.name\n",
+    "\n",
+    "    print(f\"The {value_part.referenced_property.name} of {instance.name} is {value}.\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -1,0 +1,1280 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="capellambse.extensions.validation package" href="capellambse.extensions.validation.html" /><link rel="prev" title="capellambse.extensions.metrics package" href="capellambse.extensions.metrics.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+        <title>capellambse.extensions.reqif package - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/audit-events.html">Audit events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">9. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">10. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">11. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">py-capellambse</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="capellambse.html">capellambse package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.model package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.common.html">capellambse.model.common package</a></li>
+<li class="toctree-l4 has-children"><a class="reference internal" href="capellambse.model.crosslayer.html">capellambse.model.crosslayer package</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of capellambse.model.crosslayer package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l5"><a class="reference internal" href="capellambse.model.crosslayer.information.html">capellambse.model.crosslayer.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.model.layers.html">capellambse.model.layers package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.pvmt.html">capellambse.pvmt package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-capellambse.extensions.reqif">
+<span id="capellambse-extensions-reqif-package"></span><h1>capellambse.extensions.reqif package<a class="headerlink" href="#module-capellambse.extensions.reqif" title="Link to this heading">¶</a></h1>
+<p>Tools for handling ReqIF Requirements.</p>
+<img alt="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IkNsYXNzRGlhZ3JhbUJsYW5rIiBmb250LWZhbWlseT0iJ09wZW4gU2FucycsJ1NlZ29lIFVJJyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjExcHgiIGhlaWdodD0iNjUwIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSI0NDUgNSA1MTEgNjUwIiB3aWR0aD0iNTExIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48c3ltYm9sIGlkPSJDbGFzc1N5bWJvbCIgdmlld0JveD0iMCAwIDI1IDI1Ij48bGluZWFyR3JhZGllbnQgaWQ9IkNsYXNzU3ltYm9sLWdyYWRpZW50IiB4MT0iMCIgeDI9IjAiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiNjZmE2YTUiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2YxZTJlMyIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGcgc3Ryb2tlPSIjOTEzNzM0Ij48cmVjdCBmaWxsPSIjZWVkY2RkIiBoZWlnaHQ9IjMiIHdpZHRoPSIxNSIgeD0iNSIgeT0iMTciIC8+PHJlY3QgZmlsbD0iI2VlZGNkZCIgaGVpZ2h0PSIzIiB3aWR0aD0iMTUiIHg9IjUiIHk9IjE0IiAvPjxyZWN0IGZpbGw9InVybCgjQ2xhc3NTeW1ib2wtZ3JhZGllbnQpIiBoZWlnaHQ9IjEwIiB3aWR0aD0iMTUiIHg9IjUiIHk9IjQiIC8+PC9nPjwvc3ltYm9sPjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRkZGRkZGIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNFOEUwRDIiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0ZBRkFGQSIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRkZGRkZGIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNGQUZBRkEiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRkZFQkE3IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNGRkZGRkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxtYXJrZXIgaWQ9IkdlbmVyYWxpemF0aW9uTWFya18wMDAwMDAiIG1hcmtlckhlaWdodD0iNy41IiBtYXJrZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIG1hcmtlcldpZHRoPSI3LjUiIG9yaWVudD0iYXV0byIgcmVmWD0iNyIgcmVmWT0iNCI+PHBhdGggZD0iTSAwLjEyNzUsNy41IDcuNSwzLjc1IDAsMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L21hcmtlcj48L2RlZnM+PHJlY3QgZmlsbD0iI2ZmZiIgaGVpZ2h0PSI2NTAiIHN0cm9rZT0ibm9uZSIgd2lkdGg9IjUxMSIgeD0iNDQ1IiB5PSI1IiAvPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVUdFlMaXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9UQm5hRVBISEVlcTBsTXRMLWc4MEFBIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iMTAxIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzA3N0YwMCIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTUyIiB4PSI0NzUuNSIgeT0iMTUuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDkwMDkiIGZvbnQtc3R5bGU9Iml0YWxpYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDc1IiB5PSIxNSI+PHRzcGFuIHg9IjU2Mi4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMy4xNDI4NTcxNDI4NTcxNDIiPkdlbmVyaWNFbGVtZW50PC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjQ5Ny42MTkwNDc2MTkwNDc2IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjEzLjE0Mjg1NzE0Mjg1NzE0MiIgLz48bGluZSBzdHJva2U9IiMwNzdGMDAiIHgxPSI0NzUuNSIgeDI9IjYyNy41IiB5MT0iMzkuNzg1NzE0Mjg1NzE0Mjg1IiB5Mj0iMzkuNzg1NzE0Mjg1NzE0Mjg1IiAvPjx0ZXh0IGNsYXNzPSJGZWF0dXJlcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwOTAwOSIgZm9udC1zdHlsZT0iaXRhbGljIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQ4Ny41IiB5PSIzOS43ODU3MTQyODU3MTQyODUiPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTQuMDcxNDI4NTcxNDI4NTciPnV1aWQgOiBTdHJpbmc8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzIuNjQyODU3MTQyODU3MTQiPm5hbWUgOiBTdHJpbmc8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iOTEuMjE0Mjg1NzE0Mjg1NzEiPmRlc2NyaXB0aW9uIDo8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA5Ljc4NTcxNDI4NTcxNDI4Ij5IVE1MLVRleHQ8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTI4LjM1NzE0Mjg1NzE0Mjg2Ij54dHlwZSA6IFhUeXBlLi4uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggRGF0YVBrZyIgaWQ9Il9vYjQtRUxpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iRGF0YVBrZyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRkFGQUZBJnF1b3Q7KSIgaGVpZ2h0PSI0OTAiIHN0cm9rZT0iIzQ1NDU0NSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iNDkxIiB4PSI0NTUuNSIgeT0iMTU1LjUiIC8+PHRleHQgY2xhc3M9IkRhdGFQa2ciIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ1NSIgeT0iMTU1Ij48dHNwYW4geD0iNzAwLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE2Ny4yODU3MTQyODU3MTQyOCI+cmVxaWY8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV9xRVR0WUxpckVldVFIc0pjMFFPMkRnIGNvbnRleHQtX3FFVVVjTGlyRWV1UUhzSmMwUU8yRGcgY29udGV4dC1fcUVVVWRiaXJFZXVRSHNKYzBRTzJEZyBjb250ZXh0LV9xRVVVZXJpckVldVFIc0pjMFFPMkRnIGNvbnRleHQtX3FFVVVmN2lyRWV1UUhzSmMwUU8yRGciIGlkPSJfcUVDQWs3aXJFZXVRSHNKYzBRTzJEZyI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRUJBN19GRkZGRkYmcXVvdDspIiBoZWlnaHQ9IjEyNSIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNFQUE5MDAiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEzMCIgeD0iNDc1LjUiIHk9IjIwNC41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0MwNkUwMCIgZm9udC1zdHlsZT0iaXRhbGljIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0NzUiIHk9IjIwNCI+PHRzcGFuIHg9IjU1MS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMTQuMjg1NzE0Mjg1NzE0MjgiPlJlcUlGRWxlbWVudDwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0OTIuMzMzMzMzMzMzMzMzMyIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyMDQuMjg1NzE0Mjg1NzE0MjgiIC8+PGxpbmUgc3Ryb2tlPSIjRUFBOTAwIiB4MT0iNDc1LjUiIHgyPSI2MDUuNSIgeTE9IjIzMy4wNzE0Mjg1NzE0Mjg1OCIgeTI9IjIzMy4wNzE0Mjg1NzE0Mjg1OCIgLz48dGV4dCBjbGFzcz0iRmVhdHVyZXMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIGZvbnQtc3R5bGU9Iml0YWxpYyIgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSI0ODcuNSIgeT0iMjMzLjA3MTQyODU3MTQyODU4Ij48dHNwYW4geD0iNDg3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI0Ny4zNTcxNDI4NTcxNDI4NiI+aWRlbnRpZmllciA6PC90c3Bhbj48dHNwYW4geD0iNDg3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI2NS45Mjg1NzE0Mjg1NzE0NCI+U3RyaW5nPC90c3Bhbj48dHNwYW4geD0iNDg3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI4NC41Ij5sb25nX25hbWUgOjwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMDMuMDcxNDI4NTcxNDI4NTYiPlN0cmluZzwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMjEuNjQyODU3MTQyODU3MSI+ZGVzY3JpcHRpb24gOjwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNDAuMjE0Mjg1NzE0Mjg1NjciPlN0cmluZzwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNTguNzg1NzE0Mjg1NzE0MiI+bmFtZSA6Li4uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVVVWNMaXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9xRUNubzdpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiZxdW90OykiIGhlaWdodD0iNTQiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRUFBOTAwIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNTEiIHg9IjU0NS41IiB5PSI1MTIuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjU0NSIgeT0iNTEyIj48dHNwYW4geD0iNjMxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUyMi4yODU3MTQyODU3MTQzIj5SZXF1aXJlbWVudHNGb2xkZXI8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTU1LjIxNDI4NTcxNDI4NTciIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iNTEyLjI4NTcxNDI4NTcxNDMiIC8+PGxpbmUgc3Ryb2tlPSIjRUFBOTAwIiB4MT0iNTQ1LjUiIHgyPSI2OTYuNSIgeTE9IjU0MS4wNzE0Mjg1NzE0Mjg2IiB5Mj0iNTQxLjA3MTQyODU3MTQyODYiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVVVWRiaXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9xRURPczdpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiZxdW90OykiIGhlaWdodD0iNzciIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRUFBOTAwIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDQiIHg9IjcwNS41IiB5PSIzNjQuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjcwNSIgeT0iMzY0Ij48dHNwYW4geD0iNzg4LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM3My41NzE0Mjg1NzE0Mjg1NiI+UmVxdWlyZW1lbnQ8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNzMxLjIzODA5NTIzODA5NTIiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMzYzLjU3MTQyODU3MTQyODU2IiAvPjxsaW5lIHN0cm9rZT0iI0VBQTkwMCIgeDE9IjcwNS41IiB4Mj0iODQ5LjUiIHkxPSIzOTEuNjQyODU3MTQyODU3MTciIHkyPSIzOTEuNjQyODU3MTQyODU3MTciIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjQzA2RTAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjcxNy41IiB5PSIzOTEuNjQyODU3MTQyODU3MTciPjx0c3BhbiB4PSI3MTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDA1LjkyODU3MTQyODU3MTQ0Ij50ZXh0IDogU3RyaW5nPC90c3Bhbj48dHNwYW4geD0iNzE3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQyNC41Ij5mb3JlaWduX2lkIDo8L3RzcGFuPjx0c3BhbiB4PSI3MTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDQzLjA3MTQyODU3MTQyODU2Ij5JbnRlZ2VyPC90c3Bhbj48dHNwYW4geD0iNzE3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ2MS42NDI4NTcxNDI4NTcxIj5jaGFwdGVyX25hbWUuLi48L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV9xRVVVZXJpckVldVFIc0pjMFFPMkRnIiBpZD0iX3FFRDF3cmlyRWV1UUhzSmMwUU8yRGciPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkVCQTdfRkZGRkZGJnF1b3Q7KSIgaGVpZ2h0PSI2NiIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNFQUE5MDAiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEwMCIgeD0iNzg1LjUiIHk9IjUxOC41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0MwNkUwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzg1IiB5PSI1MTgiPjx0c3BhbiB4PSI4NDYuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTI2LjE0Mjg1NzE0Mjg1NzEiPk1vZHVsZTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI4MDMuNTIzODA5NTIzODA5NSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSI1MTYuMTQyODU3MTQyODU3MSIgLz48bGluZSBzdHJva2U9IiNFQUE5MDAiIHgxPSI3ODUuNSIgeDI9Ijg4NS41IiB5MT0iNTQyLjc4NTcxNDI4NTcxNDMiIHkyPSI1NDIuNzg1NzE0Mjg1NzE0MyIgLz48dGV4dCBjbGFzcz0iRmVhdHVyZXMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIHRleHQtYW5jaG9yPSJzdGFydCIgeD0iNzk3LjUiIHk9IjU0Mi43ODU3MTQyODU3MTQzIj48dHNwYW4geD0iNzk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjU1Ni4zNTcxNDI4NTcxNDI5Ij50eXBlIDogU3RyaW5nPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVVVWY3aXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9xRUVjMHJpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiZxdW90OykiIGhlaWdodD0iNTEiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRUFBOTAwIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSI4MCIgeD0iNzU1LjUiIHk9IjIzMy41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0MwNkUwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzU1IiB5PSIyMzMiPjx0c3BhbiB4PSI4MDYuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjQxLjE0Mjg1NzE0Mjg1NzE0Ij5SZWxhdGlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI3NjIuMDk1MjM4MDk1MjM4MSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyMzEuMTQyODU3MTQyODU3MTQiIC8+PGxpbmUgc3Ryb2tlPSIjRUFBOTAwIiB4MT0iNzU1LjUiIHgyPSI4MzUuNSIgeTE9IjI1Ny43ODU3MTQyODU3MTQzIiB5Mj0iMjU3Ljc4NTcxNDI4NTcxNDMiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEdlbmVyYWxpemF0aW9uIiBpZD0iX3FFVHRZTGlyRWV1UUhzSmMwUU8yRGciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDUzOS41IDIwNC41IDUzOS41IDExNi41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0dlbmVyYWxpemF0aW9uTWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgR2VuZXJhbGl6YXRpb24iIGlkPSJfcUVVVWNMaXJFZXVRSHNKYzBRTzJEZyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gNTQ1LjUgNTM4LjUgNTI1LjUgNTM4LjUgNTI1LjUgMzI5LjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjR2VuZXJhbGl6YXRpb25NYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBHZW5lcmFsaXphdGlvbiIgaWQ9Il9xRVVVZGJpckVldVFIc0pjMFFPMkRnIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA3MDUuNSAzOTMuNSA1MjUuNSAzOTMuNSA1MjUuNSAzMjkuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNHZW5lcmFsaXphdGlvbk1hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEdlbmVyYWxpemF0aW9uIiBpZD0iX3FFVVVlcmlyRWV1UUhzSmMwUU8yRGciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDgxNi41IDU4NC41IDgxNi41IDYwNC41IDUyNi41IDYwNC41IDUyNi41IDMyOS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0dlbmVyYWxpemF0aW9uTWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgR2VuZXJhbGl6YXRpb24iIGlkPSJfcUVVVWY3aXJFZXVRSHNKYzBRTzJEZyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gNzU1LjUgMjczLjUgNjA1LjUgMjczLjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjR2VuZXJhbGl6YXRpb25NYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48L3N2Zz4=" src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IkNsYXNzRGlhZ3JhbUJsYW5rIiBmb250LWZhbWlseT0iJ09wZW4gU2FucycsJ1NlZ29lIFVJJyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjExcHgiIGhlaWdodD0iNjUwIiBzaGFwZS1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSI0NDUgNSA1MTEgNjUwIiB3aWR0aD0iNTExIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48c3ltYm9sIGlkPSJDbGFzc1N5bWJvbCIgdmlld0JveD0iMCAwIDI1IDI1Ij48bGluZWFyR3JhZGllbnQgaWQ9IkNsYXNzU3ltYm9sLWdyYWRpZW50IiB4MT0iMCIgeDI9IjAiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiNjZmE2YTUiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2YxZTJlMyIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGcgc3Ryb2tlPSIjOTEzNzM0Ij48cmVjdCBmaWxsPSIjZWVkY2RkIiBoZWlnaHQ9IjMiIHdpZHRoPSIxNSIgeD0iNSIgeT0iMTciIC8+PHJlY3QgZmlsbD0iI2VlZGNkZCIgaGVpZ2h0PSIzIiB3aWR0aD0iMTUiIHg9IjUiIHk9IjE0IiAvPjxyZWN0IGZpbGw9InVybCgjQ2xhc3NTeW1ib2wtZ3JhZGllbnQpIiBoZWlnaHQ9IjEwIiB3aWR0aD0iMTUiIHg9IjUiIHk9IjQiIC8+PC9nPjwvc3ltYm9sPjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRkZGRkZGIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNFOEUwRDIiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0ZBRkFGQSIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRkZGRkZGIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNGQUZBRkEiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRkZFQkE3IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNGRkZGRkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxtYXJrZXIgaWQ9IkdlbmVyYWxpemF0aW9uTWFya18wMDAwMDAiIG1hcmtlckhlaWdodD0iNy41IiBtYXJrZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIG1hcmtlcldpZHRoPSI3LjUiIG9yaWVudD0iYXV0byIgcmVmWD0iNyIgcmVmWT0iNCI+PHBhdGggZD0iTSAwLjEyNzUsNy41IDcuNSwzLjc1IDAsMCBaIiBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L21hcmtlcj48L2RlZnM+PHJlY3QgZmlsbD0iI2ZmZiIgaGVpZ2h0PSI2NTAiIHN0cm9rZT0ibm9uZSIgd2lkdGg9IjUxMSIgeD0iNDQ1IiB5PSI1IiAvPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVUdFlMaXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9UQm5hRVBISEVlcTBsTXRMLWc4MEFBIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkZGX0U4RTBEMiZxdW90OykiIGhlaWdodD0iMTAxIiByeD0iMTBweCIgcnk9IjEwcHgiIHN0cm9rZT0iIzA3N0YwMCIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iMTUyIiB4PSI0NzUuNSIgeT0iMTUuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDkwMDkiIGZvbnQtc3R5bGU9Iml0YWxpYyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDc1IiB5PSIxNSI+PHRzcGFuIHg9IjU2Mi4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMy4xNDI4NTcxNDI4NTcxNDIiPkdlbmVyaWNFbGVtZW50PC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjQ5Ny42MTkwNDc2MTkwNDc2IiB4bGluazpocmVmPSIjQ2xhc3NTeW1ib2wiIHk9IjEzLjE0Mjg1NzE0Mjg1NzE0MiIgLz48bGluZSBzdHJva2U9IiMwNzdGMDAiIHgxPSI0NzUuNSIgeDI9IjYyNy41IiB5MT0iMzkuNzg1NzE0Mjg1NzE0Mjg1IiB5Mj0iMzkuNzg1NzE0Mjg1NzE0Mjg1IiAvPjx0ZXh0IGNsYXNzPSJGZWF0dXJlcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzAwOTAwOSIgZm9udC1zdHlsZT0iaXRhbGljIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjQ4Ny41IiB5PSIzOS43ODU3MTQyODU3MTQyODUiPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTQuMDcxNDI4NTcxNDI4NTciPnV1aWQgOiBTdHJpbmc8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzIuNjQyODU3MTQyODU3MTQiPm5hbWUgOiBTdHJpbmc8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iOTEuMjE0Mjg1NzE0Mjg1NzEiPmRlc2NyaXB0aW9uIDo8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTA5Ljc4NTcxNDI4NTcxNDI4Ij5IVE1MLVRleHQ8L3RzcGFuPjx0c3BhbiB4PSI0ODcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTI4LjM1NzE0Mjg1NzE0Mjg2Ij54dHlwZSA6IFhUeXBlLi4uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggRGF0YVBrZyIgaWQ9Il9vYjQtRUxpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iRGF0YVBrZyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRkZfRkFGQUZBJnF1b3Q7KSIgaGVpZ2h0PSI0OTAiIHN0cm9rZT0iIzQ1NDU0NSIgc3Ryb2tlLXdpZHRoPSIxIiB3aWR0aD0iNDkxIiB4PSI0NTUuNSIgeT0iMTU1LjUiIC8+PHRleHQgY2xhc3M9IkRhdGFQa2ciIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ1NSIgeT0iMTU1Ij48dHNwYW4geD0iNzAwLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE2Ny4yODU3MTQyODU3MTQyOCI+cmVxaWY8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV9xRVR0WUxpckVldVFIc0pjMFFPMkRnIGNvbnRleHQtX3FFVVVjTGlyRWV1UUhzSmMwUU8yRGcgY29udGV4dC1fcUVVVWRiaXJFZXVRSHNKYzBRTzJEZyBjb250ZXh0LV9xRVVVZXJpckVldVFIc0pjMFFPMkRnIGNvbnRleHQtX3FFVVVmN2lyRWV1UUhzSmMwUU8yRGciIGlkPSJfcUVDQWs3aXJFZXVRSHNKYzBRTzJEZyI+PHJlY3QgY2xhc3M9IkNsYXNzIiBmaWxsPSJ1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRUJBN19GRkZGRkYmcXVvdDspIiBoZWlnaHQ9IjEyNSIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNFQUE5MDAiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEzMCIgeD0iNDc1LjUiIHk9IjIwNC41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0MwNkUwMCIgZm9udC1zdHlsZT0iaXRhbGljIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0NzUiIHk9IjIwNCI+PHRzcGFuIHg9IjU1MS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIyMTQuMjg1NzE0Mjg1NzE0MjgiPlJlcUlGRWxlbWVudDwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0OTIuMzMzMzMzMzMzMzMzMyIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyMDQuMjg1NzE0Mjg1NzE0MjgiIC8+PGxpbmUgc3Ryb2tlPSIjRUFBOTAwIiB4MT0iNDc1LjUiIHgyPSI2MDUuNSIgeTE9IjIzMy4wNzE0Mjg1NzE0Mjg1OCIgeTI9IjIzMy4wNzE0Mjg1NzE0Mjg1OCIgLz48dGV4dCBjbGFzcz0iRmVhdHVyZXMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIGZvbnQtc3R5bGU9Iml0YWxpYyIgdGV4dC1hbmNob3I9InN0YXJ0IiB4PSI0ODcuNSIgeT0iMjMzLjA3MTQyODU3MTQyODU4Ij48dHNwYW4geD0iNDg3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI0Ny4zNTcxNDI4NTcxNDI4NiI+aWRlbnRpZmllciA6PC90c3Bhbj48dHNwYW4geD0iNDg3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI2NS45Mjg1NzE0Mjg1NzE0NCI+U3RyaW5nPC90c3Bhbj48dHNwYW4geD0iNDg3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI4NC41Ij5sb25nX25hbWUgOjwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMDMuMDcxNDI4NTcxNDI4NTYiPlN0cmluZzwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMjEuNjQyODU3MTQyODU3MSI+ZGVzY3JpcHRpb24gOjwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNDAuMjE0Mjg1NzE0Mjg1NjciPlN0cmluZzwvdHNwYW4+PHRzcGFuIHg9IjQ4Ny41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzNTguNzg1NzE0Mjg1NzE0MiI+bmFtZSA6Li4uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVVVWNMaXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9xRUNubzdpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiZxdW90OykiIGhlaWdodD0iNTQiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRUFBOTAwIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNTEiIHg9IjU0NS41IiB5PSI1MTIuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjU0NSIgeT0iNTEyIj48dHNwYW4geD0iNjMxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjUyMi4yODU3MTQyODU3MTQzIj5SZXF1aXJlbWVudHNGb2xkZXI8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTU1LjIxNDI4NTcxNDI4NTciIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iNTEyLjI4NTcxNDI4NTcxNDMiIC8+PGxpbmUgc3Ryb2tlPSIjRUFBOTAwIiB4MT0iNTQ1LjUiIHgyPSI2OTYuNSIgeTE9IjU0MS4wNzE0Mjg1NzE0Mjg2IiB5Mj0iNTQxLjA3MTQyODU3MTQyODYiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVVVWRiaXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9xRURPczdpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiZxdW90OykiIGhlaWdodD0iNzciIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRUFBOTAwIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSIxNDQiIHg9IjcwNS41IiB5PSIzNjQuNSIgLz48dGV4dCBjbGFzcz0iQ2xhc3MiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjcwNSIgeT0iMzY0Ij48dHNwYW4geD0iNzg4LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM3My41NzE0Mjg1NzE0Mjg1NiI+UmVxdWlyZW1lbnQ8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNzMxLjIzODA5NTIzODA5NTIiIHhsaW5rOmhyZWY9IiNDbGFzc1N5bWJvbCIgeT0iMzYzLjU3MTQyODU3MTQyODU2IiAvPjxsaW5lIHN0cm9rZT0iI0VBQTkwMCIgeDE9IjcwNS41IiB4Mj0iODQ5LjUiIHkxPSIzOTEuNjQyODU3MTQyODU3MTciIHkyPSIzOTEuNjQyODU3MTQyODU3MTciIC8+PHRleHQgY2xhc3M9IkZlYXR1cmVzIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjQzA2RTAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIHg9IjcxNy41IiB5PSIzOTEuNjQyODU3MTQyODU3MTciPjx0c3BhbiB4PSI3MTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDA1LjkyODU3MTQyODU3MTQ0Ij50ZXh0IDogU3RyaW5nPC90c3Bhbj48dHNwYW4geD0iNzE3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQyNC41Ij5mb3JlaWduX2lkIDo8L3RzcGFuPjx0c3BhbiB4PSI3MTcuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDQzLjA3MTQyODU3MTQyODU2Ij5JbnRlZ2VyPC90c3Bhbj48dHNwYW4geD0iNzE3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ2MS42NDI4NTcxNDI4NTcxIj5jaGFwdGVyX25hbWUuLi48L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBDbGFzcyBjb250ZXh0LV9xRVVVZXJpckVldVFIc0pjMFFPMkRnIiBpZD0iX3FFRDF3cmlyRWV1UUhzSmMwUU8yRGciPjxyZWN0IGNsYXNzPSJDbGFzcyIgZmlsbD0idXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkVCQTdfRkZGRkZGJnF1b3Q7KSIgaGVpZ2h0PSI2NiIgcng9IjEwcHgiIHJ5PSIxMHB4IiBzdHJva2U9IiNFQUE5MDAiIHN0cm9rZS13aWR0aD0iMSIgd2lkdGg9IjEwMCIgeD0iNzg1LjUiIHk9IjUxOC41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0MwNkUwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzg1IiB5PSI1MTgiPjx0c3BhbiB4PSI4NDYuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNTI2LjE0Mjg1NzE0Mjg1NzEiPk1vZHVsZTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI4MDMuNTIzODA5NTIzODA5NSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSI1MTYuMTQyODU3MTQyODU3MSIgLz48bGluZSBzdHJva2U9IiNFQUE5MDAiIHgxPSI3ODUuNSIgeDI9Ijg4NS41IiB5MT0iNTQyLjc4NTcxNDI4NTcxNDMiIHkyPSI1NDIuNzg1NzE0Mjg1NzE0MyIgLz48dGV4dCBjbGFzcz0iRmVhdHVyZXMiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiNDMDZFMDAiIHRleHQtYW5jaG9yPSJzdGFydCIgeD0iNzk3LjUiIHk9IjU0Mi43ODU3MTQyODU3MTQzIj48dHNwYW4geD0iNzk3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjU1Ni4zNTcxNDI4NTcxNDI5Ij50eXBlIDogU3RyaW5nPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggQ2xhc3MgY29udGV4dC1fcUVVVWY3aXJFZXVRSHNKYzBRTzJEZyIgaWQ9Il9xRUVjMHJpckVldVFIc0pjMFFPMkRnIj48cmVjdCBjbGFzcz0iQ2xhc3MiIGZpbGw9InVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZFQkE3X0ZGRkZGRiZxdW90OykiIGhlaWdodD0iNTEiIHJ4PSIxMHB4IiByeT0iMTBweCIgc3Ryb2tlPSIjRUFBOTAwIiBzdHJva2Utd2lkdGg9IjEiIHdpZHRoPSI4MCIgeD0iNzU1LjUiIHk9IjIzMy41IiAvPjx0ZXh0IGNsYXNzPSJDbGFzcyIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iI0MwNkUwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNzU1IiB5PSIyMzMiPjx0c3BhbiB4PSI4MDYuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjQxLjE0Mjg1NzE0Mjg1NzE0Ij5SZWxhdGlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI3NjIuMDk1MjM4MDk1MjM4MSIgeGxpbms6aHJlZj0iI0NsYXNzU3ltYm9sIiB5PSIyMzEuMTQyODU3MTQyODU3MTQiIC8+PGxpbmUgc3Ryb2tlPSIjRUFBOTAwIiB4MT0iNzU1LjUiIHgyPSI4MzUuNSIgeTE9IjI1Ny43ODU3MTQyODU3MTQzIiB5Mj0iMjU3Ljc4NTcxNDI4NTcxNDMiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEdlbmVyYWxpemF0aW9uIiBpZD0iX3FFVHRZTGlyRWV1UUhzSmMwUU8yRGciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDUzOS41IDIwNC41IDUzOS41IDExNi41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0dlbmVyYWxpemF0aW9uTWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgR2VuZXJhbGl6YXRpb24iIGlkPSJfcUVVVWNMaXJFZXVRSHNKYzBRTzJEZyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gNTQ1LjUgNTM4LjUgNTI1LjUgNTM4LjUgNTI1LjUgMzI5LjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjR2VuZXJhbGl6YXRpb25NYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBHZW5lcmFsaXphdGlvbiIgaWQ9Il9xRVVVZGJpckVldVFIc0pjMFFPMkRnIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA3MDUuNSAzOTMuNSA1MjUuNSAzOTMuNSA1MjUuNSAzMjkuNSIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsKCZxdW90OyNHZW5lcmFsaXphdGlvbk1hcmtfMDAwMDAwJnF1b3Q7KSIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIEdlbmVyYWxpemF0aW9uIiBpZD0iX3FFVVVlcmlyRWV1UUhzSmMwUU8yRGciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDgxNi41IDU4NC41IDgxNi41IDYwNC41IDUyNi41IDYwNC41IDUyNi41IDMyOS41IiBmaWxsPSJub25lIiBtYXJrZXItZW5kPSJ1cmwoJnF1b3Q7I0dlbmVyYWxpemF0aW9uTWFya18wMDAwMDAmcXVvdDspIiBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgR2VuZXJhbGl6YXRpb24iIGlkPSJfcUVVVWY3aXJFZXVRSHNKYzBRTzJEZyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gNzU1LjUgMjczLjUgNjA1LjUgMjczLjUiIGZpbGw9Im5vbmUiIG1hcmtlci1lbmQ9InVybCgmcXVvdDsjR2VuZXJhbGl6YXRpb25NYXJrXzAwMDAwMCZxdW90OykiIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiAvPjwvZz48L3N2Zz4=" />
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">AbstractRequirementsAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsAttribute.definition">
+<span class="sig-name descname"><span class="pre">definition</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute.definition" title="Link to this definition">¶</a></dt>
+<dd><p>The definition of this AbstractRequirementsAttribute.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsAttribute.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.AttributeProperty</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">c.AttrProxyAccessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">AbstractRequirementsRelation</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsRelation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsRelation.source">
+<span class="sig-name descname"><span class="pre">source</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsRelation.source" title="Link to this definition">¶</a></dt>
+<dd><p>The source of this AbstractRequirementsRelation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsRelation.target">
+<span class="sig-name descname"><span class="pre">target</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsRelation.target" title="Link to this definition">¶</a></dt>
+<dd><p>The target of this AbstractRequirementsRelation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractRequirementsRelation.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.AbstractRequirementsRelation.type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of this AbstractRequirementsRelation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">AbstractType</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractType.attribute_definitions">
+<span class="sig-name descname"><span class="pre">attribute_definitions</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractType.attribute_definitions" title="Link to this definition">¶</a></dt>
+<dd><p>The attribute definitions of this AbstractType.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AbstractType.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AbstractType.owner" title="Link to this definition">¶</a></dt>
+<dd><p>The owner of this AbstractType.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeAccessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">AttributeAccessor</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.DirectProxyAccessor" title="capellambse.model.common.accessors.DirectProxyAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DirectProxyAccessor</span></code></a>[<a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeAccessor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeAccessor.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Create a DirectProxyAccessor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class</strong> – The proxy class.</p></li>
+<li><p><strong>xtypes</strong> – The <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>(s) of the child element(s). If None, then
+the constructed proxy will be passed the original element
+instead of a child.</p></li>
+<li><p><strong>aslist</strong> – If None, only a single element must match, which will be
+returned directly. If not None, must be a subclass of
+<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElementList</span></code></a>,
+which will be used to return a list of all matched objects.</p></li>
+<li><p><strong>follow_abstract</strong> – Follow the link in the <code class="docutils literal notranslate"><span class="pre">abstractType</span></code> XML attribute of
+each list member and instantiate that object instead. The
+default is to instantiate the child elements directly.</p></li>
+<li><p><strong>list_extra_args</strong> – Extra arguments to pass to the
+<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElementList</span></code></a>
+constructor.</p></li>
+<li><p><strong>rootelem</strong> – A class or <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> (or list thereof) that defines the
+path from the current object’s XML element to the search
+root. If None, the current element will be used directly.</p></li>
+<li><p><strong>single_attr</strong> – If objects can be created with only a single attribute
+specified, this argument is the name of that attribute. This
+<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.WritableAccessor.create_singleattr" title="capellambse.model.common.accessors.WritableAccessor.create_singleattr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_singleattr()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeAccessor.follow_abstract">
+<span class="sig-name descname"><span class="pre">follow_abstract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#capellambse.extensions.reqif.AttributeAccessor.follow_abstract" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeAccessor.rootelem">
+<span class="sig-name descname"><span class="pre">rootelem</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">cabc.Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.extensions.reqif.AttributeAccessor.rootelem" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">AttributeDefinition</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeDefinition" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>An attribute definition for requirement types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeDefinition.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeDefinition.data_type" title="Link to this definition">¶</a></dt>
+<dd><p>The data type of this AttributeDefinition.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeDefinitionEnumeration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">AttributeDefinitionEnumeration</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeDefinitionEnumeration" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>An enumeration attribute definition for requirement types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeDefinitionEnumeration.data_type">
+<span class="sig-name descname"><span class="pre">data_type</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeDefinitionEnumeration.data_type" title="Link to this definition">¶</a></dt>
+<dd><p>The data type of this AttributeDefinitionEnumeration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.AttributeDefinitionEnumeration.multi_valued">
+<span class="sig-name descname"><span class="pre">multi_valued</span></span><a class="headerlink" href="#capellambse.extensions.reqif.AttributeDefinitionEnumeration.multi_valued" title="Link to this definition">¶</a></dt>
+<dd><p>Boolean flag for setting multiple enumeration values on the attribute</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.BooleanValueAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">BooleanValueAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.BooleanValueAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a></p>
+<p>A string value attribute.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.BooleanValueAttribute.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.AttributeProperty</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">c.AttrProxyAccessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.BooleanValueAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaIncomingRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">CapellaIncomingRelation</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaIncomingRelation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation" title="capellambse.extensions.reqif._requirements.AbstractRequirementsRelation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsRelation</span></code></a></p>
+<p>A Relation between a requirement and an object.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">CapellaModule</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>A ReqIF Module that bundles multiple Requirement folders.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule.attributes">
+<span class="sig-name descname"><span class="pre">attributes</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule.attributes" title="Link to this definition">¶</a></dt>
+<dd><p>The attributes of this CapellaModule.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule.folders">
+<span class="sig-name descname"><span class="pre">folders</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule.folders" title="Link to this definition">¶</a></dt>
+<dd><p>The folders of this CapellaModule.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule.requirement_types_folders">
+<span class="sig-name descname"><span class="pre">requirement_types_folders</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule.requirement_types_folders" title="Link to this definition">¶</a></dt>
+<dd><p>The requirement types folders of this CapellaModule.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule.requirements">
+<span class="sig-name descname"><span class="pre">requirements</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule.requirements" title="Link to this definition">¶</a></dt>
+<dd><p>The requirements of this CapellaModule.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule.to_reqif">
+<span class="sig-name descname"><span class="pre">to_reqif</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pretty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule.to_reqif" title="Link to this definition">¶</a></dt>
+<dd><p>Export this module as ReqIF XML.</p>
+<p>You can override some auto-generated metadata placed in the header
+section by passing a dictionary as <code class="docutils literal notranslate"><span class="pre">metadata</span></code>. The following keys
+are supported. Unsupported keys are silently ignored.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">creation_time</span></code>: A <code class="docutils literal notranslate"><span class="pre">datetime.datetime</span></code> object that specifies
+this document’s creation time. Default to the current time.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comment</span></code>: Override the ReqIF file’s comment. Defaults to a
+text derived from the model and module names.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code>: Specify the document title. Defaults to the module’s
+<code class="docutils literal notranslate"><span class="pre">long_name</span></code>.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.12)"><em>PathLike</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.IO" title="(in Python v3.12)"><em>IO</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><em>bytes</em></a><em>]</em>) – Where to export to. Can be the name of a file, or a file-like
+object opened in binary mode.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.12)"><em>Mapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>) – A dictionary with additional metadata (see above).</p></li>
+<li><p><strong>pretty</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Format the XML human-readable.</p></li>
+<li><p><strong>compress</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> | </em><em>None</em>) – Write compressed data (<code class="docutils literal notranslate"><span class="pre">*.reqifz</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code>
+if <code class="docutils literal notranslate"><span class="pre">target</span></code> is a string or path-like and its name ends in
+<code class="docutils literal notranslate"><span class="pre">.reqifz</span></code>, otherwise defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaModule.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.CapellaModule.type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of this CapellaModule.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaOutgoingRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">CapellaOutgoingRelation</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaOutgoingRelation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation" title="capellambse.extensions.reqif._requirements.AbstractRequirementsRelation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsRelation</span></code></a></p>
+<p>A Relation between an object and a requirement.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaOutgoingRelation.source">
+<span class="sig-name descname"><span class="pre">source</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaOutgoingRelation.source" title="Link to this definition">¶</a></dt>
+<dd><p>The source of this CapellaOutgoingRelation.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaOutgoingRelation.target">
+<span class="sig-name descname"><span class="pre">target</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaOutgoingRelation.target" title="Link to this definition">¶</a></dt>
+<dd><p>The target of this CapellaOutgoingRelation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaTypesFolder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">CapellaTypesFolder</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaTypesFolder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaTypesFolder.data_type_definitions">
+<span class="sig-name descname"><span class="pre">data_type_definitions</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaTypesFolder.data_type_definitions" title="Link to this definition">¶</a></dt>
+<dd><p>The data type definitions of this CapellaTypesFolder.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaTypesFolder.module_types">
+<span class="sig-name descname"><span class="pre">module_types</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaTypesFolder.module_types" title="Link to this definition">¶</a></dt>
+<dd><p>The module types of this CapellaTypesFolder.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaTypesFolder.relation_types">
+<span class="sig-name descname"><span class="pre">relation_types</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaTypesFolder.relation_types" title="Link to this definition">¶</a></dt>
+<dd><p>The relation types of this CapellaTypesFolder.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.CapellaTypesFolder.requirement_types">
+<span class="sig-name descname"><span class="pre">requirement_types</span></span><a class="headerlink" href="#capellambse.extensions.reqif.CapellaTypesFolder.requirement_types" title="Link to this definition">¶</a></dt>
+<dd><p>The requirement types of this CapellaTypesFolder.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.DataTypeDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">DataTypeDefinition</span></span><a class="headerlink" href="#capellambse.extensions.reqif.DataTypeDefinition" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>A data type definition for requirement types.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.DateValueAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">DateValueAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.DateValueAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a></p>
+<p>A value attribute that stores a date and time.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.DateValueAttribute.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.AttributeProperty</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">c.AttrProxyAccessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.DateValueAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ElementRelationAccessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">ElementRelationAccessor</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ElementRelationAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.WritableAccessor" title="capellambse.model.common.accessors.WritableAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">WritableAccessor</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">rq.AbstractRequirementsRelation</span></code>]</p>
+<p>Provides access to RequirementsRelations of a GenericElement.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ElementRelationAccessor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.ElementRelationAccessor.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ElementRelationAccessor.aslist">
+<span class="sig-name descname"><span class="pre">aslist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.ElementListCouplingMixin" title="capellambse.model.common.accessors.ElementListCouplingMixin"><span class="pre">ElementListCouplingMixin</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#capellambse.extensions.reqif.ElementRelationAccessor.aslist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ElementRelationAccessor.purge_references">
+<span class="sig-name descname"><span class="pre">purge_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.ElementRelationAccessor.purge_references" title="Link to this definition">¶</a></dt>
+<dd><p>Do nothing.</p>
+<p>This is a no-op, as this accessor provides a virtual relation.</p>
+<p>The relation objects it handles are cleaned up by removing the
+source or target attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ModelObject" title="capellambse.model.common.element.ModelObject"><em>ModelObject</em></a>)</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ModelObject" title="capellambse.model.common.element.ModelObject"><em>ModelObject</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.12)"><em>Generator</em></a>[None, None, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">EnumValue</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumValue" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>An enumeration value for <a class="reference internal" href="#capellambse.extensions.reqif.EnumerationDataTypeDefinition" title="capellambse.extensions.reqif.EnumerationDataTypeDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumerationDataTypeDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">EnumerationDataTypeDefinition</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumerationDataTypeDefinition" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>An enumeration data type definition for requirement types.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumerationDataTypeDefinition.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumerationDataTypeDefinition.values" title="Link to this definition">¶</a></dt>
+<dd><p>The values of this EnumerationDataTypeDefinition.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumerationValueAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">EnumerationValueAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumerationValueAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a></p>
+<p>An enumeration attribute.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumerationValueAttribute.definition">
+<span class="sig-name descname"><span class="pre">definition</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumerationValueAttribute.definition" title="Link to this definition">¶</a></dt>
+<dd><p>The definition of this EnumerationValueAttribute.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumerationValueAttribute.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumerationValueAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.EnumerationValueAttribute.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#capellambse.extensions.reqif.EnumerationValueAttribute.values" title="Link to this definition">¶</a></dt>
+<dd><p>The values of this EnumerationValueAttribute.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Folder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">Folder</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Folder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.Requirement" title="capellambse.extensions.reqif._requirements.Requirement"><code class="xref py py-class docutils literal notranslate"><span class="pre">Requirement</span></code></a></p>
+<p>A folder that stores Requirements.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Folder.folders">
+<span class="sig-name descname"><span class="pre">folders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.Folder.folders" title="Link to this definition">¶</a></dt>
+<dd><p>The folders of this Folder.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Folder.requirements">
+<span class="sig-name descname"><span class="pre">requirements</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Folder.requirements" title="Link to this definition">¶</a></dt>
+<dd><p>The requirements of this Folder.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.IntegerValueAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">IntegerValueAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.IntegerValueAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a></p>
+<p>An integer value attribute.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.IntegerValueAttribute.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.AttributeProperty</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">c.AttrProxyAccessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.IntegerValueAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.InternalRelation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">InternalRelation</span></span><a class="headerlink" href="#capellambse.extensions.reqif.InternalRelation" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation" title="capellambse.extensions.reqif._requirements.AbstractRequirementsRelation"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsRelation</span></code></a></p>
+<p>A Relation between two requirements.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ModuleType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">ModuleType</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ModuleType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractType" title="capellambse.extensions.reqif._requirements.AbstractType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractType</span></code></a></p>
+<p>A requirement-module type.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RealValueAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">RealValueAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.RealValueAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a></p>
+<p>A floating-point number value attribute.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RealValueAttribute.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.AttributeProperty</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">c.AttrProxyAccessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.RealValueAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RelationType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">RelationType</span></span><a class="headerlink" href="#capellambse.extensions.reqif.RelationType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractType" title="capellambse.extensions.reqif._requirements.AbstractType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractType</span></code></a></p>
+<p>A requirement-relation type.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RelationsList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">RelationsList</span></span><a class="headerlink" href="#capellambse.extensions.reqif.RelationsList" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElementList</span></code></a>[rq.AbstractRequirementsRelation]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RelationsList.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elemclass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RelationsList.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<a class="reference internal" href="capellambse.model.html#capellambse.model.MelodyModel" title="capellambse.model.MelodyModel"><em>MelodyModel</em></a>)</p></li>
+<li><p><strong>elements</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em>[</em><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v5.2.2)"><em>_Element</em></a><em>]</em>)</p></li>
+<li><p><strong>elemclass</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><em>type</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>source</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ModelObject" title="capellambse.model.common.element.ModelObject"><em>ModelObject</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RelationsList.by_relation_class">
+<span class="sig-name descname"><span class="pre">by_relation_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">class_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RelationsList.by_relation_class" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>class_</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><em>Literal</em></a><em>[</em><em>'incoming'</em><em>, </em><em>'outgoing'</em><em>, </em><em>'internal'</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#capellambse.extensions.reqif.RelationsList" title="capellambse.extensions.reqif._capellareq.RelationsList"><em>RelationsList</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RelationsList.by_relation_type">
+<span class="sig-name descname"><span class="pre">by_relation_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reltype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RelationsList.by_relation_type" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reltype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#capellambse.extensions.reqif.RelationsList" title="capellambse.extensions.reqif._capellareq.RelationsList"><em>RelationsList</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">ReqIFElement</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.GenericElement" title="capellambse.model.common.element.GenericElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericElement</span></code></a></p>
+<p>Attributes shared by all ReqIF elements.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement.description">
+<span class="sig-name descname"><span class="pre">description</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement.description" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement.identifier">
+<span class="sig-name descname"><span class="pre">identifier</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement.identifier" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement.long_name">
+<span class="sig-name descname"><span class="pre">long_name</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement.long_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement.name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement.prefix">
+<span class="sig-name descname"><span class="pre">prefix</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement.prefix" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.ReqIFElement.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.extensions.reqif.ReqIFElement.type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">Requirement</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Requirement" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement" title="capellambse.extensions.reqif._requirements.ReqIFElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a></p>
+<p>A ReqIF Requirement.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.attributes">
+<span class="sig-name descname"><span class="pre">attributes</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.attributes" title="Link to this definition">¶</a></dt>
+<dd><p>The attributes of this Requirement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.chapter_name">
+<span class="sig-name descname"><span class="pre">chapter_name</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.chapter_name" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.foreign_id">
+<span class="sig-name descname"><span class="pre">foreign_id</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.foreign_id" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.owner" title="Link to this definition">¶</a></dt>
+<dd><p>The owner of this Requirement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.related">
+<span class="sig-name descname"><span class="pre">related</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><span class="pre">c.GenericElement</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.related" title="Link to this definition">¶</a></dt>
+<dd><p>The related of this Requirement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.relations">
+<span class="sig-name descname"><span class="pre">relations</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation" title="capellambse.extensions.reqif.AbstractRequirementsRelation"><span class="pre">AbstractRequirementsRelation</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.relations" title="Link to this definition">¶</a></dt>
+<dd><p>The relations of this Requirement.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.text">
+<span class="sig-name descname"><span class="pre">text</span></span><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.text" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.Requirement.type">
+<span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.Accessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.Requirement.type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of this Requirement.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">RequirementType</span></span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementType" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractType" title="capellambse.extensions.reqif._requirements.AbstractType"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractType</span></code></a></p>
+<p>A requirement type.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">RequirementsRelationAccessor</span></span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.WritableAccessor" title="capellambse.model.common.accessors.WritableAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">WritableAccessor</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">rq.AbstractRequirementsRelation</span></code>]</p>
+<p>Searches for requirement relations in the architecture layer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.__init__" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor.aslist">
+<span class="sig-name descname"><span class="pre">aslist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.ElementListCouplingMixin" title="capellambse.model.common.accessors.ElementListCouplingMixin"><span class="pre">ElementListCouplingMixin</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.aslist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor.create">
+<span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elmlist</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">type_hints</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.create" title="Link to this definition">¶</a></dt>
+<dd><p>Create and return a new element of type <code class="docutils literal notranslate"><span class="pre">elmclass</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>elmlist</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.ElementListCouplingMixin" title="capellambse.model.common.accessors.ElementListCouplingMixin"><em>ElementListCouplingMixin</em></a>) – The (coupled)
+<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ElementList" title="capellambse.model.common.element.ElementList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElementList</span></code></a> to
+insert the new object into.</p></li>
+<li><p><strong>type_hints</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – Hints for finding the correct type of element to create. Can
+either be a full or shortened <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> string, or an
+abbreviation defined by the specific Accessor instance.</p></li>
+<li><p><strong>kw</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – Initialize the properties of the new object. Depending on
+the object’s type, some attributes may be required.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#capellambse.extensions.reqif.InternalRelation" title="capellambse.extensions.reqif._requirements.InternalRelation"><em>InternalRelation</em></a> | <a class="reference internal" href="#capellambse.extensions.reqif.CapellaIncomingRelation" title="capellambse.extensions.reqif._capellareq.CapellaIncomingRelation"><em>CapellaIncomingRelation</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elmlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.delete" title="Link to this definition">¶</a></dt>
+<dd><p>Delete the <code class="docutils literal notranslate"><span class="pre">obj</span></code> from the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor.insert">
+<span class="sig-name descname"><span class="pre">insert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elmlist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.insert" title="Link to this definition">¶</a></dt>
+<dd><p>Insert the <code class="docutils literal notranslate"><span class="pre">value</span></code> object into the model.</p>
+<p>The object must be inserted at an appropriate place, so that, if
+<code class="docutils literal notranslate"><span class="pre">elmlist</span></code> were to be created afresh, <code class="docutils literal notranslate"><span class="pre">value</span></code> would show up
+at index <code class="docutils literal notranslate"><span class="pre">index</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>elmlist</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.accessors.ElementListCouplingMixin" title="capellambse.model.common.accessors.ElementListCouplingMixin"><em>ElementListCouplingMixin</em></a>)</p></li>
+<li><p><strong>index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>)</p></li>
+<li><p><strong>value</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ModelObject" title="capellambse.model.common.element.ModelObject"><em>ModelObject</em></a><em> | </em><em>_NewObject</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.RequirementsRelationAccessor.purge_references">
+<span class="sig-name descname"><span class="pre">purge_references</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.purge_references" title="Link to this definition">¶</a></dt>
+<dd><p>Do nothing.</p>
+<p>This is a no-op, as this accessor provides a virtual relation.</p>
+<p>The relation objects it handles are cleaned up by removing the
+source or target attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ModelObject" title="capellambse.model.common.element.ModelObject"><em>ModelObject</em></a>)</p></li>
+<li><p><strong>target</strong> (<a class="reference internal" href="capellambse.model.common.html#capellambse.model.common.element.ModelObject" title="capellambse.model.common.element.ModelObject"><em>ModelObject</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.12)"><em>Generator</em></a>[None, None, None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.StringValueAttribute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">StringValueAttribute</span></span><a class="headerlink" href="#capellambse.extensions.reqif.StringValueAttribute" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute" title="capellambse.extensions.reqif._requirements.AbstractRequirementsAttribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a></p>
+<p>A string value attribute.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.StringValueAttribute.value">
+<span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">c.AttributeProperty</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">c.AttrProxyAccessor</span></em><a class="headerlink" href="#capellambse.extensions.reqif.StringValueAttribute.value" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.init">
+<span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.init" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-capellambse.extensions.reqif.exporter">
+<span id="capellambse-extensions-reqif-exporter-module"></span><h2>capellambse.extensions.reqif.exporter module<a class="headerlink" href="#module-capellambse.extensions.reqif.exporter" title="Link to this heading">¶</a></h2>
+<p>Implementation of a ReqIF 1.1 and 1.2 exporter.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.extensions.reqif.exporter.export_module">
+<span class="sig-prename descclassname"><span class="pre">capellambse.extensions.reqif.exporter.</span></span><span class="sig-name descname"><span class="pre">export_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pretty</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.reqif.exporter.export_module" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>module</strong> (<a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule" title="capellambse.extensions.reqif._capellareq.CapellaModule"><em>CapellaModule</em></a>)</p></li>
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/os.html#os.PathLike" title="(in Python v3.12)"><em>PathLike</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.IO" title="(in Python v3.12)"><em>IO</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><em>bytes</em></a><em>]</em>)</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.12)"><em>Mapping</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>pretty</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
+<li><p><strong>compress</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="capellambse.extensions.validation.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">capellambse.extensions.validation package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="capellambse.extensions.metrics.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">capellambse.extensions.metrics package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="/_static/img/github-logo.svg"/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">capellambse.extensions.reqif package</a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute.definition"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute.definition</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsAttribute.value"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsRelation</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation.source"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsRelation.source</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation.target"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsRelation.target</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractRequirementsRelation.type"><code class="docutils literal notranslate"><span class="pre">AbstractRequirementsRelation.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractType"><code class="docutils literal notranslate"><span class="pre">AbstractType</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractType.attribute_definitions"><code class="docutils literal notranslate"><span class="pre">AbstractType.attribute_definitions</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AbstractType.owner"><code class="docutils literal notranslate"><span class="pre">AbstractType.owner</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeAccessor"><code class="docutils literal notranslate"><span class="pre">AttributeAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">AttributeAccessor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeAccessor.follow_abstract"><code class="docutils literal notranslate"><span class="pre">AttributeAccessor.follow_abstract</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeAccessor.rootelem"><code class="docutils literal notranslate"><span class="pre">AttributeAccessor.rootelem</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeDefinition"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeDefinition.data_type"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.data_type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeDefinitionEnumeration"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeDefinitionEnumeration.data_type"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration.data_type</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.AttributeDefinitionEnumeration.multi_valued"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration.multi_valued</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.BooleanValueAttribute"><code class="docutils literal notranslate"><span class="pre">BooleanValueAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.BooleanValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">BooleanValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaIncomingRelation"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule"><code class="docutils literal notranslate"><span class="pre">CapellaModule</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule.attributes"><code class="docutils literal notranslate"><span class="pre">CapellaModule.attributes</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule.folders"><code class="docutils literal notranslate"><span class="pre">CapellaModule.folders</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule.requirement_types_folders"><code class="docutils literal notranslate"><span class="pre">CapellaModule.requirement_types_folders</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule.requirements"><code class="docutils literal notranslate"><span class="pre">CapellaModule.requirements</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule.to_reqif"><code class="docutils literal notranslate"><span class="pre">CapellaModule.to_reqif()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaModule.type"><code class="docutils literal notranslate"><span class="pre">CapellaModule.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaOutgoingRelation"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaOutgoingRelation.source"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.source</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaOutgoingRelation.target"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.target</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaTypesFolder"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaTypesFolder.data_type_definitions"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.data_type_definitions</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaTypesFolder.module_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.module_types</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaTypesFolder.relation_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.relation_types</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.CapellaTypesFolder.requirement_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.requirement_types</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.DataTypeDefinition"><code class="docutils literal notranslate"><span class="pre">DataTypeDefinition</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.DateValueAttribute"><code class="docutils literal notranslate"><span class="pre">DateValueAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.DateValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">DateValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ElementRelationAccessor"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ElementRelationAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ElementRelationAccessor.aslist"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.aslist</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ElementRelationAccessor.purge_references"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.purge_references()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumValue"><code class="docutils literal notranslate"><span class="pre">EnumValue</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumerationDataTypeDefinition"><code class="docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumerationDataTypeDefinition.values"><code class="docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition.values</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumerationValueAttribute"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumerationValueAttribute.definition"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.definition</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumerationValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.value</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.EnumerationValueAttribute.values"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.values</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Folder"><code class="docutils literal notranslate"><span class="pre">Folder</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Folder.folders"><code class="docutils literal notranslate"><span class="pre">Folder.folders</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Folder.requirements"><code class="docutils literal notranslate"><span class="pre">Folder.requirements</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.IntegerValueAttribute"><code class="docutils literal notranslate"><span class="pre">IntegerValueAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.IntegerValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">IntegerValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.InternalRelation"><code class="docutils literal notranslate"><span class="pre">InternalRelation</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ModuleType"><code class="docutils literal notranslate"><span class="pre">ModuleType</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RealValueAttribute"><code class="docutils literal notranslate"><span class="pre">RealValueAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RealValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">RealValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RelationType"><code class="docutils literal notranslate"><span class="pre">RelationType</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RelationsList"><code class="docutils literal notranslate"><span class="pre">RelationsList</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RelationsList.__init__"><code class="docutils literal notranslate"><span class="pre">RelationsList.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RelationsList.by_relation_class"><code class="docutils literal notranslate"><span class="pre">RelationsList.by_relation_class()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RelationsList.by_relation_type"><code class="docutils literal notranslate"><span class="pre">RelationsList.by_relation_type()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement"><code class="docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement.description"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.description</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement.identifier"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.identifier</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement.long_name"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.long_name</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement.name"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.name</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement.prefix"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.prefix</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.ReqIFElement.type"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement"><code class="docutils literal notranslate"><span class="pre">Requirement</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.attributes"><code class="docutils literal notranslate"><span class="pre">Requirement.attributes</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.chapter_name"><code class="docutils literal notranslate"><span class="pre">Requirement.chapter_name</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.foreign_id"><code class="docutils literal notranslate"><span class="pre">Requirement.foreign_id</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.owner"><code class="docutils literal notranslate"><span class="pre">Requirement.owner</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.related"><code class="docutils literal notranslate"><span class="pre">Requirement.related</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.relations"><code class="docutils literal notranslate"><span class="pre">Requirement.relations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.text"><code class="docutils literal notranslate"><span class="pre">Requirement.text</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.Requirement.type"><code class="docutils literal notranslate"><span class="pre">Requirement.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementType"><code class="docutils literal notranslate"><span class="pre">RequirementType</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.aslist"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.aslist</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.create"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.create()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.delete"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.delete()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.insert"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.insert()</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.RequirementsRelationAccessor.purge_references"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.purge_references()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.StringValueAttribute"><code class="docutils literal notranslate"><span class="pre">StringValueAttribute</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.StringValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">StringValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.init"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-capellambse.extensions.reqif.exporter">capellambse.extensions.reqif.exporter module</a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.reqif.exporter.export_module"><code class="docutils literal notranslate"><span class="pre">export_module()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
