@@ -6,7 +6,7 @@ from __future__ import annotations
 import lxml.etree
 
 import capellambse.loader
-from capellambse import diagram, helpers, model
+from capellambse import diagram, helpers
 
 from . import FilterArguments, composite, global_filter
 
@@ -187,7 +187,7 @@ def hide_alloc_func_exch(
 
 
 def _stringify_exchange_items(
-    obj: diagram.DiagramElement | model.common.GenericElement,
+    obj: diagram.DiagramElement,
     melodyloader: capellambse.loader.MelodyLoader,
     sort_items: bool = False,
 ) -> str:
