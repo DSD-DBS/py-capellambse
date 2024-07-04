@@ -968,7 +968,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             predicate = operator.attrgetter(predicate)
         return self._newlist([i._element for i in self if predicate(i)])
 
-    def map(self, attr: str | _MapFunction[T]) -> ElementList[GenericElement]:
+    def map(self, attr: str | _MapFunction[T]) -> ElementList[t.Any]:
         """Apply a function to each element in this list.
 
         If the argument is a string, it is interpreted as an attribute
@@ -985,6 +985,12 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         model element or a flat sequence of model elements.
         """
         if isinstance(attr, str):
+            if "." in attr:
+                mapped: ElementList[t.Any] = self
+                for attr in attr.split("."):
+                    mapped = mapped.map(operator.attrgetter(attr))
+                return mapped
+
             attr = operator.attrgetter(attr)
         newelems: list[etree._Element] = []
         newuuids: set[str] = set()
