@@ -9,7 +9,6 @@ import logging
 import math
 import os
 import pathlib
-import re
 import sys
 import typing as t
 import urllib.parse
@@ -26,7 +25,6 @@ from capellambse import helpers, loader
 from . import abc
 
 LOGGER = logging.getLogger(__name__)
-RE_LINK_NEXT = re.compile("<(http.*)>; rel=(?P<quote>[\"']?)next(?P=quote)")
 MAX_SEARCHED_JOBS = (
     int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", 1000)) or sys.maxsize
 )
@@ -336,7 +334,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
         i = 0
         stop = max or math.inf
 
-        while True:
+        while next_url:
             response = self.__rawget(next_url)
             response.raise_for_status()
             for i, object in enumerate(response.json(), start=i):
@@ -344,10 +342,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
                 if i >= stop:
                     return
 
-            match = RE_LINK_NEXT.fullmatch(response.headers.get("Link", ""))
-            if not match:
-                break
-            next_url = match.group(1)
+            next_url = response.links.get("next", {}).get("url")
 
     def get_model_info(self) -> loader.ModelInfo:
         assert isinstance(self.path, str)
