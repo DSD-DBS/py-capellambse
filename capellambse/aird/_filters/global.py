@@ -192,11 +192,15 @@ def _stringify_exchange_items(
     sort_items: bool = False,
 ) -> str:
     assert obj.uuid is not None
-    _, items = _get_allocated_exchangeitem_names(
-        obj.uuid,
-        alloc_attr="exchangedItems",
-        melodyloader=melodyloader,
-    )
+    if isinstance(obj, model.common.GenericElement):
+        items = list(obj.exchange_items.by_name)
+    else:
+        _, items = _get_allocated_exchangeitem_names(
+            obj.uuid,
+            alloc_attr="exchangedItems",
+            melodyloader=melodyloader,
+        )
+
     if items:
         if sort_items:
             items = sorted(items)
