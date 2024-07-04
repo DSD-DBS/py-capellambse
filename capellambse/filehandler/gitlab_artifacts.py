@@ -9,7 +9,6 @@ import logging
 import math
 import os
 import pathlib
-import re
 import sys
 import typing as t
 import urllib.parse
@@ -26,7 +25,6 @@ from capellambse import helpers, loader
 from . import abc
 
 LOGGER = logging.getLogger(__name__)
-RE_LINK_NEXT = re.compile("<(http.*)>; rel=(?P<quote>[\"']?)next(?P=quote)")
 MAX_SEARCHED_JOBS = (
     int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", 1000)) or sys.maxsize
 )
@@ -55,17 +53,26 @@ class GitlabArtifactsFiles(abc.FileHandler):
     Parameters
     ----------
     path
-        The base URL of the Gitlab server. Must start with one of
-        ``glart://``, ``glart+http://`` or ``glart+https://``; the
-        ``glart:`` prefix uses HTTPS to communicate with the server. May
-        also be set to ``glart:`` (without a server name), which uses
-        the ``$CI_SERVER_URL`` environment variable to find the
-        instance; if that is not set, the public Gitlab instance at
-        ``https://gitlab.com`` is used.
+        The URL to fetch artifacts from, in one of the following formats:
 
-        Example: If your project is hosted at
-        ``https://gitlab.example.com/my_username/my_cool_project``, use
-        ``glart://gitlab.example.com`` as path argument.
+        -   The literal string ``glart:`` (or ``glart://``), which uses
+            the URL from ``$CI_SERVER_FQDN`` or - if that is not set -
+            the public Gitlab instance at ``https://gitlab.com``.
+        -   The base URL of the Gitlab server, using ``glart:``,
+            ``glart+http:`` or ``glart+https:`` as the protocol.
+            ``glart:`` uses the protocol specified by
+            ``$CI_SERVER_PROTOCOL``, or falls back to HTTPS.
+        -   A URL that combines the above with some of the required
+            parameters described below, using the format::
+
+            glart://gitlab.mycompany.com/group/subgroup/project#branch=<branch>&job=<jobname>
+
+            Note that this format does not support numeric IDs for the
+            project and job, thus requiring to pass a branch name. Any
+            of the parts of this combined URL may instead be passed
+            explicitly via keyword arguments.
+
+            Keyword arguments have precedence over the combined URL.
     token
         A personal or project access token with ``read_api`` permission
         on the specified project. The following ways are supported for
@@ -83,7 +90,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
            create explicit tokens. Note that your instance might be set
            up with restrictive default permissions for the job token.
     project
-        The path (e.g. ``my_username/my_cool_project``) or numeric ID of the
+        The path (e.g. ``group/subgroup/project``) or numeric ID of the
         project to pull the artifacts from. Defaults to the
         ``$CI_PROJECT_ID`` environment variable, which Gitlab sets to
         the project currently executing a pipeline.
@@ -93,7 +100,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
         is unset. Ignored if a numeric ID is given for ``job``.
     job
         Name of the job to pull artifacts from. May also be a numeric
-        job ID.
+        job ID. Defaults to "update_capella_diagram_cache".
 
         If a job name was given, the Gitlab API is queried for the most
         recent successful job on the given ``branch`` that has attached
@@ -124,19 +131,28 @@ class GitlabArtifactsFiles(abc.FileHandler):
         token: str | None = None,
         project: str | int | None = None,
         branch: str | None = None,
-        job: str | int,
+        job: str | int | None = None,
         disable_cache: bool = False,
     ) -> None:
+        path = str(path)
         super().__init__(path, subdir=subdir)
 
         self.__session = requests.Session()
 
-        self.__path = self.__resolve_path(path)
+        self.__path, urlparts = self.__resolve_path(path)
+        if not project:
+            project = urlparts["project"]
+        if not branch:
+            branch = urlparts["branch"]
+        if not job:
+            job = urlparts["job"]
+
         self.__token = self.__resolve_token(token)
         self.__project = self.__resolve_project(project)
         self.__branch = branch or os.getenv("CI_DEFAULT_BRANCH") or "main"
-        self.__job = self.__resolve_job(job)
+        self.__job, job = self.__resolve_job(job)
 
+        self.path = f"glart+{self.__path}/{project}#branch={branch}&job={job}"
         self.__cache = diskcache.Cache(
             capellambse.dirs.user_cache_path / "gitlab-artifacts"
         )
@@ -154,19 +170,27 @@ class GitlabArtifactsFiles(abc.FileHandler):
         )
 
     @staticmethod
-    def __resolve_path(path: str) -> str:
-        if path in {"glart:", "glart://"}:
-            if host := os.getenv("CI_SERVER_URL"):
-                LOGGER.debug("Using current Gitlab instance: %s", host)
-                return host
-            else:
-                LOGGER.debug("Using public Gitlab instance at gitlab.com")
-                return "https://gitlab.com"
+    def __resolve_path(path: str) -> tuple[str, _URLParts]:
+        scheme, netloc, project, _, _, fragment = urllib.parse.urlparse(path)
+        scheme = scheme.removeprefix("glart+")
 
-        if path.startswith("glart:"):
-            return "https:" + path[6:]
+        if netloc:
+            if scheme == "glart":
+                scheme = os.getenv("CI_SERVER_PROTOCOL", "https")
+            path = urllib.parse.urlunparse((scheme, netloc, "", "", "", ""))
+        elif path := os.getenv("CI_SERVER_URL", ""):
+            LOGGER.debug("Using current Gitlab instance: %s", path)
+        else:
+            path = "https://gitlab.com"
+            LOGGER.debug("Using public Gitlab instance at: %s", path)
 
-        return path
+        args = dict(i.split("=", 1) for i in fragment.split("&") if "=" in i)
+        urlparts = _URLParts(
+            project=project.strip("/").removesuffix(".git"),
+            branch=args.get("branch", ""),
+            job=args.get("job", ""),
+        )
+        return path, urlparts
 
     @classmethod
     def __resolve_token(cls, token: str | None) -> str:
@@ -225,7 +249,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
                 LOGGER.debug("Token file is empty: %s", cred_file)
         return None
 
-    def __resolve_project(self, project: str | int | None) -> str | int:
+    def __resolve_project(self, project: str | int | None) -> int:
         if isinstance(project, int):
             return project
 
@@ -240,9 +264,16 @@ class GitlabArtifactsFiles(abc.FileHandler):
 
         raise TypeError("No 'project' specified, and not running in Gitlab CI")
 
-    def __resolve_job(self, job: str | int) -> int:
-        if isinstance(job, int):
-            return job
+    def __resolve_job(self, job: str | int) -> tuple[int, str]:
+        try:
+            job = int(job)
+            return job, str(job)
+        except ValueError:
+            pass
+        assert isinstance(job, str)
+
+        if not job:
+            job = "update_capella_diagram_cache"
 
         for jobinfo in self.__iterget(
             f"/projects/{self.__project}/jobs?scope=success",
@@ -257,7 +288,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
                 )
             ):
                 LOGGER.debug("Selected job with ID %d", jobinfo["id"])
-                return jobinfo["id"]
+                return (jobinfo["id"], job)
 
         raise RuntimeError(
             f"No recent successful {job!r} job found on {self.__branch!r}"
@@ -303,7 +334,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
         i = 0
         stop = max or math.inf
 
-        while True:
+        while next_url:
             response = self.__rawget(next_url)
             response.raise_for_status()
             for i, object in enumerate(response.json(), start=i):
@@ -311,13 +342,11 @@ class GitlabArtifactsFiles(abc.FileHandler):
                 if i >= stop:
                     return
 
-            match = RE_LINK_NEXT.fullmatch(response.headers.get("Link", ""))
-            if not match:
-                break
-            next_url = match.group(1)
+            next_url = response.links.get("next", {}).get("url")
 
     def get_model_info(self) -> loader.ModelInfo:
-        return loader.ModelInfo(branch=self.__branch, url=self.__path)
+        assert isinstance(self.path, str)
+        return loader.ModelInfo(branch=self.__branch, url=self.path)
 
     def open(
         self,
@@ -372,3 +401,9 @@ class GitlabArtifactsFiles(abc.FileHandler):
         LOGGER.debug("Opening file %r for reading", path)
         self.__cache[cachekey] = response.content
         return io.BytesIO(response.content)
+
+
+class _URLParts(t.TypedDict):
+    project: str
+    branch: str
+    job: str
