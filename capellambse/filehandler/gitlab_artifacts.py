@@ -146,13 +146,19 @@ class GitlabArtifactsFiles(abc.FileHandler):
             branch = urlparts["branch"]
         if not job:
             job = urlparts["job"]
+        # pylint: disable-next=access-member-before-definition
+        if str(self.subdir) in ("", ".", "/"):
+            self.subdir = helpers.normalize_pure_path(urlparts["subdir"])
 
         self.__token = self.__resolve_token(token)
         self.__project = self.__resolve_project(project)
         self.__branch = branch or os.getenv("CI_DEFAULT_BRANCH") or "main"
         self.__job, job = self.__resolve_job(job)
 
-        self.path = f"glart+{self.__path}/{project}#branch={branch}&job={job}"
+        self.path = (
+            f"glart+{self.__path}/{project}/-/{self.subdir}"
+            f"#branch={branch}&job={job}"
+        )
         self.__cache = diskcache.Cache(
             capellambse.dirs.user_cache_path / "gitlab-artifacts"
         )
@@ -184,11 +190,16 @@ class GitlabArtifactsFiles(abc.FileHandler):
             path = "https://gitlab.com"
             LOGGER.debug("Using public Gitlab instance at: %s", path)
 
+        if "/-/" in project:
+            project, subdir = project.split("/-/", 1)
+        else:
+            subdir = ""
         args = dict(i.split("=", 1) for i in fragment.split("&") if "=" in i)
         urlparts = _URLParts(
             project=project.strip("/").removesuffix(".git"),
             branch=args.get("branch", ""),
             job=args.get("job", ""),
+            subdir=subdir.strip("/"),
         )
         return path, urlparts
 
@@ -407,3 +418,4 @@ class _URLParts(t.TypedDict):
     project: str
     branch: str
     job: str
+    subdir: str

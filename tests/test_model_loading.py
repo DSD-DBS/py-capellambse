@@ -478,6 +478,72 @@ def test_gitlab_artifacts_handler_handles_pagination_when_searching_for_jobs(
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
 
 
+def test_gitlab_artifacts_handler_parses_info_from_url(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/group%2fsubgroup%2fproject",
+        json={"id": 1},
+    )
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/1/jobs",
+        json=[
+            {
+                "id": 3,
+                "name": "make-stuff",
+                "pipeline": {"ref": "somebranch"},
+                "artifacts": [{"file_type": "archive"}],
+            },
+        ],
+    )
+
+    path = (
+        "glart://gitlab.com/group/subgroup/project/-/subdir/subdir2"
+        "#branch=somebranch&job=make-stuff"
+    )
+    hdl = capellambse.get_filehandler(path, token="my-access-token")
+
+    # pylint: disable=line-too-long
+    assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
+    assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
+
+
+def test_gitlab_artifacts_handler_assembles_url_for_display(
+    requests_mock: requests_mock.Mocker,
+) -> None:
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/group%2fsubgroup%2fproject",
+        json={"id": 1},
+    )
+    requests_mock.get(
+        "https://gitlab.com/api/v4/projects/1/jobs",
+        json=[
+            {
+                "id": 3,
+                "name": "make-stuff",
+                "pipeline": {"ref": "somebranch"},
+                "artifacts": [{"file_type": "archive"}],
+            },
+        ],
+    )
+    expected = (
+        "glart+https://gitlab.com/group/subgroup/project/-/subdir/subdir2"
+        "#branch=somebranch&job=make-stuff"
+    )
+
+    hdl = capellambse.get_filehandler(
+        "glart://",
+        project="group/subgroup/project",
+        branch="somebranch",
+        job="make-stuff",
+        subdir="subdir/subdir2",
+        token="my-access-token",
+    )
+
+    assert hdl.path == expected
+
+
 @pytest.fixture
 def model_path_with_patched_version(
     request: pytest.FixtureRequest, tmp_path: pathlib.Path
