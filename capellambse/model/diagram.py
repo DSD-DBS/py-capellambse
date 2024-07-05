@@ -148,7 +148,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return getattr(super(), attr)
 
     def __repr__(self) -> str:
-        if not REPR_DRAW:
+        if not __getattr__("REPR_DRAW"):  # type: ignore[name-defined]
             return self._short_repr_()
 
         try:
@@ -413,7 +413,6 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             raise KeyError(self.uuid)
 
         data: t.Any = None
-        converter_stack: list[DiagramConverter] = []
         for i, cv in enumerate(chain):
             ext = getattr(cv, "filename_extension", None)
             if not ext or not hasattr(cv, "from_cache"):
@@ -438,7 +437,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             )
             raise KeyError(self.uuid)
 
-        for cv in reversed(converter_stack):
+        for cv in reversed(chain):
+            LOGGER.debug("Executing format converter %r", cv)
             if hasattr(cv, "convert"):
                 data = cv.convert(data)
             else:
@@ -812,6 +812,7 @@ def _run_converter_chain(
     pretty_print: bool = False,
 ) -> t.Any:
     for conv in reversed(chain):
+        LOGGER.debug("Executing format converter %r", conv)
         if pretty_print and isinstance(conv, PrettyDiagramFormat):
             data = conv.convert_pretty(data)
         elif isinstance(conv, DiagramFormat):
