@@ -54,6 +54,7 @@ _MapFunction: te.TypeAlias = (
 )
 
 _TERMCELL: tuple[int, int] | None = None
+_ICON_CACHE: dict[tuple[str, str, int], t.Any] = {}
 
 
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
@@ -497,6 +498,12 @@ class GenericElement:
         """
         from capellambse.diagram import get_icon, get_styleclass
 
+        sc = get_styleclass(self)
+        try:
+            return _ICON_CACHE[sc, format, size]
+        except KeyError:
+            pass
+
         try:
             data: t.Any = get_icon(get_styleclass(self), size=size)
         except ValueError:
@@ -506,6 +513,7 @@ class GenericElement:
             data = capellambse.model.diagram.convert_format(
                 "svg", format, data
             )
+        _ICON_CACHE[sc, format, size] = data
         return data
 
     if t.TYPE_CHECKING:
