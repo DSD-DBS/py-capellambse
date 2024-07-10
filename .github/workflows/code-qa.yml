@@ -99,3 +99,9 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Push to release branch
+        continue-on-error: true
+        run: |-
+          releasever="$(git describe --tags | grep -Po '(?<=^v)(?:0\.)?[1-9][0-9]*').x"
+          if [[ "$releasever" = 0.5.x ]]; then releasever="${releasever%.x}"; fi
+          git push origin "HEAD:release-$releasever"
