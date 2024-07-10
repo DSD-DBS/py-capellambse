@@ -4,10 +4,10 @@
 name: Docs
 
 on:
-  workflow_dispatch:
+  pull_request:
   push:
     branches: [master]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   sphinx:
