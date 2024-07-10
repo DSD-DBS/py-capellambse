@@ -38,6 +38,9 @@ if sys.version_info >= (3, 13):
 else:
     from typing_extensions import deprecated
 
+if t.TYPE_CHECKING:
+    from capellambse.model import crosslayer
+
 _T = t.TypeVar("_T", bound="ModelObject")
 
 _NOT_SPECIFIED = object()
@@ -215,6 +218,33 @@ class GenericElement:
         self._element = element
         self._constructed = True
         return self
+
+    @property
+    def layer(self) -> crosslayer.BaseArchitectureLayer:
+        """Find the layer that this element belongs to.
+
+        Note that an architectural layer normally does not itself have a
+        parent layer.
+
+        Returns
+        -------
+        crosslayer.BaseArchitectureLayer
+
+        Raises
+        ------
+        AttributeError
+            Raised if this element is not nested below a layer.
+        """
+        from capellambse.model import crosslayer
+
+        obj: GenericElement | None = self
+        assert obj is not None
+        while obj := getattr(obj, "parent", None):
+            if isinstance(obj, crosslayer.BaseArchitectureLayer):
+                return obj
+        raise AttributeError(
+            f"No parent layer found for {self._short_repr_()}"
+        )
 
     def __init__(
         self,
