@@ -168,6 +168,7 @@ class _GitTransaction:
         author_name: str | None = None,
         author_email: str | None = None,
         commit_msg: str = "Changes made with python-capellambse",
+        ignore_empty: bool = True,
         remote_branch: str | None = None,
         push: bool = True,
         push_options: cabc.Sequence[str] = (),
@@ -187,6 +188,15 @@ class _GitTransaction:
             If True, stop before updating the ``revision`` pointer. The
             commit will be created, but will not be part of any branch
             or tag.
+        ignore_empty
+            If True and the transaction did not actually change any
+            files (i.e. the new commit would be tree-same with its
+            parent), do not actually make a new commit.
+
+            .. versionchanged:: 0.5.67
+               Previous versions would create empty commits if no files
+               changed. If you relied on that behavior (e.g. to trigger
+               subsequent CI actions), use this option.
         remote_branch
             An alternative branch name to push to on the remote, instead
             of pushing back to the same branch. This is required if
@@ -218,6 +228,7 @@ class _GitTransaction:
         self.__handler = filehandler
         self.__dry_run = dry_run
         self.__commit_msg = commit_msg
+        self.__ignore_empty = ignore_empty
         self.__push = push
         self.__push_opts = [f"--push-option={i}" for i in push_options]
 
@@ -267,6 +278,10 @@ class _GitTransaction:
         try:
             LOGGER.debug("Writing updated tree to database")
             tree = self.__write_tree()
+
+            if self.__ignore_empty and tree == self.__get_old_tree_hash():
+                LOGGER.debug("Not creating empty commit (ignore_empty=True)")
+                return None
 
             LOGGER.debug("Creating commit object with tree %s", tree)
             commit = self.__commit(tree)
@@ -367,6 +382,17 @@ class _GitTransaction:
         tree_hash = self.__handler._git("write-tree", encoding="ascii").strip()
         LOGGER.debug("Created tree with hash %r", tree_hash)
         return tree_hash
+
+    def __get_old_tree_hash(self) -> str:
+        info = self.__handler._git("cat-file", "commit", self.__old_sha)
+        for line in info.splitlines():
+            if not line:
+                break
+            kw, hash = line.split(None, 1)
+            if kw == b"tree":
+                return hash.decode("ascii")
+
+        assert False, f"No 'tree' in commit {self.__old_sha!r}"
 
 
 class GitFileHandler(abc.FileHandler):
