@@ -2,9 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
-import re
-import typing as t
-
 import capellambse
 from capellambse.extensions import validation
 from capellambse.model import modeltypes
@@ -125,101 +122,6 @@ def capability_involves_entity(obj: capellambse.model.GenericElement) -> bool:
     if isinstance(obj, oa.OperationalCapability):
         return bool(obj.involved_entities)
     return bool(obj.involved_components)
-
-
-# FIXME Spacy and the NLP model should load lazily on rule evaluation
-def _try_load_language_model() -> (
-    tuple[spacy.Language | None, t.Literal[1, 2]]
-):
-    try:
-        return spacy.load(_NLP_NAME), 2
-    except OSError:
-        pass
-
-    try:
-        from spacy import cli
-
-        cli.download(_NLP_NAME)
-    except Exception:
-        pass
-
-    try:
-        return spacy.load(_NLP_NAME), 2
-    except OSError:
-        return None, 1
-
-
-_NLP_NAME = "en_core_web_lg"
-try:
-    import spacy
-
-    _HAS_SPACY = 2
-except ImportError:
-    _nlp = None
-    _HAS_SPACY = 0
-else:
-    _nlp, _HAS_SPACY = _try_load_language_model()
-
-
-@rule(
-    category=_validate.Category.REQUIRED,
-    types=[
-        sa.Capability,
-        sa.SystemFunction,
-        oa.OperationalCapability,
-        oa.OperationalActivity,
-        la.LogicalFunction,
-        pa.PhysicalFunction,
-    ],
-    id="Rule-003",
-    name=(
-        "Behavior name follows verb-noun pattern"
-        if _HAS_SPACY == 2
-        else "Can't check if behavior name follows verb-noun pattern"
-    ),
-    rationale=(
-        "Using the verb-noun pattern for naming behaviors promotes clarity,"
-        " consistency, and effective communication across the system. Adhering"
-        " to this convention simplifies understanding and management for all"
-        " stakeholders. Please revise any non-compliant names to align with"
-        " this proven practice."
-    ),
-    action=(
-        "Install spacy and download the natural language model.",
-        "Download the natural language model.",
-        (
-            'change the object name to follow the pattern of "VERB NOUN",'
-            ' for example "brew coffee"'
-        ),
-    )[_HAS_SPACY],
-)
-def behavior_name_follows_verb_noun_pattern(
-    obj: capellambse.model.GenericElement,
-) -> bool:
-    if _nlp is None:
-        return False
-
-    text = re.sub(r"^\d+: ", "", obj.name)
-    if len(text) < 1:
-        return False
-    doc = _nlp(text)
-    if len(doc) < 2:
-        return False
-
-    # Check if the first token is a verb
-    if doc[0].pos_ != "VERB":
-        return False
-
-    # Skip any number of adjectives and adverbs following the verb
-    i = 1
-    while i < len(doc) and doc[i].pos_ in ("ADJ", "ADV"):
-        i += 1
-
-    # If there's a noun after the adjectives/adverbs, the pattern is valid
-    if i < len(doc) and doc[i].pos_ in ("NOUN", "PROPN"):
-        return True
-
-    return False
 
 
 @rule(
