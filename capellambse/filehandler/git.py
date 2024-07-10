@@ -1,21 +1,11 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=abstract-method, useless-suppression
-# For some reason, pylint in Github CI didn't get the memo that these aren't
-# actually abstract methods. Other pylint installations seem to agree that
-# implementing these methods isn't necessary. So we just ignore the warning
-# about that here.
-# TODO Revisit this decision some time in the future
-
 from __future__ import annotations
 
 import collections.abc as cabc
 import errno
-import functools
 import hashlib
-import io
-import itertools
 import logging
 import os
 import pathlib
@@ -37,6 +27,7 @@ from . import abc
 
 LOGGER = logging.getLogger(__name__)
 CACHEBASE = pathlib.Path(capellambse.dirs.user_cache_dir, "models")
+WTBASE = pathlib.Path(capellambse.dirs.user_cache_dir, "worktrees")
 
 _git_object_name = re.compile("(^|/)([0-9a-fA-F]{4,}|(.+_)?HEAD)$")
 
@@ -59,108 +50,91 @@ class _TreeEntry(t.NamedTuple):
         return f"{self.mode} {self.type} {self.object}\t{self.file}"
 
 
-class _ProcessWriter(t.BinaryIO):
+class _WritableGitFile(t.BinaryIO):
     def __init__(
         self,
-        command: cabc.Sequence[t.Any],
-        *,
-        cwd: pathlib.Path,
-        env: dict[str, str],
+        tx: _GitTransaction,
+        cachedir: pathlib.Path,
+        path: pathlib.PurePosixPath,
     ) -> None:
-        # pylint: disable=consider-using-with
-        LOGGER.debug("Spawning process to stream to: %r", command)
-        self.process = subprocess.Popen(
-            command,
-            cwd=cwd,
-            env=env,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-        )
+        tx.record_pending_update(path, self)
+        self.__tx = tx
+        self.__path = path
+        self.__file = cachedir.joinpath(path).open("wb")
 
-        assert self.process.stdin is not None
-        self.write = self.process.stdin.write  # type: ignore[assignment]
+    @property
+    def mode(self) -> str:
+        return self.__file.mode
 
-    def write(self, s: bytes) -> int:  # type: ignore[override]
-        return len(s)  # stub
+    @property
+    def name(self) -> str:
+        return str(self.__path)
 
     def close(self) -> None:
-        assert self.process.stdin is not None
-        assert self.process.stdout is not None
-        if not self.process.stdin.closed:
-            self.process.stdin.close()
-        if not self.process.stdout.closed:
-            self.process.stdout.close()
-        self.process.wait()
-        assert self.process.returncode is not None
-        if self.process.returncode != 0:
-            raise RuntimeError(
-                f"Subprocess returned error {self.process.returncode}"
-            )
+        self.__file.close()
+        self.__tx.record_update(self.__path)
 
     @property
     def closed(self) -> bool:
-        assert self.process.stdin is not None
-        return self.process.stdin.closed
+        return self.__file.closed
 
-    def __enter__(self) -> _ProcessWriter:
+    def fileno(self) -> int:
+        return self.__file.fileno()
+
+    def flush(self) -> None:
+        self.__file.flush()
+
+    def isatty(self) -> bool:
+        return self.__file.isatty()
+
+    def read(self, n: int = -1) -> bytes:
+        return self.__file.read(n)
+
+    def readable(self) -> bool:
+        return self.__file.readable()
+
+    def readline(self, limit: int = -1) -> bytes:
+        return self.__file.readline(limit)
+
+    def readlines(self, hint: int = -1) -> list[bytes]:
+        return self.__file.readlines(hint)
+
+    def seek(self, offset: int, whence: int = 0) -> int:
+        return self.__file.seek(offset, whence)
+
+    def seekable(self) -> bool:
+        return self.__file.seekable()
+
+    def tell(self) -> int:
+        return self.__file.tell()
+
+    def truncate(self, size: int | None = None) -> int:
+        return self.__file.truncate(size)
+
+    def writable(self) -> bool:
+        return self.__file.writable()
+
+    def write(self, s: bytes) -> int:  # type: ignore[override] # ???
+        return self.__file.write(s)
+
+    def writelines(  # type: ignore[override] # ???
+        self, lines: t.Iterable[bytes]
+    ) -> None:
+        self.__file.writelines(lines)
+
+    def __enter__(self) -> _WritableGitFile:
+        self.__file.__enter__()
         return self
 
-    def __exit__(self, *args: t.Any) -> None:
-        self.close()
+    def __exit__(self, exc_type, exc_value, exc_trace):
+        self.__file.__exit__(exc_type, exc_value, exc_trace)
+        self.__tx.record_update(self.__path)
 
+    def __iter__(self) -> _WritableGitFile:
+        return self
 
-class _WritableIndexFile(_ProcessWriter):
-    def __init__(
-        self,
-        cb: cabc.Callable[[str], None],
-        cwd: pathlib.Path,
-        env: dict[str, str],
-        filename: pathlib.PurePosixPath,
-    ) -> None:
-        super().__init__(
-            ["git", "hash-object", "--path", filename, "--stdin", "-w"],
-            cwd=cwd,
-            env=env,
-        )
-        self.callback = cb
-
-    def close(self) -> None:
-        assert self.process.stdin is not None
-        assert self.process.stdout is not None
-
-        hash, _ = self.process.communicate()
-        assert hash
-        super().close()
-        self.callback(hash.decode("ascii").strip())
-
-
-class _WritableLFSFile(_ProcessWriter):
-    def __init__(
-        self,
-        cb: cabc.Callable[[str], None],
-        cwd: pathlib.Path,
-        env: dict[str, str],
-        filename: pathlib.PurePosixPath,
-    ) -> None:
-        super().__init__(
-            ["git", "lfs", "clean", "--", filename], cwd=cwd, env=env
-        )
-        self.__indexfile = _WritableIndexFile(  # type: ignore[abstract]
-            cb, cwd, env, filename
-        )
-
-    def close(self) -> None:
-        assert self.process.stdin is not None
-        assert self.process.stdout is not None
-
-        try:
-            pointer, _ = self.process.communicate()
-            super().close()
-
-            assert pointer
-            self.__indexfile.write(pointer)
-        finally:
-            self.__indexfile.close()
+    def __next__(self) -> bytes:
+        return self.readline()
 
 
 class _GitTransaction:
@@ -240,7 +214,6 @@ class _GitTransaction:
             - If the given ``remote_branch`` (or the final part of the
               originally given revision) looks like a git object
         """
-        self.__updates: dict[pathlib.PurePosixPath, str] = {}
         self.__outer_context = outer_transactor(**kw)
         self.__handler = filehandler
         self.__dry_run = dry_run
@@ -269,11 +242,10 @@ class _GitTransaction:
 
         self.__targetref = targetref
         self.__open_files: cabc.MutableMapping[
-            tuple[int, pathlib.PurePosixPath], _ProcessWriter
+            tuple[int, pathlib.PurePosixPath], _WritableGitFile
         ] = weakref.WeakValueDictionary()
 
     def __enter__(self) -> cabc.Mapping[str, t.Any]:
-        self.__updates = {}
         self.__old_sha = (
             self.__handler._git("rev-parse", self.__handler.revision)
             .decode("ascii")
@@ -287,15 +259,14 @@ class _GitTransaction:
 
     def __exit__(self, exc_type, exc_value, exc_trace):
         if exc_value is not None:
+            self.__handler._transaction = None
+            self.__handler._git("reset", "--hard", self.__old_sha)
             return self.__outer_context.__exit__(
                 exc_type, exc_value, exc_trace
             )
         try:
-            LOGGER.debug("Creating updated tree structures")
-            tree = self.__update_tree(
-                self.__read_tree(self.__old_sha),
-                self.__updates,
-            )
+            LOGGER.debug("Writing updated tree to database")
+            tree = self.__write_tree()
 
             LOGGER.debug("Creating commit object with tree %s", tree)
             commit = self.__commit(tree)
@@ -304,6 +275,7 @@ class _GitTransaction:
                 return None
 
             LOGGER.debug("Updating ref %r to %s", self.__targetref, commit)
+            self.__handler._git("reset", "--soft", commit)
             self.__update_target_ref(commit)
 
             if not self.__push:
@@ -318,44 +290,36 @@ class _GitTransaction:
             self.__outer_context.__exit__(exc_type, exc_value, exc_trace)
         return None
 
-    def record_update(self, path: pathlib.PurePosixPath, new_sha: str) -> None:
-        """Record an updated blob in the current transaction.
+    def record_update(self, filename: pathlib.PurePosixPath) -> None:
+        """Record an updated file in the current transaction.
 
         Parameters
         ----------
-        path
-            The path of the blob, relative to the root of the repository.
-        new_sha
-            The SHA sum (object name) of the new blob.
+        filename
+            The path of the file, relative to the root of the repository.
         """
-        assert re.fullmatch("[0-9a-fA-F]+", new_sha)
-        assert self.__handler._transaction is not None
-        if path in self.__updates:
-            LOGGER.warning(
-                "Path changed twice in the same transaction: %s", path
-            )
-        self.__updates[path] = new_sha
+        assert self.__handler._transaction is self
+        self.__handler._git("add", filename)
 
     def record_pending_update(
-        self, filename: pathlib.PurePosixPath, file: _ProcessWriter
+        self, filename: pathlib.PurePosixPath, file: _WritableGitFile
     ) -> None:
         self.__open_files[id(file), filename] = file
 
     def __commit(self, tree: str) -> str:
         """Commit ``tree`` as child commit of ``__target_ref``."""
-        commit_hash = (
-            self.__handler._git(
-                "commit-tree",
-                tree,
-                "-p",
-                self.__old_sha,
-                "-m",
-                self.__commit_msg,
-                env=self.__gitenv,
-            )
-            .strip()
-            .decode("ascii")
+        commit_hash = self.__handler._git(
+            "commit-tree",
+            tree,
+            "-p",
+            self.__old_sha,
+            "-m",
+            self.__commit_msg,
+            env=self.__gitenv,
+            encoding="ascii",
         )
+        commit_hash = commit_hash.strip()
+
         LOGGER.debug("Created commit with hash %r", commit_hash)
         return commit_hash
 
@@ -370,17 +334,6 @@ class _GitTransaction:
             remote,
             self.__targetref,
         )
-
-    def __read_tree(self, treeish: str) -> dict[str, _TreeEntry]:
-        """Read a tree object from git into a dictionary."""
-        treedata = self.__handler._git("ls-tree", treeish, "-z")
-        tree: dict[str, _TreeEntry] = {}
-        for line in treedata.decode("utf-8").split("\0"):
-            if line == "":
-                continue
-            leaf = _TreeEntry.fromstring(line)
-            tree[leaf.file] = leaf
-        return tree
 
     def __resolve_head(self) -> str:
         """Resolve HEAD to a single symbolic name."""
@@ -401,12 +354,8 @@ class _GitTransaction:
             commit,
         )
 
-    def __update_tree(
-        self,
-        old_tree: cabc.Mapping[str, _TreeEntry],
-        updates: cabc.Mapping[pathlib.PurePosixPath, str],
-    ) -> str:
-        """Apply ``updates`` to ``old_tree`` and create a new tree object."""
+    def __write_tree(self) -> str:
+        """Write the tree built up in the git index to the database."""
         unclosed_files = 0
         for (_, filename), file in self.__open_files.items():
             if not file.closed:
@@ -414,38 +363,8 @@ class _GitTransaction:
                 LOGGER.warning("File is still open: %s", filename)
         if unclosed_files:
             LOGGER.critical(self.__unclosed_error, unclosed_files)
-        tree = dict(old_tree)
 
-        def groupkey(i: tuple[pathlib.PurePosixPath, str]) -> str:
-            if len(i[0].parts) > 1:
-                return i[0].parts[0]
-            return ""
-
-        for prefix, contents in itertools.groupby(
-            sorted(updates.items(), key=groupkey), key=groupkey
-        ):
-            if not prefix:
-                for f, h in contents:
-                    tree[f.name] = _TreeEntry("100644", "blob", h, f.name)
-            else:
-                ent = tree.get(prefix)
-                if ent is None or ent.type != "tree":
-                    ent = _TreeEntry("040000", "tree", "", prefix)
-
-                new_subtree = self.__update_tree(
-                    self.__read_tree(ent.object) if ent.object else {},
-                    {k.relative_to(prefix): v for k, v in contents},
-                )
-                tree[prefix] = ent._replace(object=new_subtree)
-
-        tree_dump = "\0".join(i.tostring() for i in tree.values())
-        tree_hash = (
-            self.__handler._git(
-                "mktree", "-z", input=tree_dump.encode("utf-8")
-            )
-            .decode("ascii")
-            .strip()
-        )
+        tree_hash = self.__handler._git("write-tree", encoding="ascii").strip()
         LOGGER.debug("Created tree with hash %r", tree_hash)
         return tree_hash
 
@@ -548,15 +467,6 @@ class GitFileHandler(abc.FileHandler):
         self.__init_worktree()
 
         self._transaction: _GitTransaction | None = None
-        try:
-            self._git("lfs", "env", silent=True)
-        except subprocess.CalledProcessError:
-            LOGGER.debug("LFS not installed, disabling related functionality")
-            self.__has_lfs = False
-        else:
-            LOGGER.debug("LFS support detected")
-            self.__has_lfs = True
-        self.__lfsfiles = {}
 
     def open(
         self,
@@ -571,38 +481,8 @@ class GitFileHandler(abc.FileHandler):
                 raise abc.TransactionClosedError(
                     "Writing to git requires a transaction"
                 )
-            return self.__open_writable(path)
-        return self.__open_readable(path)
-
-    def __open_readable(self, path: pathlib.PurePosixPath) -> t.BinaryIO:
-        try:
-            if self.__is_lfs(path):
-                content = self.__open_from_lfs(path)
-            else:
-                content = self.__open_from_index(path)
-        except subprocess.CalledProcessError as err:
-            stderr = err.stderr.decode("utf-8")
-            if str(path) in stderr.splitlines()[0]:
-                raise FileNotFoundError(stderr) from err
-            raise
-        return io.BytesIO(content)
-
-    def __open_writable(self, path: pathlib.PurePosixPath) -> t.BinaryIO:
-        assert self._transaction is not None
-
-        cls: type[_WritableLFSFile] | type[_WritableIndexFile]
-        if self.__is_lfs(path):
-            cls = _WritableLFSFile
-        else:
-            cls = _WritableIndexFile
-        file = cls(
-            cb=functools.partial(self._transaction.record_update, path),
-            cwd=self.cache_dir,
-            env=self.__get_git_env()[0],
-            filename=path,
-        )
-        self._transaction.record_pending_update(path, file)
-        return file
+            return _WritableGitFile(self._transaction, self.cache_dir, path)
+        return open(self.cache_dir / path, "rb")
 
     def get_model_info(self) -> modelinfo.ModelInfo:
         def revparse(*args: str) -> str:
@@ -635,7 +515,7 @@ class GitFileHandler(abc.FileHandler):
     @property
     def rootdir(self) -> GitPath:
         """The root directory of the repository."""
-        return GitPath(self, pathlib.PurePosixPath("."), "tree")
+        return GitPath(self, pathlib.PurePosixPath("."))
 
     def iterdir(
         self, path: str | pathlib.PurePosixPath = "."
@@ -648,19 +528,8 @@ class GitFileHandler(abc.FileHandler):
             The path to the directory to iterate over.
         """
         path = capellambse.helpers.normalize_pure_path(path, base=self.subdir)
-        if path == pathlib.PurePosixPath("."):
-            treename = self.revision
-        else:
-            treename = f"{self.revision}:{path}"
-        tree = (
-            self._git("ls-tree", "-z", treename)
-            .decode("utf-8", errors="surrogateescape")
-            .rstrip("\x00")
-            .split("\x00")
-        )
-        for line in tree:
-            _, type, _, name = line.split(maxsplit=3)
-            yield GitPath(self, pathlib.PurePosixPath(path, name), type)
+        for subpath in self.cache_dir.joinpath(*path.parts).iterdir():
+            yield GitPath(self, pathlib.PurePosixPath(path, subpath.name))
 
     @staticmethod
     def __cleanup_worktree(
@@ -710,12 +579,15 @@ class GitFileHandler(abc.FileHandler):
 
         return git_env, git_cmd
 
-    def __init_cache_dir(self) -> None:
-        if (
+    def __is_local_repo(self) -> bool:
+        return (
             isinstance(self.path, pathlib.Path)
             or str(self.path).startswith("file://")
             or pathlib.Path(self.path).is_absolute()
-        ):
+        )
+
+    def __init_cache_dir(self) -> None:
+        if self.__is_local_repo():
             self.__init_cache_dir_local()
         else:
             self.__init_cache_dir_remote()
@@ -784,6 +656,8 @@ class GitFileHandler(abc.FileHandler):
                     fetchspec += f":{self.revision}"
                 self.__git_nolock("fetch", *fetchopts, self.path, fetchspec)
 
+            self.__git_nolock("config", "extensions.worktreeConfig", "true")
+
     def __resolve_default_branch(self) -> tuple[str, str]:
         """Resolve the default branch name and its hash on the remote."""
         LOGGER.debug("Resolving default branch on remote %s", self.path)
@@ -835,8 +709,9 @@ class GitFileHandler(abc.FileHandler):
         return hash, refname
 
     def __init_worktree(self) -> None:
+        WTBASE.mkdir(0o700, parents=True, exist_ok=True)
         worktree = pathlib.Path(
-            tempfile.mkdtemp(None, f"capellambse-{os.getpid()}-")
+            tempfile.mkdtemp(None, f"capellambse-{os.getpid()}-", WTBASE)
         )
         LOGGER.debug("Setting up a worktree at %s", worktree)
         try:
@@ -844,7 +719,6 @@ class GitFileHandler(abc.FileHandler):
                 "worktree",
                 "add",
                 "--detach",
-                "--no-checkout",
                 worktree,
                 self.__hash,
             )
@@ -857,45 +731,16 @@ class GitFileHandler(abc.FileHandler):
             self, self.__cleanup_worktree, self.__repo, worktree
         )
 
-        self._git("reset", "--mixed", self.revision)
-
-    def __is_lfs(self, path: pathlib.PurePosixPath) -> bool:
-        """Check whether a file uses LFS or not.
-
-        As a side effect, this method will raise an exception if
-        ``__init__`` has detected that ``git-lfs`` is not installed and
-        the ``path`` is determined to be an LFS file.
-        """
-        try:
-            return self.__lfsfiles[path]
-        except KeyError:
-            pass
-
-        attrs = self._git("check-attr", "--all", "--cached", "-z", "--", path)
-        for _, attr, value in capellambse.helpers.ntuples(
-            3, attrs.split(b"\0")
-        ):
-            if attr == b"filter" and value == b"lfs":
-                break
-        else:
-            self.__lfsfiles[path] = False
-            return False
-
-        self.__lfsfiles[path] = True
-        if not self.__has_lfs:
-            raise RuntimeError(
-                f"Cannot open LFS file, git-lfs is not installed: {path}"
-            )
-        return True
-
-    def __open_from_index(self, filename: pathlib.PurePosixPath) -> bytes:
-        return self._git(
-            "cat-file", "blob", f"{self.revision}:{filename}", silent=True
-        )
-
-    def __open_from_lfs(self, filename: pathlib.PurePosixPath) -> bytes:
-        lfsinfo = self.__open_from_index(filename)
-        return self._git("lfs", "smudge", "--", filename, input=lfsinfo)
+        if not self.__is_local_repo():
+            try:
+                self.__git_nolock("lfs", "env", silent=True)
+            except subprocess.CalledProcessError:
+                LOGGER.debug("LFS not installed, skipping setup")
+            else:
+                LOGGER.debug("LFS support detected, registering filter")
+                self.__git_nolock("lfs", "install", "--worktree", "--force")
+                self.__git_nolock("config", "--worktree", "core.bare", "false")
+                self._git("lfs", "pull")
 
     @t.overload
     def _git(
@@ -972,30 +817,8 @@ class GitFileHandler(abc.FileHandler):
 
 
 class GitPath(abc.FilePath[GitFileHandler]):
-    def __init__(
-        self,
-        parent: GitFileHandler,
-        path: pathlib.PurePosixPath,
-        type: str | None = None,
-    ) -> None:
-        super().__init__(parent, path)
-        self._type = type
-
     def is_dir(self) -> bool:
-        if self._type is None:
-            self._type = self._find_type()
-        return self._type == "tree"
+        return self._parent.cache_dir.joinpath(self._path).is_dir()
 
     def is_file(self) -> bool:
-        if self._type is None:
-            self._type = self._find_type()
-        return self._type == "blob"
-
-    def _find_type(self) -> str:
-        return (
-            self._parent._git(
-                "cat-file", "-t", f"{self._parent.revision}:{self._path}"
-            )
-            .strip()
-            .decode("utf-8")
-        )
+        return self._parent.cache_dir.joinpath(self._path).is_file()
