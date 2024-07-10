@@ -18,6 +18,7 @@ import collections.abc as cabc
 import enum
 import functools
 import inspect
+import logging
 import operator
 import re
 import sys
@@ -40,6 +41,8 @@ else:
 
 if t.TYPE_CHECKING:
     from capellambse.model import crosslayer
+
+LOGGER = logging.getLogger(__name__)
 
 _T = t.TypeVar("_T", bound="ModelObject")
 
@@ -373,9 +376,10 @@ class GenericElement:
             if _TERMCELL is None:
                 try:
                     _TERMCELL = helpers.get_term_cell_size()
-                except ValueError:
+                except ValueError as err:
+                    LOGGER.warning("Cannot determine term cell size: %s", err)
                     _TERMCELL = (0, 0)
-            size = _TERMCELL[1] or 11
+            size = (_TERMCELL[1] or 13) - 2
             icon = self._get_icon("termgraphics", size=size) or b""
             assert isinstance(icon, bytes)
         else:
