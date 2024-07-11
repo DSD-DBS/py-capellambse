@@ -602,18 +602,18 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
         def make_values_container(
             self, *values: t.Any
-        ) -> cabc.Container[t.Any]:
+        ) -> cabc.Iterable[t.Any]:
             return values
 
-        def ismatch(
-            self, element: _T, valueset: cabc.Container[t.Any]
-        ) -> bool:
+        def ismatch(self, element: _T, valueset: cabc.Iterable[t.Any]) -> bool:
             try:
                 value = self.extract_key(element)
             except AttributeError:
                 return False
 
-            return self._positive == (value in valueset)
+            if isinstance(value, str) or not isinstance(value, cabc.Iterable):
+                return self._positive == (value in valueset)
+            return self._positive == any(v in value for v in valueset)
 
         @t.overload
         def __call__(self, *values: t.Any, single: t.Literal[True]) -> _T: ...
@@ -1164,7 +1164,7 @@ class MixedElementList(ElementList[GenericElement]):
 
         def make_values_container(
             self, *values: t.Any
-        ) -> cabc.Container[t.Any]:
+        ) -> cabc.Iterable[t.Any]:
             return tuple(map(operator.methodcaller("lower"), values))
 
     def __init__(
