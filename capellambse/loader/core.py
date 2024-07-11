@@ -1329,6 +1329,7 @@ class MelodyLoader:
         """Return information about the loaded model."""
         info = self.filehandler.get_model_info()
         modelroot = next(self.iterall_xt(*ROOT_XT), None)
+        info.entrypoint = self.entrypoint
         info.title = getattr(modelroot, "attrib", {}).get("name")
         info.viewpoints = dict(self.referenced_viewpoints())
         info.capella_version = info.viewpoints.get(

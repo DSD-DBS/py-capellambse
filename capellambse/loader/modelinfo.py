@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import dataclasses
+import pathlib
 
 
 @dataclasses.dataclass
@@ -11,6 +12,7 @@ class ModelInfo:
     branch: str | None = None
     title: str | None = None
     url: str | None = None
+    entrypoint: pathlib.PurePosixPath | None = None
     revision: str | None = None
     rev_hash: str | None = None
     capella_version: str | None = None
