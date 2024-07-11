@@ -709,16 +709,12 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         else:
             self._elemclass = GenericElement  # type: ignore[assignment]
 
-        if bool(mapkey) != bool(mapvalue):
-            raise TypeError(
-                "mapkey and mapvalue must both either be set or unset"
-            )
         # pylint: disable=assigning-non-slot  # false-positive
-        if not mapkey or not mapvalue:
-            self.__mapkey: cabc.Callable[[T], t.Any] | None = None
+        if not mapkey:
+            self.__mapkey: str | None = None
             self.__mapvalue: str | None = None
         else:
-            self.__mapkey = operator.attrgetter(mapkey)
+            self.__mapkey = mapkey
             self.__mapvalue = mapvalue
 
     def __eq__(self, other: object) -> bool:
@@ -841,10 +837,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             return obj._element in self._elements
         return any(i == obj for i in self)
 
-    def __getattr__(
-        self,
-        attr: str,
-    ) -> ElementList._Filter:
+    def __getattr__(self, attr: str) -> ElementList._Filter:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
             if attr in {"name", "uuid"}:
@@ -916,11 +909,12 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         return self.__html__()
 
     def _mapkey(self, obj: T) -> t.Any:
-        if self.__mapkey is None or self.__mapvalue is None:
+        if self.__mapkey is None:
             raise TypeError("This list cannot act as a mapping")
 
+        mapkey = operator.attrgetter(self.__mapkey)
         try:
-            return self.__mapkey(obj)
+            return mapkey(obj)
         except AttributeError:
             return None
 
@@ -936,10 +930,11 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         :meth:`_map_getvalue` and :meth:`_map_setvalue`
             Get or set the mapping value behind the target object.
         """
-        if self.__mapkey is None or self.__mapvalue is None:
+        if self.__mapkey is None:
             raise TypeError("This list cannot act as a mapping")
 
-        candidates = [i for i in self if self.__mapkey(i) == key]
+        mapkey = operator.attrgetter(self.__mapkey)
+        candidates = [i for i in self if mapkey(i) == key]
         if len(candidates) > 1:
             raise ValueError(f"Multiple matches for key {key!r}")
         if not candidates:
@@ -948,13 +943,17 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
     def _map_getvalue(self, obj: T) -> t.Any:
         """Get the mapping value from the target object."""
-        assert self.__mapvalue
+        if not self.__mapvalue:
+            return obj
         getvalue = operator.attrgetter(self.__mapvalue)
         return getvalue(obj)
 
     def _map_setvalue(self, obj: T, value: t.Any) -> None:
         """Set a new mapping value on the target object."""
-        assert self.__mapvalue
+        if not self.__mapvalue:
+            self[self.index(obj)] = value
+            return
+
         key = self.__mapvalue.rsplit(".", maxsplit=1)
         if len(key) == 1:
             target: t.Any = obj
@@ -965,7 +964,13 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
     def _newlist(self, elements: list[etree._Element]) -> ElementList[T]:
         listtype = self._newlist_type()
-        return listtype(self._model, elements, self._elemclass)
+        return listtype(
+            self._model,
+            elements,
+            self._elemclass,
+            mapkey=self.__mapkey,
+            mapvalue=self.__mapvalue,
+        )
 
     def _newlist_type(self) -> type[ElementList]:
         return type(self)
