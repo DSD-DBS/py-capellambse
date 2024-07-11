@@ -19,6 +19,7 @@ def init() -> None:
     # pylint: disable=redefined-outer-name # false-positive
     import capellambse
     from capellambse.model import common as c
+    from capellambse.model import crosslayer as xl
 
     c.set_accessor(
         capellambse.MelodyModel,
@@ -34,4 +35,9 @@ def init() -> None:
     )
     c.GenericElement.validate = property(  # type: ignore[attr-defined]
         lambda self: self.validation.validate
+    )
+    c.set_accessor(
+        xl.BaseArchitectureLayer,
+        "validation",
+        c.AlternateAccessor(LayerValidation),
     )

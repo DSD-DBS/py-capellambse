@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "Category",
     "ElementValidation",
+    "LayerValidation",
     "ModelValidation",
     "RealType",
     "Result",
@@ -441,8 +442,39 @@ class ModelValidation(Validation):
         return c.MixedElementList(self._model, list(found.values()))
 
 
+class LayerValidation(Validation):
+    """Provides access to the layer's validation rules and results."""
+
+    @property
+    def rules(self) -> Rules:
+        """Return all registered validation rules."""
+        return _VALIDATION_RULES
+
+    def validate(self) -> Results:
+        """Execute all registered validation rules and store results."""
+        all_results = []
+        for rule_ in _VALIDATION_RULES.values():
+            for obj in rule_.find_objects(self._model):
+                if obj.layer != self.parent:
+                    continue
+                all_results.append(
+                    (
+                        (rule_, obj.uuid),
+                        Result(rule_, obj, rule_.validate(obj)),
+                    )
+                )
+        return Results(all_results)
+
+    def search(self, /, *typenames: str) -> c.ElementList[t.Any]:
+        found: dict[str, t.Any] = {}
+        for i in typenames:
+            objs = _types_registry[i].search(self._model).by_layer(self.parent)
+            found.update((o.uuid, o._element) for o in objs)
+        return c.MixedElementList(self._model, list(found.values()))
+
+
 class ElementValidation(Validation):
-    """Provides access to the model's validation rules and results."""
+    """Provides access to the element's validation rules and results."""
 
     @property
     def rules(self) -> list[Rule]:
