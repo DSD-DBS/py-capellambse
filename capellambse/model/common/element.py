@@ -311,6 +311,25 @@ class GenericElement:
             return NotImplemented
         return self._element is other._element
 
+    def __dir__(self) -> list[str]:
+        badacc = (accessors.DeprecatedAccessor,)
+        cls = type(self)
+        attrs: list[str] = []
+        for i in super().__dir__():
+            try:
+                acc = getattr(cls, i)
+            except Exception:
+                continue
+            if isinstance(acc, badacc):
+                continue
+            try:
+                if getattr(acc, "__deprecated__", None):
+                    continue
+            except Exception:
+                continue
+            attrs.append(i)
+        return attrs
+
     @deprecated("Hashing of elements is deprecated, use the '.uuid' instead")
     def __hash__(self):
         return hash(self._element)
