@@ -534,9 +534,32 @@ class Diagram(AbstractDiagram):
             self.__nodes = list(
                 aird.iter_visible(self._model._loader, self._element)
             )
-        return c.MixedElementList(
-            self._model, self.__nodes.copy(), c.GenericElement
-        )
+        return c.MixedElementList(self._model, self.__nodes.copy())
+
+    @property
+    def semantic_nodes(self) -> c.MixedElementList:
+        if self.__nodes is None:
+            self.__nodes = list(
+                aird.iter_visible(self._model._loader, self._element)
+            )
+
+        from capellambse.model.crosslayer import cs, interaction
+
+        elems: list[etree._Element] = []
+        for i in self.__nodes:
+            elems.append(i)
+            resolved = None
+            obj = c.GenericElement.from_model(self._model, i)
+            if isinstance(obj, cs.Part):
+                resolved = obj.type
+            elif isinstance(obj, interaction.AbstractInvolvement):
+                resolved = obj.involved
+            elif isinstance(obj, interaction.StateFragment):
+                resolved = obj.function
+
+            if resolved is not None:
+                elems.append(resolved._element)
+        return c.MixedElementList(self._model, elems)
 
     @property
     def _allow_render(self) -> bool:
