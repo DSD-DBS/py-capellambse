@@ -329,15 +329,17 @@ def iter_visible(
         "ownedAnnotationsEntries with source GMF_DIAGRAMS",
         diag_element.attrib["uid"],
     )
+    styles = {
+        i.get("element"): i
+        for i in style_data.iter()
+        if i.get("visible", "true") == "true"
+    }
     port_tag = "ownedBorderedNodes"
     visited: set[str] = set()
     for elt in diag_element.iterdescendants("ownedDiagramElements", port_tag):
-        style_element = helpers.xpath_fetch_unique(
-            f".//*[@element='{elt.attrib['uid']}']",
-            style_data,
-            "style description",
-        )
-        if style_element.get("visible", "true") != "true":
+        try:
+            style_element = styles[elt.attrib["uid"]]
+        except KeyError:
             continue
 
         # Component Ports have their visible attribute on a child element
@@ -353,8 +355,8 @@ def iter_visible(
         try:
             target = next(elt.iterdescendants("target"))
         except StopIteration:
-            C.LOGGER.warning(
-                "No semantic element found for %r",
+            C.LOGGER.debug(
+                "No semantic element found for %r, ignoring",
                 elt.get("name", elt.attrib["uid"]),
             )
             continue
