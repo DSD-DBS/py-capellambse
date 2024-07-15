@@ -67,12 +67,6 @@ class AbstractExchange(c.GenericElement):
     source_port = c.DeprecatedAccessor[c.GenericElement]("source")
     target_port = c.DeprecatedAccessor[c.GenericElement]("target")
 
-    def __dir__(self) -> list[str]:
-        attrs = list(super().__dir__())
-        attrs.remove("source_port")
-        attrs.remove("target_port")
-        return attrs
-
 
 @c.xtype_handler(None)
 class AbstractFunction(c.GenericElement):
@@ -322,11 +316,6 @@ class ComponentExchange(AbstractExchange):
         for exchange in func_exchanges:
             items += exchange.exchange_items
         return items
-
-    def __dir__(self) -> list[str]:
-        attrs = list(super().__dir__())
-        attrs.remove("func_exchanges")
-        return attrs
 
 
 for _port, _exchange in [
