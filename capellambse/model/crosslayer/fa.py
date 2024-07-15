@@ -17,6 +17,8 @@ import collections.abc as cabc
 import sys
 import typing as t
 
+from lxml import etree
+
 from .. import common as c
 from .. import modeltypes
 from . import capellacommon, capellacore, information, interaction
@@ -144,6 +146,22 @@ class Function(AbstractFunction):
     realizing_functions = c.ReferenceSearchingAccessor[AbstractFunction](
         (), "realized_functions", aslist=c.MixedElementList
     )
+
+    @property
+    def input_exchanges(self) -> c.ElementList[FunctionalExchange]:
+        """All incoming exchanges."""
+        elements: list[etree._Element] = []
+        for port in self.inputs:
+            elements.extend([ex._element for ex in port.exchanges])
+        return self.exchanges._newlist(elements)
+
+    @property
+    def output_exchanges(self) -> c.ElementList[FunctionalExchange]:
+        """All outgoing exchanges."""
+        elements: list[etree._Element] = []
+        for port in self.outputs:
+            elements.extend([ex._element for ex in port.exchanges])
+        return self.exchanges._newlist(elements)
 
 
 @c.xtype_handler(None)
