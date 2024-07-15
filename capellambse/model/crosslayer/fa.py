@@ -13,7 +13,6 @@ Functional Analysis object-relations map (ontology):
 
 from __future__ import annotations
 
-import collections.abc as cabc
 import sys
 import typing as t
 
@@ -306,16 +305,11 @@ class ComponentExchange(AbstractExchange):
         return self.allocating_physical_link
 
     @property
-    def exchange_items(
-        self,
-    ) -> c.ElementList[information.ExchangeItem]:
-        items = c.ElementList(self._model, [], information.ExchangeItem)
-        items.extend(self.allocated_exchange_items)
-        func_exchanges = self.allocated_functional_exchanges
-        assert isinstance(func_exchanges, cabc.Iterable)
-        for exchange in func_exchanges:
-            items += exchange.exchange_items
-        return items
+    def exchange_items(self) -> c.ElementList[information.ExchangeItem]:
+        return (
+            self.allocated_exchange_items
+            + self.allocated_functional_exchanges.map("exchange_items")
+        )
 
 
 for _port, _exchange in [
