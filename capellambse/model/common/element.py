@@ -853,7 +853,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         return getattr(super(), attr)
 
     def __dir__(self) -> list[str]:  # pragma: no cover
-        no_dir_attr = re.compile(r"^(_|as_|pvmt$|nodes$|diagrams?$)")
+        no_dir_attr = re.compile(r"^(_|as_|pvmt$|diagrams?$)")
 
         def filterable_attrs() -> cabc.Iterator[str]:
             for obj in self:
