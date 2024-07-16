@@ -482,11 +482,14 @@ class GenericElement:
             icon = ""
         else:
             assert isinstance(icon, str)
+        value = getattr(self, "value", "")
+        if hasattr(value, "_short_html_"):
+            value = value._short_html_()
         return helpers.make_short_html(
             type(self).__name__,
             self.uuid,
             self.name,
-            getattr(self, "value", ""),
+            value,
             icon=icon,
             iconsize=15,
         )
