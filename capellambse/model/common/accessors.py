@@ -1874,6 +1874,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
 
     aslist: type[ElementListCouplingMixin] | None
     class_: type[element.GenericElement]
+    alternate: type[element.GenericElement] | None
 
     def __init__(
         self,
@@ -1887,6 +1888,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         mapkey: str | None = None,
         mapvalue: str | None = None,
         list_extra_args: dict[str, t.Any] | None = None,
+        alternate: type[element.GenericElement] | None = None,
     ) -> None:
         super().__init__(
             element.GenericElement,
@@ -1902,6 +1904,10 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         else:
             self.classes = (classes,)
 
+        if len(self.classes) != 1 and alternate is not None:
+            raise TypeError("alternate needs exactly 1 possible origin class")
+        self.alternate = alternate
+
     def __get__(self, obj, objtype=None):
         del objtype
         if obj is None:  # pragma: no cover
@@ -1909,12 +1915,17 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
 
         elts = list(obj._element.iterchildren(self.role_tag))
         rv = self._make_list(obj, elts)
+        if self.classes:
+            rv = rv.filter(lambda i: isinstance(i, self.classes))
+        if self.alternate is not None:
+            assert isinstance(rv, element.ElementList)
+            assert not isinstance(rv, element.MixedElementList)
+            rv._elemclass = self.alternate
+
         if obj._constructed:
             sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
             sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        if not self.classes:
-            return rv
-        return rv.filter(lambda i: isinstance(i, self.classes))
+        return rv
 
     def __set__(
         self,
