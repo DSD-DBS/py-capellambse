@@ -256,6 +256,8 @@ class GenericElement:
         parent: etree._Element,
         xmltag: str | None = None,
         /,
+        *,
+        uuid: str,
         **kw: t.Any,
     ) -> None:
         all_required_attrs: set[str] = set()
@@ -263,7 +265,7 @@ class GenericElement:
             all_required_attrs |= getattr(
                 basecls, "_required_attrs", frozenset()
             )
-        missing_attrs = all_required_attrs - frozenset(kw)
+        missing_attrs = all_required_attrs - frozenset(kw) - {"uuid"}
         if missing_attrs:
             mattrs = ", ".join(sorted(missing_attrs))
             raise TypeError(f"Missing required keyword arguments: {mattrs}")
@@ -280,6 +282,7 @@ class GenericElement:
         self._element: etree._Element = etree.Element(xmltag)
         parent.append(self._element)
         try:
+            self.uuid = uuid
             for key, val in kw.items():
                 if key == "xtype":
                     self._element.set(helpers.ATT_XT, val)
