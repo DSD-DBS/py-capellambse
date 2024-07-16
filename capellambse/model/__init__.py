@@ -18,14 +18,22 @@ import os
 import pathlib
 import re
 import shutil
+import sys
 import typing as t
 
 from lxml import etree
 
 import capellambse
 import capellambse.helpers
-import capellambse.pvmt
 from capellambse import _diagram_cache, aird, filehandler, loader
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
+if t.TYPE_CHECKING:
+    import capellambse.pvmt as _pvmt
 
 from . import common, diagram  # isort:skip
 
@@ -94,6 +102,8 @@ class MelodyModel:
     diagram_cache: filehandler.FileHandler | None
     _diagram_cache_subdir: pathlib.PurePosixPath
     _constructed: bool
+
+    __pvext: capellambse.pvmt.PVMTExtension | None
 
     def __init__(
         self,
@@ -268,15 +278,6 @@ class MelodyModel:
         self._loader = loader.MelodyLoader(path, **kwargs)
         self._fallback_render_aird = fallback_render_aird
 
-        try:
-            self._pvext = capellambse.pvmt.load_pvmt_from_model(self._loader)
-        except ValueError as err:
-            LOGGER.warning(
-                "Cannot load PVMT extension: %s: %s", type(err).__name__, err
-            )
-            LOGGER.warning("Property values are not available in this model")
-            self._pvext = None
-
         if diagram_cache:
             if diagram_cache == path:
                 self.diagram_cache = self._loader.filehandler
@@ -309,6 +310,30 @@ class MelodyModel:
     @property
     def _model(self) -> MelodyModel:
         return self
+
+    @property
+    @deprecated(
+        "The legacy PVMT extension is deprecated and will be replaced soon",
+        category=FutureWarning,
+    )
+    def _pvext(self) -> _pvmt.PVMTExtension | None:
+        try:
+            return self.__pvext
+        except AttributeError:
+            pass
+
+        import capellambse.pvmt as _pvmt
+
+        try:
+            self.__pvext = _pvmt.load_pvmt_from_model(self._loader)
+        except ValueError as err:
+            LOGGER.warning(
+                "Cannot load legacy PVMT extension: %s: %s",
+                type(err).__name__,
+                err,
+            )
+            LOGGER.warning("Legacy PVMT is not available in this model")
+        return self.__pvext
 
     @property
     def parent(self) -> None:

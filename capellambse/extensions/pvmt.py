@@ -85,6 +85,7 @@ class _PVMTDomain:
         if len(path) < 1 or len(path) > 2:
             raise ValueError("Provide a name as `group` or `group.prop`")
 
+        assert self._model._pvext is not None
         try:
             pvgroup = self._model._pvext.get_element_pv(
                 self._element, f"{self._domain}.{path[0]}", create=False
