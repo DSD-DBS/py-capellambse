@@ -1879,8 +1879,8 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         self,
         role_tag: str,
         classes: (
-            type[element.GenericElement]
-            | cabc.Iterable[type[element.GenericElement]]
+            type[element.ModelObject]
+            | cabc.Iterable[type[element.ModelObject]]
         ) = (),
         *,
         aslist: type[element.ElementList[T]] | None = None,
@@ -2023,7 +2023,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         type_1: str | None,
         type_2: str | object = _NOT_SPECIFIED,
         /,
-    ) -> tuple[type[element.GenericElement], str]:
+    ) -> tuple[type[element.ModelObject], str]:
         if not self.classes:
             return super()._match_xtype(type_1, type_2)
 
@@ -2038,7 +2038,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             raise ValueError(f"Invalid class for {self._qualname}: {type_1}")
         return cls, build_xtype(cls)
 
-    def _guess_xtype(self) -> tuple[type[element.GenericElement], str]:
+    def _guess_xtype(self) -> tuple[type[element.ModelObject], str]:
         if len(self.classes) == 1:
             return self.classes[0], build_xtype(self.classes[0])
 
