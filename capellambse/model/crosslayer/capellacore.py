@@ -111,7 +111,8 @@ class PropertyValueGroup(c.GenericElement):
             EnumerationPropertyValue,
         ),
         aslist=c.ElementList,
-        list_extra_args={"mapkey": "name", "mapvalue": "value"},
+        mapkey="name",
+        mapvalue="value",
     )
 
 
@@ -127,7 +128,8 @@ class PropertyValuePkg(c.GenericElement):
     groups = c.DirectProxyAccessor(
         PropertyValueGroup,
         aslist=c.ElementList,
-        list_extra_args={"mapkey": "name", "mapvalue": "values"},
+        mapkey="name",
+        mapvalue="values",
     )
     values = c.DirectProxyAccessor(
         c.GenericElement,
@@ -139,7 +141,8 @@ class PropertyValuePkg(c.GenericElement):
             EnumerationPropertyValue,
         ),
         aslist=c.ElementList,
-        list_extra_args={"mapkey": "name", "mapvalue": "value"},
+        mapkey="name",
+        mapvalue="value",
     )
 
 
@@ -165,7 +168,8 @@ c.set_accessor(
             StringPropertyValue,
         ),
         aslist=c.MixedElementList,
-        list_extra_args={"mapkey": "name", "mapvalue": "value"},
+        mapkey="name",
+        mapvalue="value",
     ),
 )
 c.set_accessor(
@@ -174,7 +178,8 @@ c.set_accessor(
     c.DirectProxyAccessor(
         PropertyValueGroup,
         aslist=c.ElementList,
-        list_extra_args={"mapkey": "name", "mapvalue": "values"},
+        mapkey="name",
+        mapvalue="values",
     ),
 )
 

@@ -137,10 +137,8 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
                 StringValueAttribute,
             ),
             aslist=c.MixedElementList,
-            list_extra_args={
-                "mapkey": "definition.long_name",
-                "mapvalue": "value",
-            },
+            mapkey="definition.long_name",
+            mapvalue="value",
         )
 
     def _match_xtype(  # type: ignore[override]

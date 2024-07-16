@@ -543,6 +543,9 @@ class PhysicalAccessor(Accessor[T]):
         ) = None,
         *,
         aslist: type[element.ElementList[T]] | None = None,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
+        fixed_length: int = 0,
         list_extra_args: cabc.Mapping[str, t.Any] | None = None,
     ) -> None:
         super().__init__()
@@ -564,7 +567,24 @@ class PhysicalAccessor(Accessor[T]):
 
         self.aslist = aslist
         self.class_ = class_
-        self.list_extra_args = list_extra_args or {}
+        self.list_extra_args = {}
+        if list_extra_args is not None:
+            warnings.warn(
+                (
+                    "list_extra_args is deprecated,"
+                    " pass mapkey and/or mapvalue directly instead"
+                ),
+                DeprecationWarning,
+            )
+            self.list_extra_args.update(list_extra_args)
+        if mapkey is not None:
+            self.list_extra_args["mapkey"] = mapkey
+        if mapvalue is not None:
+            self.list_extra_args["mapvalue"] = mapvalue
+        if fixed_length > 0:
+            self.list_extra_args["fixed_length"] = fixed_length
+        elif fixed_length < 0:
+            raise ValueError("List length cannot be negative")
 
     def _guess_xtype(self) -> tuple[type[T], str]:
         """Try to guess the type of element that should be created."""
@@ -602,6 +622,9 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
         aslist: type[element.ElementList] | None = None,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
+        fixed_length: int = 0,
         follow_abstract: bool = False,
         list_extra_args: dict[str, t.Any] | None = None,
         rootelem: (
@@ -627,6 +650,24 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             returned directly. If not None, must be a subclass of
             :class:`~capellambse.model.common.element.ElementList`,
             which will be used to return a list of all matched objects.
+        mapkey
+            Specify the attribute to look up when the returned list is
+            indexed with a str. If not specified, str indexing is not
+            possible.
+
+            Ignored if *aslist* is not specified.
+        mapvalue
+            If specified, return this attribute of the found object when
+            using str indices into the returned list. If not specified,
+            the found object itself is returned.
+
+            Ignored if *aslist* is not specified.
+        fixed_length
+            When non-zero, the returned list will try to stay at exactly
+            this length, by not allowing to insert or delete beyond this
+            many members.
+
+            Ignored if *aslist* is not specified.
         follow_abstract
             Follow the link in the ``abstractType`` XML attribute of
             each list member and instantiate that object instead. The
@@ -635,6 +676,11 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             Extra arguments to pass to the
             :class:`~capellambse.model.common.element.ElementList`
             constructor.
+
+            .. deprecated: 0.5.68
+
+               Use 'mapkey', 'mapvalue' and 'fixed_length' directly
+               instead.
         rootelem
             A class or ``xsi:type`` (or list thereof) that defines the
             path from the current object's XML element to the search
@@ -650,6 +696,9 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             xtypes,
             aslist=aslist,
             list_extra_args=list_extra_args,
+            mapkey=mapkey,
+            mapvalue=mapvalue,
+            fixed_length=fixed_length,
             single_attr=single_attr,
         )
         self.follow_abstract: bool = follow_abstract
@@ -870,6 +919,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         /,
         *,
         aslist: type[element.ElementList] | None = None,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
         attr: str,
         backattr: str | None = None,
         unique: bool = True,
@@ -892,6 +943,18 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         aslist
             Optionally specify a different subclass of
             :class:`~capellambse.model.common.element.ElementList`.
+        mapkey
+            Specify the attribute to look up when the returned list is
+            indexed with a str. If not specified, str indexing is not
+            possible.
+
+            Ignored if *aslist* is not specified.
+        mapvalue
+            If specified, return this attribute of the found object when
+            using str indices into the returned list. If not specified,
+            the found object itself is returned.
+
+            Ignored if *aslist* is not specified.
         unique
             Enforce that each element may only appear once in the list.
             If a duplicate is attempted to be added, an exception will
@@ -906,7 +969,13 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             )
         elif not isinstance(tag, str):
             raise TypeError(f"tag must be a str, not {type(tag).__name__}")
-        super().__init__(element.GenericElement, xtype, aslist=aslist)
+        super().__init__(
+            element.GenericElement,
+            xtype,
+            aslist=aslist,
+            mapkey=mapkey,
+            mapvalue=mapvalue,
+        )
         if len(self.xtypes) != 1:
             raise TypeError(f"One xtype is required, got {len(self.xtypes)}")
         self.follow = attr
@@ -1088,6 +1157,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         attr: str,
         *,
         aslist: type[element.ElementList] | None = None,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
         list_extra_args: cabc.Mapping[str, t.Any] | None = None,
     ):
         """Create an AttrProxyAccessor.
@@ -1104,16 +1175,34 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             returned. If not None, must be a subclass of
             :class:`~capellambse.model.common.element.ElementList`. It
             will be used to return a list of all matched objects.
+        mapkey
+            Specify the attribute to look up when the returned list is
+            indexed with a str. If not specified, str indexing is not
+            possible.
+
+            Ignored if *aslist* is not specified.
+        mapvalue
+            If specified, return this attribute of the found object when
+            using str indices into the returned list. If not specified,
+            the found object itself is returned.
+
+            Ignored if *aslist* is not specified.
         list_extra_args
             Extra arguments to pass to the
             :class:`~capellambse.model.common.element.ElementList`
             constructor.
+
+            .. deprecated: 0.5.68
+
+               Use 'mapkey' and 'mapvalue' directly instead.
         """
         del class_
         super().__init__(
             element.GenericElement,
             aslist=aslist,
             list_extra_args=list_extra_args,
+            mapkey=mapkey,
+            mapvalue=mapvalue,
         )
         self.attr = attr
 
@@ -1232,12 +1321,16 @@ class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
         attr: str,
         *,
         aslist: type[element.ElementList],
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
     ) -> None:
         super().__init__(
             class_,
             attr,
             aslist=aslist,
             list_extra_args={"fixed_length": 2},
+            mapkey=mapkey,
+            mapvalue=mapvalue,
         )
         assert self.aslist is not None
 
@@ -1304,10 +1397,7 @@ class AlternateAccessor(Accessor[T]):
 
     __slots__ = ("class_",)
 
-    def __init__(
-        self,
-        class_: type[T],
-    ):
+    def __init__(self, class_: type[T]):
         super().__init__()
         self.class_ = class_
 
@@ -1327,10 +1417,7 @@ class ParentAccessor(PhysicalAccessor[T]):
 
     __slots__ = ()
 
-    def __init__(
-        self,
-        class_: type[T],
-    ):
+    def __init__(self, class_: type[T]):
         super().__init__(class_)
 
     def __get__(self, obj, objtype=None):
@@ -1582,6 +1669,8 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         class_: type[T] | tuple[type[element.ModelObject], ...],
         *attrs: str,
         aslist: type[element.ElementList] | None = None,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
     ) -> None:
         """Create a ReferenceSearchingAccessor.
 
@@ -1596,15 +1685,31 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
             returned directly. If not None, must be a subclass of
             :class:`~capellambse.model.common.element.ElementList`,
             which will be used to return a list of all matched objects.
+        mapkey
+            Specify the attribute to look up when the returned list is
+            indexed with a str. If not specified, str indexing is not
+            possible.
+
+            Ignored if *aslist* is not specified.
+        mapvalue
+            If specified, return this attribute of the found object when
+            using str indices into the returned list. If not specified,
+            the found object itself is returned.
+
+            Ignored if *aslist* is not specified.
         """
         if isinstance(class_, tuple):
             super().__init__(
                 element.GenericElement,  # type: ignore[arg-type]
                 aslist=aslist,
+                mapkey=mapkey,
+                mapvalue=mapvalue,
             )
             self.target_classes = class_
         else:
-            super().__init__(class_, aslist=aslist)
+            super().__init__(
+                class_, aslist=aslist, mapkey=mapkey, mapvalue=mapvalue
+            )
             self.target_classes = (class_,)
         self.attrs = tuple(operator.attrgetter(i) for i in attrs)
 
@@ -1647,8 +1752,20 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     aslist: type[ElementListCouplingMixin] | None
     class_: type[T]
 
-    def __init__(self, cls: type[T], attr: str) -> None:
-        super().__init__(cls, (), aslist=element.ElementList)
+    def __init__(
+        self,
+        cls: type[T],
+        attr: str,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
+    ) -> None:
+        super().__init__(
+            cls,
+            (),
+            aslist=element.ElementList,
+            mapkey=mapkey,
+            mapvalue=mapvalue,
+        )
         self.attr = attr
 
     @t.overload
@@ -1767,6 +1884,8 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         ) = (),
         *,
         aslist: type[element.ElementList[T]] | None = None,
+        mapkey: str | None = None,
+        mapvalue: str | None = None,
         list_extra_args: dict[str, t.Any] | None = None,
     ) -> None:
         super().__init__(
@@ -1774,6 +1893,8 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             (),
             aslist=aslist,
             list_extra_args=list_extra_args,
+            mapkey=mapkey,
+            mapvalue=mapvalue,
         )
         self.role_tag = role_tag
         if not isinstance(classes, type):
