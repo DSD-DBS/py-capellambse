@@ -7,6 +7,7 @@ __all__ = [
     "InvalidModificationError",
     "NonUniqueMemberError",
     "Accessor",
+    "Alias",
     "DeprecatedAccessor",
     "WritableAccessor",
     "DirectProxyAccessor",
@@ -148,6 +149,51 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         if not hasattr(self, "__objclass__"):
             return f"(unknown {type(self).__name__} - call __set_name__)"
         return f"{self.__objclass__.__name__}.{self.__name__}"
+
+
+class Alias(Accessor[T]):
+    """Provides an alias to another attribute.
+
+    Parameters
+    ----------
+    target
+        The target to redirect to.
+    dirhide
+        If True, hide this alias from `dir()` calls.
+    """
+
+    __slots__ = ("dirhide", "target")
+
+    def __init__(self, target: str, /, *, dirhide: bool = True) -> None:
+        if "." in target:
+            raise ValueError(f"Unsupported alias target: {target!r}")
+
+        super().__init__()
+        self.target = target
+        self.dirhide = dirhide
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
+    @t.overload
+    def __get__(
+        self,
+        obj: element.ModelObject,
+        objtype: type[t.Any] | None = ...,
+    ) -> T | element.ElementList[T]: ...
+    def __get__(
+        self,
+        obj: element.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> te.Self | T | element.ElementList[T]:
+        if obj is None:
+            return self
+        return getattr(obj, self.target)
+
+    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
+        setattr(obj, self.target, value)
+
+    def __delete__(self, obj: element.ModelObject) -> None:
+        delattr(obj, self.target)
 
 
 class DeprecatedAccessor(Accessor[T]):

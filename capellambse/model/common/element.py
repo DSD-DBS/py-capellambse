@@ -322,6 +322,8 @@ class GenericElement:
                 continue
             if isinstance(acc, badacc):
                 continue
+            if isinstance(acc, accessors.Alias) and acc.dirhide:
+                continue
             try:
                 if getattr(acc, "__deprecated__", None):
                     continue
