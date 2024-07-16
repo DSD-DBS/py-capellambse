@@ -23,8 +23,6 @@ _T = t.TypeVar("_T", bound=diagram.Box)
 def generic_factory(
     seb: C.SemanticElementBuilder, *, minsize: diagram.Vector2D = ...
 ) -> diagram.Box: ...
-
-
 @t.overload
 def generic_factory(
     seb: C.SemanticElementBuilder,
@@ -32,8 +30,6 @@ def generic_factory(
     boxtype: type[_T] | functools.partial[_T],
     minsize: diagram.Vector2D = ...,
 ) -> _T: ...
-
-
 def generic_factory(
     seb: C.SemanticElementBuilder,
     *,

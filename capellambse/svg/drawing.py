@@ -916,10 +916,8 @@ class LinesData:
 
     @t.overload
     def __getitem__(self, index: int) -> str: ...
-
     @t.overload
     def __getitem__(self, index: slice) -> list[str]: ...
-
     def __getitem__(self, index: int | slice) -> str | list[str]:
         return self.lines[index]
 

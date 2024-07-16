@@ -797,13 +797,10 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
     @t.overload
     def __getitem__(self, idx: int) -> T: ...
-
     @t.overload
     def __getitem__(self, idx: slice) -> ElementList[T]: ...
-
     @t.overload
     def __getitem__(self, idx: str) -> t.Any: ...
-
     def __getitem__(self, idx: int | slice | str) -> t.Any:
         if isinstance(idx, slice):
             return self._newlist(self._elements[idx])
@@ -814,13 +811,10 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
     @t.overload
     def __setitem__(self, index: int, value: T) -> None: ...
-
     @t.overload
     def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
-
     @t.overload
     def __setitem__(self, index: str, value: t.Any) -> None: ...
-
     def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         if isinstance(index, slice):
             del self[index]
@@ -982,10 +976,8 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
     @t.overload
     def get(self, key: str) -> T | None: ...
-
     @t.overload
     def get(self, key: str, default: U) -> T | U: ...
-
     def get(self, key: str, default: t.Any = None) -> t.Any:
         try:
             return self[key]
@@ -1208,10 +1200,8 @@ class ElementListMapKeyView(cabc.Sequence):
 
     @t.overload
     def __getitem__(self, idx: int) -> t.Any: ...
-
     @t.overload
     def __getitem__(self, idx: slice) -> list: ...
-
     def __getitem__(self, idx):
         if isinstance(idx, slice):
             return [self.__parent._mapkey(i) for i in self.__parent[idx]]
@@ -1230,10 +1220,8 @@ class ElementListMapItemsView(t.Sequence[t.Tuple[t.Any, t.Any]], t.Generic[T]):
 
     @t.overload
     def __getitem__(self, idx: int) -> tuple[t.Any, T]: ...
-
     @t.overload
     def __getitem__(self, idx: slice) -> list[tuple[t.Any, T]]: ...
-
     def __getitem__(self, idx):
         if isinstance(idx, slice):
             return [

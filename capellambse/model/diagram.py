@@ -239,12 +239,10 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     @t.overload
     def render(self, fmt: None, /, **params) -> diagram.Diagram: ...
-
     @t.overload
     def render(
         self, fmt: str, /, *, pretty_print: bool = ..., **params
     ) -> t.Any: ...
-
     def render(
         self,
         fmt: str | None,

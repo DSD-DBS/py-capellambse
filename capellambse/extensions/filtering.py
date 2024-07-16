@@ -66,12 +66,10 @@ class AssociatedCriteriaAccessor(
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
-
     @t.overload
     def __get__(
         self, obj: c.ModelObject, objtype: type[t.Any] | None = ...
     ) -> c.ElementList[c.T]: ...
-
     def __get__(
         self,
         obj: c.ModelObject | None,

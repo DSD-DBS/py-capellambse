@@ -193,21 +193,17 @@ class StackingBox(diagram.Box):
 
         @t.overload
         def __getitem__(self, index: int) -> str: ...
-
         @t.overload
         def __getitem__(self, index: slice) -> list[str]: ...
-
         def __getitem__(self, index: int | slice) -> str | list[str]:
             return self.__list[index]
 
         @t.overload
         def __setitem__(self, index: int, value: str) -> None: ...
-
         @t.overload
         def __setitem__(
             self, index: slice, value: cabc.Iterable[str]
         ) -> None: ...
-
         def __setitem__(
             self,
             index: int | slice,
@@ -251,12 +247,10 @@ class StackingBox(diagram.Box):
 
         @t.overload
         def __getitem__(self, index: int) -> diagram.DiagramElement: ...
-
         @t.overload
         def __getitem__(
             self, index: slice
         ) -> list[diagram.DiagramElement]: ...
-
         def __getitem__(
             self, index: int | slice
         ) -> diagram.DiagramElement | list[diagram.DiagramElement]:
@@ -266,12 +260,10 @@ class StackingBox(diagram.Box):
         def __setitem__(
             self, index: int, value: diagram.DiagramElement
         ) -> None: ...
-
         @t.overload
         def __setitem__(
             self, index: slice, value: cabc.Iterable[diagram.DiagramElement]
         ) -> None: ...
-
         def __setitem__(
             self,
             index: int | slice,

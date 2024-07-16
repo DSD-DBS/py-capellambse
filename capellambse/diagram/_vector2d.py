@@ -42,10 +42,8 @@ class Vector2D(t.NamedTuple):
 
     @t.overload  # type: ignore
     def __mul__(self, other: Vec2ish) -> Vec2Element: ...
-
     @t.overload
     def __mul__(self, other: Vec2Element) -> Vector2D: ...
-
     def __mul__(self, other: Vec2Element | Vec2ish) -> Vector2D | Vec2Element:
         result = self.__map2(operator.mul, other)
         if result is NotImplemented:
@@ -54,10 +52,8 @@ class Vector2D(t.NamedTuple):
 
     @t.overload  # type: ignore[override]
     def __rmul__(self, other: Vec2ish) -> Vec2Element: ...
-
     @t.overload
     def __rmul__(self, other: Vec2Element) -> Vector2D: ...
-
     def __rmul__(self, other: Vec2Element | Vec2ish) -> Vector2D | Vec2Element:
         result = self.__map2(operator.mul, other, True)
         if result is NotImplemented:
@@ -241,12 +237,10 @@ class Vec2Property:
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> Vec2Property: ...
-
     @t.overload
     def __get__(
         self, obj: t.Any, objtype: type[t.Any] | None = ...
     ) -> Vector2D: ...
-
     def __get__(
         self, obj: t.Any | None, objtype: type[t.Any] | None = None
     ) -> Vec2Property | Vector2D:
@@ -285,10 +279,8 @@ class Vec2List(t.MutableSequence[Vector2D]):
 
     @t.overload
     def __getitem__(self, index: int) -> Vector2D: ...
-
     @t.overload
     def __getitem__(self, index: slice) -> cabc.MutableSequence[Vector2D]: ...
-
     def __getitem__(
         self, index: int | slice
     ) -> Vector2D | cabc.Sequence[Vector2D]:
@@ -300,14 +292,12 @@ class Vec2List(t.MutableSequence[Vector2D]):
         index: int,
         value: Vec2ish,
     ) -> None: ...
-
     @t.overload
     def __setitem__(
         self,
         index: slice,
         value: cabc.Iterable[Vec2ish],
     ) -> None: ...
-
     def __setitem__(
         self,
         index: int | slice,

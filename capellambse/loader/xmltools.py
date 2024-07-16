@@ -101,10 +101,8 @@ class AttributeProperty:
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty: ...
-
     @t.overload
     def __get__(self, obj: t.Any, objtype: type | None = None) -> t.Any: ...
-
     def __get__(self, obj, objtype=None):
         del objtype
         if obj is None:
@@ -285,10 +283,8 @@ class BooleanAttributeProperty(AttributeProperty):
 
     @t.overload
     def __get__(self, obj: None, objtype: type) -> AttributeProperty: ...
-
     @t.overload
     def __get__(self, obj: t.Any, objtype: type | None = None) -> bool: ...
-
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self
@@ -340,12 +336,10 @@ class DatetimeAttributeProperty(AttributeProperty):
     def __get__(
         self, obj: None, objtype: type
     ) -> DatetimeAttributeProperty: ...
-
     @t.overload
     def __get__(
         self, obj: t.Any, objtype: type | None = None
     ) -> datetime.datetime | None: ...
-
     def __get__(self, obj, objtype=None):
         if obj is None:
             return self

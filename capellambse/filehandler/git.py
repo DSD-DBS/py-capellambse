@@ -777,7 +777,6 @@ class GitFileHandler(abc.FileHandler):
         silent: bool = ...,
         **kw: t.Any,
     ) -> str: ...
-
     @t.overload
     def _git(
         self,
@@ -787,7 +786,6 @@ class GitFileHandler(abc.FileHandler):
         silent: bool = ...,
         **kw: t.Any,
     ) -> bytes: ...
-
     def _git(
         self,
         *cmd: t.Any,

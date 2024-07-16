@@ -114,12 +114,10 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
-
     @t.overload
     def __get__(
         self, obj: element.ModelObject, objtype: type[t.Any] | None = ...
     ) -> T | element.ElementList[T]: ...
-
     @abc.abstractmethod
     def __get__(
         self,
@@ -207,14 +205,12 @@ class DeprecatedAccessor(Accessor[T]):
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
-
     @t.overload
     def __get__(
         self,
         obj: element.ModelObject,
         objtype: type[t.Any] | None = ...,
     ) -> T | element.ElementList[T]: ...
-
     def __get__(
         self,
         obj: element.ModelObject | None,
@@ -1354,10 +1350,8 @@ class IndexAccessor(Accessor[T]):
 
     @t.overload
     def __get__(self, obj: None, objtype=None) -> te.Self: ...
-
     @t.overload
     def __get__(self, obj, objtype=None) -> T | element.ElementList[T]: ...
-
     def __get__(
         self,
         obj: element.ModelObject | None,
@@ -1770,12 +1764,10 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
-
     @t.overload
     def __get__(
         self, obj: element.ModelObject, objtype: type[t.Any] | None = None
     ) -> element.ElementList[T]: ...
-
     def __get__(
         self,
         obj: element.ModelObject | None,
@@ -2118,13 +2110,10 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
 
     @t.overload
     def __setitem__(self, index: int, value: T) -> None: ...
-
     @t.overload
     def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
-
     @t.overload
     def __setitem__(self, index: str, value: t.Any) -> None: ...
-
     def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         assert self._parent is not None
         accessor = type(self)._accessor
