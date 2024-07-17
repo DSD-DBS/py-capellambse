@@ -813,7 +813,10 @@ class Drawing:
         grp.add(ln)
 
     def _add_decofactory(self, name: str) -> None:
-        symbol, dependencies = diagram.get_svg_symbol(name)
+        try:
+            symbol, dependencies = diagram.get_svg_symbol(name)
+        except ValueError:
+            symbol, dependencies = diagram.get_svg_symbol("Error")
         self.__drawing.defs.add(symbol)
         for dep in dependencies:
             if dep not in self.deco_cache:
