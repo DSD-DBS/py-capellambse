@@ -472,7 +472,7 @@
                 id="00000000-0000-0000-0000-000000000001" name="External Data.Object IDs"
                 appliedPropertyValueGroups="#00fd06dd-cedc-403a-9742-261510c70b76">
               <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
-                  name="Object ID" id="00000000-0000-0000-0000-000000000002" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
+                  id="00000000-0000-0000-0000-000000000002" name="Object ID" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
                   value="CABLE-0001"/>
             </ownedPropertyValueGroups>
           </ownedPhysicalLinks>

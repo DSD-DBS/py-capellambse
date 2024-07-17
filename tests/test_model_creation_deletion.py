@@ -123,8 +123,7 @@ def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
 
     assert not list(model.find_references(component))
     assert part.type is None
-    records = [i for i in caplog.records if "PVMT" not in i.getMessage()]
-    assert not records
+    assert not caplog.records
 
 
 def test_deleting_an_object_purges_references_from_LinkAccessor(

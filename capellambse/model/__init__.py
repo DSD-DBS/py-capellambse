@@ -33,9 +33,6 @@ if sys.version_info >= (3, 13):
 else:
     from typing_extensions import deprecated
 
-if t.TYPE_CHECKING:
-    import capellambse.pvmt as _pvmt
-
 from . import common, diagram  # isort:skip
 
 # Architectural Layers
@@ -102,8 +99,6 @@ class MelodyModel:
 
     diagram_cache: filehandler.FileHandler | None
     _diagram_cache_subdir: pathlib.PurePosixPath
-
-    __pvext: capellambse.pvmt.PVMTExtension | None
 
     def __init__(
         self,
@@ -307,30 +302,6 @@ class MelodyModel:
     @property
     def _model(self) -> MelodyModel:
         return self
-
-    @property
-    @deprecated(
-        "The legacy PVMT extension is deprecated and will be replaced soon",
-        category=FutureWarning,
-    )
-    def _pvext(self) -> _pvmt.PVMTExtension | None:
-        try:
-            return self.__pvext
-        except AttributeError:
-            pass
-
-        import capellambse.pvmt as _pvmt
-
-        try:
-            self.__pvext = _pvmt.load_pvmt_from_model(self._loader)
-        except ValueError as err:
-            LOGGER.warning(
-                "Cannot load legacy PVMT extension: %s: %s",
-                type(err).__name__,
-                err,
-            )
-            LOGGER.warning("Legacy PVMT is not available in this model")
-        return self.__pvext
 
     @property
     def parent(self) -> None:
