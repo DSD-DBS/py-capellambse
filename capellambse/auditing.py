@@ -8,10 +8,17 @@ __all__ = ["AttributeAuditor", "WriteProtector"]
 import collections.abc as cabc
 import sys
 import typing as t
+import warnings
 
 import capellambse
 
 from . import helpers
+
+warnings.warn(
+    "The auditing feature is deprecated and will be removed soon",
+    category=DeprecationWarning,
+    stacklevel=2,
+)
 
 
 class AttributeAuditor:

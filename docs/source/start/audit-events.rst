@@ -8,6 +8,14 @@
 Audit events
 ************
 
+.. deprecated:: v0.5.68
+
+   The auditing feature is deprecated and will be removed with v0.6.
+
+   Some design choices make working with it and maintaining it unnecessarily
+   difficult, which means that in practice it wasn't being used much (if at
+   all), which in turn led to the code rotting.
+
 |project| fires :external:py:func:`sys.audit` events for certain calls in the
 high-level API. These events can be inspected by a callable registered with
 :external:py:func:`sys.addaudithook`.

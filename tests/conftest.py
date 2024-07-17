@@ -40,8 +40,7 @@ def session_shared_model() -> cabc.Iterator[capellambse.MelodyModel]:
     from the model.
     """
     loaded = capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
-    with capellambse.WriteProtector(loaded):
-        yield loaded
+    yield loaded
 
 
 @pytest.fixture
