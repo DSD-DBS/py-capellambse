@@ -17,7 +17,6 @@ import enum
 import math
 import os
 import re
-import sys
 import typing as t
 
 import markupsafe
@@ -100,11 +99,7 @@ class AttributeProperty:
         if obj is None:
             return self
 
-        rv = self._get(obj)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._get(obj)
 
     def _get(self, obj):
         try:
@@ -122,13 +117,6 @@ class AttributeProperty:
 
     def __set__(self, obj, value) -> None:
         stringified = self._stringify(obj, value)
-        if obj._constructed:
-            sys.audit(
-                "capellambse.setattr",
-                obj,
-                self.__name__,
-                self._original_value or value,
-            )
         if stringified is None:
             self.__delete__(obj)
         else:
@@ -209,13 +197,8 @@ class HTMLAttributeProperty(AttributeProperty):
             return self
 
         rv = self._get(obj)
-
         if os.getenv("CAPELLAMBSE_XHTML") == "1":
             rv = helpers.repair_html(rv)
-
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(self, obj: t.Any, value: str) -> None:
@@ -314,11 +297,7 @@ class BooleanAttributeProperty(AttributeProperty):
         if obj is None:
             return self
 
-        rv = obj._element.get(self.attribute, "false") == "true"
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return obj._element.get(self.attribute, "false") == "true"
 
     def __set__(self, obj, value) -> None:
         self._original_value = value

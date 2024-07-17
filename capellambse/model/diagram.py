@@ -491,7 +491,6 @@ class Diagram(AbstractDiagram):
     )
 
     _element: aird.DRepresentationDescriptor
-    _constructed: bool
 
     __nodes: list[etree._Element] | None
 
@@ -506,7 +505,6 @@ class Diagram(AbstractDiagram):
             self = cls.__new__(cls)
             self._model = model
             self._element = element
-            self._constructed = True
             self.__nodes = None
             return self
 

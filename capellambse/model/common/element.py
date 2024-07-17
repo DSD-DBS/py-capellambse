@@ -115,9 +115,6 @@ class ModelObject(t.Protocol):
     @property
     def _element(self) -> etree._Element: ...
 
-    @property
-    def _constructed(self) -> bool: ...
-
     def __init__(
         self,
         model: capellambse.MelodyModel,
@@ -166,7 +163,6 @@ class GenericElement:
     constraints: accessors.Accessor
     parent: accessors.ParentAccessor
 
-    _constructed: bool
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
 
@@ -220,7 +216,6 @@ class GenericElement:
         self = class_.__new__(class_)
         self._model = model
         self._element = element
-        self._constructed = True
         return self
 
     @property
@@ -277,7 +272,6 @@ class GenericElement:
             raise TypeError(
                 f"Cannot instantiate {type(self).__name__} directly"
             )
-        self._constructed = False
         self._model = model
         self._element: etree._Element = etree.Element(xmltag)
         parent.append(self._element)
@@ -299,7 +293,6 @@ class GenericElement:
         except BaseException:
             parent.remove(self._element)
             raise
-        self._constructed = True
 
     def __setattr__(self, attr: str, value: t.Any) -> None:
         if attr.startswith("_") or hasattr(type(self), attr):

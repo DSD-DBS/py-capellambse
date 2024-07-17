@@ -394,7 +394,6 @@ class Validation:
 
     _model: capellambse.MelodyModel
     _element: etree._Element
-    _constructed: bool
 
     parent = c.AlternateAccessor(c.GenericElement)
 
@@ -409,7 +408,6 @@ class Validation:
         self = cls.__new__(cls)
         self._model = model_
         self._element = element
-        self._constructed = True
         return self
 
 

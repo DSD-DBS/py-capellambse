@@ -101,7 +101,6 @@ class MelodyModel:
 
     diagram_cache: filehandler.FileHandler | None
     _diagram_cache_subdir: pathlib.PurePosixPath
-    _constructed: bool
 
     __pvext: capellambse.pvmt.PVMTExtension | None
 
@@ -274,7 +273,6 @@ class MelodyModel:
 
         capellambse.load_model_extensions()
 
-        self._constructed = False
         self._loader = loader.MelodyLoader(path, **kwargs)
         self._fallback_render_aird = fallback_render_aird
 
@@ -294,8 +292,6 @@ class MelodyModel:
             )
         else:
             self.diagram_cache = None
-
-        self._constructed = True
 
     @property
     def _element(self) -> etree._Element:

@@ -14,8 +14,6 @@ except metadata.PackageNotFoundError:
     __version__ = "0.0.0+unknown"
 del metadata
 
-from typing import TYPE_CHECKING
-
 from ._namespaces import *
 from .cli_helpers import *
 from .filehandler import *
@@ -56,13 +54,3 @@ def load_model_extensions() -> None:
                 entrypoint.name,
                 entrypoint.value,
             )
-
-
-if not TYPE_CHECKING:
-
-    def __getattr__(attr):
-        if attr in {"AttributeAuditor", "WriteProtector"}:
-            from . import auditing
-
-            return getattr(auditing, attr)
-        raise AttributeError(f"module {__name__!r} has no attribute {attr!r}")

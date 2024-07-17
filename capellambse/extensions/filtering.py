@@ -89,11 +89,7 @@ class AssociatedCriteriaAccessor(
             links = critset.get("filteringCriteria", "")
             elems = list(loader.follow_links(obj._element, links))
 
-        rv = self._make_list(obj, elems)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._make_list(obj, elems)
 
 
 @c.xtype_handler(None)

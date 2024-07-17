@@ -9,7 +9,6 @@ import datetime
 import enum
 import math
 import re
-import sys
 import typing as t
 
 import markupsafe
@@ -110,7 +109,7 @@ class AttributeProperty:
 
         xml_element = getattr(obj, self.xmlattr)
         try:
-            rv = self.returntype(xml_element.attrib[self.attribute])
+            return self.returntype(xml_element.attrib[self.attribute])
         except KeyError:
             if self.default is not self.NOT_OPTIONAL:
                 return self.default and self.returntype(
@@ -120,10 +119,6 @@ class AttributeProperty:
                 f"Mandatory XML attribute {self.attribute!r} not found on"
                 f" {xml_element!r}"
             ) from None
-
-        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-        sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
 
     def __set__(self, obj, value) -> None:
         xml_element = getattr(obj, self.xmlattr)
@@ -291,8 +286,6 @@ class BooleanAttributeProperty(AttributeProperty):
 
         xml_element = getattr(obj, self.xmlattr)
         rv = xml_element.get(self.attribute, "false") == "true"
-        sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-        sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(self, obj, value) -> None:

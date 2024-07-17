@@ -16,7 +16,6 @@ __all__ = [
 import collections.abc as cabc
 import contextlib
 import os
-import sys
 import typing as t
 
 from lxml import etree
@@ -133,11 +132,7 @@ class RequirementsRelationAccessor(
         if obj is None:  # pragma: no cover
             return self
 
-        rv = self._make_list(obj, self._find_relations(obj))
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._make_list(obj, self._find_relations(obj))
 
     def __set__(self, obj, value: t.Any) -> None:
         if not isinstance(value, cabc.Iterable):
@@ -145,9 +140,6 @@ class RequirementsRelationAccessor(
 
         if CapellaOutgoingRelation in [type(i) for i in value]:
             raise NotImplementedError("Cannot insert CapellaOutgoingRelations")
-
-        if obj._constructed:
-            sys.audit("capellambse.setattr", obj, self.__name__, value)
 
         for i in self._find_relations(obj):
             ip = i.getparent()
@@ -158,8 +150,6 @@ class RequirementsRelationAccessor(
     def __delete__(self, obj) -> None:
         assert self.aslist is not None
 
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.delete", obj, self.__name__, None)
         for i in self._find_relations(obj):
             parent = i.getparent()
             assert parent is not None
@@ -347,11 +337,7 @@ class ElementRelationAccessor(
                 continue
             if obj in (relation.source, relation.target):
                 relations.append(relation._element)
-        rv = self._make_list(obj, relations)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._make_list(obj, relations)
 
     @contextlib.contextmanager
     def purge_references(

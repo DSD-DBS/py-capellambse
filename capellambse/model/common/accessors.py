@@ -437,8 +437,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         references to the target and ensures that deleting them would
         result in a valid model. If any validity constraints would be
         violated, an exception is raised to indicate as such, and the
-        whole operation is aborted. This is also when the relevant
-        "capellambse.delete" audit events are fired for each reference.
+        whole operation is aborted.
 
         Once all ``__enter__`` methods have been called, the target
         object is deleted from the model. Then all ``__exit__`` methods
@@ -499,7 +498,6 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
            @contextlib.contextmanager
            def purge_references(self, obj, target):
                assert self.__get__(obj, type(obj)) == target
-               sys.audit("capellambse.delete", obj, self.__name__, None)
 
                yield
 
@@ -721,20 +719,13 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             for e in self._getsubelems(obj)
             if e.get("id") is not None
         ]
-        rv = self._make_list(obj, elems)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._make_list(obj, elems)
 
     def __set__(
         self,
         obj: element.ModelObject,
         value: str | T | _NewObject | cabc.Iterable[str | T | _NewObject],
     ) -> None:
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.setattr", obj, self.__name__, value)
-
         if self.aslist:
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
                 raise TypeError("Can only set list attribute to an iterable")
@@ -764,9 +755,6 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             raise TypeError("Cannot delete due to 'rootelem' being set")
         if self.follow_abstract:
             raise TypeError("Cannot delete when following abstract types")
-
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.delete", obj, self.__name__, None)
 
         if self.aslist is not None:
             self._delete(obj._model, list(self._getsubelems(obj)))
@@ -993,15 +981,9 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             if e not in seen:
                 elems.append(e)
                 seen.add(e)
-        rv = self._make_list(obj, elems)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._make_list(obj, elems)
 
     def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
-        if obj._constructed:
-            sys.audit("capellambse.setattr", obj, self.__name__, value)
         if self.aslist is None:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError(f"{self._qualname} expects a single element")
@@ -1016,9 +998,6 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             self.__create_link(obj, v)
 
     def __delete__(self, obj: element.ModelObject) -> None:
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.delete", obj, self.__name__, None)
-
         refobjs = list(self.__find_refs(obj))
         for i in refobjs:
             obj._model._loader.idcache_remove(i)
@@ -1122,9 +1101,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self, obj: element.ModelObject, target: element.ModelObject
     ) -> cabc.Generator[None, None, None]:
         purge: list[etree._Element] = []
-        for i, ref in enumerate(self.__find_refs(obj)):
+        for ref in self.__find_refs(obj):
             if self.__follow_ref(obj, ref) is target._element:
-                sys.audit("capellambse.delete", obj, self.__name__, i)
                 purge.append(ref)
 
         yield
@@ -1211,20 +1189,13 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             obj._element, obj._element.get(self.attr, "")
         )
 
-        rv = self._make_list(obj, elems)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self._make_list(obj, elems)
 
     def __set__(
         self,
         obj: element.ModelObject,
         values: T | _NewObject | cabc.Iterable[T | _NewObject],
     ) -> None:
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.setattr", obj, self.__name__, values)
-
         if not isinstance(values, cabc.Iterable):
             values = (values,)
         elif self.aslist is None:
@@ -1239,9 +1210,6 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self.__set_links(obj, values)  # type: ignore[arg-type]
 
     def __delete__(self, obj: element.ModelObject) -> None:
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.delete", obj, self.__name__, None)
-
         del obj._element.attrib[self.attr]
 
     def insert(
@@ -1283,11 +1251,9 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self, obj: element.ModelObject, target: element.ModelObject
     ) -> cabc.Generator[None, None, None]:
         # pylint: disable=unnecessary-dunder-call
+        yield
+
         if self.aslist is not None:
-            for i, member in enumerate(self.__get__(obj)):
-                if member == target:
-                    sys.audit("capellambse.delete", obj, self.__name__, i)
-            yield
             try:
                 elt = obj._element
                 links = obj._model._loader.follow_links(
@@ -1300,8 +1266,6 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             except Exception:
                 LOGGER.exception("Cannot write new list of targets")
         else:
-            sys.audit("capellambse.delete", obj, self.__name__, None)
-            yield
             try:
                 del obj._element.attrib[self.attr]
             except KeyError:
@@ -1399,11 +1363,7 @@ class AlternateAccessor(Accessor[T]):
         del objtype
         if obj is None:  # pragma: no cover
             return self
-        rv = self.class_.from_model(obj._model, obj._element)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self.class_.from_model(obj._model, obj._element)
 
 
 class ParentAccessor(PhysicalAccessor[T]):
@@ -1423,11 +1383,7 @@ class ParentAccessor(PhysicalAccessor[T]):
         if parent is None:
             objrepr = getattr(obj, "_short_repr_", obj.__repr__)()
             raise AttributeError(f"Object {objrepr} is orphaned")
-        rv = self.class_.from_model(obj._model, parent)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return self.class_.from_model(obj._model, parent)
 
 
 @deprecated(
@@ -1555,7 +1511,6 @@ class _Specification(t.MutableMapping[str, str]):
     ) -> None:
         self._model = model
         self._element = elm
-        self._constructed = True
 
     def __delitem__(self, k: str) -> None:
         k = self._aliases.get(k, k)
@@ -1643,11 +1598,7 @@ class SpecificationAccessor(Accessor[_Specification]):
         except StopIteration:
             raise AttributeError("No specification found") from None
 
-        rv = _Specification(obj._model, spec_elm)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return _Specification(obj._model, spec_elm)
 
 
 class ReferenceSearchingAccessor(PhysicalAccessor[T]):
@@ -1777,20 +1728,13 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         if obj is None:
             return self
 
-        rv = getattr(obj, self.attr)
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
-        return rv
+        return getattr(obj, self.attr)
 
     def __set__(
         self,
         obj: element.ModelObject,
         value: T | _NewObject | cabc.Iterable[T | _NewObject],
     ) -> None:
-        if obj._constructed:
-            sys.audit("capellambse.setattr", obj, self.__name__, value)
-
         if isinstance(value, (list, element.ElementList, tuple)):
             pass
         elif isinstance(value, cabc.Iterable):
@@ -1808,9 +1752,6 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         setattr(obj, self.attr, value)
 
     def __delete__(self, obj):
-        if obj._constructed:
-            sys.audit("capellambse.delattr", obj, self.__name__, None)
-
         delattr(obj, self.attr)
 
     def create(
@@ -1855,8 +1796,6 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self, obj: element.ModelObject, target: element.ModelObject
     ) -> cabc.Iterator[None]:
         acc: WritableAccessor = getattr(self.class_, self.attr)
-        # XXX: This should really fire a ``capellambse.delete`` audit event,
-        #      but the event parameters depend on things only ``acc`` knows.
         with acc.purge_references(obj, target):
             yield
 
@@ -1913,10 +1852,6 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             assert isinstance(rv, element.ElementList)
             assert not isinstance(rv, element.MixedElementList)
             rv._elemclass = self.alternate
-
-        if obj._constructed:
-            sys.audit("capellambse.read_attribute", obj, self.__name__, rv)
-            sys.audit("capellambse.getattr", obj, self.__name__, rv)
         return rv
 
     def __set__(
@@ -1929,9 +1864,6 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             | cabc.Iterable[str | element.GenericElement | _NewObject]
         ),
     ) -> None:
-        if getattr(obj, "_constructed", True):
-            sys.audit("capellambse.setattr", obj, self.__name__, value)
-
         if self.aslist:
             raise NotImplementedError(
                 "Setting lists of model objects is not supported yet"
@@ -2143,12 +2075,6 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         if not isinstance(index, slice):
             index = slice(index, index + 1 or None)
         for obj in self[index]:
-            sys.audit(
-                "capellambse.delete",
-                self._parent,
-                accessor.__name__,
-                index.start,
-            )
             accessor.delete(self, obj)
         super().__delitem__(index)
 
@@ -2190,7 +2116,6 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create(self, *type_hints, **kw)
         try:
-            sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
             acc.insert(self, len(self), newobj)
             super().insert(len(self), newobj)
         except:
@@ -2219,7 +2144,6 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert isinstance(acc, WritableAccessor)
         newobj = acc.create_singleattr(self, arg)
         try:
-            sys.audit("capellambse.create", self._parent, acc.__name__, newobj)
             acc.insert(self, len(self), newobj)
             super().insert(len(self), newobj)
         except:
@@ -2234,9 +2158,5 @@ class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, WritableAccessor)
-        if self._parent._constructed:
-            sys.audit(
-                "capellambse.insert", self._parent, acc.__name__, index, value
-            )
         acc.insert(self, index, value)
         super().insert(index, value)
