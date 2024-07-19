@@ -1327,15 +1327,22 @@ class MelodyLoader:
 
     def get_model_info(self) -> ModelInfo:
         """Return information about the loaded model."""
-        info = self.filehandler.get_model_info()
+        root_handler = self.resources["\x00"].get_model_info()
         modelroot = next(self.iterall_xt(*ROOT_XT), None)
-        info.entrypoint = self.entrypoint
-        info.title = getattr(modelroot, "attrib", {}).get("name")
-        info.viewpoints = dict(self.referenced_viewpoints())
-        info.capella_version = info.viewpoints.get(
-            "org.polarsys.capella.core.viewpoint", "UNKNOWN"
+        viewpoints = dict(self.referenced_viewpoints())
+
+        return ModelInfo(
+            url=root_handler.url,
+            title=getattr(modelroot, "attrib", {}).get("name"),
+            entrypoint=self.entrypoint,
+            viewpoints=viewpoints,
+            resources={
+                k: v.get_model_info() for k, v in self.resources.items()
+            },
+            capella_version=viewpoints.get(
+                "org.polarsys.capella.core.viewpoint", "UNKNOWN"
+            ),
         )
-        return info
 
     @contextlib.contextmanager
     def write_tmp_project_dir(self) -> cabc.Iterator[pathlib.Path]:

@@ -7,11 +7,9 @@ import contextlib
 import logging
 import os
 import pathlib
-import subprocess
 import typing as t
 
 from capellambse import helpers
-from capellambse.loader.modelinfo import ModelInfo
 
 from . import abc
 
@@ -49,17 +47,6 @@ class LocalFileHandler(abc.FileHandler):
         self.__transaction.add(normpath)
         tmppath = _tmpname(normpath)
         return (self.path / tmppath).open("wb")
-
-    def get_model_info(self) -> ModelInfo:
-        assert isinstance(self.path, pathlib.Path)
-        if (self.path / ".git").exists():
-            return ModelInfo(
-                branch=self.__git_rev_parse("--abbrev-ref", "HEAD"),
-                title=self.path.name,
-                url=self.__git_get_remote_url(),
-                rev_hash=self.__git_rev_parse("HEAD"),
-            )
-        return ModelInfo(title=self.path.name)
 
     @contextlib.contextmanager
     def write_transaction(
@@ -115,54 +102,6 @@ class LocalFileHandler(abc.FileHandler):
                 self,
                 pathlib.PurePosixPath(p.relative_to(self.path)),
             )
-
-    def __git_rev_parse(self, *options: str) -> str | None:
-        assert isinstance(self.path, pathlib.Path)
-        try:
-            return (
-                subprocess.run(
-                    ["git", "rev-parse", *options],
-                    cwd=self.path,
-                    check=True,
-                    capture_output=True,
-                )
-                .stdout.decode("utf-8")
-                .strip()
-            )
-        except Exception as err:
-            LOGGER.debug(
-                "Git rev-parse with options %s failed: %s: %s",
-                options,
-                type(err).__name__,
-                err,
-            )
-            return None
-
-    def __git_get_remote_url(self) -> str | None:
-        assert isinstance(self.path, pathlib.Path)
-        try:
-            remotes = (
-                subprocess.run(
-                    ["git", "remote"],
-                    cwd=self.path,
-                    check=True,
-                    capture_output=True,
-                )
-                .stdout.decode("utf-8")
-                .splitlines()
-            )
-            return (
-                subprocess.run(
-                    ["git", "remote", "get-url", remotes[0]],
-                    cwd=self.path,
-                    check=True,
-                    capture_output=True,
-                )
-                .stdout.decode("utf-8")
-                .strip()
-            )
-        except (IndexError, subprocess.CalledProcessError):
-            return None
 
 
 def _tmpname(filename: pathlib.PurePosixPath) -> pathlib.PurePosixPath:

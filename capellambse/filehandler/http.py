@@ -22,7 +22,7 @@ import urllib.parse
 import requests
 import typing_extensions as te
 
-from capellambse import helpers, loader
+from capellambse import helpers
 
 from . import abc
 
@@ -170,14 +170,6 @@ class HTTPFileHandler(abc.FileHandler):
         self.session.headers.update(headers or {})
         if username and password:
             self.session.auth = (username, password)
-
-    def get_model_info(self) -> loader.ModelInfo:
-        assert isinstance(self.path, str)
-        parts = urllib.parse.urlparse(self.path)
-        return loader.ModelInfo(
-            title=parts.path.rsplit("/", maxsplit=1)[-1],
-            url=self.path,
-        )
 
     def open(
         self,

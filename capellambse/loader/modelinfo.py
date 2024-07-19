@@ -5,15 +5,17 @@ from __future__ import annotations
 
 import dataclasses
 import pathlib
+import typing as t
+
+if t.TYPE_CHECKING:
+    from capellambse import filehandler
 
 
 @dataclasses.dataclass
 class ModelInfo:
-    branch: str | None = None
-    title: str | None = None
-    url: str | None = None
-    entrypoint: pathlib.PurePosixPath | None = None
-    revision: str | None = None
-    rev_hash: str | None = None
-    capella_version: str | None = None
-    viewpoints: dict[str, str] = dataclasses.field(default_factory=dict)
+    url: str | None
+    title: str | None
+    entrypoint: pathlib.PurePosixPath
+    resources: dict[str, filehandler.abc.HandlerInfo]
+    capella_version: str
+    viewpoints: dict[str, str]

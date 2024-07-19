@@ -56,9 +56,6 @@ class MemoryFileHandler(abc.FileHandler):
 
         self._data: dict[pathlib.PurePosixPath, bytearray] = {}
 
-    def get_model_info(self) -> ModelInfo:
-        return ModelInfo(url="memory:")
-
     def open(
         self,
         filename: str | pathlib.PurePosixPath,

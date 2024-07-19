@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import dataclasses
 import errno
 import hashlib
 import logging
@@ -21,7 +22,6 @@ import warnings
 import weakref
 
 import capellambse.helpers
-from capellambse.loader import modelinfo
 
 from . import abc
 
@@ -510,7 +510,7 @@ class GitFileHandler(abc.FileHandler):
             return _WritableGitFile(self._transaction, self.cache_dir, path)
         return open(self.cache_dir / path, "rb")
 
-    def get_model_info(self) -> modelinfo.ModelInfo:
+    def get_model_info(self) -> abc.HandlerInfo:
         def revparse(*args: str) -> str:
             return (
                 self._git("rev-parse", *args, silent=True)
@@ -518,13 +518,8 @@ class GitFileHandler(abc.FileHandler):
                 .strip()
             )
 
-        title = str(self.path).rsplit("/", maxsplit=1)[-1]
-        if title.endswith(".git"):
-            title = title[: -len(".git")]
-
-        return modelinfo.ModelInfo(
+        return GitHandlerInfo(
             branch=revparse("--abbrev-ref", self.revision),
-            title=title,
             url=str(self.path),
             revision=self.revision,
             rev_hash=revparse(self.revision),
@@ -846,3 +841,10 @@ class GitPath(abc.FilePath[GitFileHandler]):
 
     def is_file(self) -> bool:
         return self._parent.cache_dir.joinpath(self._path).is_file()
+
+
+@dataclasses.dataclass
+class GitHandlerInfo(abc.HandlerInfo):
+    branch: str | None
+    revision: str | None
+    rev_hash: str | None

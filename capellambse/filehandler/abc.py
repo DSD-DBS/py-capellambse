@@ -8,10 +8,12 @@ __all__ = [
     "FilePath",
     "AbstractFilePath",
     "TransactionClosedError",
+    "HandlerInfo",
 ]
 
 import abc
 import collections.abc as cabc
+import dataclasses
 import fnmatch
 import os
 import pathlib
@@ -62,9 +64,13 @@ class FileHandler(metaclass=abc.ABCMeta):
         self.path = path
         self.subdir = helpers.normalize_pure_path(subdir)
 
-    @abc.abstractmethod
-    def get_model_info(self) -> modelinfo.ModelInfo:
-        pass
+    def get_model_info(self) -> HandlerInfo:
+        if isinstance(self.path, pathlib.Path):
+            try:
+                return HandlerInfo(url=self.path.resolve().as_uri())
+            except OSError:
+                pass
+        return HandlerInfo(url=os.fspath(self.path))
 
     @abc.abstractmethod
     def open(
@@ -355,3 +361,11 @@ AbstractFilePath = FilePath
 
 class TransactionClosedError(RuntimeError):
     """Raised when a transaction must be opened first to write files."""
+
+
+@dataclasses.dataclass
+class HandlerInfo:
+    url: str | None
+
+    def __getattr__(self, attr: str) -> t.Any:
+        return None

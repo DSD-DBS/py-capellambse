@@ -8,6 +8,7 @@ __all__ = [
     "GenericElement",
     "NonUniqueMemberError",
     "MelodyModel",
+    "ModelInfo",
 ]
 
 import collections.abc as cabc
@@ -659,8 +660,7 @@ class MelodyModel:
     def info(self) -> ModelInfo:
         upstream_info = self._loader.get_model_info()
         if self.diagram_cache is not None:
-            dgcinfo = dataclasses.asdict(self.diagram_cache.get_model_info())
-            dgcinfo = {k: v for k, v in dgcinfo.items() if v is not None}
+            dgcinfo = self.diagram_cache.get_model_info()
         else:
             dgcinfo = None
         return ModelInfo(
@@ -689,7 +689,7 @@ class MelodyModel:
 
 @dataclasses.dataclass
 class ModelInfo(loader.ModelInfo):
-    diagram_cache: t.Mapping[str, t.Any] | None = None
+    diagram_cache: filehandler.abc.HandlerInfo | None
 
 
 def _reference_attributes(objtype: type[ModelObject], /) -> tuple[str, ...]:

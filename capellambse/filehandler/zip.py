@@ -16,7 +16,6 @@ import weakref
 import zipfile
 
 from capellambse import helpers
-from capellambse.loader import modelinfo
 
 from . import abc, get_filehandler
 
@@ -94,9 +93,6 @@ class ZipFileHandler(abc.FileHandler):
             subdir = subdir[: subdir.rfind("/") + 1].rstrip("/")
             LOGGER.debug("Auto-selected base directory: %s", subdir)
             self.subdir = pathlib.PurePosixPath(subdir)
-
-    def get_model_info(self) -> modelinfo.ModelInfo:
-        return modelinfo.ModelInfo(url=os.fspath(self.path))
 
     def open(
         self,

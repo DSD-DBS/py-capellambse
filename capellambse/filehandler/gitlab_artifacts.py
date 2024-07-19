@@ -20,7 +20,7 @@ import requests.exceptions
 import urllib3.exceptions
 
 import capellambse
-from capellambse import helpers, loader
+from capellambse import helpers
 
 from . import abc
 
@@ -354,10 +354,6 @@ class GitlabArtifactsFiles(abc.FileHandler):
                     return
 
             next_url = response.links.get("next", {}).get("url")
-
-    def get_model_info(self) -> loader.ModelInfo:
-        assert isinstance(self.path, str)
-        return loader.ModelInfo(branch=self.__branch, url=self.path)
 
     def open(
         self,
