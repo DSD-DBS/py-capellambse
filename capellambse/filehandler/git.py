@@ -18,7 +18,6 @@ import tempfile
 import textwrap
 import typing as t
 import urllib.parse
-import warnings
 import weakref
 
 import capellambse.helpers
@@ -422,15 +421,6 @@ class GitFileHandler(abc.FileHandler):
         inhibit all attempts to contact the remote; it just disables the
         initial "fetch" operation. Later operations may still require to
         access the server, for example to download Git-LFS files.
-    shallow
-        Make a shallow clone.
-
-        .. deprecated:: 0.5.57
-
-        All cache repos are now using tree-less partial clones. This
-        reduces server load during subsequent fetches without
-        significantly impacting cache size. Existing shallow clones will
-        be unshallowed during the next fetch.
 
     See Also
     --------
@@ -463,17 +453,7 @@ class GitFileHandler(abc.FileHandler):
         update_cache: bool = True,
         *,
         subdir: str | pathlib.PurePosixPath = "/",
-        shallow: bool = _NOT_SPECIFIED,  # type: ignore[assignment]
     ) -> None:
-        if shallow is not _NOT_SPECIFIED:
-            warnings.warn(
-                (
-                    "Shallow clones are no longer supported,"
-                    " please remove the `shallow` parameter."
-                ),
-                DeprecationWarning,
-                stacklevel=2,
-            )
         super().__init__(path, subdir=subdir)
         self.disable_cache = disable_cache
 
