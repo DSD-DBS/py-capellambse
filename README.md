@@ -51,6 +51,10 @@ Related projects
 - [`capella-diff-tools`](https://github.com/DSD-DBS/capella-diff-tools) — A set
   of tools to compare Capella models.
 
+- [`capella-polarion`](https://github.com/DSD-DBS/capella-polarion/) —
+  Synchronize information from the Capella model into a
+  [Polarion](https://plm.sw.siemens.com/de-DE/polarion/) project
+
 - [`capella-ros-tools`](https://github.com/DSD-DBS/capella-ros-tools) — Import
   and export ROS `*.msg` files to/from Capella models, or transform `*.msg`
   files into a declarative YAML file.
