@@ -6,18 +6,26 @@
 Documentation development
 *************************
 
-The following command deletes previous built documentation and derives
-docs out of code:
+First, make sure that the necessary dependencies for building documentation are
+installed:
 
 .. code:: bash
 
-    make -C docs apidoc
+   pip install '.[docs]'
 
-The following command builds the docs:
+The following command builds the documentation:
 
 .. code:: bash
 
-    make -C docs html
+   make -C docs html
 
-The resulting documentation build should be available in `docs/build/html`,
-entry point is `index.html`
+The resulting documentation build will be available in ``docs/build/html``.
+
+Instead, you can also use ``make -C docs serve`` to (re-)build the docs and start a
+local server, which can be accessed on http://localhost:8000.
+
+The following command deletes previously built documentation:
+
+.. code:: bash
+
+   make -C docs clean

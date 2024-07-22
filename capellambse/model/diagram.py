@@ -848,7 +848,7 @@ if not t.TYPE_CHECKING:
 
     def __getattr__(name):
         if name != "REPR_DRAW":
-            raise NameError(f"No name {name} in module {__name__}")
+            raise AttributeError(f"No name {name} in module {__name__}")
         try:
             return globals()["REPR_DRAW"]
         except KeyError:

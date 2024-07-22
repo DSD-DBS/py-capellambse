@@ -56,6 +56,7 @@ docs = [
   "nbsphinx",
   "sphinx>=7.2.3",
   "sphinx-argparse-cli",
+  "sphinx-autodoc-typehints",
   "tomli; python_version<'3.11'",
 ]
 

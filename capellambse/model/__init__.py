@@ -593,15 +593,6 @@ class MelodyModel:
 
             Ignored if the ``image_format`` is not ``"svg"``.
 
-        Raises
-        ------
-        TypeError
-            If no ``diagram_cache`` was specified while loading the
-            model.
-        RuntimeError
-            If an error occurs while diagrams are being exported from
-            the Capella model.
-
         Examples
         --------
         **Running a local installation of Capella**

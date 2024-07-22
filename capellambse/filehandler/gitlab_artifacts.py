@@ -65,7 +65,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
         -   A URL that combines the above with some of the required
             parameters described below, using the format::
 
-            glart://gitlab.mycompany.com/group/subgroup/project#branch=<branch>&job=<jobname>
+                glart://gitlab.mycompany.com/group/subgroup/project#branch=<branch>&job=<jobname>
 
             Note that this format does not support numeric IDs for the
             project and job, thus requiring to pass a branch name. Any

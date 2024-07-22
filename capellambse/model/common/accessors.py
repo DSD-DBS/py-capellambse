@@ -453,8 +453,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         In order to not confuse other context managers and keep the
         model consistent, ``__exit__`` must not raise any further
         exceptions. Exceptions should instead be logged to stderr, for
-        example by using the
-        :external:py:meth:`logging.Logger.exception` facility.
+        example by using the :py:meth:`logging.Logger.exception`
+        facility.
 
         The ``purge_references`` method will only be called for Accessor
         instances that actually contain a reference.

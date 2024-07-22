@@ -33,7 +33,9 @@ ALWAYS_EXPANDED_TAGS = frozenset({"bodies"})
 
 
 @t.runtime_checkable
-class _HasWrite(t.Protocol):
+class HasWrite(t.Protocol):
+    """A simple protocol to check for a writable file-like object."""
+
     def write(self, chunk: bytes) -> int: ...
 
 
@@ -96,7 +98,7 @@ def to_bytes(
 def write(
     tree: lxml.etree._Element | lxml.etree._ElementTree,
     /,
-    file: _HasWrite | os.PathLike | str | bytes,
+    file: HasWrite | os.PathLike | str | bytes,
     *,
     encoding: str = "utf-8",
     errors: str = "strict",
@@ -120,8 +122,8 @@ def write(
     siblings
         Also include siblings of the given subtree.
     """
-    ctx: t.ContextManager[_HasWrite]
-    if isinstance(file, _HasWrite):
+    ctx: t.ContextManager[HasWrite]
+    if isinstance(file, HasWrite):
         ctx = contextlib.nullcontext(file)
     else:
         ctx = open(file, "wb")
@@ -292,7 +294,7 @@ def _ns_sortkey(v: tuple[str | None, str]) -> tuple[int, str | None]:
 
 
 def _serialize_comment(
-    buffer: _HasWrite,
+    buffer: HasWrite,
     comment: lxml.etree._Comment,
     /,
     *,
@@ -328,7 +330,7 @@ def _serialize_comment(
 
 
 def _serialize_element(
-    buffer: _HasWrite,
+    buffer: HasWrite,
     element: lxml.etree._Element,
     indent: int,
     *,
@@ -424,7 +426,7 @@ def _serialize_element(
 
 
 def _serialize_text(
-    buffer: _HasWrite,
+    buffer: HasWrite,
     text: str | None,
     /,
     *,

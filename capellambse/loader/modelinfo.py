@@ -5,10 +5,8 @@ from __future__ import annotations
 
 import dataclasses
 import pathlib
-import typing as t
 
-if t.TYPE_CHECKING:
-    from capellambse import filehandler
+from capellambse import filehandler
 
 
 @dataclasses.dataclass

@@ -45,51 +45,35 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx_argparse_cli",
+    "sphinx_autodoc_typehints",
 ]
 
-# Enable nitpicky mode
 nitpicky = True
+# pylint: disable=line-too-long
 nitpick_ignore = [
-    ("any", "capellambse.aird.GLOBAL_FILTERS"),
-    ("py:class", "_MapFunction"),
-    ("py:class", "_T"),
-    ("py:class", "T"),
-    ("py:class", "c.Accessor"),
-    ("py:class", "c.AttributeProperty"),
-    ("py:class", "c.AttrProxyAccessor"),
-    ("py:class", "c.GenericElement"),
-    ("py:class", "cabc.Mapping"),
-    ("py:class", "cabc.Sequence"),
-    ("py:class", "cabc.Set"),
-    ("py:class", "capellambse.filehandler.abc._F"),
-    ("py:class", "capellambse.helpers.UUIDString"),
-    ("py:class", "capellambse.helpers._T"),
-    ("py:class", "capellambse.loader.exs._HasWrite"),
-    ("py:class", "capellambse.model.common.T"),
-    ("py:class", "capellambse.model.common.U"),
-    ("py:class", "capellambse.model.common.accessors._NewObject"),
-    ("py:class", "capellambse.model.common.accessors._Specification"),
-    ("py:class", "capellambse.model.modeltypes._StringyEnumMixin"),
-    ("py:class", "json.encoder.JSONEncoder"),
+    # in inventory as "py:function"
     ("py:class", "operator.attrgetter"),
-    ("py:class", "rq.AbstractRequirementsRelation"),
-    ("py:class", "t.Any"),
-    ("py:class", "yaml.dumper.SafeDumper"),
-    ("py:class", "yaml.loader.SafeLoader"),
-    ("py:class", "yaml.nodes.Node"),
+    # exposed as "new_object" factory function
+    ("py:class", "capellambse.model.common.accessors._NewObject"),
+    # exposed as `json.JSONEncoder`
+    ("py:class", "json.encoder.JSONEncoder"),
+    # Sphinx doesn't even know where this happens
+    ("py:class", "ModelObject"),
+    # TODO figure out why sphinx doesn't document these
     ("py:exc", "capellambse.UnsupportedPluginError"),
     ("py:exc", "capellambse.UnsupportedPluginVersionError"),
-    ("py:meth", "fail"),
-    ("py:meth", "write_transaction"),
-    ("py:obj", "capellambse.filehandler.abc._F"),
-    (
-        "py:obj",
-        "capellambse.filehandler.localfilehandler"
-        ".LocalFileHandler.write_transaction",
-    ),
-    ("py:obj", "capellambse.model.common.T"),
-    ("py:obj", "capellambse.model.common.U"),
+    ("any", "capellambse.aird.GLOBAL_FILTERS"),
+    # Private type hinting helpers
+    ("py:class", "_MapFunction"),
+    ("py:class", "capellambse.model.common.accessors._Specification"),
 ]
+nitpick_ignore_regex = [
+    ("py:.*", r"^yaml\..*"),
+    ("py:.*", r"^(?:.*\.)?_[A-Z]$"),  # Single-letter TypeVars (e.g. _T)
+    # Super/subclass and "see also" references sometimes break
+    ("py:(meth|obj)", r"(?:.*\.)?write_transaction"),
+]
+# pylint: enable=line-too-long
 
 
 # Add any paths that contain templates here, relative to this directory.

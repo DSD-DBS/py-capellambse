@@ -14,8 +14,11 @@ import typing as t
 import capellambse
 
 S = t.TypeVar("S", bound=t.Optional[str])
+"""TypeVar for ":py:class:`str` | None"."""
 T = t.TypeVar("T", bound="ModelObject")
+"""TypeVar for ":py:class:`capellambse.model.common.element.ModelObject`"."""
 U = t.TypeVar("U")
+"""TypeVar (unbound)."""
 
 
 XTYPE_ANCHORS = {

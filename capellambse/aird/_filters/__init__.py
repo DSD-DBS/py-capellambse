@@ -23,12 +23,12 @@ CompositeFilter = t.Callable[
     [c.ElementBuilder, diagram.DiagramElement],
     t.Optional[Phase2CompositeFilter],
 ]
-#: Maps composite filter names to phase-1 callables
 COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
+"""Maps composite filter names to phase-1 callables."""
 
 GlobalFilter = t.Callable[["FilterArguments", etree._Element], None]
-#: Maps names of global filters to functions that implement them
 GLOBAL_FILTERS: dict[str, GlobalFilter] = {}
+"""Maps names of global filters to functions that implement them."""
 
 PLUGIN_PATH = (
     "/plugin/org.polarsys.capella.core.sirius.analysis"

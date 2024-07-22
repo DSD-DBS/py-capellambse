@@ -116,7 +116,7 @@ class CapellaTypesFolder(rq.ReqIFElement):
 
 
 class RequirementsRelationAccessor(
-    c.WritableAccessor["rq.AbstractRequirementsRelation"]
+    c.WritableAccessor[rq.AbstractRequirementsRelation]
 ):
     """Searches for requirement relations in the architecture layer."""
 
@@ -249,7 +249,7 @@ class RequirementsRelationAccessor(
             return CapellaIncomingRelation
 
 
-class RelationsList(c.ElementList["rq.AbstractRequirementsRelation"]):
+class RelationsList(c.ElementList[rq.AbstractRequirementsRelation]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
@@ -311,7 +311,7 @@ class RelationsList(c.ElementList["rq.AbstractRequirementsRelation"]):
 
 
 class ElementRelationAccessor(
-    c.WritableAccessor["rq.AbstractRequirementsRelation"]
+    c.WritableAccessor[rq.AbstractRequirementsRelation]
 ):
     """Provides access to RequirementsRelations of a GenericElement."""
 

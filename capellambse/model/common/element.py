@@ -219,7 +219,7 @@ class GenericElement:
         return self
 
     @property
-    def layer(self) -> crosslayer.BaseArchitectureLayer:
+    def layer(self) -> GenericElement:
         """Find the layer that this element belongs to.
 
         Note that an architectural layer normally does not itself have a
@@ -1027,7 +1027,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             predicate = operator.attrgetter(predicate)
         return self._newlist([i._element for i in self if predicate(i)])
 
-    def map(self, attr: str | _MapFunction[T]) -> ElementList[t.Any]:
+    def map(self, attr: str | _MapFunction[T]) -> ElementList:
         """Apply a function to each element in this list.
 
         If the argument is a string, it is interpreted as an attribute

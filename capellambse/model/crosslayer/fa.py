@@ -14,7 +14,6 @@ Functional Analysis object-relations map (ontology):
 from __future__ import annotations
 
 import sys
-import typing as t
 
 from .. import common as c
 from .. import modeltypes
@@ -24,9 +23,6 @@ if sys.version_info >= (3, 13):
     from warnings import deprecated
 else:
     from typing_extensions import deprecated
-
-if t.TYPE_CHECKING:
-    from . import cs
 
 XT_COMP_EX_FNC_EX_ALLOC = (
     "org.polarsys.capella.core.data.fa"
@@ -408,3 +404,6 @@ c.set_accessor(
         aslist=c.ElementList,
     ),
 )
+
+
+from . import cs

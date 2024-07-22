@@ -65,6 +65,7 @@ CROSS_FRAGMENT_LINK = re.compile(
 )
 
 UUIDString = t.NewType("UUIDString", str)
+"""A string that represents a unique ID within the model."""
 _T = t.TypeVar("_T")
 
 
@@ -586,8 +587,8 @@ def process_html_fragments(
     node_callback
         A callback function to process each node in the parsed markup.
         The function should accept a single
-        :external:py:class:`lxml.etree._Element` as argument; its return
-        value is ignored.
+        :py:class:`lxml.etree._Element` as argument; its return value is
+        ignored.
 
         Note that, since the markup is parsed as fragments, more than
         the first element passed to the callback may have no parent.
