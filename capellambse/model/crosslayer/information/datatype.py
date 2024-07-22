@@ -47,6 +47,7 @@ class BooleanType(DataType):
 class Enumeration(DataType):
     """An Enumeration."""
 
+    domain_type = c.AttrProxyAccessor(c.GenericElement, "domainType")
     owned_literals = c.DirectProxyAccessor(
         datavalue.EnumerationLiteral, aslist=c.ElementList
     )
