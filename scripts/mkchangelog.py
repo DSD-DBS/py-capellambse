@@ -28,7 +28,6 @@ MAILUSER = re.compile(
 
 HEADINGS: tuple[tuple[str, str | None], ...] = (
     ("BAD", "Commits with malformed subject lines"),
-    ("BREAKING", "BREAKING CHANGES"),
     ("revert", "Reverted earlier changes"),
     ("feat", "New features"),
     ("perf", "Performance improvements"),
@@ -64,6 +63,7 @@ def _main(since: str, until: str) -> None:
         encoding="utf-8",
     )
     commits: dict[str, list[str]] = collections.defaultdict(list)
+    breaking_changes: list[str] = []
 
     unknown_authors: set[str] = set()
     for msg, author, hash in helpers.ntuples(3, all_commits.split("\0")):
@@ -87,10 +87,10 @@ def _main(since: str, until: str) -> None:
             "type", "scope", "breaking", "subject"
         )
         scope = f"**{scope}**: " if scope else ""
-        if breaking:
-            ctype = "BREAKING"
         subject = subject[0].upper() + subject[1:]
         commits[ctype].append(f"{scope}{subject} *by {author}* ({hash})")
+        if breaking:
+            breaking_changes.append(f"{scope}{subject}")
 
     try:
         with open("notable-changes.md", encoding="locale") as f:
@@ -101,7 +101,15 @@ def _main(since: str, until: str) -> None:
         errtext = f" {type(err).__name__}: {err}"
         custom_changes = f"***Cannot read notable-changes.md:*** {errtext}"
 
-    print("# Notable changes", end="\n\n")
+    if breaking_changes:
+        print("# Breaking changes", end="\n\n")
+        for msg in breaking_changes:
+            print(f"- {msg}")
+        print()
+
+        print("# Other notable changes", end="\n\n")
+    else:
+        print("# Notable changes", end="\n\n")
     if custom_changes:
         print(custom_changes.strip(), end="\n\n")
     print("# Full changelog", end="\n\n")
