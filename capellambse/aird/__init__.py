@@ -4,11 +4,9 @@
 from __future__ import annotations
 
 __all__ = [
-    "DiagramDescriptor",
     "DRepresentationDescriptor",
     "ActiveFilters",
     "enumerate_descriptors",
-    "enumerate_diagrams",
     "find_target",
     "get_styleclass",
     "parse_diagrams",
@@ -21,7 +19,6 @@ __all__ = [
 import collections.abc as cabc
 import logging
 import pathlib
-import sys
 import typing as t
 import urllib.parse
 
@@ -33,11 +30,6 @@ from capellambse import diagram, helpers, loader
 from . import _common as C
 from . import _filters, _semantic, _visual
 from ._filters import GLOBAL_FILTERS, ActiveFilters, GlobalFilter
-
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
 
 DRepresentationDescriptor = t.NewType(
     "DRepresentationDescriptor", etree._Element
@@ -59,7 +51,7 @@ Other representations (e.g. data tables) will not be listed by
 """
 
 
-class DiagramDescriptor(t.NamedTuple):
+class _DiagramDescriptor(t.NamedTuple):
     fragment: pathlib.PurePosixPath
     name: str
     styleclass: str | None
@@ -121,20 +113,13 @@ def _viewpoint_of(view: etree._Element) -> str:
     return urllib.parse.unquote(viewname.group(1))
 
 
-@deprecated("'enumerate_diagrams' is deprecated, use 'enumerate_descriptors'")
-def enumerate_diagrams(
-    model: loader.MelodyLoader,
-) -> cabc.Iterator[DiagramDescriptor]:
-    """Enumerate the diagrams in the model.
-
-    Parameters
-    ----------
-    model
-        The MelodyLoader instance
-    """
+def parse_diagrams(
+    model: loader.MelodyLoader, **params: t.Any
+) -> cabc.Iterator[diagram.Diagram]:
+    """Parse all diagrams from the model."""
     for descriptor in enumerate_descriptors(model):
         try:
-            d = _build_descriptor(model, descriptor)
+            d = parse_diagram(model, descriptor, **params)
         except Exception as err:
             C.LOGGER.warning(
                 "Ignoring invalid diagram %r: %s", descriptor, err
@@ -143,32 +128,17 @@ def enumerate_diagrams(
             yield d
 
 
-def parse_diagrams(
-    model: loader.MelodyLoader, **params: t.Any
-) -> cabc.Iterator[diagram.Diagram]:
-    """Parse all diagrams from the model."""
-    for descriptor in enumerate_descriptors(model):
-        try:
-            d = _build_descriptor(model, descriptor)
-        except Exception as err:
-            C.LOGGER.warning(
-                "Ignoring invalid diagram %r: %s", descriptor, err
-            )
-            continue
-        yield parse_diagram(model, d, **params)
-
-
 def _build_descriptor(
     model: loader.MelodyLoader,
     descriptor: DRepresentationDescriptor,
-) -> DiagramDescriptor:
+) -> _DiagramDescriptor:
     assert isinstance(descriptor, etree._Element)
 
     diag_root = model[descriptor.attrib["repPath"]]
     styleclass = get_styleclass(descriptor)
     target = find_target(model, descriptor)
 
-    return DiagramDescriptor(
+    return _DiagramDescriptor(
         fragment=model.find_fragment(descriptor),
         name=descriptor.attrib["name"],
         styleclass=styleclass,
@@ -210,7 +180,7 @@ def get_styleclass(descriptor: DRepresentationDescriptor) -> str | None:
 
 def parse_diagram(
     model: loader.MelodyLoader,
-    descriptor: DRepresentationDescriptor | DiagramDescriptor,
+    descriptor: DRepresentationDescriptor,
     **params: t.Any,
 ) -> diagram.Diagram:
     """Parse a single diagram from the model.
@@ -220,16 +190,21 @@ def parse_diagram(
     model
         A loaded model.
     descriptor
-        A DiagramDescriptor as obtained from :func:`enumerate_diagrams`.
+        A DiagramDescriptor as obtained from :func:`enumerate_descriptors`.
     """
-    if not isinstance(descriptor, DiagramDescriptor):
-        descriptor = _build_descriptor(model, descriptor)
+    if not is_representation_descriptor(descriptor):
+        raise TypeError(
+            f"Expected a DRepresentationDescriptor, got {descriptor!r}"
+        )
+    diag_descriptor = _build_descriptor(model, descriptor)
 
     diag = diagram.Diagram(
-        descriptor.name, styleclass=descriptor.styleclass, uuid=descriptor.uid
+        diag_descriptor.name,
+        styleclass=diag_descriptor.styleclass,
+        uuid=diag_descriptor.uid,
     )
     dgtree = model.follow_link(
-        model.trees[descriptor.fragment].root, descriptor.uid
+        model.trees[diag_descriptor.fragment].root, diag_descriptor.uid
     )
     treedata = helpers.xpath_fetch_unique(
         C.XP_ANNOTATION_ENTRIES,
@@ -253,7 +228,7 @@ def parse_diagram(
                     diagram_tree=dgtree,
                     data_element=data_elm,
                     melodyloader=model,
-                    fragment=descriptor.fragment,
+                    fragment=diag_descriptor.fragment,
                 )
             )
         except C.SkipObject:
@@ -263,7 +238,8 @@ def parse_diagram(
 
     if len(diag) == 0:
         C.LOGGER.error(
-            "Deserialized diagram %r is empty", descriptor.name or diag.name
+            "Deserialized diagram %r is empty",
+            diag_descriptor.name or diag.name,
         )
     else:
         diag.calculate_viewport()
@@ -286,7 +262,7 @@ def _element_from_xml(ebd: C.ElementBuilder) -> diagram.DiagramElement:
 
 def iter_visible(
     model: loader.MelodyLoader,
-    descriptor: DRepresentationDescriptor | DiagramDescriptor,
+    descriptor: DRepresentationDescriptor,
 ) -> cabc.Iterator[etree._Element]:
     r"""Iterate over all semantic elements that are visible in a diagram.
 
@@ -300,7 +276,7 @@ def iter_visible(
     model
         A loaded model.
     descriptor
-        A DiagramDescriptor as obtained from :func:`enumerate_diagrams`.
+        A DiagramDescriptor as obtained from :func:`enumerate_descriptors`.
 
     Raises
     ------
@@ -313,15 +289,8 @@ def iter_visible(
     etree._Element
         A semantic element from the ``*.capella`` file.
     """
-    if isinstance(descriptor, DiagramDescriptor):
-        diag_element = model.follow_link(
-            model.trees[descriptor.fragment].root, descriptor.uid
-        )
-    else:
-        assert isinstance(descriptor, etree._Element)
-        diag_element = model.follow_link(
-            descriptor, descriptor.attrib["repPath"]
-        )
+    assert isinstance(descriptor, etree._Element)
+    diag_element = model.follow_link(descriptor, descriptor.attrib["repPath"])
 
     style_data = helpers.xpath_fetch_unique(
         C.XP_ANNOTATION_ENTRIES,
@@ -383,29 +352,3 @@ def is_representation_descriptor(
     e: etree._Element, /
 ) -> t.TypeGuard[DRepresentationDescriptor]:
     return helpers.xtype_of(e) == "viewpoint:DRepresentationDescriptor"
-
-
-if not t.TYPE_CHECKING:
-
-    def __getattr__(key: str) -> t.Any:
-        if key == "diagram":
-            obj = diagram
-        else:
-            try:
-                obj = getattr(diagram, key)
-            except NameError:
-                try:
-                    obj = importlib.import_module(f"capellambse.diagram.{key}")
-                except ImportError:
-                    raise NameError(f"No name {key} in {__name__}") from None
-        import warnings
-
-        warnings.warn(
-            (
-                f"{__name__}.{key} is deprecated,"
-                " import it from capellambse.diagram instead"
-            ),
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        return obj

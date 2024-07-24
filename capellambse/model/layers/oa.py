@@ -26,8 +26,6 @@ class OperationalActivity(fa.AbstractFunction):
 
     _xmltag = "ownedOperationalActivities"
 
-    owning_entity = c.DeprecatedAccessor["Entity"]("owner")
-
     exchanges = c.DirectProxyAccessor(
         fa.FunctionalExchange, aslist=c.ElementList
     )

@@ -669,24 +669,3 @@ class VisibilityKind(_StringyEnumMixin, _enum.Enum):
     """The feature is only visible/accessible from the class itself."""
     PACKAGE = "PACKAGE"
     """The feature is accessible from any element within the same package."""
-
-
-if not t.TYPE_CHECKING:
-    __replaced_names = {
-        "ExchangeItemType": ExchangeMechanism,
-        "Kind": PhysicalComponentKind,
-        "Nature": PhysicalComponentNature,
-        "FPortDir": OrientationPortKind,
-    }
-
-    def __getattr__(name):
-        if replacement := __replaced_names.get(name):
-            import warnings
-
-            warnings.warn(
-                f"{name} is deprecated; use {replacement.__name__} instead",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            return replacement
-        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -18,7 +18,6 @@ __all__ = [
     "IndexAccessor",
     "AlternateAccessor",
     "ParentAccessor",
-    "CustomAccessor",
     "AttributeMatcherAccessor",
     "SpecificationAccessor",
     "ReferenceSearchingAccessor",
@@ -34,7 +33,6 @@ import contextlib
 import itertools
 import logging
 import operator
-import sys
 import typing as t
 import warnings
 
@@ -45,12 +43,7 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import XTYPE_HANDLERS, S, T, U, build_xtype, element
-
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
+from . import XTYPE_HANDLERS, S, T, build_xtype, element
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -540,7 +533,6 @@ class PhysicalAccessor(Accessor[T]):
         mapkey: str | None = None,
         mapvalue: str | None = None,
         fixed_length: int = 0,
-        list_extra_args: cabc.Mapping[str, t.Any] | None = None,
     ) -> None:
         super().__init__()
         if xtypes is None:
@@ -562,15 +554,6 @@ class PhysicalAccessor(Accessor[T]):
         self.aslist = aslist
         self.class_ = class_
         self.list_extra_args = {}
-        if list_extra_args is not None:
-            warnings.warn(
-                (
-                    "list_extra_args is deprecated,"
-                    " pass mapkey and/or mapvalue directly instead"
-                ),
-                DeprecationWarning,
-            )
-            self.list_extra_args.update(list_extra_args)
         if mapkey is not None:
             self.list_extra_args["mapkey"] = mapkey
         if mapvalue is not None:
@@ -620,7 +603,6 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         mapvalue: str | None = None,
         fixed_length: int = 0,
         follow_abstract: bool = False,
-        list_extra_args: dict[str, t.Any] | None = None,
         rootelem: (
             str
             | type[element.GenericElement]
@@ -666,15 +648,6 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             Follow the link in the ``abstractType`` XML attribute of
             each list member and instantiate that object instead. The
             default is to instantiate the child elements directly.
-        list_extra_args
-            Extra arguments to pass to the
-            :class:`~capellambse.model.common.element.ElementList`
-            constructor.
-
-            .. deprecated: 0.5.68
-
-               Use 'mapkey', 'mapvalue' and 'fixed_length' directly
-               instead.
         rootelem
             A class or ``xsi:type`` (or list thereof) that defines the
             path from the current object's XML element to the search
@@ -689,7 +662,6 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             class_,
             xtypes,
             aslist=aslist,
-            list_extra_args=list_extra_args,
             mapkey=mapkey,
             mapvalue=mapvalue,
             fixed_length=fixed_length,
@@ -1133,7 +1105,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         aslist: type[element.ElementList] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
-        list_extra_args: cabc.Mapping[str, t.Any] | None = None,
+        fixed_length: int = 0,
     ):
         """Create an AttrProxyAccessor.
 
@@ -1161,22 +1133,20 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             the found object itself is returned.
 
             Ignored if *aslist* is not specified.
-        list_extra_args
-            Extra arguments to pass to the
-            :class:`~capellambse.model.common.element.ElementList`
-            constructor.
+        fixed_length
+            When non-zero, the returned list will try to stay at exactly
+            this length, by not allowing to insert or delete beyond this
+            many members.
 
-            .. deprecated: 0.5.68
-
-               Use 'mapkey' and 'mapvalue' directly instead.
+            Ignored if *aslist* is not specified.
         """
         del class_
         super().__init__(
             element.GenericElement,
             aslist=aslist,
-            list_extra_args=list_extra_args,
             mapkey=mapkey,
             mapvalue=mapvalue,
+            fixed_length=fixed_length,
         )
         self.attr = attr
 
@@ -1288,9 +1258,9 @@ class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
             class_,
             attr,
             aslist=aslist,
-            list_extra_args={"fixed_length": 2},
             mapkey=mapkey,
             mapvalue=mapvalue,
+            fixed_length=2,
         )
         assert self.aslist is not None
 
@@ -1384,78 +1354,6 @@ class ParentAccessor(PhysicalAccessor[T]):
             objrepr = getattr(obj, "_short_repr_", obj.__repr__)()
             raise AttributeError(f"Object {objrepr} is orphaned")
         return self.class_.from_model(obj._model, parent)
-
-
-@deprecated(
-    "CustomAccessor is deprecated,"
-    " create a specialized Accessor subclass instead"
-)
-class CustomAccessor(PhysicalAccessor[T]):
-    """Customizable alternative to the DirectProxyAccessor.
-
-    .. deprecated:: 0.5.4
-
-       Deprecated due to overcomplexity and (ironically) a lack of
-       flexibility.
-    """
-
-    __slots__ = (
-        "elmfinders",
-        "elmmatcher",
-        "matchtransform",
-    )
-
-    def __init__(
-        self,
-        class_: type[T],
-        *elmfinders: cabc.Callable[[element.GenericElement], cabc.Iterable[T]],
-        elmmatcher: cabc.Callable[
-            [U, element.GenericElement], bool
-        ] = operator.contains,  # type: ignore[assignment]
-        matchtransform: cabc.Callable[[T], U] = (
-            lambda e: e  # type: ignore[assignment,return-value]
-        ),
-        aslist: type[element.ElementList] | None = None,
-    ) -> None:
-        """Create a CustomAccessor.
-
-        Parameters
-        ----------
-        class_
-            The target subclass of ``GenericElement``
-        elmfinders
-            Functions that are called on the current element. Each
-            returns an iterable of possible targets.
-        aslist
-            If None, only a single element must match, which will be
-            returned directly. If not None, must be a subclass of
-            :class:`~capellambse.model.common.element.ElementList`,
-            which will be used to return a list of all matched objects.
-        elmmatcher
-            Function that is called with the transformed target element
-            and the current element to determine if the untransformed
-            target should be accepted.
-        matchtransform
-            Function that transforms a target so that it can be used by
-            the matcher function.
-        """
-        super().__init__(class_, aslist=aslist)
-        self.elmfinders = elmfinders
-        self.elmmatcher = elmmatcher
-        self.matchtransform = matchtransform
-
-    def __get__(self, obj, objtype=None):
-        del objtype
-        if obj is None:
-            return self
-
-        elms = itertools.chain.from_iterable(f(obj) for f in self.elmfinders)
-        matches = [
-            e._element
-            for e in elms
-            if self.elmmatcher(self.matchtransform(e), obj)
-        ]
-        return self._make_list(obj, matches)
 
 
 class AttributeMatcherAccessor(DirectProxyAccessor[T]):
@@ -1818,14 +1716,12 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         aslist: type[element.ElementList[T]] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
-        list_extra_args: dict[str, t.Any] | None = None,
         alternate: type[element.GenericElement] | None = None,
     ) -> None:
         super().__init__(
             element.GenericElement,
             (),
             aslist=aslist,
-            list_extra_args=list_extra_args,
             mapkey=mapkey,
             mapvalue=mapvalue,
         )

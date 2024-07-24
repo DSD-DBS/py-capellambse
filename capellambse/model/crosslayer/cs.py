@@ -78,7 +78,6 @@ class PhysicalLink(PhysicalPort):
     ends = c.PhysicalLinkEndsAccessor(
         PhysicalPort, "linkEnds", aslist=c.ElementList
     )
-    linkEnds = c.DeprecatedAccessor[PhysicalPort]("ends")
     exchanges = c.LinkAccessor[fa.ComponentExchange](
         "ownedComponentExchangeAllocations",
         fa.XT_COMP_EX_ALLOC,

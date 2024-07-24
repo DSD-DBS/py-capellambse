@@ -19,7 +19,6 @@ import os
 import pathlib
 import re
 import shutil
-import sys
 import typing as t
 
 from lxml import etree
@@ -27,11 +26,6 @@ from lxml import etree
 import capellambse
 import capellambse.helpers
 from capellambse import _diagram_cache, aird, filehandler, loader
-
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
 
 from . import common, diagram  # isort:skip
 
@@ -111,7 +105,6 @@ class MelodyModel:
             | dict[str, t.Any]
             | None
         ) = None,
-        jupyter_untrusted: bool | None = None,
         fallback_render_aird: bool = False,
         **kwargs: t.Any,
     ) -> None:
@@ -214,17 +207,6 @@ class MelodyModel:
             - Cache file name: ``_7FWu4KrxEeqOgqWuHJrXFA.svg``
 
             *This argument is **not** passed to the file handler.*
-        diagram_cache_subdir: str
-            A sub-directory prefix to prepend to diagram UUIDs before
-            looking them up in the ``diagram_cache``.
-
-            *This argument is **not** passed to the file handler.*
-        jupyter_untrusted: bool
-            If set to True, restricts or disables some features that are
-            unavailable in an untrusted Jupyter environment. Currently
-            this only disables the SVG format as rich display option for
-            Ipython, which is needed to avoid rendering issues with
-            Github's Jupyter notebook viewer.
         fallback_render_aird: bool
             If set to True, enable the internal engine to render
             diagrams that were not found in the pre-rendered cache.
@@ -244,29 +226,6 @@ class MelodyModel:
         capellambse.filehandler.http.HTTPFileHandler :
             A simple ``http(s)://`` file handler.
         """
-        import warnings
-
-        if "diagram_cache_subdir" in kwargs:
-            warnings.warn(
-                (
-                    "The 'diagram_cache_subdir' argument is deprecated,"
-                    " use a FileHandler / dict with a 'subdir' instead."
-                ),
-                DeprecationWarning,
-                stacklevel=2,
-            )
-        diagram_cache_subdir = kwargs.pop("diagram_cache_subdir", None)
-
-        if jupyter_untrusted is not None:
-            warnings.warn(
-                (
-                    "The 'jupyter_untrusted' argument is no longer needed and"
-                    " will be removed soon. Please remove it from your calls."
-                ),
-                DeprecationWarning,
-                stacklevel=2,
-            )
-
         capellambse.load_model_extensions()
 
         self._loader = loader.MelodyLoader(path, **kwargs)
@@ -283,9 +242,6 @@ class MelodyModel:
                 )
             else:
                 self.diagram_cache = filehandler.get_filehandler(diagram_cache)
-            self._diagram_cache_subdir = pathlib.PurePosixPath(
-                diagram_cache_subdir or "."
-            )
         else:
             self.diagram_cache = None
 

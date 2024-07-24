@@ -406,8 +406,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __load_cache(self, chain: list[DiagramConverter]) -> t.Any:
         cache_handler = self._model.diagram_cache
-        cachedir = getattr(self._model, "_diagram_cache_subdir", None)
-        if cache_handler is None or cachedir is None:
+        if cache_handler is None:
             raise KeyError(self.uuid)
 
         data: t.Any = None
@@ -416,7 +415,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             if not ext or not hasattr(cv, "from_cache"):
                 continue
 
-            filename = cachedir / (self.uuid + ext)
+            filename = self.uuid + ext
             try:
                 with cache_handler.open(filename) as f:
                     cache = f.read()

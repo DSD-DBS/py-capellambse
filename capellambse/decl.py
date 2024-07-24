@@ -39,11 +39,6 @@ from capellambse import helpers
 from capellambse.model import common
 from capellambse.model import new_object as NewObject
 
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
-
 FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
 _FutureAction = dict[str, t.Any]
 _OperatorResult = tuple[
@@ -217,18 +212,6 @@ def _operate_delete(
             del target[idx]
 
     return ()
-
-
-@deprecated(
-    "The 'modify' key has been deprecated, use 'set' instead",
-    category=UserWarning,
-)
-def _operate_modify(
-    promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject,
-    modifications: dict[str, t.Any],
-) -> cabc.Generator[_OperatorResult, t.Any, None]:
-    yield from _operate_set(promises, parent, modifications)
 
 
 def _operate_set(
@@ -412,7 +395,6 @@ _OPERATIONS = collections.OrderedDict(
     (
         ("create", _operate_create),
         ("extend", _operate_extend),
-        ("modify", _operate_modify),
         ("set", _operate_set),
         ("sync", _operate_sync),
         ("delete", _operate_delete),

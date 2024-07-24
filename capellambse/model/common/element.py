@@ -21,7 +21,6 @@ import inspect
 import logging
 import operator
 import re
-import sys
 import textwrap
 import typing as t
 
@@ -33,11 +32,6 @@ import capellambse
 from capellambse import helpers
 
 from . import XTYPE_HANDLERS, T, U, accessors, properties
-
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
 
 if t.TYPE_CHECKING:
     from capellambse.model import crosslayer
@@ -60,7 +54,6 @@ _ICON_CACHE: dict[tuple[str, str, int], t.Any] = {}
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
     def add_wrapped_eq(cls: type[T]) -> type[T]:
         orig_eq = cls.__eq__
-        orig_hash = cls.__hash__
 
         @functools.wraps(orig_eq)
         def new_eq(self, other: object) -> bool:
@@ -78,21 +71,7 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
                     return result
             return orig_eq(self, other)
 
-        # <https://github.com/DSD-DBS/py-capellambse/issues/52>
-        @deprecated(
-            (
-                "Hashing of this type is broken and will be removed soon,"
-                f" use the `.uuid` or `.{attr}` directly instead"
-            ),
-            category=FutureWarning,
-        )
-        @functools.wraps(orig_hash)
-        def new_hash(self) -> int:
-            return orig_hash(self)
-
         cls.__eq__ = new_eq  # type: ignore[method-assign]
-        cls.__hash__ = new_hash  # type: ignore[method-assign]
-
         return cls
 
     return add_wrapped_eq
@@ -165,6 +144,27 @@ class GenericElement:
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
+
+    __hash__ = None  # type: ignore[assignment]
+    """Disable hashing by default on the base class.
+
+    The ``__hash__`` contract states that two objects that compare equal
+    must have the same hash value, and that the hash value must not
+    change over an object's lifetime.
+
+    Some subclasses of ``ModelElement`` which encapsulate a piece of
+    plain old data compare the same as one of their attributes, which
+    means they would have to also hash to the same value as that
+    attribute.
+
+    However, since ModelElement instances are mutable, that attribute
+    could change at any time, which would result in those instances
+    ending up in the wrong hash bucket, thus breaking lookups.
+
+    For this reason, and to avoid inconsistent behavior where some
+    classes are hashable and some are not, hashing of ModelObjects is
+    generally disabled.
+    """
 
     @property
     def progress_status(self) -> properties.AttributeProperty | str:
@@ -327,10 +327,6 @@ class GenericElement:
                 continue
             attrs.append(i)
         return attrs
-
-    @deprecated("Hashing of elements is deprecated, use the '.uuid' instead")
-    def __hash__(self):
-        return hash(self._element)
 
     def __repr__(self) -> str:  # pragma: no cover
         header = self._short_repr_()

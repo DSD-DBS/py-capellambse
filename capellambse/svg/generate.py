@@ -8,15 +8,9 @@ import dataclasses
 import json
 import os
 import pathlib
-import sys
 import typing as t
 
 from capellambse.svg.drawing import LabelDict
-
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
 
 ContentsDict = t.TypedDict(
     "ContentsDict",
@@ -115,10 +109,6 @@ class SVGDiagram:
     def draw_object(self, obj: ContentsDict) -> None:
         """Draw the given ``obj`` on the underlaying ``Drawing``."""
         self.drawing.draw_object(obj)
-
-    @deprecated("'save_drawing' is deprecated, use 'save' instead")
-    def save_drawing(self, *args, **kwargs) -> None:
-        self.save(*args, **kwargs)
 
     def save(
         self,

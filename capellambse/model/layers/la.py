@@ -56,7 +56,6 @@ class LogicalComponent(cs.Component):
     )
 
     components: c.Accessor
-    functions = c.DeprecatedAccessor[LogicalFunction]("allocated_functions")
 
 
 @c.xtype_handler(XT_ARCH)

@@ -84,8 +84,6 @@ class PhysicalComponent(cs.Component):
     def components(self) -> c.ElementList[PhysicalComponent]:
         return self.deployed_components + self.owned_components
 
-    functions = c.DeprecatedAccessor[PhysicalFunction]("allocated_functions")
-
 
 @c.xtype_handler(XT_ARCH)
 class PhysicalComponentPkg(c.GenericElement):

@@ -34,11 +34,6 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
-if sys.version_info >= (3, 13):
-    from warnings import deprecated
-else:
-    from typing_extensions import deprecated
-
 E = builder.ElementMaker()
 LOGGER = logging.getLogger(__name__)
 PROJECT_NATURE = "org.polarsys.capella.project.nature"
@@ -208,11 +203,6 @@ class ModelFile:
             return FragmentType.VISUAL
         else:
             return FragmentType.OTHER
-
-    @property
-    @deprecated("ModelFile.tree is deprecated, use the 'root' directly")
-    def tree(self) -> etree._ElementTree:
-        return etree.ElementTree(self.root)
 
     def __init__(
         self,
@@ -860,37 +850,6 @@ class MelodyLoader:
         for fragment, tree in roottrees:
             ret += [follow_href(fragment, elem) for elem in query(tree)]
         return ret
-
-    @deprecated("find_by_xsi_type is deprecated, use `iterall_xt` instead")
-    def find_by_xsi_type(
-        self,
-        *xsi_types: str,
-        roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
-    ) -> list[etree._Element]:
-        r"""Find all elements matching any of the given ``xsi:type``\ s.
-
-        Parameters
-        ----------
-        xsi_types
-            ``xsi:type`` strings to match, for example
-            "org.polarsys.capella.core.data.cs:InterfacePkg"
-        roots
-            A list of XML elements to use as roots for the query.
-            Defaults to all tree roots.
-        """
-        if roots is None:
-            return list(self.iterall_xt(*xsi_types))
-        elif isinstance(roots, etree._Element):
-            roots = (roots,)
-
-        xtset = self._nonempty_hashset(xsi_types)
-        del xsi_types
-
-        return [
-            i
-            for i in itertools.chain.from_iterable(roots)
-            if (xt := helpers.xtype_of(i)) is not None and xt in xtset
-        ]
 
     def iterall(self, *tags: str) -> cabc.Iterator[etree._Element]:
         """Iterate over all elements in all trees by tags.

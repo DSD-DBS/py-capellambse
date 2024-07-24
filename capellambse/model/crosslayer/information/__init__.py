@@ -94,9 +94,6 @@ class Property(c.GenericElement):
     max_card = c.RoleTagAccessor("ownedMaxCard")
     association = c.ReferenceSearchingAccessor(Association, "roles")
 
-    min = c.DeprecatedAccessor[t.Any]("min_value")
-    max = c.DeprecatedAccessor[t.Any]("max_value")
-
 
 @c.xtype_handler(None)
 class Class(c.GenericElement):
