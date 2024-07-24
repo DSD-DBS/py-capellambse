@@ -172,10 +172,12 @@ class RequirementsRelationAccessor(
     def create(
         self,
         elmlist: m.ElementListCouplingMixin,
+        typehint: str | None = None,
         /,
-        *type_hints: str | None,
         **kw: t.Any,
     ) -> rq.InternalRelation | CapellaIncomingRelation:
+        del typehint
+
         if "target" not in kw:
             raise TypeError("No `target` for new requirement relation")
         cls = self._find_relation_type(kw["target"])

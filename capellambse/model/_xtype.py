@@ -11,7 +11,6 @@ __all__ = [
     "xtype_handler",
 ]
 
-import collections
 import collections.abc as cabc
 import typing as t
 
@@ -29,9 +28,7 @@ they represent. :func:`build_xtype` and related functions/classes can then
 use this information to automatically derive an ``xsi:type`` from any
 class that is defined in such an anchor module (or a submodule of one).
 """
-XTYPE_HANDLERS: dict[str | None, dict[str, type[t.Any]]] = (
-    collections.defaultdict(dict)
-)
+XTYPE_HANDLERS: dict[None, dict[str, type[t.Any]]] = {None: {}}
 r"""Defines a mapping between ``xsi:type``\ s and wrapper classes.
 
 The first layer's keys can be either ``None`` or the ``xsi:type`` of the
@@ -68,15 +65,15 @@ def xtype_handler(
 
     Example::
 
-        >>> @xtype_handler('arch:xtype', 'xtype:1', 'xtype:2')
+        >>> @xtype_handler(None, 'xtype:1', 'xtype:2')
         ... class Test:
         ...     _xmltag = "ownedTests"
         ...     def from_model(self, model, element, /):
         ...         ...  # Instantiate from model XML element
     """
-    if arch is not None and not isinstance(arch, str):  # pragma: no cover
+    if arch is not None:  # pragma: no cover
         raise TypeError(
-            f"'arch' must be a str or None, not {type(arch).__name__}"
+            "xtype_handler with non-None 'arch' is no longer supported"
         )
 
     # Compile a list of all xtype strings
@@ -98,9 +95,9 @@ def xtype_handler(
             xtype_strs.append(build_xtype(cls))
 
         for xtype in xtype_strs:
-            if xtype in XTYPE_HANDLERS[arch]:  # pragma: no cover
+            if xtype in XTYPE_HANDLERS[None]:  # pragma: no cover
                 raise LookupError(f"Duplicate xsi:type {xtype} in {arch}")
-            XTYPE_HANDLERS[arch][xtype] = cls
+            XTYPE_HANDLERS[None][xtype] = cls
         return cls
 
     return register_xtype_handler
@@ -132,7 +129,6 @@ def find_wrapper(typehint: str) -> tuple[type[_obj.ModelObject], ...]:
     """
     return tuple(
         v
-        for i in XTYPE_HANDLERS.values()
-        for k, v in i.items()
+        for k, v in XTYPE_HANDLERS[None].items()
         if k.endswith(f":{typehint}") or k == typehint
     )

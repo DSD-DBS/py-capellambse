@@ -165,20 +165,10 @@ class GenericElement:
         if class_ is GenericElement:
             xtype = helpers.xtype_of(element)
             if xtype is not None:
-                ancestors = model._loader.iterancestors(element)
-                for ancestor in ancestors:
-                    anc_xtype = helpers.xtype_of(ancestor)
-                    try:
-                        class_ = _xtype.XTYPE_HANDLERS[anc_xtype][xtype]
-                    except KeyError:
-                        pass
-                    else:
-                        break
-                else:
-                    try:
-                        class_ = _xtype.XTYPE_HANDLERS[None][xtype]
-                    except KeyError:
-                        pass
+                try:
+                    class_ = _xtype.XTYPE_HANDLERS[None][xtype]
+                except KeyError:
+                    pass
             if class_ is not cls:
                 return class_.from_model(model, element)
         self = class_.__new__(class_)
@@ -816,7 +806,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         elm: etree._Element = value._element
         self._elements.insert(index, elm)
 
-    def create(self, *type_hints: str | None, **kw: t.Any) -> T:
+    def create(self, typehint: str | None = None, /, **kw: t.Any) -> T:
         raise TypeError("Cannot create elements: List is not coupled")
 
     def create_singleattr(self, arg: t.Any) -> T:
@@ -1260,7 +1250,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
         assert type(self).__bases__[0] is ElementListCouplingMixin
         return type(self).__bases__[1]
 
-    def create(self, *type_hints: str | None, **kw: t.Any) -> T:
+    def create(self, typehint: str | None = None, /, **kw: t.Any) -> T:
         """Make a new model object (instance of GenericElement).
 
         Instead of specifying the full ``xsi:type`` including the
@@ -1277,7 +1267,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
 
         Parameters
         ----------
-        type_hints
+        typehint
             Hints for finding the correct type of element to create. Can
             either be a full or shortened ``xsi:type`` string, or an
             abbreviation defined by the specific Accessor instance.
@@ -1291,7 +1281,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
         assert self._parent is not None
         acc = type(self)._accessor
         assert isinstance(acc, _descriptors.WritableAccessor)
-        newobj = acc.create(self, *type_hints, **kw)
+        newobj = acc.create(self, typehint, **kw)
         try:
             acc.insert(self, len(self), newobj)
             super().insert(len(self), newobj)

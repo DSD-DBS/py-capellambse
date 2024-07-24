@@ -46,7 +46,7 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import S, T, _xtype
+from . import T, _xtype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -267,8 +267,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     def create(
         self,
         elmlist: _obj.ElementListCouplingMixin,
+        typehint: str | None = None,
         /,
-        *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
         """Create and return a new element of type ``elmclass``.
@@ -278,7 +278,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         elmlist
             The (coupled) :py:class:`~capellambse.model.ElementList` to
             insert the new object into.
-        type_hints
+        typehint
             Hints for finding the correct type of element to create. Can
             either be a full or shortened ``xsi:type`` string, or an
             abbreviation defined by the specific Accessor instance.
@@ -324,12 +324,12 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         self,
         parent: _obj.ModelObject,
         xmltag: str | None,
+        typehint: str | None,
         /,
-        *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
-        if type_hints:
-            elmclass, kw["xtype"] = self._match_xtype(*type_hints)
+        if typehint:
+            elmclass, kw["xtype"] = self._match_xtype(typehint)
         else:
             elmclass, kw["xtype"] = self._guess_xtype()
         assert elmclass is not None
@@ -356,57 +356,25 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             **self.list_extra_args,
         )
 
-    def _match_xtype(
-        self,
-        type_1: str | None,
-        type_2: str | object = _NOT_SPECIFIED,
-        /,
-    ) -> tuple[type[T], str]:
-        r"""Find the right class for the given ``xsi:type``\ (s)."""
-
-        def match_xt(xtp: S, itr: cabc.Iterable[S]) -> S:
-            matches: list[S] = []
-            for i in itr:
-                if (
-                    xtp is i is None
-                    or i is not None
-                    and xtp == i
-                    or xtp == i.split(":")[-1]  # type: ignore[union-attr]
-                ):
-                    matches.append(i)
-            if not matches:
-                raise ValueError(f"Invalid or unknown xsi:type {xtp!r}")
-            if len(matches) > 1:
-                raise ValueError(
-                    f"Ambiguous xsi:type {xtp!r}, please qualify: "
-                    + ", ".join(repr(i) for i in matches)
-                )
-            return matches[0]
-
-        if not isinstance(type_1, str):
+    def _match_xtype(self, hint: str, /) -> tuple[type[T], str]:
+        """Find the right class for the given ``xsi:type``."""
+        if not isinstance(hint, str):
             raise TypeError(
-                f"Expected str as first type, got {type(type_1).__name__!r}"
+                f"Expected str as first type, got {type(hint).__name__!r}"
             )
-        candidate_classes: dict[str, type[T]]
-        if type_2 is _NOT_SPECIFIED:
-            candidate_classes = dict(
-                itertools.chain.from_iterable(
-                    i.items() for i in _xtype.XTYPE_HANDLERS.values()
-                )
-            )
-            objtype = type_1
-        elif not isinstance(type_2, str):
-            raise TypeError(
-                f"Expected a str objtype, not {type(type_2).__name__}"
-            )
-        else:
-            candidate_classes = _xtype.XTYPE_HANDLERS[
-                match_xt(type_1, _xtype.XTYPE_HANDLERS)
-            ]
-            objtype = type_2
 
-        objtype = match_xt(objtype, candidate_classes)
-        return candidate_classes[objtype], objtype
+        matches: list[tuple[type[T], str]] = []
+        for i, cls in _xtype.XTYPE_HANDLERS[None].items():
+            if hint in {i, i.split(":")[-1], cls.__name__}:
+                matches.append((cls, i))
+        if not matches:
+            raise ValueError(f"Invalid or unknown xsi:type {hint!r}")
+        if len(matches) > 1:
+            raise ValueError(
+                f"Ambiguous xsi:type {hint!r}, please qualify: "
+                + ", ".join(repr(i) for _, i in matches)
+            )
+        return matches[0]
 
     def _guess_xtype(self) -> tuple[type[T], str]:
         try:
@@ -795,14 +763,14 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def create(
         self,
         elmlist: _obj.ElementListCouplingMixin,
+        typehint: str | None = None,
         /,
-        *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
         if self.rootelem:
             raise TypeError("Cannot create objects here")
 
-        return self._create(elmlist._parent, None, *type_hints, **kw)
+        return self._create(elmlist._parent, None, typehint, **kw)
 
     def insert(
         self,
@@ -1656,11 +1624,11 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def create(
         self,
         elmlist: _obj.ElementListCouplingMixin,
+        typehint: str | None = None,
         /,
-        *type_hints: str | None,
         **kw: t.Any,
     ) -> T:
-        if type_hints:
+        if typehint:
             raise TypeError(f"{self._qualname} does not support type hints")
         acc: WritableAccessor = getattr(self.class_, self.attr)
         obj = acc.create(elmlist, _xtype.build_xtype(self.class_), **kw)
@@ -1786,11 +1754,11 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     def create(
         self,
         elmlist: _obj.ElementListCouplingMixin,
+        typehint: str | None = None,
         /,
-        *type_hints: str | None,
         **kw: t.Any,
     ) -> _obj.GenericElement:
-        return self._create(elmlist._parent, self.role_tag, *type_hints, **kw)
+        return self._create(elmlist._parent, self.role_tag, typehint, **kw)
 
     def insert(
         self,
@@ -1849,24 +1817,13 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     ) -> cabc.Iterator[None]:
         yield
 
-    def _match_xtype(
-        self,
-        type_1: str | None,
-        type_2: str | object = _NOT_SPECIFIED,
-        /,
-    ) -> tuple[type[_obj.ModelObject], str]:
+    def _match_xtype(self, hint: str, /) -> tuple[type[_obj.ModelObject], str]:
         if not self.classes:
-            return super()._match_xtype(type_1, type_2)
+            return super()._match_xtype(hint)
 
-        if type_2 is not _NOT_SPECIFIED:
-            raise TypeError(
-                f"Only a single type hint is allowed for {self._qualname},"
-                f" got ({type_1!r}, {type_2!r})"
-            )
-
-        cls = next((i for i in self.classes if i.__name__ == type_1), None)
+        cls = next((i for i in self.classes if i.__name__ == hint), None)
         if cls is None:
-            raise ValueError(f"Invalid class for {self._qualname}: {type_1}")
+            raise ValueError(f"Invalid class for {self._qualname}: {hint}")
         return cls, _xtype.build_xtype(cls)
 
     def _guess_xtype(self) -> tuple[type[_obj.ModelObject], str]:

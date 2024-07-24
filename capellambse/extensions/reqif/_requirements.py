@@ -143,9 +143,9 @@ class AttributeAccessor(m.DirectProxyAccessor[AbstractRequirementsAttribute]):
             mapvalue="value",
         )
 
-    def _match_xtype(  # type: ignore[override]
-        self, type_: str
-    ) -> tuple[type, str]:
+    def _match_xtype(
+        self, type_: str, /
+    ) -> tuple[type[AbstractRequirementsAttribute], str]:
         type_ = type_.lower()
         try:
             cls = _attr_type_hints[type_]
