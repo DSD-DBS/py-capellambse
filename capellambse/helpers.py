@@ -36,9 +36,6 @@ else:
     import fcntl
     import termios
 
-if t.TYPE_CHECKING:
-    from capellambse import model as modelmod
-
 LOGGER = logging.getLogger(__name__)
 
 ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"

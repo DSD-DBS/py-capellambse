@@ -29,9 +29,6 @@ if sys.version_info >= (3, 11):
 else:
     import importlib.abc as ira
 
-if t.TYPE_CHECKING:
-    from capellambse.loader import modelinfo
-
 
 _F = t.TypeVar("_F", bound="FileHandler")
 

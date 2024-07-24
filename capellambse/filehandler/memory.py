@@ -26,9 +26,6 @@ from capellambse import helpers
 
 from . import abc
 
-if t.TYPE_CHECKING:
-    from capellambse.loader.modelinfo import ModelInfo
-
 
 class MemoryFileHandler(abc.FileHandler):
     """A file handler that stores data in memory."""
