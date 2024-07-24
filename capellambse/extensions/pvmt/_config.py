@@ -1,13 +1,13 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Model-level PVMT configuration."""
+
 from __future__ import annotations
 
 __all__ = [
     "ManagedDomain",
     "ManagedGroup",
     "PVMTConfiguration",
-    "PVMTConfigurationAccessor",
     "PVMTDescriptionProperty",
     "ScopeError",
     "SelectorRules",
@@ -25,11 +25,9 @@ import typing_extensions as te
 from lxml import etree
 
 import capellambse
-import capellambse.model.common as c
+import capellambse.metamodel as mm
+import capellambse.model as m
 from capellambse import helpers
-from capellambse.model import capellacore
-from capellambse.model import crosslayer as xl
-from capellambse.model import la, oa, pa, sa
 
 LOGGER = logging.getLogger(__name__)
 
@@ -55,7 +53,7 @@ _RULES_RE = re.compile(
 )
 
 
-class ScopeError(c.InvalidModificationError):
+class ScopeError(m.InvalidModificationError):
     """Raised when trying to apply a PVMT group to an out-of-scope element."""
 
     @property
@@ -63,7 +61,7 @@ class ScopeError(c.InvalidModificationError):
         return self.args[0]
 
     @property
-    def obj(self) -> c.ModelObject:
+    def obj(self) -> m.ModelObject:
         return self.args[1]
 
     def __str__(self) -> str:
@@ -73,7 +71,7 @@ class ScopeError(c.InvalidModificationError):
 
 
 def _matchprops(
-    obj: c.ModelObject,
+    obj: m.ModelObject,
     props: tuple[tuple[str, str, str], ...],
 ) -> bool:
     for prop, op, wanted in props:
@@ -88,7 +86,7 @@ def _matchprops(
             ismatch = cmp(actual, type(actual)(wanted))
         elif isinstance(actual, bool):
             ismatch = cmp(actual, wanted == "true")
-        elif isinstance(actual, capellacore.EnumerationPropertyLiteral):
+        elif isinstance(actual, mm.capellacore.EnumerationPropertyLiteral):
             ismatch = cmp(actual.name, wanted)
         else:
             raise TypeError(
@@ -106,34 +104,34 @@ class SelectorRules:
     raw: str
 
     @property
-    def classes(self) -> tuple[type[c.ModelObject], ...]:
+    def classes(self) -> tuple[type[m.ModelObject], ...]:
         classes = []
         for match in _RULES_RE.finditer(self.raw):
             if match.group("key") != "CLASS":
                 continue
             uri = match.group("value")
             _, clsname = uri.rsplit("/", 1)
-            (cls,) = c.find_wrapper(clsname)
+            (cls,) = m.find_wrapper(clsname)
             classes.append(cls)
 
         return tuple(classes)
 
     @property
-    def layers(self) -> tuple[type[xl.BaseArchitectureLayer], ...]:
-        classes: list[type[xl.BaseArchitectureLayer]] = []
+    def layers(self) -> tuple[type[mm.cs.ComponentArchitecture], ...]:
+        classes: list[type[mm.cs.ComponentArchitecture]] = []
         for match in _RULES_RE.finditer(self.raw):
             if match.group("key") != "ARCHITECTURE":
                 continue
 
             for arch in match.group("value").split(";"):
                 if arch == "OPERATIONAL":
-                    classes.append(oa.OperationalAnalysis)
+                    classes.append(mm.oa.OperationalAnalysis)
                 elif arch == "SYSTEM":
-                    classes.append(sa.SystemAnalysis)
+                    classes.append(mm.sa.SystemAnalysis)
                 elif arch == "LOGICAL":
-                    classes.append(la.LogicalArchitecture)
+                    classes.append(mm.la.LogicalArchitecture)
                 elif arch == "PHYSICAL":
-                    classes.append(pa.PhysicalArchitecture)
+                    classes.append(mm.pa.PhysicalArchitecture)
                 else:
                     LOGGER.debug("Unknown ARCHITECTURE, ignoring: %r", arch)
 
@@ -154,16 +152,15 @@ class SelectorRules:
         return tuple(t.cast("list[tuple[str, str, str]]", propdefs))
 
 
-class PVMTDescriptionProperty(c.AttributeProperty):
+class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
     def __init__(self, attribute: str) -> None:
-        super().__init__(
-            attribute,
-            returntype=SelectorRules,
-            default="",
-            __doc__="The element selector rules for this group.",
-        )
+        super().__init__(attribute, default=SelectorRules(""), writable=True)
+        self.__doc__ = "The element selector rules for this group."
 
-    def __set__(self, obj, value) -> None:
+    def _from_xml(self, data: str, /) -> SelectorRules:
+        return SelectorRules(data)
+
+    def _to_xml(self, value: SelectorRules | str, /) -> str:
         if isinstance(value, SelectorRules):
             value = value.raw
         elif not isinstance(value, str):
@@ -173,22 +170,22 @@ class PVMTDescriptionProperty(c.AttributeProperty):
             )
 
         # TODO implement validation
-        super().__set__(obj, value)
+        return value
 
 
-class ManagedGroup(c.GenericElement):
+class ManagedGroup(m.GenericElement):
     """A managed group of property values."""
 
     _required_attrs = frozenset({"name"})
 
     selector = PVMTDescriptionProperty("description")
-    description = c.Alias("selector", dirhide=True)  # type: ignore[assignment]
+    description = m.Alias("selector", dirhide=True)  # type: ignore[assignment]
 
     @property
     def fullname(self) -> str:
         return f"{self.parent.name}.{self.name}"
 
-    def applies_to(self, obj: c.ModelObject) -> bool:
+    def applies_to(self, obj: m.ModelObject) -> bool:
         """Determine whether this group applies to a model element."""
         classes = self.selector.classes
         if classes and type(obj) not in classes:
@@ -201,7 +198,7 @@ class ManagedGroup(c.GenericElement):
             return _matchprops(obj, props)
         return True
 
-    def find_applicable(self) -> c.ElementList:
+    def find_applicable(self) -> m.ElementList:
         """Find all elements in the model that this group applies to."""
         objs = self._model.search(*self.selector.classes)
         if layers := self.selector.layers:
@@ -212,7 +209,7 @@ class ManagedGroup(c.GenericElement):
             objs = objs.filter(lambda i: _matchprops(i, props))
         return objs
 
-    def apply(self, obj: c.ModelObject) -> capellacore.PropertyValueGroup:
+    def apply(self, obj: m.ModelObject) -> mm.capellacore.PropertyValueGroup:
         """Apply this group to the model element, and return the applied group.
 
         If the group is not applicable to the passed element, a
@@ -243,7 +240,7 @@ class ManagedGroup(c.GenericElement):
         )
         for propdef in self.property_values:
             groupobj.property_values.create(
-                c.build_xtype(type(propdef)),
+                m.build_xtype(type(propdef)),
                 name=propdef.name,
                 applied_property_values=[propdef],
                 value=propdef.value,
@@ -260,7 +257,7 @@ class ManagedGroup(c.GenericElement):
         )
 
 
-class ManagedDomain(c.GenericElement):
+class ManagedDomain(m.GenericElement):
     """A "domain" in the property value management extension."""
 
     _required_attrs = frozenset({"name"})
@@ -268,21 +265,21 @@ class ManagedDomain(c.GenericElement):
     version = property(
         lambda self: self.property_values.by_name("version").value
     )
-    types = c.RoleTagAccessor(
+    types = m.RoleTagAccessor(
         "ownedEnumerationPropertyTypes",
-        capellacore.EnumerationPropertyType,
+        mm.capellacore.EnumerationPropertyType,
     )
-    groups = c.RoleTagAccessor(
+    groups = m.RoleTagAccessor(
         "ownedPropertyValueGroups",
-        capellacore.PropertyValueGroup,
-        aslist=c.ElementList,
+        mm.capellacore.PropertyValueGroup,
+        aslist=m.ElementList,
         mapkey="name",
         alternate=ManagedGroup,
     )
-    enumeration_property_types = c.RoleTagAccessor(
+    enumeration_property_types = m.RoleTagAccessor(
         "ownedEnumerationPropertyTypes",
-        capellacore.EnumerationPropertyType,
-        aslist=c.ElementList,
+        mm.capellacore.EnumerationPropertyType,
+        aslist=m.ElementList,
     )
 
     def __init__(
@@ -316,39 +313,17 @@ class ManagedDomain(c.GenericElement):
         return self
 
 
-class PVMTConfiguration(c.GenericElement):
+class PVMTConfiguration(m.GenericElement):
     """Provides access to the model-wide PVMT configuration."""
 
     # pylint: disable-next=super-init-not-called
     def __init__(self, *_args, **_kw) -> None:
         raise TypeError("Use 'model.pvmt' to access PVMT configuration")
 
-    domains = c.RoleTagAccessor(
+    domains = m.RoleTagAccessor(
         "ownedPropertyValuePkgs",
-        capellacore.PropertyValuePkg,
-        aslist=c.ElementList,
+        mm.capellacore.PropertyValuePkg,
+        aslist=m.ElementList,
         mapkey="name",
         alternate=ManagedDomain,
     )
-
-
-class PVMTConfigurationAccessor(c.Accessor[PVMTConfiguration]):
-    """Finds the model-wide PVMT configuration and provides access to it."""
-
-    @t.overload
-    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
-    @t.overload
-    def __get__(
-        self, obj: c.ModelObject, objtype: type[c.ModelObject] | None = ...
-    ) -> PVMTConfiguration: ...
-    def __get__(self, obj, objtype=None):
-        del objtype
-        if obj is None:  # pragma: no cover
-            return self
-
-        try:
-            ext = obj.property_value_packages.by_name("EXTENSIONS")
-        except KeyError:
-            LOGGER.debug("Creating EXTENSIONS package")
-            ext = obj.property_value_packages.create(name="EXTENSIONS")
-        return PVMTConfiguration.from_model(obj, ext._element)

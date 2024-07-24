@@ -350,6 +350,7 @@ class ModelFile:
             new_nsmap[ns] = uri
 
         assert new_nsmap
+        LOGGER.debug("New nsmap: %s", new_nsmap)
         if self.root.nsmap == new_nsmap:
             return
 

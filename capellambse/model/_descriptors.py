@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 __all__ = [
+    # exceptions
     "InvalidModificationError",
     "NonUniqueMemberError",
+    # relationship descriptors
     "Accessor",
     "Alias",
     "DeprecatedAccessor",
@@ -21,10 +23,11 @@ __all__ = [
     "AttributeMatcherAccessor",
     "SpecificationAccessor",
     "ReferenceSearchingAccessor",
-    "ElementListCouplingMixin",
     "RoleTagAccessor",
     "TypecastAccessor",
     "PhysicalAccessor",
+    # helpers
+    "NewObject",
 ]
 
 import abc
@@ -43,7 +46,7 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import XTYPE_HANDLERS, S, T, build_xtype, element
+from . import S, T, _xtype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -72,18 +75,17 @@ class NonUniqueMemberError(ValueError):
         )
 
 
-class _NewObject:
-    """A marker class that indicates that a new object should be created.
+class NewObject:
+    """A marker which will create a new model object when inserted.
 
     This object can be assigned to an attribute of a model object, and
     will be replaced with a new object of the correct type by the
     attribute's accessor.
 
-    In the future, this class will be replaced with a function that
-    simply returns a new object of the correct type.
+    For the time being, client code should treat this as opaque object.
     """
 
-    def __init__(self, /, *type_hint: str, **kw: t.Any) -> None:
+    def __init__(self, /, type_hint: str, **kw: t.Any) -> None:
         self._type_hint = type_hint
         self._kw = kw
 
@@ -109,20 +111,20 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
     @t.overload
     def __get__(
-        self, obj: element.ModelObject, objtype: type[t.Any] | None = ...
-    ) -> T | element.ElementList[T]: ...
+        self, obj: _obj.ModelObject, objtype: type[t.Any] | None = ...
+    ) -> T | _obj.ElementList[T]: ...
     @abc.abstractmethod
     def __get__(
         self,
-        obj: element.ModelObject | None,
+        obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | element.ElementList[T]:
+    ) -> te.Self | T | _obj.ElementList[T]:
         pass
 
-    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
+    def __set__(self, obj: _obj.ModelObject, value: t.Any) -> None:
         raise TypeError("Cannot set this type of attribute")
 
-    def __delete__(self, obj: element.ModelObject) -> None:
+    def __delete__(self, obj: _obj.ModelObject) -> None:
         raise TypeError("Cannot delete this type of attribute")
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
@@ -168,22 +170,22 @@ class Alias(Accessor[T]):
     @t.overload
     def __get__(
         self,
-        obj: element.ModelObject,
+        obj: _obj.ModelObject,
         objtype: type[t.Any] | None = ...,
-    ) -> T | element.ElementList[T]: ...
+    ) -> T | _obj.ElementList[T]: ...
     def __get__(
         self,
-        obj: element.ModelObject | None,
+        obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | element.ElementList[T]:
+    ) -> te.Self | T | _obj.ElementList[T]:
         if obj is None:
             return self
         return getattr(obj, self.target)
 
-    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
+    def __set__(self, obj: _obj.ModelObject, value: t.Any) -> None:
         setattr(obj, self.target, value)
 
-    def __delete__(self, obj: element.ModelObject) -> None:
+    def __delete__(self, obj: _obj.ModelObject) -> None:
         delattr(obj, self.target)
 
 
@@ -201,25 +203,25 @@ class DeprecatedAccessor(Accessor[T]):
     @t.overload
     def __get__(
         self,
-        obj: element.ModelObject,
+        obj: _obj.ModelObject,
         objtype: type[t.Any] | None = ...,
-    ) -> T | element.ElementList[T]: ...
+    ) -> T | _obj.ElementList[T]: ...
     def __get__(
         self,
-        obj: element.ModelObject | None,
+        obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | element.ElementList[T]:
+    ) -> te.Self | T | _obj.ElementList[T]:
         if obj is None:
             return self
 
         self.__warn()
         return getattr(obj, self.alternative)
 
-    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
+    def __set__(self, obj: _obj.ModelObject, value: t.Any) -> None:
         self.__warn()
         setattr(obj, self.alternative, value)
 
-    def __delete__(self, obj: element.ModelObject) -> None:
+    def __delete__(self, obj: _obj.ModelObject) -> None:
         self.__warn()
         delattr(obj, self.alternative)
 
@@ -231,7 +233,7 @@ class DeprecatedAccessor(Accessor[T]):
 class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[_obj.ElementListCouplingMixin] | None
     class_: type[T]
     list_extra_args: cabc.Mapping[str, t.Any]
     single_attr: str | None
@@ -239,7 +241,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     def __init__(
         self,
         *args: t.Any,
-        aslist: type[element.ElementList] | None,
+        aslist: type[_obj.ElementList] | None,
         single_attr: str | None = None,
         **kw: t.Any,
     ) -> None:
@@ -248,7 +250,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         if aslist is not None:
             self.aslist = type(
                 "Coupled" + aslist.__name__,
-                (ElementListCouplingMixin, aslist),
+                (_obj.ElementListCouplingMixin, aslist),
                 {"_accessor": self},
             )
             self.aslist.__module__ = __name__
@@ -257,14 +259,14 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     def __set__(
         self,
-        obj: element.ModelObject,
-        value: T | _NewObject | cabc.Iterable[T | _NewObject],
+        obj: _obj.ModelObject,
+        value: T | NewObject | cabc.Iterable[T | NewObject],
     ) -> None:
         raise TypeError("Cannot set this type of attribute")
 
     def create(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         /,
         *type_hints: str | None,
         **kw: t.Any,
@@ -274,8 +276,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         Parameters
         ----------
         elmlist
-            The (coupled)
-            :py:class:`~capellambse.model.common.element.ElementList` to
+            The (coupled) :py:class:`~capellambse.model.ElementList` to
             insert the new object into.
         type_hints
             Hints for finding the correct type of element to create. Can
@@ -288,7 +289,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         raise TypeError("Cannot create objects")
 
     def create_singleattr(
-        self, elmlist: ElementListCouplingMixin, arg: t.Any, /
+        self, elmlist: _obj.ElementListCouplingMixin, arg: t.Any, /
     ) -> T:
         """Create an element that only has a single attribute of interest."""
         if self.single_attr is None:
@@ -299,9 +300,9 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     def insert(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         index: int,
-        value: element.ModelObject | _NewObject,
+        value: _obj.ModelObject | NewObject,
     ) -> None:
         """Insert the ``value`` object into the model.
 
@@ -313,15 +314,15 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     def delete(
         self,
-        elmlist: ElementListCouplingMixin,
-        obj: element.ModelObject,
+        elmlist: _obj.ElementListCouplingMixin,
+        obj: _obj.ModelObject,
     ) -> None:
         """Delete the ``obj`` from the model."""
         raise NotImplementedError("Objects in this list cannot be deleted")
 
     def _create(
         self,
-        parent: element.ModelObject,
+        parent: _obj.ModelObject,
         xmltag: str | None,
         /,
         *type_hints: str | None,
@@ -390,7 +391,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         if type_2 is _NOT_SPECIFIED:
             candidate_classes = dict(
                 itertools.chain.from_iterable(
-                    i.items() for i in XTYPE_HANDLERS.values()
+                    i.items() for i in _xtype.XTYPE_HANDLERS.values()
                 )
             )
             objtype = type_1
@@ -399,8 +400,8 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
                 f"Expected a str objtype, not {type(type_2).__name__}"
             )
         else:
-            candidate_classes = XTYPE_HANDLERS[
-                match_xt(type_1, XTYPE_HANDLERS)
+            candidate_classes = _xtype.XTYPE_HANDLERS[
+                match_xt(type_1, _xtype.XTYPE_HANDLERS)
             ]
             objtype = type_2
 
@@ -417,7 +418,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         raise TypeError(f"{self._qualname} requires a type hint")
 
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> contextlib.AbstractContextManager[None]:
         """Purge references to the given object from the model.
 
@@ -514,7 +515,7 @@ class PhysicalAccessor(Accessor[T]):
         "xtypes",
     )
 
-    aslist: type[element.ElementList] | None
+    aslist: type[_obj.ElementList] | None
     class_: type[T]
     list_extra_args: cabc.Mapping[str, t.Any]
     xtypes: cabc.Set[str]
@@ -524,12 +525,12 @@ class PhysicalAccessor(Accessor[T]):
         class_: type[T],
         xtypes: (
             str
-            | type[element.ModelObject]
-            | cabc.Iterable[str | type[element.ModelObject]]
+            | type[_obj.ModelObject]
+            | cabc.Iterable[str | type[_obj.ModelObject]]
             | None
         ) = None,
         *,
-        aslist: type[element.ElementList[T]] | None = None,
+        aslist: type[_obj.ElementList[T]] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
         fixed_length: int = 0,
@@ -537,18 +538,19 @@ class PhysicalAccessor(Accessor[T]):
         super().__init__()
         if xtypes is None:
             self.xtypes = (
-                {build_xtype(class_)}
-                if class_ is not element.GenericElement
+                {_xtype.build_xtype(class_)}
+                if class_ is not _obj.GenericElement
                 else set()
             )
         elif isinstance(xtypes, type):
-            assert issubclass(xtypes, element.GenericElement)
-            self.xtypes = {build_xtype(xtypes)}
+            assert issubclass(xtypes, _obj.GenericElement)
+            self.xtypes = {_xtype.build_xtype(xtypes)}
         elif isinstance(xtypes, str):
             self.xtypes = {xtypes}
         else:
             self.xtypes = {
-                i if isinstance(i, str) else build_xtype(i) for i in xtypes
+                i if isinstance(i, str) else _xtype.build_xtype(i)
+                for i in xtypes
             }
 
         self.aslist = aslist
@@ -565,7 +567,7 @@ class PhysicalAccessor(Accessor[T]):
 
     def _guess_xtype(self) -> tuple[type[T], str]:
         """Try to guess the type of element that should be created."""
-        if self.class_ is element.GenericElement or self.class_ is None:
+        if self.class_ is _obj.GenericElement or self.class_ is None:
             raise ValueError("Multiple object types that can be created")
         if not self.xtypes:
             raise ValueError("No matching `xsi:type` found")
@@ -589,7 +591,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     __slots__ = ("follow_abstract", "rootelem")
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[_obj.ElementListCouplingMixin] | None
     class_: type[T]
     single_attr: str | None
 
@@ -598,15 +600,15 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         class_: type[T],
         xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
-        aslist: type[element.ElementList] | None = None,
+        aslist: type[_obj.ElementList] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
         fixed_length: int = 0,
         follow_abstract: bool = False,
         rootelem: (
             str
-            | type[element.GenericElement]
-            | cabc.Sequence[str | type[element.GenericElement]]
+            | type[_obj.GenericElement]
+            | cabc.Sequence[str | type[_obj.GenericElement]]
             | None
         ) = None,
         single_attr: str | None = None,
@@ -624,8 +626,8 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         aslist
             If None, only a single element must match, which will be
             returned directly. If not None, must be a subclass of
-            :class:`~capellambse.model.common.element.ElementList`,
-            which will be used to return a list of all matched objects.
+            :class:`~capellambse.model.ElementList`, which will be used
+            to return a list of all matched objects.
         mapkey
             Specify the attribute to look up when the returned list is
             indexed with a str. If not specified, str indexing is not
@@ -655,8 +657,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         single_attr
             If objects can be created with only a single attribute
             specified, this argument is the name of that attribute. This
-            :meth:`~capellambse.model.common.accessors\
-            .WritableAccessor.create_singleattr`.
+            :meth:`~capellambse.model.WritableAccessor.create_singleattr`.
         """
         super().__init__(
             class_,
@@ -673,12 +674,13 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         elif isinstance(rootelem, str):
             self.rootelem = rootelem.split("/")
         elif isinstance(rootelem, type) and issubclass(
-            rootelem, element.GenericElement
+            rootelem, _obj.GenericElement
         ):
-            self.rootelem = [build_xtype(rootelem)]
+            self.rootelem = [_xtype.build_xtype(rootelem)]
         else:
             self.rootelem = [
-                i if isinstance(i, str) else build_xtype(i) for i in rootelem
+                i if isinstance(i, str) else _xtype.build_xtype(i)
+                for i in rootelem
             ]
 
     def __get__(self, obj, objtype=None):
@@ -695,8 +697,8 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def __set__(
         self,
-        obj: element.ModelObject,
-        value: str | T | _NewObject | cabc.Iterable[str | T | _NewObject],
+        obj: _obj.ModelObject,
+        value: str | T | NewObject | cabc.Iterable[str | T | NewObject],
     ) -> None:
         if self.aslist:
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
@@ -712,7 +714,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         else:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError("Cannot set non-list attribute to an iterable")
-            if not isinstance(value, _NewObject):
+            if not isinstance(value, NewObject):
                 raise NotImplementedError(
                     "Moving model objects is not supported yet"
                 )
@@ -720,9 +722,9 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 raise NotImplementedError(
                     "Replacing model objects is not supported yet"
                 )
-            self._create(obj, None, *value._type_hint, **value._kw)
+            self._create(obj, None, value._type_hint, **value._kw)
 
-    def __delete__(self, obj: element.ModelObject) -> None:
+    def __delete__(self, obj: _obj.ModelObject) -> None:
         if self.rootelem:
             raise TypeError("Cannot delete due to 'rootelem' being set")
         if self.follow_abstract:
@@ -749,7 +751,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 if elm.get("id") is None:
                     continue
 
-                obj = element.GenericElement.from_model(model, elm)
+                obj = _obj.GenericElement.from_model(model, elm)
                 for ref, attr, _ in model.find_references(obj):
                     acc = getattr(type(ref), attr)
                     if acc is self or not isinstance(acc, WritableAccessor):
@@ -763,7 +765,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 parent.remove(elm)
 
     def _resolve(
-        self, obj: element.ModelObject, elem: etree._Element
+        self, obj: _obj.ModelObject, elem: etree._Element
     ) -> etree._Element:
         if self.follow_abstract:
             if abstype := elem.get("abstractType"):
@@ -773,14 +775,14 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return elem
 
     def _getsubelems(
-        self, obj: element.ModelObject
+        self, obj: _obj.ModelObject
     ) -> cabc.Iterator[etree._Element]:
         return itertools.chain.from_iterable(
             obj._model._loader.iterchildren_xt(i, *iter(self.xtypes))
             for i in self._findroots(obj)
         )
 
-    def _findroots(self, obj: element.ModelObject) -> list[etree._Element]:
+    def _findroots(self, obj: _obj.ModelObject) -> list[etree._Element]:
         roots = [obj._element]
         for xtype in self.rootelem:
             roots = list(
@@ -792,7 +794,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def create(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         /,
         *type_hints: str | None,
         **kw: t.Any,
@@ -804,11 +806,11 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def insert(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         index: int,
-        value: element.ModelObject | _NewObject,
+        value: _obj.ModelObject | NewObject,
     ) -> None:
-        if isinstance(value, _NewObject):
+        if isinstance(value, NewObject):
             raise NotImplementedError(
                 "Creating new objects in lists with new_object() is not"
                 " supported yet"
@@ -831,15 +833,15 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def delete(
         self,
-        elmlist: ElementListCouplingMixin,
-        obj: element.ModelObject,
+        elmlist: _obj.ElementListCouplingMixin,
+        obj: _obj.ModelObject,
     ) -> None:
         assert obj._model is elmlist._model
         self._delete(obj._model, [obj._element])
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Iterator[None]:
         yield
 
@@ -850,7 +852,7 @@ class DeepProxyAccessor(DirectProxyAccessor[T]):
     __slots__ = ()
 
     def _getsubelems(
-        self, obj: element.ModelObject
+        self, obj: _obj.ModelObject
     ) -> cabc.Iterator[etree._Element]:
         return itertools.chain.from_iterable(
             obj._model._loader.iterdescendants_xt(i, *iter(self.xtypes))
@@ -863,7 +865,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     __slots__ = ("backattr", "tag", "unique")
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[_obj.ElementListCouplingMixin] | None
     backattr: str | None
     class_: type[T]
     tag: str | None
@@ -871,10 +873,10 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __init__(
         self,
         tag: str | None,
-        xtype: str | type[element.GenericElement],
+        xtype: str | type[_obj.GenericElement],
         /,
         *,
-        aslist: type[element.ElementList] | None = None,
+        aslist: type[_obj.ElementList] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
         attr: str,
@@ -898,7 +900,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             reference back to the owner (parent) object.
         aslist
             Optionally specify a different subclass of
-            :class:`~capellambse.model.common.element.ElementList`.
+            :class:`~capellambse.model.ElementList`.
         mapkey
             Specify the attribute to look up when the returned list is
             indexed with a str. If not specified, str indexing is not
@@ -926,7 +928,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         elif not isinstance(tag, str):
             raise TypeError(f"tag must be a str, not {type(tag).__name__}")
         super().__init__(
-            element.GenericElement,
+            _obj.GenericElement,
             xtype,
             aslist=aslist,
             mapkey=mapkey,
@@ -955,7 +957,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 seen.add(e)
         return self._make_list(obj, elems)
 
-    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
+    def __set__(self, obj: _obj.ModelObject, value: t.Any) -> None:
         if self.aslist is None:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError(f"{self._qualname} expects a single element")
@@ -969,14 +971,14 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         for v in value:
             self.__create_link(obj, v)
 
-    def __delete__(self, obj: element.ModelObject) -> None:
+    def __delete__(self, obj: _obj.ModelObject) -> None:
         refobjs = list(self.__find_refs(obj))
         for i in refobjs:
             obj._model._loader.idcache_remove(i)
             obj._element.remove(i)
 
     def __follow_ref(
-        self, obj: element.ModelObject, refelm: etree._Element
+        self, obj: _obj.ModelObject, refelm: etree._Element
     ) -> etree._Element | None:
         link = refelm.get(self.follow)
         if not link:
@@ -984,14 +986,14 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         return obj._model._loader.follow_link(obj._element, link)
 
     def __find_refs(
-        self, obj: element.ModelObject
+        self, obj: _obj.ModelObject
     ) -> cabc.Iterator[etree._Element]:
         for refelm in obj._element.iterchildren(tag=self.tag):
             if helpers.xtype_of(refelm) in self.xtypes:
                 yield refelm
 
     def __backref(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> etree._Element | None:
         for i in self.__find_refs(obj):
             if self.__follow_ref(obj, i) == target._element:
@@ -1000,10 +1002,10 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def __create_link(
         self,
-        parent: element.ModelObject,
-        target: element.ModelObject,
+        parent: _obj.ModelObject,
+        target: _obj.ModelObject,
         *,
-        before: element.ModelObject | None = None,
+        before: _obj.ModelObject | None = None,
     ) -> etree._Element:
         assert self.tag is not None
         loader = parent._model._loader
@@ -1034,15 +1036,15 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def insert(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         index: int,
-        value: element.ModelObject | _NewObject,
+        value: _obj.ModelObject | NewObject,
     ) -> None:
         if self.aslist is None:
             raise TypeError("Cannot insert: This is not a list (bug?)")
         if self.tag is None:
             raise NotImplementedError("Cannot insert: XML tag not set")
-        if isinstance(value, _NewObject):
+        if isinstance(value, NewObject):
             raise NotImplementedError("Cannot insert new objects yet")
 
         self.__create_link(
@@ -1053,8 +1055,8 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def delete(
         self,
-        elmlist: ElementListCouplingMixin,
-        obj: element.ModelObject,
+        elmlist: _obj.ElementListCouplingMixin,
+        obj: _obj.ModelObject,
     ) -> None:
         if self.aslist is None:
             raise TypeError("Cannot delete: This is not a list (bug?)")
@@ -1070,7 +1072,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Generator[None, None, None]:
         purge: list[etree._Element] = []
         for ref in self.__find_refs(obj):
@@ -1094,7 +1096,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     __slots__ = ("attr",)
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[_obj.ElementListCouplingMixin] | None
     class_: type[T]
 
     def __init__(
@@ -1102,7 +1104,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         class_: type[T] | None,
         attr: str,
         *,
-        aslist: type[element.ElementList] | None = None,
+        aslist: type[_obj.ElementList] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
         fixed_length: int = 0,
@@ -1119,8 +1121,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
             If None, the attribute contains at most one element
             reference, and either None or the constructed proxy will be
             returned. If not None, must be a subclass of
-            :class:`~capellambse.model.common.element.ElementList`. It
-            will be used to return a list of all matched objects.
+            :class:`~capellambse.model.ElementList`. It will be used to
+            return a list of all matched objects.
         mapkey
             Specify the attribute to look up when the returned list is
             indexed with a str. If not specified, str indexing is not
@@ -1142,7 +1144,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         """
         del class_
         super().__init__(
-            element.GenericElement,
+            _obj.GenericElement,
             aslist=aslist,
             mapkey=mapkey,
             mapvalue=mapvalue,
@@ -1163,8 +1165,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def __set__(
         self,
-        obj: element.ModelObject,
-        values: T | _NewObject | cabc.Iterable[T | _NewObject],
+        obj: _obj.ModelObject,
+        values: T | NewObject | cabc.Iterable[T | NewObject],
     ) -> None:
         if not isinstance(values, cabc.Iterable):
             values = (values,)
@@ -1173,23 +1175,23 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 f"{self._qualname} requires a single item, not an iterable"
             )
 
-        if any(isinstance(i, _NewObject) for i in values):
+        if any(isinstance(i, NewObject) for i in values):
             raise NotImplementedError("Cannot create new objects here")
 
         assert isinstance(values, cabc.Iterable)
         self.__set_links(obj, values)  # type: ignore[arg-type]
 
-    def __delete__(self, obj: element.ModelObject) -> None:
+    def __delete__(self, obj: _obj.ModelObject) -> None:
         del obj._element.attrib[self.attr]
 
     def insert(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         index: int,
-        value: element.ModelObject | _NewObject,
+        value: _obj.ModelObject | NewObject,
     ) -> None:
         assert self.aslist is not None
-        if isinstance(value, _NewObject):
+        if isinstance(value, NewObject):
             raise NotImplementedError("Cannot insert new objects yet")
         if value._model is not elmlist._parent._model:
             raise ValueError("Cannot insert elements from different models")
@@ -1197,14 +1199,14 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self.__set_links(elmlist._parent, objs)
 
     def delete(
-        self, elmlist: ElementListCouplingMixin, obj: element.ModelObject
+        self, elmlist: _obj.ElementListCouplingMixin, obj: _obj.ModelObject
     ) -> None:
         assert self.aslist is not None
         objs = [i for i in elmlist if i != obj]
         self.__set_links(elmlist._parent, objs)
 
     def __set_links(
-        self, obj: element.ModelObject, values: cabc.Iterable[T]
+        self, obj: _obj.ModelObject, values: cabc.Iterable[T]
     ) -> None:
         parts: list[str] = []
         for value in values:
@@ -1218,9 +1220,8 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Generator[None, None, None]:
-        # pylint: disable=unnecessary-dunder-call
         yield
 
         if self.aslist is not None:
@@ -1250,7 +1251,7 @@ class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
         class_: type[T],
         attr: str,
         *,
-        aslist: type[element.ElementList],
+        aslist: type[_obj.ElementList],
         mapkey: str | None = None,
         mapvalue: str | None = None,
     ) -> None:
@@ -1266,7 +1267,7 @@ class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Generator[None, None, None]:
         # TODO This should instead delete the link
         raise NotImplementedError("Cannot purge references from PhysicalLink")
@@ -1285,16 +1286,16 @@ class IndexAccessor(Accessor[T]):
     @t.overload
     def __get__(self, obj: None, objtype=None) -> te.Self: ...
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | element.ElementList[T]: ...
+    def __get__(self, obj, objtype=None) -> T | _obj.ElementList[T]: ...
     def __get__(
         self,
-        obj: element.ModelObject | None,
+        obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | element.ElementList[T]:
+    ) -> te.Self | T | _obj.ElementList[T]:
         if obj is None:
             return self
         container = getattr(obj, self.wrapped)
-        if not isinstance(container, element.ElementList):
+        if not isinstance(container, _obj.ElementList):
             raise RuntimeError(
                 f"Cannot get {self._qualname}: {self.wrapped} is not a list"
             )
@@ -1305,9 +1306,9 @@ class IndexAccessor(Accessor[T]):
             )
         return container[self.index]
 
-    def __set__(self, obj: element.ModelObject, value: t.Any) -> None:
+    def __set__(self, obj: _obj.ModelObject, value: t.Any) -> None:
         container = getattr(obj, self.wrapped)
-        if not isinstance(container, ElementListCouplingMixin):
+        if not isinstance(container, _obj.ElementListCouplingMixin):
             raise TypeError(
                 f"Cannot set {self._qualname}:"
                 f" {self.wrapped} is not a coupled list"
@@ -1367,12 +1368,12 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
         class_: type[T],
         xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
         *,
-        aslist: type[element.ElementList] | None = None,
+        aslist: type[_obj.ElementList] | None = None,
         attributes: dict[str, t.Any],
         **kwargs,
     ) -> None:
         super().__init__(
-            class_, xtypes, aslist=element.MixedElementList, **kwargs
+            class_, xtypes, aslist=_obj.MixedElementList, **kwargs
         )
         self.__aslist = aslist
         self.attributes = attributes
@@ -1505,13 +1506,13 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
     __slots__ = ("attrs", "target_classes")
 
     attrs: tuple[operator.attrgetter, ...]
-    target_classes: tuple[type[element.ModelObject], ...]
+    target_classes: tuple[type[_obj.ModelObject], ...]
 
     def __init__(
         self,
-        class_: type[T] | tuple[type[element.ModelObject], ...],
+        class_: type[T] | tuple[type[_obj.ModelObject], ...],
         *attrs: str,
-        aslist: type[element.ElementList] | None = None,
+        aslist: type[_obj.ElementList] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
     ) -> None:
@@ -1526,7 +1527,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         aslist
             If None, only a single element must match, which will be
             returned directly. If not None, must be a subclass of
-            :class:`~capellambse.model.common.element.ElementList`,
+            :class:`~capellambse.model.ElementList`,
             which will be used to return a list of all matched objects.
         mapkey
             Specify the attribute to look up when the returned list is
@@ -1543,7 +1544,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         """
         if isinstance(class_, tuple):
             super().__init__(
-                element.GenericElement,  # type: ignore[arg-type]
+                _obj.GenericElement,  # type: ignore[arg-type]
                 aslist=aslist,
                 mapkey=mapkey,
                 mapvalue=mapvalue,
@@ -1569,9 +1570,9 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
                 except AttributeError:
                     continue
                 if (
-                    isinstance(value, element.ElementList)
+                    isinstance(value, _obj.ElementList)
                     and obj in value
-                    or isinstance(value, element.GenericElement)
+                    or isinstance(value, _obj.GenericElement)
                     and obj == value
                 ):
                     matches.append(candidate._element)
@@ -1592,7 +1593,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     specified type.
     """
 
-    aslist: type[ElementListCouplingMixin] | None
+    aslist: type[_obj.ElementListCouplingMixin] | None
     class_: type[T]
 
     def __init__(
@@ -1605,7 +1606,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         super().__init__(
             cls,
             (),
-            aslist=element.ElementList,
+            aslist=_obj.ElementList,
             mapkey=mapkey,
             mapvalue=mapvalue,
         )
@@ -1615,13 +1616,13 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
     @t.overload
     def __get__(
-        self, obj: element.ModelObject, objtype: type[t.Any] | None = None
-    ) -> element.ElementList[T]: ...
+        self, obj: _obj.ModelObject, objtype: type[t.Any] | None = None
+    ) -> _obj.ElementList[T]: ...
     def __get__(
         self,
-        obj: element.ModelObject | None,
+        obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | element.ElementList[T]:
+    ) -> te.Self | _obj.ElementList[T]:
         del objtype
         if obj is None:
             return self
@@ -1630,17 +1631,17 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def __set__(
         self,
-        obj: element.ModelObject,
-        value: T | _NewObject | cabc.Iterable[T | _NewObject],
+        obj: _obj.ModelObject,
+        value: T | NewObject | cabc.Iterable[T | NewObject],
     ) -> None:
-        if isinstance(value, (list, element.ElementList, tuple)):
+        if isinstance(value, (list, _obj.ElementList, tuple)):
             pass
         elif isinstance(value, cabc.Iterable):
             value = list(value)
         else:
             raise TypeError(f"Expected list, got {type(value).__name__}")
 
-        if any(isinstance(i, _NewObject) for i in value):
+        if any(isinstance(i, NewObject) for i in value):
             raise NotImplementedError("Cannot create new objects here")
 
         if not all(isinstance(i, self.class_) for i in value):
@@ -1654,7 +1655,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def create(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         /,
         *type_hints: str | None,
         **kw: t.Any,
@@ -1662,17 +1663,17 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         if type_hints:
             raise TypeError(f"{self._qualname} does not support type hints")
         acc: WritableAccessor = getattr(self.class_, self.attr)
-        obj = acc.create(elmlist, build_xtype(self.class_), **kw)
+        obj = acc.create(elmlist, _xtype.build_xtype(self.class_), **kw)
         assert isinstance(obj, self.class_)
         return obj
 
     def insert(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         index: int,
-        value: element.ModelObject | _NewObject,
+        value: _obj.ModelObject | NewObject,
     ) -> None:
-        if isinstance(value, _NewObject):
+        if isinstance(value, NewObject):
             raise NotImplementedError("Cannot insert new objects yet")
         if not isinstance(value, self.class_):
             raise TypeError(
@@ -1683,15 +1684,15 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 
     def delete(
         self,
-        elmlist: ElementListCouplingMixin,
-        obj: element.ModelObject,
+        elmlist: _obj.ElementListCouplingMixin,
+        obj: _obj.ModelObject,
     ) -> None:
         acc: WritableAccessor = getattr(self.class_, self.attr)
         acc.delete(elmlist, obj)
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Iterator[None]:
         acc: WritableAccessor = getattr(self.class_, self.attr)
         with acc.purge_references(obj, target):
@@ -1701,25 +1702,24 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
 class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     __slots__ = ("classes", "role_tag")
 
-    aslist: type[ElementListCouplingMixin] | None
-    class_: type[element.GenericElement]
-    alternate: type[element.GenericElement] | None
+    aslist: type[_obj.ElementListCouplingMixin] | None
+    class_: type[_obj.GenericElement]
+    alternate: type[_obj.GenericElement] | None
 
     def __init__(
         self,
         role_tag: str,
         classes: (
-            type[element.ModelObject]
-            | cabc.Iterable[type[element.ModelObject]]
+            type[_obj.ModelObject] | cabc.Iterable[type[_obj.ModelObject]]
         ) = (),
         *,
-        aslist: type[element.ElementList[T]] | None = None,
+        aslist: type[_obj.ElementList[T]] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
-        alternate: type[element.GenericElement] | None = None,
+        alternate: type[_obj.GenericElement] | None = None,
     ) -> None:
         super().__init__(
-            element.GenericElement,
+            _obj.GenericElement,
             (),
             aslist=aslist,
             mapkey=mapkey,
@@ -1745,19 +1745,19 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         if self.classes:
             rv = rv.filter(lambda i: isinstance(i, self.classes))
         if self.alternate is not None:
-            assert isinstance(rv, element.ElementList)
-            assert not isinstance(rv, element.MixedElementList)
+            assert isinstance(rv, _obj.ElementList)
+            assert not isinstance(rv, _obj.MixedElementList)
             rv._elemclass = self.alternate
         return rv
 
     def __set__(
         self,
-        obj: element.ModelObject,
+        obj: _obj.ModelObject,
         value: (
             str
-            | element.GenericElement
-            | _NewObject
-            | cabc.Iterable[str | element.GenericElement | _NewObject]
+            | _obj.GenericElement
+            | NewObject
+            | cabc.Iterable[str | _obj.GenericElement | NewObject]
         ),
     ) -> None:
         if self.aslist:
@@ -1767,12 +1767,12 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         else:
             if isinstance(value, cabc.Iterable) and not isinstance(value, str):
                 raise TypeError("Cannot set non-list attribute to an iterable")
-            if not isinstance(value, _NewObject):
+            if not isinstance(value, NewObject):
                 raise NotImplementedError(
                     "Moving model objects is not supported yet"
                 )
             if (elem := self.__get__(obj)) is not None:
-                valueclass, _ = self._match_xtype(*value._type_hint)
+                valueclass, _ = self._match_xtype(value._type_hint)
                 elemclass = elem.__class__
                 if elemclass is not valueclass:
                     obj._model._loader.idcache_remove(elem._element)
@@ -1781,24 +1781,24 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
                     for k, v in value._kw.items():
                         setattr(elem, k, v)
                     return
-            self._create(obj, self.role_tag, *value._type_hint, **value._kw)
+            self._create(obj, self.role_tag, value._type_hint, **value._kw)
 
     def create(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         /,
         *type_hints: str | None,
         **kw: t.Any,
-    ) -> element.GenericElement:
+    ) -> _obj.GenericElement:
         return self._create(elmlist._parent, self.role_tag, *type_hints, **kw)
 
     def insert(
         self,
-        elmlist: ElementListCouplingMixin,
+        elmlist: _obj.ElementListCouplingMixin,
         index: int,
-        value: element.ModelObject | _NewObject,
+        value: _obj.ModelObject | NewObject,
     ) -> None:
-        if isinstance(value, _NewObject):
+        if isinstance(value, NewObject):
             raise NotImplementedError("Cannot insert new objects yet")
         if value._model is not elmlist._model:
             raise ValueError("Cannot move elements between models")
@@ -1817,8 +1817,8 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
 
     def delete(
         self,
-        elmlist: ElementListCouplingMixin,
-        obj: element.ModelObject,
+        elmlist: _obj.ElementListCouplingMixin,
+        obj: _obj.ModelObject,
     ) -> None:
         assert obj._model is elmlist._model
         model = obj._model
@@ -1830,7 +1830,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
                 if elm.get("id") is None:
                     continue
 
-                obj = element.GenericElement.from_model(model, elm)
+                obj = _obj.GenericElement.from_model(model, elm)
                 for ref, attr, _ in model.find_references(obj):
                     acc = getattr(type(ref), attr)
                     if acc is self or not isinstance(acc, WritableAccessor):
@@ -1845,7 +1845,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: element.ModelObject, target: element.ModelObject
+        self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Iterator[None]:
         yield
 
@@ -1854,7 +1854,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         type_1: str | None,
         type_2: str | object = _NOT_SPECIFIED,
         /,
-    ) -> tuple[type[element.ModelObject], str]:
+    ) -> tuple[type[_obj.ModelObject], str]:
         if not self.classes:
             return super()._match_xtype(type_1, type_2)
 
@@ -1867,11 +1867,11 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         cls = next((i for i in self.classes if i.__name__ == type_1), None)
         if cls is None:
             raise ValueError(f"Invalid class for {self._qualname}: {type_1}")
-        return cls, build_xtype(cls)
+        return cls, _xtype.build_xtype(cls)
 
-    def _guess_xtype(self) -> tuple[type[element.ModelObject], str]:
+    def _guess_xtype(self) -> tuple[type[_obj.ModelObject], str]:
         if len(self.classes) == 1:
-            return self.classes[0], build_xtype(self.classes[0])
+            return self.classes[0], _xtype.build_xtype(self.classes[0])
 
         if len(self.classes) > 1:
             hint = ", valid values: " + ", ".join(
@@ -1887,7 +1887,7 @@ def no_list(
     model: capellambse.MelodyModel,
     elems: cabc.Sequence[etree._Element],
     class_: type[T],
-) -> element.ModelObject | None:
+) -> _obj.ModelObject | None:
     """Return a single element or None instead of a list of elements.
 
     Parameters
@@ -1910,149 +1910,4 @@ def no_list(
     return class_.from_model(model, elems[0])
 
 
-class ElementListCouplingMixin(element.ElementList[T], t.Generic[T]):
-    """Couples an ElementList with an Accessor to enable write support.
-
-    This class is meant to be subclassed further, where the subclass has
-    both this class and the originally intended one as base classes (but
-    no other ones, i.e. there must be exactly two bases). The Accessor
-    then inserts itself as the ``_accessor`` class variable on the new
-    subclass. This allows the mixed-in methods to delegate actual model
-    modifications to the Accessor.
-    """
-
-    _accessor: WritableAccessor[T]
-
-    def __init__(
-        self,
-        *args: t.Any,
-        parent: element.ModelObject,
-        fixed_length: int = 0,
-        **kw: t.Any,
-    ) -> None:
-        assert type(self)._accessor
-
-        super().__init__(*args, **kw)
-        self._parent = parent
-        self.fixed_length = fixed_length
-
-    @t.overload
-    def __setitem__(self, index: int, value: T) -> None: ...
-    @t.overload
-    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
-    @t.overload
-    def __setitem__(self, index: str, value: t.Any) -> None: ...
-    def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
-        assert self._parent is not None
-        accessor = type(self)._accessor
-        assert isinstance(accessor, WritableAccessor)
-
-        if not isinstance(index, (int, slice)):
-            super().__setitem__(index, value)
-            return
-
-        new_objs = list(self)
-        new_objs[index] = value
-
-        if self.fixed_length and len(new_objs) != self.fixed_length:
-            raise TypeError(
-                f"Cannot set: List must stay at length {self.fixed_length}"
-            )
-
-        accessor.__set__(self._parent, new_objs)
-
-    def __delitem__(self, index: int | slice) -> None:
-        if self.fixed_length and len(self) <= self.fixed_length:
-            raise TypeError("Cannot delete from a fixed-length list")
-
-        assert self._parent is not None
-        accessor = type(self)._accessor
-        assert isinstance(accessor, WritableAccessor)
-        if not isinstance(index, slice):
-            index = slice(index, index + 1 or None)
-        for obj in self[index]:
-            accessor.delete(self, obj)
-        super().__delitem__(index)
-
-    def _newlist_type(self) -> type[element.ElementList[T]]:
-        assert len(type(self).__bases__) == 2
-        assert type(self).__bases__[0] is ElementListCouplingMixin
-        return type(self).__bases__[1]
-
-    def create(self, *type_hints: str | None, **kw: t.Any) -> T:
-        """Make a new model object (instance of GenericElement).
-
-        Instead of specifying the full ``xsi:type`` including the
-        namespace, you can also pass in just the part after the ``:``
-        separator. If this is unambiguous, the appropriate
-        layer-specific type will be selected automatically.
-
-        This method can be called with or without the ``layertype``
-        argument. If a layertype is not given, all layers will be tried
-        to find an appropriate ``xsi:type`` handler. Note that setting
-        the layertype to ``None`` explicitly is different from not
-        specifying it at all; ``None`` tries only the "Transverse
-        modelling" type elements.
-
-        Parameters
-        ----------
-        type_hints
-            Hints for finding the correct type of element to create. Can
-            either be a full or shortened ``xsi:type`` string, or an
-            abbreviation defined by the specific Accessor instance.
-        kw
-            Initialize the properties of the new object. Depending on
-            the object, some attributes may be required.
-        """
-        if self.fixed_length and len(self) >= self.fixed_length:
-            raise TypeError("Cannot create elements in a fixed-length list")
-
-        assert self._parent is not None
-        acc = type(self)._accessor
-        assert isinstance(acc, WritableAccessor)
-        newobj = acc.create(self, *type_hints, **kw)
-        try:
-            acc.insert(self, len(self), newobj)
-            super().insert(len(self), newobj)
-        except:
-            self._parent._element.remove(newobj._element)
-            raise
-        return newobj
-
-    def create_singleattr(self, arg: t.Any) -> T:
-        """Make a new model object (instance of GenericElement).
-
-        This new object has only one interesting attribute.
-
-        See Also
-        --------
-        :meth:`ElementListCouplingMixin.create` :
-            More details on how elements are created.
-        :meth:`WritableAccessor.create_singleattr` :
-            The method to override in Accessors in order to implement
-            this operation.
-        """
-        if self.fixed_length and len(self) >= self.fixed_length:
-            raise TypeError("Cannot create elements in a fixed-length list")
-
-        assert self._parent is not None
-        acc = type(self)._accessor
-        assert isinstance(acc, WritableAccessor)
-        newobj = acc.create_singleattr(self, arg)
-        try:
-            acc.insert(self, len(self), newobj)
-            super().insert(len(self), newobj)
-        except:
-            self._parent._element.remove(newobj._element)
-            raise
-        return newobj
-
-    def insert(self, index: int, value: T) -> None:
-        if self.fixed_length and len(self) >= self.fixed_length:
-            raise TypeError("Cannot insert into a fixed-length list")
-
-        assert self._parent is not None
-        acc = type(self)._accessor
-        assert isinstance(acc, WritableAccessor)
-        acc.insert(self, index, value)
-        super().insert(index, value)
+from . import _obj

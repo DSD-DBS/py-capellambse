@@ -121,18 +121,17 @@ Extending objects
 
 The following subsections show how to create completely new objects, or
 reference and move already existing ones, using examples of declarative YAML
-files on
-:py:class:`~capellambse.model.common.accessors.ElementListCouplingMixin`-ish
+files on :py:class:`~capellambse.model.ElementListCouplingMixin`-ish
 attributes. The extension of one-to-one attributes works in the same way,
 adhering to the YAML syntax.
 
 Creating new objects
 ^^^^^^^^^^^^^^^^^^^^
 
-:py:class:`~capellambse.model.layers.la.LogicalFunction` objects have several
+:py:class:`~capellambse.metamodel.la.LogicalFunction` objects have several
 different attributes which can be modified from a declarative YAML file. For
 example, it is possible to create new
-sub-:py:attr:`~capellambse.model.layers.la.LogicalFunction.functions`. This
+sub-:py:attr:`~capellambse.metamodel.la.LogicalFunction.functions`. This
 snippet creates a function with the name "brew coffee" directly below the root
 function:
 
@@ -201,7 +200,7 @@ Creating new references
 It is important to understand when new model objects are created and when only
 references are added. The following example would create a reference in the
 ``.allocated_functions`` attribute of the
-:py:class:`~capellambse.model.layers.la.LogicalComponent` which is also the
+:py:class:`~capellambse.metamodel.la.LogicalComponent` which is also the
 logical ``root_component`` (parent) to the logical ``root_function``:
 
 .. code-block:: yaml
@@ -213,8 +212,8 @@ logical ``root_component`` (parent) to the logical ``root_function``:
          - !uuid f28ec0f8-f3b3-43a0-8af7-79f194b29a2d
 
 This is caused by the type of relationship (non-
-:py:class:`~capellambse.model.common.accessors.DirectProxyAccessor`) between
-the parent and its ``allocated_functions``.
+:py:class:`~capellambse.model.DirectProxyAccessor`) between the parent and its
+``allocated_functions``.
 
 It is also possible to create references to promised objects, but extra caution
 for declaring ``promise_id``\ s for resolving these promises successfully:
@@ -238,10 +237,10 @@ Moving objects
 ^^^^^^^^^^^^^^
 
 The following example would move a logical function from underneath a
-:py:class:`~capellambse.model.layers.la.LogicalFunctionPkg` (accessible via
+:py:class:`~capellambse.metamodel.la.LogicalFunctionPkg` (accessible via
 ``functions``) into ``functions`` of the logical ``root_function`` (parent)
 since the ``functions`` attribute has a parent/children relationship (i.e. the
-:py:class:`~capellambse.model.common.accessors.DirectProxyAccessor` is used).
+:py:class:`~capellambse.model.DirectProxyAccessor` is used).
 
 .. code-block:: yaml
 
@@ -258,7 +257,7 @@ without introducing new objects into the model. This happens by specifying the
 attributes in the ``set:`` key.
 
 The following example would change the ``name`` of the root
-:py:class:`~capellambse.model.layers.la.LogicalComponent` to "Coffee Machine"
+:py:class:`~capellambse.metamodel.la.LogicalComponent` to "Coffee Machine"
 (notice how we use a different UUID than before):
 
 .. code-block:: yaml
@@ -270,8 +269,8 @@ The following example would change the ``name`` of the root
 
 This is not limited to string attributes; it is just as well possible to change
 e.g. numeric properties. This example changes the ``min_card`` property of an
-:py:class:`~capellambse.model.crosslayer.information.ExchangeItemElement` to
-``0`` and the ``max_card`` to infinity, effectively removing both limitations:
+:py:class:`~capellambse.metamodel.information.ExchangeItemElement` to ``0`` and
+the ``max_card`` to infinity, effectively removing both limitations:
 
 .. code-block:: yaml
    :emphasize-lines: 3-

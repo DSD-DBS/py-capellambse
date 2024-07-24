@@ -8,27 +8,14 @@ import typing as t
 import markupsafe
 import pytest
 
-import capellambse
-import capellambse.model.common as c
-from capellambse.model import MelodyModel, la, modeltypes
-from capellambse.model.crosslayer.capellacommon import (
-    Region,
-    State,
-    StateTransition,
-)
-from capellambse.model.crosslayer.capellacore import Constraint
-from capellambse.model.crosslayer.cs import PhysicalPort
-from capellambse.model.crosslayer.fa import ComponentPort
-from capellambse.model.crosslayer.information import Class
-from capellambse.model.layers.ctx import SystemComponentPkg
-from capellambse.model.layers.la import CapabilityRealization
-from capellambse.model.layers.oa import OperationalCapability
+import capellambse.metamodel as mm
+import capellambse.model as m
 
 # pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import-untyped]
 
 
-def test_model_info_contains_capella_version(model: MelodyModel):
+def test_model_info_contains_capella_version(model: m.MelodyModel):
     assert hasattr(model.info, "capella_version")
 
 
@@ -41,7 +28,7 @@ def test_model_info_contains_capella_version(model: MelodyModel):
     ],
 )
 def test_model_compatibility(folder: str, aird: str) -> None:
-    MelodyModel(TEST_ROOT / folder / aird)
+    m.MelodyModel(TEST_ROOT / folder / aird)
 
 
 @pytest.mark.parametrize(
@@ -81,7 +68,7 @@ def test_model_compatibility(folder: str, aird: str) -> None:
     ],
 )
 def test_find_references_finds_all_references(
-    model: MelodyModel, target, expected
+    model: m.MelodyModel, target, expected
 ) -> None:
     target_obj = model.by_uuid(target)
 
@@ -99,13 +86,13 @@ def test_find_references_finds_all_references(
     assert found_with_uuid == expected
 
 
-def test_ElementList_filter_by_name(model: MelodyModel):
+def test_ElementList_filter_by_name(model: m.MelodyModel):
     cap = model.oa.all_capabilities.by_name("Eat food")
     assert cap.uuid == "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422"
     assert cap.name == "Eat food"
 
 
-def test_ElementList_filter_contains(model: MelodyModel):
+def test_ElementList_filter_contains(model: m.MelodyModel):
     caps = model.oa.all_capabilities
     assert "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422" in caps.by_uuid
     assert "Eat food" in caps.by_name
@@ -119,29 +106,29 @@ def test_ElementList_filter_contains(model: MelodyModel):
     assert "LogicalComponent" not in involvements.by_type
 
 
-def test_ElementList_filter_iter(model: MelodyModel):
+def test_ElementList_filter_iter(model: m.MelodyModel):
     caps = model.oa.all_capabilities
     assert sorted(i.name for i in caps) == sorted(caps.by_name)
 
 
-def test_ElementList_filter_by_type(model: MelodyModel):
+def test_ElementList_filter_by_type(model: m.MelodyModel):
     diags = model.diagrams.by_type("OCB")
     assert len(diags) == 1
-    assert diags[0].type is modeltypes.DiagramType.OCB
+    assert diags[0].type is m.DiagramType.OCB
 
 
-def test_ElementList_dictlike_getitem(model: MelodyModel):
+def test_ElementList_dictlike_getitem(model: m.MelodyModel):
     obj = model.search("LogicalComponent").by_name("Whomping Willow")
-    assert isinstance(obj, la.LogicalComponent)
+    assert isinstance(obj, mm.la.LogicalComponent)
 
     result = obj.property_value_groups["Stats"]["WIS"]
 
     assert result == 150
 
 
-def test_ElementList_dictlike_setitem(model: MelodyModel):
+def test_ElementList_dictlike_setitem(model: m.MelodyModel):
     obj = model.search("LogicalComponent").by_name("Whomping Willow")
-    assert isinstance(obj, la.LogicalComponent)
+    assert isinstance(obj, mm.la.LogicalComponent)
     pv_obj = obj.property_values.by_name("cars_defeated")
 
     obj.property_values["cars_defeated"] += 1
@@ -149,7 +136,7 @@ def test_ElementList_dictlike_setitem(model: MelodyModel):
     assert pv_obj.value == 2
 
 
-def test_MixedElementList_filter_by_type(model: MelodyModel):
+def test_MixedElementList_filter_by_type(model: m.MelodyModel):
     process = model.oa.all_processes.by_uuid(
         "d588e41f-ec4d-4fa9-ad6d-056868c66274"
     )
@@ -175,38 +162,37 @@ def test_MixedElementList_filter_by_type(model: MelodyModel):
         ("progress_status", "TO_BE_DISCUSSED"),
     ],
 )
-def test_GenericElement_attrs(model: MelodyModel, key: str, value: str):
+def test_GenericElement_attrs(model: m.MelodyModel, key: str, value: str):
     elm = model.oa.all_capabilities.by_name("Eat food")
     assert getattr(elm, key) == value
 
 
-def test_GenericElement_has_diagrams(model: MelodyModel):
+def test_GenericElement_has_diagrams(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
     assert hasattr(elm, "diagrams")
     assert len(elm.diagrams) == 0
 
 
-def test_GenericElement_has_pvmt(model: MelodyModel):
+def test_GenericElement_has_pvmt(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
 
     getattr(elm, "pvmt")
 
 
-def test_GenericElement_has_progress_status(model: MelodyModel):
+def test_GenericElement_has_progress_status(model: m.MelodyModel):
     elm = model.oa.all_capabilities[0]
     assert elm.progress_status == "NOT_SET"
 
 
-def test_Capabilities_have_constraints(model: MelodyModel):
+def test_Capabilities_have_constraints(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
     assert hasattr(elm, "constraints")
     assert len(elm.constraints) == 3
 
 
-def test_SystemCapability_has_realized_capabilities(model: MelodyModel):
-    elm: CapabilityRealization = model.by_uuid(  # type: ignore[assignment]
-        "9390b7d5-598a-42db-bef8-23677e45ba06"
-    )
+def test_SystemCapability_has_realized_capabilities(model: m.MelodyModel):
+    elm = model.by_uuid("9390b7d5-598a-42db-bef8-23677e45ba06")
+    assert isinstance(elm, mm.sa.Capability)
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 2
@@ -214,21 +200,19 @@ def test_SystemCapability_has_realized_capabilities(model: MelodyModel):
 
 
 def test_Capability_of_logical_layer_has_realized_capabilities(
-    model: MelodyModel,
+    model: m.MelodyModel,
 ):
-    elm: CapabilityRealization = model.by_uuid(  # type: ignore[assignment]
-        "b80b3141-a7fc-48c7-84b2-1467dcef5fce"
-    )
+    elm = model.by_uuid("b80b3141-a7fc-48c7-84b2-1467dcef5fce")
+    assert isinstance(elm, mm.la.CapabilityRealization)
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 1
     assert elm.realized_capabilities[0].xtype.endswith("Capability")
 
 
-def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
-    elm: OperationalCapability = model.by_uuid(  # type: ignore[assignment]
-        "53c58b24-3938-4d6a-b84a-bb9bff355a41"
-    )
+def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
+    elm = model.by_uuid("53c58b24-3938-4d6a-b84a-bb9bff355a41")
+    assert isinstance(elm, mm.oa.OperationalCapability)
     expected = (
         "The actor lives in a world where predators exist\r\n"
         "AND\r\n"
@@ -281,7 +265,7 @@ def test_Capabilities_conditions_markup_escapes(model: MelodyModel):
     ],
 )
 def test_Capability_exchange(
-    model_5_2: MelodyModel, uuid: str, trg_uuid: str, attr_name: str
+    model_5_2: m.MelodyModel, uuid: str, trg_uuid: str, attr_name: str
 ):
     cap = model_5_2.by_uuid(uuid)
     expected = model_5_2.by_uuid(trg_uuid)
@@ -332,7 +316,7 @@ def test_Capability_exchange(
     ],
 )
 def test_realizing_links(
-    model: MelodyModel, uuid: str, real_uuid: str, real_attr: str
+    model: m.MelodyModel, uuid: str, real_uuid: str, real_attr: str
 ):
     elm = model.by_uuid(uuid)
     real = model.by_uuid(real_uuid)
@@ -342,24 +326,23 @@ def test_realizing_links(
 
 
 class TestStateMachines:
-    def test_stm_accessible_from_component_pkg(self, model: MelodyModel):
-        comp: SystemComponentPkg = model.by_uuid(  # type: ignore[assignment]
-            "ecb687c1-c540-4de6-8b1d-024d1ed0178f"
-        )
+    def test_stm_accessible_from_component_pkg(self, model: m.MelodyModel):
+        comp = model.by_uuid("ecb687c1-c540-4de6-8b1d-024d1ed0178f")
+        assert isinstance(comp, mm.sa.SystemComponentPkg)
         stm = comp.state_machines.by_uuid(
             "9806df59-397c-4505-918f-3b1288638251"
         )
 
         assert stm.name == "RootStateMachine"
 
-    def test_stm_has_regions(self, model: MelodyModel):
+    def test_stm_has_regions(self, model: m.MelodyModel):
         entity = model.oa.all_entities.by_name("Functional Human Being")
         state_machine = entity.state_machines[0]
 
         assert hasattr(state_machine, "regions")
         assert len(state_machine.regions) == 1
 
-    def test_stm_region(self, model: MelodyModel):
+    def test_stm_region(self, model: m.MelodyModel):
         entity = model.oa.all_entities.by_name("Functional Human Being")
         region = entity.state_machines[0].regions[0]
 
@@ -367,7 +350,7 @@ class TestStateMachines:
         assert len(region.modes) == 0
         assert len(region.transitions) == 14
 
-    def test_stm_state_mode_regions_well_defined(self, model: MelodyModel):
+    def test_stm_state_mode_regions_well_defined(self, model: m.MelodyModel):
         mode = (
             model.oa.all_entities.by_name("Environment")
             .entities.by_name("Weather")
@@ -380,7 +363,9 @@ class TestStateMachines:
         assert len(mode.regions) == 1
         assert len(mode.regions[0].modes) > 0
 
-    def test_stm_transition_attributes_well_defined(self, model: MelodyModel):
+    def test_stm_transition_attributes_well_defined(
+        self, model: m.MelodyModel
+    ):
         transition = (
             model.oa.all_entities.by_name("Functional Human Being")
             .state_machines[0]
@@ -408,10 +393,9 @@ class TestStateMachines:
         assert transition.effects is not None
         assert list(transition.effects.by_name) == ["good advise", "Make Food"]
 
-    def test_stm_transition_multiple_guards(self, model: MelodyModel):
-        transition: StateTransition = model.by_uuid(
-            "6781fb18-6dd1-4b01-95f7-2f896316e46c"
-        )  # type: ignore[assignment]
+    def test_stm_transition_multiple_guards(self, model: m.MelodyModel):
+        transition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")
+        assert isinstance(transition, mm.capellacommon.StateTransition)
 
         assert transition.guard is not None
         assert (
@@ -420,17 +404,17 @@ class TestStateMachines:
         )
         assert transition.guard.specification["Python"] == "self.hunger >= 0.8"
 
-    def test_stm_region_has_access_to_diagrams(self, model: MelodyModel):
-        default_region: Region = model.by_uuid(  # type: ignore[assignment]
-            "eeeb98a7-6063-4115-8b4b-40a51cc0df49"
-        )
-        state: State = default_region.states.by_uuid(
+    def test_stm_region_has_access_to_diagrams(self, model: m.MelodyModel):
+        default_region = model.by_uuid("eeeb98a7-6063-4115-8b4b-40a51cc0df49")
+        assert isinstance(default_region, mm.capellacommon.Region)
+        state = default_region.states.by_uuid(
             "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
-        )  # type: ignore[assignment]
+        )
+        assert isinstance(state, mm.capellacommon.State)
         sleep_region = state.regions[0]
 
         assert default_region.diagrams
-        assert isinstance(default_region.diagrams, c.ElementList)
+        assert isinstance(default_region.diagrams, m.ElementList)
         assert (
             default_region.diagrams[0].name
             == "[MSM] States of Functional Human Being"
@@ -439,22 +423,20 @@ class TestStateMachines:
         assert sleep_region.diagrams
         assert sleep_region.diagrams[0].name == "[MSM] Keep the sleep schedule"
 
-    def test_stm_state_has_functions(self, model: MelodyModel):
+    def test_stm_state_has_functions(self, model: m.MelodyModel):
         state = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
         assert len(state.functions) == 4  # leaf functions only
         assert "teach Care of Magical Creatures" in state.functions.by_name
 
 
-def test_exchange_items_of_a_function_port(model: MelodyModel):
+def test_exchange_items_of_a_function_port(model: m.MelodyModel):
     port = model.by_uuid("db64f0c9-ea1c-4962-b043-1774547c36f7")
     assert "good advise" in port.exchange_items.by_name
     assert "not so good advise" in port.exchange_items.by_name
     assert len(port.exchange_items) == 2
 
 
-def test_exchange_items_on_logical_function_exchanges(
-    model: MelodyModel,
-):
+def test_exchange_items_on_logical_function_exchanges(model: m.MelodyModel):
     exchange = model.la.all_function_exchanges.by_uuid(
         "cdc69c5e-ddd8-4e59-8b99-f510400650aa"
     )
@@ -464,9 +446,7 @@ def test_exchange_items_on_logical_function_exchanges(
     assert exchange in exchange_item.exchanges
 
 
-def test_exchange_items_on_logical_actor_exchanges(
-    model: MelodyModel,
-):
+def test_exchange_items_on_logical_actor_exchanges(model: m.MelodyModel):
     aex = model.la.actor_exchanges.by_uuid(
         "9cbdd233-aff5-47dd-9bef-9be1277c77c3"
     )
@@ -476,9 +456,7 @@ def test_exchange_items_on_logical_actor_exchanges(
     assert aex in cex_item.exchanges
 
 
-def test_exchange_items_on_logical_component_exchanges(
-    model: MelodyModel,
-):
+def test_exchange_items_on_logical_component_exchanges(model: m.MelodyModel):
     cex = model.la.component_exchanges.by_uuid(
         "c31491db-817d-44b3-a27c-67e9cc1e06a2"
     )
@@ -498,7 +476,7 @@ def test_exchange_items_on_logical_component_exchanges(
     ],
 )
 def test_component_is_human_is_actor(
-    name: str, is_actor: bool, is_human: bool, model: MelodyModel
+    name: str, is_actor: bool, is_human: bool, model: m.MelodyModel
 ) -> None:
     actor = model.la.all_components.by_name(name)
 
@@ -506,29 +484,31 @@ def test_component_is_human_is_actor(
     assert actor.is_human == is_human
 
 
-def test_constraint_links_to_constrained_elements(model: MelodyModel) -> None:
+def test_constraint_links_to_constrained_elements(
+    model: m.MelodyModel,
+) -> None:
     con = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
     celt = model.by_uuid("3b83b4ba-671a-4de8-9c07-a5c6b1d3c422")
 
-    assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
+    assert isinstance(con, mm.capellacore.Constraint)
     assert len(con.constrained_elements) == 1
     assert con.constrained_elements[0] == celt
 
 
 def test_constraint_specification_has_linked_object_name_in_body(
-    model: MelodyModel,
+    model: m.MelodyModel,
 ) -> None:
     uuid = "dd2d0dab-a35f-4104-91e5-b412f35cba15"
     con = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
     expected_linked_text = f'<a href="hlink://{uuid}">Hunted animal</a>'
 
-    assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
+    assert isinstance(con, mm.capellacore.Constraint)
     assert con.specification["LinkedText"] == expected_linked_text
 
 
 class TestAttrProxyAccessor:
     @staticmethod
-    def test_function_is_available_in_state(model: capellambse.MelodyModel):
+    def test_function_is_available_in_state(model: m.MelodyModel):
         function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
 
         states = function.available_in_states
@@ -537,9 +517,7 @@ class TestAttrProxyAccessor:
         assert len(states) == 1
 
     @staticmethod
-    def test_available_in_states_can_be_modified(
-        model: capellambse.MelodyModel,
-    ):
+    def test_available_in_states_can_be_modified(model: m.MelodyModel):
         function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
         new_state = model.by_uuid("53cab5f0-fe2f-4553-8223-fbe5ea9e4d42")
         assert len(function.available_in_states) == 1
@@ -553,19 +531,15 @@ class TestAttrProxyAccessor:
 
 
 def test_specification_linkedText_to_internal_linkedText_transformation(
-    model: MelodyModel,
+    model: m.MelodyModel,
 ) -> None:
-    c1: Constraint = model.by_uuid(
-        "039b1462-8dd0-4bfd-a52d-0c6f1484aa6e"
-    )  # type: ignore[assignment]
-    c2: Constraint = model.by_uuid(
-        "0b546f8b-408c-4520-9f6a-f77efe97640b"
-    )  # type: ignore[assignment]
+    c1 = model.by_uuid("039b1462-8dd0-4bfd-a52d-0c6f1484aa6e")
+    assert isinstance(c1, mm.capellacore.Constraint)
+    c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
+    assert isinstance(c2, mm.capellacore.Constraint)
 
     c2.specification["LinkedText"] = c1.specification["LinkedText"]
 
-    assert isinstance(c1, capellambse.model.crosslayer.capellacore.Constraint)
-    assert isinstance(c2, capellambse.model.crosslayer.capellacore.Constraint)
     assert (
         next(c1.specification._element.iterchildren("bodies")).text
         == next(c2.specification._element.iterchildren("bodies")).text
@@ -580,10 +554,10 @@ def test_specification_linkedText_to_internal_linkedText_transformation(
     )
 )
 def test_constraint_without_specification_raises_AttributeError(
-    model: MelodyModel,
+    model: m.MelodyModel,
 ) -> None:
     con = model.by_uuid("0336eae7-21f2-4a73-8d71-c7d5ff550229")
-    assert isinstance(con, capellambse.model.crosslayer.capellacore.Constraint)
+    assert isinstance(con, mm.capellacore.Constraint)
 
     with pytest.raises(AttributeError, match="^No specification found$"):
         con.specification  # pylint: disable=pointless-statement
@@ -591,10 +565,14 @@ def test_constraint_without_specification_raises_AttributeError(
 
 @pytest.mark.parametrize(
     "searchkey",
-    [Class, "org.polarsys.capella.core.data.information:Class", "Class"],
+    [
+        mm.information.Class,
+        "org.polarsys.capella.core.data.information:Class",
+        "Class",
+    ],
 )
 def test_model_search_finds_elements(
-    session_shared_model: capellambse.MelodyModel, searchkey
+    session_shared_model: m.MelodyModel, searchkey
 ):
     expected = {
         "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
@@ -621,7 +599,7 @@ def test_model_search_finds_elements(
 
 
 def test_model_search_below_filters_elements_by_ancestor(
-    session_shared_model: capellambse.MelodyModel,
+    session_shared_model: m.MelodyModel,
 ):
     parent = session_shared_model.by_uuid(
         "6583b560-6d2f-4190-baa2-94eef179c8ea"
@@ -639,10 +617,10 @@ def test_model_search_below_filters_elements_by_ancestor(
 
 @pytest.mark.parametrize(
     "xtype",
-    {i for map in c.XTYPE_HANDLERS.values() for i in map.values()},
+    {i for map in m.XTYPE_HANDLERS.values() for i in map.values()},
 )
 def test_model_search_does_not_contain_duplicates(
-    session_shared_model: capellambse.MelodyModel, xtype: type[t.Any]
+    session_shared_model: m.MelodyModel, xtype: type[t.Any]
 ) -> None:
     results = session_shared_model.search(xtype)
     uuids = [i.uuid for i in results]
@@ -650,7 +628,7 @@ def test_model_search_does_not_contain_duplicates(
     assert len(uuids) == len(set(uuids))
 
 
-def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
+def test_CommunicationMean(model: m.MelodyModel) -> None:
     comm = model.by_uuid("6638ccd2-61cc-481e-bb23-4c1b147e1dbc")
     env = model.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
     fhb = model.by_uuid("a8c42033-fdf2-458f-bae9-1cfd1207c49f")
@@ -681,7 +659,7 @@ def test_CommunicationMean(model: capellambse.MelodyModel) -> None:
     ],
 )
 def test_FunctionalChainInvolvementLink_has_items_and_context(
-    model_5_2: capellambse.MelodyModel,
+    model_5_2: m.MelodyModel,
     chain_uuid: str,
     link_uuid: str,
     target_uuid: str,
@@ -720,7 +698,7 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
     ],
 )
 def test_GenericElement_has_GenericTraces(
-    model_5_2: capellambse.MelodyModel, trace_uuid: str, expected: str
+    model_5_2: m.MelodyModel, trace_uuid: str, expected: str
 ) -> None:
     cls = model_5_2.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")
     trace = model_5_2.by_uuid(trace_uuid)
@@ -747,7 +725,7 @@ def test_GenericElement_has_GenericTraces(
     ],
 )
 def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
-    model_5_2: capellambse.MelodyModel,
+    model_5_2: m.MelodyModel,
     chain_uuid: str,
     fnc_uuid: str,
     target_uuid: str,
@@ -776,7 +754,7 @@ def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
     ],
 )
 def test_FunctionalChainInvolvement_has_control_nodes(
-    model_5_2: capellambse.MelodyModel, chain_uuid: str, control_nodes: int
+    model_5_2: m.MelodyModel, chain_uuid: str, control_nodes: int
 ) -> None:
     chain = model_5_2.by_uuid(chain_uuid)
 
@@ -888,7 +866,7 @@ class TestArchitectureLayers:
     )
     def test_ArchitectureLayers_have_root_definitions(
         self,
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
         layer: str,
         definitions: t.Sequence[str],
     ) -> None:
@@ -908,7 +886,7 @@ class TestArchitectureLayers:
         ],
     )
     def test_PhysicalComponent_has_nature_attribute(
-        self, model: capellambse.MelodyModel, nature: str, uuid: str
+        self, model: m.MelodyModel, nature: str, uuid: str
     ) -> None:
         pcomp = model.by_uuid(uuid)
 
@@ -941,7 +919,7 @@ class TestArchitectureLayers:
         ],
     )
     def test_PhysicalComponent_has_kind_attribute(
-        self, model: capellambse.MelodyModel, kind: str, uuid: str
+        self, model: m.MelodyModel, kind: str, uuid: str
     ) -> None:
         pcomp = model.by_uuid(uuid)
 
@@ -949,7 +927,7 @@ class TestArchitectureLayers:
         assert pcomp.kind == kind
 
     def test_PhysicalComponent_vehicle_component_chain(
-        self, model: capellambse.MelodyModel
+        self, model: m.MelodyModel
     ) -> None:
         vehicle = model.by_uuid("b327d900-abd2-4138-a111-9ff0684739d8")
         sensor_comp = model.by_uuid("3f416925-9d8a-4e9c-99f3-e912efb23d2f")
@@ -991,7 +969,7 @@ class TestArchitectureLayers:
         assert card_2_os.components[0] == app2
 
     def test_PhysicalComponent_deploying_components(
-        self, model: capellambse.MelodyModel
+        self, model: m.MelodyModel
     ) -> None:
         comp_card1 = model.by_uuid("63be604e-883e-41ea-9023-fc74f29906fe")
         card1_os = model.by_uuid("7b188ad0-0d82-4b2c-9913-45292e537871")
@@ -999,11 +977,13 @@ class TestArchitectureLayers:
         assert card1_os in comp_card1.deployed_components
         assert comp_card1 in card1_os.deploying_components
 
-    def test_physical_path_is_found(self, model: MelodyModel) -> None:
+    def test_physical_path_is_found(self, model: m.MelodyModel) -> None:
         expected_path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
         assert expected_path in model.pa.all_physical_paths
 
-    def test_pa_component_exchange_is_found(self, model: MelodyModel) -> None:
+    def test_pa_component_exchange_is_found(
+        self, model: m.MelodyModel
+    ) -> None:
         expected_exchange = model.by_uuid(
             "3aa006b1-f954-4e8f-a4e9-2e9cd38555de"
         )
@@ -1016,21 +996,21 @@ class TestArchitectureLayers:
                 "b51ccc6f-5f96-4e28-b90e-72463a3b50cf",
                 "physical_ports",
                 3,
-                PhysicalPort,
+                mm.cs.PhysicalPort,
                 id="PP",
             ),
             pytest.param(
                 "c78b5d7c-be0c-4ed4-9d12-d447cb39304e",
                 "ports",
                 3,
-                ComponentPort,
+                mm.fa.ComponentPort,
                 id="CP",
             ),
         ],
     )
     def test_PhysicalComponent_finds_ports(
         self,
-        model: MelodyModel,
+        model: m.MelodyModel,
         uuid: str,
         port_attr: str,
         ports: int,
@@ -1044,7 +1024,7 @@ class TestArchitectureLayers:
             assert isinstance(p, class_)
 
     def test_ComponentExchange_has_allocating_FunctionalExchange(
-        self, model: MelodyModel
+        self, model: m.MelodyModel
     ) -> None:
         fex = model.by_uuid("df56e23a-d5bd-470c-ac08-aab8d4dad211")
         cex = model.by_uuid("a8c0bb4c-6802-42a9-9ef7-abbd4371f5f8")
@@ -1052,7 +1032,7 @@ class TestArchitectureLayers:
         assert fex.allocating_component_exchange == fex.owner == cex
 
     def test_ComponentExchange_has_allocating_PhysicalLink(
-        self, model: MelodyModel
+        self, model: m.MelodyModel
     ) -> None:
         cex = model.by_uuid("a647a577-0dc1-454f-917f-ce1c89089a2f")
         link = model.by_uuid("90517d41-da3e-430c-b0a9-e3badf416509")
@@ -1060,7 +1040,7 @@ class TestArchitectureLayers:
         assert cex.allocating_physical_link == cex.owner == link
 
     def test_ComponentExchange_has_allocating_PhysicalPath(
-        self, model: MelodyModel
+        self, model: m.MelodyModel
     ) -> None:
         path = model.by_uuid("42c5ffb3-29b3-4580-a061-8f76833a3d37")
         cex = model.by_uuid("3aa006b1-f954-4e8f-a4e9-2e9cd38555de")
@@ -1083,13 +1063,13 @@ class TestArchitectureLayers:
         ("filters", {"ModelExtensionFilter"}),
         ("target.uuid", "eeeb98a7-6063-4115-8b4b-40a51cc0df49"),
         ("type", "MSM"),
-        ("type", capellambse.model.modeltypes.DiagramType.MSM),
+        ("type", m.DiagramType.MSM),
         ("viewpoint", "Common"),
         ("xtype", "viewpoint:DRepresentationDescriptor"),
     ],
 )
 def test_diagram_attributes(
-    model: capellambse.MelodyModel, attr: str, value: t.Any
+    model: m.MelodyModel, attr: str, value: t.Any
 ) -> None:
     diagram = model.diagrams.by_uuid("_7Ft7QKrxEeqOgqWuHJrXFA")
     get_attribute_under_test = operator.attrgetter(attr)
@@ -1100,7 +1080,7 @@ def test_diagram_attributes(
 
 
 def test_diagram_without_documentation_has_empty_description(
-    model: capellambse.MelodyModel,
+    model: m.MelodyModel,
 ) -> None:
     diagram = model.diagrams.by_uuid("_KLGoEKyJEeqCdMaqCWkrKg")
     expected = ""
@@ -1110,9 +1090,7 @@ def test_diagram_without_documentation_has_empty_description(
     assert actual == expected
 
 
-def test_lists_of_links_appear_to_contain_target_objects(
-    model: capellambse.MelodyModel,
-):
+def test_lists_of_links_appear_to_contain_target_objects(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
     expected = [
         "0e71a0d3-0a18-4671-bba0-71b5f88f95dd",
@@ -1124,14 +1102,14 @@ def test_lists_of_links_appear_to_contain_target_objects(
     assert actual == expected
 
 
-def test_lists_of_links_cannot_create_objects(model: capellambse.MelodyModel):
+def test_lists_of_links_cannot_create_objects(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 
     with pytest.raises(TypeError, match="create"):
         hogwarts.allocated_functions.create(name="fall to the Death Eaters")
 
 
-def test_lists_of_links_can_be_appended_to(model: capellambse.MelodyModel):
+def test_lists_of_links_can_be_appended_to(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
     defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
 
@@ -1140,7 +1118,7 @@ def test_lists_of_links_can_be_appended_to(model: capellambse.MelodyModel):
     assert hogwarts.allocated_functions[-1] == defend_the_stone
 
 
-def test_lists_of_links_can_be_inserted_into(model: capellambse.MelodyModel):
+def test_lists_of_links_can_be_inserted_into(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
     defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
 
@@ -1149,7 +1127,7 @@ def test_lists_of_links_can_be_inserted_into(model: capellambse.MelodyModel):
     assert hogwarts.allocated_functions[0] == defend_the_stone
 
 
-def test_lists_of_links_can_be_removed_from(model: capellambse.MelodyModel):
+def test_lists_of_links_can_be_removed_from(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
     protect_students = model.by_uuid("264fb47d-67b7-4bdc-8d06-8a0e5139edbf")
     assert protect_students in hogwarts.allocated_functions
@@ -1160,13 +1138,13 @@ def test_lists_of_links_can_be_removed_from(model: capellambse.MelodyModel):
 
 
 def test_lists_of_links_disallow_insertion_of_duplicate_members(
-    model: capellambse.MelodyModel,
+    model: m.MelodyModel,
 ):
     parent = model.by_uuid("3b83b4ba-671a-4de8-9c07-a5c6b1d3c422")
     target = model.by_uuid("dfaf473d-257f-4455-90fd-fe9489dac617")
     assert target in parent.involved_activities
 
-    with pytest.raises(capellambse.model.NonUniqueMemberError) as catch:
+    with pytest.raises(m.NonUniqueMemberError) as catch:
         parent.involved_activities.append(target)
 
     assert catch.value.args == (parent, "involved_activities", target)

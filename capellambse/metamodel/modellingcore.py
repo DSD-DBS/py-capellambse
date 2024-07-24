@@ -5,11 +5,11 @@
 These base classes are used between different layers.
 """
 
-from .. import common as c
+from capellambse import model as m
 
 
-class TraceableElement(c.GenericElement):
+class TraceableElement(m.GenericElement):
     """A template for traceable ModelObjects."""
 
-    source = c.AttrProxyAccessor(c.GenericElement, attr="sourceElement")
-    target = c.AttrProxyAccessor(c.GenericElement, attr="targetElement")
+    source = m.AttrProxyAccessor(m.GenericElement, attr="sourceElement")
+    target = m.AttrProxyAccessor(m.GenericElement, attr="targetElement")

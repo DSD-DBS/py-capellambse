@@ -9,9 +9,8 @@ from capellambse import model
 
 
 def protocol_ModelObject_compliance():
-    mobj: model.common.ModelObject
+    mobj: model.ModelObject
 
     mobj = model.GenericElement()  # type: ignore[call-arg]
-    mobj = model.MelodyModel()  # type: ignore[call-arg]
-    mobj = model.common.accessors._Specification()  # type: ignore[call-arg]
+    mobj = model._descriptors._Specification()  # type: ignore[call-arg]
     mobj = model.diagram.Diagram()

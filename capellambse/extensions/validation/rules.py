@@ -3,67 +3,62 @@
 from __future__ import annotations
 
 import capellambse
-from capellambse.extensions import validation
-from capellambse.model import modeltypes
-from capellambse.model.crosslayer import capellacommon as cc
-from capellambse.model.crosslayer import fa
-from capellambse.model.layers import ctx as sa
-from capellambse.model.layers import la, oa, pa
+import capellambse.metamodel as mm
 
 from . import _validate
-from ._validate import rule
+from ._validate import rule, virtual_type
 
 
-@validation.virtual_type(sa.SystemComponent)
-def SystemActor(cmp: sa.SystemComponent) -> bool:
+@virtual_type(mm.sa.SystemComponent)
+def SystemActor(cmp: mm.sa.SystemComponent) -> bool:
     return cmp.is_actor
 
 
-@validation.virtual_type(pa.PhysicalComponent)
-def BehaviourPhysicalComponent(cmp: pa.PhysicalComponent) -> bool:
-    return cmp.nature == modeltypes.PhysicalComponentNature.BEHAVIOR
+@virtual_type(mm.pa.PhysicalComponent)
+def BehaviourPhysicalComponent(cmp: mm.pa.PhysicalComponent) -> bool:
+    return cmp.nature == mm.modeltypes.PhysicalComponentNature.BEHAVIOR
 
 
-@validation.virtual_type(cc.State)
-def OperationalState(state: cc.State) -> bool:
+@virtual_type(mm.capellacommon.State)
+def OperationalState(state: mm.capellacommon.State) -> bool:
     layer = _find_layer(state)
-    return isinstance(layer, oa.OperationalAnalysis)
+    return isinstance(layer, mm.oa.OperationalAnalysis)
 
 
-@validation.virtual_type(cc.State)
-def SystemState(state: cc.State) -> bool:
+@virtual_type(mm.capellacommon.State)
+def SystemState(state: mm.capellacommon.State) -> bool:
     layer = _find_layer(state)
-    return isinstance(layer, sa.SystemAnalysis)
+    return isinstance(layer, mm.sa.SystemAnalysis)
 
 
-@validation.virtual_type(cc.State)
-def LogicalState(state: cc.State) -> bool:
+@virtual_type(mm.capellacommon.State)
+def LogicalState(state: mm.capellacommon.State) -> bool:
     layer = _find_layer(state)
-    return isinstance(layer, la.LogicalArchitecture)
+    return isinstance(layer, mm.la.LogicalArchitecture)
 
 
-@validation.virtual_type(cc.State)
-def PhysicalState(state: cc.State) -> bool:
+@virtual_type(mm.capellacommon.State)
+def PhysicalState(state: mm.capellacommon.State) -> bool:
     layer = _find_layer(state)
-    return isinstance(layer, pa.PhysicalArchitecture)
+    return isinstance(layer, mm.pa.PhysicalArchitecture)
 
 
 def _find_layer(
     obj,
 ) -> (
-    oa.OperationalAnalysis
-    | sa.SystemAnalysis
-    | la.LogicalArchitecture
-    | pa.PhysicalArchitecture
+    mm.oa.OperationalAnalysis
+    | mm.sa.SystemAnalysis
+    | mm.la.LogicalArchitecture
+    | mm.pa.PhysicalArchitecture
 ):
     parent = obj.parent
     while not isinstance(
         parent,
         (
-            oa.OperationalAnalysis,
-            sa.SystemAnalysis,
-            la.LogicalArchitecture,
-            pa.PhysicalArchitecture,
+            mm.oa.OperationalAnalysis,
+            mm.sa.SystemAnalysis,
+            mm.la.LogicalArchitecture,
+            mm.pa.PhysicalArchitecture,
         ),
     ):
         parent = parent.parent
@@ -74,17 +69,17 @@ def _find_layer(
 @rule(
     category=_validate.Category.RECOMMENDED,
     types=[
-        sa.Capability,
-        sa.SystemFunction,
-        sa.SystemComponent,
-        oa.Entity,
-        oa.OperationalCapability,
-        oa.OperationalActivity,
-        la.LogicalFunction,
-        la.LogicalComponent,
-        pa.PhysicalFunction,
-        pa.PhysicalComponent,
-        cc.State,
+        mm.sa.Capability,
+        mm.sa.SystemFunction,
+        mm.sa.SystemComponent,
+        mm.oa.Entity,
+        mm.oa.OperationalCapability,
+        mm.oa.OperationalActivity,
+        mm.la.LogicalFunction,
+        mm.la.LogicalComponent,
+        mm.pa.PhysicalFunction,
+        mm.pa.PhysicalComponent,
+        mm.capellacommon.State,
     ],
     id="Rule-001",
     name="Object has a description or summary",
@@ -106,8 +101,8 @@ def has_non_empty_description_or_summary(
 @rule(
     category=_validate.Category.REQUIRED,
     types=[
-        sa.Capability,
-        oa.OperationalCapability,
+        mm.sa.Capability,
+        mm.oa.OperationalCapability,
     ],
     id="Rule-002",
     name="Capability involves an Entity / Actor",
@@ -119,7 +114,7 @@ def has_non_empty_description_or_summary(
     action="Add at least one involved Actor or Entity.",
 )
 def capability_involves_entity(obj: capellambse.model.GenericElement) -> bool:
-    if isinstance(obj, oa.OperationalCapability):
+    if isinstance(obj, mm.oa.OperationalCapability):
         return bool(obj.involved_entities)
     return bool(obj.involved_components)
 
@@ -127,9 +122,9 @@ def capability_involves_entity(obj: capellambse.model.GenericElement) -> bool:
 @rule(
     category=_validate.Category.RECOMMENDED,
     types=[
-        sa.Capability,
-        oa.OperationalCapability,
-        la.CapabilityRealization,
+        mm.sa.Capability,
+        mm.oa.OperationalCapability,
+        mm.la.CapabilityRealization,
         # The CapabilityRealization in the pa layer is also affected by this
         # rule but is not defined as pa.CapabilityRealization since its the
         # same class as la.CapabilityRealization
@@ -157,9 +152,9 @@ def has_precondition(obj: capellambse.model.GenericElement) -> bool:
 @rule(
     category=_validate.Category.RECOMMENDED,
     types=[
-        sa.Capability,
-        oa.OperationalCapability,
-        la.CapabilityRealization,
+        mm.sa.Capability,
+        mm.oa.OperationalCapability,
+        mm.la.CapabilityRealization,
     ],
     id="Rule-005",
     name="Capability has a defined post-condition",
@@ -183,7 +178,7 @@ def has_postcondition(obj):
 
 @rule(
     category=_validate.Category.REQUIRED,
-    types=[fa.FunctionalExchange],
+    types=[mm.fa.FunctionalExchange],
     id="Rule-006",
     name=(
         "All Functional exchanges shall be allocated to at least one component"
@@ -200,7 +195,7 @@ def has_postcondition(obj):
     ),
 )
 def functional_exchange_allocated_to_component_exchange(
-    obj: fa.FunctionalExchange,
+    obj: mm.fa.FunctionalExchange,
 ) -> bool:
     if _find_layer(obj).name == "Physical Architecture":
         return bool(obj.allocating_component_exchange)
@@ -210,7 +205,7 @@ def functional_exchange_allocated_to_component_exchange(
 # 01. Operational Analysis
 @rule(
     category=_validate.Category.REQUIRED,
-    types=[oa.OperationalCapability],
+    types=[mm.oa.OperationalCapability],
     id="Rule-007",
     name=(
         "Capability involves at least two Activities from different"
@@ -226,7 +221,7 @@ def functional_exchange_allocated_to_component_exchange(
     ),
 )
 def capability_involves_two_activities_from_different_entities(
-    obj: oa.OperationalCapability,
+    obj: mm.oa.OperationalCapability,
 ) -> bool:
     actors = {
         activity.owner.uuid
@@ -238,7 +233,7 @@ def capability_involves_two_activities_from_different_entities(
 
 @rule(
     category=_validate.Category.REQUIRED,
-    types=[oa.OperationalActivity],
+    types=[mm.oa.OperationalActivity],
     id="Rule-008",
     name="Activity has at least one interaction with another activity",
     rationale=(
@@ -253,7 +248,7 @@ def capability_involves_two_activities_from_different_entities(
     ),
 )
 def activity_has_interaction_with_another_activity(
-    obj: oa.OperationalActivity,
+    obj: mm.oa.OperationalActivity,
 ) -> bool:
     return bool(obj.related_exchanges)
 
@@ -261,7 +256,7 @@ def activity_has_interaction_with_another_activity(
 # 02. System Analysis
 @rule(
     category=_validate.Category.REQUIRED,
-    types=[sa.Capability],
+    types=[mm.sa.Capability],
     id="Rule-009",
     name=(
         "System capability involves at least one Actor Function and one"
@@ -277,7 +272,9 @@ def activity_has_interaction_with_another_activity(
         " Capability"
     ),
 )
-def capability_involves_actor_and_system_function(obj: sa.Capability) -> bool:
+def capability_involves_actor_and_system_function(
+    obj: mm.sa.Capability,
+) -> bool:
     actor_functions = [
         fnc
         for fnc in obj.involved_functions
@@ -293,7 +290,7 @@ def capability_involves_actor_and_system_function(obj: sa.Capability) -> bool:
 
 @rule(
     category=_validate.Category.REQUIRED,
-    types=[sa.Capability],
+    types=[mm.sa.Capability],
     id="Rule-010",
     name="IS- and SHOULD entity involvements match",
     rationale=(
@@ -312,7 +309,7 @@ def capability_involves_actor_and_system_function(obj: sa.Capability) -> bool:
         " System"
     ),
 )
-def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
+def is_and_should_entity_involvements_match(obj: mm.sa.Capability) -> bool:
     is_involvements = {x.owner.uuid for x in obj.involved_functions if x.owner}
     should_involvements = {x.uuid for x in obj.involved_components}
     return is_involvements == should_involvements
@@ -320,7 +317,7 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
 
 @rule(
     category=_validate.Category.RECOMMENDED,
-    types=[sa.SystemFunction],
+    types=[mm.sa.SystemFunction],
     id="SF-040",
     name="Function shall have at least one input or output",
     rationale=(
@@ -329,5 +326,5 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
     ),
     action="consider adding inputs and / or outputs to the Function.",
 )
-def function_has_inputs_and_outputs(obj: sa.SystemFunction) -> bool:
+def function_has_inputs_and_outputs(obj: mm.sa.SystemFunction) -> bool:
     return len(obj.inputs) > 0 or len(obj.outputs) > 0

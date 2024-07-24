@@ -29,26 +29,28 @@ __all__ = [
 ]
 
 import re
+import typing as t
 
-import markupsafe
-
-import capellambse.model.common as c
+import capellambse.model as m
 from capellambse import helpers
 
-c.XTYPE_ANCHORS[__name__] = "Requirements"
+if t.TYPE_CHECKING:
+    import markupsafe
+
+m.XTYPE_ANCHORS[__name__] = "Requirements"
 
 
-class ReqIFElement(c.GenericElement):
+class ReqIFElement(m.GenericElement):
     """Attributes shared by all ReqIF elements."""
 
-    identifier = c.AttributeProperty("ReqIFIdentifier", optional=True)
-    long_name = c.AttributeProperty("ReqIFLongName", optional=True)
-    description: str = c.AttributeProperty(  # type: ignore[assignment]
-        "ReqIFDescription", optional=True
+    identifier = m.StringPOD("ReqIFIdentifier")
+    long_name = m.StringPOD("ReqIFLongName")
+    description: str = m.StringPOD(  # type: ignore[assignment]
+        "ReqIFDescription"
     )
-    name = c.AttributeProperty("ReqIFName", optional=True)
-    prefix = c.AttributeProperty("ReqIFPrefix", optional=True)
-    type: c.Accessor = property(lambda _: None)  # type: ignore[assignment]
+    name = m.StringPOD("ReqIFName")
+    prefix = m.StringPOD("ReqIFPrefix")
+    type: m.Accessor = property(lambda _: None)  # type: ignore[assignment]
 
     def _short_repr_(self) -> str:  # pragma: no cover
         mytype = type(self).__name__
@@ -79,28 +81,28 @@ class ReqIFElement(c.GenericElement):
         return helpers.make_short_html(type(self).__name__, self.uuid, name)
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class DataTypeDefinition(ReqIFElement):
     """A data type definition for requirement types."""
 
     _xmltag = "ownedDefinitionTypes"
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class AttributeDefinition(ReqIFElement):
     """An attribute definition for requirement types."""
 
     _xmltag = "ownedAttributes"
 
-    data_type = c.AttrProxyAccessor(DataTypeDefinition, "definitionType")
+    data_type = m.AttrProxyAccessor(DataTypeDefinition, "definitionType")
 
 
-class AbstractRequirementsAttribute(c.GenericElement):
+class AbstractRequirementsAttribute(m.GenericElement):
     _xmltag = "ownedAttributes"
 
-    definition = c.AttrProxyAccessor(AttributeDefinition, "definition")
+    definition = m.AttrProxyAccessor(AttributeDefinition, "definition")
 
-    value: c.AttributeProperty | c.AttrProxyAccessor
+    value: m.BasePOD | m.AttrProxyAccessor
 
     def __repr__(self) -> str:
         return self._short_repr_()
@@ -124,10 +126,10 @@ class AbstractRequirementsAttribute(c.GenericElement):
         return repr(self.value)
 
 
-class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
+class AttributeAccessor(m.DirectProxyAccessor[AbstractRequirementsAttribute]):
     def __init__(self) -> None:
         super().__init__(
-            c.GenericElement,  # type: ignore[arg-type]
+            m.GenericElement,  # type: ignore[arg-type]
             (
                 BooleanValueAttribute,
                 DateValueAttribute,
@@ -136,7 +138,7 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
                 RealValueAttribute,
                 StringValueAttribute,
             ),
-            aslist=c.MixedElementList,
+            aslist=m.MixedElementList,
             mapkey="definition.long_name",
             mapvalue="value",
         )
@@ -147,23 +149,23 @@ class AttributeAccessor(c.DirectProxyAccessor[AbstractRequirementsAttribute]):
         type_ = type_.lower()
         try:
             cls = _attr_type_hints[type_]
-            return cls, c.build_xtype(cls)
+            return cls, m.build_xtype(cls)
         except KeyError:
             raise ValueError(f"Invalid type hint given: {type_!r}") from None
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class BooleanValueAttribute(AbstractRequirementsAttribute):
     """A string value attribute."""
 
-    value = c.BooleanAttributeProperty("value")
+    value = m.BoolPOD("value")
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class DateValueAttribute(AbstractRequirementsAttribute):
     """A value attribute that stores a date and time."""
 
-    value = c.DatetimeAttributeProperty("value", optional=True)
+    value = m.DatetimePOD("value")
 
     def _repr_value(self) -> str:
         if self.value is None:
@@ -171,29 +173,29 @@ class DateValueAttribute(AbstractRequirementsAttribute):
         return self.value.isoformat()
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class IntegerValueAttribute(AbstractRequirementsAttribute):
     """An integer value attribute."""
 
-    value = c.AttributeProperty("value", returntype=int, default=0)
+    value = m.IntPOD("value")
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class RealValueAttribute(AbstractRequirementsAttribute):
     """A floating-point number value attribute."""
 
-    value = c.AttributeProperty("value", returntype=float, default=0.0)
+    value = m.FloatPOD("value")
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class StringValueAttribute(AbstractRequirementsAttribute):
     """A string value attribute."""
 
-    value = c.AttributeProperty("value", default="")
+    value = m.StringPOD("value")
 
 
-@c.xtype_handler(None)
-@c.attr_equal("long_name")
+@m.xtype_handler(None)
+@m.attr_equal("long_name")
 class EnumValue(ReqIFElement):
     """An enumeration value for :class:`.EnumerationDataTypeDefinition`."""
 
@@ -203,43 +205,38 @@ class EnumValue(ReqIFElement):
         return self.long_name
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class EnumerationDataTypeDefinition(ReqIFElement):
     """An enumeration data type definition for requirement types."""
 
     _xmltag = "ownedDefinitionTypes"
 
-    values = c.DirectProxyAccessor(
-        EnumValue, aslist=c.ElementList, single_attr="long_name"
+    values = m.DirectProxyAccessor(
+        EnumValue, aslist=m.ElementList, single_attr="long_name"
     )
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class AttributeDefinitionEnumeration(ReqIFElement):
     """An enumeration attribute definition for requirement types."""
 
     _xmltag = "ownedAttributes"
 
-    data_type = c.AttrProxyAccessor(
+    data_type = m.AttrProxyAccessor(
         EnumerationDataTypeDefinition, "definitionType"
     )
-    multi_valued = c.BooleanAttributeProperty(
-        "multiValued",
-        __doc__=(
-            "Boolean flag for setting multiple enumeration values on"
-            " the attribute"
-        ),
-    )
+    multi_valued = m.BoolPOD("multiValued")
+    """Whether to allow setting multiple values on this attribute."""
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class EnumerationValueAttribute(AbstractRequirementsAttribute):
     """An enumeration attribute."""
 
-    definition = c.AttrProxyAccessor(
+    definition = m.AttrProxyAccessor(
         AttributeDefinitionEnumeration, "definition"  # type: ignore[arg-type]
     )
-    values = c.AttrProxyAccessor(EnumValue, "values", aslist=c.ElementList)
+    values = m.AttrProxyAccessor(EnumValue, "values", aslist=m.ElementList)
 
     @property
     def value(self):
@@ -254,73 +251,71 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
         return repr([i.long_name for i in self.values])
 
 
-@c.attr_equal("long_name")
+@m.attr_equal("long_name")
 class AbstractType(ReqIFElement):
-    owner = c.ParentAccessor(c.GenericElement)
-    attribute_definitions = c.DirectProxyAccessor(
-        c.GenericElement,
+    owner = m.ParentAccessor(m.GenericElement)
+    attribute_definitions = m.DirectProxyAccessor(
+        m.GenericElement,
         (AttributeDefinition, AttributeDefinitionEnumeration),
-        aslist=c.MixedElementList,
+        aslist=m.MixedElementList,
     )
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class ModuleType(AbstractType):
     """A requirement-module type."""
 
     _xmltag = "ownedTypes"
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class RelationType(AbstractType):
     """A requirement-relation type."""
 
     _xmltag = "ownedTypes"
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class RequirementType(AbstractType):
     """A requirement type."""
 
     _xmltag = "ownedTypes"
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class Requirement(ReqIFElement):
     """A ReqIF Requirement."""
 
     _xmltag = "ownedRequirements"
 
-    owner = c.ParentAccessor(c.GenericElement)
+    owner = m.ParentAccessor(m.GenericElement)
 
-    chapter_name = c.AttributeProperty("ReqIFChapterName", optional=True)
-    foreign_id = c.AttributeProperty(
-        "ReqIFForeignID", optional=True, returntype=int
-    )
-    text = c.HTMLAttributeProperty("ReqIFText", optional=True)
+    chapter_name = m.StringPOD("ReqIFChapterName")
+    foreign_id = m.IntPOD("ReqIFForeignID")
+    text = m.HTMLStringPOD("ReqIFText")
     attributes = AttributeAccessor()
-    type = c.AttrProxyAccessor(RequirementType, "requirementType")
+    type = m.AttrProxyAccessor(RequirementType, "requirementType")
 
-    relations: c.Accessor[AbstractRequirementsRelation]
-    related: c.Accessor[c.GenericElement]
+    relations: m.Accessor[AbstractRequirementsRelation]
+    related: m.Accessor[m.GenericElement]
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class Folder(Requirement):
     """A folder that stores Requirements."""
 
     _xmltag = "ownedRequirements"
 
-    folders: c.Accessor
-    requirements = c.DirectProxyAccessor(Requirement, aslist=c.ElementList)
+    folders: m.Accessor
+    requirements = m.DirectProxyAccessor(Requirement, aslist=m.ElementList)
 
 
 class AbstractRequirementsRelation(ReqIFElement):
     _required_attrs = frozenset({"source", "target"})
 
-    type = c.AttrProxyAccessor(RelationType, "relationType")
-    source = c.AttrProxyAccessor(Requirement, "source")
-    target = c.AttrProxyAccessor(c.GenericElement, "target")
+    type = m.AttrProxyAccessor(RelationType, "relationType")
+    source = m.AttrProxyAccessor(Requirement, "source")
+    target = m.AttrProxyAccessor(m.GenericElement, "target")
 
     def _short_repr_(self) -> str:
         direction = ""
@@ -334,7 +329,7 @@ class AbstractRequirementsRelation(ReqIFElement):
         )
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class InternalRelation(AbstractRequirementsRelation):
     """A Relation between two requirements."""
 

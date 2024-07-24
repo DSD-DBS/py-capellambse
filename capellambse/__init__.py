@@ -17,8 +17,7 @@ del metadata
 from ._namespaces import *
 from .cli_helpers import *
 from .filehandler import *
-from .model import MelodyModel
-from .model.common import ModelObject, new_object
+from .model import MelodyModel, ModelObject, NewObject
 
 _has_loaded_extensions = False
 

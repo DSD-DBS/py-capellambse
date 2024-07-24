@@ -57,15 +57,13 @@ nitpick_ignore = [
     ("py:class", "capellambse.model.common.accessors._NewObject"),
     # exposed as `json.JSONEncoder`
     ("py:class", "json.encoder.JSONEncoder"),
-    # Sphinx doesn't even know where this happens
-    ("py:class", "ModelObject"),
     # TODO figure out why sphinx doesn't document these
     ("py:exc", "capellambse.UnsupportedPluginError"),
     ("py:exc", "capellambse.UnsupportedPluginVersionError"),
     ("any", "capellambse.aird.GLOBAL_FILTERS"),
     # Private type hinting helpers
     ("py:class", "_MapFunction"),
-    ("py:class", "capellambse.model.common.accessors._Specification"),
+    ("py:class", "capellambse.model._descriptors._Specification"),
 ]
 nitpick_ignore_regex = [
     ("py:.*", r"^yaml\..*"),

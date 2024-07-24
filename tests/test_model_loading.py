@@ -669,7 +669,6 @@ def test_updated_namespaces_use_rounded_versions(
     model_5_2._loader.update_namespaces()
 
     assert model_5_2.info.capella_version == "5.2.0"
-    nsver = model_5_2._element.nsmap[
-        "org.polarsys.capella.core.data.capellacommon"
-    ].rsplit("/", 1)[-1]
+    ns = "org.polarsys.capella.core.data.capellacommon"
+    nsver = model_5_2.project._element.nsmap[ns].rsplit("/", 1)[-1]
     assert nsver == "5.0.0"

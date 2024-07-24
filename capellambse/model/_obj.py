@@ -7,16 +7,15 @@ __all__ = [
     "ModelObject",
     "GenericElement",
     "ElementList",
-    "ElementListMapKeyView",
-    "ElementListMapItemsView",
     "CachedElementList",
     "MixedElementList",
-    "attr_equal",
+    "ElementListMapKeyView",
+    "ElementListMapItemsView",
+    "ElementListCouplingMixin",
 ]
 
 import collections.abc as cabc
 import enum
-import functools
 import inspect
 import logging
 import operator
@@ -31,14 +30,10 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import XTYPE_HANDLERS, T, U, accessors, properties
-
-if t.TYPE_CHECKING:
-    from capellambse.model import crosslayer
+from . import T, U, _descriptors, _pods, _styleclass, _xtype
 
 LOGGER = logging.getLogger(__name__)
 
-_T = t.TypeVar("_T", bound="ModelObject")
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -49,32 +44,6 @@ _MapFunction: te.TypeAlias = (
 
 _TERMCELL: tuple[int, int] | None = None
 _ICON_CACHE: dict[tuple[str, str, int], t.Any] = {}
-
-
-def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
-    def add_wrapped_eq(cls: type[T]) -> type[T]:
-        orig_eq = cls.__eq__
-
-        @functools.wraps(orig_eq)
-        def new_eq(self, other: object) -> bool:
-            # pylint: disable=unnecessary-dunder-call
-            try:
-                cmpkey = getattr(self, attr)
-            except AttributeError:
-                pass
-            else:
-                if isinstance(other, type(cmpkey)):
-                    result = cmpkey.__eq__(other)
-                else:
-                    result = other.__eq__(cmpkey)
-                if result is not NotImplemented:
-                    return result
-            return orig_eq(self, other)
-
-        cls.__eq__ = new_eq  # type: ignore[method-assign]
-        return cls
-
-    return add_wrapped_eq
 
 
 class ModelObject(t.Protocol):
@@ -127,20 +96,19 @@ class ModelObject(t.Protocol):
 class GenericElement:
     """Provides high-level access to a single model element."""
 
-    uuid = properties.AttributeProperty("id", writable=False)
+    uuid = _pods.StringPOD("id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
-    name = properties.AttributeProperty("name", optional=True, default="")
-    description = properties.HTMLAttributeProperty(
-        "description", optional=True
-    )
-    summary = properties.AttributeProperty("summary", optional=True)
-    diagrams: accessors.Accessor[capellambse.model.diagram.Diagram]
+    name = _pods.StringPOD("name")
+    description = _pods.HTMLStringPOD("description")
+    summary = _pods.StringPOD("summary")
+    diagrams: _descriptors.Accessor[capellambse.model.diagram.Diagram]
     diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target(self)
     )
 
-    constraints: accessors.Accessor
-    parent: accessors.ParentAccessor
+    parent: _descriptors.ParentAccessor
+    constraints: _descriptors.Accessor
+    property_value_packages: _descriptors.Accessor
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
@@ -167,7 +135,7 @@ class GenericElement:
     """
 
     @property
-    def progress_status(self) -> properties.AttributeProperty | str:
+    def progress_status(self) -> str:
         uuid = self._element.get("status")
         if uuid is None:
             return "NOT_SET"
@@ -201,14 +169,14 @@ class GenericElement:
                 for ancestor in ancestors:
                     anc_xtype = helpers.xtype_of(ancestor)
                     try:
-                        class_ = XTYPE_HANDLERS[anc_xtype][xtype]
+                        class_ = _xtype.XTYPE_HANDLERS[anc_xtype][xtype]
                     except KeyError:
                         pass
                     else:
                         break
                 else:
                     try:
-                        class_ = XTYPE_HANDLERS[None][xtype]
+                        class_ = _xtype.XTYPE_HANDLERS[None][xtype]
                     except KeyError:
                         pass
             if class_ is not cls:
@@ -219,27 +187,23 @@ class GenericElement:
         return self
 
     @property
-    def layer(self) -> GenericElement:
+    def layer(self) -> capellambse.metamodel.cs.ComponentArchitecture:
         """Find the layer that this element belongs to.
 
         Note that an architectural layer normally does not itself have a
         parent layer.
-
-        Returns
-        -------
-        crosslayer.BaseArchitectureLayer
 
         Raises
         ------
         AttributeError
             Raised if this element is not nested below a layer.
         """
-        from capellambse.model import crosslayer
+        import capellambse.metamodel as mm
 
         obj: GenericElement | None = self
         assert obj is not None
         while obj := getattr(obj, "parent", None):
-            if isinstance(obj, crosslayer.BaseArchitectureLayer):
+            if isinstance(obj, mm.cs.ComponentArchitecture):
                 return obj
         raise AttributeError(
             f"No parent layer found for {self._short_repr_()}"
@@ -282,7 +246,7 @@ class GenericElement:
                     self._element.set(helpers.ATT_XT, val)
                 elif not isinstance(
                     getattr(type(self), key),
-                    (accessors.Accessor, properties.AttributeProperty),
+                    (_descriptors.Accessor, _pods.BasePOD),
                 ):
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
@@ -308,7 +272,7 @@ class GenericElement:
         return self._element is other._element
 
     def __dir__(self) -> list[str]:
-        badacc = (accessors.DeprecatedAccessor,)
+        badacc = (_descriptors.DeprecatedAccessor,)
         cls = type(self)
         attrs: list[str] = []
         for i in super().__dir__():
@@ -318,7 +282,7 @@ class GenericElement:
                 continue
             if isinstance(acc, badacc):
                 continue
-            if isinstance(acc, accessors.Alias) and acc.dirhide:
+            if isinstance(acc, _descriptors.Alias) and acc.dirhide:
                 continue
             try:
                 if getattr(acc, "__deprecated__", None):
@@ -337,7 +301,7 @@ class GenericElement:
                 continue
 
             acc = getattr(type(self), attr, None)
-            if isinstance(acc, accessors.ReferenceSearchingAccessor):
+            if isinstance(acc, _descriptors.ReferenceSearchingAccessor):
                 classes = ", ".join(i.__name__ for i in acc.target_classes)
                 attrs.append(
                     f".{attr} = ... # backreference to {classes}"
@@ -429,7 +393,7 @@ class GenericElement:
                 continue
 
             acc = getattr(type(self), attr, None)
-            if isinstance(acc, accessors.ReferenceSearchingAccessor):
+            if isinstance(acc, _descriptors.ReferenceSearchingAccessor):
                 classes = ", ".join(i.__name__ for i in acc.target_classes)
                 fragments.append('<tr><th style="text-align: right;">')
                 fragments.append(escape(attr))
@@ -489,6 +453,16 @@ class GenericElement:
     def _repr_html_(self) -> str:
         return self.__html__()
 
+    def _get_styleclass(self) -> str:
+        """Return the styleclass of this object.
+
+        :meta public:
+
+        The styleclass determines which set of styles gets applied when
+        drawing this object in a diagram.
+        """
+        return _styleclass.get_styleclass(self)
+
     def _get_icon(self, format: str, /, *, size: int = 16) -> t.Any | None:
         """Render a small icon for this object.
 
@@ -512,16 +486,16 @@ class GenericElement:
             The icon (usually as str or bytes object), or None if no
             icon could be found.
         """
-        from capellambse.diagram import get_icon, get_styleclass
+        from capellambse.diagram import get_icon
 
-        sc = get_styleclass(self)
+        sc = self._get_styleclass()
         try:
             return _ICON_CACHE[sc, format, size]
         except KeyError:
             pass
 
         try:
-            data: t.Any = get_icon(get_styleclass(self), size=size)
+            data: t.Any = get_icon(sc, size=size)
         except ValueError:
             return None
 
@@ -549,145 +523,8 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         "_model",
     )
 
-    class _Filter(t.Generic[_T]):
-        """Filters this list based on an extractor function."""
-
-        __slots__ = ("_attr", "_parent", "_positive", "_single")
-
-        def __init__(
-            self,
-            parent: ElementList[_T],
-            attr: str,
-            *,
-            positive: bool = True,
-            single: bool = False,
-        ) -> None:
-            """Create a filter object.
-
-            If the extractor returns an :class:`enum.Enum` member for any
-            element, the enum member's name will be used for comparisons
-            against any ``values``.
-
-            Parameters
-            ----------
-            parent
-                Reference to the :class:`ElementList` this filter should
-                operate on
-            attr
-                The attribute on list members to filter on
-            extract_key
-                Callable that extracts the key from an element
-            positive
-                Use elements that match (True) or don't (False)
-            single
-                When listing all matches, return a single element
-                instead. If multiple elements match, it is an error; if
-                none match, a ``KeyError`` is raised. Can be overridden
-                at call time.
-            """
-            self._attr = attr
-            self._parent = parent
-            self._positive = positive
-            self._single = single
-
-        def extract_key(self, element: _T) -> t.Any:
-            extractor = operator.attrgetter(self._attr)
-            value = extractor(element)
-            if isinstance(value, enum.Enum):
-                value = value.name
-            return value
-
-        def make_values_container(
-            self, *values: t.Any
-        ) -> cabc.Iterable[t.Any]:
-            return values
-
-        def ismatch(self, element: _T, valueset: cabc.Iterable[t.Any]) -> bool:
-            try:
-                value = self.extract_key(element)
-            except AttributeError:
-                return False
-
-            if isinstance(value, str) or not isinstance(value, cabc.Iterable):
-                return self._positive == (value in valueset)
-            return self._positive == any(v in value for v in valueset)
-
-        @t.overload
-        def __call__(self, *values: t.Any, single: t.Literal[True]) -> _T: ...
-        @t.overload
-        def __call__(
-            self, *values: t.Any, single: t.Literal[False]
-        ) -> ElementList[_T]: ...
-        @t.overload
-        def __call__(
-            self, *values: t.Any, single: bool | None = None
-        ) -> _T | ElementList[_T]: ...
-        def __call__(
-            self, *values: t.Any, single: bool | None = None
-        ) -> _T | ElementList[_T]:
-            """List all elements that match this filter.
-
-            Parameters
-            ----------
-            values
-                The values to match against.
-            single
-                If not ``None``, overrides the ``single`` argument to
-                the constructor for this filter call.
-            """
-            if single is None:
-                single = self._single
-            valueset = self.make_values_container(*values)
-            indices = []
-            elements = []
-            for i, elm in enumerate(self._parent):
-                if self.ismatch(elm, valueset):
-                    indices.append(i)
-                    elements.append(self._parent._elements[i])
-
-            if not single:
-                return self._parent._newlist(elements)
-            if len(elements) > 1:
-                value = values[0] if len(values) == 1 else values
-                raise KeyError(f"Multiple matches for {value!r}")
-            if len(elements) == 0:
-                raise KeyError(values[0] if len(values) == 1 else values)
-            return self._parent[indices[0]]  # Ensure proper construction
-
-        def __iter__(self) -> cabc.Iterator[t.Any]:
-            """Yield values that result in a non-empty list when filtered for.
-
-            The returned iterator yields all values that, when given to
-            :meth:`__call__`, will result in a non-empty list being
-            returned. Consequently, if the original list was empty, this
-            iterator will yield no values.
-
-            The order in which the values are yielded is undefined.
-            """
-            yielded: set[t.Any] = set()
-
-            for elm in self._parent:
-                key = self.extract_key(elm)
-                if key not in yielded:
-                    yield key
-                    yielded.add(key)
-
-        def __contains__(self, value: t.Any) -> bool:
-            valueset = self.make_values_container(value)
-            for elm in self._parent:
-                if self.ismatch(elm, valueset):
-                    return True
-            return False
-
-        def __getattr__(self, attr: str) -> te.Self:
-            if attr.startswith("_"):
-                raise AttributeError(f"Invalid filter attribute name: {attr}")
-            return type(self)(
-                self._parent,
-                f"{self._attr}.{attr}",
-                positive=self._positive,
-                single=self._single,
-            )
+    def is_coupled(self) -> bool:
+        return False
 
     def __init__(
         self,
@@ -706,7 +543,6 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         else:
             self._elemclass = GenericElement  # type: ignore[assignment]
 
-        # pylint: disable=assigning-non-slot  # false-positive
         if not mapkey:
             self.__mapkey: str | None = None
             self.__mapvalue: str | None = None
@@ -828,16 +664,16 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             return obj._element in self._elements
         return any(i == obj for i in self)
 
-    def __getattr__(self, attr: str) -> ElementList._Filter:
+    def __getattr__(self, attr: str) -> _ListFilter:
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
             if attr in {"name", "uuid"}:
-                return self._Filter(self, attr, single=True)
-            return self._Filter(self, attr)
+                return _ListFilter(self, attr, single=True)
+            return _ListFilter(self, attr)
 
         if attr.startswith("exclude_") and attr.endswith("s"):
             attr = attr[len("exclude_") : -len("s")]
-            return self._Filter(self, attr, positive=False)
+            return _ListFilter(self, attr, positive=False)
 
         return getattr(super(), attr)
 
@@ -963,7 +799,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             mapvalue=self.__mapvalue,
         )
 
-    def _newlist_type(self) -> type[ElementList]:
+    def _newlist_type(self) -> type[ElementList[T]]:
         return type(self)
 
     @t.overload
@@ -1079,30 +915,157 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         return MixedElementList(self._model, newelems)
 
 
+class _ListFilter(t.Generic[T]):
+    """Filters this list based on an extractor function."""
+
+    __slots__ = ("_attr", "_parent", "_positive", "_single")
+
+    def __init__(
+        self,
+        parent: ElementList[T],
+        attr: str,
+        *,
+        positive: bool = True,
+        single: bool = False,
+    ) -> None:
+        """Create a filter object.
+
+        If the extractor returns an :class:`enum.Enum` member for any
+        element, the enum member's name will be used for comparisons
+        against any ``values``.
+
+        Parameters
+        ----------
+        parent
+            Reference to the :class:`ElementList` this filter should
+            operate on
+        attr
+            The attribute on list members to filter on
+        extract_key
+            Callable that extracts the key from an element
+        positive
+            Use elements that match (True) or don't (False)
+        single
+            When listing all matches, return a single element
+            instead. If multiple elements match, it is an error; if
+            none match, a ``KeyError`` is raised. Can be overridden
+            at call time.
+        """
+        self._attr = attr
+        self._parent = parent
+        self._positive = positive
+        self._single = single
+
+    def extract_key(self, element: T) -> t.Any:
+        extractor = operator.attrgetter(self._attr)
+        value = extractor(element)
+        if isinstance(value, enum.Enum):
+            value = value.name
+        return value
+
+    def make_values_container(self, *values: t.Any) -> cabc.Iterable[t.Any]:
+        return values
+
+    def ismatch(self, element: T, valueset: cabc.Iterable[t.Any]) -> bool:
+        try:
+            value = self.extract_key(element)
+        except AttributeError:
+            return False
+
+        if isinstance(value, str) or not isinstance(value, cabc.Iterable):
+            return self._positive == (value in valueset)
+        return self._positive == any(v in value for v in valueset)
+
+    @t.overload
+    def __call__(self, *values: t.Any, single: t.Literal[True]) -> T: ...
+    @t.overload
+    def __call__(
+        self, *values: t.Any, single: t.Literal[False]
+    ) -> ElementList[T]: ...
+    @t.overload
+    def __call__(
+        self, *values: t.Any, single: bool | None = None
+    ) -> T | ElementList[T]: ...
+    def __call__(
+        self, *values: t.Any, single: bool | None = None
+    ) -> T | ElementList[T]:
+        """List all elements that match this filter.
+
+        Parameters
+        ----------
+        values
+            The values to match against.
+        single
+            If not ``None``, overrides the ``single`` argument to
+            the constructor for this filter call.
+        """
+        if single is None:
+            single = self._single
+        valueset = self.make_values_container(*values)
+        indices = []
+        elements = []
+        for i, elm in enumerate(self._parent):
+            if self.ismatch(elm, valueset):
+                indices.append(i)
+                elements.append(self._parent._elements[i])
+
+        if not single:
+            return self._parent._newlist(elements)
+        if len(elements) > 1:
+            value = values[0] if len(values) == 1 else values
+            raise KeyError(f"Multiple matches for {value!r}")
+        if len(elements) == 0:
+            raise KeyError(values[0] if len(values) == 1 else values)
+        return self._parent[indices[0]]  # Ensure proper construction
+
+    def __iter__(self) -> cabc.Iterator[t.Any]:
+        """Yield values that result in a non-empty list when filtered for.
+
+        The returned iterator yields all values that, when given to
+        :meth:`__call__`, will result in a non-empty list being
+        returned. Consequently, if the original list was empty, this
+        iterator will yield no values.
+
+        The order in which the values are yielded is undefined.
+        """
+        yielded: set[t.Any] = set()
+
+        for elm in self._parent:
+            key = self.extract_key(elm)
+            if key not in yielded:
+                yield key
+                yielded.add(key)
+
+    def __contains__(self, value: t.Any) -> bool:
+        valueset = self.make_values_container(value)
+        for elm in self._parent:
+            if self.ismatch(elm, valueset):
+                return True
+        return False
+
+    def __getattr__(self, attr: str) -> te.Self:
+        if attr.startswith("_"):
+            raise AttributeError(f"Invalid filter attribute name: {attr}")
+        return type(self)(
+            self._parent,
+            f"{self._attr}.{attr}",
+            positive=self._positive,
+            single=self._single,
+        )
+
+
+class _LowercaseListFilter(_ListFilter[T], t.Generic[T]):
+    def extract_key(self, element: T) -> t.Any:
+        value = super().extract_key(element)
+        assert isinstance(value, str)
+        return value.lower()
+
+    def make_values_container(self, *values: t.Any) -> cabc.Iterable[t.Any]:
+        return tuple(map(operator.methodcaller("lower"), values))
+
+
 class CachedElementList(ElementList[T], t.Generic[T]):
     """An ElementList that caches the constructed proxies by UUID."""
-
-    class _Filter(ElementList._Filter[_T], t.Generic[_T]):
-        @t.overload
-        def __call__(self, *values: t.Any, single: t.Literal[True]) -> _T: ...
-        @t.overload
-        def __call__(
-            self, *values: t.Any, single: t.Literal[False]
-        ) -> ElementList[_T]: ...
-        @t.overload
-        def __call__(
-            self, *values: t.Any, single: bool | None = None
-        ) -> _T | ElementList[_T]: ...
-        def __call__(
-            self, *values: t.Any, single: bool | None = None
-        ) -> _T | ElementList[_T]:
-            newlist = super().__call__(*values, single=single)
-            if single or self._single:
-                return newlist
-
-            assert isinstance(newlist, CachedElementList)
-            newlist.cacheattr = t.cast(t.Optional[str], self._parent.cacheattr)
-            return newlist
 
     def __init__(
         self,
@@ -1141,20 +1104,15 @@ class CachedElementList(ElementList[T], t.Generic[T]):
             elem = cache.setdefault(elem.uuid, elem)
         return elem
 
+    def _newlist(self, elements: list[etree._Element]) -> ElementList[T]:
+        newlist = super()._newlist(elements)
+        assert isinstance(newlist, CachedElementList)
+        newlist.cacheattr = self.cacheattr
+        return newlist
+
 
 class MixedElementList(ElementList[GenericElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
-
-    class _LowercaseFilter(ElementList._Filter[_T], t.Generic[_T]):
-        def extract_key(self, element: _T) -> t.Any:
-            value = super().extract_key(element)
-            assert isinstance(value, str)
-            return value.lower()
-
-        def make_values_container(
-            self, *values: t.Any
-        ) -> cabc.Iterable[t.Any]:
-            return tuple(map(operator.methodcaller("lower"), values))
 
     def __init__(
         self,
@@ -1177,9 +1135,9 @@ class MixedElementList(ElementList[GenericElement]):
         del elemclass
         super().__init__(model, elements, GenericElement, **kw)
 
-    def __getattr__(self, attr: str) -> ElementList._Filter[GenericElement]:
+    def __getattr__(self, attr: str) -> _ListFilter[GenericElement]:
         if attr == "by_type":
-            return self._LowercaseFilter(self, "__class__.__name__")
+            return _LowercaseListFilter(self, "__class__.__name__")
         return super().__getattr__(attr)
 
     def __dir__(self) -> list[str]:  # pragma: no cover
@@ -1228,3 +1186,154 @@ class ElementListMapItemsView(t.Sequence[t.Tuple[t.Any, t.Any]], t.Generic[T]):
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({list(self)!r})"
+
+
+class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
+    """Couples an ElementList with an Accessor to enable write support.
+
+    This class is meant to be subclassed further, where the subclass has
+    both this class and the originally intended one as base classes (but
+    no other ones, i.e. there must be exactly two bases). The Accessor
+    then inserts itself as the ``_accessor`` class variable on the new
+    subclass. This allows the mixed-in methods to delegate actual model
+    modifications to the Accessor.
+    """
+
+    _accessor: _descriptors.WritableAccessor[T]
+
+    def is_coupled(self) -> bool:
+        return True
+
+    def __init__(
+        self,
+        *args: t.Any,
+        parent: ModelObject,
+        fixed_length: int = 0,
+        **kw: t.Any,
+    ) -> None:
+        assert type(self)._accessor
+
+        super().__init__(*args, **kw)
+        self._parent = parent
+        self.fixed_length = fixed_length
+
+    @t.overload
+    def __setitem__(self, index: int, value: T) -> None: ...
+    @t.overload
+    def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
+    @t.overload
+    def __setitem__(self, index: str, value: t.Any) -> None: ...
+    def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
+        assert self._parent is not None
+        accessor = type(self)._accessor
+        assert isinstance(accessor, _descriptors.WritableAccessor)
+
+        if not isinstance(index, (int, slice)):
+            super().__setitem__(index, value)
+            return
+
+        new_objs = list(self)
+        new_objs[index] = value
+
+        if self.fixed_length and len(new_objs) != self.fixed_length:
+            raise TypeError(
+                f"Cannot set: List must stay at length {self.fixed_length}"
+            )
+
+        accessor.__set__(self._parent, new_objs)
+
+    def __delitem__(self, index: int | slice) -> None:
+        if self.fixed_length and len(self) <= self.fixed_length:
+            raise TypeError("Cannot delete from a fixed-length list")
+
+        assert self._parent is not None
+        accessor = type(self)._accessor
+        assert isinstance(accessor, _descriptors.WritableAccessor)
+        if not isinstance(index, slice):
+            index = slice(index, index + 1 or None)
+        for obj in self[index]:
+            accessor.delete(self, obj)
+        super().__delitem__(index)
+
+    def _newlist_type(self) -> type[ElementList[T]]:
+        assert len(type(self).__bases__) == 2
+        assert type(self).__bases__[0] is ElementListCouplingMixin
+        return type(self).__bases__[1]
+
+    def create(self, *type_hints: str | None, **kw: t.Any) -> T:
+        """Make a new model object (instance of GenericElement).
+
+        Instead of specifying the full ``xsi:type`` including the
+        namespace, you can also pass in just the part after the ``:``
+        separator. If this is unambiguous, the appropriate
+        layer-specific type will be selected automatically.
+
+        This method can be called with or without the ``layertype``
+        argument. If a layertype is not given, all layers will be tried
+        to find an appropriate ``xsi:type`` handler. Note that setting
+        the layertype to ``None`` explicitly is different from not
+        specifying it at all; ``None`` tries only the "Transverse
+        modelling" type elements.
+
+        Parameters
+        ----------
+        type_hints
+            Hints for finding the correct type of element to create. Can
+            either be a full or shortened ``xsi:type`` string, or an
+            abbreviation defined by the specific Accessor instance.
+        kw
+            Initialize the properties of the new object. Depending on
+            the object, some attributes may be required.
+        """
+        if self.fixed_length and len(self) >= self.fixed_length:
+            raise TypeError("Cannot create elements in a fixed-length list")
+
+        assert self._parent is not None
+        acc = type(self)._accessor
+        assert isinstance(acc, _descriptors.WritableAccessor)
+        newobj = acc.create(self, *type_hints, **kw)
+        try:
+            acc.insert(self, len(self), newobj)
+            super().insert(len(self), newobj)
+        except:
+            self._parent._element.remove(newobj._element)
+            raise
+        return newobj
+
+    def create_singleattr(self, arg: t.Any) -> T:
+        """Make a new model object (instance of GenericElement).
+
+        This new object has only one interesting attribute.
+
+        See Also
+        --------
+        :meth:`ElementListCouplingMixin.create` :
+            More details on how elements are created.
+        :meth:`WritableAccessor.create_singleattr` :
+            The method to override in Accessors in order to implement
+            this operation.
+        """
+        if self.fixed_length and len(self) >= self.fixed_length:
+            raise TypeError("Cannot create elements in a fixed-length list")
+
+        assert self._parent is not None
+        acc = type(self)._accessor
+        assert isinstance(acc, _descriptors.WritableAccessor)
+        newobj = acc.create_singleattr(self, arg)
+        try:
+            acc.insert(self, len(self), newobj)
+            super().insert(len(self), newobj)
+        except:
+            self._parent._element.remove(newobj._element)
+            raise
+        return newobj
+
+    def insert(self, index: int, value: T) -> None:
+        if self.fixed_length and len(self) >= self.fixed_length:
+            raise TypeError("Cannot insert into a fixed-length list")
+
+        assert self._parent is not None
+        acc = type(self)._accessor
+        assert isinstance(acc, _descriptors.WritableAccessor)
+        acc.insert(self, index, value)
+        super().insert(index, value)

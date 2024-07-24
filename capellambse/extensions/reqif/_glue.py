@@ -4,66 +4,66 @@
 
 __all__ = ["init"]
 
-from capellambse.model import common as c
-from capellambse.model import crosslayer
+import capellambse.model as m
+from capellambse.metamodel import cs
 
 from . import _capellareq as cr
 from . import _requirements as rq
 
 
 def init() -> None:
-    c.set_accessor(
+    m.set_accessor(
         rq.Folder,
         "folders",
-        c.DirectProxyAccessor(rq.Folder, aslist=c.ElementList),
+        m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList),
     )
-    c.set_accessor(
-        c.GenericElement, "requirements", cr.ElementRelationAccessor()
+    m.set_accessor(
+        m.GenericElement, "requirements", cr.ElementRelationAccessor()
     )
-    c.set_accessor(
-        crosslayer.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "requirement_modules",
-        c.DirectProxyAccessor(cr.CapellaModule, aslist=c.ElementList),
+        m.DirectProxyAccessor(cr.CapellaModule, aslist=m.ElementList),
     )
-    c.set_accessor(
-        crosslayer.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "all_requirements",
-        c.DeepProxyAccessor(
-            rq.Requirement, aslist=c.ElementList, rootelem=cr.CapellaModule
+        m.DeepProxyAccessor(
+            rq.Requirement, aslist=m.ElementList, rootelem=cr.CapellaModule
         ),
     )
-    c.set_accessor(
-        crosslayer.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "requirement_types_folders",
-        c.DirectProxyAccessor(cr.CapellaTypesFolder, aslist=c.ElementList),
+        m.DirectProxyAccessor(cr.CapellaTypesFolder, aslist=m.ElementList),
     )
-    c.set_accessor(
+    m.set_accessor(
         cr.CapellaModule,
         "requirement_types_folders",
-        c.DirectProxyAccessor(cr.CapellaTypesFolder, aslist=c.ElementList),
+        m.DirectProxyAccessor(cr.CapellaTypesFolder, aslist=m.ElementList),
     )
-    c.set_accessor(
-        crosslayer.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "all_requirement_types",
-        c.DeepProxyAccessor(
+        m.DeepProxyAccessor(
             rq.RequirementType,
-            aslist=c.ElementList,
+            aslist=m.ElementList,
             rootelem=cr.CapellaTypesFolder,
         ),
     )
-    c.set_accessor(
-        crosslayer.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "all_module_types",
-        c.DeepProxyAccessor(
-            rq.ModuleType, aslist=c.ElementList, rootelem=cr.CapellaTypesFolder
+        m.DeepProxyAccessor(
+            rq.ModuleType, aslist=m.ElementList, rootelem=cr.CapellaTypesFolder
         ),
     )
-    c.set_accessor(
-        crosslayer.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "all_relation_types",
-        c.DeepProxyAccessor(
+        m.DeepProxyAccessor(
             rq.RelationType,
-            aslist=c.ElementList,
+            aslist=m.ElementList,
             rootelem=cr.CapellaTypesFolder,
         ),
     )

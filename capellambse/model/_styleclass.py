@@ -1,16 +1,19 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Functions for receiving the styleclass from a given model object."""
+
 from __future__ import annotations
 
-__all__ = ["get_styleclass"]
+__all__: list[str] = []
 
 import collections.abc as cabc
+import typing as t
 
-from capellambse import model
+if t.TYPE_CHECKING:
+    from . import _obj
 
 
-def get_styleclass(obj: model.ModelObject) -> str:
+def get_styleclass(obj: _obj.ModelObject) -> str:
     """Return the styleclass for an individual model object.
 
     Parameters
@@ -28,46 +31,58 @@ def get_styleclass(obj: model.ModelObject) -> str:
     return styleclass_factory(obj)
 
 
-def _default(obj: model.ModelObject) -> str:
-    if isinstance(obj, model.GenericElement):
+def _default(obj: _obj.ModelObject) -> str:
+    from . import _obj
+
+    if isinstance(obj, _obj.GenericElement):
         return obj.xtype.split(":")[-1]
     return type(obj).__name__
 
 
-def _association(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.Association)
+def _association(obj: _obj.ModelObject) -> str:
+    import capellambse.metamodel as mm
+
+    from . import _obj
+
+    assert isinstance(obj, mm.information.Association)
     default_kind = kind = "ASSOCIATION"
-    assert isinstance(obj.roles, model.ElementList)
+    assert isinstance(obj.roles, _obj.ElementList)
     for member in obj.roles:
         if member.kind != default_kind:
             kind = member.kind.name
     return kind.capitalize()
 
 
-def _functional_chain_involvement(obj: model.ModelObject) -> str:
+def _functional_chain_involvement(obj: _obj.ModelObject) -> str:
+    import capellambse.metamodel as mm
+
     assert isinstance(
         obj,
         (
-            model.fa.FunctionalChainInvolvementLink,
-            model.fa.FunctionalChainInvolvementFunction,
+            mm.fa.FunctionalChainInvolvementLink,
+            mm.fa.FunctionalChainInvolvementFunction,
         ),
     )
     styleclass = _default(obj)
-    if isinstance(obj.parent, model.oa.OperationalProcess):
+    if isinstance(obj.parent, mm.oa.OperationalProcess):
         return styleclass.replace("Functional", "Operational")
     return styleclass
 
 
-def _functional_exchange(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.fa.FunctionalExchange)
+def _functional_exchange(obj: _obj.ModelObject) -> str:
+    import capellambse.metamodel as mm
+
+    assert isinstance(obj, mm.fa.FunctionalExchange)
     styleclass = _default(obj)
     if get_styleclass(obj.target) == "OperationalActivity":
         return styleclass.replace("Functional", "Operational")
     return styleclass
 
 
-def _generic_component(obj: model.ModelObject, extra: str = "") -> str:
-    assert isinstance(obj, model.cs.Component)
+def _generic_component(obj: _obj.ModelObject, extra: str = "") -> str:
+    import capellambse.metamodel as mm
+
+    assert isinstance(obj, mm.cs.Component)
     styleclass = _default(obj)
     return "".join(
         (
@@ -79,15 +94,21 @@ def _generic_component(obj: model.ModelObject, extra: str = "") -> str:
     )
 
 
-def _physical_component(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.pa.PhysicalComponent)
+def _physical_component(obj: _obj.ModelObject) -> str:
+    import capellambse.metamodel as mm
+
+    assert isinstance(obj, mm.pa.PhysicalComponent)
     nature = (obj.nature.name, "")[obj.nature.name == "UNSET"]
     return _generic_component(obj, extra=nature.capitalize())
 
 
-def _part(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.cs.Part)
-    assert not isinstance(obj.type, model.ElementList)
+def _part(obj: _obj.ModelObject) -> str:
+    import capellambse.metamodel as mm
+
+    from . import _obj
+
+    assert isinstance(obj, mm.cs.Part)
+    assert not isinstance(obj.type, _obj.ElementList)
     xclass = _default(obj.type)
     if xclass == "PhysicalComponent":
         return _physical_component(obj)
@@ -96,12 +117,16 @@ def _part(obj: model.ModelObject) -> str:
     return _generic_component(obj.type)
 
 
-def _port_allocation(obj: model.ModelObject) -> str:
-    assert isinstance(obj, model.information.PortAllocation)
+def _port_allocation(obj: _obj.ModelObject) -> str:
+    import capellambse.metamodel as mm
+
+    from . import _obj
+
+    assert isinstance(obj, mm.information.PortAllocation)
     styleclasses = {
         get_styleclass(p)
         for p in (obj.source, obj.target)
-        if not isinstance(p, (model.fa.ComponentPort, model.ElementList))
+        if not isinstance(p, (mm.fa.ComponentPort, _obj.ElementList))
     }
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 

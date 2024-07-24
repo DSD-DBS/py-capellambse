@@ -18,26 +18,26 @@ from . import rules  # isort: skip
 def init() -> None:
     # pylint: disable=redefined-outer-name # false-positive
     import capellambse
-    from capellambse.model import common as c
-    from capellambse.model import crosslayer as xl
+    import capellambse.model as m
+    from capellambse.metamodel import cs
 
-    c.set_accessor(
+    setattr(
         capellambse.MelodyModel,
         "validation",
-        c.AlternateAccessor(ModelValidation),
+        property(ModelValidation),
     )
     capellambse.MelodyModel.validate = property(  # type: ignore[attr-defined]
         lambda self: self.validation.validate
     )
 
-    c.set_accessor(
-        c.GenericElement, "validation", c.AlternateAccessor(ElementValidation)
+    m.set_accessor(
+        m.GenericElement, "validation", m.AlternateAccessor(ElementValidation)
     )
-    c.GenericElement.validate = property(  # type: ignore[attr-defined]
+    m.GenericElement.validate = property(  # type: ignore[attr-defined]
         lambda self: self.validation.validate
     )
-    c.set_accessor(
-        xl.BaseArchitectureLayer,
+    m.set_accessor(
+        cs.ComponentArchitecture,
         "validation",
-        c.AlternateAccessor(LayerValidation),
+        m.AlternateAccessor(LayerValidation),
     )

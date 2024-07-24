@@ -27,12 +27,11 @@ import typing as t
 from lxml import etree
 
 import capellambse
-import capellambse.model.modeltypes as mt
-from capellambse import model
-from capellambse.model import common as c
+import capellambse.metamodel as mm
+import capellambse.model as m
 
 LOGGER = logging.getLogger(__name__)
-_T = t.TypeVar("_T", bound=t.Union[c.GenericElement, "VirtualType"])
+_T = t.TypeVar("_T", bound=t.Union[m.GenericElement, "VirtualType"])
 
 
 @dataclasses.dataclass(frozen=True)
@@ -41,11 +40,11 @@ class VirtualType(t.Generic[_T]):
     real_type: type[_T]
     filter: cabc.Callable[[_T], bool]
 
-    def search(self, model_: capellambse.MelodyModel) -> c.ElementList:
-        assert isinstance(self.real_type, (str, type(c.GenericElement)))
+    def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
+        assert isinstance(self.real_type, (str, type(m.GenericElement)))
         return model_.search(self.real_type).filter(self.filter)
 
-    def matches(self, obj: c.GenericElement) -> bool:
+    def matches(self, obj: m.GenericElement) -> bool:
         return isinstance(obj, self.real_type) and self.filter(obj)
 
 
@@ -57,11 +56,11 @@ class RealType(t.Generic[_T]):
     def name(self) -> str:
         return self.class_.__name__
 
-    def search(self, model_: capellambse.MelodyModel) -> c.ElementList:
-        assert isinstance(self.class_, (str, type(c.GenericElement)))
+    def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
+        assert isinstance(self.class_, (str, type(m.GenericElement)))
         return model_.search(self.class_)
 
-    def matches(self, obj: c.GenericElement) -> bool:
+    def matches(self, obj: m.GenericElement) -> bool:
         return isinstance(obj, self.class_)
 
 
@@ -84,7 +83,7 @@ class _VirtualTypesRegistry(cabc.Mapping[str, t.Union[VirtualType, RealType]]):
         except KeyError:
             pass
 
-        _, class_ = c.resolve_handler(key)
+        (class_,) = m.find_wrapper(key)
         return RealType(class_)
 
     def register(self, vtype: VirtualType) -> None:
@@ -104,7 +103,7 @@ def virtual_type(
     real_type: str | type[_T],
 ) -> cabc.Callable[[cabc.Callable[[_T], bool]], VirtualType[_T]]:
     if isinstance(real_type, str):
-        (cls,) = t.cast(tuple[type[_T], ...], c.find_wrapper(real_type))
+        (cls,) = t.cast(tuple[type[_T], ...], m.find_wrapper(real_type))
     else:
         cls = real_type
 
@@ -116,27 +115,28 @@ def virtual_type(
     return decorate
 
 
-@virtual_type(model.oa.OperationalActivity)
+@virtual_type(mm.oa.OperationalActivity)
 def OperationalActivity(obj):
     return obj != obj._model.oa.root_activity
 
 
-@virtual_type(model.ctx.SystemFunction)
+@virtual_type(mm.sa.SystemFunction)
 def SystemFunction(obj):
     return obj != obj._model.sa.root_function
 
 
-@virtual_type(model.la.LogicalFunction)
+@virtual_type(mm.la.LogicalFunction)
 def LogicalFunction(obj):
     return obj != obj._model.la.root_function
 
 
-@virtual_type(model.pa.PhysicalFunction)
+@virtual_type(mm.pa.PhysicalFunction)
 def PhysicalFunction(obj):
     return obj != obj._model.pa.root_function
 
 
-class Category(mt._StringyEnumMixin, enum.Enum):
+@m.stringy_enum
+class Category(enum.Enum):
     """A category for a rule."""
 
     REQUIRED = enum.auto()
@@ -149,7 +149,7 @@ class Result:
     """The result of checking a validation rule against a model object."""
 
     rule: Rule
-    object: c.GenericElement
+    object: m.GenericElement
     passed: bool
 
     def __repr__(self) -> str:
@@ -184,7 +184,7 @@ class Rule(t.Generic[_T]):
                 seen.add(obj.uuid)
                 yield obj
 
-    def applies_to(self, obj: c.GenericElement) -> bool:
+    def applies_to(self, obj: m.GenericElement) -> bool:
         """Check whether this Rule applies to a specific element."""
         return any(_types_registry[i].matches(obj) for i in self.types)
 
@@ -198,7 +198,7 @@ class Rules(dict[str, Rule]):
             category = Category[category]
         return [i for i in self.values() if i.category == category]
 
-    def by_type(self, type: type[c.GenericElement] | str) -> list[Rule]:
+    def by_type(self, type: type[m.GenericElement] | str) -> list[Rule]:
         """Filter the validation rules by type."""
         if not isinstance(type, str):
             type = type.__name__
@@ -224,7 +224,7 @@ class Results:
         return iter(self.__container.values())
 
     def get_result(
-        self, rule_: Rule | str, target: str | c.GenericElement, /
+        self, rule_: Rule | str, target: str | m.GenericElement, /
     ) -> Result | None:
         if isinstance(rule_, str):
             rule_ = _VALIDATION_RULES[rule_]
@@ -245,7 +245,7 @@ class Results:
             seen.add(result.rule.id)
             yield result.rule
 
-    def iter_objects(self) -> cabc.Iterator[c.GenericElement]:
+    def iter_objects(self) -> cabc.Iterator[m.GenericElement]:
         seen: set[str] = set()
         for result in self.__container.values():
             if result.object.uuid in seen:
@@ -256,7 +256,7 @@ class Results:
     def iter_results(self) -> cabc.Iterator[Result]:
         return iter(self)
 
-    def iter_compliant_objects(self) -> cabc.Iterator[c.GenericElement]:
+    def iter_compliant_objects(self) -> cabc.Iterator[m.GenericElement]:
         for obj in self.iter_objects():
             if all(i.passed for i in self.by_object(obj).iter_results()):
                 yield obj
@@ -270,7 +270,7 @@ class Results:
             if rule_ == key
         )
 
-    def by_object(self, target: str | c.GenericElement, /) -> Results:
+    def by_object(self, target: str | m.GenericElement, /) -> Results:
         """Filter the validation results by the target object."""
         if not isinstance(target, str):
             target = target.uuid
@@ -389,30 +389,13 @@ def rule(
     return rule_decorator
 
 
-class Validation:
-    """Basic class for access to validation rules and results."""
+class ModelValidation:
+    """Provides access to the model's validation rules and results."""
 
     _model: capellambse.MelodyModel
-    _element: etree._Element
 
-    parent = c.AlternateAccessor(c.GenericElement)
-
-    def __init__(self, **kw: t.Any) -> None:
-        raise TypeError("Cannot create Validation object this way")
-
-    @classmethod
-    def from_model(
-        cls, model_: capellambse.MelodyModel, element: etree._Element
-    ) -> Validation:
-        """Create a Validation object for a MelodyModel or an element."""
-        self = cls.__new__(cls)
-        self._model = model_
-        self._element = element
-        return self
-
-
-class ModelValidation(Validation):
-    """Provides access to the model's validation rules and results."""
+    def __init__(self, model: capellambse.MelodyModel) -> None:
+        self._model = model
 
     @property
     def rules(self) -> Rules:
@@ -432,15 +415,37 @@ class ModelValidation(Validation):
                 )
         return Results(all_results)
 
-    def search(self, /, *typenames: str) -> c.ElementList[t.Any]:
+    def search(self, /, *typenames: str) -> m.ElementList[t.Any]:
         found: dict[str, t.Any] = {}
         for i in typenames:
             objs = _types_registry[i].search(self._model)
             found.update((o.uuid, o._element) for o in objs)
-        return c.MixedElementList(self._model, list(found.values()))
+        return m.MixedElementList(self._model, list(found.values()))
 
 
-class LayerValidation(Validation):
+class ObjectValidation:
+    """Basic class for access to validation rules and results."""
+
+    _model: capellambse.MelodyModel
+    _element: etree._Element
+
+    parent = m.AlternateAccessor(m.GenericElement)
+
+    def __init__(self, **kw: t.Any) -> None:
+        raise TypeError("Cannot create Validation object this way")
+
+    @classmethod
+    def from_model(
+        cls, model_: capellambse.MelodyModel, element: etree._Element
+    ) -> Validation:
+        """Create a Validation object for a MelodyModel or an element."""
+        self = cls.__new__(cls)
+        self._model = model_
+        self._element = element
+        return self
+
+
+class LayerValidation(ObjectValidation):
     """Provides access to the layer's validation rules and results."""
 
     @property
@@ -463,15 +468,15 @@ class LayerValidation(Validation):
                 )
         return Results(all_results)
 
-    def search(self, /, *typenames: str) -> c.ElementList[t.Any]:
+    def search(self, /, *typenames: str) -> m.ElementList[t.Any]:
         found: dict[str, t.Any] = {}
         for i in typenames:
             objs = _types_registry[i].search(self._model).by_layer(self.parent)
             found.update((o.uuid, o._element) for o in objs)
-        return c.MixedElementList(self._model, list(found.values()))
+        return m.MixedElementList(self._model, list(found.values()))
 
 
-class ElementValidation(Validation):
+class ElementValidation(ObjectValidation):
     """Provides access to the element's validation rules and results."""
 
     @property
@@ -493,3 +498,6 @@ class ElementValidation(Validation):
                     )
                 )
         return Results(all_results)
+
+
+Validation = t.Union[ModelValidation, ObjectValidation]

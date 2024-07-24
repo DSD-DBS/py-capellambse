@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Implements the Capella Filtering extension."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -13,8 +14,9 @@ import typing as t
 import typing_extensions as te
 
 import capellambse
-import capellambse.model.common as c
-from capellambse import _native, helpers, model
+import capellambse.metamodel as mm
+import capellambse.model as m
+from capellambse import _native, helpers
 
 VIEWPOINT: t.Final = "org.polarsys.capella.filtering"
 NAMESPACE: t.Final = "http://www.polarsys.org/capella/filtering/6.0.0"
@@ -22,59 +24,57 @@ SYMBOLIC_NAME: t.Final = "filtering"
 
 _LOGGER = logging.getLogger(__name__)
 
-c.XTYPE_ANCHORS[__name__] = SYMBOLIC_NAME
+m.XTYPE_ANCHORS[__name__] = SYMBOLIC_NAME
 
 
-@c.xtype_handler(None)
-class FilteringCriterion(c.GenericElement):
+@m.xtype_handler(None)
+class FilteringCriterion(m.GenericElement):
     """A single filtering criterion."""
 
     _xmltag = "ownedFilteringCriteria"
 
-    filtered_objects = c.ReferenceSearchingAccessor[c.GenericElement](
-        (), "filtering_criteria", aslist=c.MixedElementList
+    filtered_objects = m.ReferenceSearchingAccessor[m.GenericElement](
+        (), "filtering_criteria", aslist=m.MixedElementList
     )
 
 
-@c.xtype_handler(None)
-class FilteringCriterionPkg(c.GenericElement):
+@m.xtype_handler(None)
+class FilteringCriterionPkg(m.GenericElement):
     """A package containing multiple filtering criteria."""
 
     _xmltag = "ownedFilteringCriterionPkgs"
 
-    criteria = c.DirectProxyAccessor(FilteringCriterion, aslist=c.ElementList)
-    packages: c.Accessor[FilteringCriterionPkg]
+    criteria = m.DirectProxyAccessor(FilteringCriterion, aslist=m.ElementList)
+    packages: m.Accessor[FilteringCriterionPkg]
 
 
-@c.xtype_handler(None)
-class FilteringModel(c.GenericElement):
+@m.xtype_handler(None)
+class FilteringModel(m.GenericElement):
     """A filtering model containing criteria to filter by."""
 
-    criteria = c.DirectProxyAccessor(FilteringCriterion, aslist=c.ElementList)
-    criterion_packages = c.DirectProxyAccessor(
-        FilteringCriterionPkg, aslist=c.ElementList
+    criteria = m.DirectProxyAccessor(FilteringCriterion, aslist=m.ElementList)
+    criterion_packages = m.DirectProxyAccessor(
+        FilteringCriterionPkg, aslist=m.ElementList
     )
 
 
-class AssociatedCriteriaAccessor(
-    c.accessors.PhysicalAccessor[FilteringCriterion]
-):
+class AssociatedCriteriaAccessor(m.PhysicalAccessor[FilteringCriterion]):
     def __init__(self) -> None:
         super().__init__(
-            FilteringCriterion, aslist=c.ElementList[FilteringCriterion]
+            FilteringCriterion, aslist=m.ElementList[FilteringCriterion]
         )
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
     @t.overload
     def __get__(
-        self, obj: c.ModelObject, objtype: type[t.Any] | None = ...
-    ) -> c.ElementList[c.T]: ...
+        self, obj: m.ModelObject, objtype: type[t.Any] | None = ...
+    ) -> m.ElementList[m.T]: ...
     def __get__(
         self,
-        obj: c.ModelObject | None,
+        obj: m.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | c.ElementList[c.T]:
+    ) -> te.Self | m.ElementList[m.T]:
         del objtype
         if obj is None:  # pragma: no cover
             return self
@@ -92,28 +92,33 @@ class AssociatedCriteriaAccessor(
         return self._make_list(obj, elems)
 
 
-@c.xtype_handler(None)
-class FilteringResult(c.GenericElement):
+@m.xtype_handler(None)
+class FilteringResult(m.GenericElement):
     """A filtering result."""
 
 
-@c.xtype_handler(None)
-class ComposedFilteringResult(c.GenericElement):
+@m.xtype_handler(None)
+class ComposedFilteringResult(m.GenericElement):
     """A composed filtering result."""
 
 
 def init() -> None:
-    c.set_accessor(
-        model.MelodyModel,
+    m.set_accessor(
+        mm.capellamodeller.SystemEngineering,
         "filtering_model",
-        c.DirectProxyAccessor(FilteringModel, rootelem=model.XT_SYSENG),
+        m.DirectProxyAccessor(FilteringModel),
     )
-    c.set_accessor(
-        c.GenericElement, "filtering_criteria", AssociatedCriteriaAccessor()
+    setattr(
+        m.MelodyModel,
+        "filtering_model",
+        property(lambda self: self.project.model_root.filtering_model),
+    )
+    m.set_accessor(
+        m.GenericElement, "filtering_criteria", AssociatedCriteriaAccessor()
     )
 
 
-c.set_self_references(
+m.set_self_references(
     (FilteringCriterionPkg, "packages"),
 )
 
@@ -235,7 +240,7 @@ else:
     def _find_results(
         loaded_model: capellambse.MelodyModel, result_strings: list[str]
     ) -> cabc.Sequence[FilteringResult | ComposedFilteringResult]:
-        all_results: c.ElementList[FilteringResult | ComposedFilteringResult]
+        all_results: m.ElementList[FilteringResult | ComposedFilteringResult]
         all_results = loaded_model.search(
             FilteringResult, ComposedFilteringResult
         )
@@ -243,7 +248,7 @@ else:
             return all_results
 
         wanted: list[FilteringResult | ComposedFilteringResult] = []
-        obj: c.GenericElement
+        obj: m.GenericElement
         for result in result_strings:
             if helpers.is_uuid_string(result):
                 try:

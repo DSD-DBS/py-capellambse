@@ -12,7 +12,6 @@ from __future__ import annotations
 
 __all__ = [
     "FindBy",
-    "NewObject",
     "Promise",
     "UUIDReference",
     "UnfulfilledPromisesError",
@@ -35,9 +34,9 @@ import typing as t
 import yaml
 
 import capellambse
+import capellambse.model as m
 from capellambse import helpers
-from capellambse.model import common
-from capellambse.model import new_object as NewObject
+from capellambse.model import NewObject
 
 FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
 _FutureAction = dict[str, t.Any]
@@ -113,7 +112,7 @@ def apply(
         parent = instruction.pop("parent")
         if isinstance(parent, (Promise, _ObjectFinder)):
             try:
-                parent = _resolve(promises, model, parent)
+                parent = _resolve(promises, model.project, parent)
             except _UnresolvablePromise as p:
                 d = {"parent": parent, **instruction}
                 deferred[p.args[0]].append(d)
@@ -183,12 +182,10 @@ def _operate_delete(
                 "Cannot delete object:"
                 f" {type(parent).__name__} has no attribute {attr!r}"
             ) from None
-        if not isinstance(target, common.ElementList) or not isinstance(
-            objs, list
-        ):
+        if not isinstance(target, m.ElementList) or not isinstance(objs, list):
             delattr(parent, attr)
             continue
-        if not isinstance(target, common.ElementListCouplingMixin):
+        if not isinstance(target, m.ElementListCouplingMixin):
             raise TypeError(
                 "Cannot delete object:"
                 f" {type(parent).__name__}.{attr} is not model-coupled"
@@ -295,7 +292,7 @@ def _operate_sync(
 
 def _resolve(
     promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject | capellambse.MelodyModel,
+    parent: capellambse.ModelObject,
     value: t.Any,
 ) -> t.Any:
     if isinstance(value, Promise):
@@ -317,7 +314,7 @@ def _resolve(
 
 def _resolve_findby(
     promises: dict[Promise, capellambse.ModelObject],
-    parent: capellambse.ModelObject | capellambse.MelodyModel,
+    parent: capellambse.ModelObject,
     attr: str | None,
     value: FindBy,
 ) -> capellambse.ModelObject:
@@ -331,7 +328,7 @@ def _resolve_findby(
     if typehint is None:
         wanted_types: tuple[type[t.Any], ...] = ()
     else:
-        wanted_types = common.find_wrapper(typehint)
+        wanted_types = m.find_wrapper(typehint)
         if not wanted_types:
             raise ValueError(f"Unknown type: {typehint}")
 
@@ -415,20 +412,18 @@ def _create_complex_objects(
             "Cannot create object:"
             f" {type(parent).__name__} has no attribute {attr!r}"
         ) from None
-    if not isinstance(target, common.ElementList):
+    if not isinstance(target, m.ElementList):
         raise TypeError(
             "Cannot create object:"
             f" {type(parent).__name__}.{attr} is not a list"
         )
-    if not isinstance(target, common.ElementListCouplingMixin):
+    if not isinstance(target, m.ElementListCouplingMixin):
         raise TypeError(
             "Cannot create object:"
             f" {type(parent).__name__}.{attr} is not model-coupled"
         )
     for child in objs:
-        if isinstance(
-            child, (common.GenericElement, list, Promise, _ObjectFinder)
-        ):
+        if isinstance(child, (m.GenericElement, list, Promise, _ObjectFinder)):
             try:
                 obj = _resolve(promises, parent, child)
             except _UnresolvablePromise as p:
@@ -447,7 +442,7 @@ def _create_complex_object(
     promises: dict[Promise, capellambse.ModelObject],
     parent: capellambse.ModelObject,
     attr: str,
-    target: common.ElementListCouplingMixin,
+    target: m.ElementListCouplingMixin,
     obj_desc: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     try:
@@ -470,7 +465,7 @@ def _create_complex_object(
         obj_desc["promise_id"] = promise
         yield (p.args[0], {"parent": parent, "extend": {attr: [obj_desc]}})
         return
-    assert isinstance(target, common.ElementListCouplingMixin)
+    assert isinstance(target, m.ElementListCouplingMixin)
     obj = target.create(*type_hint, **simple_attrs)
     if promise is not None:
         if isinstance(promise, str):

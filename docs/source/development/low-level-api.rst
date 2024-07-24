@@ -63,10 +63,10 @@ Low to high-level shift
 -----------------------
 
 The GenericElement class offers the
-:py:meth:`~capellambse.model.common.element.GenericElement.from_model` class
-method, which takes a ``MelodyModel`` instance and a low-level LXML
-``_Element`` as arguments and constructs a high-level API proxy object from
-them. This is the way "back up" to the high-level API.
+:py:meth:`~capellambse.model.GenericElement.from_model` class method, which
+takes a ``MelodyModel`` instance and a low-level LXML ``_Element`` as arguments
+and constructs a high-level API proxy object from them. This is the way "back
+up" to the high-level API.
 
 .. note::
 
@@ -88,9 +88,9 @@ them. This is the way "back up" to the high-level API.
    True
 
 When working with multiple objects, it can be desirable to directly construct a
-high-level :py:class:`~capellambse.model.common.element.ElementList` with them.
-The ElementList constructor works similar to ``GenericElement.from_model``, but
-it takes a list of elements instead of only a single one.
+high-level :py:class:`~capellambse.model.ElementList` with them. The
+ElementList constructor works similar to ``GenericElement.from_model``, but it
+takes a list of elements instead of only a single one.
 
 .. code-block:: python
 

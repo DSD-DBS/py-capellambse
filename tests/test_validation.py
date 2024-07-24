@@ -7,10 +7,10 @@ import pathlib
 import pytest
 from click import testing as clitest
 
-import capellambse
+import capellambse.metamodel as mm
+import capellambse.model as m
 from capellambse.extensions import validation
 from capellambse.extensions.validation import __main__
-from capellambse.model.layers import ctx, la
 
 TEST_UUID = "da12377b-fb70-4441-8faa-3a5c153c5de2"
 TEST_RULE_ID = "Rule-001"
@@ -34,7 +34,7 @@ def test_decorated_rules_are_added_to_global_registry(fake_registry):
     @validation.rule(
         TEST_RULE_ID,
         validation.Category.REQUIRED,
-        types=[la.LogicalFunction],
+        types=[mm.la.LogicalFunction],
         **TEST_RULE_PARAMS,
     )
     def testrule(_):
@@ -47,26 +47,26 @@ def test_rules_can_be_filtered_by_object_type(fake_registry):
     @validation.rule(
         TEST_RULE_ID,
         validation.Category.REQUIRED,
-        types=[la.LogicalComponent, la.LogicalFunction],
+        types=[mm.la.LogicalComponent, mm.la.LogicalFunction],
         **TEST_RULE_PARAMS,
     )
     def testrule(_):
         return True
 
     assert list(fake_registry.items()) == [(testrule.id, testrule)]
-    assert fake_registry.by_type(la.LogicalComponent) == [testrule]
-    assert fake_registry.by_type(la.LogicalFunction) == [testrule]
-    assert fake_registry.by_type(ctx.SystemFunction) == []
+    assert fake_registry.by_type(mm.la.LogicalComponent) == [testrule]
+    assert fake_registry.by_type(mm.la.LogicalFunction) == [testrule]
+    assert fake_registry.by_type(mm.sa.SystemFunction) == []
 
 
 def test_model_gives_access_to_the_full_set_of_rules(
-    model: capellambse.MelodyModel,
+    model: m.MelodyModel,
 ) -> None:
     assert len(model.validation.rules) > 0
 
 
 def test_model_object_gives_access_to_rules_that_apply_to_it(
-    model: capellambse.MelodyModel,
+    model: m.MelodyModel,
 ):
     obj = model.by_uuid(TEST_UUID)
     assert isinstance(obj.validation, validation.ElementValidation)
@@ -80,28 +80,28 @@ def test_model_object_gives_access_to_rules_that_apply_to_it(
 def test_validation_results_filtering(
     # pylint: disable-next=unused-argument
     fake_registry: validation.Rules,
-    model: capellambse.MelodyModel,
+    model: m.MelodyModel,
 ) -> None:
     @validation.rule(
         "TEST-LC",
         validation.Category.REQUIRED,
-        types=[la.LogicalComponent],
+        types=[mm.la.LogicalComponent],
         **TEST_RULE_PARAMS,
     )
-    def test_lc(_: la.LogicalComponent) -> bool:
+    def test_lc(_: mm.la.LogicalComponent) -> bool:
         return True
 
     @validation.rule(
         "TEST-LF",
         validation.Category.RECOMMENDED,
-        types=[la.LogicalFunction],
+        types=[mm.la.LogicalFunction],
         **TEST_RULE_PARAMS,
     )
-    def test_lf(_: la.LogicalFunction) -> bool:
+    def test_lf(_: mm.la.LogicalFunction) -> bool:
         return True
 
-    assert model.search(la.LogicalComponent), "Empty test model?"
-    assert model.search(la.LogicalFunction), "Empty test model?"
+    assert model.search(mm.la.LogicalComponent), "Empty test model?"
+    assert model.search(mm.la.LogicalFunction), "Empty test model?"
 
     results = model.validation.validate()
     assert results
@@ -132,7 +132,7 @@ def test_validation_results_filtering(
     )
 
 
-def test_MelodyModel_validation(model: capellambse.MelodyModel):
+def test_MelodyModel_validation(model: m.MelodyModel):
     assert isinstance(model.validation, validation.ModelValidation)
     assert model.validation.rules
 
@@ -141,7 +141,7 @@ def test_MelodyModel_validation(model: capellambse.MelodyModel):
     assert results
 
 
-def test_ModelObject_validation(model: capellambse.MelodyModel):
+def test_ModelObject_validation(model: m.MelodyModel):
     obj = model.by_uuid(TEST_UUID)
     assert isinstance(obj.validation, validation.ElementValidation)
     assert obj.validation.rules

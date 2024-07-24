@@ -5,9 +5,8 @@ import typing as t
 
 import pytest
 
-import capellambse.model.common as c
-from capellambse import MelodyModel
-from capellambse.model.crosslayer.information import Class
+import capellambse.model as m
+from capellambse.metamodel import information
 
 TEMP_PROPERTY_UUID = "2e729284-56e2-4afa-b29e-7fe00d057f80"
 CLASS_TYPED_PROP_UUID = "752afd4c-dfa1-4040-baf4-9c5a4ef5b399"
@@ -25,18 +24,22 @@ FLOAT_TYPE_UUID = "d65e426c-7df0-43df-aaa4-417ae193176a"
     ],
 )
 def test_generalizations(
-    model: MelodyModel, name: str, super_name: str, expected_type: str
+    model: m.MelodyModel,
+    name: str,
+    super_name: str,
+    expected_type: str,
 ):
     objects_of_type = model.search(expected_type)
     obj = objects_of_type.by_name(name)
     super_obj = objects_of_type.by_name(super_name)
 
-    obj_type: str = obj.xtype  # type: ignore[assignment]
-    assert obj_type.endswith(expected_type)
+    assert isinstance(obj.xtype, str)
+    assert obj.xtype.endswith(expected_type)
     assert obj.super == super_obj
-    super_xtype: str = super_obj.xtype  # type: ignore[assignment]
-    assert super_xtype.endswith(expected_type)
-    sub_objects: c.ElementList = super_obj.sub  # type: ignore[assignment]
+    assert isinstance(super_obj.xtype, str)
+    assert super_obj.xtype.endswith(expected_type)
+    sub_objects = super_obj.sub
+    assert isinstance(sub_objects, m.ElementList)
     assert obj in sub_objects
 
 
@@ -59,7 +62,9 @@ def test_generalizations(
         ),  # property
     ],
 )
-def test_object_visibility(model: MelodyModel, uuid: str, expected_visibility):
+def test_object_visibility(
+    model: m.MelodyModel, uuid: str, expected_visibility
+):
     obj = model.by_uuid(uuid)
     assert obj.visibility == expected_visibility
 
@@ -88,7 +93,7 @@ def test_object_visibility(model: MelodyModel, uuid: str, expected_visibility):
     ],
 )
 def test_object_has_type(
-    model: MelodyModel, typed_object_uuid: str, expected_type_uuid: str
+    model: m.MelodyModel, typed_object_uuid: str, expected_type_uuid: str
 ):
     obj = model.by_uuid(typed_object_uuid)
     expected_type = model.by_uuid(expected_type_uuid)
@@ -96,10 +101,9 @@ def test_object_has_type(
 
 
 class TestClasses:
-    def test_class_owns_stm(self, model: MelodyModel):
-        elm: Class = model.by_uuid(
-            "959b5222-7717-4ee9-bd3a-f8a209899464"
-        )  # type: ignore[assignment]
+    def test_class_owns_stm(self, model: m.MelodyModel):
+        elm = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")
+        assert isinstance(elm, information.Class)
 
         assert elm.xtype.endswith("Class")
         assert hasattr(elm, "state_machines")
@@ -130,7 +134,7 @@ class TestClasses:
     )
     def test_class_has_bool_attributes(
         self,
-        model: MelodyModel,
+        model: m.MelodyModel,
         uuid: str,
         attr_name: str,
         expected_value: bool,
@@ -150,7 +154,7 @@ class TestClasses:
         ],
     )
     def test_class_has_visibility(
-        self, model: MelodyModel, uuid: str, expected: str
+        self, model: m.MelodyModel, uuid: str, expected: str
     ) -> None:
         obj = model.by_uuid(uuid)
         assert obj.visibility == expected
@@ -166,7 +170,7 @@ class TestClasses:
         ],
     )
     def test_class_has_properties(
-        self, model: MelodyModel, uuid: str, num_of_properties: int
+        self, model: m.MelodyModel, uuid: str, num_of_properties: int
     ):
         obj = model.by_uuid(uuid)
         assert len(obj.properties) == num_of_properties
@@ -185,7 +189,9 @@ class TestClassProperty:
             pytest.param("is_read_only"),
         ],
     )
-    def test_property_has_bool_attributes(self, model: MelodyModel, attr_name):
+    def test_property_has_bool_attributes(
+        self, model: m.MelodyModel, attr_name
+    ):
         prop_all_false = model.by_uuid(TEMP_PROPERTY_UUID)  # temperature prop
         prop_all_true = model.by_uuid(
             "3b4915eb-22fc-421d-bf89-07a14d0a2772"
@@ -209,19 +215,19 @@ class TestClassProperty:
         ],
     )
     def test_property_has_role_tag_value(
-        self, model: MelodyModel, value_attr: str, expected_val_uuid: str
+        self, model: m.MelodyModel, value_attr: str, expected_val_uuid: str
     ):
         obj = model.by_uuid(TEMP_PROPERTY_UUID)
         expected_val = model.by_uuid(expected_val_uuid)
         assert hasattr(obj, value_attr)
         assert getattr(obj, value_attr) == expected_val
 
-    def test_property_has_no_value(self, model: MelodyModel):
+    def test_property_has_no_value(self, model: m.MelodyModel):
         obj = model.by_uuid(CLASS_TYPED_PROP_UUID)
         assert getattr(obj, "min_value") is None
 
 
-def test_complex_value(model: MelodyModel):
+def test_complex_value(model: m.MelodyModel):
     cv = model.by_uuid("3a467d68-f53c-4d66-9d32-fe032a8cb2c5")
     value_parts = {
         i.referenced_property.name: i.value.value for i in cv.value_parts
@@ -249,14 +255,14 @@ def test_complex_value(model: MelodyModel):
     ],
 )
 def test_literal_value_has_value(
-    model: MelodyModel, uuid: str, expected_value: t.Any, expected_cls
+    model: m.MelodyModel, uuid: str, expected_value: t.Any, expected_cls
 ):
     obj = model.by_uuid(uuid)
     assert obj.value == expected_value
     assert str(obj.xtype).endswith(expected_cls)
 
 
-def test_literal_value_has_unit(model: MelodyModel):
+def test_literal_value_has_unit(model: m.MelodyModel):
     obj = model.by_uuid("d543018f-5f44-4c03-8e2e-875457c8967e")
     expected_unit = model.by_uuid("695386d5-6364-4e85-a1c3-a2c489bf0eb2")
     assert obj.unit == expected_unit

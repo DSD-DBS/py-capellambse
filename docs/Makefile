@@ -30,6 +30,7 @@ apidoc:
 		../capellambse/extensions/reqif/elements.py \
 		../capellambse/repl.py \
 		../capellambse/sphinx.py
+	sed -i -e '/^\.\. automodule:: capellambse$$/a \   :no-index:' source/code/capellambse.rst
 
 clean-apidoc:
 	rm -rfv source/code

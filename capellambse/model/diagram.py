@@ -3,9 +3,33 @@
 """Classes that allow access to diagrams in the model."""
 from __future__ import annotations
 
+__all__ = [
+    # main interface
+    "AbstractDiagram",
+    "Diagram",
+    "DiagramAccessor",
+    "DiagramType",
+    # format converters
+    "DiagramFormat",
+    "PrettyDiagramFormat",
+    "convert_svgdiagram",
+    "SVGFormat",
+    "PNGFormat",
+    "ConfluenceSVGFormat",
+    "SVGDataURIFormat",
+    "SVGInHTMLIMGFormat",
+    "TerminalGraphicsFormat",
+    # exceptions
+    "UnknownOutputFormat",
+    # helpers
+    "convert_format",
+    "REPR_DRAW",
+]
+
 import abc
 import base64
 import collections.abc as cabc
+import enum
 import importlib.metadata as imm
 import io
 import logging
@@ -20,8 +44,110 @@ from lxml import etree
 import capellambse
 from capellambse import aird, diagram, helpers, svg
 
-from . import common as c
-from . import modeltypes
+from . import _descriptors, _obj, _pods, _xtype, stringy_enum
+
+
+@stringy_enum
+class DiagramType(enum.Enum):
+    """The types of diagrams that Capella knows about.
+
+    Extracted from::
+
+        $CAPELLA/eclipse/configuration/org.eclipse.osgi/635/0/.cp/description
+
+    with::
+
+        grep '<ownedRepresentations' *(.) \
+        | grep --color=always -P '(?<=name=").*?(?=")'
+
+    Also directly exposed as ``capellambse.model.DiagramAccessor``.
+    """
+
+    UNKNOWN = "(Unknown Diagram Type)"
+    # Common
+    MSM = "Mode State Machine"
+    # Capella Architecture?
+    CDI = "Contextual Component Detailed Interfaces"
+    CEI = "Contextual Component External Interfaces"
+    CII = "Contextual Component Internal Interfaces"
+    IDB = "Interfaces Diagram Blank"
+    # Requirements?
+    CRI = "Contextual Capability Realization Involvement"
+    CRB = "Capability Realization Blank"
+    PD = "Package Dependencies"
+    ID = "Interface Delegations"
+    CDB = "Class Diagram Blank"
+    IS = "Component Interfaces Scenario"
+    ES = "Component Exchanges Scenario"
+    FS = "Functional Scenario"
+    SFCD = LFCD = PFCD = "Functional Chain Description"
+    # State And Mode - Matrix?
+    # Contextual State And Mode - Matrix?
+    # Modes and States Reference Matrix?
+    # Operational Analysis
+    # Operational Activities - Requirements?
+    OEBD = "Operational Entity Breakdown"
+    OAIB = "Operational Activity Interaction Blank"
+    OAB = "Operational Entity Blank"
+    OABD = "Operational Activity Breakdown"
+    ORB = "Operational Role Blank"
+    OES = "Operational Interaction Scenario"
+    OAS = "Activity Interaction Scenario"
+    OPD = "Operational Process Description"
+    OCB = "Operational Capabilities Blank"
+    # Requirements - Operational Activities?
+    COC = "Contextual Operational Capability"
+    # System Analysis
+    CM = "Contextual Mission"
+    MB = "Missions Blank"
+    CC = "Contextual Capability"
+    MCB = "Missions Capabilities Blank"
+    # System Functions - Requirements?
+    # System Functions - Operational Activities?
+    SFBD = "System Function Breakdown"
+    SDFB = "System Data Flow Blank"
+    SAB = "System Architecture Blank"
+    CSA = "Contextual System Actors"
+    # System Actor - Operational Actor?
+    # Interfaces - Capabilities?
+    # Interfaces - Scenarios?
+    # Interfaces - Capabilities and Scenarios?
+    # System/Actors - System Functions?
+    # Requirements - System Functions?
+    # Logical Architecture
+    # Logical Functions - Requirements?
+    # Logical Components - Requirements?
+    # Logical Functions - System Functions?
+    # Logical Components - Logical Functions?
+    # Logical Architecture Requirement Refinements?
+    # Logical Interface - Context Interface?
+    # Logical Actor - Context Actor?
+    LCBD = "Logical Component Breakdown"
+    LFBD = "Logical Function Breakdown"
+    LDFB = "Logical Data Flow Blank"
+    LAB = "Logical Architecture Blank"
+    CRR = "Capability Realization Refinement"
+    # Requirements - Logical Functions?
+    # Physical Architecture
+    # Physical Functions - Requirements?
+    # Physical Components - Requirements?
+    # Physical Functions - Logical Functions?
+    # Physical Components - Logical Components?
+    # Physical Components - Physical Functions?
+    # Physical Interface - Logical Interface?
+    PFBD = "Physical Function Breakdown"
+    PDFB = "Physical Data Flow Blank"
+    PCBD = "Physical Component Breakdown"
+    PAB = "Physical Architecture Blank"
+    # Physical Actor - Logical Actor?
+    # Requirements - Physical Functions?
+    PPD = "Physical Path Description"
+    # EPBS
+    # Configuration Items - Requirements?
+    # Configuration Items - Physical Artifacts?
+    # EPBS Requirement Refinements?
+    EAB = "EPBS Architecture Blank"
+    CIBD = "Configuration Items Breakdown"
 
 
 @t.runtime_checkable
@@ -43,6 +169,11 @@ DiagramConverter = t.Union[
 
 LOGGER = logging.getLogger(__name__)
 REPR_DRAW: bool
+"""Whether to draw diagrams onto the terminal in their repr().
+
+Determined automatically based on whether output is connected to a
+terminal, and whether the terminal supports the kitty graphics protocol.
+"""
 
 
 class UnknownOutputFormat(ValueError):
@@ -50,7 +181,10 @@ class UnknownOutputFormat(ValueError):
 
 
 class AbstractDiagram(metaclass=abc.ABCMeta):
-    """Abstract superclass of model diagrams."""
+    """Abstract superclass of model diagrams.
+
+    Also directly exposed as ``capellambse.model.AbstractDiagram``.
+    """
 
     if t.TYPE_CHECKING:
 
@@ -59,15 +193,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         @property
         def name(self) -> str: ...
         @property
-        def target(self) -> c.GenericElement: ...
+        def target(self) -> _obj.GenericElement: ...
 
     else:
-
         uuid: str
         """Unique ID of this diagram."""
         name: str
         """Human-readable name for this diagram."""
-        target: c.GenericElement
+        target: _obj.GenericElement
         """This diagram's "target".
 
         The target of a diagram is usually:
@@ -223,7 +356,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return bundle
 
     @property
-    def nodes(self) -> c.MixedElementList:
+    def nodes(self) -> _obj.MixedElementList:
         """Return a list of all nodes visible in this diagram."""
         allids = {e.uuid for e in self.render(None) if not e.hidden}
         elems = []
@@ -235,7 +368,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 continue
 
             elems.append(elem._element)
-        return c.MixedElementList(self._model, elems, c.GenericElement)
+        return _obj.MixedElementList(self._model, elems, _obj.GenericElement)
 
     @t.overload
     def render(self, fmt: None, /, **params) -> diagram.Diagram: ...
@@ -469,25 +602,24 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             pass
 
 
-@c.xtype_handler(
+@_xtype.xtype_handler(
     None,
     "viewpoint:DRepresentationDescriptor",
     "diagram:DSemanticDiagram",
     "sequence:SequenceDDiagram",
 )
 class Diagram(AbstractDiagram):
-    """Provides access to a single diagram."""
+    """Provides access to a single diagram.
 
-    uuid: str = c.properties.AttributeProperty(  # type: ignore[assignment]
+    Also directly exposed as ``capellambse.model.Diagram``.
+    """
+
+    uuid: str = _pods.StringPOD(  # type: ignore[assignment]
         "uid", writable=False
     )
     xtype = property(lambda self: helpers.xtype_of(self._element))
-    name: str = c.properties.AttributeProperty(  # type: ignore[assignment]
-        "name", optional=True, default=""
-    )
-    description = c.properties.HTMLAttributeProperty(
-        "documentation", optional=True
-    )
+    name: str = _pods.StringPOD("name")  # type: ignore[assignment]
+    description = _pods.HTMLStringPOD("documentation")
 
     _element: aird.DRepresentationDescriptor
 
@@ -524,13 +656,13 @@ class Diagram(AbstractDiagram):
         return self._model is other._model and self._element == other._element
 
     @property
-    def nodes(self) -> c.MixedElementList:
+    def nodes(self) -> _obj.MixedElementList:
         if self.__nodes is None:
             self.__nodes = list(
                 aird.iter_visible(self._model._loader, self._element)
             )
-        return c.MixedElementList(
-            self._model, self.__nodes.copy(), c.GenericElement
+        return _obj.MixedElementList(
+            self._model, self.__nodes.copy(), _obj.GenericElement
         )
 
     @property
@@ -554,19 +686,19 @@ class Diagram(AbstractDiagram):
         return self._element.attrib["repPath"]
 
     @property
-    def target(self) -> c.GenericElement:
+    def target(self) -> _obj.GenericElement:
         target = aird.find_target(self._model._loader, self._element)
-        return c.GenericElement.from_model(self._model, target)
+        return _obj.GenericElement.from_model(self._model, target)
 
     @property
-    def type(self) -> modeltypes.DiagramType:
+    def type(self) -> DiagramType:
         """Return the type of this diagram."""
         sc = aird.get_styleclass(self._element)
         try:
-            return modeltypes.DiagramType(sc)
+            return DiagramType(sc)
         except ValueError:  # pragma: no cover
             LOGGER.warning("Unknown diagram type %r", sc)
-            return modeltypes.DiagramType.UNKNOWN
+            return DiagramType.UNKNOWN
 
     @property
     def filters(self) -> cabc.MutableSet[str]:
@@ -588,8 +720,11 @@ class Diagram(AbstractDiagram):
         super().invalidate_cache()
 
 
-class DiagramAccessor(c.Accessor):
-    """Provides access to a list of diagrams below the specified viewpoint."""
+class DiagramAccessor(_descriptors.Accessor):
+    """Provides access to a list of diagrams below the specified viewpoint.
+
+    Also directly exposed as ``capellambse.model.DiagramAccessor``.
+    """
 
     def __init__(
         self,
@@ -606,11 +741,15 @@ class DiagramAccessor(c.Accessor):
         if obj is None:  # pragma: no cover
             return self
 
+        if isinstance(obj, _model.MelodyModel):
+            model = obj
+        else:
+            model = obj._model
         descriptors = aird.enumerate_descriptors(
-            obj._model._loader, viewpoint=self.viewpoint
+            model._loader, viewpoint=self.viewpoint
         )
-        return c.CachedElementList(
-            obj._model,
+        return _obj.CachedElementList(
+            model,
             list(descriptors),
             Diagram,
             cacheattr=self.cacheattr,
@@ -854,3 +993,6 @@ if not t.TYPE_CHECKING:
             pass
         globals()["REPR_DRAW"] = d = TerminalGraphicsFormat.is_supported()
         return d
+
+
+from . import _model

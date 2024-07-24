@@ -298,7 +298,7 @@ def _build_spec_object_types(
     for reqtype, attr_defs in reqtypes:
         modelobj: rq.RequirementType | None
         if reqtype:
-            modelobj = model.by_uuid(reqtype)  # type: ignore[assignment]
+            modelobj = model.by_uuid(reqtype)
             assert isinstance(modelobj, rq.RequirementType)
             reqtype = reqtype.upper()
         else:

@@ -19,10 +19,10 @@ import lxml
 from lxml import etree
 
 import capellambse.helpers
+import capellambse.model as m
 import capellambse.model.diagram
 from capellambse import _native
 from capellambse.filehandler import local
-from capellambse.model import modeltypes
 
 E = lxml.builder.ElementMaker()
 BAD_FILENAMES = frozenset(
@@ -91,7 +91,7 @@ class IndexEntry(t.TypedDict):
 
     uuid: str
     name: str
-    type: modeltypes.DiagramType
+    type: m.DiagramType
     viewpoint: str
     success: bool
 
@@ -523,6 +523,6 @@ class IndexEncoder(json.JSONEncoder):
     """A JSON encoder for the index file."""
 
     def default(self, o):
-        if isinstance(o, modeltypes.DiagramType):
+        if isinstance(o, m.DiagramType):
             return o.name
         return super().default(o)

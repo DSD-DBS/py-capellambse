@@ -11,7 +11,8 @@ import sys
 
 import pytest
 
-import capellambse
+import capellambse.metamodel as mm
+import capellambse.model as m
 from capellambse import decl, helpers
 from capellambse.extensions import reqif
 
@@ -75,7 +76,7 @@ class TestDumpLoad:
 class TestApplyExtend:
     @staticmethod
     def test_decl_errors_on_unknown_operations(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
@@ -97,7 +98,7 @@ class TestApplyExtend:
         ],
     )
     def test_decl_finds_parent_to_act_on(
-        model: capellambse.MelodyModel, parent_str
+        model: m.MelodyModel, parent_str
     ) -> None:
         parent = model.by_uuid(TEACH_POTIONS_FUNC)
         funcname = "pass the unit test"
@@ -118,7 +119,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_decl_creates_each_object_in_a_list(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         parent_obj = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
@@ -142,7 +143,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_decl_creates_nested_complex_objects_where_they_belong(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
@@ -171,7 +172,7 @@ class TestApplyExtend:
         ["AttributeDefinition", "AttributeDefinitionEnumeration"],
     )
     def test_decl_can_disambiguate_creations_with_type_hints(
-        model: capellambse.MelodyModel, type: str
+        model: m.MelodyModel, type: str
     ) -> None:
         module_id = "db47fca9-ddb6-4397-8d4b-e397e53d277e"
         module = model.by_uuid(module_id)
@@ -193,7 +194,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_decl_can_create_simple_objects_by_passing_plain_strings(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         attrdef_id = "637caf95-3229-4607-99a0-7d7b990bc97f"
         attrdef = model.by_uuid(attrdef_id)
@@ -211,7 +212,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_extend_operations_change_model_objects_in_place(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         fnc = model.by_uuid("8833d2dc-b862-4a50-b26c-6f7e0f17faef")
@@ -232,7 +233,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_extend_operations_with_promises_change_model_objects_in_place(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_component = model.by_uuid(ROOT_COMPONENT)
         fnc_name = "The promised one"
@@ -255,7 +256,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_extend_operations_on_faulty_attribute_cause_an_exception(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         non_existing_attr = "Thought up"
         yml = f"""\
@@ -270,7 +271,7 @@ class TestApplyExtend:
 
     @staticmethod
     def test_promises_are_resolved_during_the_second_attempt(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         PHYS_COMPONENT = "b327d900-abd2-4138-a111-9ff0684739d8"
         cmp = model.by_uuid(PHYS_COMPONENT)
@@ -308,7 +309,7 @@ class TestApplyExtend:
 class TestApplyPromises:
     @staticmethod
     def test_promises_can_backwards_reference_objects(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_func = model.by_uuid(ROOT_FUNCTION)
         root_comp = model.by_uuid(ROOT_COMPONENT)
@@ -334,7 +335,7 @@ class TestApplyPromises:
 
     @staticmethod
     def test_promises_can_forward_reference_objects(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_func = model.by_uuid(ROOT_FUNCTION)
         root_comp = model.by_uuid(ROOT_COMPONENT)
@@ -367,7 +368,7 @@ class TestApplyPromises:
         ],
     )
     def test_promises_on_simple_attributes_can_reference_objects(
-        model: capellambse.MelodyModel, order
+        model: m.MelodyModel, order
     ) -> None:
         root_func = model.by_uuid(ROOT_FUNCTION)
         snippets = (
@@ -401,7 +402,7 @@ class TestApplyPromises:
 
     @staticmethod
     def test_reused_promise_ids_cause_an_exception(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
@@ -418,7 +419,7 @@ class TestApplyPromises:
 
     @staticmethod
     def test_unfulfilled_promises_raise_an_exception(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
@@ -432,7 +433,7 @@ class TestApplyPromises:
 
     @staticmethod
     def test_promises_are_resolved_for_parent_objects(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         yml = f"""\
             - parent: !promise pass-test
@@ -451,7 +452,7 @@ class TestApplyPromises:
 
         assert decl.Promise("pass-test") in resolved
         func = resolved[decl.Promise("pass-test")]
-        assert isinstance(func, capellambse.model.la.LogicalFunction)
+        assert isinstance(func, mm.la.LogicalFunction)
         assert func.name == "pass the unit test"
         assert func.description == "Makes sure that the test passes."
 
@@ -459,7 +460,7 @@ class TestApplyPromises:
 class TestApplyModify:
     @staticmethod
     def test_modify_operations_change_model_objects_in_place(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         newname = "Coffee machine"
         root_component = model.by_uuid(ROOT_COMPONENT)
@@ -475,9 +476,7 @@ class TestApplyModify:
         assert root_component.name == newname
 
     @staticmethod
-    def test_modify_can_set_attributes_to_promises(
-        model: capellambse.MelodyModel,
-    ) -> None:
+    def test_modify_can_set_attributes_to_promises(model: m.MelodyModel):
         root_component = model.by_uuid(ROOT_COMPONENT)
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}
@@ -498,7 +497,7 @@ class TestApplyModify:
 
     @staticmethod
     def test_modify_can_set_attributes_to_uuid_references(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_component = model.by_uuid(ROOT_COMPONENT)
         root_function = model.by_uuid(ROOT_FUNCTION)
@@ -516,7 +515,7 @@ class TestApplyModify:
 
     @staticmethod
     def test_modifying_to_a_list_removes_all_previous_list_members(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
@@ -536,7 +535,7 @@ class TestApplyModify:
 class TestApplyDelete:
     @staticmethod
     def test_delete_operations_remove_child_objects_from_the_model(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         assert len(root_function.functions) > 0
@@ -559,7 +558,7 @@ class TestApplyDelete:
 
     @staticmethod
     def test_delete_operations_delete_attributes_if_no_list_of_uuids_was_given(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         assert len(root_function.functions) > 0
@@ -577,7 +576,7 @@ class TestApplyDelete:
 class TestApplySync:
     @staticmethod
     def test_sync_operation_without_find_key_raises_an_error(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         yml = f"""\
         - parent: !uuid {ROOT_FUNCTION}
@@ -591,7 +590,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_finds_and_modifies_existing_objects_in_the_list(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         new_description = "This is a function."
@@ -612,7 +611,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_honors_type_hints(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         yml = """\
             - parent: !uuid 3c2d312c-37c9-41b5-8c32-67578fa52dc3
@@ -632,7 +631,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_set_overwrites_iterables(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         subfunc = root_function.functions[0]
@@ -656,7 +655,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_extend_does_not_overwrite_iterables(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         subfunc = root_function.functions[0]
@@ -679,7 +678,7 @@ class TestApplySync:
         assert old_port in subfunc.inputs
 
     @staticmethod
-    def test_sync_operation_recursive(model: capellambse.MelodyModel) -> None:
+    def test_sync_operation_recursive(model: m.MelodyModel) -> None:
         root_package = model.la.data_package
         package_name = "The new package"
         subpackage_name = "The new subpackage"
@@ -704,7 +703,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_no_duplicates(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_package = model.la.data_package
         class_name = "The new class"
@@ -743,7 +742,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         new_name = "The new function"
@@ -767,7 +766,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_resolves_promises_with_newly_created_objects(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         newname = "The new function"
         yml = f"""\
@@ -784,12 +783,12 @@ class TestApplySync:
         assert resolved
         assert decl.Promise("my_function") in resolved
         new_func = resolved[decl.Promise("my_function")]
-        assert isinstance(new_func, capellambse.model.la.LogicalFunction)
+        assert isinstance(new_func, mm.la.LogicalFunction)
         assert new_func.name == newname
 
     @staticmethod
     def test_sync_operation_resolves_promises_with_existing_objects(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
         yml = f"""\
@@ -809,7 +808,7 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_can_resolve_multiple_promises_with_one_object(
-        model: capellambse.MelodyModel,
+        model: m.MelodyModel,
     ) -> None:
         function = model.by_uuid(ROOT_FUNCTION).functions[0]
         yml = f"""\
@@ -833,7 +832,7 @@ class TestApplySync:
 
 
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])
-def test_full_example(model: capellambse.MelodyModel, filename: str):
+def test_full_example(model: m.MelodyModel, filename: str):
     decl.apply(model, DATAPATH / filename)
 
 

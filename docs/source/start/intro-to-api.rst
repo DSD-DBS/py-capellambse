@@ -35,23 +35,23 @@ Layer-specific packages
 
 The following packages enable working with model layers:
 
-* :mod:`capellambse.model.layers.oa` - covers Operational Analysis layer.
-* :mod:`capellambse.model.layers.ctx` - covers System Analysis layer.
-* :mod:`capellambse.model.layers.la` - covers Logical Architecture layer.
-* :mod:`capellambse.model.layers.pa` - covers Physical Architecture layer.
+* :mod:`capellambse.metamodel.oa` - covers Operational Analysis layer.
+* :mod:`capellambse.metamodel.sa` - covers System Analysis layer.
+* :mod:`capellambse.metamodel.la` - covers Logical Architecture layer.
+* :mod:`capellambse.metamodel.pa` - covers Physical Architecture layer.
 
 Cross-layer packages
 ====================
 
 The following packages enable all (almost) of the layer packages:
 
-* :mod:`capellambse.model.crosslayer.fa` - covers Functional Analysis concerns,
+* :mod:`capellambse.metamodel.fa` - covers Functional Analysis concerns,
   defines things like AbstractFunction or FunctionalExchange
-* :mod:`capellambse.model.crosslayer.cs` - covers Composite Structure concerns,
+* :mod:`capellambse.metamodel.cs` - covers Composite Structure concerns,
   defines things like Component
-* :mod:`capellambse.model.crosslayer.capellacommon` - covers common concerns,
+* :mod:`capellambse.metamodel.capellacommon` - covers common concerns,
   defines things like StateMachine, State
-* :mod:`capellambse.model.crosslayer.information` - covers Information
+* :mod:`capellambse.metamodel.information` - covers Information
   concerns, defines things like Class, DataPkg, ExchangeItem
 
 Extension packages

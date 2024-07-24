@@ -1,36 +1,31 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
-"""Common classes used by all MelodyModel functions.
 
-.. diagram:: [CDB] Common Types ORM
-"""
 from __future__ import annotations
+
+__all__ = [
+    "XTYPE_ANCHORS",
+    "XTYPE_HANDLERS",
+    "build_xtype",
+    "find_wrapper",
+    "xtype_handler",
+]
 
 import collections
 import collections.abc as cabc
-import operator
 import typing as t
 
-import capellambse
-
-S = t.TypeVar("S", bound=t.Optional[str])
-"""TypeVar for ":py:class:`str` | None"."""
-T = t.TypeVar("T", bound="ModelObject")
-"""TypeVar for ":py:class:`capellambse.model.common.element.ModelObject`"."""
-U = t.TypeVar("U")
-"""TypeVar (unbound)."""
-
+from . import T, _obj
 
 XTYPE_ANCHORS = {
-    "capellambse.model": "org.polarsys.capella.core.data.capellamodeller",
-    "capellambse.model.crosslayer": "org.polarsys.capella.core.data",
+    "capellambse.metamodel": "org.polarsys.capella.core.data",
+    "capellambse.metamodel.sa": "org.polarsys.capella.core.data.ctx",
     "capellambse.model.diagram": "viewpoint",
-    "capellambse.model.layers": "org.polarsys.capella.core.data",
 }
 """A mapping from anchor modules to Capella packages.
 
 This dictionary maps Python modules and packages to the Capella packages
-they represent. ``build_xtype`` and related functions/classes can then
+they represent. :func:`build_xtype` and related functions/classes can then
 use this information to automatically derive an ``xsi:type`` from any
 class that is defined in such an anchor module (or a submodule of one).
 """
@@ -47,62 +42,6 @@ layer-specific wrappers have precedence over layer-agnostic ones.
 These keys map to a further dictionary. This second layer maps from the
 ``xsi:type``\ (s) that each wrapper handles to the wrapper class.
 """
-
-
-def build_xtype(class_: type[ModelObject]) -> str:
-    anchor = package = ""
-    for a, p in XTYPE_ANCHORS.items():
-        if len(a) > len(anchor) and class_.__module__.startswith(a):
-            anchor = a
-            package = p
-
-    if not anchor:
-        raise TypeError(f"Module is not an xtype anchor: {class_.__module__}")
-
-    module = class_.__module__[len(anchor) :]
-    clsname = class_.__name__
-    return f"{package}{module}:{clsname}"
-
-
-def find_wrapper(typehint: str) -> tuple[type[ModelObject], ...]:
-    """Find the possible wrapper classes for the hinted type.
-
-    The typehint is either a single class name, or a namespace prefix
-    and class name separated by ``:``. This function searches for all
-    known wrapper classes that match the given namespace prefix (if any)
-    and which have the given name, and returns them as a tuple. If no
-    matching wrapper classes are found, an empty tuple is returned.
-    """
-    return tuple(
-        v
-        for i in XTYPE_HANDLERS.values()
-        for k, v in i.items()
-        if k.endswith(f":{typehint}") or k == typehint
-    )
-
-
-def enumliteral(
-    generic_element: GenericElement, attr: str, default: str = "NOT_SET"
-) -> AttributeProperty | str:
-    uuid = generic_element._element.attrib.get(attr)
-    if uuid is None:
-        return default
-
-    return generic_element.from_model(
-        generic_element._model, generic_element._model._loader[uuid]
-    ).name
-
-
-def set_accessor(
-    cls: type[ModelObject], attr: str, accessor: Accessor
-) -> None:
-    setattr(cls, attr, accessor)
-    accessor.__set_name__(cls, attr)
-
-
-def set_self_references(*args: tuple[type[ModelObject], str]) -> None:
-    for cls, attr in args:
-        set_accessor(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
 
 
 def xtype_handler(
@@ -167,29 +106,33 @@ def xtype_handler(
     return register_xtype_handler
 
 
-def resolve_handler(xtype: str) -> tuple[str, type[t.Any]]:
-    matches: list[tuple[str, type[t.Any]]] = []
+def build_xtype(class_: type[_obj.ModelObject]) -> str:
+    anchor = package = ""
+    for a, p in XTYPE_ANCHORS.items():
+        if len(a) > len(anchor) and class_.__module__.startswith(a):
+            anchor = a
+            package = p
 
-    if ":" in xtype:
-        ismatch: cabc.Callable[[str, str], bool] = operator.eq
-        searchname = xtype
-    else:
-        ismatch = str.endswith
-        searchname = ":" + xtype
+    if not anchor:
+        raise TypeError(f"Module is not an xtype anchor: {class_.__module__}")
 
-    for i in XTYPE_HANDLERS.values():
-        matches.extend(t for t in i.items() if ismatch(t[0], searchname))
-
-    if len(matches) < 1:
-        raise ValueError(f"No handlers found for xsi:type: {xtype}")
-    if len(matches) > 1:
-        raise RuntimeError(f"Multiple handlers for xsi:type: {xtype}")
-    return matches[0]
+    module = class_.__module__[len(anchor) :]
+    clsname = class_.__name__
+    return f"{package}{module}:{clsname}"
 
 
-from .accessors import *
-from .accessors import _NewObject as new_object
-from .element import *
-from .properties import *
+def find_wrapper(typehint: str) -> tuple[type[_obj.ModelObject], ...]:
+    """Find the possible wrapper classes for the hinted type.
 
-set_accessor(GenericElement, "parent", ParentAccessor(GenericElement))
+    The typehint is either a single class name, or a namespace prefix
+    and class name separated by ``:``. This function searches for all
+    known wrapper classes that match the given namespace prefix (if any)
+    and which have the given name, and returns them as a tuple. If no
+    matching wrapper classes are found, an empty tuple is returned.
+    """
+    return tuple(
+        v
+        for i in XTYPE_HANDLERS.values()
+        for k, v in i.items()
+        if k.endswith(f":{typehint}") or k == typehint
+    )

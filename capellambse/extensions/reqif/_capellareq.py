@@ -21,23 +21,23 @@ import typing as t
 from lxml import etree
 
 import capellambse
-import capellambse.model.common as c
+import capellambse.model as m
 
 from . import _requirements as rq
 from . import exporter
 
-c.XTYPE_ANCHORS[__name__] = "CapellaRequirements"
+m.XTYPE_ANCHORS[__name__] = "CapellaRequirements"
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class CapellaModule(rq.ReqIFElement):
     """A ReqIF Module that bundles multiple Requirement folders."""
 
     _xmltag = "ownedExtensions"
 
-    folders = c.DirectProxyAccessor(rq.Folder, aslist=c.ElementList)
-    requirements = c.DirectProxyAccessor(rq.Requirement, aslist=c.ElementList)
-    type = c.AttrProxyAccessor(rq.ModuleType, "moduleType")
+    folders = m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList)
+    requirements = m.DirectProxyAccessor(rq.Requirement, aslist=m.ElementList)
+    type = m.AttrProxyAccessor(rq.ModuleType, "moduleType")
     attributes = rq.AttributeAccessor()
 
     def to_reqif(
@@ -80,43 +80,43 @@ class CapellaModule(rq.ReqIFElement):
         )
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class CapellaIncomingRelation(rq.AbstractRequirementsRelation):
     """A Relation between a requirement and an object."""
 
     _xmltag = "ownedRelations"
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
     """A Relation between an object and a requirement."""
 
     _xmltag = "ownedExtensions"
 
-    source = c.AttrProxyAccessor(rq.Requirement, "target")
-    target = c.AttrProxyAccessor(c.GenericElement, "source")
+    source = m.AttrProxyAccessor(rq.Requirement, "target")
+    target = m.AttrProxyAccessor(m.GenericElement, "source")
 
 
-@c.xtype_handler(None)
+@m.xtype_handler(None)
 class CapellaTypesFolder(rq.ReqIFElement):
     _xmltag = "ownedExtensions"
 
-    data_type_definitions = c.DirectProxyAccessor(
-        c.GenericElement,
+    data_type_definitions = m.DirectProxyAccessor(
+        m.GenericElement,
         (rq.DataTypeDefinition, rq.EnumerationDataTypeDefinition),
-        aslist=c.MixedElementList,
+        aslist=m.MixedElementList,
     )
-    module_types = c.DirectProxyAccessor(rq.ModuleType, aslist=c.ElementList)
-    relation_types = c.DirectProxyAccessor(
-        rq.RelationType, aslist=c.ElementList
+    module_types = m.DirectProxyAccessor(rq.ModuleType, aslist=m.ElementList)
+    relation_types = m.DirectProxyAccessor(
+        rq.RelationType, aslist=m.ElementList
     )
-    requirement_types = c.DirectProxyAccessor(
-        rq.RequirementType, aslist=c.ElementList
+    requirement_types = m.DirectProxyAccessor(
+        rq.RequirementType, aslist=m.ElementList
     )
 
 
 class RequirementsRelationAccessor(
-    c.WritableAccessor[rq.AbstractRequirementsRelation]
+    m.WritableAccessor[rq.AbstractRequirementsRelation]
 ):
     """Searches for requirement relations in the architecture layer."""
 
@@ -124,7 +124,7 @@ class RequirementsRelationAccessor(
 
     def __init__(self, *args, **kw) -> None:
         super().__init__(
-            *args, **kw, aslist=c.ElementList, single_attr="long_name"
+            *args, **kw, aslist=m.ElementList, single_attr="long_name"
         )
 
     def __get__(self, obj, objtype=None):
@@ -166,12 +166,12 @@ class RequirementsRelationAccessor(
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
         return self.aslist(
-            parent_obj._model, elements, c.GenericElement, parent=parent_obj
+            parent_obj._model, elements, m.GenericElement, parent=parent_obj
         )
 
     def create(
         self,
-        elmlist: c.ElementListCouplingMixin,
+        elmlist: m.ElementListCouplingMixin,
         /,
         *type_hints: str | None,
         **kw: t.Any,
@@ -187,7 +187,7 @@ class RequirementsRelationAccessor(
                 **kw,
                 source=elmlist._parent,
                 uuid=uuid,
-                xtype=c.build_xtype(cls),
+                xtype=m.build_xtype(cls),
             )
 
     def delete(self, elmlist, obj) -> None:
@@ -203,11 +203,11 @@ class RequirementsRelationAccessor(
 
     def insert(
         self,
-        elmlist: c.ElementListCouplingMixin,
+        elmlist: m.ElementListCouplingMixin,
         index: int,
-        value: c.ModelObject | c.new_object,
+        value: m.ModelObject | m.NewObject,
     ) -> None:
-        if isinstance(value, c.new_object):
+        if isinstance(value, m.NewObject):
             raise NotImplementedError("Cannot insert new objects yet")
 
         if isinstance(value, CapellaOutgoingRelation):
@@ -224,7 +224,7 @@ class RequirementsRelationAccessor(
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: c.ModelObject, target: c.ModelObject
+        self, obj: m.ModelObject, target: m.ModelObject
     ) -> cabc.Generator[None, None, None]:
         """Do nothing.
 
@@ -236,7 +236,7 @@ class RequirementsRelationAccessor(
         yield
 
     def _find_relation_type(
-        self, target: c.GenericElement
+        self, target: m.GenericElement
     ) -> type[rq.InternalRelation | CapellaIncomingRelation]:
         if isinstance(target, rq.Requirement):
             return rq.InternalRelation
@@ -249,14 +249,14 @@ class RequirementsRelationAccessor(
             return CapellaIncomingRelation
 
 
-class RelationsList(c.ElementList[rq.AbstractRequirementsRelation]):
+class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
         elements: list[etree._Element],
         elemclass: type[t.Any] | None = None,
         *,
-        source: c.ModelObject,
+        source: m.ModelObject,
     ) -> None:
         del elemclass
         super().__init__(model, elements, rq.AbstractRequirementsRelation)
@@ -270,7 +270,7 @@ class RelationsList(c.ElementList[rq.AbstractRequirementsRelation]):
     def __getitem__(self, idx: str) -> t.Any: ...
     def __getitem__(self, idx: int | slice | str) -> t.Any:
         rel = super().__getitem__(idx)
-        if isinstance(rel, c.ElementList):
+        if isinstance(rel, m.ElementList):
             return rel
 
         assert isinstance(rel, rq.AbstractRequirementsRelation)
@@ -283,7 +283,7 @@ class RelationsList(c.ElementList[rq.AbstractRequirementsRelation]):
     def by_relation_type(self, reltype: str) -> RelationsList:
         matches = []
         for elm in self._elements:
-            rel_elm = c.GenericElement.from_model(self._model, elm)
+            rel_elm = m.GenericElement.from_model(self._model, elm)
             assert isinstance(rel_elm, rq.AbstractRequirementsRelation)
             if rel_elm.type is not None and rel_elm.type.name == reltype:
                 matches.append(elm)
@@ -299,7 +299,7 @@ class RelationsList(c.ElementList[rq.AbstractRequirementsRelation]):
         }
         matches: list[etree._Element] = []
         for elm in self._elements:
-            rel_elm = c.GenericElement.from_model(self._model, elm)
+            rel_elm = m.GenericElement.from_model(self._model, elm)
             if isinstance(rel_elm, relation_types[class_]):
                 matches.append(rel_elm._element)
         return self._newlist(matches)
@@ -311,7 +311,7 @@ class RelationsList(c.ElementList[rq.AbstractRequirementsRelation]):
 
 
 class ElementRelationAccessor(
-    c.WritableAccessor[rq.AbstractRequirementsRelation]
+    m.WritableAccessor[rq.AbstractRequirementsRelation]
 ):
     """Provides access to RequirementsRelations of a GenericElement."""
 
@@ -341,7 +341,7 @@ class ElementRelationAccessor(
 
     @contextlib.contextmanager
     def purge_references(
-        self, obj: c.ModelObject, target: c.ModelObject
+        self, obj: m.ModelObject, target: m.ModelObject
     ) -> cabc.Generator[None, None, None]:
         """Do nothing.
 
@@ -363,5 +363,5 @@ class ElementRelationAccessor(
         )
 
 
-c.set_accessor(rq.Requirement, "relations", RequirementsRelationAccessor())
-c.set_accessor(rq.Requirement, "related", ElementRelationAccessor())
+m.set_accessor(rq.Requirement, "relations", RequirementsRelationAccessor())
+m.set_accessor(rq.Requirement, "related", ElementRelationAccessor())

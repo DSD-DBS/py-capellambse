@@ -12,8 +12,8 @@ import typing_extensions as te
 from lxml import etree
 
 import capellambse
-import capellambse.model.common as c
-from capellambse.model import capellacore
+import capellambse.model as m
+from capellambse.metamodel import capellacore
 
 from . import _config
 
@@ -45,42 +45,21 @@ class ObjectPVMT:
        >>> power = obj.pvmt["DarkMagic.Power"]
        >>> power["Max"]
        2000
-
-    3. Both of the above approaches are simple to use, but also have
-       some shortcomings. For example, it is not possible to determine
-       whether a property value group has been "applied" to an object.
-
-       These more advanced features are available through the "virtual"
-       model objects provided through 'obj.pvmt.domains'.
-
-       >>> obj.pvmt.domains
-       <ManagedPropertyValueDomains ...>  # TODO
-
-       For detailed information on how to use this API, refer to the
-       detailed documentation of the relevant objects:
-
-       - :class:`~capellambse.extensions.pvmt.ManagedPropertyValueDomains`
-       - :class:`~capellambse.extensions.pvmt.ManagedPropertyValueGroups`
-
-    Notes
-    -----
-    Managed property values are only available if the model has the
-    Property Value Management viewpoint installed.
     """
 
     _model: capellambse.MelodyModel
     _element: etree._Element
     _constructed: bool
 
-    owner = c.AlternateAccessor(c.GenericElement)
+    owner = m.AlternateAccessor(m.GenericElement)
 
     @property
-    def groupdefs(self) -> c.ElementList[_config.ManagedGroup]:
+    def groupdefs(self) -> m.ElementList[_config.ManagedGroup]:
         groups = self._model.pvmt.domains.map("groups")
         return groups.filter(lambda i: i.applies_to(self.owner))
 
     @property
-    def applied_groups(self) -> c.ElementList[capellacore.PropertyValueGroup]:
+    def applied_groups(self) -> m.ElementList[capellacore.PropertyValueGroup]:
         elms: list[etree._Element] = []
         groupdefs = self.owner.property_value_groups
         for group in groupdefs:
@@ -97,7 +76,7 @@ class ObjectPVMT:
                 continue
             elms.append(group._element)
 
-        return c.ElementList(self._model, elms, capellacore.PropertyValueGroup)
+        return m.ElementList(self._model, elms, capellacore.PropertyValueGroup)
 
     def __init__(self, *_a: t.Any, **_k: t.Any) -> None:
         raise TypeError(f"Cannot instantiate {type(self).__name__} directly")
