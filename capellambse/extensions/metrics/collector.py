@@ -9,36 +9,43 @@ modeling focus is (problem space / solution space / balanced)
 """
 
 import capellambse
+import capellambse.metamodel as mm
+import capellambse.model as m
+from capellambse.extensions import reqif
 
 COMMON_OBJECTS = [
-    "Requirement",
-    "Class",
-    "StateMachine",
-    "PhysicalLink",
-    "FunctionalExchange",
-    "ComponentExchange",
-    "ExchangeItem",
+    mm.capellacommon.StateMachine,
+    mm.cs.PhysicalLink,
+    mm.fa.ComponentExchange,
+    mm.fa.FunctionalExchange,
+    mm.information.Class,
+    mm.information.ExchangeItem,
+    reqif.Requirement,
 ]
 
-OBJECTS_OF_INTEREST = [
-    [  # Operational Analysis
-        "OperationalCapability",
-        "OperationalActivity",
-        "Entity",
-    ]
-    + COMMON_OBJECTS,
-    ["SystemFunction", "SystemComponent"] + COMMON_OBJECTS,  # System Analysis
-    [  # Logical Architecture
-        "LogicalFunction",
-        "LogicalComponent",
-    ]
-    + COMMON_OBJECTS,
-    [  # Physical Architecture
-        "PhysicalFunction",
-        "PhysicalComponent",
-    ]
-    + COMMON_OBJECTS,
-]
+OBJECTS_OF_INTEREST: dict[str, list[type[m.GenericElement]]] = {
+    "oa": [
+        *COMMON_OBJECTS,
+        mm.oa.OperationalCapability,
+        mm.oa.OperationalActivity,
+        mm.oa.Entity,
+    ],
+    "sa": [
+        *COMMON_OBJECTS,
+        mm.sa.SystemFunction,
+        mm.sa.SystemComponent,
+    ],
+    "la": [
+        *COMMON_OBJECTS,
+        mm.la.LogicalFunction,
+        mm.la.LogicalComponent,
+    ],
+    "pa": [
+        *COMMON_OBJECTS,
+        mm.pa.PhysicalFunction,
+        mm.pa.PhysicalComponent,
+    ],
+}
 
 
 def quantify_model_layers(
@@ -60,10 +67,9 @@ def quantify_model_layers(
     """
     objects = []
     diagrams = []
-    for layer, object_types in zip(
-        [model.oa, model.sa, model.la, model.pa], OBJECTS_OF_INTEREST
-    ):
-        layer_objects = len(model.search(*object_types, below=layer))
+    for layer, object_types in OBJECTS_OF_INTEREST.items():
+        layer_obj = getattr(model, layer)
+        layer_objects = len(model.search(*object_types, below=layer_obj))
         objects.append(layer_objects)
-        diagrams.append(len(layer.diagrams))
+        diagrams.append(len(layer_obj.diagrams))
     return objects, diagrams
