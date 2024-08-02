@@ -391,8 +391,8 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["black"],
             "stroke-dasharray": "5",
             "text_fill": COLORS["black"],
-            "marker-start": "DiamondMark",
-            "marker-end": "ArrowMark",
+            "marker-start": "FilledDiamondMark",
+            "marker-end": "FineArrowMark",
         },
         "Edge.Generalization": {
             "stroke": COLORS["black"],
@@ -705,7 +705,7 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["dark_gray"],
         },
         "Edge.OperationalExchange": {
-            "marker-end": "ArrowMark",
+            "marker-end": "FilledArrowMark",
             "stroke": COLORS["_CAP_Activity_Border_Orange"],
         },
     },

@@ -43,11 +43,22 @@ def fine_arrow_mark(id_, /, **kw) -> container.Marker:
     return _make_marker((7, 3.75), (7.5, 7.5), id_=id_, d=d, **kw)
 
 
-@decorations.marker_factories
-def arrow_mark(id_, /, **kw) -> container.Marker:
+def _make_arrow_marker(id_: str, /, **kw) -> container.Marker:
     return _make_marker(
         (5, 2.5), (5.5, 5.5), id_=id_, d="M 0,0 5,2.5 0,5", **kw
     )
+
+
+@decorations.marker_factories
+def arrow_mark(id_, /, **kw) -> container.Marker:
+    kw.setdefault("fill", "#fff")
+    return _make_arrow_marker(id_, **kw)
+
+
+@decorations.marker_factories
+def filled_arrow_mark(id_, /, **kw) -> container.Marker:
+    kw.setdefault("fill", "#000")
+    return _make_arrow_marker(id_, **kw)
 
 
 def _make_diamond_marker(id_: str, /, **kw) -> container.Marker:

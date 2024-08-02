@@ -507,6 +507,8 @@ class Drawing:
                 )._to_dict()
                 markstyle.pop("marker-start", None)
                 markstyle.pop("marker-end", None)
+                markstyle.pop("stroke-dasharray", None)
+                markstyle.pop("fill", None)
                 self.__drawing.defs.add(
                     factory.function(marker_id, **markstyle)
                 )
