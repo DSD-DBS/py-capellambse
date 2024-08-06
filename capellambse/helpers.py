@@ -47,6 +47,7 @@ FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_VALID_UUID = re.compile(r"[A-Za-z0-9_-]+")
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
+DEFAULT_FONT_SIZE = 10
 
 CROSS_FRAGMENT_LINK = re.compile(
     r"""
@@ -230,7 +231,7 @@ def load_font(fonttype: str, size: int) -> ImageFont.FreeTypeFont:
 def extent_func(
     text: str,
     fonttype: str = "OpenSans-Regular.ttf",
-    size: int = 12,
+    size: int = DEFAULT_FONT_SIZE,
 ) -> tuple[float, float]:
     """Calculate the display size of the given text.
 
@@ -253,14 +254,14 @@ def extent_func(
     width = height = 0
     font = load_font(fonttype, size)
     (width, height), _ = font.font.getsize(text)
-    return (width * 10 / 7, height * 10 / 7)
+    return (width * 1.1, height * 10 / 7)
 
 
 def get_text_extent(
     text: str,
     width: float | int = math.inf,
     fonttype: str = "OpenSans-Regular.ttf",
-    fontsize: int = 12,
+    fontsize: int = DEFAULT_FONT_SIZE,
 ) -> tuple[float, float]:
     """Calculate the bounding box size of ``text`` after line wrapping.
 

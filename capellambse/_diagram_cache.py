@@ -324,7 +324,7 @@ def _text_extents(element: etree._Element) -> Extents:
     x = float(element.get("x", 0))
     y = float(element.get("y", 0))
     text = element.text or ""
-    font_size_str = element.get("font-size", "12").strip().lower()
+    font_size_str = element.get("font-size", "10").strip().lower()
     if "px" in font_size_str:
         font_size_str = font_size_str[:-2]
     font_size = float(font_size_str)

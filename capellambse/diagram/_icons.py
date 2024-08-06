@@ -93,13 +93,13 @@ def get_svg_symbol(
     try:
         factory_def = _FACTORIES[f"{styleclass}Symbol"]
     except KeyError:
-        raise ValueError(f"No icon for type {styleclass}") from None
+        factory_def = _FACTORIES["NotFoundSymbol"]
     return (factory_def.function(), factory_def.dependencies)
 
 
 def has_icon(styleclass: str, /) -> bool:
     """Determine if an icon exists for the given styleclass."""
-    return f"{styleclass}Symbol" in _FACTORIES
+    return f"{styleclass}Symbol" in _FACTORIES or styleclass not in {"Note"}
 
 
 class _FactoryDefinition(t.NamedTuple):
@@ -123,6 +123,14 @@ def _factory(
         return func
 
     return decorator
+
+
+@_factory()
+def _not_found_symbol() -> container.Symbol:
+    symb = container.Symbol(id="NotFoundSymbol", viewBox="0 0 10 10")
+    rect = shapes.Rect(insert=(0, 0), size=(10, 10), fill="red")
+    symb.add(rect)
+    return symb
 
 
 @_factory()
@@ -389,8 +397,8 @@ def function_symbol(
     symb.add(gradient)
     symb.add(
         shapes.Ellipse(
-            center=(42.2, 32),
-            r=(22.5, 15.5),
+            center=(39.5, 39.5),
+            r=(26, 21),
             fill=f"url(#{gradient.get_id()})",
             stroke="#000",
             stroke_width=2,
@@ -399,10 +407,10 @@ def function_symbol(
     symb.add(
         text.Text(
             text=label,
-            insert=(42.2, 38),
+            insert=(40, 50),
             text_anchor="middle",
             font_family="'Open Sans','Segoe UI',Arial,sans-serif",
-            font_size="16px",
+            font_size="25px",
             font_weight="bold",
             fill="#000",
             stroke="none",
@@ -1141,25 +1149,27 @@ def _make_edge_symbol(
     )
 
     grp = container.Group(stroke="#000", stroke_width=2)
-    grp.add(
-        path.Path(
-            d="M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z",
-            fill=f"url(#{grad_id}reverse)",
-        )
-    )
-    d = (
-        "m 14.372107,10 h 12.622435 c 0.926189,0.585267"
-        " 1.836022,1.274509 2.268178,5 -0.208657,2.812473"
-        " -0.954601,4.503809 -2.273297,5 H 14.296948"
-    )
-    grp.add(path.Path(d=d, fill=middle_color))
-    d = (
-        "M 3.9464908,5.0048246 V 24.995175 H 10.87518 C"
-        " 12.433713,24.159139 15.158267,20.291241 15.313795,15"
-        " 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c"
-        " -2.2179509,0 -4.5908341,0 -6.9286892,0 z"
-    )
-    grp.add(path.Path(d=d, fill=f"url(#{grad_id})"))
+    path_data = [
+        (
+            "M 36.190065,4.03021792 V 19.96978208 H 26.17482 V 4.03021792 Z",
+            f"url(#{grad_id}reverse)",
+        ),
+        (
+            "m 14.372107,8 h 12.622435 c 0.926189,0.4682136 "
+            "1.836022,1.0196072 2.268178,4 -0.208657,2.2499784 "
+            "-0.954601,3.6030472 -2.273297,4 H 14.296948",
+            middle_color,
+        ),
+        (
+            "M 3.9464908,4.00385968 V 19.99614032 H 10.87518 C "
+            "12.433713,19.3273112 15.158267,16.2339928 15.313795,11.25 "
+            "15.498614,8.946514 14.059659,5.29927304 10.87518,4.00385968 c "
+            "-2.2179509,0 -4.5908341,0 -6.9286892,0 z",
+            f"url(#{grad_id})",
+        ),
+    ]
+    for d, fill in path_data:
+        grp.add(path.Path(d=d, fill=fill))
     symb.add(grp)
     return symb
 
