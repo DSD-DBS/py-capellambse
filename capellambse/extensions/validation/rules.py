@@ -319,6 +319,23 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
 
 
 @rule(
+    category=_validate.Category.REQUIRED,
+    types=[sa.SystemFunction],
+    id="SF-030",
+    name="Function shall be allocated to the System or an Actor.",
+    rationale=(
+        "An unallocated Function can lead to ambiguity, as it's unclear which"
+        " entity is responsible for its implementation. Allocating the"
+        " Function to the System or an Actor will clarify ownership and ensure"
+        " proper delivery within the overall system context."
+    ),
+    action="allocate Function to the System or an Actor, or delete it",
+)
+def function_is_allocated(obj: sa.SystemFunction) -> bool:
+    return bool(obj.owner)
+
+
+@rule(
     category=_validate.Category.RECOMMENDED,
     types=[sa.SystemFunction],
     id="SF-040",
@@ -331,3 +348,118 @@ def is_and_should_entity_involvements_match(obj: sa.Capability) -> bool:
 )
 def function_has_inputs_and_outputs(obj: sa.SystemFunction) -> bool:
     return len(obj.inputs) > 0 or len(obj.outputs) > 0
+
+
+@rule(
+    category=_validate.Category.REQUIRED,
+    types=SystemActor,
+    id="SY-001",
+    name="System has at least one Function allocated to it.",
+    rationale="A System has functionalities and those have to be described.",
+    action="Allocate at least one Function to the System",
+)
+def system_involves_function(sys: sa.SystemComponent) -> bool:
+    return len(sys.allocated_functions) > 0
+
+
+@rule(
+    category=_validate.Category.RECOMMENDED,
+    # FIXME Only apply to SystemFunctions that are not allocated to an Actor
+    types=[sa.SystemFunction],
+    id="SF-050",
+    name=(
+        "A System Function shall be connected to at least one System Actor"
+        " through a Functional Exchange."
+    ),
+    rationale=(
+        "A System Function is justified only if it provides some useful"
+        " service directly to an System Actor. BUT: there are functions"
+        " connected only to other functions, which then connect to actors. So"
+        " the rule should read: A System Function shall be connected directly"
+        " or indirectly (via other functions) to at least one System Actor"
+        " through a Functional Exchange."
+    ),
+    action=(
+        "Connect the System Function via a Functional Exchange to a System"
+        " Actor or to another System Function which is (directly or"
+        " indirectly) connected to a System Actor or delete the System"
+        " Function."
+    ),
+)
+def function_of_system_exchanges_with_actor(func: sa.SystemFunction) -> bool:
+    using_actors = sum(
+        ex.source.is_actor or ex.target.is_actor
+        for ex in func.related_exchanges
+    )
+    return bool(using_actors)
+
+
+@rule(
+    category=_validate.Category.SUGGESTED,
+    types=[fa.FunctionalExchange],
+    id="SFE-020",
+    name="Functional Exchange should have an allocated Exchange Item.",
+    rationale=(
+        "Allocating Exchange Items to Functional Exchanges clarifies the data,"
+        " material, or energy being exchanged between functions, and allows"
+        " for greater understanding and detailing of the exchanged elements."
+    ),
+    action="add an Exchange Item to the Functional Exchange",
+)
+def exchange_transmits_items(ex: fa.FunctionalExchange) -> bool:
+    return len(ex.exchange_items) > 0
+
+
+@rule(
+    category=_validate.Category.REQUIRED,
+    types=[sa.Capability],
+    id="SC-200",
+    name="System Capability should represent a specific behaviour",
+    rationale=(
+        "To ensure a System Capability is well-defined and concrete, it should"
+        " be based on an actual behavior or use case with an appropriate level"
+        " of detail. Work Instructions ARCH.052 'Create initial system"
+        " exchange scenarios' or ARCH.053 'Create initial system functional"
+        " chains' may help you getting there."
+    ),
+    action=(
+        "Specify the behaviour of the System Capability by creating a system"
+        " exchange scenarios or defining functional chains"
+    ),
+)
+def capability_involves_functional_chain_or_scenario(
+    cap: sa.Capability,
+) -> bool:
+    return len(cap.involved_chains) > 0 or len(cap.scenarios) > 0
+
+
+@rule(
+    category=_validate.Category.RECOMMENDED,
+    types=[sa.SystemFunction],
+    id="VK-001-XD",
+    name="Function is connected to another Entity's function (System, Actor)",
+    rationale=(
+        "To keep system analysis solution-agnostic, it is important to ensure"
+        " that System-level functions focus on stakeholder-facing interactions"
+        " rather than functional decomposition within a component. This"
+        " approach emphasizes component responsibilities towards other actors,"
+        " fostering a better understanding of the system's intended behavior"
+        " and facilitating alignment with stakeholder needs, while avoiding"
+        " premature commitment to specific solutions."
+    ),
+    action=(
+        "consider introducing interaction with another Entity (System, Actor),"
+        " merging or removing this function"
+    ),
+)
+def function_has_external_exchanges(obj: sa.SystemFunction) -> bool:
+    owner = obj.owner
+    all_exchanges = [
+        ex for port in obj.inputs + obj.outputs for ex in port.exchanges
+    ]
+    neighbors = [
+        ex.source.owner if ex.source.owner is not owner else ex.target.owner
+        for ex in all_exchanges
+        if ex.source.owner is not owner and ex.target.owner is not owner
+    ]
+    return len(neighbors) > 0
