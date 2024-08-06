@@ -57,23 +57,14 @@ class ComplexValue(c.GenericElement):
 @c.attr_equal("name")
 @c.xtype_handler(None)
 class EnumerationLiteral(c.GenericElement):
-    """An EnumerationLiteral (proxy link)."""
-
     _xmltag = "ownedLiterals"
 
-    name = c.AttributeProperty("name", returntype=str)
     value = c.RoleTagAccessor("domainValue")
 
     owner: c.Accessor
 
-    def __eq__(self, other: object) -> bool:
-        if isinstance(other, str):
-            return self.name == other
-        return super().__eq__(other)
-
 
 @c.xtype_handler(None)
 class EnumerationReference(c.GenericElement):
-    name = c.AttributeProperty("name", returntype=str)
     type = c.AttrProxyAccessor(c.GenericElement, "abstractType")
     value = c.AttrProxyAccessor(c.GenericElement, "referencedValue")
