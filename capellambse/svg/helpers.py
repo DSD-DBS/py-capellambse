@@ -19,17 +19,17 @@ def check_for_horizontal_overflow(
     icon_size: int | float,
     alignment: AlignmentLiteral = "center",
 ) -> tuple[cabc.Sequence[str], float, float]:
-    max_text_width = width - (icon_size + 2 * icon_padding)
+    max_text_width = width - icon_size - icon_padding
     assert max_text_width >= 0
     lines = helpers.word_wrap(text, max_text_width)
     text_width = max(w for w, _ in map(helpers.extent_func, lines))
-    label_width = text_width + icon_size + 2 * icon_padding
+    label_width = text_width + icon_size + icon_padding
     if alignment == "center":
         label_margin = (width - label_width) / 2
     elif alignment == "left":
         label_margin = 0
     else:
-        label_margin = width - label_margin
+        label_margin = width - label_width
     return (lines, label_margin, text_width)
 
 
