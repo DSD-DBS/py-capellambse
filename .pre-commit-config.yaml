@@ -95,17 +95,15 @@ repos:
     rev: 24.2.0
     hooks:
       - id: black-jupyter
-  - repo: local # mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
     hooks:
       - id: mypy
         name: mypy
-        entry: mypy
-        language: python
-        types_or: [python, toml, yaml]
+        types_or: [python, pyi, toml, yaml]
         pass_filenames: false
         args: [capellambse, tests]
         additional_dependencies:
-          - mypy==1.10.0
           - mypypp==0.1.1
 
           - click==8.1.7
