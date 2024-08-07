@@ -93,13 +93,13 @@ def get_svg_symbol(
     try:
         factory_def = _FACTORIES[f"{styleclass}Symbol"]
     except KeyError:
-        factory_def = _FACTORIES["NotFoundSymbol"]
+        raise ValueError(f"No icon for type {styleclass}") from None
     return (factory_def.function(), factory_def.dependencies)
 
 
 def has_icon(styleclass: str, /) -> bool:
     """Determine if an icon exists for the given styleclass."""
-    return f"{styleclass}Symbol" in _FACTORIES or styleclass not in {"Note"}
+    return f"{styleclass}Symbol" in _FACTORIES
 
 
 class _FactoryDefinition(t.NamedTuple):
@@ -123,14 +123,6 @@ def _factory(
         return func
 
     return decorator
-
-
-@_factory()
-def _not_found_symbol() -> container.Symbol:
-    symb = container.Symbol(id="NotFoundSymbol", viewBox="0 0 10 10")
-    rect = shapes.Rect(insert=(0, 0), size=(10, 10), fill="red")
-    symb.add(rect)
-    return symb
 
 
 @_factory()
