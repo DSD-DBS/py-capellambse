@@ -48,6 +48,7 @@ RE_VALID_UUID = re.compile(r"[A-Za-z0-9_-]+")
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
 TABS_BEFORE = frozenset({"li"})
 DEFAULT_FONT_SIZE = 10
+WIDTH_PADDING_FACTOR = 1.15
 
 CROSS_FRAGMENT_LINK = re.compile(
     r"""
@@ -254,7 +255,7 @@ def extent_func(
     width = height = 0
     font = load_font(fonttype, size)
     (width, height), _ = font.font.getsize(text)
-    return (width * 1.1, height * 10 / 7)
+    return (width * WIDTH_PADDING_FACTOR, height * 10 / 7)
 
 
 def get_text_extent(

@@ -609,13 +609,13 @@ class Drawing:
         rect_style = {"text_style": text_style, "obj_style": obj_style}
         labels: list[LabelDict] = []
         if label_:
-            max_label_width = (
+            max_text_width = (
                 width_ - decorations.icon_size - decorations.icon_padding
             )
             if not children_:
                 y_ += (
                     height_
-                    - chelpers.get_text_extent(label_, max_label_width)[1]
+                    - chelpers.get_text_extent(label_, max_text_width)[1]
                 ) / 2
             labels.append(
                 {
@@ -1004,8 +1004,8 @@ def get_label_icon_position(
     assert lines.min_x is not None
     icon_x = lines.min_x - builder.icon_size - decorations.icon_padding
     if builder.text_anchor == "middle":
-        max_width = max(chelpers.extent_func(line)[0] for line in lines)
-        icon_x -= max_width / 2 - 7
+        text_width = max(chelpers.extent_func(line)[0] for line in lines)
+        icon_x -= (text_width / chelpers.WIDTH_PADDING_FACTOR) / 2 - 2
     if label["class"] == "Annotation":
         icon_x -= decorations.icon_padding
 

@@ -128,7 +128,7 @@ class TestSVG:
     ):
         """Test diagrams get rendered successfully."""
         diag = model.diagrams.by_name(diagram_name)
-        diag.render("svgdiagram").save(pretty=True)
+        diag.render("svg")
 
 
 class TestSVGHelpers:
