@@ -46,6 +46,7 @@ If you want a quickstart at how to use this package, head right into the
    start/envvars
    start/intro-to-api
    start/declarative
+   start/migrating-0.6
 
 .. toctree::
    :caption: Tutorials
