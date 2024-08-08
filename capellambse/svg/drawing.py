@@ -24,8 +24,6 @@ from . import decorations, generate, helpers, style, symbols
 LOGGER = logging.getLogger(__name__)
 DEBUG = "CAPELLAMBSE_SVG_DEBUG" in os.environ
 """Debug flag to render helping lines."""
-LABEL_ICON_PADDING = 2
-"""Default padding between a label's icon and text."""
 NUMBER = r"-?\d+(\.\d+)?"
 RE_ROTATION = re.compile(
     rf"rotate\((?P<angle>{NUMBER}),\s*(?P<x>{NUMBER}),\s*(?P<y>{NUMBER})\) "
@@ -55,7 +53,7 @@ class Drawing:
         metadata: generate.DiagramMetadata,
         *,
         font_family: str = "'Open Sans','Segoe UI',Arial,sans-serif",
-        font_size: int = 11,
+        font_size: int = chelpers.DEFAULT_FONT_SIZE,
         transparent_background: bool = False,
     ):
         superparams = {
@@ -613,6 +611,14 @@ class Drawing:
         rect_style = {"text_style": text_style, "obj_style": obj_style}
         labels: list[LabelDict] = []
         if label_:
+            max_text_width = (
+                width_ - decorations.icon_size - decorations.icon_padding
+            )
+            if not children_:
+                y_ += (
+                    height_
+                    - chelpers.get_text_extent(label_, max_text_width)[1]
+                ) / 2
             labels.append(
                 {
                     "x": x_,
@@ -755,9 +761,7 @@ class Drawing:
         y_margin: int | float,
     ) -> container.Group:
         if diagram.has_icon(class_):
-            additional_space = (
-                decorations.icon_size + 2 * decorations.icon_padding
-            )
+            additional_space = decorations.icon_size + decorations.icon_padding
             label["width"] += additional_space + 2
             label["x"] -= additional_space / 2
 
@@ -1002,8 +1006,8 @@ def get_label_icon_position(
     assert lines.min_x is not None
     icon_x = lines.min_x - builder.icon_size - decorations.icon_padding
     if builder.text_anchor == "middle":
-        icon_x -= lines.max_line_width / 3
-
+        text_width = max(chelpers.extent_func(line)[0] for line in lines)
+        icon_x -= (text_width / chelpers.WIDTH_PADDING_FACTOR) / 2 - 2
     if label["class"] == "Annotation":
         icon_x -= decorations.icon_padding
 
