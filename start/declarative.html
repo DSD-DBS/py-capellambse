@@ -1,0 +1,715 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Migrating from py-capellambse v0.5.x to v0.6.x" href="migrating-0.6.html" /><link rel="prev" title="Introduction to py-capellambse API" href="intro-to-api.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>Declarative modelling - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="declarative-modelling">
+<span id="id1"></span><h1>Declarative modelling<a class="headerlink" href="#declarative-modelling" title="Link to this heading">¶</a></h1>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 0.5.0: </span>Introduced the declarative modelling module.</p>
+</div>
+<p>py-capellambse supports declarative modelling with the <a class="reference internal" href="../code/capellambse.html#module-capellambse.decl" title="capellambse.decl"><code class="xref py py-mod docutils literal notranslate"><span class="pre">capellambse.decl</span></code></a>
+module. This requires the optional dependency <code class="docutils literal notranslate"><span class="pre">capellambse[decl]</span></code> to be
+installed.</p>
+<p>The YAML-based declarative modelling engine combines a few simple concepts into
+a powerful, but easy to use file format. These files can then be applied to any
+model supported by py-capellambse.</p>
+<section id="example">
+<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
+<p>Here is an example YAML file that declares a simple coffee machine with a
+couple of functions, and functional exchanges between them:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0d2edb8f-fa34-4e73-89ec-fb9a63001440</span><span class="w"> </span><span class="c1"># root logical component</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="nt">components</span><span class="p">:</span>
+<span class="linenos"> 4</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Coffee Machine</span>
+<span class="linenos"> 5</span><span class="w">        </span><span class="nt">allocated_functions</span><span class="p">:</span>
+<span class="linenos"> 6</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+<span class="linenos"> 7</span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span><span class="w"> </span><span class="c1"># root logical function</span>
+<span class="linenos"> 8</span><span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="linenos">10</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+<span class="linenos">11</span><span class="w">        </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+<span class="linenos">12</span><span class="w">        </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="linenos">13</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Portafilter port</span>
+<span class="linenos">14</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Steam port</span>
+<span class="linenos">15</span><span class="w">            </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam input</span>
+<span class="linenos">16</span><span class="w">        </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="linenos">17</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Fluid port</span>
+<span class="linenos">18</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Waste port</span>
+<span class="linenos">19</span><span class="w">            </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waste output</span>
+<span class="linenos">20</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">produce steam</span>
+<span class="linenos">21</span><span class="w">        </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="linenos">22</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Water port</span>
+<span class="linenos">23</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Power port</span>
+<span class="linenos">24</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">User command</span>
+<span class="linenos">25</span><span class="w">        </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="linenos">26</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Steam port</span>
+<span class="linenos">27</span><span class="w">            </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam output</span>
+<span class="linenos">28</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">collect process waste</span>
+<span class="linenos">29</span><span class="w">        </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="linenos">30</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Waste port</span>
+<span class="linenos">31</span><span class="w">            </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waste input</span>
+<span class="linenos">32</span><span class="w">    </span><span class="nt">exchanges</span><span class="p">:</span>
+<span class="linenos">33</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Steam</span>
+<span class="linenos">34</span><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam output</span>
+<span class="linenos">35</span><span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam input</span>
+<span class="linenos">36</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Waste</span>
+<span class="linenos">37</span><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waste output</span>
+<span class="linenos">38</span><span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">waste input</span>
+</pre></div>
+</div>
+<section id="cli-usage">
+<h3>CLI usage<a class="headerlink" href="#cli-usage" title="Link to this heading">¶</a></h3>
+<p>If the additional optional dependency <code class="docutils literal notranslate"><span class="pre">capellambse[decl,cli]</span></code> is installed,
+this file can be applied from the command line. Assuming it is saved as
+<code class="docutils literal notranslate"><span class="pre">coffee-machine.yml</span></code>, it can then be applied to a locally stored Capella
+model like this:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>capellambse.decl<span class="w"> </span>--model<span class="w"> </span>path/to/model.aird<span class="w"> </span>coffee-machine.yml
+</pre></div>
+</div>
+<p>Refer to the <a class="reference internal" href="../code/capellambse.html#capellambse.cli_helpers.loadcli" title="capellambse.cli_helpers.loadcli"><code class="xref py py-func docutils literal notranslate"><span class="pre">capellambse.cli_helpers.loadcli()</span></code></a> documentation to find
+out the supported argument format for <code class="docutils literal notranslate"><span class="pre">--model</span></code>.</p>
+</section>
+<section id="api-usage">
+<h3>API usage<a class="headerlink" href="#api-usage" title="Link to this heading">¶</a></h3>
+<p>Declarative YAML can also be applied programmatically, by calling the
+<a class="reference internal" href="../code/capellambse.html#capellambse.decl.apply" title="capellambse.decl.apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">capellambse.decl.apply()</span></code></a> function. It takes a (loaded) py-capellambse
+model, and either a path to a file or a file-like object. To pass in a string
+containing YAML, wrap it in <a class="reference external" href="https://docs.python.org/3/library/io.html#io.StringIO" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">io.StringIO</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">io</span><span class="o">,</span> <span class="nn">capellambse.decl</span>
+<span class="n">my_model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">my_yaml</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>
+
+<span class="hll"><span class="n">capellambse</span><span class="o">.</span><span class="n">decl</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">my_model</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">my_yaml</span><span class="p">))</span>
+</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="format-description">
+<h2>Format description<a class="headerlink" href="#format-description" title="Link to this heading">¶</a></h2>
+<p>The expected YAML follows a simple format, where a parent object (i.e. an
+object that already exists in the model) is selected, and one or more of three
+different operations is applied to it:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">extend</span></code>-ing the object on list attributes,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set</span></code>-ting properties on the object itself,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sync</span></code>-ing objects into the model, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete</span></code>-ing one or more children.</p></li>
+</ul>
+<section id="selecting-a-parent">
+<h3>Selecting a parent<a class="headerlink" href="#selecting-a-parent" title="Link to this heading">¶</a></h3>
+<p>There are a few ways to select a parent object from the model.</p>
+<p>The most straight-forward way is to use the universally unique ID (UUID), using
+the <code class="docutils literal notranslate"><span class="pre">!uuid</span></code> YAML tag. The following query selects the root logical function
+in our test model:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+</pre></div>
+</div>
+<p>A more versatile way involves the <code class="docutils literal notranslate"><span class="pre">!find</span></code> YAML tag, which allows specifying a
+set of attributes in order to filter down to a single model element. This tag
+simply takes a mapping of all the attributes to select for. This usually also
+involves the element’s type (or class), which is selectable with the <code class="docutils literal notranslate"><span class="pre">_type</span></code>
+attribute:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!find</span>
+<span class="w">    </span><span class="nt">_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LogicalFunction</span>
+<span class="w">  </span><span class="c1"># ^-- note the leading underscore, to disambiguate from the &quot;type&quot;</span>
+<span class="w">  </span><span class="c1"># property that exists on some model elements</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Root Logical Function</span>
+<span class="w">  </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">!find</span></code> tag also supports dot-notation for filtering on nested
+attributes.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!find</span>
+<span class="w">    </span><span class="nt">_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FunctionOutputPort</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FOP 1</span>
+<span class="w">    </span><span class="nt">owner.name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">manage the school</span>
+<span class="w">  </span><span class="nt">set</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">...</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</section>
+<section id="extending-objects">
+<h3>Extending objects<a class="headerlink" href="#extending-objects" title="Link to this heading">¶</a></h3>
+<p>The following subsections show how to create completely new objects, or
+reference and move already existing ones, using examples of declarative YAML
+files on <a class="reference internal" href="../code/capellambse.model.html#capellambse.model.ElementListCouplingMixin" title="capellambse.model.ElementListCouplingMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElementListCouplingMixin</span></code></a>-ish
+attributes. The extension of one-to-one attributes works in the same way,
+adhering to the YAML syntax.</p>
+<section id="creating-new-objects">
+<h4>Creating new objects<a class="headerlink" href="#creating-new-objects" title="Link to this heading">¶</a></h4>
+<p><a class="reference internal" href="../code/capellambse.metamodel.html#capellambse.metamodel.la.LogicalFunction" title="capellambse.metamodel.la.LogicalFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalFunction</span></code></a> objects have several
+different attributes which can be modified from a declarative YAML file. For
+example, it is possible to create new
+sub-<a class="reference internal" href="../code/capellambse.metamodel.html#capellambse.metamodel.la.LogicalFunction.functions" title="capellambse.metamodel.la.LogicalFunction.functions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">functions</span></code></a>. This
+snippet creates a function with the name “brew coffee” directly below the root
+function:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+<span class="hll"><span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+</span><span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+</pre></div>
+</div>
+<p>Functions can be nested arbitrarily deeply, and can also receive any other
+supported attributes at the same time. The “brew coffee” function for example
+could further receive nested child functions, each providing an output port:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+<span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="hll"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">functions</span><span class="p">:</span>
+</span><span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">grind beans</span>
+<span class="w">            </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Ground Beans port</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">heat water</span>
+<span class="w">            </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Hot Water port</span>
+</pre></div>
+</div>
+<p>While objects that already exist in the base model can be referenced with
+<code class="docutils literal notranslate"><span class="pre">!uuid</span></code>, this is not possible for objects declared by the YAML file, as they
+will have a random UUID assigned to ensure uniqueness. For this reason, a
+promise mechanic exists, which allows to “tag” any declared object with a
+<code class="docutils literal notranslate"><span class="pre">promise_id</span></code>, and later reference that object with the <code class="docutils literal notranslate"><span class="pre">!promise</span></code> YAML tag.
+These promise IDs are user defined strings. The only requirement is that two
+objects cannot receive the same ID, however they can be referenced any number
+of times. This example snippet demonstrates how to declare two logical
+functions, which communicate through a functional exchange:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+<span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+<span class="w">        </span><span class="nt">inputs</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Steam port</span>
+<span class="hll"><span class="w">            </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam-input</span>
+</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">produce steam</span>
+<span class="w">        </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Steam port</span>
+<span class="hll"><span class="w">            </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam-output</span>
+</span><span class="w">    </span><span class="nt">exchanges</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Steam</span>
+<span class="hll"><span class="w">        </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam-output</span>
+</span><span class="hll"><span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">steam-input</span>
+</span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">!promise</span></code> tag (and the <code class="docutils literal notranslate"><span class="pre">!uuid</span></code> tag as well) can be used anywhere where
+a model object is expected.</p>
+</section>
+<section id="creating-new-references">
+<h4>Creating new references<a class="headerlink" href="#creating-new-references" title="Link to this heading">¶</a></h4>
+<p>It is important to understand when new model objects are created and when only
+references are added. The following example would create a reference in the
+<code class="docutils literal notranslate"><span class="pre">.allocated_functions</span></code> attribute of the
+<a class="reference internal" href="../code/capellambse.metamodel.html#capellambse.metamodel.la.LogicalComponent" title="capellambse.metamodel.la.LogicalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalComponent</span></code></a> which is also the
+logical <code class="docutils literal notranslate"><span class="pre">root_component</span></code> (parent) to the logical <code class="docutils literal notranslate"><span class="pre">root_function</span></code>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0d2edb8f-fa34-4e73-89ec-fb9a63001440</span>
+<span class="hll"><span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+</span><span class="w">    </span><span class="nt">allocated_functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+</pre></div>
+</div>
+<p>This is caused by the type of relationship (non-
+<a class="reference internal" href="../code/capellambse.model.html#capellambse.model.DirectProxyAccessor" title="capellambse.model.DirectProxyAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DirectProxyAccessor</span></code></a>) between the parent and its
+<code class="docutils literal notranslate"><span class="pre">allocated_functions</span></code>.</p>
+<p>It is also possible to create references to promised objects, but extra caution
+for declaring <code class="docutils literal notranslate"><span class="pre">promise_id</span></code>s for resolving these promises successfully:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+<span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">The promised one</span>
+<span class="hll"><span class="w">        </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">promised-fnc</span>
+</span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0d2edb8f-fa34-4e73-89ec-fb9a63001440</span>
+<span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="hll"><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">promised-fnc</span>
+</span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">promise_id</span></code> declaration can also happen after referencing it.</p>
+</section>
+<section id="moving-objects">
+<h4>Moving objects<a class="headerlink" href="#moving-objects" title="Link to this heading">¶</a></h4>
+<p>The following example would move a logical function from underneath a
+<a class="reference internal" href="../code/capellambse.metamodel.html#capellambse.metamodel.la.LogicalFunctionPkg" title="capellambse.metamodel.la.LogicalFunctionPkg"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalFunctionPkg</span></code></a> (accessible via
+<code class="docutils literal notranslate"><span class="pre">functions</span></code>) into <code class="docutils literal notranslate"><span class="pre">functions</span></code> of the logical <code class="docutils literal notranslate"><span class="pre">root_function</span></code> (parent)
+since the <code class="docutils literal notranslate"><span class="pre">functions</span></code> attribute has a parent/children relationship (i.e. the
+<a class="reference internal" href="../code/capellambse.model.html#capellambse.model.DirectProxyAccessor" title="capellambse.model.DirectProxyAccessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">DirectProxyAccessor</span></code></a> is used).</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+<span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8833d2dc-b862-4a50-b26c-6f7e0f17faef</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="setting-properties">
+<h3>Setting properties<a class="headerlink" href="#setting-properties" title="Link to this heading">¶</a></h3>
+<p>After selecting a parent, it is also possible to directly change its properties
+without introducing new objects into the model. This happens by specifying the
+attributes in the <code class="docutils literal notranslate"><span class="pre">set:</span></code> key.</p>
+<p>The following example would change the <code class="docutils literal notranslate"><span class="pre">name</span></code> of the root
+<a class="reference internal" href="../code/capellambse.metamodel.html#capellambse.metamodel.la.LogicalComponent" title="capellambse.metamodel.la.LogicalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogicalComponent</span></code></a> to “Coffee Machine”
+(notice how we use a different UUID than before):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0d2edb8f-fa34-4e73-89ec-fb9a63001440</span>
+<span class="hll"><span class="w">  </span><span class="nt">set</span><span class="p">:</span>
+</span><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Coffee Machine</span>
+</pre></div>
+</div>
+<p>This is not limited to string attributes; it is just as well possible to change
+e.g. numeric properties. This example changes the <code class="docutils literal notranslate"><span class="pre">min_card</span></code> property of an
+<a class="reference internal" href="../code/capellambse.metamodel.information.html#capellambse.metamodel.information.ExchangeItemElement" title="capellambse.metamodel.information.ExchangeItemElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExchangeItemElement</span></code></a> to <code class="docutils literal notranslate"><span class="pre">0</span></code> and
+the <code class="docutils literal notranslate"><span class="pre">max_card</span></code> to infinity, effectively removing both limitations:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">81b87fcc-03cf-434b-ad5b-ef18266c5a3e</span>
+<span class="w">  </span><span class="nt">set</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">min_card</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</span><span class="hll"><span class="w">    </span><span class="nt">max_card</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.inf</span>
+</span></pre></div>
+</div>
+</section>
+<section id="synchronizing-objects">
+<h3>Synchronizing objects<a class="headerlink" href="#synchronizing-objects" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">sync:</span></code> key is a combination of the above <code class="docutils literal notranslate"><span class="pre">extend:</span></code> and <code class="docutils literal notranslate"><span class="pre">set:</span></code> keys.
+Using it, it is possible to modify objects that already exist, or create new
+objects if they don’t exist yet.</p>
+<p>Unlike the other keys however, <code class="docutils literal notranslate"><span class="pre">sync:</span></code> takes two sets of attributs: one that
+is used to find a matching object (using the <code class="docutils literal notranslate"><span class="pre">find:</span></code> key), and one that is
+only used to set values once the object of interest was found (using the
+<code class="docutils literal notranslate"><span class="pre">set:</span></code> key).</p>
+<p>This operation also supports Promise IDs, which are resolved either using the
+found existing object or the newly created one.</p>
+<p>The following snippet ensures that the root LogicalFunction contains a
+subfunction “brew coffee” with the given description. A function named “brew
+coffee” will be used if it already exists, but if not, a new one will be
+created. In either case, the used function will resolve the “brew-coffee”
+promise, which can be used to reference it elsewhere:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span><span class="w">  </span><span class="c1"># the root function</span>
+<span class="w">  </span><span class="nt">sync</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">find</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew coffee</span>
+<span class="w">        </span><span class="nt">set</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">This function brews coffee.</span>
+<span class="w">        </span><span class="nt">promise_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew-coffee</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0d2edb8f-fa34-4e73-89ec-fb9a63001440</span><span class="w">  </span><span class="c1"># the root component</span>
+<span class="w">  </span><span class="nt">extend</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">allocated_functions</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!promise</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brew-coffee</span>
+</pre></div>
+</div>
+</section>
+<section id="deleting-objects">
+<h3>Deleting objects<a class="headerlink" href="#deleting-objects" title="Link to this heading">¶</a></h3>
+<p>Finally, with declarative modelling files, it is possible to delete objects
+from the model. Depending on where the delete operation occurs, either the
+target object is deleted entirely, or only the link to it is destroyed.</p>
+<p>Currently, objects to be deleted can only be selected by their UUID.</p>
+<p>For example, this snippet deletes the logical function named “produce Great
+Wizards” from the model:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f28ec0f8-f3b3-43a0-8af7-79f194b29a2d</span>
+<span class="w">  </span><span class="nt">delete</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">functions</span><span class="p">:</span>
+</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0e71a0d3-0a18-4671-bba0-71b5f88f95dd</span>
+</pre></div>
+</div>
+<p>In contrast, this snippet only removes its allocation to the “Hogwarts” root
+component, but the function still exists afterwards:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">parent</span><span class="p">:</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0d2edb8f-fa34-4e73-89ec-fb9a63001440</span>
+<span class="w">  </span><span class="nt">delete</span><span class="p">:</span>
+<span class="hll"><span class="w">    </span><span class="nt">allocated_functions</span><span class="p">:</span>
+</span><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="kt">!uuid</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0e71a0d3-0a18-4671-bba0-71b5f88f95dd</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="migrating-0.6.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Migrating from py-capellambse v0.5.x to v0.6.x</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="intro-to-api.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Introduction to py-capellambse API</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Declarative modelling</a><ul>
+<li><a class="reference internal" href="#example">Example</a><ul>
+<li><a class="reference internal" href="#cli-usage">CLI usage</a></li>
+<li><a class="reference internal" href="#api-usage">API usage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#format-description">Format description</a><ul>
+<li><a class="reference internal" href="#selecting-a-parent">Selecting a parent</a></li>
+<li><a class="reference internal" href="#extending-objects">Extending objects</a><ul>
+<li><a class="reference internal" href="#creating-new-objects">Creating new objects</a></li>
+<li><a class="reference internal" href="#creating-new-references">Creating new references</a></li>
+<li><a class="reference internal" href="#moving-objects">Moving objects</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#setting-properties">Setting properties</a></li>
+<li><a class="reference internal" href="#synchronizing-objects">Synchronizing objects</a></li>
+<li><a class="reference internal" href="#deleting-objects">Deleting objects</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
