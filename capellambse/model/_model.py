@@ -11,6 +11,8 @@ import logging
 import os
 import typing as t
 
+from lxml import etree
+
 import capellambse
 import capellambse.helpers
 from capellambse import _diagram_cache, aird, filehandler, loader
@@ -38,28 +40,30 @@ class MelodyModel:
     def project(self) -> capellambse.metamodel.capellamodeller.Project:
         import capellambse.metamodel as mm
 
-        try:
-            ep, elem = next(
-                (ep, frag.root)
-                for ep, frag in self._loader.trees.items()
-                if frag.fragment_type == loader.FragmentType.SEMANTIC
-            )
-        except StopIteration:
-            raise RuntimeError("No semantic fragment loaded?") from None
+        target_xt = {
+            _xtype.build_xtype(mm.capellamodeller.Project),
+            _xtype.build_xtype(mm.capellamodeller.Library),
+        }
+        roots: list[etree._Element] = []
+        for fname, frag in self._loader.trees.items():
+            if fname.parts[0] != "\x00":
+                continue
+            elem = frag.root
+            if elem.tag == "{http://www.omg.org/XMI}XMI":
+                try:
+                    elem = next(iter(elem))
+                except StopIteration:
+                    continue
+            if capellambse.helpers.xtype_of(elem) not in target_xt:
+                continue
+            roots.append(elem)
 
-        if elem.tag == "{http://www.omg.org/XMI}XMI":
-            try:
-                elem = next(iter(elem))
-            except StopIteration:
-                raise RuntimeError(
-                    f"No root element found in entrypoint file {ep}"
-                ) from None
-
-        obj = _obj.GenericElement.from_model(self, elem)
-
-        if not isinstance(obj, mm.capellamodeller.Project):
-            raise RuntimeError("Model root is not a Project or Library")
-
+        if len(roots) < 1:
+            raise RuntimeError("No root project or library found")
+        if len(roots) > 1:
+            raise RuntimeError(f"Found {len(roots)} Project/Library objects")
+        obj = _obj.GenericElement.from_model(self, roots[0])
+        assert isinstance(obj, mm.capellamodeller.Project)
         return obj
 
     @property
