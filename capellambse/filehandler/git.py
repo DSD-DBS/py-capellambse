@@ -502,7 +502,7 @@ class GitFileHandler(abc.FileHandler):
             branch=revparse("--abbrev-ref", self.revision),
             url=str(self.path),
             revision=self.revision,
-            rev_hash=revparse(self.revision),
+            rev_hash=self.__hash,
         )
 
     def write_transaction(
@@ -826,5 +826,5 @@ class GitPath(abc.FilePath[GitFileHandler]):
 @dataclasses.dataclass
 class GitHandlerInfo(abc.HandlerInfo):
     branch: str | None
-    revision: str | None
-    rev_hash: str | None
+    revision: str
+    rev_hash: str

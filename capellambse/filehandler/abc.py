@@ -362,7 +362,7 @@ class TransactionClosedError(RuntimeError):
 
 @dataclasses.dataclass
 class HandlerInfo:
-    url: str | None
+    url: str
 
     def __getattr__(self, attr: str) -> t.Any:
         return None
