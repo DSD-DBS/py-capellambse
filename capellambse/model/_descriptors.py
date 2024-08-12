@@ -1787,7 +1787,14 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         elts = list(obj._element.iterchildren(self.role_tag))
         rv = self._make_list(obj, elts)
         if self.classes:
-            rv = rv.filter(lambda i: isinstance(i, self.classes))
+            for i in rv:
+                if not isinstance(i, self.classes):
+                    expected = ", ".join(i.__name__ for i in self.classes)
+                    raise RuntimeError(
+                        f"Unexpected element of type {type(i).__name__}"
+                        f" in {self._qualname} on {obj._short_repr_()},"
+                        f" expected one of: {expected}"
+                    )
         if self.alternate is not None:
             assert isinstance(rv, _obj.ElementList)
             assert not isinstance(rv, _obj.MixedElementList)
