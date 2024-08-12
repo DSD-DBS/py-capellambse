@@ -67,6 +67,35 @@ affects the following modules:
    * - capellambse.model.layers.ctx
      - capellambse.metamodel.sa
 
+Requirements extension (``capellambse.extensions.reqif``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The following deprecated aliases have been removed:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed alias
+     - Correct name
+   * - EnumDataTypeDefinition
+     - EnumerationDataTypeDefinition
+   * - RequirementsFolder
+     - Folder
+   * - RequirementsIncRelation
+     - CapellaIncomingRelation
+   * - RequirementsIntRelation
+     - InternalRelation
+   * - RequirementsModule
+     - CapellaModule
+   * - RequirementsOutRelation
+     - CapellaOutgoingRelation
+   * - RequirementsTypesFolder
+     - CapellaTypesFolder
+   * - String constants starting with ``XT_``
+     - Use :func:`~capellambse.model.common.build_xtype` instead
+   * - The ``reqif.elements`` submodule
+     - Removed, use the ``reqif`` package directly
+
 Model implementation
 ~~~~~~~~~~~~~~~~~~~~
 
