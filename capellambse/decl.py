@@ -541,10 +541,8 @@ class YDMDumper(yaml.SafeDumper):
     def represent_newobj(self, data: t.Any) -> yaml.Node:
         assert isinstance(data, NewObject)
         attrs = dict(data._kw)
-        if len(data._type_hint) > 1:
-            raise TypeError("Cannot use more than one type hint")
-        if len(data._type_hint) == 1:
-            attrs["_type"] = data._type_hint[0]
+        if data._type_hint:
+            attrs["_type"] = data._type_hint
         return self.represent_mapping("!new_object", attrs)
 
     def represent_findby(self, data: t.Any) -> yaml.Node:
