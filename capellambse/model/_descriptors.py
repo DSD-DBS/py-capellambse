@@ -814,18 +814,94 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         yield
 
 
-class DeepProxyAccessor(DirectProxyAccessor[T]):
+class DeepProxyAccessor(PhysicalAccessor[T]):
     """A DirectProxyAccessor that searches recursively through the tree."""
 
     __slots__ = ()
 
+    def __init__(
+        self,
+        class_: type[T],
+        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
+        *,
+        aslist: type[_obj.ElementList] | None = None,
+        rootelem: (
+            type[_obj.GenericElement]
+            | cabc.Sequence[type[_obj.GenericElement]]
+            | None
+        ) = None,
+    ) -> None:
+        """Create a DeepProxyAccessor.
+
+        Parameters
+        ----------
+        class_
+            The proxy class.
+        xtypes
+            The ``xsi:type`` (or types) to search for. If None, defaults
+            to the type of the passed ``class_``.
+        aslist
+            A subclass of :class:`~capellambse.model.ElementList` to use
+            for returning a list of all matched objects. If not
+            specified, defaults to the base ElementList.
+        rootelem
+            Limit the search scope to objects of this type, nested below
+            the current object. When passing a sequence, defines a path
+            of object types to follow.
+        """
+        if aslist is None:
+            aslist = _obj.ElementList
+        super().__init__(
+            class_,
+            xtypes,
+            aslist=aslist,
+        )
+        if rootelem is None:
+            self.rootelem: cabc.Sequence[str] = ()
+        elif isinstance(rootelem, type) and issubclass(
+            rootelem, _obj.GenericElement
+        ):
+            self.rootelem = (_xtype.build_xtype(rootelem),)
+        elif not isinstance(rootelem, str):  # type: ignore[unreachable]
+            self.rootelem = tuple(_xtype.build_xtype(i) for i in rootelem)
+        else:
+            raise TypeError(
+                "Invalid 'rootelem', expected a type or list of types: "
+                + repr(rootelem)
+            )
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
+    @t.overload
+    def __get__(
+        self, obj: _obj.ModelObject, objtype: type[t.Any] | None = ...
+    ) -> _obj.ElementList[T]: ...
+    def __get__(
+        self,
+        obj: _obj.ModelObject | None,
+        objtype: type[t.Any] | None = None,
+    ) -> te.Self | _obj.ElementList[T]:
+        del objtype
+        if obj is None:  # pragma: no cover
+            return self
+
+        elems = [e for e in self._getsubelems(obj) if e.get("id") is not None]
+        assert self.aslist is not None
+        return self.aslist(obj._model, elems)
+
     def _getsubelems(
         self, obj: _obj.ModelObject
     ) -> cabc.Iterator[etree._Element]:
-        return itertools.chain.from_iterable(
-            obj._model._loader.iterdescendants_xt(i, *iter(self.xtypes))
-            for i in self._findroots(obj)
-        )
+        ldr = obj._model._loader
+        roots = [obj._element]
+        for xtype in self.rootelem:
+            roots = list(
+                itertools.chain.from_iterable(
+                    ldr.iterchildren_xt(i, xtype) for i in roots
+                )
+            )
+        for root in roots:
+            yield from ldr.iterdescendants_xt(root, *self.xtypes)
 
 
 class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
@@ -1711,7 +1787,14 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         elts = list(obj._element.iterchildren(self.role_tag))
         rv = self._make_list(obj, elts)
         if self.classes:
-            rv = rv.filter(lambda i: isinstance(i, self.classes))
+            for i in rv:
+                if not isinstance(i, self.classes):
+                    expected = ", ".join(i.__name__ for i in self.classes)
+                    raise RuntimeError(
+                        f"Unexpected element of type {type(i).__name__}"
+                        f" in {self._qualname} on {obj._short_repr_()},"
+                        f" expected one of: {expected}"
+                    )
         if self.alternate is not None:
             assert isinstance(rv, _obj.ElementList)
             assert not isinstance(rv, _obj.MixedElementList)
