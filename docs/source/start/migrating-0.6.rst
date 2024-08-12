@@ -92,7 +92,7 @@ The following deprecated aliases have been removed:
    * - RequirementsTypesFolder
      - CapellaTypesFolder
    * - String constants starting with ``XT_``
-     - Use :func:`~capellambse.model.common.build_xtype` instead
+     - Use :func:`~capellambse.model.build_xtype` instead
    * - The ``reqif.elements`` submodule
      - Removed, use the ``reqif`` package directly
 
