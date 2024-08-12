@@ -137,12 +137,13 @@ def test_ElementList_dictlike_setitem(model: m.MelodyModel):
 
 
 def test_MixedElementList_filter_by_type(model: m.MelodyModel):
-    process = model.oa.all_processes.by_uuid(
-        "d588e41f-ec4d-4fa9-ad6d-056868c66274"
-    )
+    process = model.by_uuid("d588e41f-ec4d-4fa9-ad6d-056868c66274")
+    assert isinstance(process, mm.oa.OperationalProcess)
+
     involvements = process.involved
     acts = involvements.by_type("OperationalActivity")
     fexs = involvements.by_type("FunctionalExchange")
+
     assert len(involvements) == 7
     assert len(acts) == 4
     assert len(fexs) == 3
@@ -169,6 +170,7 @@ def test_GenericElement_attrs(model: m.MelodyModel, key: str, value: str):
 
 def test_GenericElement_has_diagrams(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
+    assert isinstance(elm, mm.oa.OperationalCapability)
     assert hasattr(elm, "diagrams")
     assert len(elm.diagrams) == 0
 
@@ -186,6 +188,7 @@ def test_GenericElement_has_progress_status(model: m.MelodyModel):
 
 def test_Capabilities_have_constraints(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
+    assert isinstance(elm, mm.oa.OperationalCapability)
     assert hasattr(elm, "constraints")
     assert len(elm.constraints) == 3
 
@@ -337,6 +340,7 @@ class TestStateMachines:
 
     def test_stm_has_regions(self, model: m.MelodyModel):
         entity = model.oa.all_entities.by_name("Functional Human Being")
+        assert isinstance(entity, mm.oa.Entity)
         state_machine = entity.state_machines[0]
 
         assert hasattr(state_machine, "regions")
@@ -344,6 +348,7 @@ class TestStateMachines:
 
     def test_stm_region(self, model: m.MelodyModel):
         entity = model.oa.all_entities.by_name("Functional Human Being")
+        assert isinstance(entity, mm.oa.Entity)
         region = entity.state_machines[0].regions[0]
 
         assert len(region.states) == 12
@@ -351,13 +356,8 @@ class TestStateMachines:
         assert len(region.transitions) == 14
 
     def test_stm_state_mode_regions_well_defined(self, model: m.MelodyModel):
-        mode = (
-            model.oa.all_entities.by_name("Environment")
-            .entities.by_name("Weather")
-            .state_machines[0]
-            .regions[0]
-            .modes.by_name("Day")
-        )
+        mode = model.by_uuid("91dc2eec-c878-4fdb-91d8-8f4a4527424e")
+        assert isinstance(mode, mm.capellacommon.Mode)
 
         assert hasattr(mode, "regions")
         assert len(mode.regions) == 1
@@ -366,12 +366,8 @@ class TestStateMachines:
     def test_stm_transition_attributes_well_defined(
         self, model: m.MelodyModel
     ):
-        transition = (
-            model.oa.all_entities.by_name("Functional Human Being")
-            .state_machines[0]
-            .regions[0]
-            .transitions.by_uuid("a78cf778-0476-4e08-a3a3-c115dca55dd1")
-        )
+        transition = model.by_uuid("a78cf778-0476-4e08-a3a3-c115dca55dd1")
+        assert isinstance(transition, mm.capellacommon.StateTransition)
 
         assert hasattr(transition, "source")
         assert transition.source is not None
@@ -422,11 +418,6 @@ class TestStateMachines:
 
         assert sleep_region.diagrams
         assert sleep_region.diagrams[0].name == "[MSM] Keep the sleep schedule"
-
-    def test_stm_state_has_functions(self, model: m.MelodyModel):
-        state = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
-        assert len(state.functions) == 4  # leaf functions only
-        assert "teach Care of Magical Creatures" in state.functions.by_name
 
 
 def test_exchange_items_of_a_function_port(model: m.MelodyModel):

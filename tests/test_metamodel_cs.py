@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 from capellambse import MelodyModel
+from capellambse.metamodel import cs
 
 
 def test_PhysicalPath_has_ordered_list_of_involved_items(model: MelodyModel):
@@ -51,6 +52,7 @@ def test_PhysicalLink_has_exchanges(model: MelodyModel):
 
 def test_PhysicalLink_setting_ends(model: MelodyModel):
     link = model.pa.all_physical_links.by_name("Eth Cable 2")
+    assert isinstance(link, cs.PhysicalLink)
     source_pp = model.by_uuid("76d9c301-c0ad-4615-9f02-b804b018decf")
     target_pp = model.by_uuid("53c9fe29-18e2-4642-906e-b7507bf0ff39")
 
@@ -64,6 +66,7 @@ def test_PhysicalLink_setting_ends(model: MelodyModel):
 
 def test_PhysicalLink_setting_source_and_target(model: MelodyModel):
     link = model.pa.all_physical_links.by_name("Eth Cable 2")
+    assert isinstance(link, cs.PhysicalLink)
     source_pp = model.by_uuid("76d9c301-c0ad-4615-9f02-b804b018decf")
     target_pp = model.by_uuid("53c9fe29-18e2-4642-906e-b7507bf0ff39")
 
