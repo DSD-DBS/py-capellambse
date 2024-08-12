@@ -389,8 +389,8 @@ def function_symbol(
     symb.add(gradient)
     symb.add(
         shapes.Ellipse(
-            center=(42.2, 32),
-            r=(22.5, 15.5),
+            center=(39.5, 39.5),
+            r=(26, 21),
             fill=f"url(#{gradient.get_id()})",
             stroke="#000",
             stroke_width=2,
@@ -399,10 +399,10 @@ def function_symbol(
     symb.add(
         text.Text(
             text=label,
-            insert=(42.2, 38),
+            insert=(40, 50),
             text_anchor="middle",
             font_family="'Open Sans','Segoe UI',Arial,sans-serif",
-            font_size="16px",
+            font_size="25px",
             font_weight="bold",
             fill="#000",
             stroke="none",

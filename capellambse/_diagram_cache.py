@@ -18,10 +18,9 @@ import typing as t
 import lxml
 from lxml import etree
 
-import capellambse.helpers
+import capellambse
 import capellambse.model as m
-import capellambse.model.diagram
-from capellambse import _native
+from capellambse import _native, helpers
 from capellambse.filehandler import local
 
 E = lxml.builder.ElementMaker()
@@ -324,10 +323,10 @@ def _text_extents(element: etree._Element) -> Extents:
     x = float(element.get("x", 0))
     y = float(element.get("y", 0))
     text = element.text or ""
-    font_size_str = element.get("font-size", "12").strip().lower()
+    font_size_str = element.get("font-size", "0").strip().lower()
     if "px" in font_size_str:
         font_size_str = font_size_str[:-2]
-    font_size = float(font_size_str)
+    font_size = float(font_size_str) or helpers.DEFAULT_FONT_SIZE
     width = len(text) * font_size * 0.6  # Simplistic width estimation
     return Extents(x, x + width, y - font_size, y)
 
