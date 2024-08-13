@@ -115,8 +115,8 @@ intersphinx_mapping = {
     "lxml": ("https://lxml.de/apidoc/", None),
     "markupsafe": ("https://markupsafe.palletsprojects.com/en/2.1.x", None),
     "python": ("https://docs.python.org/3", None),
-    "svgwrite": ("https://svgwrite.readthedocs.io/en/latest/", None),
-    "requests": ("https://requests.readthedocs.io/en/latest/", None),
+    "svgwrite": ("https://svgwrite.readthedocs.io/en/latest", None),
+    "requests": ("https://requests.readthedocs.io/en/latest", None),
     "PIL": ("https://pillow.readthedocs.io/en/stable", None),
 }
 
