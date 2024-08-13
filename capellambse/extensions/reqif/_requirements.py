@@ -102,7 +102,7 @@ class AbstractRequirementsAttribute(m.GenericElement):
 
     definition = m.AttrProxyAccessor(AttributeDefinition, "definition")
 
-    value: m.BasePOD | m.AttrProxyAccessor
+    value: t.Any
 
     def __repr__(self) -> str:
         return self._short_repr_()
