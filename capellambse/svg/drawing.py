@@ -614,7 +614,7 @@ class Drawing:
             max_text_width = (
                 width_ - decorations.icon_size - decorations.icon_padding
             )
-            if not children_:
+            if not children_ and class_ not in decorations.always_top_label:
                 label_extent = chelpers.get_text_extent(label_, max_text_width)
                 y_ += (height_ - label_extent[1]) / 2
             labels.append(
