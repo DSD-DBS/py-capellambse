@@ -44,8 +44,8 @@ def main(metamodel: str):
                 continue
 
             literals = [
-                Literal(l.attrib["name"], l.get("value", "0"), getdoc(l))
-                for l in elem.iterchildren("eLiterals")
+                Literal(lit.attrib["name"], lit.get("value", "0"), getdoc(lit))
+                for lit in elem.iterchildren("eLiterals")
             ]
             classes[clsname] = Class(clsname, literals, getdoc(elem))
 
@@ -57,10 +57,10 @@ def main(metamodel: str):
         print(f"class {cls.name}(_StringyEnumMixin, _enum.Enum):")
         if cls.doc:
             print(f'    """{cls.doc}"""\n')
-        for l in cls.literals:
-            print(f"    {fixname(l.name)} = {l.name!r}")
-            if l.doc:
-                print(f'    """{l.doc}"""')
+        for lit in cls.literals:
+            print(f"    {fixname(lit.name)} = {lit.name!r}")
+            if lit.doc:
+                print(f'    """{lit.doc}"""')
 
 
 def getdoc(elem: etree._Element) -> str:

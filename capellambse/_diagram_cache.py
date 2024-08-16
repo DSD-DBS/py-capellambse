@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import collections
+import contextlib
 import datetime
 import itertools
 import json
@@ -120,10 +121,8 @@ def export(
         )
 
     diag_cache_dir = pathlib.Path(model.diagram_cache.path)
-    try:
+    with contextlib.suppress(FileNotFoundError):
         shutil.rmtree(diag_cache_dir)
-    except FileNotFoundError:
-        pass
     diag_cache_dir.mkdir(parents=True)
 
     native_args = _find_executor(model, capella, force)
@@ -167,19 +166,16 @@ def _find_executor(
     native_args: dict[str, str] = {}
     if force == "docker":
         native_args["docker"] = capella
-    elif force == "exe":
+    elif force == "exe" or pathlib.Path(capella).is_absolute():
         native_args["exe"] = capella
-    else:
-        if pathlib.Path(capella).is_absolute():
-            native_args["exe"] = capella
-        elif pathlib.Path(capella).parent == pathlib.Path("."):
-            exe = shutil.which(capella)
-            if exe:
-                native_args["exe"] = exe
-            else:
-                raise ValueError(f"Not found in PATH: {capella}")
+    elif pathlib.Path(capella).parent == pathlib.Path():
+        exe = shutil.which(capella)
+        if exe:
+            native_args["exe"] = exe
         else:
-            native_args["docker"] = capella
+            raise ValueError(f"Not found in PATH: {capella}")
+    else:
+        native_args["docker"] = capella
     assert "exe" in native_args or "docker" in native_args
     return native_args
 
@@ -249,7 +245,7 @@ def _sanitize_filename(fname: str) -> str:
     fname = fname.rstrip(" .")
     fname = re.sub(
         '[\x00-\x1f<>:"/\\\\|?*]',
-        lambda m: "-"[ord(m.group(0)) < 32 :],
+        lambda m: "-"[ord(m.group(0)) < ord(" ") :],
         fname,
     )
     if fname.split(".")[0].upper() in BAD_FILENAMES:
@@ -298,7 +294,7 @@ def _polyline_extents(element: etree._Element) -> Extents:
         tuple(map(float, p.split(",")))
         for p in element.get("points", "").strip().split()
     ]
-    x_coords, y_coords = zip(*points)
+    x_coords, y_coords = zip(*points, strict=False)
     return Extents(min(x_coords), max(x_coords), min(y_coords), max(y_coords))
 
 
@@ -475,7 +471,8 @@ def _write_index(
     dest: pathlib.Path,
     index: list[IndexEntry],
 ) -> None:
-    now = datetime.datetime.now().strftime("%A, %Y-%m-%d %H:%M:%S")
+    nowtime = datetime.datetime.now(tz=None)
+    now = nowtime.strftime("%A, %Y-%m-%d %H:%M:%S")
     title = f"Capella diagram cache for {model.name!r}"
     html = E.html(
         E.head(

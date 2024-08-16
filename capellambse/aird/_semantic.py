@@ -8,6 +8,7 @@ melody file is the source of truth for all attributes that are not
 specific to a single diagram, i.e. basically everything except position,
 size and styling.
 """
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -16,7 +17,7 @@ import typing as t
 
 from lxml import etree
 
-import capellambse  # pylint: disable=unused-import  # used in typing
+import capellambse
 from capellambse import diagram
 
 from . import _box_factories

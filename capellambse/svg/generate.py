@@ -18,12 +18,12 @@ ContentsDict = t.TypedDict(
         "type": str,
         "id": str,
         "class": str,
-        "points": t.List[t.List[int]],
+        "points": list[list[int]],
         "x": float,
         "y": float,
         "width": float,
         "height": float,
-        "label": t.Union[LabelDict, str],
+        "label": LabelDict | str,
     },
     total=False,
 )
@@ -133,7 +133,7 @@ DiagramMetadataDict = t.TypedDict(
         "y": float,
         "width": float,
         "height": float,
-        "class": t.Union[str, None],
+        "class": str | None,
     },
 )
 

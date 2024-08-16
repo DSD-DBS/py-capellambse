@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Global fixtures for pytest."""
-import collections.abc as cabc
+
 import importlib.metadata as imm
 import io
 import pathlib
@@ -29,7 +29,7 @@ if not any(
 
 
 @pytest.fixture(scope="session")
-def session_shared_model() -> cabc.Iterator[capellambse.MelodyModel]:
+def session_shared_model() -> capellambse.MelodyModel:
     """Load the standard test model.
 
     Unlike the ``model`` fixture, this fixture is shared across the
@@ -39,8 +39,7 @@ def session_shared_model() -> cabc.Iterator[capellambse.MelodyModel]:
     This fixture exists as a speed optimization for tests that only read
     from the model.
     """
-    loaded = capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
-    yield loaded
+    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
 
 
 @pytest.fixture

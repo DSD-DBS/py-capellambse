@@ -11,7 +11,7 @@ import typing as t
 
 E = t.TypeVar("E", bound=enum.Enum)
 """TypeVar for ":py:class:`~enum.Enum`"."""
-S = t.TypeVar("S", bound=t.Optional[str])
+S = t.TypeVar("S", bound=str | None)
 """TypeVar for ":py:class:`str` | None"."""
 T = t.TypeVar("T", bound="ModelObject")
 """TypeVar for ":py:class:`capellambse.model.ModelObject`"."""
@@ -37,7 +37,6 @@ def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
 
         @functools.wraps(orig_eq)
         def new_eq(self, other: object) -> bool:
-            # pylint: disable=unnecessary-dunder-call
             try:
                 cmpkey = getattr(self, attr)
             except AttributeError:
@@ -94,7 +93,10 @@ from ._xtype import *
 
 # NOTE: These are not in __all__ to avoid duplicate documentation in Sphinx,
 #       however their docstring should mention the re-export.
-from .diagram import AbstractDiagram, Diagram, DiagramAccessor, DiagramType
+from .diagram import AbstractDiagram as AbstractDiagram
+from .diagram import Diagram as Diagram
+from .diagram import DiagramAccessor as DiagramAccessor
+from .diagram import DiagramType as DiagramType
 
 GenericElement.parent = ParentAccessor(GenericElement)
 

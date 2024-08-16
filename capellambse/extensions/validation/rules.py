@@ -55,10 +55,10 @@ def _find_layer(
     while not isinstance(
         parent,
         (
-            mm.oa.OperationalAnalysis,
-            mm.sa.SystemAnalysis,
-            mm.la.LogicalArchitecture,
-            mm.pa.PhysicalArchitecture,
+            mm.oa.OperationalAnalysis
+            | mm.sa.SystemAnalysis
+            | mm.la.LogicalArchitecture
+            | mm.pa.PhysicalArchitecture
         ),
     ):
         parent = parent.parent

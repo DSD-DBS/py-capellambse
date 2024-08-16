@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Helpers for working with models in CLI scripts."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -59,7 +60,6 @@ try:
                 return loadcli(value)
             except ValueError as err:
                 self.fail(err.args[0], param, ctx)
-                assert False
 
     class ModelInfoCLI(click.ParamType):
         """Declare an option that loads information about a model.
@@ -95,7 +95,6 @@ try:
                 return loadinfo(value)
             except ValueError as err:
                 self.fail(err.args[0], param, ctx)
-                assert False
 
 except ImportError:
     if not t.TYPE_CHECKING:

@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=redefined-outer-name
 from __future__ import annotations
 
 import pytest
@@ -30,7 +29,7 @@ def fhdir() -> memory.MemoryFileHandler:
 
 
 def test_MemoryFileHandler_raises_ValueError_for_invalid_path():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="MemoryFileHandler"):
         memory.MemoryFileHandler(path="memory://invalid")
 
 

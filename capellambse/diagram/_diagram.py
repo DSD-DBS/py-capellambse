@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Classes that represent different aspects of a diagram."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -30,7 +31,7 @@ SNAPPING = "AIRD_NOSNAP" not in os.environ
 DiagramElement = t.Union["Box", "Edge", "Circle"]
 StyleOverrides = t.MutableMapping[
     str,
-    t.Union[str, diagram.RGB, t.MutableSequence[t.Union[str, diagram.RGB]]],
+    str | diagram.RGB | t.MutableSequence[str | diagram.RGB],
 ]
 
 
@@ -291,50 +292,51 @@ class Box:
                 (self.center, source),
                 (self.pos + self.size @ (1, 0), self.pos + self.size),
             )
-        elif -alpha_prime < angle <= 0:
+        if -alpha_prime < angle <= 0:
             return diagram.line_intersect(
                 (self.center, source),
                 (self.pos + self.size @ (0, 1), self.pos + self.size),
             )
-        elif alpha < angle < math.pi:
+        if alpha < angle < math.pi:
             return diagram.line_intersect(
                 (self.center, source),
                 (self.pos, self.pos + self.size @ (1, 0)),
             )
-        else:
-            return diagram.line_intersect(
-                (self.center, source),
-                (self.pos, self.pos + self.size @ (0, 1)),
-            )
+        return diagram.line_intersect(
+            (self.center, source),
+            (self.pos, self.pos + self.size @ (0, 1)),
+        )
 
     def __vector_snap_manhattan(
         self, point: diagram.Vector2D, direction: diagram.Vector2D
     ) -> diagram.Vector2D:
-        direction = direction.closestaxis()
-        if direction.x:
+        axis = direction.closestaxis()
+
+        if axis.x:
             if point.y < self.pos.y:
                 return self.pos + self.size @ (0.5, 0)
-            elif point.y > self.pos.y + self.size.y:
+            if point.y > self.pos.y + self.size.y:
                 return self.pos + self.size @ (0.5, 1)
-            elif self.port:
-                return self.pos + self.size @ (direction.x < 0, 0.5)
-            else:
-                return diagram.Vector2D(
-                    self.pos.x + self.size.x * (direction.x < 0),
-                    point.y,
-                )
-        else:
+            if self.port:
+                return self.pos + self.size @ (axis.x < 0, 0.5)
+            return diagram.Vector2D(
+                self.pos.x + self.size.x * (axis.x < 0),
+                point.y,
+            )
+
+        if axis.y:
             if point.x < self.pos.x:
                 return self.pos + self.size @ (0, 0.5)
-            elif point.x > self.pos.x + self.size.x:
+            if point.x > self.pos.x + self.size.x:
                 return self.pos + self.size @ (1, 0.5)
-            elif self.port:
-                return self.pos + self.size @ (0.5, direction.y < 0)
-            else:
-                return diagram.Vector2D(
-                    point.x,
-                    self.pos.y + self.size.y * (direction.y < 0),
-                )
+            if self.port:
+                return self.pos + self.size @ (0.5, axis.y < 0)
+            return diagram.Vector2D(
+                point.x,
+                self.pos.y + self.size.y * (axis.y < 0),
+            )
+
+        raise AssertionError(f"closestaxis({axis!r}) returned (0,0)")
 
     def __vector_snap_tree(
         self, point: diagram.Vector2D, direction: diagram.Vector2D
@@ -342,8 +344,7 @@ class Box:
         if direction == diagram.Vector2D(0.0, 0.0):
             if self.center.x < point.x:
                 return diagram.Vector2D(point.x - 1, point.y)
-            else:
-                return diagram.Vector2D(point.x + 1, point.y)
+            return diagram.Vector2D(point.x + 1, point.y)
 
         if self.port:
             if (
@@ -352,17 +353,16 @@ class Box:
                 and point.y != self.pos.y
             ):
                 return self.pos + self.size @ (0.5, 1.0)
-            else:
-                return self.pos + self.size @ (0.5, 0.0)
-        else:
-            if (
-                direction.y < 0.0
-                or math.isclose(direction.y, 0.0)
-                and point.y != self.pos.y
-            ):
-                return diagram.Vector2D(point.x, self.pos.y + self.size.y)
-            else:
-                return diagram.Vector2D(point.x, self.pos.y)
+            return self.pos + self.size @ (0.5, 0.0)
+
+        if (
+            direction.y < 0.0
+            or math.isclose(direction.y, 0.0)
+            and point.y != self.pos.y
+        ):
+            return diagram.Vector2D(point.x, self.pos.y + self.size.y)
+
+        return diagram.Vector2D(point.x, self.pos.y)
 
     def move(self, offset: diagram.Vector2D, *, children: bool = True) -> None:
         """Move the box by the specified offset.
@@ -434,11 +434,7 @@ class Box:
                     height = min(self.maxsize.y, height)
 
         # Features divider line
-        if (
-            self.features
-            or self.styleclass == "Class"
-            or self.styleclass == "Enumeration"
-        ):
+        if self.features or self.styleclass in ("Class", "Enumeration"):
             height += 24
 
         if needwidth:
@@ -521,7 +517,7 @@ class Box:
         if labels:
             labels = " " + repr(labels)
         return (
-            f"{self.styleclass if self.styleclass else 'Box'}{labels}"
+            f"{self.styleclass or 'Box'}{labels}"
             f" at {self.pos}, size {self.size}"
             + (f" with {len(self.features)} features" if self.features else "")
         )
@@ -753,7 +749,6 @@ class Edge(diagram.Vec2List):
             f"{f' {label!r}' if label else ''} between"
             f" {self[0]} and {self[-1]}"
             + (
-                # pylint: disable=not-an-iterable  # false-positive
                 f" via {', '.join(str(p) for p in self[1:-1])}"
                 if numpoints > 2
                 else ""
@@ -957,27 +952,24 @@ class Diagram:
             If this is set to True, the old element will be overwritten
             instead.
         """
-        if element.uuid is not None:
-            if element.uuid in self:
-                if force:
-                    old_hidden = self[element.uuid].hidden
-                    new_hidden = element.hidden
-                    if new_hidden:
-                        LOGGER.warning("Skipping hidden duplicate %s", element)
-                        return
-                    if not old_hidden:
-                        LOGGER.warning("Skipping duplicate %s", element)
-                        return
-                    LOGGER.warning(
-                        "Overwriting hidden duplicate %r with %r",
-                        str(self[element.uuid]),
-                        str(element),
-                    )
-                    self.__elements.remove(self[element.uuid])
-                else:
-                    raise ValueError(
-                        f"Duplicate element UUID {element.uuid!r}"
-                    )
+        if element.uuid is not None and element.uuid in self:
+            if force:
+                old_hidden = self[element.uuid].hidden
+                new_hidden = element.hidden
+                if new_hidden:
+                    LOGGER.warning("Skipping hidden duplicate %s", element)
+                    return
+                if not old_hidden:
+                    LOGGER.warning("Skipping duplicate %s", element)
+                    return
+                LOGGER.warning(
+                    "Overwriting hidden duplicate %r with %r",
+                    str(self[element.uuid]),
+                    str(element),
+                )
+                self.__elements.remove(self[element.uuid])
+            else:
+                raise ValueError(f"Duplicate element UUID {element.uuid!r}")
 
         if extend_viewport:
             self.__extend_viewport(element.bounds)

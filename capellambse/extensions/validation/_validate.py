@@ -41,7 +41,7 @@ class VirtualType(t.Generic[_T]):
     filter: cabc.Callable[[_T], bool]
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
-        assert isinstance(self.real_type, (str, type(m.GenericElement)))
+        assert isinstance(self.real_type, str | type(m.GenericElement))
         return model_.search(self.real_type).filter(self.filter)
 
     def matches(self, obj: m.GenericElement) -> bool:
@@ -57,14 +57,14 @@ class RealType(t.Generic[_T]):
         return self.class_.__name__
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
-        assert isinstance(self.class_, (str, type(m.GenericElement)))
+        assert isinstance(self.class_, str | type(m.GenericElement))
         return model_.search(self.class_)
 
     def matches(self, obj: m.GenericElement) -> bool:
         return isinstance(obj, self.class_)
 
 
-class _VirtualTypesRegistry(cabc.Mapping[str, t.Union[VirtualType, RealType]]):
+class _VirtualTypesRegistry(cabc.Mapping[str, VirtualType | RealType]):
     def __init__(self) -> None:
         self.__registry: dict[str, VirtualType] = {}
 
@@ -358,7 +358,7 @@ def rule(
         raise TypeError("No 'types' specified")
     if isinstance(types, type):
         type_names = [types.__name__]
-    elif isinstance(types, (RealType, VirtualType)):
+    elif isinstance(types, RealType | VirtualType):
         type_names = [types.name]
     elif isinstance(types, str):
         type_names = [types]
@@ -367,7 +367,7 @@ def rule(
         for i in types:
             if isinstance(i, str):
                 type_names.append(i)
-            elif isinstance(i, (RealType, VirtualType)):
+            elif isinstance(i, RealType | VirtualType):
                 type_names.append(i.name)
             else:
                 type_names.append(i.__name__)
@@ -432,6 +432,7 @@ class ObjectValidation:
     parent = m.AlternateAccessor(m.GenericElement)
 
     def __init__(self, **kw: t.Any) -> None:
+        del kw
         raise TypeError("Cannot create Validation object this way")
 
     @classmethod
@@ -500,4 +501,4 @@ class ElementValidation(ObjectValidation):
         return Results(all_results)
 
 
-Validation = t.Union[ModelValidation, ObjectValidation]
+Validation = ModelValidation | ObjectValidation

@@ -19,8 +19,11 @@ class UnsupportedPluginVersionError(ValueError):
     """Raised when the plugin's version is unsupported."""
 
     def __str__(self) -> str:
+        if len(self.args) != 2:
+            return super().__str__()
         plugin, ns_plugin = self.args
-        assert isinstance(plugin, Plugin) and isinstance(ns_plugin, Plugin)
+        assert isinstance(plugin, Plugin)
+        assert isinstance(ns_plugin, Plugin)
         return (
             f"Plugin '{plugin.name}' with unsupported version encountered: "
             f"{plugin.version!r} does not match {ns_plugin.version!r}."
@@ -79,8 +82,7 @@ class Plugin:
             if isinstance(self.version, tuple):
                 vsmin, vsmax = tuple(map(_tofloat, self.version))
                 return vsmin <= vmin <= vmax <= vsmax
-            else:
-                return vmin <= _tofloat(self.version) <= vmax
+            return vmin <= _tofloat(self.version) <= vmax
 
         assert other.version is not None
         oversion = _tofloat(other.version)
@@ -108,6 +110,7 @@ class Plugin:
             self.version[0].split("."),
             self.version[1].split("."),
             value.split("."),
+            strict=False,
         ):
             if not int(mymin) <= int(their) <= int(mymax):
                 return False

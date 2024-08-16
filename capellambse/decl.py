@@ -8,6 +8,7 @@ A YAML-based approach to describing how to create and modify
 For an in-depth explanation, please refer to the :ref:`full
 documentation about declarative modelling <declarative-modelling>`.
 """
+
 from __future__ import annotations
 
 __all__ = [
@@ -38,11 +39,11 @@ import capellambse.model as m
 from capellambse import helpers
 from capellambse.model import NewObject
 
-FileOrPath = t.Union[t.IO[str], str, os.PathLike[t.Any]]
+FileOrPath = str | os.PathLike[t.Any] | t.IO[str]
 _FutureAction = dict[str, t.Any]
 _OperatorResult = tuple[
     "Promise",
-    t.Union[capellambse.ModelObject, _FutureAction],
+    capellambse.ModelObject | _FutureAction,
 ]
 
 
@@ -65,7 +66,7 @@ def load(file: FileOrPath) -> list[dict[str, t.Any]]:
         ctx: t.ContextManager[t.IO[str]] = contextlib.nullcontext(file)
     else:
         assert not isinstance(file, t.IO)
-        ctx = open(file, encoding="utf-8")
+        ctx = open(file, encoding="utf-8")  # noqa: SIM115
 
     with ctx as opened_file:
         return yaml.load(opened_file, Loader=YDMLoader)
@@ -110,7 +111,7 @@ def apply(
         instruction = instructions.popleft()
 
         parent = instruction.pop("parent")
-        if isinstance(parent, (Promise, _ObjectFinder)):
+        if isinstance(parent, Promise | _ObjectFinder):
             try:
                 parent = _resolve(promises, model.project, parent)
             except _UnresolvablePromise as p:
@@ -217,7 +218,7 @@ def _operate_set(
     modifications: dict[str, t.Any],
 ) -> cabc.Generator[_OperatorResult, t.Any, None]:
     for attr, value in modifications.items():
-        if isinstance(value, (list, Promise, _ObjectFinder)):
+        if isinstance(value, list | Promise | _ObjectFinder):
             try:
                 value = _resolve(promises, parent, value)
             except _UnresolvablePromise as p:
@@ -320,7 +321,7 @@ def _resolve_findby(
 ) -> capellambse.ModelObject:
     attrs = dict(value.attributes)
     typehint = attrs.pop("_type", None)
-    if not isinstance(typehint, (str, type(None))):
+    if not isinstance(typehint, str | type(None)):
         raise TypeError(
             f"Expected a string for !find {{_type: ...}},"
             f" got {type(typehint)}: {typehint!r}"
@@ -345,7 +346,7 @@ def _resolve_findby(
 
     if attrs:
         for k, v in attrs.items():
-            if isinstance(v, (list, Promise, _ObjectFinder)):
+            if isinstance(v, list | Promise | _ObjectFinder):
                 attrs[k] = _resolve(promises, parent, v)
 
         if len(attrs) > 1:
@@ -423,7 +424,10 @@ def _create_complex_objects(
             f" {type(parent).__name__}.{attr} is not model-coupled"
         )
     for child in objs:
-        if isinstance(child, (m.GenericElement, list, Promise, _ObjectFinder)):
+        if isinstance(
+            child,
+            m.GenericElement | list | Promise | _ObjectFinder,
+        ):
             try:
                 obj = _resolve(promises, parent, child)
             except _UnresolvablePromise as p:
@@ -433,6 +437,7 @@ def _create_complex_objects(
         elif isinstance(child, str):
             target.create_singleattr(child)
         else:
+            assert not isinstance(child, Promise)  # mypy false-positive
             yield from _create_complex_object(
                 promises, parent, attr, target, child
             )
@@ -521,10 +526,7 @@ class FindBy:
     attributes: cabc.Mapping[str, t.Any]
 
 
-_ObjectFinder: tuple[type, ...] = (
-    UUIDReference,
-    FindBy,
-)
+_ObjectFinder: t.TypeAlias = UUIDReference | FindBy
 
 
 class YDMDumper(yaml.SafeDumper):

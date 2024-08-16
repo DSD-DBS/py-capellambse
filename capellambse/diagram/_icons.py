@@ -1177,10 +1177,18 @@ def _make_lgradient(
         raise ValueError(
             "Exactly two values each for start and end are needed"
         )
+    if len(stop_colors) != len(stop_opacity):
+        raise ValueError(
+            "stop_colors and stop_opacity must have the same lengths"
+            f" (len(stop_colors) = {len(stop_colors)},"
+            f" len(stop_opacity) = {len(stop_opacity)})"
+        )
 
     offsets = [i / (len(stop_colors) - 1) for i in range(len(stop_colors))]
     grad = gradients.LinearGradient(id_=id_, start=start, end=end)
-    for offset, stop_col, stop_op in zip(offsets, stop_colors, stop_opacity):
+    for offset, stop_col, stop_op in zip(
+        offsets, stop_colors, stop_opacity, strict=True
+    ):
         grad.add_stop_color(offset=offset, color=stop_col, opacity=stop_op)
     return grad
 
@@ -1196,6 +1204,13 @@ def _make_rgradient(
     stop_colors=("#fff", "#000"),
     offsets=("0", "1"),
 ) -> gradients.RadialGradient:
+    if len(stop_colors) != len(offsets):
+        raise ValueError(
+            "stop_colors and offsets must have the same lengths"
+            f" (len(stop_colors) = {len(stop_colors)},"
+            f" len(stop_opacity) = {len(offsets)})"
+        )
+
     grad = gradients.RadialGradient(
         id_=id_,
         center=center,
@@ -1205,7 +1220,7 @@ def _make_rgradient(
     )
     if matrix:
         grad.matrix(*matrix)
-    for offset, stop_color in zip(offsets, stop_colors):
+    for offset, stop_color in zip(offsets, stop_colors, strict=True):
         grad.add_stop_color(offset=offset, color=stop_color)
     return grad
 

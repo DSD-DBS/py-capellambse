@@ -42,7 +42,7 @@ def check_for_vertical_overflow(
     lines_to_render = []
     text_height = 0.0
     for i, (line, (_, line_height)) in enumerate(
-        zip(lines, map(helpers.extent_func, lines))
+        zip(lines, map(helpers.extent_func, lines), strict=True)
     ):
         if text_height + line_height > height:
             overflow = lines[i - 1] if i else line

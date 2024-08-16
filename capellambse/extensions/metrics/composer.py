@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Collection of tools for drawing model complexity assessment badge."""
+
 from __future__ import annotations
 
 import collections.abc as cabc

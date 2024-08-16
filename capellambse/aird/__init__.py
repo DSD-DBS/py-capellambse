@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Functions for parsing and interacting with diagrams in a Capella model."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -17,7 +18,7 @@ __all__ = [
 ]
 
 import collections.abc as cabc
-import logging
+import contextlib
 import pathlib
 import typing as t
 import urllib.parse
@@ -191,6 +192,8 @@ def parse_diagram(
         A loaded model.
     descriptor
         A DiagramDescriptor as obtained from :func:`enumerate_descriptors`.
+    params
+        Additional render parameters.
     """
     if not is_representation_descriptor(descriptor):
         raise TypeError(
@@ -313,10 +316,8 @@ def iter_visible(
 
         # Component Ports have their visible attribute on a child element
         if elt.tag == port_tag:
-            try:
+            with contextlib.suppress(StopIteration):
                 real_se = next(style_element.iterchildren("children"))
-            except StopIteration:
-                pass
 
             if real_se.get("visible", "true") != "true":
                 continue

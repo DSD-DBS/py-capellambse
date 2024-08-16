@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Two dimensional vector calculation utility."""
-# pylint: disable=unsubscriptable-object, not-an-iterable  # false-positives
+
 from __future__ import annotations
 
 __all__ = [
@@ -18,7 +18,7 @@ import math
 import operator
 import typing as t
 
-Vec2Element = t.Union[float, int]
+Vec2Element = int | float
 Vec2ish = tuple[Vec2Element, Vec2Element] | cabc.Sequence[Vec2Element]
 
 
@@ -200,7 +200,7 @@ class Vector2D(t.NamedTuple):
         other: Vec2Element | Vec2ish,
         reflected: bool = False,
     ) -> Vector2D:
-        if not isinstance(other, (int, float)):  # pragma: no cover
+        if not isinstance(other, int | float):  # pragma: no cover
             return NotImplemented
         if reflected:
             return type(self)(func(other, self[0]), func(other, self[1]))
@@ -212,7 +212,7 @@ class Vector2D(t.NamedTuple):
         other: Vec2Element | Vec2ish,
         reflected: bool = False,
     ) -> Vector2D:
-        if isinstance(other, (int, float)):  # pragma: no cover
+        if isinstance(other, int | float):  # pragma: no cover
             return NotImplemented
         if not len(other) == 2:  # pragma: no cover
             raise ValueError("Length of 'other' must be 2")

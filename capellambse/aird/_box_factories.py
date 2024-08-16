@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Factory functions for different types of Boxes."""
+
 from __future__ import annotations
 
 import collections
@@ -17,6 +18,9 @@ from . import _common as C
 from . import _filters, _styling
 
 _T = t.TypeVar("_T", bound=diagram.Box)
+
+_MIN_SIZE: t.Final = diagram.Vector2D(148, 69)
+_DROP_SHADOW_SIZE: t.Final = 2
 
 
 @t.overload
@@ -36,7 +40,7 @@ def generic_factory(
     boxtype: (
         type[diagram.Box] | type[_T] | functools.partial[_T]
     ) = diagram.Box,
-    minsize: diagram.Vector2D = diagram.Vector2D(148, 69),
+    minsize: diagram.Vector2D = _MIN_SIZE,
 ) -> _T:
     """Construct a Box from the diagram XML."""
     diag_parent = seb.diag_element.getparent()
@@ -85,7 +89,10 @@ def generic_factory(
         style_type = ostyle.attrib[C.ATT_XMT].split(":")[-1]
         if style_type == "FlatContainerStyle":
             # Remove drop shadows
-            size -= (2 if size.x >= 2 else 0, 2 if size.y >= 2 else 0)
+            size -= (
+                _DROP_SHADOW_SIZE if size.x >= _DROP_SHADOW_SIZE else 0,
+                _DROP_SHADOW_SIZE if size.y >= _DROP_SHADOW_SIZE else 0,
+            )
     styleoverrides = _styling.apply_style_overrides(
         seb.target_diagram.styleclass, f"Box.{seb.styleclass}", ostyle
     )

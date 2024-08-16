@@ -1,9 +1,11 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Functions that handle element styling."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
+import contextlib
 import struct
 import typing as t
 
@@ -107,10 +109,8 @@ def apply_visualelement_styles(
     styleoverrides["fill"] = unpack_rgb("fillColor", 0xFFFFFF)
     styleoverrides["text_fill"] = unpack_rgb("fontColor", 0x000000)
 
-    try:
+    with contextlib.suppress(KeyError):
         styleoverrides["stroke-width"] = int(data_element.attrib["lineWidth"])
-    except KeyError:
-        pass
 
     return _filter_default_styles(diagram_class, element_class, styleoverrides)
 

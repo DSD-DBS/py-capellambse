@@ -4,6 +4,7 @@
 
 .. diagram:: [CDB] Requirements ORM
 """
+
 import typing as t
 
 from ._capellareq import *

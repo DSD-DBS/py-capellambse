@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """The abstract FileHandler superclass and utilities."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -205,6 +206,7 @@ class FileHandler(metaclass=abc.ABCMeta):
             the root directory (i.e. the one specified by ``path`` and
             ``subdir``).
         """
+        del path
         raise TypeError(
             f"{type(self).__name__} does not support listing files"
         )

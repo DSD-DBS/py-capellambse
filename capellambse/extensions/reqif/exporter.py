@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Implementation of a ReqIF 1.1 and 1.2 exporter."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -67,15 +68,15 @@ def export_module(
     data.append(header)
     data.append(_build_content(module, timestamp))
 
-    if compress is None and isinstance(target, (str, os.PathLike)):
+    if compress is None and isinstance(target, str | os.PathLike):
         compress = os.fspath(target).endswith(".reqifz")
     else:
         compress = False
 
-    if not isinstance(target, (str, os.PathLike)):
+    if not isinstance(target, str | os.PathLike):
         ctx: t.ContextManager[t.IO[bytes]] = contextlib.nullcontext(target)
     else:
-        ctx = open(target, "wb")  # pylint: disable=consider-using-with
+        ctx = open(target, "wb")  # noqa: SIM115
 
     with contextlib.ExitStack() as stack:
         container = stack.enter_context(ctx)
@@ -208,9 +209,8 @@ def _build_datatypes(
         elem = etree.Element(f"DATATYPE-DEFINITION-{attrtype}")
         elem.set("IDENTIFIER", id)
         elem.set("LAST-CHANGE", timestamp)
-        if attrdef and attrdef.data_type:
-            if attrdef.data_type.long_name:
-                elem.set("LONG-NAME", attrdef.data_type.long_name)
+        if attrdef and attrdef.data_type and attrdef.data_type.long_name:
+            elem.set("LONG-NAME", attrdef.data_type.long_name)
 
         type_attrs = {
             "STRING": {"MAX-LENGTH": "2147483647"},
@@ -267,6 +267,7 @@ def _build_specification_type(
                 ),
             )
         )
+
     if module_type is None:
         return E(
             "SPECIFICATION-TYPE",
@@ -278,16 +279,16 @@ def _build_specification_type(
             },
             spec_attributes,
         )
-    else:
-        return E(
-            "SPECIFICATION-TYPE",
-            {
-                "IDENTIFIER": f"_{identifier}",
-                "LAST-CHANGE": timestamp,
-                "LONG-NAME": module_type.long_name,
-            },
-            spec_attributes,
-        )
+
+    return E(
+        "SPECIFICATION-TYPE",
+        {
+            "IDENTIFIER": f"_{identifier}",
+            "LAST-CHANGE": timestamp,
+            "LONG-NAME": module_type.long_name,
+        },
+        spec_attributes,
+    )
 
 
 def _build_spec_object_types(
@@ -630,5 +631,6 @@ def _attrtype2reqif(
     attrtype: rq.AbstractRequirementsAttribute,
 ) -> str:
     m = re.fullmatch("([A-Z][A-Za-z]*)ValueAttribute", type(attrtype).__name__)
-    assert m and m.group(1)
+    assert m
+    assert m.group(1)
     return m.group(1).upper()

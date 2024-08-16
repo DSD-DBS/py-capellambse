@@ -20,10 +20,8 @@ TEST_RULE_PARAMS = {
     "action": "Nothing",
 }
 
-# pylint: disable=redefined-outer-name
 
-
-@pytest.fixture(scope="function")
+@pytest.fixture
 def fake_registry(monkeypatch):
     registry = validation.Rules()
     monkeypatch.setattr(validation._validate, "_VALIDATION_RULES", registry)
@@ -77,18 +75,15 @@ def test_model_object_gives_access_to_rules_that_apply_to_it(
     assert all(rule.applies_to(obj) for rule in rules)
 
 
-def test_validation_results_filtering(
-    # pylint: disable-next=unused-argument
-    fake_registry: validation.Rules,
-    model: m.MelodyModel,
-) -> None:
+@pytest.mark.usefixtures("fake_registry")
+def test_validation_results_filtering(model: m.MelodyModel) -> None:
     @validation.rule(
         "TEST-LC",
         validation.Category.REQUIRED,
         types=[mm.la.LogicalComponent],
         **TEST_RULE_PARAMS,
     )
-    def test_lc(_: mm.la.LogicalComponent) -> bool:
+    def rule_lc(_: mm.la.LogicalComponent) -> bool:
         return True
 
     @validation.rule(
@@ -97,7 +92,7 @@ def test_validation_results_filtering(
         types=[mm.la.LogicalFunction],
         **TEST_RULE_PARAMS,
     )
-    def test_lf(_: mm.la.LogicalFunction) -> bool:
+    def rule_lf(_: mm.la.LogicalFunction) -> bool:
         return True
 
     assert model.search(mm.la.LogicalComponent), "Empty test model?"

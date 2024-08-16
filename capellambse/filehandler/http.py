@@ -1,13 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=abstract-method, useless-suppression
-# For some reason, pylint in Github CI didn't get the memo that these aren't
-# actually abstract methods. Other pylint installations seem to agree that
-# implementing these methods isn't necessary. So we just ignore the warning
-# about that here.
-# TODO Revisit this decision some time in the future
-
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -74,6 +67,7 @@ class DownloadStream(t.BinaryIO):
         return True
 
     def write(self, s: bytes | bytearray) -> int:  # type: ignore[override]
+        del s
         raise TypeError("Cannot write to a read-only stream")
 
     def writable(self) -> bool:
@@ -204,6 +198,7 @@ class HTTPFileHandler(abc.FileHandler):
     def iterdir(  # pragma: no cover
         self, path: str | pathlib.PurePosixPath = ".", /
     ) -> cabc.Iterator[abc.FilePath[te.Self]]:
+        del path
         raise TypeError(
             "Cannot list files on raw HTTP sources."
             " Maybe you forgot a 'git+' prefix?"

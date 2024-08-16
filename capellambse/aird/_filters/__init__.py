@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Functions implementing various filters that Capella supports."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -21,7 +22,7 @@ Phase2CompositeFilter = t.Callable[
 ]
 CompositeFilter = t.Callable[
     [c.ElementBuilder, diagram.DiagramElement],
-    t.Optional[Phase2CompositeFilter],
+    Phase2CompositeFilter | None,
 ]
 COMPOSITE_FILTERS: dict[str, CompositeFilter] = {}
 """Maps composite filter names to phase-1 callables."""
@@ -273,8 +274,8 @@ class ActiveFilters(t.MutableSet[str]):
 
     def __init__(
         self,
-        model: model.MelodyModel,  # pylint: disable=redefined-outer-name
-        diagram: model.diagram.Diagram,  # pylint: disable=redefined-outer-name
+        model: model.MelodyModel,
+        diagram: model.diagram.Diagram,
     ) -> None:
         self._model = model
         self._diagram = diagram
@@ -358,7 +359,7 @@ class ActiveFilters(t.MutableSet[str]):
 for module in ("composite", "global"):
     try:
         importlib.import_module(f"{__name__}.{module}")
-    except Exception as _err:  # pylint: disable=broad-except
+    except Exception as _err:
         c.LOGGER.error(
             "Cannot load filters from %s: %s: %s",
             module,

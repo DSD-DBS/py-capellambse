@@ -15,6 +15,7 @@ __all__ = [
 ]
 
 import collections.abc as cabc
+import contextlib
 import enum
 import inspect
 import logging
@@ -79,6 +80,8 @@ class ModelObject(t.Protocol):
             The model instance.
         parent
             The parent XML element below which to create a new object.
+        xmltag
+            Override the XML tag to use for this element.
         kw
             Any additional arguments will be used to populate the
             instance attributes. Note that some attributes may be
@@ -165,10 +168,8 @@ class GenericElement:
         if class_ is GenericElement:
             xtype = helpers.xtype_of(element)
             if xtype is not None:
-                try:
+                with contextlib.suppress(KeyError):
                     class_ = _xtype.XTYPE_HANDLERS[None][xtype]
-                except KeyError:
-                    pass
             if class_ is not cls:
                 return class_.from_model(model, element)
         self = class_.__new__(class_)
@@ -236,7 +237,7 @@ class GenericElement:
                     self._element.set(helpers.ATT_XT, val)
                 elif not isinstance(
                     getattr(type(self), key),
-                    (_descriptors.Accessor, _pods.BasePOD),
+                    _descriptors.Accessor | _pods.BasePOD,
                 ):
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
@@ -328,7 +329,6 @@ class GenericElement:
         return f"{header}\n{attr_text}"
 
     def _short_repr_(self) -> str:
-        # pylint: disable=unidiomatic-typecheck
         if type(self) is GenericElement:
             mytype = f"Model element ({self.xtype})"
         else:
@@ -368,7 +368,6 @@ class GenericElement:
             fragments.append(
                 f'<img src="{icon}" alt="" width="20" height="20"> '
             )
-        # pylint: disable-next=unidiomatic-typecheck
         if type(self) is GenericElement:
             fragments.append("Model element")
         else:
@@ -469,6 +468,11 @@ class GenericElement:
             starts with the *svg* format. This means that *svg* and every
             format directly or indirectly derived from it are supported,
             including *png*, *datauri_svg* and others.
+        size
+            Return the icon scaled to this horizontal and vertical size
+            in pixels. This may yield higher quality results compared to
+            scaling the returned icon, especially when using raster
+            image formats.
 
         Returns
         -------
@@ -544,7 +548,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         if not isinstance(other, cabc.Sequence):
             return NotImplemented
         return len(self) == len(other) and all(
-            ours == theirs for ours, theirs in zip(self, other)
+            ours == theirs for ours, theirs in zip(self, other, strict=True)
         )
 
     def __add(
@@ -694,15 +698,15 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         items: list[str] = []
         for i, item in enumerate(self):
             if hasattr(item, "_short_repr_"):
-                rv = item._short_repr_()
+                item_repr = item._short_repr_()
             else:
-                rv = repr(item)
-            r = rv.splitlines() or [""]
+                item_repr = repr(item)
+            repr_line = item_repr.splitlines() or [""]
             prefix = f"[{i}] "
-            r[0] = prefix + r[0]
+            repr_line[0] = prefix + repr_line[0]
             prefix = " " * len(prefix)
-            r[1:] = [prefix + l for l in r[1:]]
-            items.append("\n".join(r))
+            repr_line[1:] = [prefix + i for i in repr_line[1:]]
+            items.append("\n".join(repr_line))
         return "\n".join(items)
 
     def _short_repr_(self) -> str:
@@ -807,9 +811,11 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         self._elements.insert(index, elm)
 
     def create(self, typehint: str | None = None, /, **kw: t.Any) -> T:
+        del typehint, kw
         raise TypeError("Cannot create elements: List is not coupled")
 
     def create_singleattr(self, arg: t.Any) -> T:
+        del arg
         raise TypeError("Cannot create elements: List is not coupled")
 
     def delete_all(self, **kw: t.Any) -> None:
@@ -868,8 +874,8 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         if isinstance(attr, str):
             if "." in attr:
                 mapped: ElementList[t.Any] = self
-                for attr in attr.split("."):
-                    mapped = mapped.map(operator.attrgetter(attr))
+                for a in attr.split("."):
+                    mapped = mapped.map(operator.attrgetter(a))
                 return mapped
 
             attr = operator.attrgetter(attr)
@@ -1028,10 +1034,7 @@ class _ListFilter(t.Generic[T]):
 
     def __contains__(self, value: t.Any) -> bool:
         valueset = self.make_values_container(value)
-        for elm in self._parent:
-            if self.ismatch(elm, valueset):
-                return True
-        return False
+        return any(self.ismatch(elm, valueset) for elm in self._parent)
 
     def __getattr__(self, attr: str) -> te.Self:
         if attr.startswith("_"):
@@ -1079,6 +1082,8 @@ class CachedElementList(ElementList[T], t.Generic[T]):
             reconstructing elements.
         cacheattr
             The attribute on the ``model`` to use as cache.
+        **kw
+            Additional arguments are passed to the superclass.
         """
         super().__init__(model, elements, elemclass, **kw)
         self.cacheattr = cacheattr
@@ -1121,6 +1126,8 @@ class MixedElementList(ElementList[GenericElement]):
             The members of this list.
         elemclass
             Ignored; provided for drop-in compatibility.
+        **kw
+            Additional arguments are passed to the superclass.
         """
         del elemclass
         super().__init__(model, elements, GenericElement, **kw)
@@ -1131,7 +1138,7 @@ class MixedElementList(ElementList[GenericElement]):
         return super().__getattr__(attr)
 
     def __dir__(self) -> list[str]:  # pragma: no cover
-        return super().__dir__() + ["by_type", "exclude_types"]
+        return [*super().__dir__(), "by_type", "exclude_types"]
 
 
 class ElementListMapKeyView(cabc.Sequence):
@@ -1154,7 +1161,7 @@ class ElementListMapKeyView(cabc.Sequence):
         return f"{type(self).__name__}({list(self)!r})"
 
 
-class ElementListMapItemsView(t.Sequence[t.Tuple[t.Any, t.Any]], t.Generic[T]):
+class ElementListMapItemsView(cabc.Sequence[tuple[t.Any, T]], t.Generic[T]):
     def __init__(self, parent, /) -> None:
         self.__parent = parent
 
@@ -1218,7 +1225,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
         accessor = type(self)._accessor
         assert isinstance(accessor, _descriptors.WritableAccessor)
 
-        if not isinstance(index, (int, slice)):
+        if not isinstance(index, int | slice):
             super().__setitem__(index, value)
             return
 

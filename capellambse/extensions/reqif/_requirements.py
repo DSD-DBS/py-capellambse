@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """The 'Requirements' namespace."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -234,7 +235,8 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
     """An enumeration attribute."""
 
     definition = m.AttrProxyAccessor(
-        AttributeDefinitionEnumeration, "definition"  # type: ignore[arg-type]
+        AttributeDefinitionEnumeration,  # type: ignore[arg-type]
+        "definition",
     )
     values = m.AttrProxyAccessor(EnumValue, "values", aslist=m.ElementList)
 

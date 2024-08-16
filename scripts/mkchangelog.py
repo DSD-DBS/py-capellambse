@@ -19,7 +19,7 @@ else:
     import tomli as tomllib
 
 CONCOM = re.compile(
-    r"^(?P<type>\w+)(?:\((?P<scope>[A-Za-z0-9_-]+)\))?(?P<breaking>\!)?: (?P<subject>.*)$"  # pylint: disable=line-too-long
+    r"^(?P<type>\w+)(?:\((?P<scope>[A-Za-z0-9_-]+)\))?(?P<breaking>\!)?: (?P<subject>.*)$"
 )
 LOGGER = logging.getLogger(__name__)
 MAILUSER = re.compile(

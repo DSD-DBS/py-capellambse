@@ -1,13 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=abstract-method, useless-suppression
-# For some reason, pylint in Github CI didn't get the memo that these aren't
-# actually abstract methods. Other pylint installations seem to agree that
-# implementing these methods isn't necessary. So we just ignore the warning
-# about that here.
-# TODO Revisit this decision some time in the future
-
 from __future__ import annotations
 
 __all__ = [

@@ -64,6 +64,7 @@ information and usage examples.
 - ``showxml``: Print the XML representation of a model object
 - ``suppress``: Context manager that suppresses exceptions of given type
 """
+
 from __future__ import annotations
 
 import argparse
@@ -92,20 +93,16 @@ from capellambse.loader import exs
 try:
     import readline
 
-    try:
-        import rlcompleter  # pylint: disable=unused-import
-    except ImportError:
-        pass
+    with contextlib.suppress(ImportError):
+        import rlcompleter  # noqa: F401
 
     class _ReadlineHistory:
         def __init__(self, histfile):
             self.histfile = histfile
 
         def __enter__(self) -> None:
-            try:
+            with contextlib.suppress(FileNotFoundError):
                 readline.read_history_file(self.histfile)
-            except FileNotFoundError:
-                pass
             readline.parse_and_bind("tab: complete")
 
         def __exit__(self, *_) -> None:
@@ -128,8 +125,6 @@ except ImportError:
         def __exit__(self, *_):
             pass
 
-
-_ModelInfo = t.Dict[str, t.Union[str, t.Dict[str, str]]]
 
 basedir = pathlib.Path(__file__).parent.resolve()
 logger = logging.getLogger("capellambse.repl")
@@ -212,13 +207,16 @@ def logtee(
     catch: bool = False,
     tee: bool = True,
     level: int | str | None = None,
-    logger: str = "",  # pylint: disable=redefined-outer-name
+    logger: str = "",
 ) -> cabc.Generator[None, None, None]:
-    """Temporarily write log messages into ``file``.
+    """Temporarily write log messages to a file.
+
+    This function adds an additional log handler, meaning that the
+    current logging targets (usually stderr) will also still be served.
 
     Parameters
     ----------
-    file
+    filename
         The file path to write log messages to.
     append
         Append to the file instead of overwriting it.
@@ -250,11 +248,11 @@ def logtee(
 
     try:
         yield
-    except BaseException as err:
+    except BaseException:
         loggerobj.handlers = [handler]
         loggerobj.propagate = False
         loggerobj.exception("Exception reached top of context")
-        if not isinstance(err, Exception) or not catch:
+        if not catch:
             raise
     finally:
         loggerobj.handlers = orig_handlers
@@ -340,9 +338,10 @@ def fzf(
     getter = operator.attrgetter(attr)
 
     entries = [(str(getter(i)).replace("\0", ""), repr(i)) for i in elements]
-    maxlen = max(l if (l := len(i[0])) < 40 else 1 for i in entries)
+    maxlen = max(len(i[0]) for i in entries)
+    maxlen = min(maxlen, 40)
     fzf_input = "\0".join(
-        f"{i} \x1B[97m{s:{maxlen}}  \x1B[36m{e}"
+        f"{i} \x1b[97m{s:{maxlen}}  \x1b[36m{e}"
         for i, (s, e) in enumerate(entries)
     )
 

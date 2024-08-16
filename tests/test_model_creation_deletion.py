@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """Tests for creating and deleting model elements."""
 
-# pylint: disable=missing-function-docstring, redefined-outer-name
 import pathlib
 
 import pytest
@@ -10,8 +9,9 @@ import pytest
 import capellambse.metamodel as mm
 import capellambse.model as m
 
-# pylint: disable-next=relative-beyond-top-level, unused-import
-from .conftest import model as model50  # type: ignore[import-untyped]
+from .conftest import (  # type: ignore[import-untyped] # noqa: F401
+    model as model50,
+)
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "writemodel"
 TEST_MODEL = "WriteTestModel.aird"
@@ -65,7 +65,7 @@ def test_deleted_elements_are_removed(model: m.MelodyModel, deletion_target):
     assert len(comps) != 2, "List length did not change"
 
     with pytest.raises(KeyError):
-        model._loader[olduuid]  # pylint: disable=pointless-statement
+        model._loader[olduuid]
 
     assert not model._loader.xpath(
         XPATH_UUID.format(olduuid)

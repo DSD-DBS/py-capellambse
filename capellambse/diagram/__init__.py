@@ -5,6 +5,7 @@
 This module is used to create diagrams, which can then be exported in
 various formats (such as SVG).
 """
+
 # isort: off
 from ._vector2d import *
 

@@ -21,8 +21,7 @@ from . import _descriptors, _obj, _xtype, diagram
 
 # `pathlib` is referenced by the `dataclasses` auto-generated init.
 # Sphinx-autodoc-typehints needs this import here to resolve the forward ref.
-# pylint: disable-next=unused-import
-import pathlib  # isort: skip
+import pathlib  # isort: skip  # noqa: F401
 
 LOGGER = logging.getLogger(__name__)
 
@@ -239,6 +238,10 @@ class MelodyModel:
             diagrams that were not found in the pre-rendered cache.
             Defaults to False, which means an exception is raised
             instead. Ignored if no ``diagram_cache`` was specified.
+        **kwargs
+            Additional arguments are passed on to the underlying
+            :class:`~capellambse.loader.core.MelodyLoader`, which in
+            turn passes it on to the primary resource's FileHandler.
 
         See Also
         --------
@@ -331,21 +334,21 @@ class MelodyModel:
             elements specially.
         """
         xtypes_: list[str] = []
-        for i in xtypes:
-            if isinstance(i, type):
-                xtypes_.append(_xtype.build_xtype(i))
-            elif ":" in i:
-                xtypes_.append(i)
-            elif i in ("GenericElement", "ModelObject"):
+        for xtype in xtypes:
+            if isinstance(xtype, type):
+                xtypes_.append(_xtype.build_xtype(xtype))
+            elif ":" in xtype:
+                xtypes_.append(xtype)
+            elif xtype in ("GenericElement", "ModelObject"):
                 xtypes_.clear()
                 break
             else:
-                suffix = ":" + i
+                suffix = ":" + xtype
                 matching_types: list[str] = []
-                for l in _xtype.XTYPE_HANDLERS.values():
-                    matching_types.extend(t for t in l if t.endswith(suffix))
+                for i in _xtype.XTYPE_HANDLERS.values():
+                    matching_types.extend(c for c in i if c.endswith(suffix))
                 if not matching_types:
-                    raise ValueError(f"Unknown incomplete type name: {i}")
+                    raise ValueError(f"Unknown incomplete type name: {xtype}")
                 xtypes_.extend(matching_types)
 
         cls = (_obj.MixedElementList, _obj.ElementList)[len(xtypes_) == 1]

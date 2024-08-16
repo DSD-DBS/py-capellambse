@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=redefined-outer-name
 import pathlib
 import shutil
 
@@ -36,7 +35,7 @@ class TestPVMTConfiguration:
         assert actual == expected
 
     @pytest.mark.parametrize(
-        ["enum_uuid", "enum_vals"],
+        ("enum_uuid", "enum_vals"),
         [
             (
                 "03e5e5ae-0a61-473d-a792-e003ce601ff4",

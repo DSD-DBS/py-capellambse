@@ -36,6 +36,7 @@ import contextlib
 import itertools
 import logging
 import operator
+import types
 import typing as t
 import warnings
 
@@ -286,6 +287,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             Initialize the properties of the new object. Depending on
             the object's type, some attributes may be required.
         """
+        del elmlist, typehint, kw
         raise TypeError("Cannot create objects")
 
     def create_singleattr(
@@ -340,8 +342,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
         pelem = parent._element
         with parent._model._loader.new_uuid(pelem, want=want_id) as obj_id:
-            obj = elmclass(parent._model, pelem, xmltag, uuid=obj_id, **kw)
-        return obj
+            return elmclass(parent._model, pelem, xmltag, uuid=obj_id, **kw)
 
     def _make_list(self, parent_obj, elements):
         assert hasattr(self, "class_")
@@ -811,6 +812,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def purge_references(
         self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Iterator[None]:
+        del obj, target
         yield
 
 
@@ -1444,7 +1446,7 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
 
 
 class _Specification(t.MutableMapping[str, str]):
-    _aliases = {"LinkedText": "capella:linkedText"}
+    _aliases = types.MappingProxyType({"LinkedText": "capella:linkedText"})
     _linked_text = frozenset({"capella:linkedText"})
     _model: capellambse.MelodyModel
     _element: etree._Element
@@ -1678,7 +1680,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         obj: _obj.ModelObject,
         value: T | NewObject | cabc.Iterable[T | NewObject],
     ) -> None:
-        if isinstance(value, (list, _obj.ElementList, tuple)):
+        if isinstance(value, list | _obj.ElementList | tuple):
             pass
         elif isinstance(value, cabc.Iterable):
             value = list(value)
@@ -1815,24 +1817,24 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             raise NotImplementedError(
                 "Setting lists of model objects is not supported yet"
             )
-        else:
-            if isinstance(value, cabc.Iterable) and not isinstance(value, str):
-                raise TypeError("Cannot set non-list attribute to an iterable")
-            if not isinstance(value, NewObject):
-                raise NotImplementedError(
-                    "Moving model objects is not supported yet"
-                )
-            if (elem := self.__get__(obj)) is not None:
-                valueclass, _ = self._match_xtype(value._type_hint)
-                elemclass = elem.__class__
-                if elemclass is not valueclass:
-                    obj._model._loader.idcache_remove(elem._element)
-                    obj._element.remove(elem._element)
-                else:
-                    for k, v in value._kw.items():
-                        setattr(elem, k, v)
-                    return
-            self._create(obj, self.role_tag, value._type_hint, **value._kw)
+
+        if isinstance(value, cabc.Iterable) and not isinstance(value, str):
+            raise TypeError("Cannot set non-list attribute to an iterable")
+        if not isinstance(value, NewObject):
+            raise NotImplementedError(
+                "Moving model objects is not supported yet"
+            )
+        if (elem := self.__get__(obj)) is not None:
+            valueclass, _ = self._match_xtype(value._type_hint)
+            elemclass = elem.__class__
+            if elemclass is not valueclass:
+                obj._model._loader.idcache_remove(elem._element)
+                obj._element.remove(elem._element)
+            else:
+                for k, v in value._kw.items():
+                    setattr(elem, k, v)
+                return
+        self._create(obj, self.role_tag, value._type_hint, **value._kw)
 
     def create(
         self,
@@ -1873,8 +1875,9 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     ) -> None:
         assert obj._model is elmlist._model
         model = obj._model
-        all_elements = list(model._loader.iterdescendants_xt(obj._element)) + [
-            obj._element
+        all_elements = [
+            *list(model._loader.iterdescendants_xt(obj._element)),
+            obj._element,
         ]
         with contextlib.ExitStack() as stack:
             for elm in all_elements:
@@ -1898,6 +1901,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     def purge_references(
         self, obj: _obj.ModelObject, target: _obj.ModelObject
     ) -> cabc.Iterator[None]:
+        del obj, target
         yield
 
     def _match_xtype(self, hint: str, /) -> tuple[type[_obj.ModelObject], str]:

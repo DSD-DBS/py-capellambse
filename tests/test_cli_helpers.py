@@ -5,7 +5,6 @@ import pytest
 
 import capellambse
 
-# pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import (  # type: ignore[import-untyped]
     INSTALLED_PACKAGE,
     TEST_MODEL,

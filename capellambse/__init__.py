@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """The capellambse package."""
+
 import platformdirs
 
 dirs = platformdirs.PlatformDirs("capellambse")
@@ -17,7 +18,9 @@ del metadata
 from ._namespaces import *
 from .cli_helpers import *
 from .filehandler import *
-from .model import MelodyModel, ModelObject, NewObject
+from .model import MelodyModel as MelodyModel
+from .model import ModelObject as ModelObject
+from .model import NewObject as NewObject
 
 _has_loaded_extensions = False
 
@@ -32,10 +35,8 @@ def load_model_extensions() -> None:
     than once has no effect, so it is safe (although not necessary) to
     explicitly call this function before loading a model.
     """
-    # pylint: disable=import-outside-toplevel  # Reduce namespace pollution
-    import importlib.metadata as imm  # pylint: disable=reimported
-
-    # pylint: disable=redefined-outer-name  # false-positive
+    # Reduce namespace pollution
+    import importlib.metadata as imm
     import logging
 
     global _has_loaded_extensions

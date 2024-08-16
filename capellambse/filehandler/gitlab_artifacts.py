@@ -146,7 +146,6 @@ class GitlabArtifactsFiles(abc.FileHandler):
             branch = urlparts["branch"]
         if not job:
             job = urlparts["job"]
-        # pylint: disable-next=access-member-before-definition
         if str(self.subdir) in ("", ".", "/"):
             self.subdir = helpers.normalize_pure_path(urlparts["subdir"])
 
@@ -162,7 +161,6 @@ class GitlabArtifactsFiles(abc.FileHandler):
         self.__cache = diskcache.Cache(
             capellambse.dirs.user_cache_path / "gitlab-artifacts"
         )
-        # pylint: disable-next=unused-private-member
         self.__fnz = weakref.finalize(self, self.__cache.close)
 
         if disable_cache:
@@ -209,7 +207,8 @@ class GitlabArtifactsFiles(abc.FileHandler):
             return cls.__load_token_from_arg(token)
 
         if cred_dir := os.getenv("CREDENTIALS_DIRECTORY"):
-            if token := cls.__load_token_from_credentials(cred_dir):
+            token = cls.__load_token_from_credentials(cred_dir)
+            if token:
                 return token
 
         if token := os.getenv("CI_JOB_TOKEN"):
@@ -256,8 +255,7 @@ class GitlabArtifactsFiles(abc.FileHandler):
             if token:
                 LOGGER.debug("Using token from %s", cred_file)
                 return token
-            else:
-                LOGGER.debug("Token file is empty: %s", cred_file)
+            LOGGER.debug("Token file is empty: %s", cred_file)
         return None
 
     def __resolve_project(self, project: str | int | None) -> int:
@@ -342,13 +340,12 @@ class GitlabArtifactsFiles(abc.FileHandler):
             f"{self.__path}/api/v4{path}{sep}pagination=keyset&per_page="
             + str(min(100, max or 100))
         )
-        i = 0
         stop = max or math.inf
 
         while next_url:
             response = self.__rawget(next_url)
             response.raise_for_status()
-            for i, object in enumerate(response.json(), start=i):
+            for i, object in enumerate(response.json()):
                 yield object
                 if i >= stop:
                     return

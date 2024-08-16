@@ -12,19 +12,16 @@ helps maintain the quality and consistency of the model.
 
 from ._validate import *
 
-from . import rules  # isort: skip
+from . import rules as rules  # isort: skip
 
 
 def init() -> None:
-    # pylint: disable=redefined-outer-name # false-positive
     import capellambse
     import capellambse.model as m
     from capellambse.metamodel import cs
 
-    setattr(
-        capellambse.MelodyModel,
-        "validation",
-        property(ModelValidation),
+    capellambse.MelodyModel.validation = property(  # type: ignore[attr-defined]
+        ModelValidation
     )
     capellambse.MelodyModel.validate = property(  # type: ignore[attr-defined]
         lambda self: self.validation.validate

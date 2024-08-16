@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """The 'CapellaRequirements' namespace."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -216,7 +217,7 @@ class RequirementsRelationAccessor(
             parent = value.target._element
         else:
             assert isinstance(
-                value, (CapellaIncomingRelation, rq.InternalRelation)
+                value, CapellaIncomingRelation | rq.InternalRelation
             )
             assert elmlist._parent == value.source
             parent = elmlist._parent._element
@@ -235,6 +236,7 @@ class RequirementsRelationAccessor(
         The relation objects it handles are cleaned up by removing the
         source or target attribute.
         """
+        del obj, target
         yield
 
     def _find_relation_type(
@@ -242,13 +244,12 @@ class RequirementsRelationAccessor(
     ) -> type[rq.InternalRelation | CapellaIncomingRelation]:
         if isinstance(target, rq.Requirement):
             return rq.InternalRelation
-        elif isinstance(target, rq.ReqIFElement):
+        if isinstance(target, rq.ReqIFElement):
             raise TypeError(
                 "Cannot create relations to targets of type"
                 f" {type(target).__name__}"
             )
-        else:
-            return CapellaIncomingRelation
+        return CapellaIncomingRelation
 
 
 class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
@@ -279,8 +280,7 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
         assert self._source in (rel.source, rel.target)
         if self._source == rel.source:
             return rel.target
-        else:
-            return rel.source
+        return rel.source
 
     def by_relation_type(self, reltype: str) -> RelationsList:
         matches = []
@@ -317,8 +317,6 @@ class ElementRelationAccessor(
 ):
     """Provides access to RequirementsRelations of a GenericElement."""
 
-    # pylint: disable=abstract-method  # Only partially implemented for now
-
     __slots__ = ("aslist",)
 
     def __init__(self) -> None:
@@ -352,6 +350,7 @@ class ElementRelationAccessor(
         The relation objects it handles are cleaned up by removing the
         source or target attribute.
         """
+        del obj, target
         yield
 
     def _make_list(self, parent_obj, elements):

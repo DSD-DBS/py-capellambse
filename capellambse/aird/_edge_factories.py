@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Factory functions for Edges inside a diagram."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -339,12 +340,11 @@ def snap_manhattan(
         else:
             points[i] = diagram.Vector2D(endpoint.x, points[i].y)
             points.insert(i + (i > next_i), endpoint)
+    elif math.isclose(endpoint.x, points[i].x):
+        points[i] = endpoint
     else:
-        if math.isclose(endpoint.x, points[i].x):
-            points[i] = endpoint
-        else:
-            points[i] = diagram.Vector2D(points[i].x, endpoint.y)
-            points.insert(i + (i > next_i), endpoint)
+        points[i] = diagram.Vector2D(points[i].x, endpoint.y)
+        points.insert(i + (i > next_i), endpoint)
 
 
 def snap_tree(
@@ -375,7 +375,7 @@ def _construct_labels(
     layouts = seb.data_element.xpath("./children/layoutConstraint")
     labels: list[diagram.Box] = []
     for (labelanchor, travel_direction), layout, melodyobj in zip(
-        refpoints, layouts, seb.melodyobjs
+        refpoints, layouts, seb.melodyobjs, strict=False
     ):
         labeltext = melodyobj.get("name", "")
 
@@ -538,7 +538,8 @@ def fcil_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     seb.styleclass = xtype.split(":")[-1]
     edge = generic_factory(seb)
     edge.labels = edge.labels[:1]
-    assert edge.styleclass is not None and edge.target is not None
+    assert edge.styleclass is not None
+    assert edge.target is not None
     if edge.target.styleclass == "OperationalActivity":
         edge.styleclass = "OperationalExchange"
     return edge
@@ -554,7 +555,8 @@ def eie_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
 def fex_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     """Create a functional exchange."""
     edge = generic_factory(seb)
-    assert edge.styleclass is not None and edge.target is not None
+    assert edge.styleclass is not None
+    assert edge.target is not None
     if edge.target.styleclass == "OperationalActivity":
         edge.styleclass = "OperationalExchange"
     return edge

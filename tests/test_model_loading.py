@@ -1,7 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 
-# pylint: disable=redefined-outer-name
 from __future__ import annotations
 
 import base64
@@ -19,7 +18,6 @@ import requests_mock
 import capellambse
 from capellambse.filehandler import gitlab_artifacts
 
-# pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import-untyped]
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
@@ -31,8 +29,8 @@ DUMMY_PNG = base64.standard_b64decode(
 )
 
 
-@pytest.fixture(autouse=True, scope="function")
-def glart_clear_env(monkeypatch):
+@pytest.fixture(autouse=True)
+def _glart_clear_env(monkeypatch):
     for i in list(os.environ):
         if i.startswith("CI_"):
             monkeypatch.delenv(i)
@@ -89,7 +87,7 @@ def test_split_protocol_returns_path_objects_unchanged():
 
 
 @pytest.mark.parametrize(
-    ["url", "expected"],
+    ("url", "expected"),
     (
         [
             ("/path/to/file", pathlib.Path("/path/to/file")),
@@ -158,7 +156,7 @@ class FakeEntrypoint:
     @property
     def name(self):
         class AlwaysEqual:
-            def __eq__(_, name):  # pylint: disable=E,I
+            def __eq__(_, name):
                 nonlocal self
                 assert name == self._expected_name
                 return True
@@ -175,7 +173,7 @@ class FakeEntrypoint:
         return filehandler
 
     @classmethod
-    def patch(cls, monkeypatch, expected_name, expected_url):
+    def patch(cls, monkeypatch, expected_name, expected_url) -> None:
         def entry_points(group, name):
             assert group == "capellambse.filehandler"
             assert name == expected_name
@@ -253,7 +251,7 @@ def test_MelodyLoader_follow_link_finds_target(link: str):
 
 
 @pytest.mark.parametrize(
-    ["path", "subdir", "req_url"],
+    ("path", "subdir", "req_url"),
     [
         (
             "https://example.com/~user",
@@ -343,8 +341,10 @@ def test_http_file_handlers_passed_through_custom_headers(
 
 
 def test_gitlab_artifacts_handler_uses_public_gitlab_when_no_hostname_given(
-    requests_mock: requests_mock.Mocker,  # pylint: disable=unused-argument
+    requests_mock: requests_mock.Mocker,
 ) -> None:
+    del requests_mock
+
     hdl = capellambse.get_filehandler(
         "glart://",
         project=1,
@@ -354,7 +354,6 @@ def test_gitlab_artifacts_handler_uses_public_gitlab_when_no_hostname_given(
     )
 
     assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
-    # pylint: disable=line-too-long
     assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
@@ -377,7 +376,6 @@ def test_gitlab_artifacts_handler_resolves_project_to_numeric_id(
     )
 
     assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
-    # pylint: disable=line-too-long
     assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
@@ -407,7 +405,6 @@ def test_gitlab_artifacts_handler_looks_up_job_id_given_a_job_name(
     )
 
     assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
-    # pylint: disable=line-too-long
     assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
@@ -472,7 +469,6 @@ def test_gitlab_artifacts_handler_handles_pagination_when_searching_for_jobs(
     )
 
     assert isinstance(hdl, gitlab_artifacts.GitlabArtifactsFiles)
-    # pylint: disable=line-too-long
     assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
@@ -503,7 +499,6 @@ def test_gitlab_artifacts_handler_parses_info_from_url(
     )
     hdl = capellambse.get_filehandler(path, token="my-access-token")
 
-    # pylint: disable=line-too-long
     assert hdl._GitlabArtifactsFiles__path == "https://gitlab.com"  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__project == 1  # type: ignore[attr-defined]
     assert hdl._GitlabArtifactsFiles__job == 3  # type: ignore[attr-defined]
@@ -614,7 +609,7 @@ def test_model_info_contains_viewpoints_and_capella_version() -> None:
 
 
 @pytest.mark.parametrize(
-    ["format", "content"],
+    ("format", "content"),
     [
         pytest.param("svg", DUMMY_SVG, id="svg"),
         pytest.param("png", DUMMY_PNG, id="png"),

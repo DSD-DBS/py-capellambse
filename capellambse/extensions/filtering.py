@@ -5,7 +5,9 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import contextlib
 import logging
+import operator
 import pathlib
 import shutil
 import sys
@@ -108,10 +110,8 @@ def init() -> None:
         "filtering_model",
         m.DirectProxyAccessor(FilteringModel),
     )
-    setattr(
-        m.MelodyModel,
-        "filtering_model",
-        property(lambda self: self.project.model_root.filtering_model),
+    m.MelodyModel.filtering_model = property(  # type: ignore[attr-defined]
+        operator.attrgetter("project.model_root.filtering_model")
     )
     m.set_accessor(
         m.GenericElement, "filtering_criteria", AssociatedCriteriaAccessor()
@@ -208,10 +208,8 @@ else:
             for result in progress:
                 derived_name = name_pattern.format(model=model_, result=result)
                 output_sub = output / derived_name
-                try:
+                with contextlib.suppress(FileNotFoundError):
                     shutil.rmtree(output_sub)
-                except FileNotFoundError:
-                    pass
                 proc = cli(
                     *_native.ARGS_CMDLINE,
                     "-appid",
@@ -257,7 +255,7 @@ else:
                     pass
                 else:
                     if not isinstance(
-                        obj, (FilteringResult, ComposedFilteringResult)
+                        obj, FilteringResult | ComposedFilteringResult
                     ):
                         click.echo(
                             f"Error: Object {obj._short_repr_()} is of type"
@@ -270,7 +268,7 @@ else:
                     continue
 
             obj = all_results.by_name(result, single=True)
-            assert isinstance(obj, (FilteringResult, ComposedFilteringResult))
+            assert isinstance(obj, FilteringResult | ComposedFilteringResult)
             wanted.append(obj)
         return wanted
 

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Enumeration types used by the MelodyModel."""
+
 import enum as _enum
 import typing as t
 

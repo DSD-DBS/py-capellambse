@@ -10,6 +10,7 @@ Information object-relations map (ontology):
 
 .. diagram:: [CDB] Information [Ontology]
 """
+
 from __future__ import annotations
 
 import capellambse.model as m

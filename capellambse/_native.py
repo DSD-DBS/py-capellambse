@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Facilities for working with a native Capella instance."""
+
 from __future__ import annotations
 
 __all__ = ["ARGS_CMDLINE", "native_capella"]
@@ -100,7 +101,7 @@ def native_capella(
             docker = docker.replace("{VERSION}", model.info.capella_version)
             runner = _DockerRunner(docker)
         else:
-            assert False
+            raise AssertionError()
 
         yield _NativeCapella(workspace, runner)
 
@@ -130,20 +131,19 @@ class _SimpleRunner:
         path = pathlib.Path(path)
         if path.is_absolute():
             self.path = path
-        else:
-            if path.parent == pathlib.Path("."):
-                exe = shutil.which(path.name)
-                if exe is None:
-                    raise FileNotFoundError(
-                        errno.ENOENT, f"Not found in PATH: {path.name}"
-                    )
-                self.path = pathlib.Path(exe)
-            elif path.exists():
-                self.path = path.resolve()
-            else:
+        elif path.parent == pathlib.Path():
+            exe = shutil.which(path.name)
+            if exe is None:
                 raise FileNotFoundError(
-                    errno.ENOENT, f"File not found: {path.name}"
+                    errno.ENOENT, f"Not found in PATH: {path.name}"
                 )
+            self.path = pathlib.Path(exe)
+        elif path.exists():
+            self.path = path.resolve()
+        else:
+            raise FileNotFoundError(
+                errno.ENOENT, f"File not found: {path.name}"
+            )
 
     def __call__(
         self,
@@ -335,6 +335,4 @@ class _DockerRunner:
             stdout=subprocess.PIPE,
         )
 
-        if result.stdout == b"":
-            return False
-        return True
+        return result.stdout != b""

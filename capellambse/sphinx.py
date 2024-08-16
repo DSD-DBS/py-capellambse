@@ -52,6 +52,7 @@ Known limitations
   changing the model, you need to force a full rebuild of all pages by
   passing ``--fresh-env`` to Sphinx' build command.
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -121,7 +122,7 @@ class DiagramDirective(sphinx.util.docutils.SphinxDirective):
     has_content = True
     required_arguments = 1
     final_argument_whitespace = True
-    option_spec = {
+    option_spec: t.ClassVar = {
         "alt": rst.directives.unchanged,
         "height": rst.directives.nonnegative_int,
         "width": rst.directives.nonnegative_int,

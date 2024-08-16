@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Miscellaneous utility functions used throughout the modules."""
+
 from __future__ import annotations
 
 import array
@@ -138,10 +139,8 @@ def normalize_pure_path(
     parts: list[str] = []
     for i in path.parts[1:]:
         if i == "..":
-            try:
+            with contextlib.suppress(IndexError):
                 parts.pop()
-            except IndexError:
-                pass
         else:
             parts.append(i)
 
@@ -287,8 +286,8 @@ def get_text_extent(
     """
     ex_func = functools.partial(extent_func, fonttype=fonttype, size=fontsize)
     lines = [*map(ex_func, word_wrap(text, width))]
-    line_height = max(l[1] for l in lines)
-    return max(l[0] for l in lines), line_height * len(lines)
+    line_height = max(i[1] for i in lines)
+    return max(i[0] for i in lines), line_height * len(lines)
 
 
 def make_short_html(
@@ -353,8 +352,7 @@ def make_short_html(
 
     if not value:
         return markupsafe.Markup(f"{link} ({uuid})")
-    else:
-        return markupsafe.Markup(f"{link}: {value} ({uuid})")
+    return markupsafe.Markup(f"{link}: {value} ({uuid})")
 
 
 def ssvparse(

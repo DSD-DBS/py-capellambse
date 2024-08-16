@@ -8,6 +8,7 @@ different, even though semantically nothing might have changed at all.
 This module implements a serializer which produces output like Capella
 does.
 """
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -126,7 +127,7 @@ def write(
     if isinstance(file, HasWrite):
         ctx = contextlib.nullcontext(file)
     else:
-        ctx = open(file, "wb")
+        ctx = open(file, "wb")  # noqa: SIM115
 
     payload = serialize(
         tree,

@@ -59,8 +59,8 @@ def _functional_chain_involvement(obj: _obj.ModelObject) -> str:
     assert isinstance(
         obj,
         (
-            mm.fa.FunctionalChainInvolvementLink,
-            mm.fa.FunctionalChainInvolvementFunction,
+            mm.fa.FunctionalChainInvolvementLink
+            | mm.fa.FunctionalChainInvolvementFunction
         ),
     )
     styleclass = _default(obj)
@@ -112,7 +112,7 @@ def _part(obj: _obj.ModelObject) -> str:
     xclass = _default(obj.type)
     if xclass == "PhysicalComponent":
         return _physical_component(obj)
-    elif xclass == "Entity":
+    if xclass == "Entity":
         return xclass
     return _generic_component(obj.type)
 
@@ -126,7 +126,7 @@ def _port_allocation(obj: _obj.ModelObject) -> str:
     styleclasses = {
         get_styleclass(p)
         for p in (obj.source, obj.target)
-        if not isinstance(p, (mm.fa.ComponentPort, _obj.ElementList))
+        if not isinstance(p, mm.fa.ComponentPort | _obj.ElementList)
     }
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 

@@ -82,7 +82,7 @@ def _matchprops(
             return False
 
         cmp = _PROP_OPS[op]
-        if isinstance(actual, (float, int, str)):
+        if isinstance(actual, float | int | str):
             ismatch = cmp(actual, type(actual)(wanted))
         elif isinstance(actual, bool):
             ismatch = cmp(actual, wanted == "true")
@@ -316,7 +316,6 @@ class ManagedDomain(m.GenericElement):
 class PVMTConfiguration(m.GenericElement):
     """Provides access to the model-wide PVMT configuration."""
 
-    # pylint: disable-next=super-init-not-called
     def __init__(self, *_args, **_kw) -> None:
         raise TypeError("Use 'model.pvmt' to access PVMT configuration")
 

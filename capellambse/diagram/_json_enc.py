@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Module that handles converting diagrams to the intermediary JSON format."""
+
 from __future__ import annotations
 
 __all__ = ["DiagramJSONEncoder"]
@@ -11,7 +12,7 @@ import typing as t
 
 from capellambse import diagram
 
-_CSSStyle = t.Union[diagram.RGB, t.Iterable[t.Union[diagram.RGB, str]], str]
+_CSSStyle = str | diagram.RGB | t.Iterable[str | diagram.RGB]
 
 
 class DiagramJSONEncoder(json.JSONEncoder):
@@ -135,7 +136,7 @@ def _intround(val: float | int) -> int:
 
 
 def _encode_styleoverrides(
-    overrides: cabc.Mapping[str, _CSSStyle]
+    overrides: cabc.Mapping[str, _CSSStyle],
 ) -> dict[str, object]:
     return {k: _encode_style(v) for k, v in overrides.items()}
 
@@ -143,6 +144,6 @@ def _encode_styleoverrides(
 def _encode_style(style: _CSSStyle) -> object:
     if isinstance(style, diagram.RGB):
         return str(style)
-    if isinstance(style, (list, tuple)):
+    if isinstance(style, list | tuple):
         return [_encode_style(i) for i in style]
     return style

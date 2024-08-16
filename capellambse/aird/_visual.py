@@ -6,6 +6,7 @@ Visual elements, contrary to semantic ones, do not exist in the melody
 files at all. They are used for things such as Notes and inter-diagram
 hyperlinks.
 """
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -95,7 +96,7 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
         layout = next(ebd.data_element.iterchildren("layoutConstraint"))
     except StopIteration:
         raise ValueError(
-            "No layoutConstraint found for element {uid}"
+            f"No layoutConstraint found for element {uid}"
         ) from None
 
     pos = refpos + (

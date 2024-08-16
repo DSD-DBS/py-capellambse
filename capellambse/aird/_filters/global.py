@@ -1,7 +1,10 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Global filter implementations."""
+
 from __future__ import annotations
+
+import contextlib
 
 import lxml.etree
 
@@ -180,10 +183,8 @@ def hide_alloc_func_exch(
             "ownedComponentExchangeFunctionalExchangeAllocations"
         ):
             target = fex.attrib["targetElement"].rsplit("#", 1)[-1]
-            try:
+            with contextlib.suppress(KeyError):
                 args.target_diagram[target].hidden = True
-            except KeyError:
-                pass  # not in this diagram
 
 
 def _stringify_exchange_items(

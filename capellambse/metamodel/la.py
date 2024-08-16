@@ -4,6 +4,7 @@
 
 .. diagram:: [CDB] LA ORM
 """
+
 from __future__ import annotations
 
 from capellambse import model as m

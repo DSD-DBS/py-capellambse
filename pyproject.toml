@@ -13,9 +13,7 @@ description = "Provides access to Capella MBSE projects in Python"
 readme = "README.md"
 requires-python = ">=3.10, <3.14"
 license = { text = "Apache-2.0" }
-authors = [
-  { name = "DB InfraGO AG" },
-]
+authors = [{ name = "DB InfraGO AG" }]
 keywords = ["arcadia", "capella", "mbse", "model-based systems engineering"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -102,10 +100,6 @@ pvmt = "capellambse.extensions.pvmt:init"
 reqif = "capellambse.extensions.reqif:init"
 validation = "capellambse.extensions.validation:init"
 
-[tool.black]
-line-length = 79
-target-version = ["py310"]
-
 [tool.coverage.run]
 branch = true
 command_line = "-m pytest"
@@ -156,98 +150,6 @@ module = [
 ]
 ignore_missing_imports = true
 
-[tool.pydocstyle]
-convention = "numpy"
-add-select = [
-  "D212",  # Multi-line docstring summary should start at the first line
-  "D402",  # First line should not be the function’s “signature”
-  "D417",  # Missing argument descriptions in the docstring
-]
-add-ignore = [
-  "D1",    # Missing docstring in [...]
-  "D201",  # No blank lines allowed before function docstring  # auto-formatting
-  "D202",  # No blank lines allowed after function docstring  # auto-formatting
-  "D203",  # 1 blank line required before class docstring  # auto-formatting
-  "D204",  # 1 blank line required after class docstring  # auto-formatting
-  "D211",  # No blank lines allowed before class docstring  # auto-formatting
-  "D213",  # Multi-line docstring summary should start at the second line
-]
-
-[tool.pylint.format]
-ignore-long-lines = '^\s*(?:(?:__ |\.\. __: )?\w+(?:\+\w+)?://[^ ]+|def test_.*|[A-Za-z0-9_\.]+(?: ?:)?)$'
-
-[tool.pylint.master]
-extension-pkg-allow-list = [
-  "lxml.builder",
-  "lxml.etree",
-]
-max-line-length = 79
-
-[tool.pylint.messages_control]
-disable = [
-  "broad-exception-caught",
-  "cyclic-import",
-  "global-statement",
-  "import-outside-toplevel",
-  "invalid-name",
-  "missing-class-docstring",
-  "missing-function-docstring",
-  "missing-module-docstring",
-  "no-else-break",
-  "no-else-continue",
-  "no-else-raise",
-  "no-else-return",
-  "protected-access",
-  "redefined-argument-from-local",
-  "redefined-builtin",
-  "too-few-public-methods",
-  "too-many-ancestors",
-  "too-many-arguments",
-  "too-many-boolean-expressions",
-  "too-many-branches",
-  "too-many-instance-attributes",
-  "too-many-lines",
-  "too-many-locals",
-  "too-many-public-methods",
-  "too-many-return-statements",
-  "too-many-statements",
-
-  # Auto-formatting
-  "bad-indentation",
-  "inconsistent-quotes",
-  "missing-final-newline",
-  "mixed-line-endings",
-  "multiple-imports",
-  "multiple-statements",
-  "trailing-newlines",
-  "trailing-whitespace",
-  "unexpected-line-ending-format",
-  "ungrouped-imports",
-  "wrong-import-order",
-  "wrong-import-position",
-
-  # Handled by mypy
-  "arguments-differ",
-  "assignment-from-no-return",
-  "import-error",
-  "missing-kwoa",
-  "no-member",
-  "no-value-for-parameter",
-  "redundant-keyword-arg",
-  "signature-differs",
-  "syntax-error",
-  "too-many-function-args",
-  "unbalanced-tuple-unpacking",
-  "undefined-variable",
-  "unexpected-keyword-arg",
-]
-enable = [
-  "c-extension-no-member",
-  "deprecated-pragma",
-  "use-symbolic-message-instead",
-  "useless-suppression",
-]
-
 [tool.pytest.ini_options]
 addopts = """
   --import-mode=importlib
@@ -257,6 +159,86 @@ addopts = """
 """
 testpaths = ["tests"]
 xfail_strict = true
+
+[tool.ruff]
+line-length = 79
+
+[tool.ruff.lint]
+extend-select = [
+  "ARG",    # flake8-unused-arguments
+  "B",      # flake8-bugbear
+  "C4",     # flake8-comprehensions
+  "D",      # pydocstyle
+  "D212",   # "Multi-line docstring summary should start at the first line"
+  "D402",   # "First line should not be the function’s 'signature'"
+  "D417",   # "Missing argument descriptions in the docstring"
+  "DTZ",    # flake8-datetimez
+  "ERA",    # eradicate
+  "FA",     # flake8-future-annotations
+  "FIX",    # flake8-fixme
+  "FURB",   # refurb
+  "G",      # flake8-logging-format
+  "ICN",    # flake8-import-conventions
+  "ISC001", # "Implicitly concatenated string literals on one line"
+  "ISC003", # "Explicitly concatenated string should be implicitly concatenated"
+  "LOG",    # flake8-logging
+  "PIE",    # flake8-pie
+  "PL",     # pylint
+  "PT",     # flake8-pytest-style
+  "RET",    # flake8-return
+  "RUF",    # ruff
+  "SIM",    # flake8-simplify
+  "TCH005", # "Found empty type-checking block"
+  "T1",     # flake8-debugger
+  "UP",     # pyupgrade
+  "YTT",    # flake8-2020
+]
+extend-ignore = [
+  "D1",      # Missing docstring in _
+  "D201",    # No blank lines allowed before function docstring  # auto-formatting
+  "D202",    # No blank lines allowed after function docstring  # auto-formatting
+  "D203",    # 1 blank line required before class docstring  # auto-formatting
+  "D204",    # 1 blank line required after class docstring  # auto-formatting
+  "D211",    # No blank lines allowed before class docstring  # auto-formatting
+  "D213",    # Multi-line docstring summary should start at the second line
+  "DTZ001",  # `tzinfo=None` passed to `datetime.datetime()`
+  "DTZ005",  # `tz=None` passed to `datetime.datetime.now()`
+  "E402",    # Module level import not at top of file
+  "F403",    # `from _ import *` used; unable to detect undefined names
+  "F405",    # `_` may be undefined, or defined from star imports
+  "PLC0414", # Import alias does not rename original package # used for explicit reexports
+  "PLR0904", # Too many public methods
+  "PLR0911", # Too many return statements
+  "PLR0912", # Too many branches
+  "PLR0913", # Too many arguments in function definition
+  "PLR0914", # Too many local variables
+  "PLR0915", # Too many statements
+  "PLR0916", # Too many Boolean expressions
+  "PLR0917", # Too many positional arguments
+  "PLR2004", # Magic value used in comparison, consider replacing `_` with a constant variable
+  "PLW0603", # Using the global statement to update `_` is discouraged
+  "PLW2901", # `for` loop variable `_` overwritten by assignment target
+  "RUF005",  # Consider iterable unpacking instead of concatenation  # false-positives with NamedTuple and overridden __add__ (i.e. Vector2D)
+  "SIM108",  # Use ternary operator instead of `if`-`else`-block
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"__init__.py" = [
+  "PLE0604", # Invalid object in `__all__`, must contain only strings  # false-positive when unpacking imported submodule __all__
+]
+"tests/test_*.py" = [
+  "F811",    # Redefinition of unused `_` from line _
+  "PLR2004", # Magic value used in comparison, consider replacing `_` with a constant variable
+]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+  "capellambse.diagram.Vector2D",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+ignore-decorators = ["typing.overload"]
 
 [tool.setuptools]
 platforms = ["any"]

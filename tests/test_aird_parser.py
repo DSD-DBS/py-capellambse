@@ -32,16 +32,14 @@ class TestAIRDBasicFunctionality:
     def diagram_under_test(self, model):
         descriptor = next(aird.enumerate_descriptors(model), None)
         assert descriptor is not None
-        yield aird.parse_diagram(model, descriptor)
+        return aird.parse_diagram(model, descriptor)
 
     def test_parsing_all_diagrams_does_not_raise_exceptions(
         self, model, caplog
     ):
         del caplog
-        i = 0
-        for i, _ in enumerate(aird.parse_diagrams(model), start=1):
-            pass
-        assert i == 1
+        num = sum(1 for _ in aird.parse_diagrams(model))
+        assert num == 1
 
     @pytest.mark.xfail(
         sys.platform not in {"win32", "cygwin"},
@@ -102,7 +100,7 @@ def test_airdparser_msm_produces_valid_json_without_error(
 
 
 @pytest.mark.parametrize(
-    ["diag_uid", "num_nodes"],
+    ("diag_uid", "num_nodes"),
     [
         ("_7Ft7QKrxEeqOgqWuHJrXFA", 34),
         ("_KLGoEKyJEeqCdMaqCWkrKg", 14),

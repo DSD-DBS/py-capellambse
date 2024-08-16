@@ -63,6 +63,8 @@ class LocalFileHandler(abc.FileHandler):
         dry_run
             Discard the temporary files after a successful transaction
             instead of committing them to their destinations.
+        **kw
+            Additional arguments are ignored.
         """
         assert isinstance(self.path, pathlib.Path)
 

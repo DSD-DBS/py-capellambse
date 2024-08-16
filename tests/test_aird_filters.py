@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Tests for aird-filters applied after rendering a diagram."""
+
 import pytest
 
 import capellambse
@@ -89,7 +90,7 @@ def test_fex_exchangeitems_filter_is_applied(
 
 
 @pytest.mark.parametrize(
-    "sort,expected_labels",
+    ("sort", "expected_labels"),
     [
         pytest.param(
             False,

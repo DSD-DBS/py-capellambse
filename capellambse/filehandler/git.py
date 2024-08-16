@@ -163,66 +163,16 @@ class _GitTransaction:
         filehandler: GitFileHandler,
         /,
         *,
-        dry_run: bool = False,
-        author_name: str | None = None,
-        author_email: str | None = None,
-        commit_msg: str = "Changes made with python-capellambse",
-        ignore_empty: bool = True,
-        remote_branch: str | None = None,
-        push: bool = True,
-        push_options: cabc.Sequence[str] = (),
+        dry_run: bool,
+        author_name: str | None,
+        author_email: str | None,
+        commit_msg: str,
+        ignore_empty: bool,
+        remote_branch: str | None,
+        push: bool,
+        push_options: cabc.Sequence[str],
         **kw: t.Any,
     ) -> None:
-        """Create a transaction that records all changes as a new commit.
-
-        Parameters
-        ----------
-        author_name
-            The name of the commit author.
-        author_email
-            The e-mail address of the commit author.
-        commit_msg
-            The commit message.
-        dry_run
-            If True, stop before updating the ``revision`` pointer. The
-            commit will be created, but will not be part of any branch
-            or tag.
-        ignore_empty
-            If True and the transaction did not actually change any
-            files (i.e. the new commit would be tree-same with its
-            parent), do not actually make a new commit.
-
-            .. versionchanged:: 0.5.67
-               Previous versions would create empty commits if no files
-               changed. If you relied on that behavior (e.g. to trigger
-               subsequent CI actions), use this option.
-        remote_branch
-            An alternative branch name to push to on the remote, instead
-            of pushing back to the same branch. This is required if
-            ``push`` is ``True`` and the ``revision`` that was passed to
-            the constructor does not refer to a branch (or looks like a
-            git object).
-
-            Note: For convenience, ``refs/heads/`` will be prepended
-            automatically to this name if it isn't already present. This
-            also means that it is not possible to create tags or other
-            types of refs; passing in something like ``refs/tags/v2.4``
-            would result in the full ref name
-            ``refs/heads/refs/tags/v2.4``.
-        push
-            Set to ``False`` to inhibit pushing the changes back.
-        push_options
-            Additional git push options. See ``--push-option`` in
-            ``git-push(1)``. Ignored if ``push`` is ``False``.
-
-        Raises
-        ------
-        ValueError
-            - If a commit hash was used during loading, and no
-              ``remote_branch`` was given
-            - If the given ``remote_branch`` (or the final part of the
-              originally given revision) looks like a git object
-        """
         self.__outer_context = outer_transactor(**kw)
         self.__handler = filehandler
         self.__dry_run = dry_run
@@ -391,7 +341,7 @@ class _GitTransaction:
             if kw == b"tree":
                 return hash.decode("ascii")
 
-        assert False, f"No 'tree' in commit {self.__old_sha!r}"
+        raise AssertionError(f"No 'tree' in commit {self.__old_sha!r}")
 
 
 class GitFileHandler(abc.FileHandler):
@@ -488,7 +438,7 @@ class GitFileHandler(abc.FileHandler):
                     "Writing to git requires a transaction"
                 )
             return _WritableGitFile(self._transaction, self.cache_dir, path)
-        return open(self.cache_dir / path, "rb")
+        return open(self.cache_dir / path, "rb")  # noqa: SIM115
 
     def get_model_info(self) -> abc.HandlerInfo:
         def revparse(*args: str) -> str:
@@ -506,12 +456,82 @@ class GitFileHandler(abc.FileHandler):
         )
 
     def write_transaction(
-        self, **kw: t.Any
+        self,
+        dry_run: bool = False,
+        author_name: str | None = None,
+        author_email: str | None = None,
+        commit_msg: str = "Changes made with python-capellambse",
+        ignore_empty: bool = True,
+        remote_branch: str | None = None,
+        push: bool = True,
+        push_options: cabc.Sequence[str] = (),
+        **kw: t.Any,
     ) -> t.ContextManager[cabc.Mapping[str, t.Any]]:
-        """See _GitTransaction for the actual docstring."""
-        return _GitTransaction(super().write_transaction, self, **kw)
+        """Create a transaction that records all changes as a new commit.
 
-    write_transaction.__doc__ = _GitTransaction.__init__.__doc__
+        Parameters
+        ----------
+        author_name
+            The name of the commit author.
+        author_email
+            The e-mail address of the commit author.
+        commit_msg
+            The commit message.
+        dry_run
+            If True, stop before updating the ``revision`` pointer. The
+            commit will be created, but will not be part of any branch
+            or tag.
+        ignore_empty
+            If True and the transaction did not actually change any
+            files (i.e. the new commit would be tree-same with its
+            parent), do not actually make a new commit.
+
+            .. versionchanged:: 0.5.67
+               Previous versions would create empty commits if no files
+               changed. If you relied on that behavior (e.g. to trigger
+               subsequent CI actions), use this option.
+        remote_branch
+            An alternative branch name to push to on the remote, instead
+            of pushing back to the same branch. This is required if
+            ``push`` is ``True`` and the ``revision`` that was passed to
+            the constructor does not refer to a branch (or looks like a
+            git object).
+
+            Note: For convenience, ``refs/heads/`` will be prepended
+            automatically to this name if it isn't already present. This
+            also means that it is not possible to create tags or other
+            types of refs; passing in something like ``refs/tags/v2.4``
+            would result in the full ref name
+            ``refs/heads/refs/tags/v2.4``.
+        push
+            Set to ``False`` to inhibit pushing the changes back.
+        push_options
+            Additional git push options. See ``--push-option`` in
+            ``git-push(1)``. Ignored if ``push`` is ``False``.
+        **kw
+            Additional arguments are ignored.
+
+        Raises
+        ------
+        ValueError
+            - If a commit hash was used during loading, and no
+              ``remote_branch`` was given
+            - If the given ``remote_branch`` (or the final part of the
+              originally given revision) looks like a git object
+        """
+        return _GitTransaction(
+            super().write_transaction,
+            self,
+            dry_run=dry_run,
+            author_name=author_name,
+            author_email=author_email,
+            commit_msg=commit_msg,
+            ignore_empty=ignore_empty,
+            remote_branch=remote_branch,
+            push=push,
+            push_options=push_options,
+            **kw,
+        )
 
     @property
     def rootdir(self) -> GitPath:
@@ -673,8 +693,7 @@ class GitFileHandler(abc.FileHandler):
             refname = match.group(1)
             hash = match.group(2)
             return hash, refname
-        else:
-            raise ValueError("Failed to resolve default branch on remote")
+        raise ValueError("Failed to resolve default branch on remote")
 
     def __resolve_remote_ref(self, ref: str) -> tuple[str, str]:
         """Resolve the given ``ref`` on the remote."""
@@ -728,7 +747,7 @@ class GitFileHandler(abc.FileHandler):
             raise
         self.cache_dir = worktree
 
-        self.__fnz = weakref.finalize(  # pylint: disable=unused-private-member
+        self.__fnz = weakref.finalize(
             self, self.__cleanup_worktree, self.__repo, worktree
         )
 

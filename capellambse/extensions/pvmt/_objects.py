@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Object-level managed property values."""
+
 from __future__ import annotations
 
 __all__ = ["ObjectPVMT"]

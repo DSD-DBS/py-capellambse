@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Custom extensions to the svgwrite ``Drawing`` object."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -165,9 +166,10 @@ class Drawing:
         lines = None
         if labels:
             y_margin = 1
-            if children or class_ in decorations.always_top_label:
-                if class_ not in decorations.needs_feature_line:
-                    y_margin = 3
+            if class_ not in decorations.needs_feature_line and (
+                children or class_ in decorations.always_top_label
+            ):
+                y_margin = 3
 
             lines = self._draw_label(
                 LabelBuilder(
@@ -308,10 +310,10 @@ class Drawing:
     def _make_text(self, builder: LabelBuilder) -> svgtext.Text:
         """Return a text element and add it to the builder group."""
         first_label = builder.labels[0]
-        assert isinstance(first_label["x"], (int, float))
-        assert isinstance(first_label["y"], (int, float))
-        assert isinstance(first_label["width"], (int, float))
-        assert isinstance(first_label["height"], (int, float))
+        assert isinstance(first_label["x"], int | float)
+        assert isinstance(first_label["y"], int | float)
+        assert isinstance(first_label["width"], int | float)
+        assert isinstance(first_label["height"], int | float)
         assert isinstance(first_label["text"], str)
         textattrs = {
             "text": "",
@@ -464,7 +466,7 @@ class Drawing:
         for attr in styling:
             val = getattr(styling, attr)
             if isinstance(val, cabc.Iterable) and not isinstance(
-                val, (str, diagram.RGB)
+                val, str | diagram.RGB
             ):
                 grad_id = styling._generate_id("CustomGradient", val)
                 if grad_id not in defs_ids:
@@ -529,7 +531,7 @@ class Drawing:
         text_style: style.Styling,
     ):
         del label_  # Symbol labels always in floating_labels!
-        assert isinstance(floating_labels_, (list, dict, type(None)))
+        assert isinstance(floating_labels_, list | dict | type(None))
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
         if (
@@ -731,7 +733,7 @@ class Drawing:
         gcls = "".join(f" context-{i}" for i in context_)
         grp = self.__drawing.g(class_=f"Edge {class_}{gcls}", id_=id_)
         path = self.__drawing.path(
-            d=["M"] + points, class_="Edge", **obj_style._to_dict()
+            d=["M", *points], class_="Edge", **obj_style._to_dict()
         )
         grp.add(path)
 
@@ -788,10 +790,9 @@ class Drawing:
         x1, y1 = data["x"], data["y"]
         x2 = data.get("x1") or data["x"] + data["width"]
         y2 = data.get("y1") or data["y"]
-        line = self.__drawing.line(
+        return self.__drawing.line(
             start=(x1, y1), end=(x2, y2), **obj_style._to_dict()
         )
-        return line
 
     def _draw_rect_helping_lines(
         self,

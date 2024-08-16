@@ -11,7 +11,6 @@ import pytest
 import capellambse.metamodel as mm
 import capellambse.model as m
 
-# pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import-untyped]
 
 
@@ -20,7 +19,7 @@ def test_model_info_contains_capella_version(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    "folder,aird",
+    ("folder", "aird"),
     [
         ("6_0", TEST_MODEL),
         ("5_2", TEST_MODEL),
@@ -32,7 +31,7 @@ def test_model_compatibility(folder: str, aird: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ["target", "expected"],
+    ("target", "expected"),
     [
         (
             "a8c42033-fdf2-458f-bae9-1cfd1207c49f",
@@ -150,7 +149,7 @@ def test_MixedElementList_filter_by_type(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    ["key", "value"],
+    ("key", "value"),
     [
         ("uuid", "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422"),
         ("xtype", "org.polarsys.capella.core.data.oa:OperationalCapability"),
@@ -178,7 +177,7 @@ def test_GenericElement_has_diagrams(model: m.MelodyModel):
 def test_GenericElement_has_pvmt(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
 
-    getattr(elm, "pvmt")
+    elm.pvmt  # noqa: B018
 
 
 def test_GenericElement_has_progress_status(model: m.MelodyModel):
@@ -227,7 +226,7 @@ def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    "uuid,trg_uuid,attr_name",
+    ("uuid", "trg_uuid", "attr_name"),
     [
         pytest.param(
             "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422",
@@ -278,7 +277,7 @@ def test_Capability_exchange(
 
 
 @pytest.mark.parametrize(
-    "uuid,real_uuid,real_attr",
+    ("uuid", "real_uuid", "real_attr"),
     [
         pytest.param(
             "99df05af-71bf-4233-9035-bcd3d4439182",
@@ -443,7 +442,7 @@ def test_exchange_items_on_logical_actor_exchanges(model: m.MelodyModel):
     )
     cex_item = aex.exchange_items.by_name("ExchangeItem 2")
 
-    assert "FLOW" == cex_item.type
+    assert cex_item.type == "FLOW"
     assert aex in cex_item.exchanges
 
 
@@ -453,12 +452,12 @@ def test_exchange_items_on_logical_component_exchanges(model: m.MelodyModel):
     )
     cex_item = cex.exchange_items.by_name("ExchangeItem 1")
 
-    assert "EVENT" == cex_item.type
+    assert cex_item.type == "EVENT"
     assert cex in cex_item.exchanges
 
 
 @pytest.mark.parametrize(
-    ["name", "is_actor", "is_human"],
+    ("name", "is_actor", "is_human"),
     [
         ("Prof. S. Snape", True, True),
         ("Whomping Willow", False, True),
@@ -499,7 +498,7 @@ def test_constraint_specification_has_linked_object_name_in_body(
 
 class TestAttrProxyAccessor:
     @staticmethod
-    def test_function_is_available_in_state(model: m.MelodyModel):
+    def test_function_is_available_in_state(model: m.MelodyModel) -> None:
         function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
 
         states = function.available_in_states
@@ -508,7 +507,7 @@ class TestAttrProxyAccessor:
         assert len(states) == 1
 
     @staticmethod
-    def test_available_in_states_can_be_modified(model: m.MelodyModel):
+    def test_available_in_states_can_be_modified(model: m.MelodyModel) -> None:
         function = model.by_uuid("957c5799-1d4a-4ac0-b5de-33a65bf1519c")
         new_state = model.by_uuid("53cab5f0-fe2f-4553-8223-fbe5ea9e4d42")
         assert len(function.available_in_states) == 1
@@ -551,7 +550,7 @@ def test_constraint_without_specification_raises_AttributeError(
     assert isinstance(con, mm.capellacore.Constraint)
 
     with pytest.raises(AttributeError, match="^No specification found$"):
-        con.specification  # pylint: disable=pointless-statement
+        con.specification  # noqa: B018
 
 
 @pytest.mark.parametrize(
@@ -633,7 +632,7 @@ def test_CommunicationMean(model: m.MelodyModel) -> None:
 
 
 @pytest.mark.parametrize(
-    "chain_uuid,link_uuid,target_uuid",
+    ("chain_uuid", "link_uuid", "target_uuid"),
     [
         pytest.param(
             "d588e41f-ec4d-4fa9-ad6d-056868c66274",
@@ -673,7 +672,7 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
 
 
 @pytest.mark.parametrize(
-    "trace_uuid,expected",
+    ("trace_uuid", "expected"),
     [
         pytest.param(
             "9f84f273-1af4-49c2-a9f1-143e94ab816b",
@@ -699,7 +698,7 @@ def test_GenericElement_has_GenericTraces(
 
 
 @pytest.mark.parametrize(
-    "chain_uuid,fnc_uuid,target_uuid",
+    ("chain_uuid", "fnc_uuid", "target_uuid"),
     [
         pytest.param(
             "d588e41f-ec4d-4fa9-ad6d-056868c66274",
@@ -734,7 +733,7 @@ def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
 
 
 @pytest.mark.parametrize(
-    ["chain_uuid", "control_nodes"],
+    ("chain_uuid", "control_nodes"),
     [
         pytest.param(
             "d588e41f-ec4d-4fa9-ad6d-056868c66274", 3, id="OperationalProcess"
@@ -754,7 +753,7 @@ def test_FunctionalChainInvolvement_has_control_nodes(
 
 class TestArchitectureLayers:
     @pytest.mark.parametrize(
-        "layer,definitions",
+        ("layer", "definitions"),
         [
             pytest.param(
                 "oa",
@@ -869,7 +868,7 @@ class TestArchitectureLayers:
         assert hasattr(layer, "diagrams")
 
     @pytest.mark.parametrize(
-        "nature,uuid",
+        ("nature", "uuid"),
         [
             ("UNSET", "b9f9a83c-fb02-44f7-9123-9d86326de5f1"),
             ("NODE", "8a6d68c8-ac3d-4654-a07e-ada7adeed09f"),
@@ -885,7 +884,7 @@ class TestArchitectureLayers:
         assert pcomp.nature == nature
 
     @pytest.mark.parametrize(
-        "kind,uuid",
+        ("kind", "uuid"),
         [
             ("UNSET", "8a6d68c8-ac3d-4654-a07e-ada7adeed09f"),
             ("HARDWARE", "a2c7f619-b38a-4b92-94a5-cbaa631badfc"),
@@ -981,7 +980,7 @@ class TestArchitectureLayers:
         assert expected_exchange in model.pa.all_component_exchanges
 
     @pytest.mark.parametrize(
-        "uuid,port_attr,ports,class_",
+        ("uuid", "port_attr", "ports", "class_"),
         [
             pytest.param(
                 "b51ccc6f-5f96-4e28-b90e-72463a3b50cf",
@@ -1040,7 +1039,7 @@ class TestArchitectureLayers:
 
 
 @pytest.mark.parametrize(
-    ["attr", "value"],
+    ("attr", "value"),
     [
         ("name", "[MSM] States of Functional Human Being"),
         (

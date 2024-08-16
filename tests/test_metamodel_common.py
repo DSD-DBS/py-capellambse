@@ -25,7 +25,7 @@ def test_state_realizing_states(model: capellambse.MelodyModel) -> None:
 
 
 @pytest.mark.parametrize(
-    "attr,uuids",
+    ("attr", "uuids"),
     [
         ("entries", ("0e0164c3-076e-42c1-8f82-7a43ab84385c",)),
         ("do_activity", ("8bcb11e6-443b-4b92-bec2-ff1d87a224e7",)),

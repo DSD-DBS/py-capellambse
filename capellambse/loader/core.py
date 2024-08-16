@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Helps loading Capella models (including fragmented variants)."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -96,7 +97,7 @@ def _derive_entrypoint(
                 entrypoint = pathlib.PurePosixPath(nested_path.name)
                 path = nested_path.parent
                 return filehandler.get_filehandler(path, **kwargs), entrypoint
-            elif nested_path.is_file():
+            if nested_path.is_file():
                 raise ValueError(
                     f"Invalid entrypoint: Not an .aird file: {nested_path}"
                 )
@@ -199,10 +200,9 @@ class ModelFile:
     def fragment_type(self) -> FragmentType:
         if self.filename.suffix in SEMANTIC_EXTS:
             return FragmentType.SEMANTIC
-        elif self.filename.suffix in VISUAL_EXTS:
+        if self.filename.suffix in VISUAL_EXTS:
             return FragmentType.VISUAL
-        else:
-            return FragmentType.OTHER
+        return FragmentType.OTHER
 
     def __init__(
         self,
@@ -267,10 +267,8 @@ class ModelFile:
     def idcache_remove(self, source: str | etree._Element) -> None:
         """Remove the ID or all IDs below the source from the ID cache."""
         if isinstance(source, str):
-            try:
+            with contextlib.suppress(KeyError):
                 del self.__idcache[source]
-            except KeyError:
-                pass
 
         else:
             for elm in source.iter():
@@ -282,10 +280,8 @@ class ModelFile:
                     if elm_id is None:
                         continue
 
-                    try:
+                    with contextlib.suppress(KeyError):
                         del self.__idcache[elm_id]
-                    except KeyError:
-                        pass
                 href = elm.get("href")
                 if href is not None:
                     del self.__hrefsources[href.split("#")[-1]]
@@ -482,7 +478,7 @@ class MelodyLoader:
             if "/" in resname or "\0" in resname:
                 raise ValueError(f"Invalid resource name: {resname!r}")
 
-            if isinstance(reshdl, (str, os.PathLike)):
+            if isinstance(reshdl, str | os.PathLike):
                 self.resources[resname] = filehandler.get_filehandler(reshdl)
             elif isinstance(reshdl, cabc.Mapping):
                 self.resources[resname] = filehandler.get_filehandler(**reshdl)
@@ -694,7 +690,7 @@ class MelodyLoader:
             except KeyError:
                 tree.idcache_reserve(new_id)
                 return new_id
-        assert False
+        raise AssertionError()
 
     @contextlib.contextmanager
     def new_uuid(
@@ -975,12 +971,10 @@ class MelodyLoader:
             if parent is None:
                 possible_sources = []
                 for idtype in IDTYPES_RESOLVED:
-                    try:
+                    with contextlib.suppress(KeyError):
                         possible_sources.append(
                             self._unfollow_href(element.attrib[idtype])
                         )
-                    except KeyError:
-                        pass
                 assert 0 <= len(possible_sources) <= 1
                 if not possible_sources:
                     break
@@ -1063,7 +1057,8 @@ class MelodyLoader:
 
         from_fragment, _ = self._find_fragment(from_element)
         to_fragment, _ = self._find_fragment(to_element)
-        assert from_fragment and to_fragment
+        assert from_fragment
+        assert to_fragment
 
         if from_fragment == to_fragment:
             return f"#{to_uuid}"
@@ -1135,10 +1130,8 @@ class MelodyLoader:
 
         matches = []
         for tree in self.trees.values():
-            try:
+            with contextlib.suppress(KeyError):
                 matches.append(tree[ref])
-            except KeyError:
-                pass
         if not matches:
             raise KeyError(link)
         if len(matches) > 1:

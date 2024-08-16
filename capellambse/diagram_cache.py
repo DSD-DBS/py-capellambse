@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """CLI for the diagram cache updating feature."""
+
 from __future__ import annotations
 
 import pathlib
@@ -9,9 +10,7 @@ import typing as t
 
 import capellambse
 from capellambse import _diagram_cache, cli_helpers
-
-# pylint: disable=unused-import
-from capellambse._diagram_cache import IndexEntry
+from capellambse._diagram_cache import IndexEntry as IndexEntry
 
 try:
     import click
@@ -94,7 +93,7 @@ else:
         docker: str | None,
         background: bool,
         refresh: bool,
-    ) -> None:  # noqa: D301
+    ) -> None:
         """Export diagrams from a Capella model.
 
         This tool can be used to easily populate a diagram cache for use
@@ -127,7 +126,7 @@ else:
 
         Due to these issues, the automatic refresh is disabled by
         default.
-        """
+        """  # noqa: D301
         modelinfo["diagram_cache"] = {"path": output}
         model_ = capellambse.MelodyModel(**modelinfo)
 

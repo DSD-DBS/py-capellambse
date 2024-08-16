@@ -49,7 +49,7 @@ def test_leading_doubledots_are_ignored():
 
 
 @pytest.mark.parametrize(
-    "input,expected_output",
+    ("input", "expected_output"),
     [("&gt;", ">"), ("&lt;", "<"), ("&quot;", '"'), ("&apos;", "'")],
 )
 def test_flatten_html_unescapes_special_char(
@@ -64,7 +64,7 @@ def test_flatten_html_strips_images() -> None:
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         ("First<br>Second", "First\nSecond"),
         ("<p>First</p>Second", "First\nSecond"),
@@ -81,7 +81,7 @@ def test_flatten_html_blocks_and_hardbreaks_to_newline(
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         (
             "<ul><li>item 1</li><li>item 2</li></ul>",
@@ -102,7 +102,7 @@ def test_flatten_html_formats_unordered_lists(
 def test_process_html_fragments_does_not_process_empty_markup() -> None:
     markup = ""
 
-    def cb(node):
+    def cb(_):
         raise AssertionError("Callback should not be called")
 
     processed_markup = helpers.process_html_fragments(markup, cb)
@@ -113,7 +113,7 @@ def test_process_html_fragments_does_not_process_empty_markup() -> None:
 def test_process_html_fragments_does_not_process_plain_text() -> None:
     markup = "Test"
 
-    def cb(node):
+    def cb(_):
         raise AssertionError("Callback should not be called")
 
     processed_markup = helpers.process_html_fragments(markup, cb)
@@ -229,8 +229,7 @@ else:
             if flags & fcntl.LOCK_NB == fcntl.LOCK_NB:
                 call_order.append("nonblock")
                 raise OSError(errno.EAGAIN, "Non-blocking flock mocks failure")
-            else:
-                call_order.append("blocking")
+            call_order.append("blocking")
 
         caplog.set_level(logging.DEBUG)
         monkeypatch.setattr(fcntl, "flock", mock_flock)

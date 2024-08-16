@@ -14,7 +14,7 @@ FLOAT_TYPE_UUID = "d65e426c-7df0-43df-aaa4-417ae193176a"
 
 
 @pytest.mark.parametrize(
-    ["name", "super_name", "expected_type"],
+    ("name", "super_name", "expected_type"),
     [
         ("SpecialTwist", "Twist", "Class"),
         ("1st Specialization of SuperClass", "SuperClass", "Class"),
@@ -44,7 +44,7 @@ def test_generalizations(
 
 
 @pytest.mark.parametrize(
-    "uuid,expected_visibility",
+    ("uuid", "expected_visibility"),
     [
         pytest.param(
             "bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "PUBLIC"
@@ -70,7 +70,7 @@ def test_object_visibility(
 
 
 @pytest.mark.parametrize(
-    "typed_object_uuid,expected_type_uuid",
+    ("typed_object_uuid", "expected_type_uuid"),
     [
         pytest.param(
             "3b4915eb-22fc-421d-bf89-07a14d0a2772",
@@ -110,7 +110,7 @@ class TestClasses:
         assert len(elm.state_machines) == 1
 
     @pytest.mark.parametrize(
-        "uuid,attr_name,expected_value",
+        ("uuid", "attr_name", "expected_value"),
         [
             pytest.param(
                 "bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "is_abstract", True
@@ -144,7 +144,7 @@ class TestClasses:
         assert value == expected_value
 
     @pytest.mark.parametrize(
-        "uuid,expected",
+        ("uuid", "expected"),
         [
             ("bbc296e1-ed4c-40cf-b37d-c8eb8613228a", "PUBLIC"),
             ("ca79bf38-5e82-4104-8c49-e6e16b3748e9", "PROTECTED"),
@@ -161,7 +161,7 @@ class TestClasses:
         assert not isinstance(obj.visibility, str)
 
     @pytest.mark.parametrize(
-        "uuid,num_of_properties",
+        ("uuid", "num_of_properties"),
         [
             pytest.param("bbc296e1-ed4c-40cf-b37d-c8eb8613228a", 2),
             pytest.param("ca79bf38-5e82-4104-8c49-e6e16b3748e9", 5),
@@ -202,7 +202,7 @@ class TestClassProperty:
         assert getattr(prop_all_true, attr_name) is True
 
     @pytest.mark.parametrize(
-        "value_attr,expected_val_uuid",
+        ("value_attr", "expected_val_uuid"),
         [
             pytest.param(
                 "default_value", "b6feec5b-3bba-4da9-b9fc-fbd3b72b287d"
@@ -224,7 +224,7 @@ class TestClassProperty:
 
     def test_property_has_no_value(self, model: m.MelodyModel):
         obj = model.by_uuid(CLASS_TYPED_PROP_UUID)
-        assert getattr(obj, "min_value") is None
+        assert obj.min_value is None
 
 
 def test_complex_value(model: m.MelodyModel):
@@ -240,7 +240,7 @@ def test_complex_value(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    "uuid,expected_value,expected_cls",
+    ("uuid", "expected_value", "expected_cls"),
     [
         pytest.param(
             "1d24c16d-61ad-40b9-9ce0-80e72320e74f",

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Classes that allow access to diagrams in the model."""
+
 from __future__ import annotations
 
 __all__ = [
@@ -29,6 +30,7 @@ __all__ = [
 import abc
 import base64
 import collections.abc as cabc
+import contextlib
 import enum
 import importlib.metadata as imm
 import io
@@ -162,10 +164,7 @@ class PrettyDiagramFormat(DiagramFormat, t.Protocol):
     def convert_pretty(cls, dg: t.Any) -> t.Any: ...
 
 
-DiagramConverter = t.Union[
-    t.Callable[[diagram.Diagram], t.Any],
-    DiagramFormat,
-]
+DiagramConverter = t.Callable[[diagram.Diagram], t.Any] | DiagramFormat
 
 LOGGER = logging.getLogger(__name__)
 REPR_DRAW: bool
@@ -233,18 +232,12 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     _model: capellambse.MelodyModel
     _render: diagram.Diagram
     _error: BaseException
-    _last_render_params: dict[str, t.Any] = {}
+    _last_render_params: dict[str, t.Any]
     """Additional rendering parameters for the cached rendered diagram.
 
     Rendering options for :class:`aird.Diagram`s. Handing over
     parameters that differ to these will force a fresh rendering of the
-    diagram, flushing the cached diagram.
-
-    The following parameters are currently supported:
-
-        - ``sorted_exchangedItems`` (*bool*): Enable ExchangeItem
-          sorting when rendering diagrams with active ExchangeItems
-          filter (``show.exchange.items.filter``).
+    diagram, flushing the cache.
     """
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
@@ -264,7 +257,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 return self.render(fmt)
             except UnknownOutputFormat:
                 raise
-            except Exception as err:  # pylint: disable=broad-except
+            except Exception as err:
                 if hasattr(self, "_error") and err is self._error:
                     err_img = self._render
                 else:
@@ -272,11 +265,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 assert err_img is not None
                 converter = _find_format_converter(fmt)
                 data: t.Any = err_img
-                for converter in reversed(list(_walk_converters(converter))):
-                    if isinstance(converter, DiagramFormat):
-                        data = converter.convert(data)
+                for cv in reversed(list(_walk_converters(converter))):
+                    if isinstance(cv, DiagramFormat):
+                        data = cv.convert(data)
                     else:
-                        data = converter(data)
+                        data = cv(data)
                 return data
         return getattr(super(), attr)
 
@@ -333,10 +326,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
         bundle: dict[str, t.Any] = {}
         for mime, conv in formats.items():
-            try:
+            with contextlib.suppress(KeyError):
                 bundle[mime] = self.__load_cache([conv])
-            except KeyError:
-                pass
 
         if bundle:
             return bundle
@@ -576,7 +567,6 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return data
 
     def __render_fresh(self, params: dict[str, t.Any]) -> diagram.Diagram:
-        # pylint: disable=broad-except
         if not hasattr(self, "_render") or self._last_render_params != params:
             self.invalidate_cache()
             try:
@@ -591,15 +581,11 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def invalidate_cache(self) -> None:
         """Reset internal diagram cache."""
-        try:
+        with contextlib.suppress(AttributeError):
             del self._render
-        except AttributeError:
-            pass
 
-        try:
+        with contextlib.suppress(AttributeError):
             del self._error
-        except AttributeError:
-            pass
 
 
 @_xtype.xtype_handler(
@@ -647,7 +633,7 @@ class Diagram(AbstractDiagram):
         )
 
     def __init__(self, **kw: t.Any) -> None:
-        # pylint: disable=super-init-not-called
+        del kw
         raise TypeError("Cannot create a Diagram this way")
 
     def __eq__(self, other: object) -> bool:

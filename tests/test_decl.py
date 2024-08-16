@@ -16,7 +16,6 @@ import capellambse.model as m
 from capellambse import decl, helpers
 from capellambse.extensions import reqif
 
-# pylint: disable-next=relative-beyond-top-level, useless-suppression
 from .conftest import (  # type: ignore[import-untyped]
     INSTALLED_PACKAGE,
     TEST_MODEL,
@@ -33,7 +32,7 @@ TEACH_POTIONS_FUNC = helpers.UUIDString("83ba0220-54f2-48f7-bca1-cd87e39639f2")
 
 class TestDumpLoad:
     @staticmethod
-    def test_promises_are_serialized_with_promise_tag():
+    def test_promises_are_serialized_with_promise_tag() -> None:
         id = "some-future-object"
         data = [{"parent": decl.Promise(id)}]
         expected = f"- parent: !promise {id!r}\n"
@@ -43,7 +42,7 @@ class TestDumpLoad:
         assert actual == expected
 
     @staticmethod
-    def test_uuid_references_are_serialized_with_uuid_tag():
+    def test_uuid_references_are_serialized_with_uuid_tag() -> None:
         uuid = helpers.UUIDString("00000000-0000-0000-0000-000000000000")
         data = [{"parent": decl.UUIDReference(uuid)}]
         expected = f"- parent: !uuid {uuid!r}\n"
@@ -53,7 +52,7 @@ class TestDumpLoad:
         assert actual == expected
 
     @staticmethod
-    def test_promise_tags_are_deserialized_as_promise():
+    def test_promise_tags_are_deserialized_as_promise() -> None:
         id = "some-future-object"
         yaml = f"- parent: !promise {id!r}\n"
         expected = [{"parent": decl.Promise(id)}]
@@ -63,7 +62,7 @@ class TestDumpLoad:
         assert actual == expected
 
     @staticmethod
-    def test_uuid_tags_are_deserialized_as_uuidreference():
+    def test_uuid_tags_are_deserialized_as_uuidreference() -> None:
         uuid = helpers.UUIDString("00000000-0000-0000-0000-000000000000")
         yaml = f"- parent: !uuid {uuid!r}\n"
         expected = [{"parent": decl.UUIDReference(uuid)}]
@@ -88,7 +87,7 @@ class TestApplyExtend:
 
     @staticmethod
     @pytest.mark.parametrize(
-        ["parent_str"],
+        "parent_str",
         [
             pytest.param(f"!uuid {TEACH_POTIONS_FUNC}", id="!uuid"),
             pytest.param(
@@ -476,7 +475,9 @@ class TestApplyModify:
         assert root_component.name == newname
 
     @staticmethod
-    def test_modify_can_set_attributes_to_promises(model: m.MelodyModel):
+    def test_modify_can_set_attributes_to_promises(
+        model: m.MelodyModel,
+    ) -> None:
         root_component = model.by_uuid(ROOT_COMPONENT)
         yml = f"""\
             - parent: !uuid {ROOT_COMPONENT}

@@ -13,7 +13,7 @@ from capellambse import aird, diagram
 
 
 @pytest.mark.parametrize(
-    ["calculate", "vec_1", "vec_2", "expected"],
+    ("calculate", "vec_1", "vec_2", "expected"),
     [
         # Addition of two vectors
         (
@@ -97,7 +97,7 @@ def test_vector_math(calculate, vec_1, vec_2, expected):
 
 
 @pytest.mark.parametrize(
-    ["vector", "expected"],
+    ("vector", "expected"),
     [
         (diagram.Vector2D(-2, 1), (2, 1)),
         (diagram.Vector2D(3, -5), (3, 5)),
@@ -112,7 +112,7 @@ def test_abs_makes_negative_components_positive(vector, expected):
 
 
 @pytest.mark.parametrize(
-    ["vector", "expected"],
+    ("vector", "expected"),
     [
         (diagram.Vector2D(-2, 1), 5),
         (diagram.Vector2D(3, -5), 34),
@@ -126,7 +126,7 @@ def test_squared_length(vector, expected):
 
 
 @pytest.mark.parametrize(
-    ["vector", "expected"],
+    ("vector", "expected"),
     [
         (diagram.Vector2D(-2, 1), 2.23606797749979),
         (diagram.Vector2D(3, -5), 5.830951894845301),
@@ -140,7 +140,7 @@ def test_length(vector, expected):
 
 
 @pytest.mark.parametrize(
-    ["vector", "expected"],
+    ("vector", "expected"),
     [
         (diagram.Vector2D(-2, 1), (-0.8944271909999159, 0.4472135954999579)),
         (diagram.Vector2D(3, -5), (0.5144957554275265, -0.8574929257125441)),
@@ -158,7 +158,7 @@ def test_normalized(vector, expected):
 
 
 @pytest.mark.parametrize(
-    ["vector", "expected"],
+    ("vector", "expected"),
     [
         # Exactly on the box - noop
         (diagram.Vector2D(1, 1), diagram.Vector2D(1, 1)),
@@ -210,7 +210,7 @@ def test_boxsnap(vector: diagram.Vector2D, expected: diagram.Vector2D):
 
 
 @pytest.mark.parametrize(
-    ["vector1", "vector2", "expected"],
+    ("vector1", "vector2", "expected"),
     [
         pytest.param(
             (diagram.Vector2D(0, 0), diagram.Vector2D(1, 1)),
@@ -237,7 +237,7 @@ def test_line_intersect(
 
 
 def test_line_intersect_raises_ValueError_when_parallel_lines_given():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="parallel"):
         diagram.line_intersect(
             (diagram.Vector2D(0, 0), diagram.Vector2D(0, 1)),
             (diagram.Vector2D(1, 0), diagram.Vector2D(1, 1)),
@@ -252,7 +252,7 @@ class TestVectorSnapping:
     PORT_SOUTH = diagram.Vector2D(6, 11)
 
     @pytest.mark.parametrize(
-        ["points", "expected"],
+        ("points", "expected"),
         [
             pytest.param(
                 [diagram.Vector2D(0, -1), diagram.Vector2D(0, 1)],
@@ -310,14 +310,15 @@ class TestVectorSnapping:
 
         points_ = itertools.tee(points, 2)
         next(points_[1], None)
-        for p, q in zip(*points_):
+        for p, q in zip(*points_, strict=False):
             direction = p - q
-            assert direction and (direction.x == 0 or direction.y == 0)
+            assert direction
+            assert direction.x == 0 or direction.y == 0
         assert points[-1] == expected
 
 
 @pytest.mark.parametrize(
-    ["point", "source", "expected"],
+    ("point", "source", "expected"),
     [
         # horizontal
         ((20, -5), (19, -5), (5, 0)),
@@ -347,7 +348,7 @@ def test_box_snapping_manhattan(
 
 
 @pytest.mark.parametrize(
-    ["point", "source", "expected"],
+    ("point", "source", "expected"),
     [
         # horizontal
         ((2, 0), (-4, 0), (2, 0)),
@@ -371,7 +372,7 @@ def test_box_snapping_tree(
 
 
 @pytest.mark.parametrize(
-    ["point", "source", "expected"],
+    ("point", "source", "expected"),
     [
         # horizontal
         ((2, 0), (-4, 0), (5, 0)),

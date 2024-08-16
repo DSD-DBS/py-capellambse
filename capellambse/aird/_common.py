@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Common constants and helpers used by all parser submodules."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -315,7 +316,10 @@ class CenterAnchoredBox(diagram.Box):
     center = diagram.Vec2Property()  # type: ignore[assignment]
 
     def __init__(
-        self, center: diagram.Vec2ish, size: diagram.Vec2ish, **kwargs: t.Any
+        self,
+        center: diagram.Vec2ish,
+        size: diagram.Vec2ish,
+        **kwargs: t.Any,
     ) -> None:
         """Create a CenterAnchoredBox.
 
@@ -325,9 +329,11 @@ class CenterAnchoredBox(diagram.Box):
         Parameters
         ----------
         center
-            The point at which to place this Box' center
+            The point at which to place this Box' center.
         size
-            The width and height of this Box
+            The width and height of this Box.
+        **kwargs
+            Any additional arguments supported by Box.
         """
         super().__init__((math.inf, math.inf), size, **kwargs)
         self.center = center

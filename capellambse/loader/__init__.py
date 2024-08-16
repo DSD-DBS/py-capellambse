@@ -10,4 +10,4 @@ the `LXML Documentation`_.
 """
 
 from .core import *
-from .modelinfo import ModelInfo
+from .modelinfo import ModelInfo as ModelInfo

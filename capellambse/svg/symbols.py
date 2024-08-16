@@ -7,12 +7,12 @@ import typing as t
 
 from svgwrite import container, gradients, path
 
-# pylint: disable-next=unused-import  # compatibility re-export
-from capellambse.diagram._icons import _make_lgradient
+# compatibility re-export
+from capellambse.diagram._icons import _make_lgradient  # noqa: F401
 
 from . import decorations
 
-Gradient = t.Union[gradients.LinearGradient, gradients.RadialGradient]
+Gradient = gradients.LinearGradient | gradients.RadialGradient
 
 
 def _make_marker(

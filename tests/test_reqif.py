@@ -218,14 +218,16 @@ class TestRequirementAttributes:
         assert len(req.attributes) == 6
         assert undefined_attr.value is False
         assert isinstance(bool_attr.value, bool)
-        for attr, typ in zip(req.attributes[2:-1], [int, float, str]):
+        for attr, typ in zip(
+            req.attributes[2:-1], [int, float, str], strict=True
+        ):
             assert isinstance(attr.value, typ)
 
         actual_values = [req.long_name for req in req2.attributes[0].values]
         assert actual_values == ["enum_val1", "enum_val2"]
 
     @pytest.mark.parametrize(
-        ["uuid", "description"],
+        ("uuid", "description"),
         [
             (
                 "9c692405-b8aa-4caa-b988-51d27db5cd1b",
@@ -336,8 +338,8 @@ class TestRequirementRelations:
         assert {i.uuid for i in relations} == target_uuids
 
     @pytest.mark.parametrize(
-        "obj_uuid,target_uuid,expected_type",
-        (
+        ("obj_uuid", "target_uuid", "expected_type"),
+        [
             pytest.param(
                 "0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc",
                 "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
@@ -350,7 +352,7 @@ class TestRequirementRelations:
                 reqif.CapellaIncomingRelation,
                 id="Incoming",
             ),
-        ),
+        ],
     )
     def test_creating_RequirementRelations(
         self,
@@ -514,7 +516,7 @@ class TestReqIFModification:
         assert isinstance(target.relations, m.ElementList)
         assert new_rel in target.relations
 
-    TEST_DATETIME = datetime.datetime(1987, 7, 27)
+    TEST_DATETIME = datetime.datetime(1987, 7, 27, tzinfo=None)
     TEST_TZ_DELTA = TEST_DATETIME.astimezone().utcoffset()
     assert TEST_TZ_DELTA is not None
     TEST_TZ_HRS, TEST_TZ_SECS = divmod(TEST_TZ_DELTA.seconds, 3600)
@@ -522,7 +524,7 @@ class TestReqIFModification:
     TEST_TZ_OFFSET = f"{TEST_TZ_HRS:+03d}{TEST_TZ_MINS:02d}"
 
     @pytest.mark.parametrize(
-        "type_hint,default_value",
+        ("type_hint", "default_value"),
         [
             pytest.param("Int", 0),
             pytest.param("Str", ""),
@@ -552,7 +554,7 @@ class TestReqIFModification:
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     @pytest.mark.parametrize(
-        "type_hint,value,xml",
+        ("type_hint", "value", "xml"),
         [
             pytest.param("Int", 0, None),
             pytest.param("Int", 1, "1"),
@@ -610,7 +612,7 @@ class TestReqIFModification:
         assert isinstance(attr, reqif.AbstractRequirementsAttribute)
 
     @pytest.mark.parametrize(
-        "type_hint,expected_type",
+        ("type_hint", "expected_type"),
         [
             pytest.param("Int", "Integer"),
             pytest.param("Integer", "Integer"),
@@ -678,7 +680,7 @@ class TestReqIFModification:
         req = model.by_uuid("79291c33-5147-4543-9398-9077d582576d")
         assert isinstance(req, reqif.Requirement)
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="type hint"):
             req.attributes.create("Gibberish")
 
     @pytest.mark.parametrize(
@@ -748,7 +750,7 @@ class TestReqIFModification:
         assert "value" not in attr._element.attrib
 
     @pytest.mark.parametrize(
-        "uuid,value",
+        ("uuid", "value"),
         [
             pytest.param("b97c09b5-948a-46e8-a656-69d764ddce7d", 1, id="Int"),
         ],

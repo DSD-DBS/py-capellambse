@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """Stylesheet generator for SVG diagrams."""
+
 from __future__ import annotations
 
 import collections.abc as cabc
@@ -85,13 +86,13 @@ class Styling:
     def _to_css(
         cls, value: float | int | str | diagram.RGB | cabc.Iterable | None
     ) -> float | int | str:
-        if isinstance(value, (str, int, float)):
+        if isinstance(value, str | int | float):
             return value
-        elif value is None:
+        if value is None:
             return "none"
-        elif isinstance(value, diagram.RGB):
+        if isinstance(value, diagram.RGB):
             return f"#{value.tohex()}"
-        elif isinstance(value, cabc.Iterable):
+        if isinstance(value, cabc.Iterable):
             grad_id = cls._generate_id(
                 "CustomGradient",
                 value,  # type: ignore[arg-type]  # false-positive

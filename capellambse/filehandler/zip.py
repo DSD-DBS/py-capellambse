@@ -83,9 +83,7 @@ class ZipFileHandler(abc.FileHandler):
 
         slave = get_filehandler(path)
         file = slave.read_file(zipname)
-        # pylint: disable-next=consider-using-with
         self.__file = zipfile.ZipFile(io.BytesIO(file))
-        # pylint: disable-next=unused-private-member
         self.__fnz = weakref.finalize(self, self.__file.close)
 
         if subdir is None:

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
 """The color palette and default style definitions used by Capella."""
+
 from __future__ import annotations
 
 __all__ = ["COLORS", "CSSdef", "STYLES", "RGB", "get_style"]
@@ -31,7 +32,6 @@ class RGB(t.NamedTuple):
         return "#" + self.tohex()
 
     def tohex(self) -> str:
-        # pylint: disable=unsubscriptable-object
         assert all(0 <= n <= 255 for n in self[:3])
         assert 0.0 <= self.a <= 1.0
         if self.a >= 1.0:
@@ -148,13 +148,12 @@ def get_style(diagramclass: str | None, objectclass: str) -> dict[str, t.Any]:
         return {}
 
     obj_type: str = objectclass.split(".", 1)[0]
-    styles = {
+    return {
         **STYLES["__GLOBAL__"].get(obj_type, {}),
         **STYLES.get(diagramclass or "", {}).get(obj_type, {}),
         **STYLES["__GLOBAL__"].get(objectclass, {}),
         **STYLES.get(diagramclass or "", {}).get(objectclass, {}),
     }
-    return styles
 
 
 #: This dict maps the color names used by Capella to RGB tuples.
@@ -260,7 +259,7 @@ COLORS: dict[str, RGB] = {
 #: 2. __GLOBAL__, element type and class
 #: 3. Diagram class specific, only element type
 #: 4. __GLOBAL__, only element type
-CSSdef = t.Union[int, str, RGB, t.List[RGB], None]
+CSSdef = int | str | RGB | list[RGB] | None
 STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
     "__GLOBAL__": {  # Global defaults
         "Box": {
@@ -448,13 +447,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
     },
     "Logical Architecture Blank": {  # (from logical.odesign)
-        **dict.fromkeys(
-            ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],
-            {
-                "fill": COLORS["white"],
-                "stroke": COLORS["black"],
-            },
-        ),
+        **{
+            key: {"fill": COLORS["white"], "stroke": COLORS["black"]}
+            for key in ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"]
+        },
         "Box.CP_UNSET": {
             "fill": [COLORS["red"], COLORS["white"]],
         },
@@ -763,13 +759,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
     },
     "Physical Architecture Blank": {
-        **dict.fromkeys(
-            ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],
-            {
-                "fill": COLORS["white"],
-                "stroke": COLORS["black"],
-            },
-        ),
+        **{
+            key: {"fill": COLORS["white"], "stroke": COLORS["black"]}
+            for key in ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"]
+        },
         "Box.FIP": {
             "fill": COLORS["dark_orange"],
             "stroke-width": 0,
@@ -857,13 +850,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         },
     },
     "System Architecture Blank": {
-        **dict.fromkeys(
-            ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"],
-            {
-                "fill": COLORS["white"],
-                "stroke": COLORS["black"],
-            },
-        ),
+        **{
+            key: {"fill": COLORS["white"], "stroke": COLORS["black"]}
+            for key in ["Box.CP_IN", "Box.CP_OUT", "Box.CP_INOUT"]
+        },
         "Box.FIP": {
             "fill": COLORS["dark_orange"],
             "stroke-width": 0,
