@@ -368,7 +368,9 @@ class MelodyModel:
 
         if below is not None:
             matches = (
-                i for i in matches if below._element in i.iterancestors()
+                i
+                for i in matches
+                if below._element in self._loader.iterancestors(i)
             )
         return cls(self, list(matches), _obj.GenericElement)
 
