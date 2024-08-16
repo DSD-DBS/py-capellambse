@@ -10,7 +10,7 @@ from capellambse import model
 def protocol_ModelObject_compliance():
     mobj: model.ModelObject
 
-    mobj = model.GenericElement()  # type: ignore[call-arg]
+    mobj = model.ModelElement()  # type: ignore[call-arg]
     mobj = model._descriptors._Specification()  # type: ignore[call-arg]
     mobj = model.diagram.Diagram()
 

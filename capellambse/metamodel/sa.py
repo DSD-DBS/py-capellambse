@@ -25,7 +25,7 @@ class SystemFunction(fa.Function):
 
 
 @m.xtype_handler(None)
-class SystemFunctionPkg(m.GenericElement):
+class SystemFunctionPkg(m.ModelElement):
     """A function package that can hold functions."""
 
     _xmltag = "ownedFunctionPkg"
@@ -60,7 +60,7 @@ class SystemComponent(cs.Component):
 
 
 @m.xtype_handler(None)
-class SystemComponentPkg(m.GenericElement):
+class SystemComponentPkg(m.ModelElement):
     """A system component package."""
 
     _xmltag = "ownedSystemComponentPkg"
@@ -79,7 +79,7 @@ class CapabilityInvolvement(interaction.AbstractInvolvement):
 
 
 @m.xtype_handler(None)
-class Capability(m.GenericElement):
+class Capability(m.ModelElement):
     """A capability."""
 
     _xmltag = "ownedCapabilities"
@@ -157,7 +157,7 @@ class MissionInvolvement(interaction.AbstractInvolvement):
 
 
 @m.xtype_handler(None)
-class CapabilityExploitation(m.GenericElement):
+class CapabilityExploitation(m.ModelElement):
     """A CapabilityExploitation."""
 
     _xmltag = "ownedCapabilityExploitations"
@@ -175,7 +175,7 @@ class CapabilityExploitation(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class Mission(m.GenericElement):
+class Mission(m.ModelElement):
     """A mission."""
 
     _xmltag = "ownedMissions"
@@ -198,7 +198,7 @@ class Mission(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class MissionPkg(m.GenericElement):
+class MissionPkg(m.ModelElement):
     """A system mission package that can hold missions."""
 
     _xmltag = "ownedMissionPkg"
@@ -208,7 +208,7 @@ class MissionPkg(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class CapabilityPkg(m.GenericElement):
+class CapabilityPkg(m.ModelElement):
     """A capability package that can hold capabilities."""
 
     _xmltag = "ownedAbstractCapabilityPkg"

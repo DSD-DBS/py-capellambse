@@ -93,7 +93,7 @@ def _find_layer(
     action="fill the description and/or summary text fields",
 )
 def has_non_empty_description_or_summary(
-    obj: capellambse.model.GenericElement,
+    obj: capellambse.model.ModelElement,
 ) -> bool:
     return bool(obj.description) or bool(obj.summary)
 
@@ -113,7 +113,7 @@ def has_non_empty_description_or_summary(
     ),
     action="Add at least one involved Actor or Entity.",
 )
-def capability_involves_entity(obj: capellambse.model.GenericElement) -> bool:
+def capability_involves_entity(obj: capellambse.model.ModelElement) -> bool:
     if isinstance(obj, mm.oa.OperationalCapability):
         return bool(obj.involved_entities)
     return bool(obj.involved_components)
@@ -145,7 +145,7 @@ def capability_involves_entity(obj: capellambse.model.GenericElement) -> bool:
         " Capability."
     ),
 )
-def has_precondition(obj: capellambse.model.GenericElement) -> bool:
+def has_precondition(obj: capellambse.model.ModelElement) -> bool:
     return obj.precondition is not None
 
 

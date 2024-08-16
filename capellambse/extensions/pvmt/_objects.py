@@ -52,7 +52,7 @@ class ObjectPVMT:
     _element: etree._Element
     _constructed: bool
 
-    owner = m.AlternateAccessor(m.GenericElement)
+    owner = m.AlternateAccessor(m.ModelElement)
 
     @property
     def groupdefs(self) -> m.ElementList[_config.ManagedGroup]:

@@ -41,7 +41,7 @@ if t.TYPE_CHECKING:
 m.XTYPE_ANCHORS[__name__] = "Requirements"
 
 
-class ReqIFElement(m.GenericElement):
+class ReqIFElement(m.ModelElement):
     """Attributes shared by all ReqIF elements."""
 
     identifier = m.StringPOD("ReqIFIdentifier")
@@ -98,7 +98,7 @@ class AttributeDefinition(ReqIFElement):
     data_type = m.AttrProxyAccessor(DataTypeDefinition, "definitionType")
 
 
-class AbstractRequirementsAttribute(m.GenericElement):
+class AbstractRequirementsAttribute(m.ModelElement):
     _xmltag = "ownedAttributes"
 
     definition = m.AttrProxyAccessor(AttributeDefinition, "definition")
@@ -130,7 +130,7 @@ class AbstractRequirementsAttribute(m.GenericElement):
 class AttributeAccessor(m.DirectProxyAccessor[AbstractRequirementsAttribute]):
     def __init__(self) -> None:
         super().__init__(
-            m.GenericElement,  # type: ignore[arg-type]
+            m.ModelElement,  # type: ignore[arg-type]
             (
                 BooleanValueAttribute,
                 DateValueAttribute,
@@ -255,9 +255,9 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
 
 @m.attr_equal("long_name")
 class AbstractType(ReqIFElement):
-    owner = m.ParentAccessor(m.GenericElement)
+    owner = m.ParentAccessor(m.ModelElement)
     attribute_definitions = m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (AttributeDefinition, AttributeDefinitionEnumeration),
         aslist=m.MixedElementList,
     )
@@ -290,7 +290,7 @@ class Requirement(ReqIFElement):
 
     _xmltag = "ownedRequirements"
 
-    owner = m.ParentAccessor(m.GenericElement)
+    owner = m.ParentAccessor(m.ModelElement)
 
     chapter_name = m.StringPOD("ReqIFChapterName")
     foreign_id = m.IntPOD("ReqIFForeignID")
@@ -299,7 +299,7 @@ class Requirement(ReqIFElement):
     type = m.AttrProxyAccessor(RequirementType, "requirementType")
 
     relations: m.Accessor[AbstractRequirementsRelation]
-    related: m.Accessor[m.GenericElement]
+    related: m.Accessor[m.ModelElement]
 
 
 @m.xtype_handler(None)
@@ -317,7 +317,7 @@ class AbstractRequirementsRelation(ReqIFElement):
 
     type = m.AttrProxyAccessor(RelationType, "relationType")
     source = m.AttrProxyAccessor(Requirement, "source")
-    target = m.AttrProxyAccessor(m.GenericElement, "target")
+    target = m.AttrProxyAccessor(m.ModelElement, "target")
 
     def _short_repr_(self) -> str:
         direction = ""

@@ -31,7 +31,7 @@ import capellambse.metamodel as mm
 import capellambse.model as m
 
 LOGGER = logging.getLogger(__name__)
-_T = t.TypeVar("_T", bound=t.Union[m.GenericElement, "VirtualType"])
+_T = t.TypeVar("_T", bound=t.Union[m.ModelElement, "VirtualType"])
 
 
 @dataclasses.dataclass(frozen=True)
@@ -41,10 +41,10 @@ class VirtualType(t.Generic[_T]):
     filter: cabc.Callable[[_T], bool]
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
-        assert isinstance(self.real_type, str | type(m.GenericElement))
+        assert isinstance(self.real_type, str | type(m.ModelElement))
         return model_.search(self.real_type).filter(self.filter)
 
-    def matches(self, obj: m.GenericElement) -> bool:
+    def matches(self, obj: m.ModelElement) -> bool:
         return isinstance(obj, self.real_type) and self.filter(obj)
 
 
@@ -57,10 +57,10 @@ class RealType(t.Generic[_T]):
         return self.class_.__name__
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
-        assert isinstance(self.class_, str | type(m.GenericElement))
+        assert isinstance(self.class_, str | type(m.ModelElement))
         return model_.search(self.class_)
 
-    def matches(self, obj: m.GenericElement) -> bool:
+    def matches(self, obj: m.ModelElement) -> bool:
         return isinstance(obj, self.class_)
 
 
@@ -149,7 +149,7 @@ class Result:
     """The result of checking a validation rule against a model object."""
 
     rule: Rule
-    object: m.GenericElement
+    object: m.ModelElement
     passed: bool
 
     def __repr__(self) -> str:
@@ -184,7 +184,7 @@ class Rule(t.Generic[_T]):
                 seen.add(obj.uuid)
                 yield obj
 
-    def applies_to(self, obj: m.GenericElement) -> bool:
+    def applies_to(self, obj: m.ModelElement) -> bool:
         """Check whether this Rule applies to a specific element."""
         return any(_types_registry[i].matches(obj) for i in self.types)
 
@@ -198,7 +198,7 @@ class Rules(dict[str, Rule]):
             category = Category[category]
         return [i for i in self.values() if i.category == category]
 
-    def by_type(self, type: type[m.GenericElement] | str) -> list[Rule]:
+    def by_type(self, type: type[m.ModelElement] | str) -> list[Rule]:
         """Filter the validation rules by type."""
         if not isinstance(type, str):
             type = type.__name__
@@ -224,7 +224,7 @@ class Results:
         return iter(self.__container.values())
 
     def get_result(
-        self, rule_: Rule | str, target: str | m.GenericElement, /
+        self, rule_: Rule | str, target: str | m.ModelElement, /
     ) -> Result | None:
         if isinstance(rule_, str):
             rule_ = _VALIDATION_RULES[rule_]
@@ -245,7 +245,7 @@ class Results:
             seen.add(result.rule.id)
             yield result.rule
 
-    def iter_objects(self) -> cabc.Iterator[m.GenericElement]:
+    def iter_objects(self) -> cabc.Iterator[m.ModelElement]:
         seen: set[str] = set()
         for result in self.__container.values():
             if result.object.uuid in seen:
@@ -256,7 +256,7 @@ class Results:
     def iter_results(self) -> cabc.Iterator[Result]:
         return iter(self)
 
-    def iter_compliant_objects(self) -> cabc.Iterator[m.GenericElement]:
+    def iter_compliant_objects(self) -> cabc.Iterator[m.ModelElement]:
         for obj in self.iter_objects():
             if all(i.passed for i in self.by_object(obj).iter_results()):
                 yield obj
@@ -270,7 +270,7 @@ class Results:
             if rule_ == key
         )
 
-    def by_object(self, target: str | m.GenericElement, /) -> Results:
+    def by_object(self, target: str | m.ModelElement, /) -> Results:
         """Filter the validation results by the target object."""
         if not isinstance(target, str):
             target = target.uuid
@@ -336,7 +336,7 @@ def rule(
         Types of objects that this rule applies to.
 
         Object types can be either real types (subclasses of
-        :class:`~capellambse.model.common.GenericElement`) or virtual
+        :class:`~capellambse.model.common.ModelElement`) or virtual
         types created with the :func:`virtual_type` decorator. These can
         be freely mixed in the rule decorator.
     id
@@ -429,7 +429,7 @@ class ObjectValidation:
     _model: capellambse.MelodyModel
     _element: etree._Element
 
-    parent = m.AlternateAccessor(m.GenericElement)
+    parent = m.AlternateAccessor(m.ModelElement)
 
     def __init__(self, **kw: t.Any) -> None:
         del kw

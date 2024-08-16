@@ -8,8 +8,8 @@ These base classes are used between different layers.
 from capellambse import model as m
 
 
-class TraceableElement(m.GenericElement):
+class TraceableElement(m.ModelElement):
     """A template for traceable ModelObjects."""
 
-    source = m.AttrProxyAccessor(m.GenericElement, attr="sourceElement")
-    target = m.AttrProxyAccessor(m.GenericElement, attr="targetElement")
+    source = m.AttrProxyAccessor(m.ModelElement, attr="sourceElement")
+    target = m.AttrProxyAccessor(m.ModelElement, attr="targetElement")

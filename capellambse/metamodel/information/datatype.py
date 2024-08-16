@@ -8,7 +8,7 @@ from .. import modeltypes
 from . import datavalue
 
 
-class DataType(m.GenericElement):
+class DataType(m.ModelElement):
     _xmltag = "ownedDataTypes"
 
     is_discrete = m.BoolPOD("discrete")
@@ -36,7 +36,7 @@ class BooleanType(DataType):
 class Enumeration(DataType):
     """An Enumeration."""
 
-    domain_type = m.AttrProxyAccessor(m.GenericElement, "domainType")
+    domain_type = m.AttrProxyAccessor(m.ModelElement, "domainType")
     owned_literals = m.DirectProxyAccessor(
         datavalue.EnumerationLiteral, aslist=m.ElementList
     )

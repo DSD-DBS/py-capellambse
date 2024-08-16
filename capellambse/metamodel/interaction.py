@@ -5,25 +5,25 @@ import capellambse.model as m
 from . import capellacore
 
 
-class FunctionalChainAbstractCapabilityInvolvement(m.GenericElement): ...
+class FunctionalChainAbstractCapabilityInvolvement(m.ModelElement): ...
 
 
-class AbstractCapabilityRealization(m.GenericElement): ...
+class AbstractCapabilityRealization(m.ModelElement): ...
 
 
 @m.xtype_handler(None)
-class Execution(m.GenericElement):
+class Execution(m.ModelElement):
     """An execution."""
 
-    start = m.AttrProxyAccessor(m.GenericElement, "start")
-    finish = m.AttrProxyAccessor(m.GenericElement, "finish")
+    start = m.AttrProxyAccessor(m.ModelElement, "start")
+    finish = m.AttrProxyAccessor(m.ModelElement, "finish")
 
 
 @m.xtype_handler(None)
 class StateFragment(Execution):
     """A state fragment."""
 
-    function = m.AttrProxyAccessor(m.GenericElement, "relatedAbstractFunction")
+    function = m.AttrProxyAccessor(m.ModelElement, "relatedAbstractFunction")
 
 
 @m.xtype_handler(None)
@@ -32,35 +32,33 @@ class CombinedFragment(Execution):
 
     operator = m.StringPOD("operator")
     operands = m.AttrProxyAccessor(
-        m.GenericElement, "referencedOperands", aslist=m.ElementList
+        m.ModelElement, "referencedOperands", aslist=m.ElementList
     )
 
 
 @m.xtype_handler(None)
-class InstanceRole(m.GenericElement):
+class InstanceRole(m.ModelElement):
     """An instance role."""
 
-    instance = m.AttrProxyAccessor[m.GenericElement](
-        None, "representedInstance"
-    )
+    instance = m.AttrProxyAccessor[m.ModelElement](None, "representedInstance")
 
 
 @m.xtype_handler(None)
-class SequenceMessage(m.GenericElement):
+class SequenceMessage(m.ModelElement):
     """A sequence message."""
 
-    source = m.AttrProxyAccessor(m.GenericElement, "sendingEnd")
-    target = m.AttrProxyAccessor(m.GenericElement, "receivingEnd")
+    source = m.AttrProxyAccessor(m.ModelElement, "sendingEnd")
+    target = m.AttrProxyAccessor(m.ModelElement, "receivingEnd")
 
 
-class Event(m.GenericElement):
+class Event(m.ModelElement):
     """Abstract super class of all events in a Scenario."""
 
 
 class EventOperation(Event):
     """Abstract super class for events about operations."""
 
-    operation = m.AttrProxyAccessor(m.GenericElement, "operation")
+    operation = m.AttrProxyAccessor(m.ModelElement, "operation")
 
 
 @m.xtype_handler(None)
@@ -79,10 +77,10 @@ class EventReceiptOperation(EventOperation):
 
 
 @m.xtype_handler(None)
-class Scenario(m.GenericElement):
+class Scenario(m.ModelElement):
     """A scenario that holds instance roles."""
 
-    instance_roles = m.DirectProxyAccessor[m.GenericElement](
+    instance_roles = m.DirectProxyAccessor[m.ModelElement](
         InstanceRole, aslist=m.ElementList
     )
     messages = m.DirectProxyAccessor(SequenceMessage, aslist=m.ElementList)
@@ -99,10 +97,10 @@ class Scenario(m.GenericElement):
     precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
 
 
-class InteractionFragment(m.GenericElement):
+class InteractionFragment(m.ModelElement):
     """Abstract super class of all interaction fragments in a Scenario."""
 
-    covered = m.AttrProxyAccessor[m.GenericElement](
+    covered = m.AttrProxyAccessor[m.ModelElement](
         None, "coveredInstanceRoles", aslist=m.MixedElementList
     )
 
@@ -130,8 +128,8 @@ class InteractionOperand(InteractionFragment):
 class InteractionState(InteractionFragment):
     """An interaction-state."""
 
-    state = m.AttrProxyAccessor(m.GenericElement, "relatedAbstractState")
-    function = m.AttrProxyAccessor(m.GenericElement, "relatedAbstractFunction")
+    state = m.AttrProxyAccessor(m.ModelElement, "relatedAbstractState")
+    function = m.AttrProxyAccessor(m.ModelElement, "relatedAbstractFunction")
 
 
 @m.xtype_handler(None)
@@ -141,10 +139,10 @@ class MessageEnd(InteractionFragment):
     event = m.AttrProxyAccessor[Event](None, "event")
 
 
-class Exchange(m.GenericElement):
+class Exchange(m.ModelElement):
     """An abstract Exchange."""
 
-    source = m.ParentAccessor(m.GenericElement)
+    source = m.ParentAccessor(m.ModelElement)
 
 
 @m.xtype_handler(None)
@@ -153,8 +151,8 @@ class AbstractCapabilityExtend(Exchange):
 
     _xmltag = "extends"
 
-    source = m.ParentAccessor(m.GenericElement)
-    target = m.AttrProxyAccessor(m.GenericElement, "extended")
+    source = m.ParentAccessor(m.ModelElement)
+    target = m.AttrProxyAccessor(m.ModelElement, "extended")
 
 
 @m.xtype_handler(None)
@@ -163,8 +161,8 @@ class AbstractCapabilityInclude(Exchange):
 
     _xmltag = "includes"
 
-    source = m.ParentAccessor(m.GenericElement)
-    target = m.AttrProxyAccessor(m.GenericElement, "included")
+    source = m.ParentAccessor(m.ModelElement)
+    target = m.AttrProxyAccessor(m.ModelElement, "included")
 
 
 @m.xtype_handler(None)
@@ -173,17 +171,17 @@ class AbstractCapabilityGeneralization(Exchange):
 
     _xmltag = "superGeneralizations"
 
-    source = m.ParentAccessor(m.GenericElement)
-    target = m.AttrProxyAccessor(m.GenericElement, "super")
+    source = m.ParentAccessor(m.ModelElement)
+    target = m.AttrProxyAccessor(m.ModelElement, "super")
 
 
-class AbstractInvolvement(m.GenericElement):
+class AbstractInvolvement(m.ModelElement):
     """An abstract Involvement."""
 
-    source = m.ParentAccessor(m.GenericElement)
-    target = m.AttrProxyAccessor(m.GenericElement, "involved")
+    source = m.ParentAccessor(m.ModelElement)
+    target = m.AttrProxyAccessor(m.ModelElement, "involved")
 
-    involved = m.AttrProxyAccessor(m.GenericElement, "involved")
+    involved = m.AttrProxyAccessor(m.ModelElement, "involved")
 
     @property
     def name(self) -> str:  # type: ignore[override]

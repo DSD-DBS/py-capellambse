@@ -23,7 +23,7 @@ class PhysicalFunction(fa.Function):
 
 
 @m.xtype_handler(None)
-class PhysicalFunctionPkg(m.GenericElement):
+class PhysicalFunctionPkg(m.ModelElement):
     """A logical component package."""
 
     _xmltag = "ownedFunctionPkg"
@@ -78,7 +78,7 @@ class PhysicalComponent(cs.Component):
 
 
 @m.xtype_handler(None)
-class PhysicalComponentPkg(m.GenericElement):
+class PhysicalComponentPkg(m.ModelElement):
     """A logical component package."""
 
     _xmltag = "ownedPhysicalComponentPkg"

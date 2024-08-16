@@ -7,17 +7,17 @@ import capellambse.model as m
 from . import capellacore, modellingcore
 
 
-class AbstractStateRealization(m.GenericElement): ...
+class AbstractStateRealization(m.ModelElement): ...
 
 
-class TransfoLink(m.GenericElement): ...
+class TransfoLink(m.ModelElement): ...
 
 
-class CapabilityRealizationInvolvement(m.GenericElement): ...
+class CapabilityRealizationInvolvement(m.ModelElement): ...
 
 
 @m.xtype_handler(None)
-class Region(m.GenericElement):
+class Region(m.ModelElement):
     """A region inside a state machine or state/mode."""
 
     _xmltag = "ownedRegions"
@@ -27,7 +27,7 @@ class Region(m.GenericElement):
     transitions: m.Accessor
 
 
-class AbstractStateMode(m.GenericElement):
+class AbstractStateMode(m.ModelElement):
     """Common code for states and modes."""
 
     _xmltag = "ownedStates"
@@ -40,13 +40,13 @@ class State(AbstractStateMode):
     """A state."""
 
     entries = m.AttrProxyAccessor(
-        m.GenericElement, "entry", aslist=m.MixedElementList
+        m.ModelElement, "entry", aslist=m.MixedElementList
     )
     do_activity = m.AttrProxyAccessor(
-        m.GenericElement, "doActivity", aslist=m.MixedElementList
+        m.ModelElement, "doActivity", aslist=m.MixedElementList
     )
     exits = m.AttrProxyAccessor(
-        m.GenericElement, "exit", aslist=m.MixedElementList
+        m.ModelElement, "exit", aslist=m.MixedElementList
     )
 
     functions: m.Accessor
@@ -93,7 +93,7 @@ class TerminatePseudoState(AbstractStateMode):
 
 
 @m.xtype_handler(None)
-class StateMachine(m.GenericElement):
+class StateMachine(m.ModelElement):
     """A state machine."""
 
     _xmltag = "ownedStateMachines"
@@ -102,18 +102,18 @@ class StateMachine(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class StateTransition(m.GenericElement):
+class StateTransition(m.ModelElement):
     r"""A transition between :class:`State`\ s or :class:`Mode`\ s."""
 
     _xmltag = "ownedTransitions"
 
-    source = m.AttrProxyAccessor(m.GenericElement, "source")
-    destination = m.AttrProxyAccessor(m.GenericElement, "target")
+    source = m.AttrProxyAccessor(m.ModelElement, "source")
+    destination = m.AttrProxyAccessor(m.ModelElement, "target")
     triggers = m.AttrProxyAccessor(
-        m.GenericElement, "triggers", aslist=m.MixedElementList
+        m.ModelElement, "triggers", aslist=m.MixedElementList
     )
     effects = m.AttrProxyAccessor(
-        m.GenericElement, "effect", aslist=m.MixedElementList
+        m.ModelElement, "effect", aslist=m.MixedElementList
     )
     guard = m.AttrProxyAccessor(capellacore.Constraint, "guard")
 
@@ -175,7 +175,7 @@ m.set_accessor(
     m.DirectProxyAccessor(StateTransition, aslist=m.ElementList),
 )
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "traces",
     m.DirectProxyAccessor(GenericTrace, aslist=m.ElementList),
 )

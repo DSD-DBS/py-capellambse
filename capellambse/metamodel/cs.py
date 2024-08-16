@@ -17,25 +17,25 @@ from . import capellacommon, fa, information
 
 
 @m.xtype_handler(None)
-class Part(m.GenericElement):
+class Part(m.ModelElement):
     """A representation of a physical component."""
 
     _xmltag = "ownedParts"
 
-    type = m.AttrProxyAccessor(m.GenericElement, "abstractType")
+    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
 
     deployed_parts: m.Accessor
 
 
 @m.xtype_handler(None)
-class ExchangeItemAllocation(m.GenericElement):
+class ExchangeItemAllocation(m.ModelElement):
     """An allocation of an ExchangeItem to an Interface."""
 
     item = m.AttrProxyAccessor(information.ExchangeItem, "allocatedItem")
 
 
 @m.xtype_handler(None)
-class Interface(m.GenericElement):
+class Interface(m.ModelElement):
     """An interface."""
 
     exchange_item_allocations = m.DirectProxyAccessor(
@@ -44,7 +44,7 @@ class Interface(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class InterfacePkg(m.GenericElement):
+class InterfacePkg(m.ModelElement):
     """A package that can hold interfaces and exchange items."""
 
     exchange_items = m.DirectProxyAccessor(
@@ -56,12 +56,12 @@ class InterfacePkg(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class PhysicalPort(m.GenericElement):
+class PhysicalPort(m.ModelElement):
     """A physical port."""
 
     _xmltag = "ownedFeatures"
 
-    owner = m.ParentAccessor(m.GenericElement)
+    owner = m.ParentAccessor(m.ModelElement)
     links: m.Accessor
 
 
@@ -87,12 +87,12 @@ class PhysicalLink(PhysicalPort):
 
 
 @m.xtype_handler(None)
-class PhysicalPath(m.GenericElement):
+class PhysicalPath(m.ModelElement):
     """A physical path."""
 
     _xmltag = "ownedPhysicalPath"
 
-    involved_items = m.LinkAccessor[m.GenericElement](
+    involved_items = m.LinkAccessor[m.ModelElement](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement",
         aslist=m.MixedElementList,
@@ -110,7 +110,7 @@ class PhysicalPath(m.GenericElement):
         return self.involved_items.by_type("PhysicalLink")
 
 
-class Component(m.GenericElement):
+class Component(m.ModelElement):
     """A template class for components."""
 
     is_abstract = m.BoolPOD("abstract")
@@ -120,7 +120,7 @@ class Component(m.GenericElement):
     is_actor = m.BoolPOD("actor")
     """Boolean flag for an actor Component."""
 
-    owner = m.ParentAccessor(m.GenericElement)
+    owner = m.ParentAccessor(m.ModelElement)
     state_machines = m.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=m.ElementList
     )
@@ -152,13 +152,13 @@ class Component(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class ComponentRealization(m.GenericElement):
+class ComponentRealization(m.ModelElement):
     """A realization that links to a component."""
 
     _xmltag = "ownedComponentRealizations"
 
 
-class ComponentArchitecture(m.GenericElement):
+class ComponentArchitecture(m.ModelElement):
     """Formerly known as BaseArchitectureLayer."""
 
     data_package = m.DirectProxyAccessor(information.DataPkg)

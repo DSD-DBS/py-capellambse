@@ -3,7 +3,7 @@
 import capellambse.model as m
 
 
-class LiteralBooleanValue(m.GenericElement):
+class LiteralBooleanValue(m.ModelElement):
     """A Literal Boolean Value."""
 
     _xmltag = "ownedLiterals"
@@ -11,17 +11,17 @@ class LiteralBooleanValue(m.GenericElement):
     value = m.BoolPOD("value")
 
 
-class LiteralValue(m.GenericElement):
+class LiteralValue(m.ModelElement):
     is_abstract = m.BoolPOD("abstract")
     """Indicates if property is abstract."""
     value = m.StringPOD("value")
-    type = m.AttrProxyAccessor(m.GenericElement, "abstractType")
+    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
 
 
 @m.xtype_handler(None)
 class LiteralNumericValue(LiteralValue):
     value = m.StringPOD("value")
-    unit = m.AttrProxyAccessor(m.GenericElement, "unit")
+    unit = m.AttrProxyAccessor(m.ModelElement, "unit")
 
 
 @m.xtype_handler(None)
@@ -30,30 +30,30 @@ class LiteralStringValue(LiteralValue):
 
 
 @m.xtype_handler(None)
-class ValuePart(m.GenericElement):
+class ValuePart(m.ModelElement):
     """A Value Part of a Complex Value."""
 
     _xmltag = "ownedParts"
 
     referenced_property = m.AttrProxyAccessor(
-        m.GenericElement, "referencedProperty"
+        m.ModelElement, "referencedProperty"
     )
     value = m.RoleTagAccessor("ownedValue")
 
 
 @m.xtype_handler(None)
-class ComplexValue(m.GenericElement):
+class ComplexValue(m.ModelElement):
     """A Complex Value."""
 
     _xmltag = "ownedDataValues"
 
-    type = m.AttrProxyAccessor(m.GenericElement, "abstractType")
+    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
     value_parts = m.DirectProxyAccessor(ValuePart, aslist=m.ElementList)
 
 
 @m.attr_equal("name")
 @m.xtype_handler(None)
-class EnumerationLiteral(m.GenericElement):
+class EnumerationLiteral(m.ModelElement):
     _xmltag = "ownedLiterals"
 
     value = m.RoleTagAccessor("domainValue")
@@ -62,6 +62,6 @@ class EnumerationLiteral(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class EnumerationReference(m.GenericElement):
-    type = m.AttrProxyAccessor(m.GenericElement, "abstractType")
-    value = m.AttrProxyAccessor(m.GenericElement, "referencedValue")
+class EnumerationReference(m.ModelElement):
+    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
+    value = m.AttrProxyAccessor(m.ModelElement, "referencedValue")

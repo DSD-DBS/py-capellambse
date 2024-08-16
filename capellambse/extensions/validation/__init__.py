@@ -28,9 +28,9 @@ def init() -> None:
     )
 
     m.set_accessor(
-        m.GenericElement, "validation", m.AlternateAccessor(ElementValidation)
+        m.ModelElement, "validation", m.AlternateAccessor(ElementValidation)
     )
-    m.GenericElement.validate = property(  # type: ignore[attr-defined]
+    m.ModelElement.validate = property(  # type: ignore[attr-defined]
         lambda self: self.validation.validate
     )
     m.set_accessor(

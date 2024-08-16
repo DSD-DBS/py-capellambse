@@ -95,7 +95,7 @@ class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
     _xmltag = "ownedExtensions"
 
     source = m.AttrProxyAccessor(rq.Requirement, "target")
-    target = m.AttrProxyAccessor(m.GenericElement, "source")
+    target = m.AttrProxyAccessor(m.ModelElement, "source")
 
 
 @m.xtype_handler(None)
@@ -103,7 +103,7 @@ class CapellaTypesFolder(rq.ReqIFElement):
     _xmltag = "ownedExtensions"
 
     data_type_definitions = m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (rq.DataTypeDefinition, rq.EnumerationDataTypeDefinition),
         aslist=m.MixedElementList,
     )
@@ -167,7 +167,7 @@ class RequirementsRelationAccessor(
     def _make_list(self, parent_obj, elements):
         assert self.aslist is not None
         return self.aslist(
-            parent_obj._model, elements, m.GenericElement, parent=parent_obj
+            parent_obj._model, elements, m.ModelElement, parent=parent_obj
         )
 
     def create(
@@ -240,7 +240,7 @@ class RequirementsRelationAccessor(
         yield
 
     def _find_relation_type(
-        self, target: m.GenericElement
+        self, target: m.ModelElement
     ) -> type[rq.InternalRelation | CapellaIncomingRelation]:
         if isinstance(target, rq.Requirement):
             return rq.InternalRelation
@@ -285,7 +285,7 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
     def by_relation_type(self, reltype: str) -> RelationsList:
         matches = []
         for elm in self._elements:
-            rel_elm = m.GenericElement.from_model(self._model, elm)
+            rel_elm = m.ModelElement.from_model(self._model, elm)
             assert isinstance(rel_elm, rq.AbstractRequirementsRelation)
             if rel_elm.type is not None and rel_elm.type.name == reltype:
                 matches.append(elm)
@@ -301,7 +301,7 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
         }
         matches: list[etree._Element] = []
         for elm in self._elements:
-            rel_elm = m.GenericElement.from_model(self._model, elm)
+            rel_elm = m.ModelElement.from_model(self._model, elm)
             if isinstance(rel_elm, relation_types[class_]):
                 matches.append(rel_elm._element)
         return self._newlist(matches)
@@ -315,7 +315,7 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
 class ElementRelationAccessor(
     m.WritableAccessor[rq.AbstractRequirementsRelation]
 ):
-    """Provides access to RequirementsRelations of a GenericElement."""
+    """Provides access to RequirementsRelations of a ModelElement."""
 
     __slots__ = ("aslist",)
 

@@ -61,7 +61,7 @@ class MelodyModel:
             raise RuntimeError("No root project or library found")
         if len(roots) > 1:
             raise RuntimeError(f"Found {len(roots)} Project/Library objects")
-        obj = _obj.GenericElement.from_model(self, roots[0])
+        obj = _obj.ModelElement.from_model(self, roots[0])
         assert isinstance(obj, mm.capellamodeller.Project)
         return obj
 
@@ -309,7 +309,7 @@ class MelodyModel:
     def search(
         self,
         *xtypes: str | type[_obj.ModelObject],
-        below: _obj.GenericElement | None = None,
+        below: _obj.ModelElement | None = None,
     ) -> _obj.ElementList:
         r"""Search for all elements with any of the given ``xsi:type``\ s.
 
@@ -339,7 +339,7 @@ class MelodyModel:
                 xtypes_.append(_xtype.build_xtype(xtype))
             elif ":" in xtype:
                 xtypes_.append(xtype)
-            elif xtype in ("GenericElement", "ModelObject"):
+            elif xtype in {"GenericElement", "ModelElement", "ModelObject"}:
                 xtypes_.clear()
                 break
             else:
@@ -372,11 +372,11 @@ class MelodyModel:
                 for i in matches
                 if below._element in self._loader.iterancestors(i)
             )
-        return cls(self, list(matches), _obj.GenericElement)
+        return cls(self, list(matches), _obj.ModelElement)
 
     def by_uuid(self, uuid: str) -> t.Any:
         """Search the entire model for an element with the given UUID."""
-        return _obj.GenericElement.from_model(self, self._loader[uuid])
+        return _obj.ModelElement.from_model(self, self._loader[uuid])
 
     def find_references(
         self, target: _obj.ModelObject | str, /
@@ -420,7 +420,7 @@ class MelodyModel:
                 if i.fragment_type != loader.FragmentType.VISUAL
             ],
         ):
-            obj = _obj.GenericElement.from_model(self, elem)
+            obj = _obj.ModelElement.from_model(self, elem)
             for attr in _reference_attributes(type(obj)):
                 if attr.startswith("_"):
                     continue
@@ -430,7 +430,7 @@ class MelodyModel:
                 except Exception:
                     continue
 
-                if isinstance(value, _obj.GenericElement) and value == target:
+                if isinstance(value, _obj.ModelElement) and value == target:
                     yield (obj, attr, None)
                 elif isinstance(value, _obj.ElementList):
                     try:

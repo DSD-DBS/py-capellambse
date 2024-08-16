@@ -6,13 +6,13 @@ import capellambse.model as m
 
 
 @m.xtype_handler(None)
-class Constraint(m.GenericElement):
+class Constraint(m.ModelElement):
     """A constraint."""
 
     _xmltag = "ownedConstraints"
 
     constrained_elements = m.AttrProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         "constrainedElements",
         aslist=m.MixedElementList,
     )
@@ -21,7 +21,7 @@ class Constraint(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class Generalization(m.GenericElement):
+class Generalization(m.ModelElement):
     """A Generalization."""
 
     _xmltag = "ownedGeneralizations"
@@ -30,14 +30,14 @@ class Generalization(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class EnumerationPropertyLiteral(m.GenericElement):
+class EnumerationPropertyLiteral(m.ModelElement):
     """A Literal for EnumerationPropertyType."""
 
     _xmltag = "ownedLiterals"
 
 
 @m.xtype_handler(None)
-class EnumerationPropertyType(m.GenericElement):
+class EnumerationPropertyType(m.ModelElement):
     """An EnumerationPropertyType."""
 
     _xmltag = "ownedEnumerationPropertyTypes"
@@ -47,7 +47,7 @@ class EnumerationPropertyType(m.GenericElement):
     )
 
 
-class PropertyValue(m.GenericElement):
+class PropertyValue(m.ModelElement):
     """Abstract base class for PropertyValues."""
 
     _xmltag = "ownedPropertyValues"
@@ -96,13 +96,13 @@ class EnumerationPropertyValue(PropertyValue):
 
 
 @m.xtype_handler(None)
-class PropertyValueGroup(m.GenericElement):
+class PropertyValueGroup(m.ModelElement):
     """A group for PropertyValues."""
 
     _xmltag = "ownedPropertyValueGroups"
 
     values = m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (
             StringPropertyValue,
             BooleanPropertyValue,
@@ -117,7 +117,7 @@ class PropertyValueGroup(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class PropertyValuePkg(m.GenericElement):
+class PropertyValuePkg(m.ModelElement):
     """A Package for PropertyValues."""
 
     _xmltag = "ownedPropertyValuePkgs"
@@ -132,7 +132,7 @@ class PropertyValuePkg(m.GenericElement):
         mapvalue="values",
     )
     values = m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (
             StringPropertyValue,
             BooleanPropertyValue,
@@ -150,16 +150,16 @@ m.set_self_references(
     (PropertyValuePkg, "packages"),
 )
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "constraints",
     m.DirectProxyAccessor(Constraint, aslist=m.ElementList),
 )
 
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "property_values",
     m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (
             BooleanPropertyValue,
             EnumerationPropertyValue,
@@ -173,7 +173,7 @@ m.set_accessor(
     ),
 )
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "property_value_groups",
     m.DirectProxyAccessor(
         PropertyValueGroup,
@@ -184,12 +184,12 @@ m.set_accessor(
 )
 
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "applied_property_values",
     m.AttrProxyAccessor(None, "appliedPropertyValues", aslist=m.ElementList),
 )
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "applied_property_value_groups",
     m.AttrProxyAccessor(
         None, "appliedPropertyValueGroups", aslist=m.ElementList

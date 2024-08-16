@@ -23,7 +23,7 @@ class LogicalFunction(fa.Function):
 
 
 @m.xtype_handler(None)
-class LogicalFunctionPkg(m.GenericElement):
+class LogicalFunctionPkg(m.ModelElement):
     """A logical function package."""
 
     _xmltag = "ownedFunctionPkg"
@@ -57,7 +57,7 @@ class LogicalComponent(cs.Component):
 
 
 @m.xtype_handler(None)
-class LogicalComponentPkg(m.GenericElement):
+class LogicalComponentPkg(m.ModelElement):
     """A logical component package."""
 
     _xmltag = "ownedLogicalComponentPkg"
@@ -74,7 +74,7 @@ class LogicalComponentPkg(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class CapabilityRealization(m.GenericElement):
+class CapabilityRealization(m.ModelElement):
     """A capability."""
 
     _xmltag = "ownedCapabilityRealizations"
@@ -122,7 +122,7 @@ class CapabilityRealization(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class CapabilityRealizationPkg(m.GenericElement):
+class CapabilityRealizationPkg(m.ModelElement):
     """A capability package that can hold capabilities."""
 
     _xmltag = "ownedAbstractCapabilityPkg"

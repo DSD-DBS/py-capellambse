@@ -30,18 +30,18 @@ m.XTYPE_ANCHORS[__name__] = SYMBOLIC_NAME
 
 
 @m.xtype_handler(None)
-class FilteringCriterion(m.GenericElement):
+class FilteringCriterion(m.ModelElement):
     """A single filtering criterion."""
 
     _xmltag = "ownedFilteringCriteria"
 
-    filtered_objects = m.ReferenceSearchingAccessor[m.GenericElement](
+    filtered_objects = m.ReferenceSearchingAccessor[m.ModelElement](
         (), "filtering_criteria", aslist=m.MixedElementList
     )
 
 
 @m.xtype_handler(None)
-class FilteringCriterionPkg(m.GenericElement):
+class FilteringCriterionPkg(m.ModelElement):
     """A package containing multiple filtering criteria."""
 
     _xmltag = "ownedFilteringCriterionPkgs"
@@ -51,7 +51,7 @@ class FilteringCriterionPkg(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class FilteringModel(m.GenericElement):
+class FilteringModel(m.ModelElement):
     """A filtering model containing criteria to filter by."""
 
     criteria = m.DirectProxyAccessor(FilteringCriterion, aslist=m.ElementList)
@@ -95,12 +95,12 @@ class AssociatedCriteriaAccessor(m.PhysicalAccessor[FilteringCriterion]):
 
 
 @m.xtype_handler(None)
-class FilteringResult(m.GenericElement):
+class FilteringResult(m.ModelElement):
     """A filtering result."""
 
 
 @m.xtype_handler(None)
-class ComposedFilteringResult(m.GenericElement):
+class ComposedFilteringResult(m.ModelElement):
     """A composed filtering result."""
 
 
@@ -114,7 +114,7 @@ def init() -> None:
         operator.attrgetter("project.model_root.filtering_model")
     )
     m.set_accessor(
-        m.GenericElement, "filtering_criteria", AssociatedCriteriaAccessor()
+        m.ModelElement, "filtering_criteria", AssociatedCriteriaAccessor()
     )
 
 
@@ -246,7 +246,7 @@ else:
             return all_results
 
         wanted: list[FilteringResult | ComposedFilteringResult] = []
-        obj: m.GenericElement
+        obj: m.ModelElement
         for result in result_strings:
             if helpers.is_uuid_string(result):
                 try:

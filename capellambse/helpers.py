@@ -521,7 +521,7 @@ def repair_html(markup: str) -> markupsafe.Markup:
 def replace_hlinks(
     markup: str,
     model: capellambse.model.MelodyModel,
-    make_href: cabc.Callable[[capellambse.model.GenericElement], str | None],
+    make_href: cabc.Callable[[capellambse.model.ModelElement], str | None],
     *,
     broken_link_css: str = "color: red; text-decoration: line-through;",
 ) -> markupsafe.Markup:

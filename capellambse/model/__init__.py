@@ -8,6 +8,7 @@ import collections.abc as cabc
 import enum
 import functools
 import typing as t
+import warnings
 
 E = t.TypeVar("E", bound=enum.Enum)
 """TypeVar for ":py:class:`~enum.Enum`"."""
@@ -98,7 +99,7 @@ from .diagram import Diagram as Diagram
 from .diagram import DiagramAccessor as DiagramAccessor
 from .diagram import DiagramType as DiagramType
 
-GenericElement.parent = ParentAccessor(GenericElement)
+ModelElement.parent = ParentAccessor(ModelElement)
 
 
 if not t.TYPE_CHECKING:
@@ -123,3 +124,17 @@ if not t.TYPE_CHECKING:
         *_all4,
         *_all5,
     ]
+
+    _deprecated_names = {
+        "GenericElement": ModelElement,
+    }
+
+    def __getattr__(attr):
+        if target := _deprecated_names.get(attr):
+            warnings.warn(
+                f"{attr} is deprecated, use {target.__name__} instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return target
+        raise AttributeError(f"{__name__} has no attribute {attr}")

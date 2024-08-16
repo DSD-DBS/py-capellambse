@@ -192,14 +192,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         @property
         def name(self) -> str: ...
         @property
-        def target(self) -> _obj.GenericElement: ...
+        def target(self) -> _obj.ModelElement: ...
 
     else:
         uuid: str
         """Unique ID of this diagram."""
         name: str
         """Human-readable name for this diagram."""
-        target: _obj.GenericElement
+        target: _obj.ModelElement
         """This diagram's "target".
 
         The target of a diagram is usually:
@@ -359,7 +359,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 continue
 
             elems.append(elem._element)
-        return _obj.MixedElementList(self._model, elems, _obj.GenericElement)
+        return _obj.MixedElementList(self._model, elems, _obj.ModelElement)
 
     @t.overload
     def render(self, fmt: None, /, **params) -> diagram.Diagram: ...
@@ -648,7 +648,7 @@ class Diagram(AbstractDiagram):
                 aird.iter_visible(self._model._loader, self._element)
             )
         return _obj.MixedElementList(
-            self._model, self.__nodes.copy(), _obj.GenericElement
+            self._model, self.__nodes.copy(), _obj.ModelElement
         )
 
     @property
@@ -672,9 +672,9 @@ class Diagram(AbstractDiagram):
         return self._element.attrib["repPath"]
 
     @property
-    def target(self) -> _obj.GenericElement:
+    def target(self) -> _obj.ModelElement:
         target = aird.find_target(self._model._loader, self._element)
-        return _obj.GenericElement.from_model(self._model, target)
+        return _obj.ModelElement.from_model(self._model, target)
 
     @property
     def type(self) -> DiagramType:

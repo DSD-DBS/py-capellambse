@@ -173,7 +173,7 @@ class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
         return value
 
 
-class ManagedGroup(m.GenericElement):
+class ManagedGroup(m.ModelElement):
     """A managed group of property values."""
 
     _required_attrs = frozenset({"name"})
@@ -257,7 +257,7 @@ class ManagedGroup(m.GenericElement):
         )
 
 
-class ManagedDomain(m.GenericElement):
+class ManagedDomain(m.ModelElement):
     """A "domain" in the property value management extension."""
 
     _required_attrs = frozenset({"name"})
@@ -313,7 +313,7 @@ class ManagedDomain(m.GenericElement):
         return self
 
 
-class PVMTConfiguration(m.GenericElement):
+class PVMTConfiguration(m.ModelElement):
     """Provides access to the model-wide PVMT configuration."""
 
     def __init__(self, *_args, **_kw) -> None:

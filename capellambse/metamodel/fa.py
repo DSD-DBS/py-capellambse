@@ -18,17 +18,17 @@ import capellambse.model as m
 from . import capellacommon, capellacore, information, interaction, modeltypes
 
 
-class ComponentExchangeAllocation(m.GenericElement): ...
+class ComponentExchangeAllocation(m.ModelElement): ...
 
 
-class ComponentExchangeFunctionalExchangeAllocation(m.GenericElement): ...
+class ComponentExchangeFunctionalExchangeAllocation(m.ModelElement): ...
 
 
-class ComponentFunctionalAllocation(m.GenericElement): ...
+class ComponentFunctionalAllocation(m.ModelElement): ...
 
 
 @m.xtype_handler(None)
-class ControlNode(m.GenericElement):
+class ControlNode(m.ModelElement):
     """A node with a specific control-kind."""
 
     _xmltag = "ownedSequenceNodes"
@@ -37,21 +37,21 @@ class ControlNode(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class FunctionRealization(m.GenericElement):
+class FunctionRealization(m.ModelElement):
     """A realization that links to a function."""
 
     _xmltag = "ownedFunctionRealizations"
 
 
-class AbstractExchange(m.GenericElement):
+class AbstractExchange(m.ModelElement):
     """Common code for Exchanges."""
 
-    source = m.AttrProxyAccessor(m.GenericElement, "source")
-    target = m.AttrProxyAccessor(m.GenericElement, "target")
+    source = m.AttrProxyAccessor(m.ModelElement, "source")
+    target = m.AttrProxyAccessor(m.ModelElement, "target")
 
 
 @m.xtype_handler(None)
-class AbstractFunction(m.GenericElement):
+class AbstractFunction(m.ModelElement):
     """An AbstractFunction."""
 
     available_in_states = m.AttrProxyAccessor(
@@ -60,10 +60,10 @@ class AbstractFunction(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class FunctionPort(m.GenericElement):
+class FunctionPort(m.ModelElement):
     """A function port."""
 
-    owner = m.ParentAccessor(m.GenericElement)
+    owner = m.ParentAccessor(m.ModelElement)
     exchanges: m.Accessor
     state_machines = m.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=m.ElementList
@@ -173,7 +173,7 @@ class FunctionalChainReference(FunctionalChainInvolvement):
 
 
 @m.xtype_handler(None)
-class FunctionalChain(m.GenericElement):
+class FunctionalChain(m.ModelElement):
     """A functional chain."""
 
     _xmltag = "ownedFunctionalChains"
@@ -181,7 +181,7 @@ class FunctionalChain(m.GenericElement):
     kind = m.EnumPOD("kind", modeltypes.FunctionalChainKind, default="SIMPLE")
 
     involvements = m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (
             FunctionalChainInvolvementFunction,
             FunctionalChainInvolvementLink,
@@ -226,13 +226,13 @@ class FunctionalChain(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class ComponentPort(m.GenericElement):
+class ComponentPort(m.ModelElement):
     """A component port."""
 
     _xmltag = "ownedFeatures"
 
     direction = m.EnumPOD("orientation", modeltypes.OrientationPortKind)
-    owner = m.ParentAccessor(m.GenericElement)
+    owner = m.ParentAccessor(m.ModelElement)
     exchanges: m.Accessor
 
 

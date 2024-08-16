@@ -162,25 +162,25 @@ def test_MixedElementList_filter_by_type(model: m.MelodyModel):
         ("progress_status", "TO_BE_DISCUSSED"),
     ],
 )
-def test_GenericElement_attrs(model: m.MelodyModel, key: str, value: str):
+def test_ModelElement_attrs(model: m.MelodyModel, key: str, value: str):
     elm = model.oa.all_capabilities.by_name("Eat food")
     assert getattr(elm, key) == value
 
 
-def test_GenericElement_has_diagrams(model: m.MelodyModel):
+def test_ModelElement_has_diagrams(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
     assert isinstance(elm, mm.oa.OperationalCapability)
     assert hasattr(elm, "diagrams")
     assert len(elm.diagrams) == 0
 
 
-def test_GenericElement_has_pvmt(model: m.MelodyModel):
+def test_ModelElement_has_pvmt(model: m.MelodyModel):
     elm = model.oa.all_capabilities.by_name("Eat food")
 
     elm.pvmt  # noqa: B018
 
 
-def test_GenericElement_has_progress_status(model: m.MelodyModel):
+def test_ModelElement_has_progress_status(model: m.MelodyModel):
     elm = model.oa.all_capabilities[0]
     assert elm.progress_status == "NOT_SET"
 
@@ -538,8 +538,8 @@ def test_specification_linkedText_to_internal_linkedText_transformation(
 
 @pytest.mark.skip(
     reason=(
-        "AttributeError is raised, but the text gets overwritten by the stub "
-        "in `GenericElement`. Solution: Create the relevant XML structures and"
+        "AttributeError is raised, but the text gets overwritten by the stub"
+        " in `ModelElement`. Solution: Create the relevant XML structures and"
         " return a real Specification object instead of raising."
     )
 )
@@ -687,7 +687,7 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
         ),
     ],
 )
-def test_GenericElement_has_GenericTraces(
+def test_ModelElement_has_GenericTraces(
     model_5_2: m.MelodyModel, trace_uuid: str, expected: str
 ) -> None:
     cls = model_5_2.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")

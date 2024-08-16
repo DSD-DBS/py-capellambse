@@ -5,7 +5,7 @@ from __future__ import annotations
 
 __all__ = [
     "ModelObject",
-    "GenericElement",
+    "ModelElement",
     "ElementList",
     "CachedElementList",
     "MixedElementList",
@@ -40,7 +40,7 @@ _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
 
 _MapFunction: te.TypeAlias = (
-    "cabc.Callable[[T], GenericElement | cabc.Iterable[GenericElement]]"
+    "cabc.Callable[[T], ModelElement | cabc.Iterable[ModelElement]]"
 )
 
 _TERMCELL: tuple[int, int] | None = None
@@ -51,10 +51,10 @@ class ModelObject(t.Protocol):
     """A class that wraps a specific model object.
 
     Most of the time, you'll want to subclass the concrete
-    ``GenericElement`` class. However, some special classes (e.g. AIRD
+    ``ModelElement`` class. However, some special classes (e.g. AIRD
     diagrams) provide a compatible interface, but it doesn't make sense
     to wrap a specific XML element. This protocol class is used in type
-    annotations to catch both "normal" GenericElement subclasses and the
+    annotations to catch both "normal" ModelElement subclasses and the
     mentioned special cases.
     """
 
@@ -96,8 +96,14 @@ class ModelObject(t.Protocol):
         """Instantiate a ModelObject from existing model elements."""
 
 
-class GenericElement:
-    """Provides high-level access to a single model element."""
+class ModelElement:
+    """A model element.
+
+    This is the common base class for all elements of a model. In terms
+    of the metamodel, it combines the role of
+    ``modellingcore.ModelElement`` and all its superclasses; references
+    to any superclass should be modified to use this class instead.
+    """
 
     uuid = _pods.StringPOD("id", writable=False)
     xtype = property(lambda self: helpers.xtype_of(self._element))
@@ -160,12 +166,12 @@ class GenericElement:
 
         Returns
         -------
-        GenericElement
-            An instance of GenericElement (or a more appropriate
-            subclass, if any) that wraps the given XML element.
+        ModelElement
+            An instance of ModelElement (or a more appropriate subclass,
+            if any) that wraps the given XML element.
         """
         class_ = cls
-        if class_ is GenericElement:
+        if class_ is ModelElement:
             xtype = helpers.xtype_of(element)
             if xtype is not None:
                 with contextlib.suppress(KeyError):
@@ -191,7 +197,7 @@ class GenericElement:
         """
         import capellambse.metamodel as mm
 
-        obj: GenericElement | None = self
+        obj: ModelElement | None = self
         assert obj is not None
         while obj := getattr(obj, "parent", None):
             if isinstance(obj, mm.cs.ComponentArchitecture):
@@ -329,7 +335,7 @@ class GenericElement:
         return f"{header}\n{attr_text}"
 
     def _short_repr_(self) -> str:
-        if type(self) is GenericElement:
+        if type(self) is ModelElement:
             mytype = f"Model element ({self.xtype})"
         else:
             mytype = type(self).__name__
@@ -368,7 +374,7 @@ class GenericElement:
             fragments.append(
                 f'<img src="{icon}" alt="" width="20" height="20"> '
             )
-        if type(self) is GenericElement:
+        if type(self) is ModelElement:
             fragments.append("Model element")
         else:
             fragments.append(escape(self.name or type(self).__name__))
@@ -535,7 +541,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         if elemclass is not None:
             self._elemclass = elemclass
         else:
-            self._elemclass = GenericElement  # type: ignore[assignment]
+            self._elemclass = ModelElement  # type: ignore[assignment]
 
         if not mapkey:
             self.__mapkey: str | None = None
@@ -559,12 +565,12 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         if self._model is not other._model:
             raise ValueError("Cannot add ElementLists from different models")
 
-        if self._elemclass is other._elemclass is not GenericElement:
+        if self._elemclass is other._elemclass is not ModelElement:
             listclass: type[ElementList] = ElementList
             elemclass: type[ModelObject] = self._elemclass
         else:
             listclass = MixedElementList
-            elemclass = GenericElement
+            elemclass = ModelElement
 
         if not reflected:
             elements = self._elements + other._elements
@@ -589,7 +595,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             if isinstance(other, ElementList):
                 objclass = other._elemclass
             else:
-                objclass = GenericElement
+                objclass = ModelElement
         else:
             objclass = self._elemclass
 
@@ -881,7 +887,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             attr = operator.attrgetter(attr)
         newelems: list[etree._Element] = []
         newuuids: set[str] = set()
-        classes: set[type[GenericElement]] = set()
+        classes: set[type[ModelElement]] = set()
         for i in self:
             try:
                 value = attr(i)
@@ -894,7 +900,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             for v in value:  # type: ignore[union-attr] # false-positive
                 if v is None:
                     continue
-                if isinstance(v, GenericElement):
+                if isinstance(v, ModelElement):
                     if v.uuid in newuuids:
                         continue
                     newuuids.add(v.uuid)
@@ -1078,8 +1084,8 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         elements
             The members of this list.
         elemclass
-            The :class:`GenericElement` subclass to use for
-            reconstructing elements.
+            The :class:`ModelElement` subclass to use for reconstructing
+            elements.
         cacheattr
             The attribute on the ``model`` to use as cache.
         **kw
@@ -1106,7 +1112,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         return newlist
 
 
-class MixedElementList(ElementList[GenericElement]):
+class MixedElementList(ElementList[ModelElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
     def __init__(
@@ -1130,9 +1136,9 @@ class MixedElementList(ElementList[GenericElement]):
             Additional arguments are passed to the superclass.
         """
         del elemclass
-        super().__init__(model, elements, GenericElement, **kw)
+        super().__init__(model, elements, ModelElement, **kw)
 
-    def __getattr__(self, attr: str) -> _ListFilter[GenericElement]:
+    def __getattr__(self, attr: str) -> _ListFilter[ModelElement]:
         if attr == "by_type":
             return _LowercaseListFilter(self, "__class__.__name__")
         return super().__getattr__(attr)
@@ -1258,7 +1264,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
         return type(self).__bases__[1]
 
     def create(self, typehint: str | None = None, /, **kw: t.Any) -> T:
-        """Make a new model object (instance of GenericElement).
+        """Make a new model object (instance of ModelElement).
 
         Instead of specifying the full ``xsi:type`` including the
         namespace, you can also pass in just the part after the ``:``
@@ -1298,7 +1304,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
         return newobj
 
     def create_singleattr(self, arg: t.Any) -> T:
-        """Make a new model object (instance of GenericElement).
+        """Make a new model object (instance of ModelElement).
 
         This new object has only one interesting attribute.
 

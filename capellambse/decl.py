@@ -119,7 +119,7 @@ def apply(
                 deferred[p.args[0]].append(d)
                 continue
 
-        if not isinstance(parent, capellambse.model.GenericElement):
+        if not isinstance(parent, capellambse.model.ModelElement):
             raise TypeError(
                 "Expected a model object as parent, found "
                 f"{type(parent).__name__}"
@@ -426,7 +426,7 @@ def _create_complex_objects(
     for child in objs:
         if isinstance(
             child,
-            m.GenericElement | list | Promise | _ObjectFinder,
+            m.ModelElement | list | Promise | _ObjectFinder,
         ):
             try:
                 obj = _resolve(promises, parent, child)

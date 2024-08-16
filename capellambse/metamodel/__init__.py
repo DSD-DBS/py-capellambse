@@ -29,7 +29,7 @@ m.set_accessor(
     ),
 )
 m.set_accessor(
-    m.GenericElement,
+    m.ModelElement,
     "property_value_packages",
     m.DirectProxyAccessor(
         capellacore.PropertyValuePkg,

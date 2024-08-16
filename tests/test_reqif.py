@@ -94,7 +94,7 @@ def test_extension_was_loaded():
 
     capellambse.load_model_extensions()
 
-    assert hasattr(m.GenericElement, "requirements")
+    assert hasattr(m.ModelElement, "requirements")
     for layer in (
         mm.oa.OperationalAnalysis,
         mm.sa.SystemAnalysis,
@@ -290,9 +290,7 @@ class TestRequirementRelations:
 
         assert len(req.relations) == 4
 
-    def test_well_defined_on_GenericElements(
-        self, model: m.MelodyModel
-    ) -> None:
+    def test_well_defined_on_ModelElements(self, model: m.MelodyModel) -> None:
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
 
         assert isinstance(ge.requirements, reqif.RelationsList)

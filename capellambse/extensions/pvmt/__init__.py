@@ -31,7 +31,7 @@ def _get_pvmt_configuration(model: m.MelodyModel) -> PVMTConfiguration:
 def init() -> None:
     """Initialize the PVMT extension."""
     m.MelodyModel.pvmt = property(_get_pvmt_configuration)  # type: ignore[attr-defined]
-    m.set_accessor(m.GenericElement, "pvmt", m.AlternateAccessor(ObjectPVMT))
+    m.set_accessor(m.ModelElement, "pvmt", m.AlternateAccessor(ObjectPVMT))
 
 
 if not t.TYPE_CHECKING:

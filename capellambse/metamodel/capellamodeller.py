@@ -8,7 +8,7 @@ from . import la, oa, pa, sa
 
 
 @m.xtype_handler(None)
-class SystemEngineering(m.GenericElement):
+class SystemEngineering(m.ModelElement):
     """A system engineering element.
 
     System engineering is an interdisciplinary approach encompassing the entire
@@ -29,7 +29,7 @@ class SystemEngineering(m.GenericElement):
     """
 
     architectures = m.RoleTagAccessor(
-        "ownedArchitectures", m.GenericElement, aslist=m.ElementList
+        "ownedArchitectures", m.ModelElement, aslist=m.ElementList
     )
 
     @property
@@ -86,7 +86,7 @@ class SystemEngineering(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class Project(m.GenericElement):
+class Project(m.ModelElement):
     model_roots = m.RoleTagAccessor(
         "ownedModelRoots", SystemEngineering, aslist=m.ElementList
     )

@@ -51,10 +51,10 @@ Shifting between API levels
 High to low-level shift
 -----------------------
 
-Every model object (i.e. instance of ``GenericElement`` or one of its
-subclasses) has an attribute ``_element``, which holds a reference to the
-corresponding :py:class:`lxml.etree._Element` instance. The low-level API works
-directly with these ``_Element`` instances.
+Every model object (i.e. instance of ``ModelElement`` or one of its subclasses)
+has an attribute ``_element``, which holds a reference to the corresponding
+:py:class:`lxml.etree._Element` instance. The low-level API works directly with
+these ``_Element`` instances.
 
 The ``MelodyModel`` object stores a reference to the
 :py:class:`~capellambse.loader.core.MelodyLoader` instance.
@@ -62,15 +62,15 @@ The ``MelodyModel`` object stores a reference to the
 Low to high-level shift
 -----------------------
 
-The GenericElement class offers the
-:py:meth:`~capellambse.model.GenericElement.from_model` class method, which
-takes a ``MelodyModel`` instance and a low-level LXML ``_Element`` as arguments
-and constructs a high-level API proxy object from them. This is the way "back
-up" to the high-level API.
+The ModelElement class offers the
+:py:meth:`~capellambse.model.ModelElement.from_model` class method, which takes
+a ``MelodyModel`` instance and a low-level LXML ``_Element`` as arguments and
+constructs a high-level API proxy object from them. This is the way "back up"
+to the high-level API.
 
 .. note::
 
-   Always call ``from_model`` on the base ``GenericElement`` class, not on its
+   Always call ``from_model`` on the base ``ModelElement`` class, not on its
    subclasses. The base class automatically searches for the correct subclass
    to instantiate, based on the ``xsi:type`` of the passed XML element. Calling
    the method on a subclass directly may inadvertently cause the wrong class to
@@ -82,14 +82,14 @@ up" to the high-level API.
    >>> el = myfunc._element
    >>> el
    <Element ownedFunctions at 0x7f9e3742b840>
-   >>> from capellambse.model import GenericElement
-   >>> high_el = GenericElement.from_model(model, el)
+   >>> from capellambse.model import ModelElement
+   >>> high_el = ModelElement.from_model(model, el)
    >>> high_el == myfunc
    True
 
 When working with multiple objects, it can be desirable to directly construct a
 high-level :py:class:`~capellambse.model.ElementList` with them. The
-ElementList constructor works similar to ``GenericElement.from_model``, but it
+ElementList constructor works similar to ``ModelElement.from_model``, but it
 takes a list of elements instead of only a single one.
 
 .. code-block:: python
@@ -127,8 +127,8 @@ parent, child and sibling elements.
    <Element ownedFunctions at 0x7f9e3742bca0>
 
 These elements and lists of elements can then be fed into
-``GenericElement.from_model`` or the ``ElementList`` constructor respectively
-in order to :ref:`return to the high-level API <api-level-shift>`.
+``ModelElement.from_model`` or the ``ElementList`` constructor respectively in
+order to :ref:`return to the high-level API <api-level-shift>`.
 
 Capella models support fragmentation into multiple files, which results in
 multiple XML trees being loaded into memory. This makes it difficult to
@@ -200,11 +200,11 @@ Manipulating objects
    when modifying a model. Therefore it is very easy to break a model using it,
    which can be very hard to recover from. Proceed with caution.
 
-As ``GenericElement`` instances are simply wrappers around the raw XML
-elements, any changes to their attributes are directly reflected by changes to
-the attributes or children of the underlying XML element and vice versa. This
-means that no special care needs to be taken to keep the high-level and
-low-level parts of the API synchronized.
+As ``ModelElement`` instances are simply wrappers around the raw XML elements,
+any changes to their attributes are directly reflected by changes to the
+attributes or children of the underlying XML element and vice versa. This means
+that no special care needs to be taken to keep the high-level and low-level
+parts of the API synchronized.
 
 In many cases, the attribute names of the high-level API match those in the
 XML, with the difference that the former uses ``snake_case`` naming (as is

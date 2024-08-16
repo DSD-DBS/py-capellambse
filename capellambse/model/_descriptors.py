@@ -508,11 +508,11 @@ class PhysicalAccessor(Accessor[T]):
         if xtypes is None:
             self.xtypes = (
                 {_xtype.build_xtype(class_)}
-                if class_ is not _obj.GenericElement
+                if class_ is not _obj.ModelElement
                 else set()
             )
         elif isinstance(xtypes, type):
-            assert issubclass(xtypes, _obj.GenericElement)
+            assert issubclass(xtypes, _obj.ModelElement)
             self.xtypes = {_xtype.build_xtype(xtypes)}
         elif isinstance(xtypes, str):
             self.xtypes = {xtypes}
@@ -536,7 +536,7 @@ class PhysicalAccessor(Accessor[T]):
 
     def _guess_xtype(self) -> tuple[type[T], str]:
         """Try to guess the type of element that should be created."""
-        if self.class_ is _obj.GenericElement or self.class_ is None:
+        if self.class_ is _obj.ModelElement or self.class_ is None:
             raise ValueError("Multiple object types that can be created")
         if not self.xtypes:
             raise ValueError("No matching `xsi:type` found")
@@ -576,8 +576,8 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         follow_abstract: bool = False,
         rootelem: (
             str
-            | type[_obj.GenericElement]
-            | cabc.Sequence[str | type[_obj.GenericElement]]
+            | type[_obj.ModelElement]
+            | cabc.Sequence[str | type[_obj.ModelElement]]
             | None
         ) = None,
         single_attr: str | None = None,
@@ -643,7 +643,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         elif isinstance(rootelem, str):
             self.rootelem = rootelem.split("/")
         elif isinstance(rootelem, type) and issubclass(
-            rootelem, _obj.GenericElement
+            rootelem, _obj.ModelElement
         ):
             self.rootelem = [_xtype.build_xtype(rootelem)]
         else:
@@ -720,7 +720,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 if elm.get("id") is None:
                     continue
 
-                obj = _obj.GenericElement.from_model(model, elm)
+                obj = _obj.ModelElement.from_model(model, elm)
                 for ref, attr, _ in model.find_references(obj):
                     acc = getattr(type(ref), attr)
                     if acc is self or not isinstance(acc, WritableAccessor):
@@ -828,8 +828,8 @@ class DeepProxyAccessor(PhysicalAccessor[T]):
         *,
         aslist: type[_obj.ElementList] | None = None,
         rootelem: (
-            type[_obj.GenericElement]
-            | cabc.Sequence[type[_obj.GenericElement]]
+            type[_obj.ModelElement]
+            | cabc.Sequence[type[_obj.ModelElement]]
             | None
         ) = None,
     ) -> None:
@@ -861,7 +861,7 @@ class DeepProxyAccessor(PhysicalAccessor[T]):
         if rootelem is None:
             self.rootelem: cabc.Sequence[str] = ()
         elif isinstance(rootelem, type) and issubclass(
-            rootelem, _obj.GenericElement
+            rootelem, _obj.ModelElement
         ):
             self.rootelem = (_xtype.build_xtype(rootelem),)
         elif not isinstance(rootelem, str):  # type: ignore[unreachable]
@@ -919,7 +919,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __init__(
         self,
         tag: str | None,
-        xtype: str | type[_obj.GenericElement],
+        xtype: str | type[_obj.ModelElement],
         /,
         *,
         aslist: type[_obj.ElementList] | None = None,
@@ -974,7 +974,7 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         elif not isinstance(tag, str):
             raise TypeError(f"tag must be a str, not {type(tag).__name__}")
         super().__init__(
-            _obj.GenericElement,
+            _obj.ModelElement,
             xtype,
             aslist=aslist,
             mapkey=mapkey,
@@ -1190,7 +1190,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         """
         del class_
         super().__init__(
-            _obj.GenericElement,
+            _obj.ModelElement,
             aslist=aslist,
             mapkey=mapkey,
             mapvalue=mapvalue,
@@ -1590,7 +1590,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         """
         if isinstance(class_, tuple):
             super().__init__(
-                _obj.GenericElement,  # type: ignore[arg-type]
+                _obj.ModelElement,  # type: ignore[arg-type]
                 aslist=aslist,
                 mapkey=mapkey,
                 mapvalue=mapvalue,
@@ -1618,7 +1618,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
                 if (
                     isinstance(value, _obj.ElementList)
                     and obj in value
-                    or isinstance(value, _obj.GenericElement)
+                    or isinstance(value, _obj.ModelElement)
                     and obj == value
                 ):
                     matches.append(candidate._element)
@@ -1749,8 +1749,8 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
     __slots__ = ("classes", "role_tag")
 
     aslist: type[_obj.ElementListCouplingMixin] | None
-    class_: type[_obj.GenericElement]
-    alternate: type[_obj.GenericElement] | None
+    class_: type[_obj.ModelElement]
+    alternate: type[_obj.ModelElement] | None
 
     def __init__(
         self,
@@ -1762,10 +1762,10 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         aslist: type[_obj.ElementList[T]] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
-        alternate: type[_obj.GenericElement] | None = None,
+        alternate: type[_obj.ModelElement] | None = None,
     ) -> None:
         super().__init__(
-            _obj.GenericElement,
+            _obj.ModelElement,
             (),
             aslist=aslist,
             mapkey=mapkey,
@@ -1812,9 +1812,9 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         obj: _obj.ModelObject,
         value: (
             str
-            | _obj.GenericElement
+            | _obj.ModelElement
             | NewObject
-            | cabc.Iterable[str | _obj.GenericElement | NewObject]
+            | cabc.Iterable[str | _obj.ModelElement | NewObject]
         ),
     ) -> None:
         if self.aslist:
@@ -1846,7 +1846,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         typehint: str | None = None,
         /,
         **kw: t.Any,
-    ) -> _obj.GenericElement:
+    ) -> _obj.ModelElement:
         return self._create(elmlist._parent, self.role_tag, typehint, **kw)
 
     def insert(
@@ -1888,7 +1888,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
                 if elm.get("id") is None:
                     continue
 
-                obj = _obj.GenericElement.from_model(model, elm)
+                obj = _obj.ModelElement.from_model(model, elm)
                 for ref, attr, _ in model.find_references(obj):
                     acc = getattr(type(ref), attr)
                     if acc is self or not isinstance(acc, WritableAccessor):
@@ -1947,7 +1947,7 @@ def no_list(
     elems
         List of elements that was matched
     class_
-        The ``GenericElement`` subclass to instantiate
+        The ``ModelElement`` subclass to instantiate
     """
     if not elems:  # pragma: no cover
         return None

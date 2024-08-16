@@ -53,7 +53,7 @@ class EntityOperationalCapabilityInvolvement(interaction.AbstractInvolvement):
 
 
 @m.xtype_handler(None)
-class OperationalCapability(m.GenericElement):
+class OperationalCapability(m.ModelElement):
     """A capability in the OperationalAnalysis layer."""
 
     _xmltag = "ownedOperationalCapabilities"
@@ -84,7 +84,7 @@ class OperationalCapability(m.GenericElement):
         aslist=m.ElementList,
         attr="involved",
     )
-    involved_entities = m.LinkAccessor[m.GenericElement](
+    involved_entities = m.LinkAccessor[m.ModelElement](
         "ownedEntityOperationalCapabilityInvolvements",
         EntityOperationalCapabilityInvolvement,
         aslist=m.MixedElementList,
@@ -118,7 +118,7 @@ class OperationalCapability(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class OperationalCapabilityPkg(m.GenericElement):
+class OperationalCapabilityPkg(m.ModelElement):
     """A package that holds operational capabilities."""
 
     _xmltag = "ownedAbstractCapabilityPkg"
@@ -163,7 +163,7 @@ class Entity(AbstractEntity):
 
 
 @m.xtype_handler(None)
-class OperationalActivityPkg(m.GenericElement):
+class OperationalActivityPkg(m.ModelElement):
     """A package that holds operational entities."""
 
     _xmltag = "ownedFunctionPkg"
@@ -197,7 +197,7 @@ class CommunicationMean(fa.AbstractExchange):
 
 
 @m.xtype_handler(None)
-class EntityPkg(m.GenericElement):
+class EntityPkg(m.ModelElement):
     """A package that holds operational entities."""
 
     _xmltag = "ownedEntityPkg"

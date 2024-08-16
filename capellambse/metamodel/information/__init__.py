@@ -20,14 +20,14 @@ from . import datatype, datavalue
 
 
 @m.xtype_handler(None)
-class Unit(m.GenericElement):
+class Unit(m.ModelElement):
     """Unit."""
 
     _xmltag = "ownedUnits"
 
 
 @m.xtype_handler(None)
-class Association(m.GenericElement):
+class Association(m.ModelElement):
     """An Association."""
 
     _xmltag = "ownedAssociations"
@@ -51,7 +51,7 @@ class PortAllocation(modellingcore.TraceableElement):
 
 
 @m.xtype_handler(None)
-class Property(m.GenericElement):
+class Property(m.ModelElement):
     """A Property of a Class."""
 
     _xmltag = "ownedFeatures"
@@ -76,7 +76,7 @@ class Property(m.GenericElement):
     kind = m.EnumPOD(
         "aggregationKind", modeltypes.AggregationKind, default="UNSET"
     )
-    type = m.AttrProxyAccessor(m.GenericElement, "abstractType")
+    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
     default_value = m.RoleTagAccessor("ownedDefaultValue")
     min_value = m.RoleTagAccessor("ownedMinValue")
     max_value = m.RoleTagAccessor("ownedMaxValue")
@@ -87,7 +87,7 @@ class Property(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class Class(m.GenericElement):
+class Class(m.ModelElement):
     """A Class."""
 
     _xmltag = "ownedClasses"
@@ -138,7 +138,7 @@ class Union(Class):
 
 
 @m.xtype_handler(None)
-class Collection(m.GenericElement):
+class Collection(m.ModelElement):
     """A Collection."""
 
     _xmltag = "ownedCollections"
@@ -150,7 +150,7 @@ class Collection(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class DataPkg(m.GenericElement):
+class DataPkg(m.ModelElement):
     """A data package that can hold classes."""
 
     _xmltag = "ownedDataPkgs"
@@ -165,7 +165,7 @@ class DataPkg(m.GenericElement):
         datatype.Enumeration, aslist=m.ElementList
     )
     datatypes = m.DirectProxyAccessor(
-        m.GenericElement,
+        m.ModelElement,
         (
             datatype.BooleanType,
             datatype.Enumeration,
@@ -182,12 +182,12 @@ class DataPkg(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class ExchangeItemElement(m.GenericElement):
+class ExchangeItemElement(m.ModelElement):
     """An ExchangeItemElement (proxy link)."""
 
     _xmltag = "ownedElements"
 
-    abstract_type = m.AttrProxyAccessor(m.GenericElement, "abstractType")
+    abstract_type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
     owner: m.Accessor
 
     min_card = m.RoleTagAccessor("ownedMinCard")
@@ -195,7 +195,7 @@ class ExchangeItemElement(m.GenericElement):
 
 
 @m.xtype_handler(None)
-class ExchangeItem(m.GenericElement):
+class ExchangeItem(m.ModelElement):
     """An item that can be exchanged on an Exchange."""
 
     _xmltag = "ownedExchangeItems"
@@ -204,7 +204,7 @@ class ExchangeItem(m.GenericElement):
         "exchangeMechanism", modeltypes.ExchangeMechanism, default="UNSET"
     )
     elements = m.DirectProxyAccessor(ExchangeItemElement, aslist=m.ElementList)
-    exchanges: m.Accessor[m.GenericElement]
+    exchanges: m.Accessor[m.ModelElement]
 
 
 m.set_accessor(

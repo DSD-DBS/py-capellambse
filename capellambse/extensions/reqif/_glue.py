@@ -18,7 +18,7 @@ def init() -> None:
         m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList),
     )
     m.set_accessor(
-        m.GenericElement, "requirements", cr.ElementRelationAccessor()
+        m.ModelElement, "requirements", cr.ElementRelationAccessor()
     )
     m.set_accessor(
         cs.ComponentArchitecture,

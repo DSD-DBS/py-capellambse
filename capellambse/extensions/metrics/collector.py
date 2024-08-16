@@ -23,7 +23,7 @@ COMMON_OBJECTS = [
     reqif.Requirement,
 ]
 
-OBJECTS_OF_INTEREST: dict[str, list[type[m.GenericElement]]] = {
+OBJECTS_OF_INTEREST: dict[str, list[type[m.ModelElement]]] = {
     "oa": [
         *COMMON_OBJECTS,
         mm.oa.OperationalCapability,
