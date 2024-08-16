@@ -1786,7 +1786,11 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
         if obj is None:  # pragma: no cover
             return self
 
-        elts = list(obj._element.iterchildren(self.role_tag))
+        loader = obj._model._loader
+        elts = [
+            loader.follow_link(i, href) if (href := i.get("href")) else i
+            for i in obj._element.iterchildren(self.role_tag)
+        ]
         rv = self._make_list(obj, elts)
         if self.classes:
             for i in rv:
