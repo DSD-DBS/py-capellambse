@@ -47,7 +47,7 @@ from lxml import etree
 import capellambse
 from capellambse import helpers
 
-from . import T, _xtype
+from . import T_co, _xtype
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -95,7 +95,7 @@ class NewObject:
         return f"<new object {self._type_hint!r} ({kw})>"
 
 
-class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
+class Accessor(t.Generic[T_co], metaclass=abc.ABCMeta):
     """Super class for all Accessor types."""
 
     __objclass__: type[t.Any]
@@ -113,13 +113,13 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
     @t.overload
     def __get__(
         self, obj: _obj.ModelObject, objtype: type[t.Any] | None = ...
-    ) -> T | _obj.ElementList[T]: ...
+    ) -> T_co | _obj.ElementList[T_co]: ...
     @abc.abstractmethod
     def __get__(
         self,
         obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | _obj.ElementList[T]:
+    ) -> te.Self | T_co | _obj.ElementList[T_co]:
         pass
 
     def __set__(self, obj: _obj.ModelObject, value: t.Any) -> None:
@@ -145,7 +145,7 @@ class Accessor(t.Generic[T], metaclass=abc.ABCMeta):
         return f"{self.__objclass__.__name__}.{self.__name__}"
 
 
-class Alias(Accessor[T]):
+class Alias(Accessor[T_co]):
     """Provides an alias to another attribute.
 
     Parameters
@@ -173,12 +173,12 @@ class Alias(Accessor[T]):
         self,
         obj: _obj.ModelObject,
         objtype: type[t.Any] | None = ...,
-    ) -> T | _obj.ElementList[T]: ...
+    ) -> T_co | _obj.ElementList[T_co]: ...
     def __get__(
         self,
         obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | _obj.ElementList[T]:
+    ) -> te.Self | T_co | _obj.ElementList[T_co]:
         if obj is None:
             return self
         return getattr(obj, self.target)
@@ -190,7 +190,7 @@ class Alias(Accessor[T]):
         delattr(obj, self.target)
 
 
-class DeprecatedAccessor(Accessor[T]):
+class DeprecatedAccessor(Accessor[T_co]):
     """Provides a deprecated alias to another attribute."""
 
     __slots__ = ("alternative",)
@@ -206,12 +206,12 @@ class DeprecatedAccessor(Accessor[T]):
         self,
         obj: _obj.ModelObject,
         objtype: type[t.Any] | None = ...,
-    ) -> T | _obj.ElementList[T]: ...
+    ) -> T_co | _obj.ElementList[T_co]: ...
     def __get__(
         self,
         obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | _obj.ElementList[T]:
+    ) -> te.Self | T_co | _obj.ElementList[T_co]:
         if obj is None:
             return self
 
@@ -231,11 +231,11 @@ class DeprecatedAccessor(Accessor[T]):
         warnings.warn(msg, FutureWarning, stacklevel=3)
 
 
-class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
+class WritableAccessor(Accessor[T_co], metaclass=abc.ABCMeta):
     """An Accessor that also provides write support on lists it returns."""
 
     aslist: type[_obj.ElementListCouplingMixin] | None
-    class_: type[T]
+    class_: type[T_co]
     list_extra_args: cabc.Mapping[str, t.Any]
     single_attr: str | None
 
@@ -261,7 +261,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
     def __set__(
         self,
         obj: _obj.ModelObject,
-        value: T | NewObject | cabc.Iterable[T | NewObject],
+        value: T_co | NewObject | cabc.Iterable[T_co | NewObject],
     ) -> None:
         raise TypeError("Cannot set this type of attribute")
 
@@ -271,7 +271,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         typehint: str | None = None,
         /,
         **kw: t.Any,
-    ) -> T:
+    ) -> T_co:
         """Create and return a new element of type ``elmclass``.
 
         Parameters
@@ -292,7 +292,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
 
     def create_singleattr(
         self, elmlist: _obj.ElementListCouplingMixin, arg: t.Any, /
-    ) -> T:
+    ) -> T_co:
         """Create an element that only has a single attribute of interest."""
         if self.single_attr is None:
             raise TypeError(
@@ -329,7 +329,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         typehint: str | None,
         /,
         **kw: t.Any,
-    ) -> T:
+    ) -> T_co:
         if typehint:
             elmclass, kw["xtype"] = self._match_xtype(typehint)
         else:
@@ -357,14 +357,14 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             **self.list_extra_args,
         )
 
-    def _match_xtype(self, hint: str, /) -> tuple[type[T], str]:
+    def _match_xtype(self, hint: str, /) -> tuple[type[T_co], str]:
         """Find the right class for the given ``xsi:type``."""
         if not isinstance(hint, str):
             raise TypeError(
                 f"Expected str as first type, got {type(hint).__name__!r}"
             )
 
-        matches: list[tuple[type[T], str]] = []
+        matches: list[tuple[type[T_co], str]] = []
         for i, cls in _xtype.XTYPE_HANDLERS[None].items():
             if hint in {i, i.split(":")[-1], cls.__name__}:
                 matches.append((cls, i))
@@ -377,7 +377,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
             )
         return matches[0]
 
-    def _guess_xtype(self) -> tuple[type[T], str]:
+    def _guess_xtype(self) -> tuple[type[T_co], str]:
         try:
             super_guess = super()._guess_xtype  # type: ignore[misc]
         except AttributeError:
@@ -474,7 +474,7 @@ class WritableAccessor(Accessor[T], metaclass=abc.ABCMeta):
         )
 
 
-class PhysicalAccessor(Accessor[T]):
+class PhysicalAccessor(Accessor[T_co]):
     """Helper super class for accessors that work with real elements."""
 
     __slots__ = (
@@ -485,13 +485,13 @@ class PhysicalAccessor(Accessor[T]):
     )
 
     aslist: type[_obj.ElementList] | None
-    class_: type[T]
+    class_: type[T_co]
     list_extra_args: cabc.Mapping[str, t.Any]
     xtypes: cabc.Set[str]
 
     def __init__(
         self,
-        class_: type[T],
+        class_: type[T_co],
         xtypes: (
             str
             | type[_obj.ModelObject]
@@ -499,7 +499,7 @@ class PhysicalAccessor(Accessor[T]):
             | None
         ) = None,
         *,
-        aslist: type[_obj.ElementList[T]] | None = None,
+        aslist: type[_obj.ElementList[T_co]] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
         fixed_length: int = 0,
@@ -534,7 +534,7 @@ class PhysicalAccessor(Accessor[T]):
         elif fixed_length < 0:
             raise ValueError("List length cannot be negative")
 
-    def _guess_xtype(self) -> tuple[type[T], str]:
+    def _guess_xtype(self) -> tuple[type[T_co], str]:
         """Try to guess the type of element that should be created."""
         if self.class_ is _obj.ModelElement or self.class_ is None:
             raise ValueError("Multiple object types that can be created")
@@ -555,19 +555,21 @@ class PhysicalAccessor(Accessor[T]):
         )
 
 
-class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class DirectProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Creates proxy objects on the fly."""
 
     __slots__ = ("follow_abstract", "rootelem")
 
     aslist: type[_obj.ElementListCouplingMixin] | None
-    class_: type[T]
+    class_: type[T_co]
     single_attr: str | None
 
     def __init__(
         self,
-        class_: type[T],
-        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
+        class_: type[T_co],
+        xtypes: (
+            str | type[T_co] | cabc.Iterable[str | type[T_co]] | None
+        ) = None,
         *,
         aslist: type[_obj.ElementList] | None = None,
         mapkey: str | None = None,
@@ -667,7 +669,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __set__(
         self,
         obj: _obj.ModelObject,
-        value: str | T | NewObject | cabc.Iterable[str | T | NewObject],
+        value: str | T_co | NewObject | cabc.Iterable[str | T_co | NewObject],
     ) -> None:
         if self.aslist:
             if isinstance(value, str) or not isinstance(value, cabc.Iterable):
@@ -767,7 +769,7 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         typehint: str | None = None,
         /,
         **kw: t.Any,
-    ) -> T:
+    ) -> T_co:
         if self.rootelem:
             raise TypeError("Cannot create objects here")
 
@@ -816,15 +818,17 @@ class DirectProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         yield
 
 
-class DeepProxyAccessor(PhysicalAccessor[T]):
+class DeepProxyAccessor(PhysicalAccessor[T_co]):
     """A DirectProxyAccessor that searches recursively through the tree."""
 
     __slots__ = ()
 
     def __init__(
         self,
-        class_: type[T],
-        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
+        class_: type[T_co],
+        xtypes: (
+            str | type[T_co] | cabc.Iterable[str | type[T_co]] | None
+        ) = None,
         *,
         aslist: type[_obj.ElementList] | None = None,
         rootelem: (
@@ -877,12 +881,12 @@ class DeepProxyAccessor(PhysicalAccessor[T]):
     @t.overload
     def __get__(
         self, obj: _obj.ModelObject, objtype: type[t.Any] | None = ...
-    ) -> _obj.ElementList[T]: ...
+    ) -> _obj.ElementList[T_co]: ...
     def __get__(
         self,
         obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | _obj.ElementList[T]:
+    ) -> te.Self | _obj.ElementList[T_co]:
         del objtype
         if obj is None:  # pragma: no cover
             return self
@@ -906,14 +910,14 @@ class DeepProxyAccessor(PhysicalAccessor[T]):
             yield from ldr.iterdescendants_xt(root, *self.xtypes)
 
 
-class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class LinkAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Accesses elements through reference elements."""
 
     __slots__ = ("backattr", "tag", "unique")
 
     aslist: type[_obj.ElementListCouplingMixin] | None
     backattr: str | None
-    class_: type[T]
+    class_: type[T_co]
     tag: str | None
 
     def __init__(
@@ -1137,17 +1141,17 @@ class LinkAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 LOGGER.exception("Cannot purge dangling ref object %r", ref)
 
 
-class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class AttrProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Provides access to elements that are linked in an attribute."""
 
     __slots__ = ("attr",)
 
     aslist: type[_obj.ElementListCouplingMixin] | None
-    class_: type[T]
+    class_: type[T_co]
 
     def __init__(
         self,
-        class_: type[T] | None,
+        class_: type[T_co] | None,
         attr: str,
         *,
         aslist: type[_obj.ElementList] | None = None,
@@ -1212,7 +1216,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __set__(
         self,
         obj: _obj.ModelObject,
-        values: T | NewObject | cabc.Iterable[T | NewObject],
+        values: T_co | NewObject | cabc.Iterable[T_co | NewObject],
     ) -> None:
         if not isinstance(values, cabc.Iterable):
             values = (values,)
@@ -1252,7 +1256,7 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         self.__set_links(elmlist._parent, objs)
 
     def __set_links(
-        self, obj: _obj.ModelObject, values: cabc.Iterable[T]
+        self, obj: _obj.ModelObject, values: cabc.Iterable[T_co]
     ) -> None:
         parts: list[str] = []
         for value in values:
@@ -1291,10 +1295,10 @@ class AttrProxyAccessor(WritableAccessor[T], PhysicalAccessor[T]):
                 LOGGER.exception("Cannot update link target")
 
 
-class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
+class PhysicalLinkEndsAccessor(AttrProxyAccessor[T_co]):
     def __init__(
         self,
-        class_: type[T],
+        class_: type[T_co],
         attr: str,
         *,
         aslist: type[_obj.ElementList],
@@ -1319,7 +1323,7 @@ class PhysicalLinkEndsAccessor(AttrProxyAccessor[T]):
         raise NotImplementedError("Cannot purge references from PhysicalLink")
 
 
-class IndexAccessor(Accessor[T]):
+class IndexAccessor(Accessor[T_co]):
     """Access a specific index in an ElementList of a fixed size."""
 
     __slots__ = ("index", "wrapped")
@@ -1332,12 +1336,12 @@ class IndexAccessor(Accessor[T]):
     @t.overload
     def __get__(self, obj: None, objtype=None) -> te.Self: ...
     @t.overload
-    def __get__(self, obj, objtype=None) -> T | _obj.ElementList[T]: ...
+    def __get__(self, obj, objtype=None) -> T_co | _obj.ElementList[T_co]: ...
     def __get__(
         self,
         obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | T | _obj.ElementList[T]:
+    ) -> te.Self | T_co | _obj.ElementList[T_co]:
         if obj is None:
             return self
         container = getattr(obj, self.wrapped)
@@ -1367,12 +1371,12 @@ class IndexAccessor(Accessor[T]):
         container[self.index] = value
 
 
-class AlternateAccessor(Accessor[T]):
+class AlternateAccessor(Accessor[T_co]):
     """Provides access to an "alternate" form of the object."""
 
     __slots__ = ("class_",)
 
-    def __init__(self, class_: type[T]):
+    def __init__(self, class_: type[T_co]):
         super().__init__()
         self.class_ = class_
 
@@ -1383,12 +1387,12 @@ class AlternateAccessor(Accessor[T]):
         return self.class_.from_model(obj._model, obj._element)
 
 
-class ParentAccessor(PhysicalAccessor[T]):
+class ParentAccessor(PhysicalAccessor[T_co]):
     """Accesses the parent XML element."""
 
     __slots__ = ()
 
-    def __init__(self, class_: type[T]):
+    def __init__(self, class_: type[T_co]):
         super().__init__(class_)
 
     def __get__(self, obj, objtype=None):
@@ -1403,7 +1407,7 @@ class ParentAccessor(PhysicalAccessor[T]):
         return self.class_.from_model(obj._model, parent)
 
 
-class AttributeMatcherAccessor(DirectProxyAccessor[T]):
+class AttributeMatcherAccessor(DirectProxyAccessor[T_co]):
     __slots__ = (
         "_AttributeMatcherAccessor__aslist",
         "attributes",
@@ -1411,8 +1415,10 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T]):
 
     def __init__(
         self,
-        class_: type[T],
-        xtypes: str | type[T] | cabc.Iterable[str | type[T]] | None = None,
+        class_: type[T_co],
+        xtypes: (
+            str | type[T_co] | cabc.Iterable[str | type[T_co]] | None
+        ) = None,
         *,
         aslist: type[_obj.ElementList] | None = None,
         attributes: dict[str, t.Any],
@@ -1546,7 +1552,7 @@ class SpecificationAccessor(Accessor[_Specification]):
         return _Specification(obj._model, spec_elm)
 
 
-class ReferenceSearchingAccessor(PhysicalAccessor[T]):
+class ReferenceSearchingAccessor(PhysicalAccessor[T_co]):
     """Searches for references to the current element elsewhere."""
 
     __slots__ = ("attrs", "target_classes")
@@ -1556,7 +1562,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
 
     def __init__(
         self,
-        class_: type[T] | tuple[type[_obj.ModelObject], ...],
+        class_: type[T_co] | tuple[type[_obj.ModelObject], ...],
         *attrs: str,
         aslist: type[_obj.ElementList] | None = None,
         mapkey: str | None = None,
@@ -1626,7 +1632,7 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T]):
         return self._make_list(obj, matches)
 
 
-class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
+class TypecastAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Changes the static type of the value of another accessor.
 
     This is useful for when a class has an attribute that is
@@ -1640,11 +1646,11 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     """
 
     aslist: type[_obj.ElementListCouplingMixin] | None
-    class_: type[T]
+    class_: type[T_co]
 
     def __init__(
         self,
-        cls: type[T],
+        cls: type[T_co],
         attr: str,
         mapkey: str | None = None,
         mapvalue: str | None = None,
@@ -1663,12 +1669,12 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     @t.overload
     def __get__(
         self, obj: _obj.ModelObject, objtype: type[t.Any] | None = None
-    ) -> _obj.ElementList[T]: ...
+    ) -> _obj.ElementList[T_co]: ...
     def __get__(
         self,
         obj: _obj.ModelObject | None,
         objtype: type[t.Any] | None = None,
-    ) -> te.Self | _obj.ElementList[T]:
+    ) -> te.Self | _obj.ElementList[T_co]:
         del objtype
         if obj is None:
             return self
@@ -1678,7 +1684,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
     def __set__(
         self,
         obj: _obj.ModelObject,
-        value: T | NewObject | cabc.Iterable[T | NewObject],
+        value: T_co | NewObject | cabc.Iterable[T_co | NewObject],
     ) -> None:
         if isinstance(value, list | _obj.ElementList | tuple):
             pass
@@ -1705,7 +1711,7 @@ class TypecastAccessor(WritableAccessor[T], PhysicalAccessor[T]):
         typehint: str | None = None,
         /,
         **kw: t.Any,
-    ) -> T:
+    ) -> T_co:
         if typehint:
             raise TypeError(f"{self._qualname} does not support type hints")
         acc: WritableAccessor = getattr(self.class_, self.attr)
@@ -1759,7 +1765,7 @@ class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
             type[_obj.ModelObject] | cabc.Iterable[type[_obj.ModelObject]]
         ) = (),
         *,
-        aslist: type[_obj.ElementList[T]] | None = None,
+        aslist: type[_obj.ElementList[T_co]] | None = None,
         mapkey: str | None = None,
         mapvalue: str | None = None,
         alternate: type[_obj.ModelElement] | None = None,
@@ -1934,7 +1940,7 @@ def no_list(
     desc: Accessor,
     model: capellambse.MelodyModel,
     elems: cabc.Sequence[etree._Element],
-    class_: type[T],
+    class_: type[T_co],
 ) -> _obj.ModelObject | None:
     """Return a single element or None instead of a list of elements.
 

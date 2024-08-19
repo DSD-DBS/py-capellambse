@@ -16,6 +16,8 @@ S = t.TypeVar("S", bound=str | None)
 """TypeVar for ":py:class:`str` | None"."""
 T = t.TypeVar("T", bound="ModelObject")
 """TypeVar for ":py:class:`capellambse.model.ModelObject`"."""
+T_co = t.TypeVar("T_co", bound="ModelObject", covariant=True)
+"""Covariant TypeVar for ":py:class:`capellambse.model.ModelObject`"."""
 U = t.TypeVar("U")
 """TypeVar (unbound)."""
 
@@ -113,6 +115,7 @@ if not t.TYPE_CHECKING:
         "E",
         "S",
         "T",
+        "T_co",
         "U",
         "attr_equal",
         "diagram",
