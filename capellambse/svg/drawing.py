@@ -258,29 +258,30 @@ class Drawing:
         x = obj.attribs["x"]
         y = y or obj.attribs["y"] + decorations.feature_space
         w, h = obj.attribs["width"], obj.attribs["height"]
-        label: LabelDict = {
-            "x": x + decorations.feature_space / 2,
-            "y": y,
-            "width": w - decorations.feature_space / 2,
-            "height": h - decorations.feature_space,
-            "class": "Features",
-            "text": "\n".join(
-                chelpers.flatten_html_string(feat) for feat in features
-            ),
-        }
-        self._draw_label(
-            LabelBuilder(
-                w,
-                h,
-                [label],
-                group,
-                class_=class_,
-                labelstyle=labelstyle,
-                y_margin=5,
-                icon=False,
-                alignment="left",
+        for feat in features:
+            label: LabelDict = {
+                "x": x + decorations.feature_space / 2,
+                "y": y,
+                "width": w - decorations.feature_space / 2,
+                "height": h - decorations.feature_space,
+                "class": "Features",
+                "text": chelpers.flatten_html_string(feat),
+            }
+            lines = self._draw_label(
+                LabelBuilder(
+                    w,
+                    h,
+                    [label],
+                    group,
+                    class_=f"{class_}Feature",
+                    labelstyle=labelstyle,
+                    y_margin=5,
+                    icon=True,
+                    alignment="left",
+                )
             )
-        )
+            if lines:
+                y += lines.text_height
 
     def _draw_label(self, builder: LabelBuilder) -> LinesData | None:
         """Draw label text on given object and return the label's group."""
@@ -974,7 +975,7 @@ def get_label_position(
         label_height = chelpers.extent_func(label["text"])[1]
         dominant_baseline_adjust = label_height / 2
         if builder.text_anchor == "start":
-            label["x"] += lines.margin + icon_size
+            label["x"] += lines.margin + icon_size / 2
         else:
             label["x"] += (label["width"] + icon_size) / 2
 
@@ -988,7 +989,8 @@ def get_label_position(
                 fill="red",
             ),
         )
-    return diagram.Vector2D(builder.labels[0]["x"], builder.labels[0]["y"])
+    min_x = min(label["x"] for label in builder.labels)
+    return diagram.Vector2D(min_x, builder.labels[0]["y"])
 
 
 def get_label_icon_position(
