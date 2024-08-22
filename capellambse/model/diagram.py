@@ -622,6 +622,7 @@ class Diagram(AbstractDiagram):
             self = cls.__new__(cls)
             self._model = model
             self._element = element
+            self._last_render_params = {}
             self.__nodes = None
             return self
 
