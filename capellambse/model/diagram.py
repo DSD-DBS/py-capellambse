@@ -335,10 +335,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         render = self.__render_fresh({})
         for mime, conv in formats.items():
             try:
-                if isinstance(conv, DiagramFormat):
-                    bundle[mime] = conv.convert(render)
-                else:
-                    bundle[mime] = conv(render)
+                chain = list(_walk_converters(conv))
+                bundle[mime] = _run_converter_chain(chain, render)
             except Exception:
                 LOGGER.exception("Failed converting diagram with %r", conv)
         if not bundle:
