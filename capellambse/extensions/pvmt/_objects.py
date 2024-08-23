@@ -142,6 +142,7 @@ class ObjectPVMT:
                 for prop in group.property_values:
                     fragments.append(f"\n  - {prop.name}: ")
                     if hasattr(prop.value, "_short_repr_"):
+                        assert prop.value is not None
                         fragments.append(prop.value._short_repr_())
                     else:
                         fragments.append(repr(prop.value))
@@ -181,6 +182,7 @@ class ObjectPVMT:
                     else:
                         actual = e(actual_val)
                 if hasattr(prop.value, "_short_html_"):
+                    assert prop.value is not None
                     default = prop.value._short_html_()
                 else:
                     default = e(prop.value)
