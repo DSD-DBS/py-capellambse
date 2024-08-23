@@ -39,15 +39,11 @@ class AbstractStateMode(m.ModelElement):
 class State(AbstractStateMode):
     """A state."""
 
-    entries = m.AttrProxyAccessor(
-        m.ModelElement, "entry", aslist=m.MixedElementList
-    )
-    do_activity = m.AttrProxyAccessor(
+    entries = m.Association(m.ModelElement, "entry", aslist=m.MixedElementList)
+    do_activity = m.Association(
         m.ModelElement, "doActivity", aslist=m.MixedElementList
     )
-    exits = m.AttrProxyAccessor(
-        m.ModelElement, "exit", aslist=m.MixedElementList
-    )
+    exits = m.Association(m.ModelElement, "exit", aslist=m.MixedElementList)
 
     incoming_transitions = m.Accessor
     outgoing_transitions = m.Accessor
@@ -110,15 +106,15 @@ class StateTransition(m.ModelElement):
 
     _xmltag = "ownedTransitions"
 
-    source = m.AttrProxyAccessor(m.ModelElement, "source")
-    destination = m.AttrProxyAccessor(m.ModelElement, "target")
-    triggers = m.AttrProxyAccessor(
+    source = m.Association(m.ModelElement, "source")
+    destination = m.Association(m.ModelElement, "target")
+    triggers = m.Association(
         m.ModelElement, "triggers", aslist=m.MixedElementList
     )
-    effects = m.AttrProxyAccessor(
+    effects = m.Association(
         m.ModelElement, "effect", aslist=m.MixedElementList
     )
-    guard = m.AttrProxyAccessor(capellacore.Constraint, "guard")
+    guard = m.Association(capellacore.Constraint, "guard")
 
 
 @m.xtype_handler(None)
@@ -138,7 +134,7 @@ class GenericTrace(modellingcore.TraceableElement):
 m.set_accessor(
     AbstractStateMode,
     "realized_states",
-    m.LinkAccessor(
+    m.Allocation(
         None,  # FIXME fill in tag
         AbstractStateRealization,
         aslist=m.ElementList,
@@ -159,9 +155,7 @@ for cls in [
     m.set_accessor(
         cls,
         "realizing_states",
-        m.ReferenceSearchingAccessor(
-            cls, "realized_states", aslist=m.ElementList
-        ),
+        m.Backref(cls, "realized_states", aslist=m.ElementList),
     )
 
 for cls in [
@@ -177,9 +171,7 @@ for cls in [
     m.set_accessor(
         cls,
         "incoming_transitions",
-        m.ReferenceSearchingAccessor(
-            StateTransition, "destination", aslist=m.ElementList
-        ),
+        m.Backref(StateTransition, "destination", aslist=m.ElementList),
     )
 for cls in [
     State,
@@ -193,15 +185,13 @@ for cls in [
     m.set_accessor(
         cls,
         "outgoing_transitions",
-        m.ReferenceSearchingAccessor(
-            StateTransition, "source", aslist=m.ElementList
-        ),
+        m.Backref(StateTransition, "source", aslist=m.ElementList),
     )
 
 m.set_accessor(
     Region,
     "states",
-    m.RoleTagAccessor(AbstractStateMode._xmltag, aslist=m.ElementList),
+    m.Containment(AbstractStateMode._xmltag, aslist=m.ElementList),
 )
 m.set_accessor(
     Region, "modes", m.DirectProxyAccessor(Mode, aslist=m.ElementList)

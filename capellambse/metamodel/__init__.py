@@ -17,7 +17,7 @@ import capellambse.model as m  # isort: skip
 m.set_accessor(
     capellacommon.State,
     "functions",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         (
             oa.OperationalActivity,
             sa.SystemFunction,

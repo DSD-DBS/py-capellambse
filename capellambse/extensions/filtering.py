@@ -35,7 +35,7 @@ class FilteringCriterion(m.ModelElement):
 
     _xmltag = "ownedFilteringCriteria"
 
-    filtered_objects = m.ReferenceSearchingAccessor[m.ModelElement](
+    filtered_objects = m.Backref[m.ModelElement](
         (), "filtering_criteria", aslist=m.MixedElementList
     )
 

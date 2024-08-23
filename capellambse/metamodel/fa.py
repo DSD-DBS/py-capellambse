@@ -31,14 +31,14 @@ class ComponentFunctionalAllocation(m.ModelElement): ...
 class ExchangeCategory(m.ModelElement):
     _xmltag = "ownedCategories"
 
-    exchanges: m.AttrProxyAccessor[FunctionalExchange]
+    exchanges: m.Association[FunctionalExchange]
 
 
 @m.xtype_handler(None)
 class ComponentExchangeCategory(m.ModelElement):
     _xmltag = "ownedComponentExchangeCategories"
 
-    exchanges: m.AttrProxyAccessor[ComponentExchange]
+    exchanges: m.Association[ComponentExchange]
 
 
 @m.xtype_handler(None)
@@ -60,18 +60,18 @@ class FunctionRealization(m.ModelElement):
 class AbstractExchange(m.ModelElement):
     """Common code for Exchanges."""
 
-    source = m.AttrProxyAccessor(m.ModelElement, "source")
-    target = m.AttrProxyAccessor(m.ModelElement, "target")
+    source = m.Association(m.ModelElement, "source")
+    target = m.Association(m.ModelElement, "target")
 
 
 @m.xtype_handler(None)
 class AbstractFunction(m.ModelElement):
     """An AbstractFunction."""
 
-    available_in_states = m.AttrProxyAccessor(
+    available_in_states = m.Association(
         capellacommon.State, "availableInStates", aslist=m.ElementList
     )
-    scenarios = m.ReferenceSearchingAccessor[interaction.Scenario](
+    scenarios = m.Backref[interaction.Scenario](
         (), "related_functions", aslist=m.ElementList
     )
 
@@ -93,7 +93,7 @@ class FunctionInputPort(FunctionPort):
 
     _xmltag = "inputs"
 
-    exchange_items = m.AttrProxyAccessor(
+    exchange_items = m.Association(
         information.ExchangeItem, "incomingExchangeItems", aslist=m.ElementList
     )
 
@@ -104,7 +104,7 @@ class FunctionOutputPort(FunctionPort):
 
     _xmltag = "outputs"
 
-    exchange_items = m.AttrProxyAccessor(
+    exchange_items = m.Association(
         information.ExchangeItem, "outgoingExchangeItems", aslist=m.ElementList
     )
 
@@ -126,13 +126,13 @@ class Function(AbstractFunction):
     packages: m.Accessor
     related_exchanges: m.Accessor[FunctionalExchange]
 
-    realized_functions = m.LinkAccessor[AbstractFunction](
+    realized_functions = m.Allocation[AbstractFunction](
         "ownedFunctionRealizations",
         FunctionRealization,
         aslist=m.MixedElementList,
         attr="targetElement",
     )
-    realizing_functions = m.ReferenceSearchingAccessor[AbstractFunction](
+    realizing_functions = m.Backref[AbstractFunction](
         (), "realized_functions", aslist=m.MixedElementList
     )
 
@@ -143,11 +143,11 @@ class FunctionalExchange(AbstractExchange):
 
     _xmltag = "ownedFunctionalExchanges"
 
-    exchange_items = m.AttrProxyAccessor(
+    exchange_items = m.Association(
         information.ExchangeItem, "exchangedItems", aslist=m.ElementList
     )
 
-    realized_functional_exchanges = m.LinkAccessor["FunctionalExchange"](
+    realized_functional_exchanges = m.Allocation["FunctionalExchange"](
         "ownedFunctionalExchangeRealizations",
         "org.polarsys.capella.core.data.fa:FunctionalExchangeRealization",
         aslist=m.ElementList,
@@ -155,7 +155,7 @@ class FunctionalExchange(AbstractExchange):
         backattr="sourceElement",
     )
     realizing_functional_exchanges: m.Accessor[FunctionalExchange]
-    categories = m.ReferenceSearchingAccessor(ExchangeCategory, "exchanges")
+    categories = m.Backref(ExchangeCategory, "exchanges")
 
     @property
     def owner(self) -> ComponentExchange | None:
@@ -172,12 +172,10 @@ class FunctionalChainInvolvement(interaction.AbstractInvolvement):
 class FunctionalChainInvolvementLink(FunctionalChainInvolvement):
     """An element linking a FunctionalChain to an Exchange."""
 
-    exchanged_items = m.AttrProxyAccessor(
+    exchanged_items = m.Association(
         information.ExchangeItem, "exchangedItems", aslist=m.ElementList
     )
-    exchange_context = m.AttrProxyAccessor(
-        capellacore.Constraint, "exchangeContext"
-    )
+    exchange_context = m.Association(capellacore.Constraint, "exchangeContext")
 
 
 @m.xtype_handler(None)
@@ -197,10 +195,8 @@ class FunctionalChain(m.ModelElement):
     _xmltag = "ownedFunctionalChains"
 
     kind = m.EnumPOD("kind", modeltypes.FunctionalChainKind, default="SIMPLE")
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
-    )
+    precondition = m.Association(capellacore.Constraint, "preCondition")
+    postcondition = m.Association(capellacore.Constraint, "postCondition")
 
     involvements = m.DirectProxyAccessor(
         m.ModelElement,
@@ -211,19 +207,19 @@ class FunctionalChain(m.ModelElement):
         ),
         aslist=m.ElementList,
     )
-    involved_functions = m.LinkAccessor[AbstractFunction](
+    involved_functions = m.Allocation[AbstractFunction](
         "ownedFunctionalChainInvolvements",
         FunctionalChainInvolvementFunction,
         aslist=m.MixedElementList,
         attr="involved",
     )
-    involved_links = m.LinkAccessor[AbstractExchange](
+    involved_links = m.Allocation[AbstractExchange](
         "ownedFunctionalChainInvolvements",
         FunctionalChainInvolvementLink,
         aslist=m.MixedElementList,
         attr="involved",
     )
-    involved_chains = m.LinkAccessor["FunctionalChain"](
+    involved_chains = m.Allocation["FunctionalChain"](
         "ownedFunctionalChainInvolvements",
         "org.polarsys.capella.core.data.fa:FunctionalChainReference",
         attr="involved",
@@ -231,7 +227,7 @@ class FunctionalChain(m.ModelElement):
     )
     involving_chains: m.Accessor[FunctionalChain]
 
-    realized_chains = m.LinkAccessor["FunctionalChain"](
+    realized_chains = m.Allocation["FunctionalChain"](
         "ownedFunctionalChainRealizations",
         "org.polarsys.capella.core.data.fa:FunctionalChainRealization",
         attr="targetElement",
@@ -256,10 +252,10 @@ class ComponentPort(m.ModelElement):
     direction = m.EnumPOD("orientation", modeltypes.OrientationPortKind)
     owner = m.ParentAccessor(m.ModelElement)
     exchanges: m.Accessor
-    provided_interfaces = m.AttrProxyAccessor(
+    provided_interfaces = m.Association(
         m.ModelElement, "providedInterfaces", aslist=m.ElementList
     )
-    required_interfaces = m.AttrProxyAccessor(
+    required_interfaces = m.Association(
         m.ModelElement, "requiredInterfaces", aslist=m.ElementList
     )
 
@@ -272,20 +268,18 @@ class ComponentExchange(AbstractExchange):
 
     kind = m.EnumPOD("kind", modeltypes.ComponentExchangeKind, default="UNSET")
 
-    allocated_functional_exchanges = m.LinkAccessor[FunctionalExchange](
+    allocated_functional_exchanges = m.Allocation[FunctionalExchange](
         "ownedComponentExchangeFunctionalExchangeAllocations",
         ComponentExchangeFunctionalExchangeAllocation,
         aslist=m.ElementList,
         attr="targetElement",
     )
-    allocated_exchange_items = m.AttrProxyAccessor(
+    allocated_exchange_items = m.Association(
         information.ExchangeItem,
         "convoyedInformations",
         aslist=m.ElementList,
     )
-    categories = m.ReferenceSearchingAccessor(
-        ComponentExchangeCategory, "exchanges"
-    )
+    categories = m.Backref(ComponentExchangeCategory, "exchanges")
 
     @property
     def owner(self) -> cs.PhysicalLink | None:
@@ -307,16 +301,14 @@ for _port, _exchange in [
     m.set_accessor(
         _port,
         "exchanges",
-        m.ReferenceSearchingAccessor(
-            _exchange, "source", "target", aslist=m.ElementList
-        ),
+        m.Backref(_exchange, "source", "target", aslist=m.ElementList),
     )
 del _port, _exchange
 
 m.set_accessor(
     ComponentExchange,
     "realized_component_exchanges",
-    m.LinkAccessor[ComponentExchange](
+    m.Allocation[ComponentExchange](
         "ownedComponentExchangeRealizations",
         "org.polarsys.capella.core.data.fa:ComponentExchangeRealization",
         aslist=m.ElementList,
@@ -327,21 +319,19 @@ m.set_accessor(
 m.set_accessor(
     ComponentExchange,
     "realizing_component_exchanges",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         ComponentExchange, "realized_component_exchanges", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     FunctionalExchange,
     "allocating_component_exchange",
-    m.ReferenceSearchingAccessor(
-        ComponentExchange, "allocated_functional_exchanges"
-    ),
+    m.Backref(ComponentExchange, "allocated_functional_exchanges"),
 )
 m.set_accessor(
     FunctionalExchange,
     "realizing_functional_exchanges",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         FunctionalExchange,
         "realized_functional_exchanges",
         aslist=m.ElementList,
@@ -350,24 +340,18 @@ m.set_accessor(
 m.set_accessor(
     FunctionalExchange,
     "involving_functional_chains",
-    m.ReferenceSearchingAccessor(
-        FunctionalChain, "involved_links", aslist=m.ElementList
-    ),
+    m.Backref(FunctionalChain, "involved_links", aslist=m.ElementList),
 )
 
 m.set_accessor(
     FunctionalChain,
     "involving_chains",
-    m.ReferenceSearchingAccessor(
-        FunctionalChain, "involved_chains", aslist=m.ElementList
-    ),
+    m.Backref(FunctionalChain, "involved_chains", aslist=m.ElementList),
 )
 m.set_accessor(
     FunctionalChain,
     "realizing_chains",
-    m.ReferenceSearchingAccessor(
-        FunctionalChain, "realized_chains", aslist=m.ElementList
-    ),
+    m.Backref(FunctionalChain, "realized_chains", aslist=m.ElementList),
 )
 
 m.set_accessor(
@@ -378,7 +362,7 @@ m.set_accessor(
 m.set_accessor(
     Function,
     "related_exchanges",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         FunctionalExchange,
         "source.owner",
         "target.owner",
@@ -388,17 +372,17 @@ m.set_accessor(
 m.set_accessor(
     information.ExchangeItem,
     "exchanges",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         (ComponentExchange, FunctionalExchange),
         "exchange_items",
         "allocated_exchange_items",
         aslist=m.ElementList,
     ),
 )
-ExchangeCategory.exchanges = m.AttrProxyAccessor(
+ExchangeCategory.exchanges = m.Association(
     FunctionalExchange, "exchanges", aslist=m.ElementList
 )
-ComponentExchangeCategory.exchanges = m.AttrProxyAccessor(
+ComponentExchangeCategory.exchanges = m.Association(
     ComponentExchange, "exchanges", aslist=m.ElementList
 )
 

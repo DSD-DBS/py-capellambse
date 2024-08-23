@@ -130,6 +130,10 @@ if not t.TYPE_CHECKING:
 
     _deprecated_names = {
         "GenericElement": ModelElement,
+        "RoleTagAccessor": Containment,
+        "AttrProxyAccessor": Association,
+        "LinkAccessor": Allocation,
+        "ReferenceSearchingAccessor": Backref,
     }
 
     def __getattr__(attr):

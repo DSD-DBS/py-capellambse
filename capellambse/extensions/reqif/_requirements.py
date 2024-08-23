@@ -95,13 +95,13 @@ class AttributeDefinition(ReqIFElement):
 
     _xmltag = "ownedAttributes"
 
-    data_type = m.AttrProxyAccessor(DataTypeDefinition, "definitionType")
+    data_type = m.Association(DataTypeDefinition, "definitionType")
 
 
 class AbstractRequirementsAttribute(m.ModelElement):
     _xmltag = "ownedAttributes"
 
-    definition = m.AttrProxyAccessor(AttributeDefinition, "definition")
+    definition = m.Association(AttributeDefinition, "definition")
 
     value: t.Any
 
@@ -223,9 +223,7 @@ class AttributeDefinitionEnumeration(ReqIFElement):
 
     _xmltag = "ownedAttributes"
 
-    data_type = m.AttrProxyAccessor(
-        EnumerationDataTypeDefinition, "definitionType"
-    )
+    data_type = m.Association(EnumerationDataTypeDefinition, "definitionType")
     multi_valued = m.BoolPOD("multiValued")
     """Whether to allow setting multiple values on this attribute."""
 
@@ -234,11 +232,11 @@ class AttributeDefinitionEnumeration(ReqIFElement):
 class EnumerationValueAttribute(AbstractRequirementsAttribute):
     """An enumeration attribute."""
 
-    definition = m.AttrProxyAccessor(
+    definition = m.Association(
         AttributeDefinitionEnumeration,  # type: ignore[arg-type]
         "definition",
     )
-    values = m.AttrProxyAccessor(EnumValue, "values", aslist=m.ElementList)
+    values = m.Association(EnumValue, "values", aslist=m.ElementList)
 
     @property
     def value(self):
@@ -296,7 +294,7 @@ class Requirement(ReqIFElement):
     foreign_id = m.IntPOD("ReqIFForeignID")
     text = m.HTMLStringPOD("ReqIFText")
     attributes = AttributeAccessor()
-    type = m.AttrProxyAccessor(RequirementType, "requirementType")
+    type = m.Association(RequirementType, "requirementType")
 
     relations: m.Accessor[AbstractRequirementsRelation]
     related: m.Accessor[m.ModelElement]
@@ -315,9 +313,9 @@ class Folder(Requirement):
 class AbstractRequirementsRelation(ReqIFElement):
     _required_attrs = frozenset({"source", "target"})
 
-    type = m.AttrProxyAccessor(RelationType, "relationType")
-    source = m.AttrProxyAccessor(Requirement, "source")
-    target = m.AttrProxyAccessor(m.ModelElement, "target")
+    type = m.Association(RelationType, "relationType")
+    source = m.Association(Requirement, "source")
+    target = m.Association(m.ModelElement, "target")
 
     def _short_repr_(self) -> str:
         direction = ""
