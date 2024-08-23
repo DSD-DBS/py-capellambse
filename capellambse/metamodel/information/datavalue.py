@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 import capellambse.model as m
 
+from .. import namespaces as ns
 
-@m.xtype_handler(None)
+NS = ns.INFORMATION_DATAVALUE
+
+
 class LiteralBooleanValue(m.ModelElement):
     """A Literal Boolean Value."""
 
@@ -16,54 +19,49 @@ class LiteralValue(m.ModelElement):
     is_abstract = m.BoolPOD("abstract")
     """Indicates if property is abstract."""
     value = m.StringPOD("value")
-    type = m.Association(m.ModelElement, "abstractType")
+    type = m.Single(m.Association(m.ModelElement, "abstractType"))
 
 
-@m.xtype_handler(None)
 class LiteralNumericValue(LiteralValue):
     value = m.StringPOD("value")
-    unit = m.Association(m.ModelElement, "unit")
+    unit = m.Single(m.Association(m.ModelElement, "unit"))
 
 
-@m.xtype_handler(None)
 class LiteralStringValue(LiteralValue):
     """A Literal String Value."""
 
 
-@m.xtype_handler(None)
 class ValuePart(m.ModelElement):
     """A Value Part of a Complex Value."""
 
     _xmltag = "ownedParts"
 
-    referenced_property = m.Association(m.ModelElement, "referencedProperty")
-    value = m.Containment("ownedValue")
+    referenced_property = m.Single(
+        m.Association(m.ModelElement, "referencedProperty")
+    )
+    value = m.Single(m.Containment("ownedValue"))
 
 
-@m.xtype_handler(None)
 class ComplexValue(m.ModelElement):
     """A Complex Value."""
 
     _xmltag = "ownedDataValues"
 
-    type = m.Association(m.ModelElement, "abstractType")
+    type = m.Single(m.Association(m.ModelElement, "abstractType"))
     value_parts = m.DirectProxyAccessor(ValuePart, aslist=m.ElementList)
 
 
-@m.attr_equal("name")
-@m.xtype_handler(None)
-class EnumerationLiteral(m.ModelElement):
+class EnumerationLiteral(m.ModelElement, eq="name"):
     _xmltag = "ownedLiterals"
 
-    value = m.Containment("domainValue")
+    value = m.Single(m.Containment("domainValue"))
 
-    owner = m.ParentAccessor["_dt.Enumeration"]()
+    owner = m.ParentAccessor()
 
 
-@m.xtype_handler(None)
 class EnumerationReference(m.ModelElement):
-    type = m.Association(m.ModelElement, "abstractType")
-    value = m.Association(m.ModelElement, "referencedValue")
+    type = m.Single(m.Association(m.ModelElement, "abstractType"))
+    value = m.Single(m.Association(m.ModelElement, "referencedValue"))
 
 
 from . import datatype as _dt  # noqa: F401
