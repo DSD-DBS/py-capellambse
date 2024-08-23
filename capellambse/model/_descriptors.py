@@ -7,25 +7,28 @@ __all__ = [
     # exceptions
     "InvalidModificationError",
     "NonUniqueMemberError",
-    # relationship descriptors
+    # descriptor ABCs
     "Accessor",
+    "WritableAccessor",
+    "PhysicalAccessor",
+    # relationship descriptors
+    "Allocation",
+    "Association",
+    "Backref",
+    "Containment",
+    # misc descriptors
     "Alias",
     "DeprecatedAccessor",
-    "WritableAccessor",
-    "DirectProxyAccessor",
     "DeepProxyAccessor",
-    "LinkAccessor",
-    "AttrProxyAccessor",
     "PhysicalLinkEndsAccessor",
     "IndexAccessor",
     "AlternateAccessor",
     "ParentAccessor",
     "AttributeMatcherAccessor",
     "SpecificationAccessor",
-    "ReferenceSearchingAccessor",
-    "RoleTagAccessor",
     "TypecastAccessor",
-    "PhysicalAccessor",
+    # legacy
+    "DirectProxyAccessor",
     # helpers
     "NewObject",
 ]
@@ -36,6 +39,7 @@ import contextlib
 import itertools
 import logging
 import operator
+import sys
 import types
 import typing as t
 import warnings
@@ -48,6 +52,11 @@ import capellambse
 from capellambse import helpers
 
 from . import T_co, _xtype
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 _NOT_SPECIFIED = object()
 "Used to detect unspecified optional arguments"
@@ -555,6 +564,7 @@ class PhysicalAccessor(Accessor[T_co]):
         )
 
 
+@deprecated("DirectProxyAccessor is deprecated, use Containment instead")
 class DirectProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Creates proxy objects on the fly."""
 
@@ -910,7 +920,7 @@ class DeepProxyAccessor(PhysicalAccessor[T_co]):
             yield from ldr.iterdescendants_xt(root, *self.xtypes)
 
 
-class LinkAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
+class Allocation(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Accesses elements through reference elements."""
 
     __slots__ = ("backattr", "tag", "unique")
@@ -933,7 +943,15 @@ class LinkAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
         backattr: str | None = None,
         unique: bool = True,
     ) -> None:
-        """Create a LinkAccessor.
+        """Define an Allocation.
+
+        Allocations use link elements (often named like "SomethingAllocation"),
+        which only contain a link to the target and sometimes also the source
+        element.
+
+        If the link element has anything other than these, e.g. its own name or
+        a type, use Containment instead and create a shortcut to the target
+        with a small ``@property``.
 
         Parameters
         ----------
@@ -1141,7 +1159,7 @@ class LinkAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
                 LOGGER.exception("Cannot purge dangling ref object %r", ref)
 
 
-class AttrProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
+class Association(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Provides access to elements that are linked in an attribute."""
 
     __slots__ = ("attr",)
@@ -1159,7 +1177,9 @@ class AttrProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
         mapvalue: str | None = None,
         fixed_length: int = 0,
     ):
-        """Create an AttrProxyAccessor.
+        """Define an Association.
+
+        Associations are stored as simple links in an XML attribute.
 
         Parameters
         ----------
@@ -1295,7 +1315,7 @@ class AttrProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
                 LOGGER.exception("Cannot update link target")
 
 
-class PhysicalLinkEndsAccessor(AttrProxyAccessor[T_co]):
+class PhysicalLinkEndsAccessor(Association[T_co]):
     def __init__(
         self,
         class_: type[T_co],
@@ -1553,7 +1573,7 @@ class SpecificationAccessor(Accessor[_Specification]):
         return _Specification(obj._model, spec_elm)
 
 
-class ReferenceSearchingAccessor(PhysicalAccessor[T_co]):
+class Backref(PhysicalAccessor[T_co]):
     """Searches for references to the current element elsewhere."""
 
     __slots__ = ("attrs", "target_classes")
@@ -1569,7 +1589,10 @@ class ReferenceSearchingAccessor(PhysicalAccessor[T_co]):
         mapkey: str | None = None,
         mapvalue: str | None = None,
     ) -> None:
-        """Create a ReferenceSearchingAccessor.
+        """Define a back-reference.
+
+        This relation is not actually stored in the model, but nevertheless
+        provides a useful shortcut to other related elements.
 
         Parameters
         ----------
@@ -1752,7 +1775,7 @@ class TypecastAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
             yield
 
 
-class RoleTagAccessor(WritableAccessor, PhysicalAccessor):
+class Containment(WritableAccessor, PhysicalAccessor):
     __slots__ = ("classes", "role_tag")
 
     aslist: type[_obj.ElementListCouplingMixin] | None

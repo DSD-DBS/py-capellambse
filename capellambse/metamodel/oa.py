@@ -22,12 +22,8 @@ class OperationalActivity(fa.AbstractFunction):
         fa.FunctionalExchange, aslist=m.ElementList
     )
 
-    inputs = m.ReferenceSearchingAccessor(
-        fa.FunctionalExchange, "target", aslist=m.ElementList
-    )
-    outputs = m.ReferenceSearchingAccessor(
-        fa.FunctionalExchange, "source", aslist=m.ElementList
-    )
+    inputs = m.Backref(fa.FunctionalExchange, "target", aslist=m.ElementList)
+    outputs = m.Backref(fa.FunctionalExchange, "source", aslist=m.ElementList)
 
     owner: m.Accessor[Entity]
 
@@ -61,13 +57,13 @@ class OperationalCapability(m.ModelElement):
     extends = m.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=m.ElementList
     )
-    extended_by = m.ReferenceSearchingAccessor(
+    extended_by = m.Backref(
         interaction.AbstractCapabilityExtend, "target", aslist=m.ElementList
     )
     includes = m.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=m.ElementList
     )
-    included_by = m.ReferenceSearchingAccessor(
+    included_by = m.Backref(
         interaction.AbstractCapabilityInclude, "target", aslist=m.ElementList
     )
     generalizes = m.DirectProxyAccessor(
@@ -78,13 +74,13 @@ class OperationalCapability(m.ModelElement):
         "target",
         aslist=m.ElementList,
     )
-    involved_activities = m.LinkAccessor[OperationalActivity](
+    involved_activities = m.Allocation[OperationalActivity](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
-    involved_entities = m.LinkAccessor[m.ModelElement](
+    involved_entities = m.Allocation[m.ModelElement](
         "ownedEntityOperationalCapabilityInvolvements",
         EntityOperationalCapabilityInvolvement,
         aslist=m.MixedElementList,
@@ -93,7 +89,7 @@ class OperationalCapability(m.ModelElement):
     entity_involvements = m.DirectProxyAccessor(
         EntityOperationalCapabilityInvolvement, aslist=m.ElementList
     )
-    involved_processes = m.LinkAccessor[OperationalProcess](
+    involved_processes = m.Allocation[OperationalProcess](
         "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.FunctionalChainAbstractCapabilityInvolvement,
         aslist=m.ElementList,
@@ -103,14 +99,12 @@ class OperationalCapability(m.ModelElement):
         OperationalProcess, aslist=m.ElementList
     )
 
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
-    )
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    postcondition = m.Association(capellacore.Constraint, "postCondition")
+    precondition = m.Association(capellacore.Constraint, "preCondition")
     scenarios = m.DirectProxyAccessor(
         interaction.Scenario, aslist=m.ElementList
     )
-    states = m.AttrProxyAccessor(
+    states = m.Association(
         capellacommon.State, "availableInStates", aslist=m.ElementList
     )
 
@@ -133,14 +127,14 @@ class OperationalCapabilityPkg(m.ModelElement):
 class AbstractEntity(cs.Component):
     """Common code for Entities."""
 
-    activities = m.LinkAccessor[OperationalActivity](
+    activities = m.Allocation[OperationalActivity](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
         aslist=m.ElementList,
         attr="targetElement",
         backattr="sourceElement",
     )
-    capabilities = m.ReferenceSearchingAccessor(
+    capabilities = m.Backref(
         OperationalCapability, "involved_entities", aslist=m.ElementList
     )
 
@@ -181,13 +175,13 @@ class CommunicationMean(fa.AbstractExchange):
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_interactions = m.LinkAccessor[fa.FunctionalExchange](
+    allocated_interactions = m.Allocation[fa.FunctionalExchange](
         None,  # FIXME fill in tag
         fa.ComponentExchangeFunctionalExchangeAllocation,
         aslist=m.ElementList,
         attr="targetElement",
     )
-    allocated_exchange_items = m.AttrProxyAccessor(
+    allocated_exchange_items = m.Association(
         information.ExchangeItem,
         "convoyedInformations",
         aslist=m.ElementList,
@@ -270,7 +264,7 @@ m.set_accessor(
 m.set_accessor(
     OperationalActivity,
     "owner",
-    m.ReferenceSearchingAccessor(Entity, "activities"),
+    m.Backref(Entity, "activities"),
 )
 m.set_accessor(
     Entity,
@@ -280,9 +274,7 @@ m.set_accessor(
 m.set_accessor(
     Entity,
     "related_exchanges",
-    m.ReferenceSearchingAccessor(
-        CommunicationMean, "source", "target", aslist=m.ElementList
-    ),
+    m.Backref(CommunicationMean, "source", "target", aslist=m.ElementList),
 )
 m.set_self_references(
     (OperationalActivity, "activities"),

@@ -28,7 +28,7 @@ class SystemEngineering(m.ModelElement):
     [source:MIL-STD 499B standard]
     """
 
-    architectures = m.RoleTagAccessor(
+    architectures = m.Containment(
         "ownedArchitectures", m.ModelElement, aslist=m.ElementList
     )
 
@@ -87,7 +87,7 @@ class SystemEngineering(m.ModelElement):
 
 @m.xtype_handler(None)
 class Project(m.ModelElement):
-    model_roots = m.RoleTagAccessor(
+    model_roots = m.Containment(
         "ownedModelRoots", SystemEngineering, aslist=m.ElementList
     )
 

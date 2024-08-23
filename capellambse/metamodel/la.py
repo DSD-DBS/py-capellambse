@@ -28,7 +28,7 @@ class LogicalFunctionPkg(m.ModelElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.RoleTagAccessor(
+    functions = m.Containment(
         "ownedLogicalFunctions", LogicalFunction, aslist=m.ElementList
     )
 
@@ -41,7 +41,7 @@ class LogicalComponent(cs.Component):
 
     _xmltag = "ownedLogicalComponents"
 
-    allocated_functions = m.LinkAccessor[LogicalFunction](
+    allocated_functions = m.Allocation[LogicalFunction](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
         aslist=m.ElementList,
@@ -82,39 +82,37 @@ class CapabilityRealization(m.ModelElement):
     owned_chains = m.DirectProxyAccessor(
         fa.FunctionalChain, aslist=m.ElementList
     )
-    involved_functions = m.LinkAccessor[LogicalFunction](
+    involved_functions = m.Allocation[LogicalFunction](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
-    involved_chains = m.LinkAccessor[fa.FunctionalChain](
+    involved_chains = m.Allocation[fa.FunctionalChain](
         "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.FunctionalChainAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
-    involved_components = m.LinkAccessor[LogicalComponent](
+    involved_components = m.Allocation[LogicalComponent](
         "ownedCapabilityRealizationInvolvements",
         capellacommon.CapabilityRealizationInvolvement,
         aslist=m.MixedElementList,
         attr="involved",
     )
-    realized_capabilities = m.LinkAccessor[sa.Capability](
+    realized_capabilities = m.Allocation[sa.Capability](
         "ownedAbstractCapabilityRealizations",
         interaction.AbstractCapabilityRealization,
         aslist=m.ElementList,
         attr="targetElement",
     )
 
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
-    )
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    postcondition = m.Association(capellacore.Constraint, "postCondition")
+    precondition = m.Association(capellacore.Constraint, "preCondition")
     scenarios = m.DirectProxyAccessor(
         interaction.Scenario, aslist=m.ElementList
     )
-    states = m.AttrProxyAccessor(
+    states = m.Association(
         capellacommon.State, "availableInStates", aslist=m.ElementList
     )
 
@@ -197,28 +195,26 @@ class LogicalArchitecture(cs.ComponentArchitecture):
 m.set_accessor(
     sa.Capability,
     "realizing_capabilities",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         CapabilityRealization, "realized_capabilities", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     sa.SystemComponent,
     "realizing_logical_components",
-    m.ReferenceSearchingAccessor(
-        LogicalComponent, "realized_components", aslist=m.ElementList
-    ),
+    m.Backref(LogicalComponent, "realized_components", aslist=m.ElementList),
 )
 m.set_accessor(
     sa.SystemFunction,
     "realizing_logical_functions",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         LogicalFunction, "realized_system_functions", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     LogicalFunction,
     "owner",
-    m.ReferenceSearchingAccessor(LogicalComponent, "allocated_functions"),
+    m.Backref(LogicalComponent, "allocated_functions"),
 )
 m.set_accessor(
     LogicalFunction,
@@ -231,7 +227,7 @@ m.set_accessor(
 m.set_accessor(
     LogicalFunction,
     "involved_in",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         CapabilityRealization, "involved_functions", aslist=m.ElementList
     ),
 )

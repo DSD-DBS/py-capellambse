@@ -16,13 +16,13 @@ class LiteralValue(m.ModelElement):
     is_abstract = m.BoolPOD("abstract")
     """Indicates if property is abstract."""
     value = m.StringPOD("value")
-    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
+    type = m.Association(m.ModelElement, "abstractType")
 
 
 @m.xtype_handler(None)
 class LiteralNumericValue(LiteralValue):
     value = m.StringPOD("value")
-    unit = m.AttrProxyAccessor(m.ModelElement, "unit")
+    unit = m.Association(m.ModelElement, "unit")
 
 
 @m.xtype_handler(None)
@@ -36,10 +36,8 @@ class ValuePart(m.ModelElement):
 
     _xmltag = "ownedParts"
 
-    referenced_property = m.AttrProxyAccessor(
-        m.ModelElement, "referencedProperty"
-    )
-    value = m.RoleTagAccessor("ownedValue")
+    referenced_property = m.Association(m.ModelElement, "referencedProperty")
+    value = m.Containment("ownedValue")
 
 
 @m.xtype_handler(None)
@@ -48,7 +46,7 @@ class ComplexValue(m.ModelElement):
 
     _xmltag = "ownedDataValues"
 
-    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
+    type = m.Association(m.ModelElement, "abstractType")
     value_parts = m.DirectProxyAccessor(ValuePart, aslist=m.ElementList)
 
 
@@ -57,15 +55,15 @@ class ComplexValue(m.ModelElement):
 class EnumerationLiteral(m.ModelElement):
     _xmltag = "ownedLiterals"
 
-    value = m.RoleTagAccessor("domainValue")
+    value = m.Containment("domainValue")
 
     owner = m.ParentAccessor["_dt.Enumeration"]()
 
 
 @m.xtype_handler(None)
 class EnumerationReference(m.ModelElement):
-    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
-    value = m.AttrProxyAccessor(m.ModelElement, "referencedValue")
+    type = m.Association(m.ModelElement, "abstractType")
+    value = m.Association(m.ModelElement, "referencedValue")
 
 
 from . import datatype as _dt  # noqa: F401
