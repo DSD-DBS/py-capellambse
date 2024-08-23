@@ -12,6 +12,7 @@ def protocol_ModelObject_compliance():
 
     mobj = model.ModelElement()  # type: ignore[call-arg]
     mobj = model._descriptors._Specification()  # type: ignore[call-arg]
+    mobj = model.diagram.AbstractDiagram()  # type: ignore[call-arg,abstract]
     mobj = model.diagram.Diagram()
 
     del mobj
