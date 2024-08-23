@@ -12,7 +12,7 @@ from . import requirements as rq
 
 
 def init() -> None:
-    m.ModelElement.requirements = cr.ElementRelationAccessor()
+    m.ModelElement.requirements = cr.ElementRelationAccessor()  # type: ignore[deprecated]
     m.ModelElement.requirements_relations = m.Backref[rq.AbstractRelation](
         (rq.NS, "AbstractRelation"), "source", "target"
     )

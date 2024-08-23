@@ -895,8 +895,6 @@ class TestArchitectureLayers:
             pytest.param(
                 "oa",
                 [
-                    "root_entity",
-                    "root_activity",
                     "activity_pkg",
                     "capability_pkg",
                     "interface_pkg",

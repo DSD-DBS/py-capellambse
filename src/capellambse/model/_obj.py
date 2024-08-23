@@ -621,6 +621,7 @@ class ModelElement(metaclass=_ModelElementMeta):
         return wrap_xml(self._model, self._model._loader[uuid]).name
 
     @classmethod
+    @deprecated("ModelElement.from_model is deprecated, use wrap_xml instead")
     def from_model(
         cls, model: capellambse.MelodyModel, element: etree._Element
     ) -> te.Self:
@@ -1872,6 +1873,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         return newlist
 
 
+@deprecated("MixedElementList is deprecated, use base ElementList instead")
 class MixedElementList(ElementList[ModelElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
@@ -2272,6 +2274,10 @@ def wrap_xml(
     return obj
 
 
+@deprecated(
+    "find_wrapper is deprecated,"
+    " use resolve_class_name or MelodyModel.resolve_class instead"
+)
 @functools.cache
 def find_wrapper(typehint: str) -> tuple[type[ModelObject], ...]:
     """Find the possible wrapper classes for the hinted type.

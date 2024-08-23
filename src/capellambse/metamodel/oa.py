@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import sys
 import typing as t
 import warnings
 
@@ -20,6 +21,11 @@ from . import (
     modellingcore,
 )
 from . import namespaces as ns
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 NS = ns.OA
 
@@ -66,6 +72,13 @@ class OperationalAnalysis(cs.BlockArchitecture):
         return self._model.search(OperationalProcess, below=self)
 
     @property
+    @deprecated(
+        (
+            "OperationalActivity.root_activity can only handle a single"
+            " OperationalActivity, use .activity_pkg.activities directly instead"
+        ),
+        category=FutureWarning,
+    )
     def root_activity(self) -> OperationalActivity:
         pkg = self.activity_pkg
         if pkg is None:
@@ -86,6 +99,13 @@ class OperationalAnalysis(cs.BlockArchitecture):
         return candidates[0]
 
     @property
+    @deprecated(
+        (
+            "OperationalActivity.root_entity can only handle a single"
+            " Entity, use .entity_pkg.entities directly instead"
+        ),
+        category=FutureWarning,
+    )
     def root_entity(self) -> Entity:
         pkg = self.entity_pkg
         if pkg is None:

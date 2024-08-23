@@ -58,18 +58,20 @@ class VirtualType(t.Generic[_T_co]):
 
 @dataclasses.dataclass(frozen=True)
 class RealType(t.Generic[_T_co]):
-    class_: type[_T_co]
+    class_: m.ClassName
 
     @property
     def name(self) -> str:
-        return self.class_.__name__
+        return self.class_[1]
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
-        assert isinstance(self.class_, str | type(m.ModelElement))
         return model_.search(self.class_)
 
     def matches(self, obj: m.ModelElement) -> bool:
-        return isinstance(obj, self.class_)
+        return (
+            obj.__capella_namespace__ is self.class_[0]
+            and type(obj).__name__ == self.class_[1]
+        )
 
 
 class _VirtualTypesRegistry(cabc.Mapping[str, VirtualType | RealType]):
@@ -90,9 +92,7 @@ class _VirtualTypesRegistry(cabc.Mapping[str, VirtualType | RealType]):
             return self.__registry[key]
         except KeyError:
             pass
-
-        (class_,) = m.find_wrapper(key)
-        return RealType(class_)
+        return RealType(m.resolve_class_name(("", key)))
 
     def register(self, vtype: VirtualType) -> None:
         try:
@@ -125,8 +125,11 @@ def virtual_type(
 
 @virtual_type(mm.oa.OperationalActivity)
 def OperationalActivity(obj):
+    assert isinstance(obj, mm.oa.OperationalActivity)
     assert hasattr(obj._model, "oa"), "Model doesn't have an OA layer?"
-    return obj != obj._model.oa.root_activity
+    pkg = obj._model.oa.activity_pkg
+    assert pkg is not None
+    return obj not in pkg.activities
 
 
 @virtual_type(mm.sa.SystemFunction)
@@ -444,7 +447,9 @@ class ModelValidation:
         for i in typenames:
             objs = _types_registry[i].search(self._model)
             found.update((o.uuid, o._element) for o in objs)
-        return m.MixedElementList(self._model, list(found.values()))
+        return m.ElementList(
+            self._model, list(found.values()), legacy_by_type=True
+        )
 
 
 class ObjectValidation:
@@ -498,7 +503,9 @@ class LayerValidation(ObjectValidation):
         for i in typenames:
             objs = _types_registry[i].search(self._model).by_layer(self.parent)
             found.update((o.uuid, o._element) for o in objs)
-        return m.MixedElementList(self._model, list(found.values()))
+        return m.ElementList(
+            self._model, list(found.values()), legacy_by_type=True
+        )
 
 
 class ElementValidation(ObjectValidation):
