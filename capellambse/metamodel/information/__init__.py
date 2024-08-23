@@ -188,7 +188,7 @@ class ExchangeItemElement(m.ModelElement):
     _xmltag = "ownedElements"
 
     abstract_type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
-    owner: m.Accessor
+    owner = m.ParentAccessor["ExchangeItem"]()
 
     min_card = m.RoleTagAccessor("ownedMinCard")
     max_card = m.RoleTagAccessor("ownedMaxCard")
@@ -228,14 +228,8 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     )
 
 m.set_accessor(
-    datavalue.EnumerationLiteral,
-    "owner",
-    m.ParentAccessor(datatype.Enumeration),
-)
-m.set_accessor(
     DataPkg, "packages", m.DirectProxyAccessor(DataPkg, aslist=m.ElementList)
 )
-m.set_accessor(ExchangeItemElement, "owner", m.ParentAccessor(ExchangeItem))
 m.set_accessor(
     Association,
     "members",

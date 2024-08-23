@@ -58,10 +58,13 @@ class EnumerationLiteral(m.ModelElement):
 
     value = m.RoleTagAccessor("domainValue")
 
-    owner: m.Accessor
+    owner = m.ParentAccessor["_dt.Enumeration"]()
 
 
 @m.xtype_handler(None)
 class EnumerationReference(m.ModelElement):
     type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
     value = m.AttrProxyAccessor(m.ModelElement, "referencedValue")
+
+
+from . import datatype as _dt  # noqa: F401

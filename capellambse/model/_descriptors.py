@@ -1392,8 +1392,9 @@ class ParentAccessor(PhysicalAccessor[T_co]):
 
     __slots__ = ()
 
-    def __init__(self, class_: type[T_co]):
-        super().__init__(class_)
+    def __init__(self, class_: type[T_co] | None = None):
+        del class_
+        super().__init__(_obj.ModelElement)  # type: ignore[arg-type]
 
     def __get__(self, obj, objtype=None):
         del objtype
