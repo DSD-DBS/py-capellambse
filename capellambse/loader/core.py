@@ -36,6 +36,11 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 E = builder.ElementMaker()
 LOGGER = logging.getLogger(__name__)
 PROJECT_NATURE = "org.polarsys.capella.project.nature"
@@ -419,6 +424,10 @@ class ModelFile:
 
         self.root = new_root
 
+    @deprecated(
+        "iterall_xt() is deprecated,"
+        " use iterall() or iter_qtypes() + iter_qtype() instead"
+    )
     def iterall_xt(
         self, xtypes: cabc.Container[str]
     ) -> cabc.Iterator[etree._Element]:
