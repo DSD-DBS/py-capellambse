@@ -265,18 +265,18 @@ class ManagedDomain(m.ModelElement):
     version = property(
         lambda self: self.property_values.by_name("version").value
     )
-    types = m.RoleTagAccessor(
+    types = m.Containment(
         "ownedEnumerationPropertyTypes",
         mm.capellacore.EnumerationPropertyType,
     )
-    groups = m.RoleTagAccessor(
+    groups = m.Containment(
         "ownedPropertyValueGroups",
         mm.capellacore.PropertyValueGroup,
         aslist=m.ElementList,
         mapkey="name",
         alternate=ManagedGroup,
     )
-    enumeration_property_types = m.RoleTagAccessor(
+    enumeration_property_types = m.Containment(
         "ownedEnumerationPropertyTypes",
         mm.capellacore.EnumerationPropertyType,
         aslist=m.ElementList,
@@ -319,7 +319,7 @@ class PVMTConfiguration(m.ModelElement):
     def __init__(self, *_args, **_kw) -> None:
         raise TypeError("Use 'model.pvmt' to access PVMT configuration")
 
-    domains = m.RoleTagAccessor(
+    domains = m.Containment(
         "ownedPropertyValuePkgs",
         mm.capellacore.PropertyValuePkg,
         aslist=m.ElementList,
