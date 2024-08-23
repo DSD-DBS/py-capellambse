@@ -29,14 +29,14 @@ class BooleanType(DataType):
         aslist=m.ElementList,
         fixed_length=2,
     )
-    default = m.RoleTagAccessor("ownedDefaultValue")
+    default = m.Containment("ownedDefaultValue")
 
 
 @m.xtype_handler(None)
 class Enumeration(DataType):
     """An Enumeration."""
 
-    domain_type = m.AttrProxyAccessor(m.ModelElement, "domainType")
+    domain_type = m.Association(m.ModelElement, "domainType")
     owned_literals = m.DirectProxyAccessor(
         datavalue.EnumerationLiteral, aslist=m.ElementList
     )
@@ -56,21 +56,21 @@ class Enumeration(DataType):
 
 @m.xtype_handler(None)
 class StringType(DataType):
-    default_value = m.RoleTagAccessor("ownedDefaultValue")
-    null_value = m.RoleTagAccessor("ownedNullValue")
-    min_length = m.RoleTagAccessor("ownedMinLength")
-    max_length = m.RoleTagAccessor("ownedMaxLength")
+    default_value = m.Containment("ownedDefaultValue")
+    null_value = m.Containment("ownedNullValue")
+    min_length = m.Containment("ownedMinLength")
+    max_length = m.Containment("ownedMaxLength")
 
 
 @m.xtype_handler(None)
 class NumericType(DataType):
     kind = m.EnumPOD("kind", modeltypes.NumericTypeKind, default="INTEGER")
-    default_value = m.RoleTagAccessor("ownedDefaultValue")
-    null_value = m.RoleTagAccessor("ownedNullValue")
-    min_value = m.RoleTagAccessor("ownedMinValue")
-    max_value = m.RoleTagAccessor("ownedMaxValue")
+    default_value = m.Containment("ownedDefaultValue")
+    null_value = m.Containment("ownedNullValue")
+    min_value = m.Containment("ownedMinValue")
+    max_value = m.Containment("ownedMaxValue")
 
 
 @m.xtype_handler(None)
 class PhysicalQuantity(NumericType):
-    unit = m.RoleTagAccessor("ownedUnit")
+    unit = m.Containment("ownedUnit")

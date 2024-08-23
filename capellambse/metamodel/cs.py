@@ -22,7 +22,7 @@ class Part(m.ModelElement):
 
     _xmltag = "ownedParts"
 
-    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
+    type = m.Association(m.ModelElement, "abstractType")
 
     deployed_parts: m.Accessor
 
@@ -31,7 +31,7 @@ class Part(m.ModelElement):
 class ExchangeItemAllocation(m.ModelElement):
     """An allocation of an ExchangeItem to an Interface."""
 
-    item = m.AttrProxyAccessor(information.ExchangeItem, "allocatedItem")
+    item = m.Association(information.ExchangeItem, "allocatedItem")
 
 
 @m.xtype_handler(None)
@@ -72,7 +72,7 @@ class PhysicalLink(PhysicalPort):
     ends = m.PhysicalLinkEndsAccessor(
         PhysicalPort, "linkEnds", aslist=m.ElementList
     )
-    exchanges = m.LinkAccessor[fa.ComponentExchange](
+    exchanges = m.Allocation[fa.ComponentExchange](
         "ownedComponentExchangeAllocations",
         fa.ComponentExchangeAllocation,
         aslist=m.ElementList,
@@ -92,13 +92,13 @@ class PhysicalPath(m.ModelElement):
 
     _xmltag = "ownedPhysicalPath"
 
-    involved_items = m.LinkAccessor[m.ModelElement](
+    involved_items = m.Allocation[m.ModelElement](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement",
         aslist=m.MixedElementList,
         attr="involved",
     )
-    exchanges = m.LinkAccessor[fa.ComponentExchange](
+    exchanges = m.Allocation[fa.ComponentExchange](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
         aslist=m.ElementList,
@@ -126,27 +126,27 @@ class Component(m.ModelElement):
     )
     ports = m.DirectProxyAccessor(fa.ComponentPort, aslist=m.ElementList)
     physical_ports = m.DirectProxyAccessor(PhysicalPort, aslist=m.ElementList)
-    parts = m.ReferenceSearchingAccessor(Part, "type", aslist=m.ElementList)
+    parts = m.Backref(Part, "type", aslist=m.ElementList)
     physical_paths = m.DirectProxyAccessor(PhysicalPath, aslist=m.ElementList)
     physical_links = m.DirectProxyAccessor(PhysicalLink, aslist=m.ElementList)
     exchanges = m.DirectProxyAccessor(
         fa.ComponentExchange, aslist=m.ElementList
     )
 
-    related_exchanges = m.ReferenceSearchingAccessor(
+    related_exchanges = m.Backref(
         fa.ComponentExchange,
         "source.owner",
         "target.owner",
         aslist=m.ElementList,
     )
 
-    realized_components = m.LinkAccessor["Component"](
+    realized_components = m.Allocation["Component"](
         "ownedComponentRealizations",
         "org.polarsys.capella.core.data.cs:ComponentRealization",
         aslist=m.ElementList,
         attr="targetElement",
     )
-    realizing_components = m.ReferenceSearchingAccessor["Component"](
+    realizing_components = m.Backref["Component"](
         (), "realized_components", aslist=m.ElementList
     )
 
@@ -189,7 +189,7 @@ m.set_accessor(
 m.set_accessor(
     Part,
     "deployed_parts",
-    m.LinkAccessor(
+    m.Allocation(
         "ownedDeploymentLinks",
         "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink",
         aslist=m.ElementList,
@@ -200,24 +200,20 @@ m.set_accessor(
 m.set_accessor(
     PhysicalPort,
     "links",
-    m.ReferenceSearchingAccessor(PhysicalLink, "ends", aslist=m.ElementList),
+    m.Backref(PhysicalLink, "ends", aslist=m.ElementList),
 )
 m.set_accessor(
     PhysicalLink,
     "physical_paths",
-    m.ReferenceSearchingAccessor(
-        PhysicalPath, "involved_items", aslist=m.ElementList
-    ),
+    m.Backref(PhysicalPath, "involved_items", aslist=m.ElementList),
 )
 m.set_accessor(
     fa.ComponentExchange,
     "allocating_physical_link",
-    m.ReferenceSearchingAccessor(PhysicalLink, "exchanges"),
+    m.Backref(PhysicalLink, "exchanges"),
 )
 m.set_accessor(
     fa.ComponentExchange,
     "allocating_physical_paths",
-    m.ReferenceSearchingAccessor(
-        PhysicalPath, "exchanges", aslist=m.ElementList
-    ),
+    m.Backref(PhysicalPath, "exchanges", aslist=m.ElementList),
 )

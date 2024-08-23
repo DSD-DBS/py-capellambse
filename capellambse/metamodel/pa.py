@@ -28,7 +28,7 @@ class PhysicalFunctionPkg(m.ModelElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.RoleTagAccessor(
+    functions = m.Containment(
         "ownedPhysicalFunctions", PhysicalFunction, aslist=m.ElementList
     )
 
@@ -49,7 +49,7 @@ class PhysicalComponent(cs.Component):
     )
     kind = m.EnumPOD("kind", modeltypes.PhysicalComponentKind, default="UNSET")
 
-    allocated_functions = m.LinkAccessor[PhysicalFunction](
+    allocated_functions = m.Allocation[PhysicalFunction](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
         aslist=m.ElementList,
@@ -168,28 +168,26 @@ class PhysicalArchitecture(cs.ComponentArchitecture):
 m.set_accessor(
     la.LogicalComponent,
     "realizing_physical_components",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         PhysicalComponent, "realized_logical_components", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     la.LogicalFunction,
     "realizing_physical_functions",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         PhysicalFunction, "realized_logical_functions", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     PhysicalComponent,
     "deploying_components",
-    m.ReferenceSearchingAccessor(
-        PhysicalComponent, "deployed_components", aslist=m.ElementList
-    ),
+    m.Backref(PhysicalComponent, "deployed_components", aslist=m.ElementList),
 )
 m.set_accessor(
     PhysicalFunction,
     "owner",
-    m.ReferenceSearchingAccessor(PhysicalComponent, "allocated_functions"),
+    m.Backref(PhysicalComponent, "allocated_functions"),
 )
 m.set_accessor(
     PhysicalFunction,

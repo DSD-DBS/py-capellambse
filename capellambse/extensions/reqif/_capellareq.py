@@ -38,7 +38,7 @@ class CapellaModule(rq.ReqIFElement):
 
     folders = m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList)
     requirements = m.DirectProxyAccessor(rq.Requirement, aslist=m.ElementList)
-    type = m.AttrProxyAccessor(rq.ModuleType, "moduleType")
+    type = m.Association(rq.ModuleType, "moduleType")
     attributes = rq.AttributeAccessor()
 
     def to_reqif(
@@ -94,8 +94,8 @@ class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
 
     _xmltag = "ownedExtensions"
 
-    source = m.AttrProxyAccessor(rq.Requirement, "target")
-    target = m.AttrProxyAccessor(m.ModelElement, "source")
+    source = m.Association(rq.Requirement, "target")
+    target = m.Association(m.ModelElement, "source")
 
 
 @m.xtype_handler(None)
