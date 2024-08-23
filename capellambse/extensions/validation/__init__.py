@@ -27,14 +27,6 @@ def init() -> None:
         lambda self: self.validation.validate
     )
 
-    m.set_accessor(
-        m.ModelElement, "validation", m.AlternateAccessor(ElementValidation)
-    )
-    m.ModelElement.validate = property(  # type: ignore[attr-defined]
-        lambda self: self.validation.validate
-    )
-    m.set_accessor(
-        cs.ComponentArchitecture,
-        "validation",
-        m.AlternateAccessor(LayerValidation),
-    )
+    m.ModelElement.validation = m.AlternateAccessor(ElementValidation)
+    m.ModelElement.validate = property(lambda self: self.validation.validate)
+    cs.ComponentArchitecture.validation = m.AlternateAccessor(LayerValidation)

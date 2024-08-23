@@ -52,6 +52,11 @@ _RULES_RE = re.compile(
     r"(?m)\[(?P<key>\w+)\]\s*(?P<value>.+?)\s*\[/(?P=key)\]"
 )
 
+NS = m.Namespace(
+    m.VIRTUAL_NAMESPACE_PREFIX + "pvmt",
+    "capellambse.virtual.pvmt",
+)
+
 
 class ScopeError(m.InvalidModificationError):
     """Raised when trying to apply a PVMT group to an out-of-scope element."""
@@ -173,13 +178,40 @@ class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
         return value
 
 
-class ManagedGroup(m.ModelElement):
+class _PVMTBase:
+    _model: capellambse.MelodyModel
+    _element: etree._Element
+
+    uuid = m.StringPOD("id")
+    name = m.StringPOD("name")
+    parent = m.ParentAccessor()
+    property_values: m.Accessor[m.ElementList[mm.capellacore.PropertyValue]]
+
+    def __init__(self, *_args, **_kw) -> None:
+        raise TypeError("Use 'model.pvmt' to access PVMT configuration")
+
+    @classmethod
+    def from_model(
+        cls, model: capellambse.MelodyModel, element: etree._Element
+    ) -> te.Self:
+        self = cls.__new__(cls)
+        self._model = model
+        self._element = element
+        return self
+
+    def _short_repr_(self) -> str:
+        return f"<{type(self).__name__} {self.name!r}>"
+
+
+_PVMTBase.property_values = mm.modellingcore.ModelElement.property_values
+
+
+class ManagedGroup(mm.capellacore.PropertyValueGroup):
     """A managed group of property values."""
 
     _required_attrs = frozenset({"name"})
 
     selector = PVMTDescriptionProperty("description")
-    description = m.Alias("selector", dirhide=True)  # type: ignore[assignment]
 
     @property
     def fullname(self) -> str:
@@ -236,7 +268,9 @@ class ManagedGroup(m.ModelElement):
 
         groupobj = obj.property_value_groups.create(
             name=groupname,
-            applied_property_value_groups=[self],
+            applied_property_value_groups=[
+                m.wrap_xml(self._model, self._element)
+            ],
         )
         for propdef in self.property_values:
             groupobj.property_values.create(
@@ -257,7 +291,7 @@ class ManagedGroup(m.ModelElement):
         )
 
 
-class ManagedDomain(m.ModelElement):
+class ManagedDomain(mm.capellacore.PropertyValuePkg):
     """A "domain" in the property value management extension."""
 
     _required_attrs = frozenset({"name"})
@@ -269,17 +303,11 @@ class ManagedDomain(m.ModelElement):
         "ownedEnumerationPropertyTypes",
         mm.capellacore.EnumerationPropertyType,
     )
-    groups = m.Containment(
+    groups = m.Containment[mm.capellacore.PropertyValueGroup](
         "ownedPropertyValueGroups",
         mm.capellacore.PropertyValueGroup,
-        aslist=m.ElementList,
         mapkey="name",
         alternate=ManagedGroup,
-    )
-    enumeration_property_types = m.Containment(
-        "ownedEnumerationPropertyTypes",
-        mm.capellacore.EnumerationPropertyType,
-        aslist=m.ElementList,
     )
 
     def __init__(
@@ -297,7 +325,7 @@ class ManagedDomain(m.ModelElement):
     def from_model(
         cls, model: capellambse.MelodyModel, element: etree._Element
     ) -> te.Self:
-        self = super().from_model(model, element)
+        self = m.wrap_xml(model, element, cls)
         try:
             version = self.property_values.by_name("version").value
         except Exception:
@@ -313,16 +341,12 @@ class ManagedDomain(m.ModelElement):
         return self
 
 
-class PVMTConfiguration(m.ModelElement):
+class PVMTConfiguration(mm.capellacore.PropertyValuePkg):
     """Provides access to the model-wide PVMT configuration."""
 
-    def __init__(self, *_args, **_kw) -> None:
-        raise TypeError("Use 'model.pvmt' to access PVMT configuration")
-
-    domains = m.Containment(
+    domains = m.Containment[mm.capellacore.PropertyValuePkg](
         "ownedPropertyValuePkgs",
         mm.capellacore.PropertyValuePkg,
-        aslist=m.ElementList,
         mapkey="name",
         alternate=ManagedDomain,
     )

@@ -27,10 +27,13 @@ import capellambse.model as m
 from . import _requirements as rq
 from . import exporter
 
-m.XTYPE_ANCHORS[__name__] = "CapellaRequirements"
+NS = m.Namespace(
+    "http://www.polarsys.org/capella/requirements",
+    "CapellaRequirements",
+    "org.polarsys.capella.vp.requirements",
+)
 
 
-@m.xtype_handler(None)
 class CapellaModule(rq.ReqIFElement):
     """A ReqIF Module that bundles multiple Requirement folders."""
 
@@ -38,7 +41,7 @@ class CapellaModule(rq.ReqIFElement):
 
     folders = m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList)
     requirements = m.DirectProxyAccessor(rq.Requirement, aslist=m.ElementList)
-    type = m.Association(rq.ModuleType, "moduleType")
+    type = m.Single(m.Association(rq.ModuleType, "moduleType"))
     attributes = rq.AttributeAccessor()
 
     def to_reqif(
@@ -81,24 +84,21 @@ class CapellaModule(rq.ReqIFElement):
         )
 
 
-@m.xtype_handler(None)
 class CapellaIncomingRelation(rq.AbstractRequirementsRelation):
     """A Relation between a requirement and an object."""
 
     _xmltag = "ownedRelations"
 
 
-@m.xtype_handler(None)
 class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
     """A Relation between an object and a requirement."""
 
     _xmltag = "ownedExtensions"
 
-    source = m.Association(rq.Requirement, "target")
-    target = m.Association(m.ModelElement, "source")
+    source = m.Single(m.Association(rq.Requirement, "target"))
+    target = m.Single(m.Association(m.ModelElement, "source"))
 
 
-@m.xtype_handler(None)
 class CapellaTypesFolder(rq.ReqIFElement):
     _xmltag = "ownedExtensions"
 
@@ -214,6 +214,11 @@ class RequirementsRelationAccessor(
             raise NotImplementedError("Cannot insert new objects yet")
 
         if isinstance(value, CapellaOutgoingRelation):
+            if not value.target:
+                raise RuntimeError(
+                    "Cannot insert outgoing relation without target:"
+                    f" {value._short_repr_()}"
+                )
             parent = value.target._element
         else:
             assert isinstance(
@@ -262,7 +267,7 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
         source: m.ModelObject,
     ) -> None:
         del elemclass
-        super().__init__(model, elements, rq.AbstractRequirementsRelation)
+        super().__init__(model, elements)
         self._source = source
 
     @t.overload
@@ -364,5 +369,5 @@ class ElementRelationAccessor(
         )
 
 
-m.set_accessor(rq.Requirement, "relations", RequirementsRelationAccessor())
-m.set_accessor(rq.Requirement, "related", ElementRelationAccessor())
+rq.Requirement.relations = RequirementsRelationAccessor()
+rq.Requirement.related = ElementRelationAccessor()
