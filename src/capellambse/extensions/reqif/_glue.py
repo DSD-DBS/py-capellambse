@@ -16,7 +16,7 @@ def init() -> None:
         cr.CapellaTypesFolder, aslist=m.ElementList
     )
 
-    m.ModelElement.requirements = cr.ElementRelationAccessor()
+    m.ModelElement.requirements = cr.ElementRelationAccessor()  # type: ignore[deprecated]
     cs.BlockArchitecture.requirement_modules = m.DirectProxyAccessor(
         cr.CapellaModule, aslist=m.ElementList
     )
