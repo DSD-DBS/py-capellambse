@@ -55,10 +55,13 @@ def test_model_loading_with_invalid_entrypoint_fails(suffix: str):
 
 def test_model_loading_via_GitFileHandler():
     path = "git+" + pathlib.Path.cwd().as_uri()
+
     capellambse.MelodyModel(
         path, entrypoint="tests/data/melodymodel/5_0/Melody Model Test.aird"
     )
-    assert not pathlib.Path.cwd().joinpath("capellambse.lock").exists()
+
+    lockfile = pathlib.Path.cwd().joinpath("capellambse.lock")
+    assert not lockfile.exists()
 
 
 def test_model_loading_via_GitFileHandler_invalid_uri():

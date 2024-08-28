@@ -390,6 +390,7 @@ class GitFileHandler(abc.FileHandler):
     __has_lfs: bool
     __lfsfiles: dict[pathlib.PurePosixPath, bool]
     __repo: pathlib.Path
+    __lockfile: pathlib.Path
 
     def __init__(
         self,
@@ -623,10 +624,14 @@ class GitFileHandler(abc.FileHandler):
             path = pathlib.Path(urlpath[1:] if windows else urlpath)
         else:
             path = pathlib.Path(self.path)
-        self.cache_dir = path.resolve()
+        self.__repo = self.cache_dir = path.resolve()
         gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
         assert isinstance(gitdir, str)
-        self.__repo = pathlib.Path(self.cache_dir, gitdir.strip()).resolve()
+        self.__lockfile = (
+            pathlib.Path(self.cache_dir, gitdir.strip())
+            .resolve()
+            .joinpath("capellambse.lock")
+        )
 
     def __init_cache_dir_remote(self) -> None:
         slug_pattern = '[\x00-\x1f\x7f"*/:<>?\\|]+'
@@ -640,6 +645,7 @@ class GitFileHandler(abc.FileHandler):
             hashpath, digest_size=12, usedforsecurity=False
         ).hexdigest()
         self.__repo = self.cache_dir = CACHEBASE.joinpath(path_hash, path_slug)
+        self.__lockfile = self.__repo.joinpath("capellambse.lock")
 
         if old_dir.exists():
             LOGGER.debug("Moving cache from %s to %s", old_dir, self.cache_dir)
@@ -746,6 +752,9 @@ class GitFileHandler(abc.FileHandler):
             os.rmdir(worktree)
             raise
         self.cache_dir = worktree
+        gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
+        assert isinstance(gitdir, str)
+        self.__repo = pathlib.Path(self.cache_dir, gitdir.strip()).resolve()
 
         self.__fnz = weakref.finalize(
             self, self.__cleanup_worktree, self.__repo, worktree
@@ -758,6 +767,12 @@ class GitFileHandler(abc.FileHandler):
                 LOGGER.debug("LFS not installed, skipping setup")
             else:
                 LOGGER.debug("LFS support detected, registering filter")
+                self.__git_nolock(
+                    "config",
+                    "--worktree",
+                    "core.hooksPath",
+                    self.__repo.joinpath("hooks"),
+                )
                 self.__git_nolock("lfs", "install", "--worktree", "--force")
                 self.__git_nolock("config", "--worktree", "core.bare", "false")
                 self._git("lfs", "pull")
@@ -787,7 +802,7 @@ class GitFileHandler(abc.FileHandler):
         silent: bool = False,
         **kw: t.Any,
     ) -> bytes | str:
-        with capellambse.helpers.flock(self.__repo / "capellambse.lock"):
+        with capellambse.helpers.flock(self.__lockfile):
             return self.__git_nolock(*cmd, env=env, silent=silent, **kw)
 
     def __git_nolock(
