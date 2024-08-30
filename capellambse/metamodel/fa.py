@@ -234,6 +234,12 @@ class ComponentPort(m.ModelElement):
     direction = m.EnumPOD("orientation", modeltypes.OrientationPortKind)
     owner = m.ParentAccessor(m.ModelElement)
     exchanges: m.Accessor
+    provided_interfaces = m.AttrProxyAccessor(
+        m.ModelElement, "providedInterfaces", aslist=m.ElementList
+    )
+    required_interfaces = m.AttrProxyAccessor(
+        m.ModelElement, "requiredInterfaces", aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
