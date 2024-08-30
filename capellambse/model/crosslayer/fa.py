@@ -257,6 +257,12 @@ class ComponentPort(c.GenericElement):
     )
     owner = c.ParentAccessor(c.GenericElement)
     exchanges: c.Accessor
+    provided_interfaces = c.AttrProxyAccessor(
+        c.GenericElement, "providedInterfaces", aslist=c.ElementList
+    )
+    required_interfaces = c.AttrProxyAccessor(
+        c.GenericElement, "requiredInterfaces", aslist=c.ElementList
+    )
 
 
 @c.xtype_handler(None)
