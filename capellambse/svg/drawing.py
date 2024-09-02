@@ -287,6 +287,8 @@ class Drawing:
 
     def _draw_label(self, builder: LabelBuilder) -> LinesData | None:
         """Draw label text on given object and return the label's group."""
+        if not builder.labels:
+            return None
         builder.icon &= diagram.has_icon(builder.class_ or "")
         text = self._make_text(builder)
         lines = None
