@@ -62,12 +62,13 @@ def generic_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     edge.styleoverrides = _styling.apply_style_overrides(
         seb.target_diagram.styleclass, f"Edge.{seb.styleclass}", ostyle
     )  # type: ignore[assignment]
-    edge.labels.extend(_construct_labels(edge, seb))
 
     if isinstance(targetport, diagram.Box):
         snaptarget(edge, -1, -2, targetport, not edge.hidden, routingstyle)
     if isinstance(sourceport, diagram.Box):
         snaptarget(edge, 0, 1, sourceport, not edge.hidden, routingstyle)
+
+    edge.labels.extend(_construct_labels(edge, seb))
 
     sourceport.add_context(seb.data_element.attrib["element"])
     if targetport is not None:
@@ -310,9 +311,18 @@ def snap_oblique(
     target: diagram.DiagramElement,
 ) -> None:
     """Snap ``points``' end to ``target`` in a straight line."""
-    points[i] = target.vector_snap(
-        points[i], source=points[next_i], style=diagram.RoutingStyle.OBLIQUE
+    source = points[next_i]
+    new_point = target.vector_snap(
+        points[i], style=diagram.RoutingStyle.OBLIQUE, source=source
     )
+    delta = (points[i] - source).angleto(new_point - source)
+    if abs(delta) >= 1:
+        new_point = target.vector_snap(
+            source,
+            style=diagram.RoutingStyle.OBLIQUE,
+            source=points[next_i - i + next_i],
+        )
+    points[i] = new_point
 
 
 def snap_manhattan(

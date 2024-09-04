@@ -272,7 +272,7 @@ class Box:
             source = diagram.Vector2D(*source)
 
         if style is RoutingStyle.OBLIQUE:
-            return self.__vector_snap_oblique(source)
+            return self.__vector_snap_oblique(point)
         if style is RoutingStyle.MANHATTAN:
             return self.__vector_snap_manhattan(point, point - source)
         if style is RoutingStyle.TREE:
@@ -282,6 +282,9 @@ class Box:
     def __vector_snap_oblique(
         self, source: diagram.Vector2D
     ) -> diagram.Vector2D:
+        if source == self.center:
+            return source
+
         angle = self.size.angleto(source - self.center)
         alpha = 2 * self.size.angleto((1, 0))
         assert alpha >= 0
