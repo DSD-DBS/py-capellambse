@@ -955,6 +955,94 @@ def _class_symbol() -> container.Symbol:
 
 
 @_factory()
+def _class_feature_symbol() -> container.Symbol:
+    symb = container.Symbol(id="ClassFeatureSymbol", viewBox="0 0 27 21")
+    grad_id = "ClassFeatureSymbol-gradient"
+    symb.add(_make_lgradient(grad_id, stop_colors=("#cfa6a5", "#f1e2e3")))
+    grp = symb.add(container.Group())
+    grp.add(shapes.Rect(insert=(7, 4), fill="#913734", size=(17, 11.5)))
+    grp.add(
+        shapes.Rect(insert=(7, 5), size=(17, 9.5), fill=f"url(#{grad_id})")
+    )
+    grp.add(
+        shapes.Circle(
+            center=(20.7, 12.1),
+            r=4.1,
+            fill="#f1e2e3",
+            stroke="#913734",
+            stroke_width=1,
+        )
+    )
+    return symb
+
+
+@_factory()
+def _enumeration_symbol() -> container.Symbol:
+    symb = container.Symbol(id="EnumerationSymbol", viewBox="0 0 25 20")
+    grad_id = "EnumerationSymbol-gradient"
+    symb.add(_make_lgradient(grad_id, stop_colors=("#cfa6a5", "#f1e2e3")))
+    grp = symb.add(container.Group(stroke="#913734"))
+    grp.add(shapes.Rect(insert=(5, 13), size=(15, 3.5), fill="#eedcdd"))
+    grp.add(shapes.Rect(insert=(5, 4), size=(15, 9), fill=f"url(#{grad_id})"))
+    letters = container.Group(
+        transform="scale(0.3,0.3) translate(20, 16)",
+        stroke="#000",
+        stroke_width=1.5,
+    )
+    d1 = (
+        "M 4.25 17.4 L 0 17.6 L 0 15.6 L 3.375 15.475 L 3.375 2.65 "
+        "L 0.25 2.875 L 0.25 1 L 5.625 0 L 5.625 15.475 L 8.5 15.6 "
+        "L 8.5 17.6 L 4.25 17.4 Z"
+    )
+    letters.add(path.Path(d=d1))
+    d2 = (
+        "M 13.375 15.5 L 24.625 15.5 L 24.625 17.5 L 11.125 17.5 "
+        "L 11.125 8.7 L 22.375 7.45 L 22.375 2 L 11.375 2 L 11.375 0 "
+        "L 22.625 0 L 24.625 2 L 24.625 9.125 L 13.375 10.375 L 13.375 15.5 Z"
+    )
+    letters.add(path.Path(d=d2, transform="translate(1, 3)"))
+    d3 = (
+        "M 40.375 15.5 L 38.375 17.5 L 26.875 17.5 L 26.875 15.5 "
+        "L 38.125 15.5 L 38.125 9.5 L 28.375 9.5 L 28.375 7.5 L 37.625 7.5 "
+        "L 37.625 2 L 27.125 2 L 27.125 0 L 37.875 0 L 39.875 2 "
+        "L 39.875 7.275 L 38.45 8.35 L 40.375 9.85 L 40.375 15.5 Z"
+    )
+    letters.add(path.Path(d=d3, transform="translate(3, 6)"))
+    symb.add(letters)
+    return symb
+
+
+@_factory()
+def _enumeration_feature_symbol() -> container.Symbol:
+    symb = container.Symbol(id="EnumerationFeatureSymbol", viewBox="0 0 27 21")
+    grad_id = "EnumerationFeatureSymbol-gradient"
+    symb.add(_make_lgradient(grad_id, stop_colors=("#cfa6a5", "#f1e2e3")))
+    grp = symb.add(container.Group())
+    grp.add(shapes.Rect(insert=(7, 4), fill="#913734", size=(17, 11.5)))
+    grp.add(
+        shapes.Rect(insert=(7, 5), size=(17, 9.5), fill=f"url(#{grad_id})")
+    )
+    letters = container.Group(
+        transform="scale(0.4,0.4) translate(24, 15.5)",
+        stroke="#000",
+        stroke_width=1.5,
+    )
+    d1 = (
+        "M 12.25 17.5 L 0 17.5 L 0 0 L 12 0 L 12 2 L 2.25 2 L 2.25 7.5 "
+        "L 10.75 7.5 L 10.75 9.5 L 2.25 9.5 L 2.25 15.5 L 12.25 15.5 "
+        "L 12.25 17.5 Z"
+    )
+    letters.add(path.Path(d=d1))
+    d2 = (
+        "M 27.25 17.5 L 14.5 17.5 L 14.5 0 L 16.75 0 L 16.75 15.5 "
+        "L 27.25 15.5 Z"
+    )
+    letters.add(path.Path(d=d2, transform="translate(2, 0)"))
+    symb.add(letters)
+    return symb
+
+
+@_factory()
 def _representation_link_symbol() -> container.Symbol:
     symb = container.Symbol(id="RepresentationLinkSymbol", viewBox="0 0 16 16")
     grp = symb.add(container.Group(stroke_width=0.5))

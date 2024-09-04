@@ -388,6 +388,19 @@ def _construct_labels(
             int(layout.attrib.get("height", "0")),
         )
 
+        if melodyobj.tag == "ownedFeatures" and len(melodyobj) == 2:
+            start, end = melodyobj
+            if (start.get("value", "1") != "1") or (
+                end.get("value", "1") != "1"
+            ):
+                if start.tag != "ownedMinCard":
+                    max, min = start.get("value"), end.get("value")
+                else:
+                    min, max = start.get("value"), end.get("value")
+                mult = f"[{min}..{max}] "
+                labeltext = mult + labeltext
+                label_pos -= diagram.Vector2D(helpers.extent_func(mult)[0], 0)
+
         # Rotate the position vector into place
         label_pos = label_pos.rotatedby(travel_direction.angleto((1, 0)))
 
