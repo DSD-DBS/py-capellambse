@@ -5,6 +5,7 @@
 from ... import common as c
 
 
+@c.xtype_handler(None)
 class LiteralBooleanValue(c.GenericElement):
     """A Literal Boolean Value."""
 
