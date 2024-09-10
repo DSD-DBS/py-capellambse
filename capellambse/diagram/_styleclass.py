@@ -106,13 +106,19 @@ def _port_allocation(obj: model.ModelObject) -> str:
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 
 
+def _control_node(obj: model.ModelObject) -> str:
+    assert isinstance(obj, model.fa.ControlNode)
+    if obj.kind is None:
+        return _default(obj)
+    return obj.kind.name.capitalize() + _default(obj)
+
+
 _STYLECLASSES: dict[str, cabc.Callable[..., str]] = {
     "Association": _association,
     "CapellaIncomingRelation": lambda _: "RequirementRelation",
     "CapellaOutgoingRelation": lambda _: "RequirementRelation",
     "Class": lambda o: "Primitive" * o.is_primitive + "Class",
     "ComponentPort": lambda o: f"CP_{o.direction or 'UNSET'}",
-    "ControlNode": lambda o: o.kind.name.capitalize() + _default(o),
     "Entity": lambda o: (
         ("Entity", "OperationalActor")[o.is_actor and o.is_human]
     ),
