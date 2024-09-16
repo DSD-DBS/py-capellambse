@@ -317,10 +317,14 @@ def snap_oblique(
     )
     delta = (points[i] - source).angleto(new_point - source)
     if abs(delta) >= 1:
+        if len(points) >= 3:
+            next_point = points[next_i - i + next_i]
+        else:
+            next_point = source
         new_point = target.vector_snap(
             source,
             style=diagram.RoutingStyle.OBLIQUE,
-            source=points[next_i - i + next_i],
+            source=next_point,
         )
     points[i] = new_point
 
