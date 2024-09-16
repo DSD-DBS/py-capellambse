@@ -555,18 +555,20 @@ class Drawing:
                 labels=floating_labels_,
                 id_=id_,
             )
-        else:
-            gcls = "".join(f" context-{i}" for i in context_)
-            grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
-            grp.add(
-                self.__drawing.use(
-                    href=f"#{class_}Symbol",
-                    insert=pos,
-                    size=size,
-                    class_=class_,
-                    **obj_style._to_dict(),
-                )
+            self.__drawing.add(grp)
+            return
+
+        gcls = "".join(f" context-{i}" for i in context_)
+        grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
+        grp.add(
+            self.__drawing.use(
+                href=f"#{class_}Symbol",
+                insert=pos,
+                size=size,
+                class_=class_,
+                **obj_style._to_dict(),
             )
+        )
 
         self.__drawing.add(grp)
         if floating_labels_:
