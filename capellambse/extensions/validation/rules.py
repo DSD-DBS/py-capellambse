@@ -10,6 +10,11 @@ from . import _validate
 from ._validate import rule, virtual_type
 
 
+@virtual_type(mm.sa.Capability)
+def SystemCapability(_: mm.sa.Capability) -> bool:
+    return True
+
+
 @virtual_type(mm.sa.SystemComponent)
 def SystemActor(cmp: mm.sa.SystemComponent) -> bool:
     return cmp.is_actor
