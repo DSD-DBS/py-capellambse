@@ -317,11 +317,13 @@ def rule(
     action: str,
     types: (
         str
-        | VirtualType[_T]
-        | type[_T]
-        | cabc.Iterable[str | VirtualType[_T] | type[_T]]
+        | VirtualType[m.ModelElement]
+        | type[m.ModelElement]
+        | cabc.Iterable[
+            str | VirtualType[m.ModelElement] | type[m.ModelElement]
+        ]
     ),
-) -> cabc.Callable[[cabc.Callable[[_T], bool]], Rule]:
+) -> cabc.Callable[[cabc.Callable[[m.ModelElement], bool]], Rule]:
     """Create a validation rule.
 
     This decorator registers the validator function as a modelling rule.
@@ -372,7 +374,9 @@ def rule(
             else:
                 type_names.append(i.__name__)
 
-    def rule_decorator(validator: cabc.Callable[[_T], bool], /) -> Rule:
+    def rule_decorator(
+        validator: cabc.Callable[[m.ModelElement], bool], /
+    ) -> Rule:
         rule_ = Rule(
             id,
             name,
