@@ -342,7 +342,7 @@ def _resolve_findby(
                 lambda i: isinstance(i, wanted_types)
             )
     else:
-        candidates = parent._model.search()
+        candidates = parent._model.search(*wanted_types)
 
     if attrs:
         for k, v in attrs.items():
