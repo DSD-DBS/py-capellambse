@@ -20,7 +20,7 @@ inputs:
   capellambse_revision:
     description: "The revision of the py-capellambse package to install"
     required: false
-    default: release-0.5
+    default: ""
   push_model_badge:
     description: "Whether to push the model badge changes or not"
     required: false
@@ -29,10 +29,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v3
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.11
+        python-version: 3.12
     - name: Generate model badge
       shell: bash
       env:
@@ -40,9 +40,15 @@ runs:
         OUTPUT_FILE: ${{ inputs.output_file }}
         CAPELLAMBSE_REVISION: ${{ inputs.capellambse_revision }}
       run: |
-        echo "::group::Install capellambse version $CAPELLAMBSE_REVISION"
-        pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
-        echo "::endgroup::"
+        if [[ -n "$CAPELLAMBSE_REVISION" ]]; then
+          echo "::group::Install capellambse version $CAPELLAMBSE_REVISION"
+          pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
+          echo "::endgroup::"
+        else
+          echo "::group::Install capellambse (latest release)"
+          pip install capellambse
+          echo "::endgroup::"
+        fi
 
         python >"$OUTPUT_FILE" <<EOF
         import os, capellambse
@@ -64,7 +70,7 @@ runs:
         git commit -m "$COMMIT_MSG"
         git push
     - name: Archive model badge in artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: model-complexity-badge
         path: ${{ inputs.output_file }}
