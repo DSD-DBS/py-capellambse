@@ -4,9 +4,15 @@ from __future__ import annotations
 
 import capellambse
 import capellambse.metamodel as mm
+import capellambse.model as m
 
 from . import _validate
 from ._validate import rule, virtual_type
+
+
+@virtual_type(mm.sa.Capability)
+def SystemCapability(_: mm.sa.Capability) -> bool:
+    return True
 
 
 @virtual_type(mm.sa.SystemComponent)
@@ -195,7 +201,7 @@ def has_postcondition(obj):
     ),
 )
 def functional_exchange_allocated_to_component_exchange(
-    obj: mm.fa.FunctionalExchange,
+    obj: m.ModelElement,
 ) -> bool:
     if _find_layer(obj).name == "Physical Architecture":
         return bool(obj.allocating_component_exchange)
@@ -221,7 +227,7 @@ def functional_exchange_allocated_to_component_exchange(
     ),
 )
 def capability_involves_two_activities_from_different_entities(
-    obj: mm.oa.OperationalCapability,
+    obj: m.ModelElement,
 ) -> bool:
     actors = {
         activity.owner.uuid
@@ -248,7 +254,7 @@ def capability_involves_two_activities_from_different_entities(
     ),
 )
 def activity_has_interaction_with_another_activity(
-    obj: mm.oa.OperationalActivity,
+    obj: m.ModelElement,
 ) -> bool:
     return bool(obj.related_exchanges)
 
@@ -273,7 +279,7 @@ def activity_has_interaction_with_another_activity(
     ),
 )
 def capability_involves_actor_and_system_function(
-    obj: mm.sa.Capability,
+    obj: m.ModelElement,
 ) -> bool:
     actor_functions = [
         fnc
@@ -309,7 +315,7 @@ def capability_involves_actor_and_system_function(
         " System"
     ),
 )
-def is_and_should_entity_involvements_match(obj: mm.sa.Capability) -> bool:
+def is_and_should_entity_involvements_match(obj: m.ModelElement) -> bool:
     is_involvements = {x.owner.uuid for x in obj.involved_functions if x.owner}
     should_involvements = {x.uuid for x in obj.involved_components}
     return is_involvements == should_involvements
@@ -326,5 +332,5 @@ def is_and_should_entity_involvements_match(obj: mm.sa.Capability) -> bool:
     ),
     action="consider adding inputs and / or outputs to the Function.",
 )
-def function_has_inputs_and_outputs(obj: mm.sa.SystemFunction) -> bool:
+def function_has_inputs_and_outputs(obj: m.ModelElement) -> bool:
     return len(obj.inputs) > 0 or len(obj.outputs) > 0

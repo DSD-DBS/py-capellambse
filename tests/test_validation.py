@@ -83,7 +83,7 @@ def test_validation_results_filtering(model: m.MelodyModel) -> None:
         types=[mm.la.LogicalComponent],
         **TEST_RULE_PARAMS,
     )
-    def rule_lc(_: mm.la.LogicalComponent) -> bool:
+    def rule_lc(_: m.ModelElement) -> bool:
         return True
 
     @validation.rule(
@@ -92,7 +92,7 @@ def test_validation_results_filtering(model: m.MelodyModel) -> None:
         types=[mm.la.LogicalFunction],
         **TEST_RULE_PARAMS,
     )
-    def rule_lf(_: mm.la.LogicalFunction) -> bool:
+    def rule_lf(_: m.ModelElement) -> bool:
         return True
 
     assert model.search(mm.la.LogicalComponent), "Empty test model?"
