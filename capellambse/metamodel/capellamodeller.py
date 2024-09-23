@@ -41,7 +41,7 @@ class SystemEngineering(m.ModelElement):
                 if isinstance(i, oa.OperationalAnalysis)
             )
         except StopIteration:
-            raise RuntimeError(
+            raise AttributeError(
                 f"OperationalAnalysis not found on {self._short_repr_()}"
             ) from None
 
@@ -54,7 +54,7 @@ class SystemEngineering(m.ModelElement):
                 if isinstance(i, sa.SystemAnalysis)
             )
         except StopIteration:
-            raise RuntimeError(
+            raise AttributeError(
                 f"SystemAnalysis not found on {self._short_repr_()}"
             ) from None
 
@@ -67,7 +67,7 @@ class SystemEngineering(m.ModelElement):
                 if isinstance(i, la.LogicalArchitecture)
             )
         except StopIteration:
-            raise RuntimeError(
+            raise AttributeError(
                 f"LogicalArchitecture not found on {self._short_repr_()}"
             ) from None
 
@@ -80,7 +80,7 @@ class SystemEngineering(m.ModelElement):
                 if isinstance(i, pa.PhysicalArchitecture)
             )
         except StopIteration:
-            raise RuntimeError(
+            raise AttributeError(
                 f"PhysicalArchitecture not found on {self._short_repr_()}"
             ) from None
 

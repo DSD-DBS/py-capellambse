@@ -117,21 +117,25 @@ def virtual_type(
 
 @virtual_type(mm.oa.OperationalActivity)
 def OperationalActivity(obj):
+    assert hasattr(obj._model, "oa"), "Model doesn't have an OA layer?"
     return obj != obj._model.oa.root_activity
 
 
 @virtual_type(mm.sa.SystemFunction)
 def SystemFunction(obj):
+    assert hasattr(obj._model, "sa"), "Model doesn't have an SA layer?"
     return obj != obj._model.sa.root_function
 
 
 @virtual_type(mm.la.LogicalFunction)
 def LogicalFunction(obj):
+    assert hasattr(obj._model, "sa"), "Model doesn't have an LA layer?"
     return obj != obj._model.la.root_function
 
 
 @virtual_type(mm.pa.PhysicalFunction)
 def PhysicalFunction(obj):
+    assert hasattr(obj._model, "sa"), "Model doesn't have a PA layer?"
     return obj != obj._model.pa.root_function
 
 

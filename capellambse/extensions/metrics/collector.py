@@ -67,9 +67,14 @@ def quantify_model_layers(
     """
     objects = []
     diagrams = []
+    model_root = model.project.model_root
     for layer, object_types in OBJECTS_OF_INTEREST.items():
-        layer_obj = getattr(model, layer)
-        layer_objects = len(model.search(*object_types, below=layer_obj))
+        if layer_obj := getattr(model_root, layer, None):
+            layer_objects = len(model.search(*object_types, below=layer_obj))
+            layer_diagrams = len(layer_obj.diagrams)
+        else:
+            layer_objects = 0
+            layer_diagrams = 0
         objects.append(layer_objects)
-        diagrams.append(len(layer_obj.diagrams))
+        diagrams.append(layer_diagrams)
     return objects, diagrams

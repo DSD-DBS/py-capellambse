@@ -155,11 +155,11 @@ class Entity(AbstractEntity):
 
     @property
     def inputs(self) -> m.ElementList[CommunicationMean]:
-        return self._model.oa.all_entity_exchanges.by_target(self)
+        return self._model.search(CommunicationMean).by_target(self)
 
     @property
     def outputs(self) -> m.ElementList[CommunicationMean]:
-        return self._model.oa.all_entity_exchanges.by_source(self)
+        return self._model.search(CommunicationMean).by_source(self)
 
 
 @m.xtype_handler(None)
