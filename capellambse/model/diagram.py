@@ -651,6 +651,29 @@ class Diagram(AbstractDiagram):
         )
 
     @property
+    def semantic_nodes(self) -> _obj.MixedElementList:
+        if self.__nodes is None:
+            self.__nodes = list(
+                aird.iter_visible(self._model._loader, self._element)
+            )
+
+        from capellambse.metamodel import cs, interaction
+
+        elems: list[etree._Element] = []
+        for i in self.__nodes:
+            obj = _obj.ModelElement.from_model(self._model, i)
+            if isinstance(obj, cs.Part):
+                obj = obj.type
+            elif isinstance(obj, interaction.AbstractInvolvement):
+                obj = obj.involved
+            elif isinstance(obj, interaction.StateFragment):
+                obj = obj.function
+
+            if obj is not None:
+                elems.append(obj._element)
+        return _obj.MixedElementList(self._model, elems)
+
+    @property
     def _allow_render(self) -> bool:
         return self._model._fallback_render_aird
 
