@@ -127,8 +127,8 @@ repos:
           - types-setuptools==68.0.0.1
           - types-six==1.16.21.8
           - typing-extensions==4.9.0
-  - repo: https://github.com/Wuestengecko/reuse-tool
-    rev: 7d19244ab46b6a125d1a4dbe4a3ebb9ca767ab1a
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v4.0.3
     hooks:
       - id: reuse
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
