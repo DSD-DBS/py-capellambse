@@ -106,6 +106,21 @@ class ModelElement:
     """
 
     uuid = _pods.StringPOD("id", writable=False)
+    """The universally unique identifier of this object.
+
+    This attribute is automatically populated when the object is
+    instantiated, and cannot be changed afterwards. It is however
+    possible to specify the UUID when instantiating the object, in which
+    case it will be used instead of generating a new one.
+
+    The UUID may be used in hashmaps and the like, as it is guaranteed
+    to not change during the object's lifetime and across model
+    save/reload cycles.
+    """
+
+    sid = _pods.StringPOD("sid")
+    """The unique system identifier of this object."""
+
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name = _pods.StringPOD("name")
     description = _pods.HTMLStringPOD("description")
