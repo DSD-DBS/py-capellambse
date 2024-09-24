@@ -114,6 +114,9 @@ class ModelElement:
     diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target(self)
     )
+    visible_on_diagrams = property(
+        lambda self: self._model.diagrams.by_semantic_nodes(self)
+    )
 
     parent: _descriptors.ParentAccessor
     constraints: _descriptors.Accessor
