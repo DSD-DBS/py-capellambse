@@ -3,6 +3,7 @@
 import capellambse.model as m
 
 
+@m.xtype_handler(None)
 class LiteralBooleanValue(m.ModelElement):
     """A Literal Boolean Value."""
 
