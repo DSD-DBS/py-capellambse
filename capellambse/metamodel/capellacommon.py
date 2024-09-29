@@ -49,6 +49,9 @@ class State(AbstractStateMode):
         m.ModelElement, "exit", aslist=m.MixedElementList
     )
 
+    incoming_transitions = m.Accessor
+    outgoing_transitions = m.Accessor
+
     functions: m.Accessor
 
 
@@ -158,6 +161,40 @@ for cls in [
         "realizing_states",
         m.ReferenceSearchingAccessor(
             cls, "realized_states", aslist=m.ElementList
+        ),
+    )
+
+for cls in [
+    State,
+    Mode,
+    DeepHistoryPseudoState,
+    FinalState,
+    ForkPseudoState,
+    JoinPseudoState,
+    ShallowHistoryPseudoState,
+    TerminatePseudoState,
+]:
+    m.set_accessor(
+        cls,
+        "incoming_transitions",
+        m.ReferenceSearchingAccessor(
+            StateTransition, "destination", aslist=m.ElementList
+        ),
+    )
+for cls in [
+    State,
+    Mode,
+    DeepHistoryPseudoState,
+    ForkPseudoState,
+    InitialPseudoState,
+    JoinPseudoState,
+    ShallowHistoryPseudoState,
+]:
+    m.set_accessor(
+        cls,
+        "outgoing_transitions",
+        m.ReferenceSearchingAccessor(
+            StateTransition, "source", aslist=m.ElementList
         ),
     )
 
