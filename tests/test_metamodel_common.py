@@ -48,3 +48,26 @@ def test_state_attributes(
     functions = getattr(state, attr)
 
     assert functions == expected_functions
+
+
+def test_state_outgoing_transitions(model: capellambse.MelodyModel) -> None:
+    state = model.by_uuid("1d03b3f0-f65b-451a-b9c7-b5df12b7bf4c")
+    expected_outgoing = [model.by_uuid("8f868115-f5fe-412c-b2a2-4adf92806fc6")]
+
+    assert state.outgoing_transitions == expected_outgoing
+
+
+def test_initial_state_outgoing_transitions(
+    model: capellambse.MelodyModel,
+) -> None:
+    initial_state = model.by_uuid("43932114-8ad4-4074-b2a9-b0d55b8d027b")
+    expected_outgoing = [model.by_uuid("4764929e-92b5-4400-a57c-432477275f48")]
+
+    assert initial_state.outgoing_transitions == expected_outgoing
+
+
+def test_state_incoming_transitions(model: capellambse.MelodyModel) -> None:
+    state = model.by_uuid("1d03b3f0-f65b-451a-b9c7-b5df12b7bf4c")
+    expected_incoming = [model.by_uuid("8770f95c-ac4e-4d37-a690-0920aa22d3f9")]
+
+    assert state.incoming_transitions == expected_incoming
