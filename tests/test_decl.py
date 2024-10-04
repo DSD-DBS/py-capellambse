@@ -8,6 +8,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import textwrap
 
 import pytest
 
@@ -15,6 +16,7 @@ import capellambse.metamodel as mm
 import capellambse.model as m
 from capellambse import decl, helpers
 from capellambse.extensions import reqif
+from capellambse.filehandler import git
 
 from .conftest import (  # type: ignore[import-untyped]
     INSTALLED_PACKAGE,
@@ -68,6 +70,37 @@ class TestDumpLoad:
         expected = [{"parent": decl.UUIDReference(uuid)}]
 
         actual = decl.load(io.StringIO(yaml))
+
+        assert actual == expected
+
+    @staticmethod
+    def test_loading_with_metadata():
+        yml = textwrap.dedent(
+            """\
+            written_by:
+              capellambse_version: 1.0.0
+              generator: Example 1.0.0
+            model:
+              version: "12345678"
+              url: https://example.invalid
+              entrypoint: path/to/model.aird
+            ---
+            []
+            """
+        )
+        expected = {
+            "written_by": {
+                "capellambse_version": "1.0.0",
+                "generator": "Example 1.0.0",
+            },
+            "model": {
+                "url": "https://example.invalid",
+                "version": "12345678",
+                "entrypoint": "path/to/model.aird",
+            },
+        }
+
+        actual, _ = decl.load_with_metadata(io.StringIO(yml))
 
         assert actual == expected
 
@@ -830,6 +863,203 @@ class TestApplySync:
             decl.Promise("promise-1"): function,
             decl.Promise("promise-2"): function,
         }
+
+
+class TestStrictMetadata:
+    @staticmethod
+    def test_strict_apply_requires_nonempty_metadata(model: m.MelodyModel):
+        yml = textwrap.dedent(
+            """\
+            {}
+            ---
+            []
+            """
+        )
+
+        with pytest.raises(ValueError, match="No metadata found$"):
+            decl.apply(model, io.StringIO(yml), strict=True)
+
+    @staticmethod
+    def test_capellambse_version_outdated(model: m.MelodyModel, monkeypatch):
+        modelinfo = m.ModelInfo(
+            url="git+https://decl-yaml.invalid/ignored-anyway.git",
+            title="Testmodel",
+            entrypoint=pathlib.PurePosixPath("testmodel.aird"),
+            resources={
+                "\x00": git.GitHandlerInfo(
+                    url="git+https://decl-yaml.invalid/testmodel.git",
+                    branch="master",
+                    revision="Baseline-1.0",
+                    rev_hash="0000000000000000000000000000000000000000",
+                )
+            },
+            capella_version="5.0.0",
+            viewpoints={"org.polarsys.capella.core.viewpoint": "5.0.0"},
+            diagram_cache=None,
+        )
+        monkeypatch.setattr(m.MelodyModel, "info", modelinfo)
+
+        yml = textwrap.dedent(
+            """\
+            written_by:
+              capellambse: '99999.99.99'
+            model:
+              url: 'git+https://decl-yaml.invalid/testmodel.git'
+              revision: '0000000000000000000000000000000000000000'
+              entrypoint: 'testmodel.aird'
+            ---
+            []
+            """
+        )
+
+        with pytest.raises(ValueError, match=r"99999\.99\.99"):
+            decl.apply(model, io.StringIO(yml), strict=True)
+
+    @staticmethod
+    def test_declared_capellambse_version_malformed(
+        model: m.MelodyModel, monkeypatch
+    ):
+        modelinfo = m.ModelInfo(
+            url="git+https://decl-yaml.invalid/ignored-anyway.git",
+            title="Testmodel",
+            entrypoint=pathlib.PurePosixPath("testmodel.aird"),
+            resources={
+                "\x00": git.GitHandlerInfo(
+                    url="git+https://decl-yaml.invalid/testmodel.git",
+                    branch="master",
+                    revision="Baseline-1.0",
+                    rev_hash="0000000000000000000000000000000000000000",
+                )
+            },
+            capella_version="5.0.0",
+            viewpoints={"org.polarsys.capella.core.viewpoint": "5.0.0"},
+            diagram_cache=None,
+        )
+        monkeypatch.setattr(m.MelodyModel, "info", modelinfo)
+
+        yml = textwrap.dedent(
+            """\
+            written_by:
+              capellambse: 'this-is-not-a-pep440-version'
+            model:
+              url: 'git+https://decl-yaml.invalid/testmodel.git'
+              revision: '0000000000000000000000000000000000000000'
+              entrypoint: 'testmodel.aird'
+            ---
+            []
+            """
+        )
+
+        with pytest.raises(ValueError, match="this-is-not-a-pep440-version"):
+            decl.apply(model, io.StringIO(yml), strict=True)
+
+    @staticmethod
+    def test_url_mismatch(model: m.MelodyModel, monkeypatch):
+        modelinfo = m.ModelInfo(
+            url="git+https://decl-yaml.invalid/ignored-anyway.git",
+            title="Testmodel",
+            entrypoint=pathlib.PurePosixPath("testmodel.aird"),
+            resources={
+                "\x00": git.GitHandlerInfo(
+                    url="git+https://decl-yaml.invalid/testmodel.git",
+                    branch="master",
+                    revision="Baseline-1.0",
+                    rev_hash="0000000000000000000000000000000000000000",
+                )
+            },
+            capella_version="5.0.0",
+            viewpoints={"org.polarsys.capella.core.viewpoint": "5.0.0"},
+            diagram_cache=None,
+        )
+        monkeypatch.setattr(m.MelodyModel, "info", modelinfo)
+
+        yml = textwrap.dedent(
+            """\
+            written_by:
+              capellambse: '0.0.1'
+            model:
+              url: 'git+https://decl-yaml.invalid/other.git'
+              revision: '0000000000000000000000000000000000000000'
+              entrypoint: 'testmodel.aird'
+            ---
+            []
+            """
+        )
+
+        with pytest.raises(ValueError, match=r"/other\.git"):
+            decl.apply(model, io.StringIO(yml), strict=True)
+
+    @staticmethod
+    def test_entrypoint_mismatch(model: m.MelodyModel, monkeypatch):
+        modelinfo = m.ModelInfo(
+            url="git+https://decl-yaml.invalid/ignored-anyway.git",
+            title="Testmodel",
+            entrypoint=pathlib.PurePosixPath("testmodel.aird"),
+            resources={
+                "\x00": git.GitHandlerInfo(
+                    url="git+https://decl-yaml.invalid/testmodel.git",
+                    branch="master",
+                    revision="Baseline-1.0",
+                    rev_hash="0000000000000000000000000000000000000000",
+                )
+            },
+            capella_version="5.0.0",
+            viewpoints={"org.polarsys.capella.core.viewpoint": "5.0.0"},
+            diagram_cache=None,
+        )
+        monkeypatch.setattr(m.MelodyModel, "info", modelinfo)
+
+        yml = textwrap.dedent(
+            """\
+            written_by:
+              capellambse: '0.0.1'
+            model:
+              url: git+https://decl-yaml.invalid/testmodel.git
+              revision: '0000000000000000000000000000000000000000'
+              entrypoint: othermodel.aird
+            ---
+            []
+            """
+        )
+
+        with pytest.raises(ValueError, match=r"othermodel\.aird"):
+            decl.apply(model, io.StringIO(yml), strict=True)
+
+    @staticmethod
+    def test_model_revision_doesnt_match(model: m.MelodyModel, monkeypatch):
+        modelinfo = m.ModelInfo(
+            url="git+https://decl-yaml.invalid/ignored-anyway.git",
+            title="Testmodel",
+            entrypoint=pathlib.PurePosixPath("testmodel.aird"),
+            resources={
+                "\x00": git.GitHandlerInfo(
+                    url="git+https://decl-yaml.invalid/testmodel.git",
+                    branch="master",
+                    revision="Baseline-1.0",
+                    rev_hash="0000000000000000000000000000000000000000",
+                )
+            },
+            capella_version="5.0.0",
+            viewpoints={"org.polarsys.capella.core.viewpoint": "5.0.0"},
+            diagram_cache=None,
+        )
+        monkeypatch.setattr(m.MelodyModel, "info", modelinfo)
+
+        yml = textwrap.dedent(
+            """\
+            written_by:
+              capellambse: '0.0.1'
+            model:
+              url: git+https://decl-yaml.invalid/testmodel.git
+              revision: 'ffffffffffffffffffffffffffffffffffffffff'
+              entrypoint: testmodel.aird
+            ---
+            []
+            """
+        )
+
+        with pytest.raises(ValueError, match=40 * "f"):
+            decl.apply(model, io.StringIO(yml), strict=True)
 
 
 @pytest.mark.parametrize("filename", ["coffee-machine.yml"])
