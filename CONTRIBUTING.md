@@ -37,6 +37,39 @@ source .venv/bin/activate.sh  # for Linux / Mac
 .venv\Scripts\activate  # for Windows
 ```
 
+### Updating the metamodel
+
+The modules below [`src/capellambse/metamodel`](src/capellambse/metamodel) are
+mostly generated using the [ecore2py script](scripts/ecore2py.py), however
+there are also some manual adjustments. Those include:
+
+- Something the ecore files don't have the correct metadata on how many
+  elements are actually expected on a property, which means something
+  properties are not marked using `m.Single()` even though they should.
+
+- capellambse's metamodel includes some additional properties that make working
+  with allocations and involvements easier, most of the time by using
+  `m.Allocation()`. These do not appear in the upstream metamodel at all.
+
+As such, the files committed here not 100% equivalent to the script output (and
+probably will never be). That said, the ecore2py script is very useful for
+finding and eliminating gaps in the current metamodel, or for updating the
+metamodel for newer Capella versions.
+
+First, run the script like this:
+
+```sh
+cd .../capellambse
+./scripts/ecore2py.py --namespaces-module ~/capella/core/plugins/**/LogicalArchitecture.ecore - |ruff format - >new-la.py
+vim -d src/capellambse/metamodel/la.py new-la.py # ... or your favorite diff editor
+```
+
+Review the generated code and merge changes in as needed. To figure out what
+the changes in the purely generated part are, you can also run the same script
+with an older ecore file.
+
+### Testing
+
 You can use `uv run <tool>` to avoid having to manually activate the project
 venv. For example, to run the unit tests, use:
 
@@ -44,12 +77,16 @@ venv. For example, to run the unit tests, use:
 uv run pytest
 ```
 
+### Native module
+
 To rebuild the native module after modifying the Rust source code, run the
 following command:
 
 ```bash
 uv sync --reinstall-package capellambse
 ```
+
+### Example notebooks
 
 The example notebooks (see above) are verified during CI, to ensure their
 output is up to date. This means they have to be re-run whenever the expected
