@@ -647,7 +647,7 @@ class DRepresentationDescriptor(AbstractDiagram):
         return _obj.ElementList(self._model, self._node_cache.copy())
 
     @property
-    def semantic_nodes(self) -> _obj.MixedElementList:
+    def semantic_nodes(self) -> _obj.ElementList:
         if not hasattr(self, "_node_cache"):
             self._node_cache = list(
                 aird.iter_visible(self._model._loader, self._element)
@@ -667,7 +667,7 @@ class DRepresentationDescriptor(AbstractDiagram):
 
             if obj is not None:
                 elems.append(obj._element)
-        return _obj.MixedElementList(self._model, elems)
+        return _obj.ElementList(self._model, elems)
 
     @property
     def _allow_render(self) -> bool:

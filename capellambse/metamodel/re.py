@@ -4,10 +4,12 @@ import enum
 
 from . import namespaces as ns
 
-NS = ns.LIBRARIES
+NS = ns.RE
 
 
 @enum.unique
-class AccessPolicy(enum.Enum):
-    READ_ONLY = "readOnly"
-    READ_AND_WRITE = "readAndWrite"
+class CatalogElementKind(enum.Enum):
+    REC = "REC"
+    RPL = "RPL"
+    REC_RPL = "REC_RPL"
+    GROUPING = "GROUPING"

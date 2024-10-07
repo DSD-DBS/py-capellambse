@@ -204,7 +204,7 @@ class EnumerationDataTypeDefinition(ReqIFElement):
 
     _xmltag = "ownedDefinitionTypes"
 
-    values = m.DirectProxyAccessor(
+    values = m.Containment(
         EnumValue, aslist=m.ElementList, single_attr="long_name"
     )
 

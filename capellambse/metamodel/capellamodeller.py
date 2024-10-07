@@ -1,17 +1,50 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
+"""The Capella modeller module."""
+
 from __future__ import annotations
+
+import typing as t
 
 import capellambse.model as m
 
-from . import la
+from . import capellacore
 from . import namespaces as ns
-from . import oa, pa, sa
+
+if t.TYPE_CHECKING:
+    from . import epbs, la, oa, pa, sa
 
 NS = ns.CAPELLAMODELLER
 
 
-class SystemEngineering(m.ModelElement):
+class Project(capellacore.Structure):
+    key_value_pairs = m.Containment["capellacore.KeyValue"](
+        "keyValuePairs", (ns.CAPELLACORE, "KeyValue")
+    )
+    folders = m.Containment["Folder"]("ownedFolders", (NS, "Folder"))
+    model_roots = m.Containment["ModelRoot"](
+        "ownedModelRoots", (NS, "ModelRoot")
+    )
+
+    @property
+    def model_root(self) -> ModelRoot:
+        if self.model_roots:
+            return self.model_roots[0]
+        return self.model_roots.create("SystemEngineering")
+
+
+class Folder(capellacore.Structure):
+    folders = m.Containment["Folder"]("ownedFolders", (NS, "Folder"))
+    model_roots = m.Containment["ModelRoot"](
+        "ownedModelRoots", (NS, "ModelRoot")
+    )
+
+
+class ModelRoot(capellacore.CapellaElement, abstract=True):
+    """A system engineering element or a package of those."""
+
+
+class SystemEngineering(capellacore.AbstractModellingStructure, ModelRoot):
     """A system engineering element.
 
     System engineering is an interdisciplinary approach encompassing the entire
@@ -30,8 +63,6 @@ class SystemEngineering(m.ModelElement):
 
     [source:MIL-STD 499B standard]
     """
-
-    architectures = m.Containment("ownedArchitectures", m.ModelElement)
 
     @property
     def oa(self) -> oa.OperationalAnalysis:
@@ -85,15 +116,26 @@ class SystemEngineering(m.ModelElement):
                 f"PhysicalArchitecture not found on {self._short_repr_()}"
             ) from None
 
-
-class Project(m.ModelElement):
-    model_roots = m.Containment("ownedModelRoots", SystemEngineering)
-
     @property
-    def model_root(self) -> SystemEngineering:
-        if self.model_roots:
-            return self.model_roots[0]
-        return self.model_roots.create()
+    def epbs(self) -> epbs.EPBSArchitecture:
+        try:
+            return next(
+                i
+                for i in self.architectures
+                if isinstance(i, epbs.EPBSArchitecture)
+            )
+        except StopIteration:
+            raise AttributeError(
+                f"EPBSArchitecture not found on {self._short_repr_()}"
+            ) from None
+
+
+class SystemEngineeringPkg(capellacore.Structure, ModelRoot):
+    """A package that contains system engineering elements."""
+
+    system_engineerings = m.Containment["SystemEngineering"](
+        "ownedSystemEngineerings", (NS, "SystemEngineering")
+    )
 
 
 class Library(Project):
