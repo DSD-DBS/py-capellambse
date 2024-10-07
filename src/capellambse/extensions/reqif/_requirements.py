@@ -202,8 +202,8 @@ class EnumValue(ReqIFElement, eq="long_name"):
 class EnumerationDataTypeDefinition(DataTypeDefinition):
     """An enumeration data type definition for requirement types."""
 
-    values = m.DirectProxyAccessor(
-        EnumValue, aslist=m.ElementList, single_attr="long_name"
+    values = m.Containment["EnumValue"](
+        "specifiedValues", (NS, "EnumValue"), single_attr="long_name"
     )
 
 
