@@ -94,9 +94,11 @@ def main(
     imports: set[str] = set()
     classes = collections.deque[ClassDef]()
     enums: list[EnumDef] = []
+    location_path: list[str] = []
 
     if subpackage is not None and subpackage != ".":
         for i in subpackage.split("."):
+            location_path.append(i)
             pkgs = root.xpath(f"./eSubpackages[@name={i!r}]")
             if len(pkgs) > 1:
                 raise SystemExit(
@@ -105,13 +107,15 @@ def main(
                 )
             if len(pkgs) < 1:
                 raise SystemExit(f"Error: Subpackage not found: {subpackage}")
+            (root,) = pkgs
+    location = ".".join(location_path)
 
     for classifier in root.iterchildren("eClassifiers"):
         qtype = qtype_of(classifier)
         if qtype == EEnum:
             enums.append(parse_enum(classifier))
         elif qtype == EClass:
-            cls, new_imports = parse_class(classifier)
+            cls, new_imports = parse_class(location, classifier)
             classes.append(cls)
             imports |= new_imports
 
@@ -132,7 +136,7 @@ def main(
             elif subpackage == ".":
                 isource = ".."
             else:
-                isource = "." * (1 + sum(1 for i in subpackage if i == "."))
+                isource = "." * (1 + subpackage.count("."))
             f.write(f"\nfrom {isource} import {', '.join(sorted(imports))}\n")
 
         f.write(
@@ -145,7 +149,7 @@ def main(
         )
 
         write_enums(f, enums, docstrings)
-        write_classes(f, classes, docstrings, namespaces_module)
+        write_classes(f, location, classes, docstrings, namespaces_module)
 
 
 def write_enums(
@@ -169,6 +173,7 @@ def write_enums(
 
 def write_classes(
     f: t.IO[str],
+    location: str,
     classes: collections.deque[ClassDef],
     docstrings: bool,
     nsmodule: bool,
@@ -185,19 +190,24 @@ def write_classes(
                     (i, c) for i, c in enumerate(classes) if c.name == base
                 )
             except StopIteration:
-                raise ValueError(
-                    f"Reference to undefined base {base}"
-                ) from None
+                if location:
+                    isource = "." * (1 + location.count("."))
+                    f.write(f"\n\nfrom {isource} import {base}")
+                else:
+                    raise ValueError(
+                        f"Reference to undefined base {base}"
+                    ) from None
+                written_classes.add(base)
             else:
                 del classes[index]
                 classes.appendleft(basedef)
                 break
         else:
-            f.write(f"\n\nclass {cls.name}")
-            instance_kwargs = cls.bases + ("abstract=True",) * cls.abstract
-            if instance_kwargs:
-                f.write(f"({', '.join(instance_kwargs)})")
-            f.write(":\n")
+            f.write(f"\n\nclass {cls.name}(")
+            f.write(", ".join(cls.bases) or "m.ModelElement")
+            if cls.abstract:
+                f.write(", abstract=True")
+            f.write("):\n")
             if docstrings and cls.docstring:
                 writedoc(f, cls.docstring, 1)
                 if cls.members:
@@ -289,6 +299,10 @@ class EnumLiteral:
 
 
 def parse_enum(element: etree._Element) -> EnumDef:
+    literal_elems = sorted(
+        element.iterchildren("eLiterals"),
+        key=lambda i: int(i.get("value", "0")),
+    )
     return EnumDef(
         name=element.attrib["name"],
         docstring=find_description(element),
@@ -298,7 +312,7 @@ def parse_enum(element: etree._Element) -> EnumDef:
                 docstring=find_description(lit),
                 value=lit.attrib["name"],
             )
-            for lit in element.iterchildren("eLiterals")
+            for lit in literal_elems
         ),
     )
 
@@ -343,11 +357,13 @@ class AssociationMember(ClassMember):
     single: bool
 
 
-def parse_class(element: etree._Element) -> tuple[ClassDef, set[str]]:
+def parse_class(
+    location: str, element: etree._Element
+) -> tuple[ClassDef, set[str]]:
     imports: set[str] = set()
     bases: list[str] = []
     for base in element.get("eSuperTypes", "").split():
-        name = clspath2dotted(base)
+        name = clspath2dotted(base, start=location)
         if "." in name:
             imports.add(name.split(".", 1)[0])
         bases.append(name)
@@ -355,7 +371,7 @@ def parse_class(element: etree._Element) -> tuple[ClassDef, set[str]]:
     members: list[ClassMember] = []
     clsname = element.attrib["name"]
     for member in element.iterchildren("eStructuralFeatures"):
-        memberdef = parse_class_member(clsname, member)
+        memberdef = parse_class_member(location, clsname, member)
         if memberdef is not None:
             members.append(memberdef)
 
@@ -370,6 +386,7 @@ def parse_class(element: etree._Element) -> tuple[ClassDef, set[str]]:
 
 
 def parse_class_member(
+    location: str,
     clsname: str,
     member: etree._Element,
 ) -> ClassMember | None:
@@ -383,7 +400,9 @@ def parse_class_member(
             )
             return None
 
-        clsname = clspath2dotted(member.attrib["eType"].rsplit(" ", 1)[-1])
+        clsname = clspath2dotted(
+            member.attrib["eType"].rsplit(" ", 1)[-1], start=location
+        )
         single = (
             member.get("upperBound", "0") == "1"
             or member.get("lowerBound", "0") == "1"
@@ -407,7 +426,9 @@ def parse_class_member(
         )
 
     if qtype == EAttribute:
-        attrtype = clspath2dotted(member.attrib["eType"].rsplit(" ", 1)[-1])
+        attrtype = clspath2dotted(
+            member.attrib["eType"].rsplit(" ", 1)[-1], start=location
+        )
         cls = PODMember
         if attrtype == "ecore.EBoolean":
             pod_type = "Bool"
@@ -448,11 +469,14 @@ def camel2snake(name: str) -> str:
     )
 
 
-def clspath2dotted(path: str) -> str:
+def clspath2dotted(path: str, *, start: str) -> str:
     module, _, name = path.rpartition("#//")
     name = name.replace("/", ".")
     if module:
         return f"{fname2modname(module)}.{name}"
+
+    if name.startswith(f"{start}."):
+        name = name.removeprefix(start).lstrip(".")
     return name
 
 

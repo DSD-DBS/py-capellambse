@@ -119,3 +119,9 @@ SA = m.Namespace(
     m.CORE_VIEWPOINT,
     "7.0.0",
 )
+SHARED_MODEL = m.Namespace(
+    "http://www.polarsys.org/capella/core/sharedmodel/{VERSION}",
+    "org.polarsys.capella.core.data.sharedmodel",
+    m.CORE_VIEWPOINT,
+    "7.0.0",
+)

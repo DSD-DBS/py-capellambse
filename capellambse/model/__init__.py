@@ -41,7 +41,7 @@ def set_accessor(
 @deprecated("set_self_references is deprecated, use a 'Containment' instead")
 def set_self_references(*args: tuple[type[ModelObject], str]) -> None:
     for cls, attr in args:
-        setattr(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
+        setattr(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))  # type: ignore[deprecated]
 
 
 @deprecated(
