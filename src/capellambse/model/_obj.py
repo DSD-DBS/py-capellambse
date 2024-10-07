@@ -57,6 +57,9 @@ if sys.version_info >= (3, 13):
 else:
     from typing_extensions import deprecated
 
+if t.TYPE_CHECKING:
+    import capellambse.metamodel as mm
+
 LOGGER = logging.getLogger(__name__)
 CORE_VIEWPOINT = "org.polarsys.capella.core.viewpoint"
 
@@ -509,6 +512,36 @@ class _ModelElementMeta(abc.ABCMeta):
         ns.register(cls, minver=minver, maxver=maxver)
         return cls
 
+    def __subclasscheck__(self, subclass) -> bool:
+        import capellambse.metamodel as mm
+
+        try:
+            replacements = {
+                (
+                    mm.cs.ComponentArchitecture,
+                    mm.oa.OperationalAnalysis,
+                ): mm.cs.BlockArchitecture,
+            }
+        except AttributeError:
+            # The metamodel isn't fully initialized yet
+            return super().__subclasscheck__(subclass)
+
+        for (sup, sub), replacement in replacements.items():
+            if self is not sup or not issubclass(subclass, sub):
+                continue
+            warnings.warn(
+                (
+                    f"{subclass.__name__}"
+                    " will soon no longer be considered a subclass of"
+                    f" {sup.__name__}, use {replacement.__name__}"
+                    " for issubclass/isinstance checks instead"
+                ),
+                UserWarning,
+                stacklevel=2,
+            )
+            return True
+        return super().__subclasscheck__(subclass)
+
 
 class ModelElement(metaclass=_ModelElementMeta):
     """A model element.
@@ -541,10 +574,9 @@ class ModelElement(metaclass=_ModelElementMeta):
     sid = _pods.StringPOD("sid")
     """The unique system identifier of this object."""
 
-    name = _pods.StringPOD("name")
-    description = _pods.HTMLStringPOD("description")
-    summary = _pods.StringPOD("summary")
-    diagrams: _descriptors.Accessor[capellambse.model.diagram.Diagram]
+    diagrams: _descriptors.Accessor[
+        ElementList[capellambse.model.diagram.Diagram]
+    ]
     diagrams = property(  # type: ignore[assignment]
         lambda self: self._model.diagrams.by_target(self)
     )
@@ -553,12 +585,20 @@ class ModelElement(metaclass=_ModelElementMeta):
     )
 
     parent = _descriptors.ParentAccessor()
-    extensions: _descriptors.Accessor[ElementList[t.Any]]
-    constraints: _descriptors.Accessor[ElementList[t.Any]]
-    property_values: _descriptors.Accessor[ElementList[t.Any]]
-    property_value_groups: _descriptors.Accessor[ElementList[t.Any]]
-    applied_property_values: _descriptors.Accessor[ElementList[t.Any]]
-    applied_property_value_groups: _descriptors.Accessor[ElementList[t.Any]]
+    extensions: _descriptors.Containment[ModelElement]
+    constraints: _descriptors.Containment[mm.capellacore.Constraint]
+    property_values: _descriptors.Containment[
+        mm.capellacore.AbstractPropertyValue
+    ]
+    property_value_groups: _descriptors.Containment[
+        mm.capellacore.PropertyValueGroup
+    ]
+    applied_property_values: _descriptors.Association[
+        mm.capellacore.AbstractPropertyValue
+    ]
+    applied_property_value_groups: _descriptors.Association[
+        mm.capellacore.PropertyValueGroup
+    ]
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
@@ -614,7 +654,7 @@ class ModelElement(metaclass=_ModelElementMeta):
         return wrap_xml(model, element, cls)
 
     @property
-    def layer(self) -> capellambse.metamodel.cs.ComponentArchitecture:
+    def layer(self) -> capellambse.metamodel.cs.BlockArchitecture:
         """Find the layer that this element belongs to.
 
         Note that an architectural layer normally does not itself have a
@@ -630,7 +670,7 @@ class ModelElement(metaclass=_ModelElementMeta):
         obj: ModelElement | None = self
         assert obj is not None
         while obj := getattr(obj, "parent", None):
-            if isinstance(obj, mm.cs.ComponentArchitecture):
+            if isinstance(obj, mm.cs.BlockArchitecture):
                 return obj
         raise AttributeError(
             f"No parent layer found for {self._short_repr_()}"
@@ -803,7 +843,9 @@ class ModelElement(metaclass=_ModelElementMeta):
         else:
             mytype = type(self).__name__
 
-        if self.name:
+        namegetter = getattr(type(self), "name", None)
+        # TODO remove check against '.name' when removing deprecated features
+        if namegetter is not None and namegetter is not ModelElement.name:  # type: ignore[attr-defined]
             name = f" {self.name!r}"
         else:
             name = ""
@@ -979,6 +1021,71 @@ class ModelElement(metaclass=_ModelElementMeta):
 
         def __getattr__(self, attr: str) -> t.Any:
             """Account for extension attributes in static type checks."""
+
+    else:
+
+        @property
+        def name(self) -> str:
+            warnings.warn(
+                (
+                    f"{type(self).__name__} cannot have a '.name',"
+                    " please update your code to check if the field exists or"
+                    " if the object subclasses modellingcore.AbstractNamedElement"
+                ),
+                category=FutureWarning,
+                stacklevel=2,
+            )
+            return ""
+
+        @name.setter
+        def name(self, _: str) -> None:
+            raise TypeError(
+                f"{type(self).__name__} cannot have a '.name',"
+                " please update your code to check if the field exists or"
+                " if the object subclasses modellingcore.AbstractNamedElement"
+            )
+
+        @property
+        def description(self) -> markupsafe.Markup:
+            warnings.warn(
+                (
+                    f"{type(self).__name__} cannot have a '.description',"
+                    " please update your code to check if the field exists or"
+                    " if the object subclasses capellacore.CapellaElement"
+                ),
+                category=FutureWarning,
+                stacklevel=2,
+            )
+            return markupsafe.Markup("")
+
+        @description.setter
+        def description(self, _: str) -> None:
+            raise TypeError(
+                f"{type(self).__name__} cannot have a '.description',"
+                " please update your code to check if the field exists or"
+                " if the object subclasses capellacore.CapellaElement"
+            )
+
+        @property
+        def summary(self) -> str:
+            warnings.warn(
+                (
+                    f"{type(self).__name__} cannot have a '.summary',"
+                    " please update your code to check if the field exists or"
+                    " if the object subclasses capellacore.CapellaElement"
+                ),
+                category=FutureWarning,
+                stacklevel=2,
+            )
+            return ""
+
+        @summary.setter
+        def summary(self, _: str) -> None:
+            raise TypeError(
+                f"{type(self).__name__} cannot have a '.summary',"
+                " please update your code to check if the field exists or"
+                " if the object subclasses capellacore.CapellaElement"
+            )
 
 
 class ElementList(cabc.MutableSequence[T], t.Generic[T]):
@@ -2108,7 +2215,8 @@ def wrap_xml(
     """
     try:
         cls = model.resolve_class(element)
-    except (UnknownNamespaceError, MissingClassError):
+    except (UnknownNamespaceError, MissingClassError) as err:
+        LOGGER.warning("Current metamodel is incomplete: %s", err)
         cls = ModelElement
 
     if type is not None:

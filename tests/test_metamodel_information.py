@@ -219,9 +219,12 @@ class TestClassProperty:
         self, model: m.MelodyModel, value_attr: str, expected_val_uuid: str
     ):
         obj = model.by_uuid(TEMP_PROPERTY_UUID)
-        expected_val = model.by_uuid(expected_val_uuid)
-        assert hasattr(obj, value_attr)
-        assert getattr(obj, value_attr) == expected_val
+        assert isinstance(obj, information.Property)
+
+        actual_val = getattr(obj, value_attr)
+        actual_val_uuid = actual_val.uuid
+
+        assert actual_val_uuid == expected_val_uuid
 
     def test_property_has_no_value(self, model: m.MelodyModel):
         obj = model.by_uuid(CLASS_TYPED_PROP_UUID)

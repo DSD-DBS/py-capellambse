@@ -7,35 +7,32 @@ __all__ = ["init"]
 import capellambse.model as m
 from capellambse.metamodel import cs
 
-from . import _capellareq as cr
-from . import _requirements as rq
+from . import capellarequirements as cr
+from . import requirements as rq
 
 
 def init() -> None:
-    rq.Folder.folders = m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList)
+    cr.CapellaModule.requirement_types_folders = m.DirectProxyAccessor(  # TODO
+        cr.CapellaTypesFolder, aslist=m.ElementList
+    )
+
     m.ModelElement.requirements = cr.ElementRelationAccessor()
-    cs.ComponentArchitecture.requirement_modules = m.DirectProxyAccessor(
+    cs.BlockArchitecture.requirement_modules = m.DirectProxyAccessor(
         cr.CapellaModule, aslist=m.ElementList
     )
-    cs.ComponentArchitecture.all_requirements = m.DeepProxyAccessor(
-        rq.Requirement, aslist=m.ElementList, rootelem=cr.CapellaModule
-    )
-    cs.ComponentArchitecture.requirement_types_folders = m.DirectProxyAccessor(
+    cs.BlockArchitecture.requirement_types_folders = m.DirectProxyAccessor(
         cr.CapellaTypesFolder, aslist=m.ElementList
     )
-    cr.CapellaModule.requirement_types_folders = m.DirectProxyAccessor(
-        cr.CapellaTypesFolder, aslist=m.ElementList
+
+    cs.BlockArchitecture.all_requirements = property(
+        lambda self: self._model.search((rq.NS, "Requirement"), below=self)
     )
-    cs.ComponentArchitecture.all_requirement_types = m.DeepProxyAccessor(
-        rq.RequirementType,
-        aslist=m.ElementList,
-        rootelem=cr.CapellaTypesFolder,
+    cs.BlockArchitecture.all_requirement_types = property(
+        lambda self: self._model.search((rq.NS, "RequirementType"), below=self)
     )
-    cs.ComponentArchitecture.all_module_types = m.DeepProxyAccessor(
-        rq.ModuleType, aslist=m.ElementList, rootelem=cr.CapellaTypesFolder
+    cs.BlockArchitecture.all_module_types = property(
+        lambda self: self._model.search((rq.NS, "ModuleType"), below=self)
     )
-    cs.ComponentArchitecture.all_relation_types = m.DeepProxyAccessor(
-        rq.RelationType,
-        aslist=m.ElementList,
-        rootelem=cr.CapellaTypesFolder,
+    cs.BlockArchitecture.all_relation_types = property(
+        lambda self: self._model.search((rq.NS, "RelationType"), below=self)
     )
