@@ -31,7 +31,7 @@ capellacommon.State.functions = m.Backref(
     ),
     "available_in_states",
 )
-m.ModelElement.property_value_packages = m.DirectProxyAccessor(
+m.ModelElement.property_value_pkgs = m.DirectProxyAccessor(
     capellacore.PropertyValuePkg,
     aslist=m.ElementList,
     mapkey="name",

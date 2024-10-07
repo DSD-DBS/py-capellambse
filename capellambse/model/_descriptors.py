@@ -19,6 +19,7 @@ __all__ = [
     "Alias",
     "AlternateAccessor",
     "DeprecatedAccessor",
+    "Filter",
     "IndexAccessor",
     "ParentAccessor",
     "Single",
