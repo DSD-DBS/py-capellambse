@@ -463,7 +463,8 @@ def parse_class_member(
         cls = PODMember
         if attrtype == "ecore.EBoolean":
             pod_type = "Bool"
-            pyname = "is_" + pyname.removeprefix("is_")
+            if pyname != "value":
+                pyname = "is_" + pyname.removeprefix("is_")
         elif attrtype in {"ecore.EString", "ecore.EChar"}:
             pod_type = "String"
         elif attrtype in {
@@ -475,6 +476,8 @@ def parse_class_member(
             pod_type = "Int"
         elif attrtype in {"ecore.EDouble", "ecore.EFloat"}:
             pod_type = "Float"
+        elif attrtype == "ecore.EDate":
+            pod_type = "Datetime"
         else:
             cls = EnumPODMember
             pod_type = attrtype

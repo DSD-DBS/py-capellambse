@@ -278,7 +278,7 @@ class TestRequirementRelations:
         rel = model.by_uuid("078b2c69-4352-4cf9-9ea5-6573b75e5eec")
         source = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         target = model.by_uuid("4bf0356c-89dd-45e9-b8a6-e0332c026d33")
-        assert isinstance(rel, reqif.AbstractRequirementsRelation)
+        assert isinstance(rel, reqif.AbstractRelation)
 
         assert rel.source == source
         assert rel.target == target
@@ -301,7 +301,7 @@ class TestRequirementRelations:
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
         rel_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
 
-        assert len(ge.requirements.by_relation_type(rel_type.name)) == 1
+        assert len(ge.requirements.by_relation_type(rel_type.long_name)) == 1
 
     @pytest.mark.parametrize(
         ("obj_uuid", "target_uuids"),
@@ -330,10 +330,7 @@ class TestRequirementRelations:
         relations = obj.relations
 
         assert isinstance(relations, m.ElementList)
-        assert all(
-            isinstance(i, reqif.AbstractRequirementsRelation)
-            for i in relations
-        )
+        assert all(isinstance(i, reqif.AbstractRelation) for i in relations)
         assert {i.uuid for i in relations} == target_uuids
 
     @pytest.mark.parametrize(
@@ -358,7 +355,7 @@ class TestRequirementRelations:
         model: m.MelodyModel,
         obj_uuid: str,
         target_uuid: str,
-        expected_type: type[reqif.AbstractRequirementsRelation],
+        expected_type: type[reqif.AbstractRelation],
     ):
         source = model.by_uuid(obj_uuid)
         target = model.by_uuid(target_uuid)
@@ -375,7 +372,7 @@ class TestReqIFAccess:
         assert isinstance(mod, reqif.CapellaModule)
 
         assert len(mod.folders) == 1
-        assert len(mod.requirements) == 1
+        assert len(mod.requirements) == 2
         assert mod.type is not None
         assert mod.type.long_name == "ModuleType"
         for attr, expected in {
@@ -392,7 +389,7 @@ class TestReqIFAccess:
         assert isinstance(folder, reqif.Folder)
 
         assert len(folder.folders) == 1
-        assert len(folder.requirements) == 2
+        assert len(folder.requirements) == 3
         assert folder.type is not None
         assert folder.type.long_name == "ReqType"
         for attr, expected in {
@@ -553,7 +550,7 @@ class TestReqIFModification:
         assert attr.definition == definition
         assert attr.value == default_value
         assert attr._element.get("value") is None
-        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
+        assert isinstance(attr, reqif.Attribute)
 
     @pytest.mark.parametrize(
         ("type_hint", "value", "xml"),
@@ -611,7 +608,7 @@ class TestReqIFModification:
         assert len(req.attributes) == 1
         assert req.attributes[0] == attr
         assert attr.definition is None
-        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
+        assert isinstance(attr, reqif.Attribute)
 
     @pytest.mark.parametrize(
         ("type_hint", "expected_type"),
@@ -761,7 +758,7 @@ class TestReqIFModification:
         self, model: m.MelodyModel, uuid: str, value: t.Any
     ):
         attr = model.by_uuid(uuid)
-        assert isinstance(attr, reqif.AbstractRequirementsAttribute)
+        assert isinstance(attr, reqif.Attribute)
 
         with pytest.raises(TypeError):
             attr.value = value
