@@ -37,21 +37,26 @@ def test_model_compatibility(folder: str, aird: str) -> None:
             "a8c42033-fdf2-458f-bae9-1cfd1207c49f",
             [
                 ("1bba6377-90b7-42d6-ad03-6c536e5519fd", "involved", None),
-                ("1bba6377-90b7-42d6-ad03-6c536e5519fd", "target", None),
+                ("2d86d2fe-577f-4dfe-8f6b-b029df3e2056", "source", None),
+                ("3da0cc89-f82f-4b67-9386-453fd06ba7c7", "source", None),
+                ("432e5fce-24cd-4288-9096-6795f985b75d", "source", None),
+                ("523cf480-183f-4527-8d37-20b823a127e0", "source", None),
                 (
                     "53c58b24-3938-4d6a-b84a-bb9bff355a41",
                     "involved_entities",
                     2,
                 ),
                 ("55c6adbe-63a5-4d1f-8319-e2f768b79fbf", "involved", None),
-                ("55c6adbe-63a5-4d1f-8319-e2f768b79fbf", "target", None),
                 ("6638ccd2-61cc-481e-bb23-4c1b147e1dbc", "target", None),
+                ("70e4d2ca-7895-484f-b4f2-a86628fa0262", "source", None),
+                ("7a6657e7-0973-441c-8634-0802c7bfcadd", "source", None),
                 (
                     "83d1334f-6180-46c4-a80d-6839341df688",
                     "involved_entities",
                     0,
                 ),
                 ("9ac82bfc-1aa6-4773-9a99-91f910389668", "type", None),
+                ("dbc6b4b0-82a1-4c28-bb48-073df1437e43", "source", None),
                 ("e37510b9-3166-4f80-a919-dfaac9b696c7", "entities", 3),
             ],
         ),
@@ -59,7 +64,7 @@ def test_model_compatibility(folder: str, aird: str) -> None:
             "91dc2eec-c878-4fdb-91d8-8f4a4527424e",
             [
                 ("88d7f9a7-1fae-4884-8233-7582153cc5a7", "target", None),
-                ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "modes", 0),
+                ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "involved_states", 0),
                 ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "states", 0),
                 ("d0ea4afa-4231-4a3d-b1db-03655738dab8", "source", None),
             ],
@@ -359,6 +364,7 @@ def test_Capability_exchange(
     model_5_2: m.MelodyModel, uuid: str, trg_uuid: str, attr_name: str
 ):
     cap = model_5_2.by_uuid(uuid)
+    assert isinstance(cap, mm.interaction.AbstractCapability)
     expected = model_5_2.by_uuid(trg_uuid)
     exchange_targets = (ex.target for ex in getattr(cap, attr_name))
 
@@ -467,6 +473,10 @@ class TestStateMachines:
 
         assert hasattr(transition, "guard")
         assert transition.guard is not None
+        assert isinstance(
+            transition.guard.specification,
+            mm.information.datavalue.OpaqueExpression,
+        )
         assert transition.guard.specification["LinkedText"] == "Food is cooked"
 
         assert hasattr(transition, "triggers")
@@ -482,6 +492,10 @@ class TestStateMachines:
         assert isinstance(transition, mm.capellacommon.StateTransition)
 
         assert transition.guard is not None
+        assert isinstance(
+            transition.guard.specification,
+            mm.information.datavalue.OpaqueExpression,
+        )
         assert (
             transition.guard.specification["LinkedText"]
             == "Actor feels hungry"
@@ -519,7 +533,9 @@ def test_exchange_items_on_logical_function_exchanges(model: m.MelodyModel):
     exchange = model.la.all_function_exchanges.by_uuid(
         "cdc69c5e-ddd8-4e59-8b99-f510400650aa"
     )
+    assert isinstance(exchange, mm.fa.FunctionalExchange)
     exchange_item = exchange.exchange_items.by_name("ExchangeItem 3")
+    assert isinstance(exchange_item, mm.information.ExchangeItem)
 
     assert exchange_item.type == "SHARED_DATA"
     assert exchange in exchange_item.exchanges
@@ -582,6 +598,9 @@ def test_constraint_specification_has_linked_object_name_in_body(
     expected_linked_text = f'<a href="hlink://{uuid}">Hunted animal</a>'
 
     assert isinstance(con, mm.capellacore.Constraint)
+    assert isinstance(
+        con.specification, mm.information.datavalue.OpaqueExpression
+    )
     assert con.specification["LinkedText"] == expected_linked_text
 
 
@@ -616,6 +635,12 @@ def test_specification_linkedText_to_internal_linkedText_transformation(
     assert isinstance(c1, mm.capellacore.Constraint)
     c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
     assert isinstance(c2, mm.capellacore.Constraint)
+    assert isinstance(
+        c1.specification, mm.information.datavalue.OpaqueExpression
+    )
+    assert isinstance(
+        c2.specification, mm.information.datavalue.OpaqueExpression
+    )
 
     c2.specification["LinkedText"] = c1.specification["LinkedText"]
 
@@ -757,9 +782,8 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
 
     assert link in chain.involvements
     assert ex_item_uuids == expected_uuids
-    assert markupsafe.escape(link.exchange_context.specification).startswith(
-        expected_context
-    )
+    spec = markupsafe.escape(link.exchange_context.specification)
+    assert spec.startswith(expected_context)
     assert link.involved == target
     assert link.name == f"[FunctionalChainInvolvementLink] to {expected_end}"
 
@@ -936,7 +960,6 @@ class TestArchitectureLayers:
                     "all_classes",
                     "all_actors",
                     "all_components",
-                    # TODO: actor_exchanges
                     "all_component_exchanges",
                     "all_function_exchanges",
                     "all_physical_exchanges",
@@ -1118,9 +1141,12 @@ class TestArchitectureLayers:
         self, model: m.MelodyModel
     ) -> None:
         cex = model.by_uuid("a647a577-0dc1-454f-917f-ce1c89089a2f")
+        assert isinstance(cex, mm.fa.ComponentExchange)
         link = model.by_uuid("90517d41-da3e-430c-b0a9-e3badf416509")
+        assert isinstance(link, mm.cs.PhysicalLink)
 
-        assert cex.allocating_physical_link == cex.owner == link
+        assert cex.owner == link
+        assert cex.allocating_physical_link == link
 
     def test_ComponentExchange_has_allocating_PhysicalPath(
         self, model: m.MelodyModel

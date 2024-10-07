@@ -18,8 +18,8 @@ from lxml import builder, etree, html
 
 import capellambse
 
-from . import _capellareq as cr
-from . import _requirements as rq
+from . import capellarequirements as cr
+from . import requirements as rq
 
 NS = "http://www.omg.org/spec/ReqIF/20110401/reqif.xsd"
 SCHEMA = "https://www.omg.org/spec/ReqIF/20110401/reqif.xsd"
@@ -451,9 +451,7 @@ def _build_attribute_values(
             yield _build_attribute_value_simple(attr)
 
 
-def _build_attribute_value_simple(
-    attr: rq.AbstractRequirementsAttribute,
-) -> etree._Element:
+def _build_attribute_value_simple(attr: rq.Attribute) -> etree._Element:
     attrtype = _attrtype2reqif(attr)
     obj = etree.Element(f"ATTRIBUTE-VALUE-{attrtype}")
     value: t.Any
@@ -487,9 +485,7 @@ def _build_attribute_value_simple(
     return obj
 
 
-def _build_attribute_value_enum(
-    attribute: rq.AbstractRequirementsAttribute,
-) -> etree._Element:
+def _build_attribute_value_enum(attribute: rq.Attribute) -> etree._Element:
     obj = etree.Element("ATTRIBUTE-VALUE-ENUMERATION")
 
     obj.append(_ref_attribute_definition("ENUMERATION", attribute.definition))
@@ -610,7 +606,8 @@ def _collect_objects(
         if i.uuid in requirements:
             return
         requirements.add(i.uuid)
-        attr_definitions = req_types.setdefault(i.type and i.type.uuid, set())
+        key = i.type.uuid if i.type else None
+        attr_definitions = req_types.setdefault(key, set())
         for attr in i.attributes:
             adef = _AttributeDefinition(attr.definition, _attrtype2reqif(attr))
             attr_definitions.add(adef)
@@ -627,9 +624,7 @@ def _collect_objects(
     return req_types
 
 
-def _attrtype2reqif(
-    attrtype: rq.AbstractRequirementsAttribute,
-) -> str:
+def _attrtype2reqif(attrtype: rq.Attribute) -> str:
     m = re.fullmatch("([A-Z][A-Za-z]*)ValueAttribute", type(attrtype).__name__)
     assert m
     assert m.group(1)

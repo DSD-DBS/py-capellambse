@@ -115,9 +115,21 @@ PA_DEPLOYMENT = m.Namespace(
     m.CORE_VIEWPOINT,
     "7.0.0",
 )
+RE = m.Namespace(
+    "http://www.polarsys.org/capella/common/re/{VERSION}",
+    "re",
+    m.CORE_VIEWPOINT,
+    "7.0.0",
+)
 SA = m.Namespace(
     "http://www.polarsys.org/capella/core/ctx/{VERSION}",
     "org.polarsys.capella.core.data.ctx",
+    m.CORE_VIEWPOINT,
+    "7.0.0",
+)
+SHARED_MODEL = m.Namespace(
+    "http://www.polarsys.org/capella/core/sharedmodel/{VERSION}",
+    "org.polarsys.capella.core.data.sharedmodel",
     m.CORE_VIEWPOINT,
     "7.0.0",
 )

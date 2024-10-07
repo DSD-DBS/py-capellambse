@@ -684,14 +684,14 @@ class DRepresentationDescriptor(AbstractDiagram):
                 aird.iter_visible(self._model._loader, self._element)
             )
 
-        from capellambse.metamodel import cs, interaction
+        from capellambse.metamodel import capellacore, cs, interaction
 
         elems: list[etree._Element] = []
         for i in self._node_cache:
             obj: _obj.ModelElement | None = _obj.wrap_xml(self._model, i)
             if isinstance(obj, cs.Part):
                 obj = obj.type
-            elif isinstance(obj, interaction.AbstractInvolvement):
+            elif isinstance(obj, capellacore.Involvement):
                 obj = obj.involved
             elif isinstance(obj, interaction.StateFragment):
                 obj = obj.function

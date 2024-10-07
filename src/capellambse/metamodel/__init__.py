@@ -18,22 +18,3 @@ from . import modellingcore as modellingcore
 from . import oa as oa
 from . import pa as pa
 from . import sa as sa
-
-import capellambse.model as m  # isort: skip
-
-capellacommon.State.functions = m.Backref(
-    (
-        oa.OperationalActivity,
-        sa.SystemFunction,
-        la.LogicalFunction,
-        pa.PhysicalFunction,
-    ),
-    "available_in_states",
-)
-m.ModelElement.property_value_packages = m.DirectProxyAccessor(
-    capellacore.PropertyValuePkg,
-    aslist=m.ElementList,
-    mapkey="name",
-)
-
-del m
