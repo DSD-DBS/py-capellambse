@@ -2887,7 +2887,10 @@ class Containment(Relationship[T_co]):
                     f"Invalid class without associated namespace: {cls!r}"
                 )
             if getattr(cls, "__capella_abstract__", True):
-                raise TypeError(f"Cannot instantiate abstract class: {cls!r}")
+                raise TypeError(
+                    f"Cannot instantiate abstract class: {cls!r}"
+                    " (You may need to specify an explicit type hint)"
+                )
             with elmlist._model._loader.new_uuid(
                 elmlist._parent._element, want=attrs.pop("uuid", None)
             ) as uuid:
