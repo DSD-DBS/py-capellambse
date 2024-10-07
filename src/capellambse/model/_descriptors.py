@@ -2479,11 +2479,21 @@ class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
     attr: str
     class_: _obj.ClassName
 
-    def __init__(self, attr: str, class_: _obj.UnresolvedClassName, /) -> None:
+    def __init__(
+        self,
+        attr: str,
+        class_: _obj.UnresolvedClassName,
+        /,
+        *,
+        legacy_by_type: bool = False,
+    ) -> None:
         self.attr = attr
         self.class_ = _obj.resolve_class_name(class_)
         self.list_type = make_coupled_list_type(self)
         self.wrapped: Relationship[T_co] | None = None
+        self.list_extra_args = {
+            "legacy_by_type": legacy_by_type,
+        }
 
     @t.overload
     def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
@@ -2522,6 +2532,7 @@ class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             obj._model,
             filtered_elts,
             parent=obj,
+            **self.list_extra_args,
         )
 
     def __set__(
@@ -2992,7 +3003,10 @@ class Containment(Relationship[T_co]):
                     f"Invalid class without associated namespace: {cls!r}"
                 )
             if getattr(cls, "__capella_abstract__", True):
-                raise TypeError(f"Cannot instantiate abstract class: {cls!r}")
+                raise TypeError(
+                    f"Cannot instantiate abstract class: {cls!r}"
+                    " (You may need to specify an explicit type hint)"
+                )
             with elmlist._model._loader.new_uuid(
                 elmlist._parent._element, want=attrs.pop("uuid", None)
             ) as uuid:
