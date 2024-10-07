@@ -122,8 +122,8 @@ class SelectorRules:
         return tuple(classes)
 
     @property
-    def layers(self) -> tuple[type[mm.cs.ComponentArchitecture], ...]:
-        classes: list[type[mm.cs.ComponentArchitecture]] = []
+    def layers(self) -> tuple[type[mm.cs.BlockArchitecture], ...]:
+        classes: list[type[mm.cs.BlockArchitecture]] = []
         for match in _RULES_RE.finditer(self.raw):
             if match.group("key") != "ARCHITECTURE":
                 continue
@@ -185,7 +185,9 @@ class _PVMTBase:
     uuid = m.StringPOD("id")
     name = m.StringPOD("name")
     parent = m.ParentAccessor()
-    property_values: m.Accessor[m.ElementList[mm.capellacore.PropertyValue]]
+    property_values: m.Accessor[
+        m.ElementList[mm.capellacore.AbstractPropertyValue]
+    ]
 
     def __init__(self, *_args, **_kw) -> None:
         raise TypeError("Use 'model.pvmt' to access PVMT configuration")
@@ -306,7 +308,7 @@ class ManagedDomain(mm.capellacore.PropertyValuePkg):
         mm.capellacore.EnumerationPropertyType,
         aslist=m.ElementList,
     )
-    groups = m.Containment[mm.capellacore.PropertyValueGroup](
+    groups: m.Containment[mm.capellacore.PropertyValueGroup] = m.Containment(  # type: ignore[assignment]
         "ownedPropertyValueGroups",
         mm.capellacore.PropertyValueGroup,
         mapkey="name",
