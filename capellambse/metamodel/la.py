@@ -9,42 +9,40 @@ from __future__ import annotations
 
 from capellambse import model as m
 
-from . import capellacommon, capellacore, cs, fa, interaction, sa
+from . import capellacommon, capellacore, cs, fa, interaction
+from . import namespaces as ns
+from . import sa
+
+NS = ns.LA
 
 
-@m.xtype_handler(None)
 class LogicalFunction(fa.Function):
     """A logical function on the Logical Architecture layer."""
 
     realized_system_functions = m.TypecastAccessor(
         sa.SystemFunction, "realized_functions"
     )
-    owner: m.Accessor[LogicalComponent]
+    owner: m.Single[LogicalComponent]
 
 
-@m.xtype_handler(None)
 class LogicalFunctionPkg(m.ModelElement):
     """A logical function package."""
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.RoleTagAccessor(
-        "ownedLogicalFunctions", LogicalFunction, aslist=m.ElementList
-    )
+    functions = m.Containment("ownedLogicalFunctions", LogicalFunction)
 
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class LogicalComponent(cs.Component):
     """A logical component on the Logical Architecture layer."""
 
     _xmltag = "ownedLogicalComponents"
 
-    allocated_functions = m.LinkAccessor[LogicalFunction](
+    allocated_functions = m.Allocation[LogicalFunction](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
-        aslist=m.ElementList,
         attr="targetElement",
         backattr="sourceElement",
     )
@@ -56,7 +54,6 @@ class LogicalComponent(cs.Component):
     components: m.Accessor
 
 
-@m.xtype_handler(None)
 class LogicalComponentPkg(m.ModelElement):
     """A logical component package."""
 
@@ -73,7 +70,6 @@ class LogicalComponentPkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class CapabilityRealization(m.ModelElement):
     """A capability."""
 
@@ -82,46 +78,41 @@ class CapabilityRealization(m.ModelElement):
     owned_chains = m.DirectProxyAccessor(
         fa.FunctionalChain, aslist=m.ElementList
     )
-    involved_functions = m.LinkAccessor[LogicalFunction](
+    involved_functions = m.Allocation[LogicalFunction](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
         attr="involved",
     )
-    involved_chains = m.LinkAccessor[fa.FunctionalChain](
+    involved_chains = m.Allocation[fa.FunctionalChain](
         "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.FunctionalChainAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
         attr="involved",
     )
-    involved_components = m.LinkAccessor[LogicalComponent](
+    involved_components = m.Allocation[LogicalComponent](
         "ownedCapabilityRealizationInvolvements",
         capellacommon.CapabilityRealizationInvolvement,
-        aslist=m.MixedElementList,
         attr="involved",
     )
-    realized_capabilities = m.LinkAccessor[sa.Capability](
+    realized_capabilities = m.Allocation[sa.Capability](
         "ownedAbstractCapabilityRealizations",
         interaction.AbstractCapabilityRealization,
-        aslist=m.ElementList,
         attr="targetElement",
     )
 
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
+    postcondition = m.Single(
+        m.Association(capellacore.Constraint, "postCondition")
     )
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    precondition = m.Single(
+        m.Association(capellacore.Constraint, "preCondition")
+    )
     scenarios = m.DirectProxyAccessor(
         interaction.Scenario, aslist=m.ElementList
     )
-    states = m.AttrProxyAccessor(
-        capellacommon.State, "availableInStates", aslist=m.ElementList
-    )
+    states = m.Association(capellacommon.State, "availableInStates")
 
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class CapabilityRealizationPkg(m.ModelElement):
     """A capability package that can hold capabilities."""
 
@@ -134,7 +125,6 @@ class CapabilityRealizationPkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class LogicalArchitecture(cs.ComponentArchitecture):
     """Provides access to the LogicalArchitecture layer of the model."""
 
@@ -159,8 +149,10 @@ class LogicalArchitecture(cs.ComponentArchitecture):
     all_capabilities = m.DeepProxyAccessor(
         CapabilityRealization, aslist=m.ElementList
     )
-    all_components = (  # maybe this should exclude .is_actor
-        m.DeepProxyAccessor(LogicalComponent, aslist=m.ElementList)
+    all_components = (
+        m.DeepProxyAccessor(  # maybe this should exclude .is_actor
+            LogicalComponent, aslist=m.ElementList
+        )
     )
     all_actors = property(
         lambda self: self._model.search(LogicalComponent).by_is_actor(True)
@@ -194,50 +186,33 @@ class LogicalArchitecture(cs.ComponentArchitecture):
     )
 
 
-m.set_accessor(
-    sa.Capability,
-    "realizing_capabilities",
-    m.ReferenceSearchingAccessor(
-        CapabilityRealization, "realized_capabilities", aslist=m.ElementList
-    ),
+sa.Capability.realizing_capabilities = m.Backref(
+    CapabilityRealization, "realized_capabilities"
 )
-m.set_accessor(
-    sa.SystemComponent,
-    "realizing_logical_components",
-    m.ReferenceSearchingAccessor(
-        LogicalComponent, "realized_components", aslist=m.ElementList
-    ),
+sa.SystemComponent.realizing_logical_components = m.Backref(
+    LogicalComponent, "realized_components"
 )
-m.set_accessor(
-    sa.SystemFunction,
-    "realizing_logical_functions",
-    m.ReferenceSearchingAccessor(
-        LogicalFunction, "realized_system_functions", aslist=m.ElementList
-    ),
+sa.SystemFunction.realizing_logical_functions = m.Backref(
+    LogicalFunction, "realized_system_functions"
 )
-m.set_accessor(
-    LogicalFunction,
-    "owner",
-    m.ReferenceSearchingAccessor(LogicalComponent, "allocated_functions"),
+LogicalFunction.owner = m.Single(
+    m.Backref(LogicalComponent, "allocated_functions")
 )
-m.set_accessor(
-    LogicalFunction,
-    "packages",
-    m.DirectProxyAccessor(
-        LogicalFunctionPkg,
-        aslist=m.ElementList,
-    ),
+LogicalFunction.packages = m.DirectProxyAccessor(
+    LogicalFunctionPkg, aslist=m.ElementList
 )
-m.set_accessor(
-    LogicalFunction,
-    "involved_in",
-    m.ReferenceSearchingAccessor(
-        CapabilityRealization, "involved_functions", aslist=m.ElementList
-    ),
+LogicalFunction.involved_in = m.Backref(
+    CapabilityRealization, "involved_functions"
 )
-m.set_self_references(
-    (LogicalComponent, "components"),
-    (LogicalComponentPkg, "packages"),
-    (LogicalFunction, "functions"),
-    (LogicalFunctionPkg, "packages"),
+LogicalComponent.components = m.DirectProxyAccessor(
+    LogicalComponent, aslist=m.ElementList
+)
+LogicalComponentPkg.packages = m.DirectProxyAccessor(
+    LogicalComponentPkg, aslist=m.ElementList
+)
+LogicalFunction.functions = m.DirectProxyAccessor(
+    LogicalFunction, aslist=m.ElementList
+)
+LogicalFunctionPkg.packages = m.DirectProxyAccessor(
+    LogicalFunctionPkg, aslist=m.ElementList
 )

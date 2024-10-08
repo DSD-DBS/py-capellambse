@@ -5,6 +5,9 @@
 import capellambse.model as m
 
 from . import capellacore, modellingcore
+from . import namespaces as ns
+
+NS = ns.CAPELLACOMMON
 
 
 class AbstractStateRealization(m.ModelElement): ...
@@ -16,7 +19,6 @@ class TransfoLink(m.ModelElement): ...
 class CapabilityRealizationInvolvement(m.ModelElement): ...
 
 
-@m.xtype_handler(None)
 class Region(m.ModelElement):
     """A region inside a state machine or state/mode."""
 
@@ -35,19 +37,12 @@ class AbstractStateMode(m.ModelElement):
     regions = m.DirectProxyAccessor(Region, aslist=m.ElementList)
 
 
-@m.xtype_handler(None)
 class State(AbstractStateMode):
     """A state."""
 
-    entries = m.AttrProxyAccessor(
-        m.ModelElement, "entry", aslist=m.MixedElementList
-    )
-    do_activity = m.AttrProxyAccessor(
-        m.ModelElement, "doActivity", aslist=m.MixedElementList
-    )
-    exits = m.AttrProxyAccessor(
-        m.ModelElement, "exit", aslist=m.MixedElementList
-    )
+    entries = m.Association(m.ModelElement, "entry")
+    do_activity = m.Association(m.ModelElement, "doActivity")
+    exits = m.Association(m.ModelElement, "exit")
 
     incoming_transitions = m.Accessor
     outgoing_transitions = m.Accessor
@@ -55,47 +50,38 @@ class State(AbstractStateMode):
     functions: m.Accessor
 
 
-@m.xtype_handler(None)
 class Mode(AbstractStateMode):
     """A mode."""
 
 
-@m.xtype_handler(None)
 class DeepHistoryPseudoState(AbstractStateMode):
     """A deep history pseudo state."""
 
 
-@m.xtype_handler(None)
 class FinalState(AbstractStateMode):
     """A final state."""
 
 
-@m.xtype_handler(None)
 class ForkPseudoState(AbstractStateMode):
     """A fork pseudo state."""
 
 
-@m.xtype_handler(None)
 class InitialPseudoState(AbstractStateMode):
     """An initial pseudo state."""
 
 
-@m.xtype_handler(None)
 class JoinPseudoState(AbstractStateMode):
     """A join pseudo state."""
 
 
-@m.xtype_handler(None)
 class ShallowHistoryPseudoState(AbstractStateMode):
     """A shallow history pseudo state."""
 
 
-@m.xtype_handler(None)
 class TerminatePseudoState(AbstractStateMode):
     """A terminate pseudo state."""
 
 
-@m.xtype_handler(None)
 class StateMachine(m.ModelElement):
     """A state machine."""
 
@@ -104,24 +90,19 @@ class StateMachine(m.ModelElement):
     regions = m.DirectProxyAccessor(Region, aslist=m.ElementList)
 
 
-@m.xtype_handler(None)
 class StateTransition(m.ModelElement):
     r"""A transition between :class:`State`\ s or :class:`Mode`\ s."""
 
     _xmltag = "ownedTransitions"
 
-    source = m.AttrProxyAccessor(m.ModelElement, "source")
-    destination = m.AttrProxyAccessor(m.ModelElement, "target")
-    triggers = m.AttrProxyAccessor(
-        m.ModelElement, "triggers", aslist=m.MixedElementList
-    )
-    effects = m.AttrProxyAccessor(
-        m.ModelElement, "effect", aslist=m.MixedElementList
-    )
-    guard = m.AttrProxyAccessor(capellacore.Constraint, "guard")
+    source = m.Single(m.Association(m.ModelElement, "source"))
+    target = m.Single(m.Association(m.ModelElement, "target"))
+    destination = m.DeprecatedAccessor("target")
+    triggers = m.Association(m.ModelElement, "triggers")
+    effects = m.Association(m.ModelElement, "effect")
+    guard = m.Single(m.Association(capellacore.Constraint, "guard"))
 
 
-@m.xtype_handler(None)
 class GenericTrace(modellingcore.TraceableElement):
     """A trace between two elements."""
 
@@ -135,15 +116,10 @@ class GenericTrace(modellingcore.TraceableElement):
         return f"[{type(self).__name__}]{direction}"
 
 
-m.set_accessor(
-    AbstractStateMode,
-    "realized_states",
-    m.LinkAccessor(
-        None,  # FIXME fill in tag
-        AbstractStateRealization,
-        aslist=m.ElementList,
-        attr="targetElement",
-    ),
+AbstractStateMode.realized_states = m.Allocation(
+    None,  # FIXME fill in tag
+    AbstractStateRealization,
+    attr="targetElement",
 )
 for cls in [
     State,
@@ -156,13 +132,7 @@ for cls in [
     ShallowHistoryPseudoState,
     TerminatePseudoState,
 ]:
-    m.set_accessor(
-        cls,
-        "realizing_states",
-        m.ReferenceSearchingAccessor(
-            cls, "realized_states", aslist=m.ElementList
-        ),
-    )
+    cls.realizing_states = m.Backref(cls, "realized_states")
 
 for cls in [
     State,
@@ -174,13 +144,8 @@ for cls in [
     ShallowHistoryPseudoState,
     TerminatePseudoState,
 ]:
-    m.set_accessor(
-        cls,
-        "incoming_transitions",
-        m.ReferenceSearchingAccessor(
-            StateTransition, "destination", aslist=m.ElementList
-        ),
-    )
+    cls.incoming_transitions = m.Backref(StateTransition, "destination")
+
 for cls in [
     State,
     Mode,
@@ -190,29 +155,13 @@ for cls in [
     JoinPseudoState,
     ShallowHistoryPseudoState,
 ]:
-    m.set_accessor(
-        cls,
-        "outgoing_transitions",
-        m.ReferenceSearchingAccessor(
-            StateTransition, "source", aslist=m.ElementList
-        ),
-    )
+    cls.outgoing_transitions = m.Backref(StateTransition, "source")
 
-m.set_accessor(
-    Region,
-    "states",
-    m.RoleTagAccessor(AbstractStateMode._xmltag, aslist=m.ElementList),
+Region.states = m.Containment(AbstractStateMode._xmltag)
+Region.modes = m.DirectProxyAccessor(Mode, aslist=m.ElementList)
+Region.transitions = m.DirectProxyAccessor(
+    StateTransition, aslist=m.ElementList
 )
-m.set_accessor(
-    Region, "modes", m.DirectProxyAccessor(Mode, aslist=m.ElementList)
-)
-m.set_accessor(
-    Region,
-    "transitions",
-    m.DirectProxyAccessor(StateTransition, aslist=m.ElementList),
-)
-m.set_accessor(
-    m.ModelElement,
-    "traces",
-    m.DirectProxyAccessor(GenericTrace, aslist=m.ElementList),
+m.ModelElement.traces = m.DirectProxyAccessor(
+    GenericTrace, aslist=m.ElementList
 )

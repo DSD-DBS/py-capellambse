@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import capellambse.model as m
 
-from . import la, oa, pa, sa
+from . import la
+from . import namespaces as ns
+from . import oa, pa, sa
+
+NS = ns.CAPELLAMODELLER
 
 
-@m.xtype_handler(None)
 class SystemEngineering(m.ModelElement):
     """A system engineering element.
 
@@ -28,9 +31,7 @@ class SystemEngineering(m.ModelElement):
     [source:MIL-STD 499B standard]
     """
 
-    architectures = m.RoleTagAccessor(
-        "ownedArchitectures", m.ModelElement, aslist=m.ElementList
-    )
+    architectures = m.Containment("ownedArchitectures", m.ModelElement)
 
     @property
     def oa(self) -> oa.OperationalAnalysis:
@@ -85,11 +86,8 @@ class SystemEngineering(m.ModelElement):
             ) from None
 
 
-@m.xtype_handler(None)
 class Project(m.ModelElement):
-    model_roots = m.RoleTagAccessor(
-        "ownedModelRoots", SystemEngineering, aslist=m.ElementList
-    )
+    model_roots = m.Containment("ownedModelRoots", SystemEngineering)
 
     @property
     def model_root(self) -> SystemEngineering:
@@ -98,6 +96,5 @@ class Project(m.ModelElement):
         return self.model_roots.create()
 
 
-@m.xtype_handler(None)
 class Library(Project):
     """A project that is primarily intended as a library of components."""

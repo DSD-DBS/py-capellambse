@@ -4,6 +4,18 @@
 from __future__ import annotations
 
 __all__ = [
+    # namespaces and discovery
+    "CORE_VIEWPOINT",
+    "ClassName",
+    "MissingClassError",
+    "Namespace",
+    "UnresolvedClassName",
+    "enumerate_namespaces",
+    "find_namespace",
+    "find_namespace_by_uri",
+    "resolve_class_name",
+    "wrap_xml",
+    # model elements
     "ModelObject",
     "ModelElement",
     "ElementList",
@@ -12,28 +24,45 @@ __all__ = [
     "ElementListMapKeyView",
     "ElementListMapItemsView",
     "ElementListCouplingMixin",
+    # legacy
+    "find_wrapper",
 ]
 
+import abc
+import collections
 import collections.abc as cabc
 import contextlib
+import dataclasses
 import enum
+import functools
+import importlib
+import importlib.metadata as imm
 import inspect
 import logging
 import operator
 import re
+import sys
 import textwrap
 import typing as t
+import warnings
 
+import awesomeversion as av
 import markupsafe
 import typing_extensions as te
 from lxml import etree
 
 import capellambse
-from capellambse import helpers
+from capellambse import helpers, loader
 
-from . import T, U, _descriptors, _pods, _styleclass, _xtype
+from . import T, U, _descriptors, _pods, _styleclass
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 LOGGER = logging.getLogger(__name__)
+CORE_VIEWPOINT = "org.polarsys.capella.core.viewpoint"
 
 
 _NOT_SPECIFIED = object()
@@ -47,6 +76,260 @@ _TERMCELL: tuple[int, int] | None = None
 _ICON_CACHE: dict[tuple[str, str, int], t.Any] = {}
 
 
+UnresolvedClassName: te.TypeAlias = "tuple[str | Namespace, str]"
+"""A tuple of namespace URI and class name."""
+
+ClassName: te.TypeAlias = "tuple[Namespace, str]"
+"""A tuple of Namespace object and class name."""
+
+
+class UnknownNamespaceError(KeyError):
+    """Raised when a requested namespace cannot be found."""
+
+    def __init__(self, name: str, /) -> None:
+        super().__init__(name)
+
+    @property
+    def name(self) -> str:
+        """The name or URI that was searched for."""
+        return self.args[0]
+
+    def __str__(self) -> str:
+        return f"Namespace not found: {self.name}"
+
+
+class MissingClassError(KeyError):
+    """Raised when a requested class is not found."""
+
+    def __init__(
+        self,
+        ns: Namespace | None,
+        nsver: av.AwesomeVersion | str | None,
+        clsname: str,
+    ) -> None:
+        if isinstance(nsver, str):
+            nsver = av.AwesomeVersion(nsver)
+        super().__init__(ns, nsver, clsname)
+
+    @property
+    def ns(self) -> Namespace | None:
+        """The namespace that was searched, or None for all namespaces."""
+        return self.args[0]
+
+    @property
+    def ns_version(self) -> av.AwesomeVersion | None:
+        """The namespace version, if the namespace is versioned."""
+        return self.args[1]
+
+    @property
+    def clsname(self) -> str:
+        """The class name that was searched for."""
+        return self.args[2]
+
+    def __str__(self) -> str:
+        if self.ns and self.ns_version:
+            return (
+                f"No class {self.clsname!r} in v{self.ns_version} of"
+                f" namespace {self.ns.uri!r}"
+            )
+        if self.ns:
+            return f"No class {self.clsname!r} in namespace {self.ns.uri!r}"
+        return f"No class {self.clsname!r} found in any known namespace"
+
+
+@dataclasses.dataclass(init=False, frozen=True)
+class Namespace:
+    """The interface between the model and a namespace containing classes.
+
+    Instances of this class represent the different namespaces used to
+    organize types of Capella model objects. They are also the entry
+    point into the namespace when a loaded model has to interact with
+    it, e.g. for looking up a class to load or create.
+
+    For a more higher-level overview of the interactions, and how to
+    make use of this and related classes, read the documentation on
+    `Extending the metamodel <_model-extensions>`__.
+
+    Parameters
+    ----------
+    uri
+        The URI of the namespace. This is used to identify the
+        namespace in the XML files. It usually looks like a URL, but
+        does not have to be one.
+    alias
+        The preferred alias of the namespace. This is the type name
+        prefix used in an XML file.
+
+        If the preferred alias is not available because another
+        namespace already uses it, a numeric suffix will be appended
+        to the alias to make it unique.
+    maxver
+        The maximum version of the namespace that is supported by this
+        implementation. If a model uses a higher version, it cannot be
+        loaded and an exception will be raised.
+    """
+
+    uri: str
+    alias: str
+    viewpoint: str | None
+    maxver: av.AwesomeVersion | None
+    version_precision: int
+    """Number of significant parts in the version number for namespaces.
+
+    When qualifying a versioned namespace based on the model's activated
+    viewpoint, only use this many components for the namespace URL.
+    Components after that are set to zero.
+
+    Example: A viewpoint version of "1.2.3" with a version precision of
+    2 will result in the namespace version "1.2.0".
+    """
+
+    def __init__(
+        self,
+        uri: str,
+        alias: str,
+        viewpoint: str | None = None,
+        maxver: str | None = None,
+        *,
+        version_precision: int = 1,
+    ) -> None:
+        if version_precision <= 0:
+            raise ValueError("Version precision cannot be negative")
+
+        object.__setattr__(self, "uri", uri)
+        object.__setattr__(self, "alias", alias)
+        object.__setattr__(self, "viewpoint", viewpoint)
+        object.__setattr__(self, "version_precision", version_precision)
+
+        is_versioned = "{VERSION}" in uri
+        if is_versioned and maxver is None:
+            raise TypeError(
+                "Versioned namespaces must declare their supported 'maxver'"
+            )
+        if not is_versioned and maxver is not None:
+            raise TypeError(
+                "Unversioned namespaces cannot declare a supported 'maxver'"
+            )
+
+        if maxver is not None:
+            maxver = av.AwesomeVersion(maxver)
+            object.__setattr__(self, "maxver", maxver)
+        else:
+            object.__setattr__(self, "maxver", None)
+
+        clstuple: te.TypeAlias = """tuple[
+            type[ModelObject],
+            av.AwesomeVersion,
+            av.AwesomeVersion | None,
+        ]"""
+        self._classes: dict[str, list[clstuple]]
+        object.__setattr__(self, "_classes", collections.defaultdict(list))
+
+    def match_uri(self, uri: str) -> bool | av.AwesomeVersion | None:
+        """Match a (potentially versioned) URI against this namespace.
+
+        The return type depends on whether this namespace is versioned.
+
+        Unversioned Namespaces return a simple boolean flag indicating
+        whether the URI exactly matches this Namespace.
+
+        Versioned Namespaces return one of:
+
+        - ``False``, if the URI did not match
+        - ``None``, if the URI did match, but the version field was
+          empty or the literal ``{VERSION}`` placeholder
+        - Otherwise, an :class:~`awesomeversion.AwesomeVersion` object
+          with the version number contained in the URL
+
+        Values other than True and False can then be passed on to
+        :meth:`get_class`, to obtain a class object appropriate for the
+        namespace and version described by the URI.
+        """
+        if "{VERSION}" not in self.uri:
+            return uri == self.uri
+
+        prefix, _, suffix = self.uri.partition("{VERSION}")
+        if (
+            len(uri) >= len(prefix) + len(suffix)
+            and uri.startswith(prefix)
+            and uri.endswith(suffix)
+        ):
+            v = uri[len(prefix) : -len(suffix) or None]
+            if "/" in v:
+                return False
+            if v in ("", "{VERSION}"):
+                return None
+            return self.trim_version(v)
+
+        return False
+
+    def get_class(
+        self, clsname: str, version: str | None = None
+    ) -> type[ModelObject]:
+        if "{VERSION}" in self.uri and not version:
+            raise TypeError(
+                f"Versioned namespace, but no version requested: {self.uri}"
+            )
+
+        classes = self._classes.get(clsname)
+        if not classes:
+            raise MissingClassError(self, version, clsname)
+
+        eligible: list[tuple[av.AwesomeVersion, type[ModelObject]]] = []
+        for cls, minver, maxver in classes:
+            if version and (version < minver or maxver and version > maxver):
+                continue
+            eligible.append((minver, cls))
+
+        if not eligible:
+            raise MissingClassError(self, version, clsname)
+        eligible.sort(key=lambda i: i[0], reverse=True)
+        return eligible[0][1]
+
+    def register(
+        self,
+        cls: type[ModelObject],
+        minver: str | None,
+        maxver: str | None,
+    ) -> None:
+        classes = self._classes[cls.__name__]
+        if minver is not None:
+            minver = av.AwesomeVersion(minver)
+        else:
+            minver = av.AwesomeVersion(0)
+        if maxver is not None:
+            maxver = av.AwesomeVersion(maxver)
+        classes.append((cls, minver, maxver))
+
+    def trim_version(
+        self, version: str | av.AwesomeVersion, /
+    ) -> av.AwesomeVersion:
+        assert self.version_precision > 0
+        pos = dots = 0
+        while pos < len(version) and dots < self.version_precision:
+            try:
+                pos = version.index(".", pos) + 1
+            except ValueError:
+                return av.AwesomeVersion(version)
+            else:
+                dots += 1
+        trimmed = version[:pos] + re.sub(r"[^.]+", "0", version[pos:])
+        return av.AwesomeVersion(trimmed)
+
+    def __contains__(self, clsname: str) -> bool:
+        """Return whether this Namespace has a class with the given name."""
+        return clsname in self._classes
+
+
+NS = Namespace(
+    "http://www.polarsys.org/capella/common/core/{VERSION}",
+    "org.polarsys.capella.common.data.core",
+    CORE_VIEWPOINT,
+    "7.0.0",
+)
+
+
+@t.runtime_checkable
 class ModelObject(t.Protocol):
     """A class that wraps a specific model object.
 
@@ -89,14 +372,136 @@ class ModelObject(t.Protocol):
             (commonly e.g. ``uuid``).
         """
 
-    @classmethod
-    def from_model(
-        cls, model: capellambse.MelodyModel, element: t.Any
-    ) -> ModelObject:
-        """Instantiate a ModelObject from existing model elements."""
+
+class _ModelElementMeta(abc.ABCMeta):
+    __capella_namespace__: Namespace
+
+    def __setattr__(cls, attr, value):
+        super().__setattr__(attr, value)
+        setname = getattr(value, "__set_name__", None)
+        if setname is not None:
+            setname(cls, attr)
+
+    def __new__(
+        mcs,
+        name: str,
+        bases: tuple[type, ...],
+        namespace: dict[str, t.Any],
+        *,
+        ns: Namespace | None = None,
+        minver: str | None = None,
+        maxver: str | None = None,
+        eq: str | None = None,
+        abstract: bool = False,
+    ) -> type[ModelElement]:
+        """Create a new model object class.
+
+        This method automatically registers the class with the
+        namespace, taking care of the ``minver`` and ``maxver``
+        constraints.
+
+        Parameters
+        ----------
+        name
+            The name of the class.
+        bases
+            The base classes of the class.
+        namespace
+            The class' namespace, as defined by Python.
+        ns
+            The metamodel namespace to register the class in. If not
+            specified, the namespace is looked up in the module that
+            defines the class.
+        minver
+            The minimum version of the namespace that this class is
+            compatible with. If not specified, the minimum version is
+            assumed to be 0.
+        maxver
+            The maximum version of the namespace that this class is
+            compatible with. If not specified, there is no maximum
+            version.
+        eq
+            When comparing instances of this class with non-model
+            classes, this attribute is used to determine equality. If
+            not specified, the standard Python equality rules apply.
+        abstract
+            Mark the class as abstract. Only subclasses of abstract
+            classes can be instantiated, not the abstract class itself.
+        """
+        del abstract  # FIXME prohibit instantiation of abstract classes
+
+        if "__capella_namespace__" in namespace:
+            raise TypeError(
+                f"Cannot create class {name!r}:"
+                " Invalid declaration of __capella_namespace__ in class body"
+            )
+
+        if (
+            "_xmltag" in namespace
+            and ns is not NS
+            and name != "ModelElement"
+            and namespace["_xmltag"] is not None
+        ):
+            warnings.warn(
+                (
+                    "The _xmltag declaration in the class body is deprecated,"
+                    " define a Containment on the containing class instead"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        if eq is not None:
+            if "__eq__" in namespace:
+                raise TypeError(
+                    f"Cannot generate __eq__ for {name!r}:"
+                    f" method already defined in class body"
+                )
+
+            def __eq__(self, other):
+                if not isinstance(other, ModelElement):
+                    value = getattr(self, eq)  # type: ignore[arg-type]
+                    return value.__eq__(other)
+                return super(cls, self).__eq__(other)  # type: ignore[misc]
+
+            namespace["__eq__"] = __eq__
+
+        if ns is None:
+            modname: str = namespace["__module__"]
+            cls_mod = importlib.import_module(modname)
+            auto_ns = getattr(cls_mod, "NS", None)
+            if not isinstance(auto_ns, Namespace):
+                raise TypeError(
+                    f"Cannot create class {name!r}: No namespace\n"
+                    "\n"
+                    f"No Namespace found at {modname}.NS,\n"
+                    "and no `ns` passed explicitly while subclassing.\n"
+                    "\n"
+                    "Declare a module-wide namespace with:\n"
+                    "\n"
+                    "    from capellambse import ModelElement, Namespace\n"
+                    "    NS = Namespace(...)\n"
+                    f"    class {name}(ModelElement): ...\n"
+                    "\n"
+                    "Or specify it explicitly for each class:\n"
+                    "\n"
+                    "    from capellambse import ModelElement, Namespace\n"
+                    "    MY_NS = Namespace(...)\n"
+                    f"    class {name}(ModelElement, ns=MY_NS): ...\n"
+                )
+            ns = auto_ns
+
+        assert isinstance(ns, Namespace)
+        namespace["__capella_namespace__"] = ns
+        cls = t.cast(
+            "type[ModelElement]",
+            super().__new__(mcs, name, bases, namespace),
+        )
+        ns.register(cls, minver=minver, maxver=maxver)
+        return cls
 
 
-class ModelElement:
+class ModelElement(metaclass=_ModelElementMeta):
     """A model element.
 
     This is the common base class for all elements of a model. In terms
@@ -133,9 +538,10 @@ class ModelElement:
         lambda self: self._model.diagrams.by_semantic_nodes(self)
     )
 
-    parent: _descriptors.ParentAccessor
+    parent = _descriptors.ParentAccessor()
     constraints: _descriptors.Accessor
     property_value_packages: _descriptors.Accessor
+    property_values: _descriptors.Accessor
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
@@ -167,12 +573,13 @@ class ModelElement:
         if uuid is None:
             return "NOT_SET"
 
-        return self.from_model(self._model, self._model._loader[uuid]).name
+        return wrap_xml(self._model, self._model._loader[uuid]).name
 
     @classmethod
+    @deprecated("ModelElement.from_model is deprecated, use wrap_xml instead")
     def from_model(
         cls, model: capellambse.MelodyModel, element: etree._Element
-    ) -> te.Self:
+    ) -> ModelObject:
         """Wrap an existing model object.
 
         Parameters
@@ -188,18 +595,7 @@ class ModelElement:
             An instance of ModelElement (or a more appropriate subclass,
             if any) that wraps the given XML element.
         """
-        class_ = cls
-        if class_ is ModelElement:
-            xtype = helpers.xtype_of(element)
-            if xtype is not None:
-                with contextlib.suppress(KeyError):
-                    class_ = _xtype.XTYPE_HANDLERS[None][xtype]
-            if class_ is not cls:
-                return class_.from_model(model, element)
-        self = class_.__new__(class_)
-        self._model = model
-        self._element = element
-        return self
+        return wrap_xml(model, element)
 
     @property
     def layer(self) -> capellambse.metamodel.cs.ComponentArchitecture:
@@ -232,6 +628,7 @@ class ModelElement:
         /,
         *,
         uuid: str,
+        xtype: str | None = None,
         **kw: t.Any,
     ) -> None:
         all_required_attrs: set[str] = set()
@@ -239,7 +636,7 @@ class ModelElement:
             all_required_attrs |= getattr(
                 basecls, "_required_attrs", frozenset()
             )
-        missing_attrs = all_required_attrs - frozenset(kw) - {"uuid"}
+        missing_attrs = all_required_attrs - frozenset(kw) - {"uuid", "xtype"}
         if missing_attrs:
             mattrs = ", ".join(sorted(missing_attrs))
             raise TypeError(f"Missing required keyword arguments: {mattrs}")
@@ -251,23 +648,35 @@ class ModelElement:
             raise TypeError(
                 f"Cannot instantiate {type(self).__name__} directly"
             )
+
+        fragment_name = model._loader.find_fragment(parent)
+        fragment = model._loader.trees[fragment_name]
+
         self._model = model
         self._element: etree._Element = etree.Element(xmltag)
         parent.append(self._element)
         try:
             self.uuid = uuid
+            if xtype is not None:
+                warnings.warn(
+                    "Passing 'xtype' during ModelElement construction is deprecated and no longer needed",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+            ns = self.__capella_namespace__
+            qtype = model.qualify_classname((ns, type(self).__name__))
+            assert qtype.namespace is not None
+            fragment.add_namespace(qtype.namespace, ns.alias)
+            self._element.set(helpers.ATT_XT, qtype)
             for key, val in kw.items():
-                if key == "xtype":
-                    self._element.set(helpers.ATT_XT, val)
-                elif not isinstance(
+                if not isinstance(
                     getattr(type(self), key),
                     _descriptors.Accessor | _pods.BasePOD,
                 ):
                     raise TypeError(
                         f"Cannot set {key!r} on {type(self).__name__}"
                     )
-                else:
-                    setattr(self, key, val)
+                setattr(self, key, val)
             self._model._loader.idcache_index(self._element)
         except BaseException:
             parent.remove(self._element)
@@ -316,10 +725,9 @@ class ModelElement:
                 continue
 
             acc = getattr(type(self), attr, None)
-            if isinstance(acc, _descriptors.ReferenceSearchingAccessor):
-                classes = ", ".join(i.__name__ for i in acc.target_classes)
+            if isinstance(acc, _descriptors.Backref):
                 attrs.append(
-                    f".{attr} = ... # backreference to {classes}"
+                    f".{attr} = ... # backreference to {acc.class_[1]}"
                     " - omitted: can be slow to compute"
                 )
                 continue
@@ -406,12 +814,11 @@ class ModelElement:
                 continue
 
             acc = getattr(type(self), attr, None)
-            if isinstance(acc, _descriptors.ReferenceSearchingAccessor):
-                classes = ", ".join(i.__name__ for i in acc.target_classes)
+            if isinstance(acc, _descriptors.Backref):
                 fragments.append('<tr><th style="text-align: right;">')
                 fragments.append(escape(attr))
                 fragments.append('</th><td style="text-align: left;"><em>')
-                fragments.append(f"Backreference to {escape(classes)}")
+                fragments.append(f"Backreference to {escape(acc.class_[1])}")
                 fragments.append(" - omitted: can be slow to compute.")
                 fragments.append(" Display this property directly to show.")
                 fragments.append("</em></td></tr>")
@@ -653,10 +1060,16 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         if isinstance(idx, str):
             obj = self._map_find(idx)
             return self._map_getvalue(obj)
-        return self._elemclass.from_model(self._model, self._elements[idx])
+
+        if self._elemclass is not ModelElement:
+            obj = self._elemclass.__new__(self._elemclass)
+            obj._model = self._model  # type: ignore[misc]
+            obj._element = self._elements[idx]  # type: ignore[misc]
+            return obj
+        return wrap_xml(self._model, self._elements[idx])
 
     @t.overload
-    def __setitem__(self, index: int, value: T) -> None: ...
+    def __setitem__(self, index: int, value: t.Any) -> None: ...
     @t.overload
     def __setitem__(self, index: slice, value: cabc.Iterable[T]) -> None: ...
     @t.overload
@@ -830,7 +1243,9 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         except KeyError:
             return default
 
-    def insert(self, index: int, value: T) -> None:
+    def insert(self, index: int, value: t.Any) -> None:
+        if not isinstance(value, ModelObject):
+            raise TypeError("Cannot create elements: List is not coupled")
         elm: etree._Element = value._element
         self._elements.insert(index, elm)
 
@@ -932,7 +1347,12 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
         if len(classes) == 1:
             return ElementList(self._model, newelems, classes.pop())
-        return MixedElementList(self._model, newelems)
+        return ElementList(self._model, newelems)
+
+    if t.TYPE_CHECKING:
+
+        def append(self, value: t.Any) -> None: ...
+        def extend(self, values: cabc.Iterable[t.Any]) -> None: ...
 
 
 class _ListFilter(t.Generic[T]):
@@ -987,6 +1407,9 @@ class _ListFilter(t.Generic[T]):
         return values
 
     def ismatch(self, element: T, valueset: cabc.Iterable[t.Any]) -> bool:
+        if self._attr == "type" and type(element).__name__ in valueset:
+            return self._positive
+
         try:
             value = self.extract_key(element)
         except AttributeError:
@@ -1130,6 +1553,7 @@ class CachedElementList(ElementList[T], t.Generic[T]):
         return newlist
 
 
+@deprecated("MixedElementList is deprecated, use base ElementList instead")
 class MixedElementList(ElementList[ModelElement]):
     """ElementList that handles proxies using ``XTYPE_HANDLERS``."""
 
@@ -1220,7 +1644,7 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
     modifications to the Accessor.
     """
 
-    _accessor: _descriptors.WritableAccessor[T]
+    _accessor: _descriptors.WritableAccessor[T] | _descriptors.Relationship[T]
 
     def is_coupled(self) -> bool:
         return True
@@ -1247,7 +1671,9 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
     def __setitem__(self, index: int | slice | str, value: t.Any) -> None:
         assert self._parent is not None
         accessor = type(self)._accessor
-        assert isinstance(accessor, _descriptors.WritableAccessor)
+        assert isinstance(
+            accessor, _descriptors.WritableAccessor | _descriptors.Relationship
+        )
 
         if not isinstance(index, int | slice):
             super().__setitem__(index, value)
@@ -1269,7 +1695,9 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         accessor = type(self)._accessor
-        assert isinstance(accessor, _descriptors.WritableAccessor)
+        assert isinstance(
+            accessor, _descriptors.WritableAccessor | _descriptors.Relationship
+        )
         if not isinstance(index, slice):
             index = slice(index, index + 1 or None)
         for obj in self[index]:
@@ -1311,15 +1739,27 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         acc = type(self)._accessor
-        assert isinstance(acc, _descriptors.WritableAccessor)
-        newobj = acc.create(self, typehint, **kw)
-        try:
-            acc.insert(self, len(self), newobj)
-            super().insert(len(self), newobj)
-        except:
-            self._parent._element.remove(newobj._element)
-            raise
-        return newobj
+        if isinstance(acc, _descriptors.WritableAccessor):
+            newobj = acc.create(self, typehint, **kw)
+            try:
+                acc.insert(self, len(self), newobj)
+                super().insert(len(self), newobj)
+            except:
+                self._parent._element.remove(newobj._element)
+                raise
+            return newobj
+
+        if isinstance(acc, _descriptors.Relationship):
+            newobj = _descriptors.NewObject(typehint or "", **kw)
+            value = acc.insert(self, len(self), newobj)
+            try:
+                super().insert(len(self), value)
+            except:
+                self._parent._element.remove(value._element)
+                raise
+            return value
+
+        raise AssertionError("Parent Accessor is not a Relationship?")
 
     def create_singleattr(self, arg: t.Any) -> T:
         """Make a new model object (instance of ModelElement).
@@ -1339,22 +1779,243 @@ class ElementListCouplingMixin(ElementList[T], t.Generic[T]):
 
         assert self._parent is not None
         acc = type(self)._accessor
-        assert isinstance(acc, _descriptors.WritableAccessor)
-        newobj = acc.create_singleattr(self, arg)
-        try:
-            acc.insert(self, len(self), newobj)
-            super().insert(len(self), newobj)
-        except:
-            self._parent._element.remove(newobj._element)
-            raise
-        return newobj
+        if isinstance(acc, _descriptors.WritableAccessor):
+            newobj = acc.create_singleattr(self, arg)
+            try:
+                acc.insert(self, len(self), newobj)
+                super().insert(len(self), newobj)
+            except:
+                self._parent._element.remove(newobj._element)
+                raise
+            return newobj
 
-    def insert(self, index: int, value: T) -> None:
+        if isinstance(acc, _descriptors.Relationship):
+            if acc.single_attr is None:
+                raise TypeError("Cannot create object from a single string")
+            return self.create(**{acc.single_attr: arg})
+
+        raise AssertionError("Parent Accessor is not a Relationship?")
+
+    def insert(self, index: int, value: T | _descriptors.NewObject) -> None:
         if self.fixed_length and len(self) >= self.fixed_length:
             raise TypeError("Cannot insert into a fixed-length list")
 
         assert self._parent is not None
         acc = type(self)._accessor
-        assert isinstance(acc, _descriptors.WritableAccessor)
-        acc.insert(self, index, value)
+
+        if isinstance(acc, _descriptors.WritableAccessor):
+            if isinstance(value, _descriptors.NewObject):
+                value = acc.create(self, value._type_hint, **value._kw)
+            acc.insert(self, index, value)
+
+        elif isinstance(acc, _descriptors.Relationship):
+            value = acc.insert(self, index, value)
+
+        else:
+            raise AssertionError(
+                f"Unsupported parent accessor type: {type(acc).__name__!r}"
+            )
+
         super().insert(index, value)
+
+
+@functools.cache
+def enumerate_namespaces() -> tuple[Namespace, ...]:
+    has_base_metamodel = False
+    namespaces: list[Namespace] = []
+    for i in imm.entry_points(group="capellambse.namespaces"):
+        if i.value.startswith("capellambse.metamodel."):
+            has_base_metamodel = True
+
+        nsobj = i.load()
+        if not isinstance(nsobj, Namespace):
+            raise TypeError(
+                "Found non-Namespace object at entrypoint"
+                f" {i.name!r} in group {i.group!r}: {nsobj!r}"
+            )
+        namespaces.append(nsobj)
+
+    if not has_base_metamodel:
+        raise RuntimeError(
+            "Did not find the base metamodel in enumerate_namespaces()!"
+            " Check that capellambse is installed properly."
+        )
+    assert len(namespaces) > 1
+    return tuple(namespaces)
+
+
+@functools.lru_cache(maxsize=128)
+def find_namespace(name: str, /) -> Namespace:
+    try:
+        return next(i for i in enumerate_namespaces() if i.alias == name)
+    except StopIteration:
+        raise UnknownNamespaceError(name) from None
+
+
+@functools.lru_cache(maxsize=128)
+def find_namespace_by_uri(
+    uri: str, /
+) -> tuple[Namespace, av.AwesomeVersion | None]:
+    """Find a namespace by its URL.
+
+    If the namespace is versioned, the second element of the returned
+    tuple is the version indicated in the URL. For unversioned
+    namespaces, the second element is always None.
+    """
+    for i in enumerate_namespaces():
+        result = i.match_uri(uri)
+        if result is False:
+            continue
+        if result is True:
+            return (i, None)
+        return (i, result)
+    raise UnknownNamespaceError(uri)
+
+
+@functools.lru_cache(maxsize=128)
+def resolve_class_name(uclsname: UnresolvedClassName, /) -> ClassName:
+    """Resolve an unresolved classname to a resolved ClassName tuple.
+
+    Note that this method does not check whether the requested class
+    name actually exists in the resolved namespace. This helps to avoid
+    problems with circular dependencies between metamodel modules, where
+    the first point of use is initialized before the class gets
+    registered in the namespace.
+
+    However, if the namespace part of the UnresolvedClassName input is
+    the empty string, the class must already be registered in its
+    namespace, as there would be no way to find the correct namespace
+    otherwise.
+    """
+    ns, clsname = uclsname
+
+    if isinstance(ns, Namespace):
+        return (ns, clsname)
+
+    if isinstance(ns, str) and ns:
+        try:
+            ns_obj = next(
+                i
+                for i in enumerate_namespaces()
+                if i.alias == ns or i.match_uri(ns)
+            )
+        except StopIteration:
+            raise ValueError(f"Namespace not found: {ns}") from None
+        else:
+            return (ns_obj, clsname)
+
+    if not ns:
+        classes: list[ClassName] = []
+        for ns_obj in enumerate_namespaces():
+            if ns and ns_obj.alias != ns and not ns_obj.match_uri(ns):
+                continue
+            if clsname in ns_obj:
+                classes.append((ns_obj, clsname))
+        if len(classes) < 1:
+            raise ValueError(f"Class not found: {uclsname!r}")
+        if len(classes) > 1:
+            if not ns:
+                raise ValueError(
+                    f"Multiple classes {clsname!r} found, specify namespace"
+                )
+            raise RuntimeError(
+                f"Multiple classes {clsname!r} found in namespace {ns}"
+            )
+        return classes[0]
+
+    raise TypeError(f"Malformed class name: {uclsname!r}")
+
+
+@t.overload
+def wrap_xml(
+    model: capellambse.MelodyModel, element: etree._Element, /
+) -> t.Any: ...
+@t.overload
+def wrap_xml(
+    model: capellambse.MelodyModel, element: etree._Element, /, type: type[T]
+) -> T: ...
+def wrap_xml(
+    model: capellambse.MelodyModel,
+    element: etree._Element,
+    /,
+    type: type[T] | None = None,
+) -> T | t.Any:
+    """Wrap an XML element with the appropriate high-level proxy class.
+
+    The proxy class to use will be automatically determined based on the
+    type declaration in the XML. If the ``type`` argument is specified,
+    it must be a superclass of the declared class, otherwise an
+    exception is raised. This may be used to benefit static type
+    checkers.
+    """
+    typehint = loader.qtype_of(element)
+    if typehint is None:
+        raise ValueError(f"Element is not a proper model element: {element!r}")
+
+    try:
+        cls = model.resolve_class(typehint)
+    except (UnknownNamespaceError, MissingClassError) as err:
+        LOGGER.warning("Current metamodel is incomplete: %s", err)
+        cls = ModelElement
+    if type is not None and not issubclass(cls, type):
+        raise RuntimeError(
+            f"Class mismatch: requested {type!r}, but found {cls!r} in XML"
+        )
+    obj = cls.__new__(cls)
+    obj._model = model  # type: ignore[misc]
+    obj._element = element  # type: ignore[misc]
+    return obj
+
+
+@deprecated(
+    "find_wrapper is deprecated,"
+    " use resolve_class_name or MelodyModel.resolve_class instead"
+)
+@functools.cache
+def find_wrapper(typehint: str) -> tuple[type[ModelObject], ...]:
+    """Find the possible wrapper classes for the hinted type.
+
+    The typehint is either a single class name, or a namespace prefix
+    and class name separated by ``:``. This function searches for all
+    known wrapper classes that match the given namespace prefix (if any)
+    and which have the given name, and returns them as a tuple. If no
+    matching wrapper classes are found, an empty tuple is returned.
+    """
+    namespaces: list[tuple[Namespace, av.AwesomeVersion | None]]
+    if typehint.startswith("{"):
+        qname = etree.QName(typehint)
+        assert qname.namespace is not None
+        clsname = qname.localname
+        namespaces = []
+        for i in enumerate_namespaces():
+            v = i.match_uri(qname.namespace)
+            if v is True:
+                namespaces.append((i, None))
+            elif v:
+                namespaces.append((i, v))
+        if not namespaces:
+            raise ValueError(
+                f"Unknown namespace: {qname.namespace!r}."
+                " Check that relevant extensions are installed properly."
+            )
+
+    elif ":" in typehint:
+        nsname, clsname = typehint.rsplit(":", 1)
+        namespaces = [
+            (i, i.maxver) for i in enumerate_namespaces() if i.alias == nsname
+        ]
+        if not namespaces:
+            raise ValueError(
+                f"Unknown namespace alias: {nsname!r}."
+                " Check that relevant extensions are installed properly."
+            )
+
+    else:
+        namespaces = [(i, i.maxver) for i in enumerate_namespaces()]
+        clsname = typehint
+
+    candidates: list[type[ModelObject]] = []
+    for ns, nsver in namespaces:
+        with contextlib.suppress(MissingClassError):
+            candidates.append(ns.get_class(clsname, nsver))
+    return tuple(candidates)

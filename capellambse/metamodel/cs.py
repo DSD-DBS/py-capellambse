@@ -14,27 +14,27 @@ Composite Structure object-relations map (ontology):
 import capellambse.model as m
 
 from . import capellacommon, fa, information
+from . import namespaces as ns
+
+NS = ns.CS
 
 
-@m.xtype_handler(None)
 class Part(m.ModelElement):
     """A representation of a physical component."""
 
     _xmltag = "ownedParts"
 
-    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
+    type = m.Single(m.Association(m.ModelElement, "abstractType"))
 
     deployed_parts: m.Accessor
 
 
-@m.xtype_handler(None)
 class ExchangeItemAllocation(m.ModelElement):
     """An allocation of an ExchangeItem to an Interface."""
 
-    item = m.AttrProxyAccessor(information.ExchangeItem, "allocatedItem")
+    item = m.Single(m.Association(information.ExchangeItem, "allocatedItem"))
 
 
-@m.xtype_handler(None)
 class Interface(m.ModelElement):
     """An interface."""
 
@@ -43,7 +43,6 @@ class Interface(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class InterfacePkg(m.ModelElement):
     """A package that can hold interfaces and exchange items."""
 
@@ -55,27 +54,24 @@ class InterfacePkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class PhysicalPort(m.ModelElement):
     """A physical port."""
 
     _xmltag = "ownedFeatures"
 
-    owner = m.ParentAccessor(m.ModelElement)
+    owner = m.ParentAccessor()
     links: m.Accessor
 
 
-@m.xtype_handler(None)
 class PhysicalLink(PhysicalPort):
     """A physical link."""
 
     ends = m.PhysicalLinkEndsAccessor(
         PhysicalPort, "linkEnds", aslist=m.ElementList
     )
-    exchanges = m.LinkAccessor[fa.ComponentExchange](
+    exchanges = m.Allocation[fa.ComponentExchange](
         "ownedComponentExchangeAllocations",
         fa.ComponentExchangeAllocation,
-        aslist=m.ElementList,
         attr="targetElement",
         backattr="sourceElement",
     )
@@ -86,22 +82,19 @@ class PhysicalLink(PhysicalPort):
     target = m.IndexAccessor[PhysicalPort]("ends", 1)
 
 
-@m.xtype_handler(None)
 class PhysicalPath(m.ModelElement):
     """A physical path."""
 
     _xmltag = "ownedPhysicalPath"
 
-    involved_items = m.LinkAccessor[m.ModelElement](
+    involved_items = m.Allocation[m.ModelElement](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement",
-        aslist=m.MixedElementList,
         attr="involved",
     )
-    exchanges = m.LinkAccessor[fa.ComponentExchange](
+    exchanges = m.Allocation[fa.ComponentExchange](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
-        aslist=m.ElementList,
         attr="targetElement",
     )
 
@@ -120,38 +113,33 @@ class Component(m.ModelElement):
     is_actor = m.BoolPOD("actor")
     """Boolean flag for an actor Component."""
 
-    owner = m.ParentAccessor(m.ModelElement)
+    owner = m.ParentAccessor()
     state_machines = m.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=m.ElementList
     )
     ports = m.DirectProxyAccessor(fa.ComponentPort, aslist=m.ElementList)
     physical_ports = m.DirectProxyAccessor(PhysicalPort, aslist=m.ElementList)
-    parts = m.ReferenceSearchingAccessor(Part, "type", aslist=m.ElementList)
+    parts = m.Backref(Part, "type")
     physical_paths = m.DirectProxyAccessor(PhysicalPath, aslist=m.ElementList)
     physical_links = m.DirectProxyAccessor(PhysicalLink, aslist=m.ElementList)
     exchanges = m.DirectProxyAccessor(
         fa.ComponentExchange, aslist=m.ElementList
     )
 
-    related_exchanges = m.ReferenceSearchingAccessor(
+    related_exchanges = m.Backref(
         fa.ComponentExchange,
         "source.owner",
         "target.owner",
-        aslist=m.ElementList,
     )
 
-    realized_components = m.LinkAccessor["Component"](
+    realized_components = m.Allocation["Component"](
         "ownedComponentRealizations",
         "org.polarsys.capella.core.data.cs:ComponentRealization",
-        aslist=m.ElementList,
         attr="targetElement",
     )
-    realizing_components = m.ReferenceSearchingAccessor["Component"](
-        (), "realized_components", aslist=m.ElementList
-    )
+    realizing_components = m.Backref["Component"]((), "realized_components")
 
 
-@m.xtype_handler(None)
 class ComponentRealization(m.ModelElement):
     """A realization that links to a component."""
 
@@ -178,43 +166,20 @@ class ComponentArchitecture(m.ModelElement):
     all_interfaces = m.DeepProxyAccessor(Interface, aslist=m.ElementList)
 
 
-m.set_accessor(
-    InterfacePkg,
-    "packages",
-    m.DirectProxyAccessor(InterfacePkg, aslist=m.ElementList),
+InterfacePkg.packages = m.DirectProxyAccessor(
+    InterfacePkg, aslist=m.ElementList
 )
-m.set_accessor(
-    Part,
-    "deployed_parts",
-    m.LinkAccessor(
-        "ownedDeploymentLinks",
-        "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink",
-        aslist=m.ElementList,
-        attr="deployedElement",
-        backattr="location",
-    ),
+Part.deployed_parts = m.Allocation(
+    "ownedDeploymentLinks",
+    "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink",
+    attr="deployedElement",
+    backattr="location",
 )
-m.set_accessor(
-    PhysicalPort,
-    "links",
-    m.ReferenceSearchingAccessor(PhysicalLink, "ends", aslist=m.ElementList),
+PhysicalPort.links = m.Backref(PhysicalLink, "ends")
+PhysicalLink.physical_paths = m.Backref(PhysicalPath, "involved_items")
+fa.ComponentExchange.allocating_physical_link = m.Single(
+    m.Backref(PhysicalLink, "exchanges")
 )
-m.set_accessor(
-    PhysicalLink,
-    "physical_paths",
-    m.ReferenceSearchingAccessor(
-        PhysicalPath, "involved_items", aslist=m.ElementList
-    ),
-)
-m.set_accessor(
-    fa.ComponentExchange,
-    "allocating_physical_link",
-    m.ReferenceSearchingAccessor(PhysicalLink, "exchanges"),
-)
-m.set_accessor(
-    fa.ComponentExchange,
-    "allocating_physical_paths",
-    m.ReferenceSearchingAccessor(
-        PhysicalPath, "exchanges", aslist=m.ElementList
-    ),
+fa.ComponentExchange.allocating_physical_paths = m.Backref(
+    PhysicalPath, "exchanges"
 )

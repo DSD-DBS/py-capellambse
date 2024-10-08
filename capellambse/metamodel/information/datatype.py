@@ -5,7 +5,10 @@ from __future__ import annotations
 import capellambse.model as m
 
 from .. import modeltypes
+from .. import namespaces as ns
 from . import datavalue
+
+NS = ns.INFORMATION_DATATYPE
 
 
 class DataType(m.ModelElement):
@@ -22,21 +25,19 @@ class DataType(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class BooleanType(DataType):
     literals = m.DirectProxyAccessor(
         datavalue.LiteralBooleanValue,
         aslist=m.ElementList,
         fixed_length=2,
     )
-    default = m.RoleTagAccessor("ownedDefaultValue")
+    default = m.Single(m.Containment("ownedDefaultValue"))
 
 
-@m.xtype_handler(None)
 class Enumeration(DataType):
     """An Enumeration."""
 
-    domain_type = m.AttrProxyAccessor(m.ModelElement, "domainType")
+    domain_type = m.Single(m.Association(m.ModelElement, "domainType"))
     owned_literals = m.DirectProxyAccessor(
         datavalue.EnumerationLiteral, aslist=m.ElementList
     )
@@ -54,23 +55,20 @@ class Enumeration(DataType):
         )
 
 
-@m.xtype_handler(None)
 class StringType(DataType):
-    default_value = m.RoleTagAccessor("ownedDefaultValue")
-    null_value = m.RoleTagAccessor("ownedNullValue")
-    min_length = m.RoleTagAccessor("ownedMinLength")
-    max_length = m.RoleTagAccessor("ownedMaxLength")
+    default_value = m.Single(m.Containment("ownedDefaultValue"))
+    null_value = m.Single(m.Containment("ownedNullValue"))
+    min_length = m.Single(m.Containment("ownedMinLength"))
+    max_length = m.Single(m.Containment("ownedMaxLength"))
 
 
-@m.xtype_handler(None)
 class NumericType(DataType):
     kind = m.EnumPOD("kind", modeltypes.NumericTypeKind, default="INTEGER")
-    default_value = m.RoleTagAccessor("ownedDefaultValue")
-    null_value = m.RoleTagAccessor("ownedNullValue")
-    min_value = m.RoleTagAccessor("ownedMinValue")
-    max_value = m.RoleTagAccessor("ownedMaxValue")
+    default_value = m.Single(m.Containment("ownedDefaultValue"))
+    null_value = m.Single(m.Containment("ownedNullValue"))
+    min_value = m.Single(m.Containment("ownedMinValue"))
+    max_value = m.Single(m.Containment("ownedMaxValue"))
 
 
-@m.xtype_handler(None)
 class PhysicalQuantity(NumericType):
-    unit = m.RoleTagAccessor("ownedUnit")
+    unit = m.Single(m.Containment("ownedUnit"))
