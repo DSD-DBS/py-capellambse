@@ -1,0 +1,830 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="3. Data Types and Data Values" href="03%20Data%20Values.html" /><link rel="prev" title="1. Introduction" href="01%20Introduction.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>2. Introduction to Physical Architecture API - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Introduction-to-Physical-Architecture-API">
+<h1><span class="section-number">2. </span>Introduction to Physical Architecture API<a class="headerlink" href="#Introduction-to-Physical-Architecture-API" title="Link to this heading">¶</a></h1>
+<p><strong>Note</strong>: In this notebook we will use <code class="docutils literal notranslate"><span class="pre">pandas</span></code> dataframes library to construct and visualize tables, <strong>if you don’t have pandas installed</strong> in the current environment you may want to do so by running the cell below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">pip</span> install pandas
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Requirement already satisfied: pandas in /home/dahbar/projects/py-capellambse/.venv/lib/python3.11/site-packages (2.1.1)
+Requirement already satisfied: numpy&gt;=1.23.2 in /home/dahbar/projects/py-capellambse/.venv/lib/python3.11/site-packages (from pandas) (1.26.0)
+Requirement already satisfied: python-dateutil&gt;=2.8.2 in /home/dahbar/projects/py-capellambse/.venv/lib/python3.11/site-packages (from pandas) (2.8.2)
+Requirement already satisfied: pytz&gt;=2020.1 in /home/dahbar/projects/py-capellambse/.venv/lib/python3.11/site-packages (from pandas) (2023.3.post1)
+Requirement already satisfied: tzdata&gt;=2022.1 in /home/dahbar/projects/py-capellambse/.venv/lib/python3.11/site-packages (from pandas) (2023.3)
+Requirement already satisfied: six&gt;=1.5 in /home/dahbar/projects/py-capellambse/.venv/lib/python3.11/site-packages (from python-dateutil&gt;=2.8.2-&gt;pandas) (1.16.0)
+Note: you may need to restart the kernel to use updated packages.
+</pre></div></div>
+</div>
+<p>The cell below loads our test model so we could play with it and silences warnings.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">import</span> <span class="nn">capellambse</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+<span class="n">path_to_model</span> <span class="o">=</span> <span class="s2">&quot;../../../tests/data/melodymodel/5_0/Melody Model Test.aird&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span><span class="n">path_to_model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>but before we jump into code, lets have a look first at Capella metamodel concerning the Physical Architecture layer (PA).</p>
+<p>Things in PA are very similar to what we see in SysML when it comes to <code class="docutils literal notranslate"><span class="pre">ibd</span></code>s (Internal Block Diagrams) - the boxes we see on those are <code class="docutils literal notranslate"><span class="pre">Part</span></code>s that are instanciated from <code class="docutils literal notranslate"><span class="pre">Block</span></code> objects. Same happens in Capella - the boxes we see on <code class="docutils literal notranslate"><span class="pre">PAB</span></code> diagrams are <code class="docutils literal notranslate"><span class="pre">Parts</span></code> that were instanciated from <code class="docutils literal notranslate"><span class="pre">PhysicalComponent</span></code>s. Here also comes the very special difference of Capella - unless you explicitly enable <strong>part re-use</strong>, <code class="docutils literal notranslate"><span class="pre">PhysicalComponent</span></code> will always have only one <code class="docutils literal notranslate"><span class="pre">Part</span></code>. This is
+the default behavior of Capella.</p>
+<p>Our API should support both cases but at the moment we don’t use models with <strong>part re-use</strong> enabled in production yet and so don’t test the library against this case. Yet we do implement Parts and support many parts - one component relationship model.</p>
+<p>One more issue to mention - rendering PA diagrams outside of Capella was never a high priority so the resulting representations of PABs rendered without Capella are not very accurate at the moment. We hope to improve it soon though. If you still do want to see how it looks like when we render it right now - uncomment the <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">diagram</span></code> in the cell below</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diagram</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">diagrams</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;[PAB] A sample vehicle arch&quot;</span><span class="p">)</span>
+<span class="n">diagram</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IlBoeXNpY2FsQXJjaGl0ZWN0dXJlQmxhbmsiIGhlaWdodD0iODEwIiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOiBnZW9tZXRyaWNQcmVjaXNpb247IGZvbnQtZmFtaWx5OiAnU2Vnb2UgVUknOyBmb250LXNpemU6IDhwdDsgY3Vyc29yOiBwb2ludGVyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIxNjUgMTUgNzM3IDgxMCIgd2lkdGg9IjczNyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpldj0iaHR0cDovL3d3dy53My5vcmcvMjAwMS94bWwtZXZlbnRzIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PGRlZnM+PHN5bWJvbCBpZD0iUGh5c2ljYWxOb2RlQ29tcG9uZW50U3ltYm9sIiBzdHlsZT0ic3Ryb2tlOiAjMDAwOyBzdHJva2Utd2lkdGg6IDI7IiB2aWV3Qm94PSIwIDAgNzkgNzkiPjxwYXRoIGQ9Ik0xOCAyMzdoNDZ2NDNIMTh6IiBzdHlsZT0iZmlsbDogI2ZmZmYwMCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjQ3aDExdjhIMTJ6IiBzdHlsZT0iZmlsbDogI2ZmZmYwMCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjYxaDExdjhIMTJ6IiBzdHlsZT0iZmlsbDogI2ZmZmYwMCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48ZyB0cmFuc2Zvcm09InNjYWxlKDAuNywwLjcpIHRyYW5zbGF0ZSgxNSwgMTgpIj48cGF0aCBkPSJtIDU3LjU4OTI5OSwzMy4yNzYxOTQgYyAwLDEuNDEwNDczIC0wLjI0OTMyNiwyLjcyMTIyIC0wLjc0Nzk3OSwzLjkzMjI0IC0wLjQ4NDQwNywxLjE5Njc2IC0xLjE2ODI3NSwyLjIzNjgwNyAtMi4wNTE2MDMsMy4xMjAxNCAtMS4wOTcwMzgsMS4wOTcwMzMgLTIuMzkzNTM4LDEuOTIzMzczIC0zLjg4OTQ5OSwyLjQ3OTAyIC0xLjQ5NTk1OSwwLjU0MTM5MyAtMy4zODM3MTgsMC44MTIwOSAtNS42NjMyNzcsMC44MTIwOSBoIC00LjIzMTQyOSB2IDExLjg2MDgzIGggLTQuMjMxNDMgdiAtMzEuODIxMjIgaCA4LjYzMzgyNiBjIDEuOTA5MTI5LDAgMy41MjYxOTEsMC4xNjM4NDMgNC44NTExODUsMC40OTE1MyAxLjMyNDk5MywwLjMxMzQ0IDIuNTAwMzkxLDAuODEyMDk3IDMuNTI2MTkyLDEuNDk1OTcgMS4yMTEwMTYsMC44MTIwODcgMi4xNDQyMSwxLjgyMzY0IDIuNzk5NTgzLDMuMDM0NjYgMC42Njk2MjEsMS4yMTEwMTMgMS4wMDQ0MzEsMi43NDI1OTMgMS4wMDQ0MzEsNC41OTQ3NCB6IG0gLTQuNDAyMzk2LDAuMTA2ODcgYyAwLC0xLjA5NzA0IC0wLjE5MjMzOSwtMi4wNTE2MDcgLTAuNTc3MDE2LC0yLjg2MzcgLTAuMzg0Njc1LC0wLjgxMjA5MyAtMC45Njg4MTEsLTEuNDc0NTkgLTEuNzUyNDA4LC0xLjk4NzQ5IC0wLjY4Mzg2OCwtMC40NDE2NjcgLTEuNDY3NDY3LC0wLjc1NTEwNyAtMi4zNTA3OTgsLTAuOTQwMzIgLTAuODY5MDc5LC0wLjE5OTQ2IC0xLjk3MzI0LC0wLjI5OTE5IC0zLjMxMjQ4MywtMC4yOTkxOSBoIC00LjE4ODY4NiB2IDEyLjcxNTY2IGggMy41Njg5MzEgYyAxLjcwOTY2OSwwIDMuMDk4Nzc2LC0wLjE0OTU5MyA0LjE2NzMyMSwtMC40NDg3OCAxLjA2ODU0MywtMC4zMTM0NCAxLjkzNzYyMywtMC44MDQ5NyAyLjYwNzI0MiwtMS40NzQ1OSAwLjY2OTYyMSwtMC42ODM4NjcgMS4xMzk3ODEsLTEuNDAzMzUzIDEuNDEwNDc4LC0yLjE1ODQ2IDAuMjg0OTQ2LC0wLjc1NTEgMC40Mjc0MTksLTEuNjAyODEgMC40Mjc0MTksLTIuNTQzMTMgeiIgc3R5bGU9IndoaXRlLXNwYWNlOiBwcmU7aW5saW5lLXNpemU6IDE1LjQ0OTQ7c3Ryb2tlLXdpZHRoOiAwLjE7IiAvPjwvZz48L3N5bWJvbD48bGluZWFyR3JhZGllbnQgaWQ9IkN1c3RvbUdyYWRpZW50X0ZGRkZEQ19GRkZDQjciIHgxPSIwIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0ZGRkZEQyIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRkZGQ0I3IiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48c3ltYm9sIGlkPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50U3ltYm9sIiBzdHlsZT0ic3Ryb2tlOiAjMDAwOyBzdHJva2Utd2lkdGg6IDI7IiB2aWV3Qm94PSIwIDAgNzkgNzkiPjxwYXRoIGQ9Ik0xOCAyMzdoNDZ2NDNIMTh6IiBzdHlsZT0iZmlsbDogI2E1YmRlNyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjQ3aDExdjhIMTJ6IiBzdHlsZT0iZmlsbDogI2E1YmRlNyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjYxaDExdjhIMTJ6IiBzdHlsZT0iZmlsbDogI2E1YmRlNyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48ZyB0cmFuc2Zvcm09InNjYWxlKDAuNywwLjcpIHRyYW5zbGF0ZSgxNSwgMTgpIj48cGF0aCBkPSJtIDU3LjU4OTI5OSwzMy4yNzYxOTQgYyAwLDEuNDEwNDczIC0wLjI0OTMyNiwyLjcyMTIyIC0wLjc0Nzk3OSwzLjkzMjI0IC0wLjQ4NDQwNywxLjE5Njc2IC0xLjE2ODI3NSwyLjIzNjgwNyAtMi4wNTE2MDMsMy4xMjAxNCAtMS4wOTcwMzgsMS4wOTcwMzMgLTIuMzkzNTM4LDEuOTIzMzczIC0zLjg4OTQ5OSwyLjQ3OTAyIC0xLjQ5NTk1OSwwLjU0MTM5MyAtMy4zODM3MTgsMC44MTIwOSAtNS42NjMyNzcsMC44MTIwOSBoIC00LjIzMTQyOSB2IDExLjg2MDgzIGggLTQuMjMxNDMgdiAtMzEuODIxMjIgaCA4LjYzMzgyNiBjIDEuOTA5MTI5LDAgMy41MjYxOTEsMC4xNjM4NDMgNC44NTExODUsMC40OTE1MyAxLjMyNDk5MywwLjMxMzQ0IDIuNTAwMzkxLDAuODEyMDk3IDMuNTI2MTkyLDEuNDk1OTcgMS4yMTEwMTYsMC44MTIwODcgMi4xNDQyMSwxLjgyMzY0IDIuNzk5NTgzLDMuMDM0NjYgMC42Njk2MjEsMS4yMTEwMTMgMS4wMDQ0MzEsMi43NDI1OTMgMS4wMDQ0MzEsNC41OTQ3NCB6IG0gLTQuNDAyMzk2LDAuMTA2ODcgYyAwLC0xLjA5NzA0IC0wLjE5MjMzOSwtMi4wNTE2MDcgLTAuNTc3MDE2LC0yLjg2MzcgLTAuMzg0Njc1LC0wLjgxMjA5MyAtMC45Njg4MTEsLTEuNDc0NTkgLTEuNzUyNDA4LC0xLjk4NzQ5IC0wLjY4Mzg2OCwtMC40NDE2NjcgLTEuNDY3NDY3LC0wLjc1NTEwNyAtMi4zNTA3OTgsLTAuOTQwMzIgLTAuODY5MDc5LC0wLjE5OTQ2IC0xLjk3MzI0LC0wLjI5OTE5IC0zLjMxMjQ4MywtMC4yOTkxOSBoIC00LjE4ODY4NiB2IDEyLjcxNTY2IGggMy41Njg5MzEgYyAxLjcwOTY2OSwwIDMuMDk4Nzc2LC0wLjE0OTU5MyA0LjE2NzMyMSwtMC40NDg3OCAxLjA2ODU0MywtMC4zMTM0NCAxLjkzNzYyMywtMC44MDQ5NyAyLjYwNzI0MiwtMS40NzQ1OSAwLjY2OTYyMSwtMC42ODM4NjcgMS4xMzk3ODEsLTEuNDAzMzUzIDEuNDEwNDc4LC0yLjE1ODQ2IDAuMjg0OTQ2LC0wLjc1NTEgMC40Mjc0MTksLTEuNjAyODEgMC40Mjc0MTksLTIuNTQzMTMgeiIgc3R5bGU9IndoaXRlLXNwYWNlOiBwcmU7aW5saW5lLXNpemU6IDE1LjQ0OTQ7c3Ryb2tlLXdpZHRoOiAwLjE7IiAvPjwvZz48L3N5bWJvbD48bGluZWFyR3JhZGllbnQgaWQ9IkN1c3RvbUdyYWRpZW50X0MzRTZGRl85NkIxREEiIHgxPSIwIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0MzRTZGRiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjOTZCMURBIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48c3ltYm9sIGlkPSJFcnJvclN5bWJvbCIgdmlld0JveD0iMCAwIDIuNjQ1OCAyLjY0NTgiPjxwYXRoIGQ9Ik0gMCwwIDIuNjQ1ODMzMywyLjY0NTgzMzMgTSAwLDIuNjQ1ODMzMyAyLjY0NTgzMzMsMCIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogcmVkOyBzdHJva2Utd2lkdGg6IDAuNTsiIC8+PC9zeW1ib2w+PHN5bWJvbCBpZD0iQ29tcG9uZW50UG9ydFN5bWJvbCIgdmlld0JveD0iMCAwIDEwIDEwIj48cGF0aCBkPSJNMCAwaDEwdjEwSDB6IiAvPjxwYXRoIGQ9Ik0gMiwyIDUsNyA4LDIiIC8+PC9zeW1ib2w+PHN5bWJvbCBpZD0iRXJyb3JTeW1ib2wiIHZpZXdCb3g9IjAgMCAyLjY0NTggMi42NDU4Ij48cGF0aCBkPSJNIDAsMCAyLjY0NTgzMzMsMi42NDU4MzMzIE0gMCwyLjY0NTgzMzMgMi42NDU4MzMzLDAiIHN0eWxlPSJmaWxsOiBub25lOyBzdHJva2U6IHJlZDsgc3Ryb2tlLXdpZHRoOiAwLjU7IiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IkVycm9yU3ltYm9sIiB2aWV3Qm94PSIwIDAgMi42NDU4IDIuNjQ1OCI+PHBhdGggZD0iTSAwLDAgMi42NDU4MzMzLDIuNjQ1ODMzMyBNIDAsMi42NDU4MzMzIDIuNjQ1ODMzMywwIiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiByZWQ7IHN0cm9rZS13aWR0aDogMC41OyIgLz48L3N5bWJvbD48c3ltYm9sIGlkPSJQaHlzaWNhbExpbmtTeW1ib2wiIHZpZXdCb3g9IjAgMCA0MCAzMCI+PGxpbmVhckdyYWRpZW50IGlkPSJQaHlzaWNhbExpbmtTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0RGREYwMCIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRThFODA5IiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IlBoeXNpY2FsTGlua1N5bWJvbC1ncmFkaWVudHJldmVyc2UiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0U4RTgwOSIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjREZERjAwIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZyBzdHlsZT0ic3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjI7Ij48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBzdHlsZT0iZmlsbDogdXJsKCNQaHlzaWNhbExpbmtTeW1ib2wtZ3JhZGllbnRyZXZlcnNlKSIgLz48cGF0aCBkPSJtIDE0LjM3MjEwNywxMCBoIDEyLjYyMjQzNSBjIDAuOTI2MTg5LDAuNTg1MjY3IDEuODM2MDIyLDEuMjc0NTA5IDIuMjY4MTc4LDUgLTAuMjA4NjU3LDIuODEyNDczIC0wLjk1NDYwMSw0LjUwMzgwOSAtMi4yNzMyOTcsNSBIIDE0LjI5Njk0OCIgc3R5bGU9ImZpbGw6ICNGNjBBMEEiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBzdHlsZT0iZmlsbDogdXJsKCNQaHlzaWNhbExpbmtTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48c3ltYm9sIGlkPSJDb21wb25lbnRFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50IiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI0UwRTlGMyIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJDb21wb25lbnRFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0UwRTlGMyIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjOEZBNUI2IiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZyBzdHlsZT0ic3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjI7Ij48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBzdHlsZT0iZmlsbDogdXJsKCNDb21wb25lbnRFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBzdHlsZT0iZmlsbDogI0EzQkNEMCIgLz48cGF0aCBkPSJNIDMuOTQ2NDkwOCw1LjAwNDgyNDYgViAyNC45OTUxNzUgSCAxMC44NzUxOCBDIDEyLjQzMzcxMywyNC4xNTkxMzkgMTUuMTU4MjY3LDIwLjI5MTI0MSAxNS4zMTM3OTUsMTUgMTUuNDk4NjE0LDExLjU4MzE0MiAxNC4wNTk2NTksNi42MjQwOTEzIDEwLjg3NTE4LDUuMDA0ODI0NiBjIC0yLjIxNzk1MDksMCAtNC41OTA4MzQxLDAgLTYuOTI4Njg5MiwwIHoiIHN0eWxlPSJmaWxsOiB1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjxyZWN0IGZpbGw9IndoaXRlIiBoZWlnaHQ9IjgxMCIgc3Ryb2tlPSJub25lIiB3aWR0aD0iNzM3IiB4PSIxNjUiIHk9IjE1IiAvPjxnIGNsYXNzPSJCb3ggUGh5c2ljYWxOb2RlQ29tcG9uZW50IiBpZD0iX2ZLVHNVRklxRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGhlaWdodD0iNzkwIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRENfRkZGQ0I3JnF1b3Q7KTsgc3Ryb2tlOiAjN0I2OTRGOyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSI2NzEiIHg9IjE3NS41IiB5PSIyNS41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjE3NSIgeT0iMjUiPjx0c3BhbiB4PSI1MjEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzUuMCI+VmVoaWNsZTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0ODEuMjE0Mjg1NzE0Mjg1NyIgeGxpbms6aHJlZj0iI1BoeXNpY2FsTm9kZUNvbXBvbmVudFN5bWJvbCIgeT0iMjUuMCIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbE5vZGVDb21wb25lbnQiIGlkPSJfZ3ZMX2NGSXFFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgaGVpZ2h0PSI3MzAiIHN0eWxlPSJmaWxsOiB1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZEQ19GRkZDQjcmcXVvdDspOyBzdHJva2U6ICM3QjY5NEY7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjQxMSIgeD0iNDI1LjUiIHk9IjU0LjUiIC8+PHRleHQgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDI1IiB5PSI1NCI+PHRzcGFuIHg9IjY0MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI2NS40Mjg1NzE0Mjg1NzE0MyI+RXF1aXBtZW50IGNvbXBhcnRtZW50PC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjU1My4zNTcxNDI4NTcxNDI5IiB4bGluazpocmVmPSIjUGh5c2ljYWxOb2RlQ29tcG9uZW50U3ltYm9sIiB5PSI1NS40Mjg1NzE0Mjg1NzE0MyIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbE5vZGVDb21wb25lbnQiIGlkPSJfbWFDQ1lGSXFFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgaGVpZ2h0PSI1MzAiIHN0eWxlPSJmaWxsOiB1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZEQ19GRkZDQjcmcXVvdDspOyBzdHJva2U6ICM3QjY5NEY7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjI1MSIgeD0iNDM1LjUiIHk9IjI0My41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQzNSIgeT0iMjQzIj48dHNwYW4geD0iNTcxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI1My4wIj5TZXJ2ZXI8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTMyLjY0Mjg1NzE0Mjg1NzEiIHhsaW5rOmhyZWY9IiNQaHlzaWNhbE5vZGVDb21wb25lbnRTeW1ib2wiIHk9IjI0My4wIiAvPjwvZz48ZyBjbGFzcz0iQm94IFBoeXNpY2FsTm9kZUNvbXBvbmVudCIgaWQ9Il9zOWNzRUZJcUVleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iUGh5c2ljYWxOb2RlQ29tcG9uZW50IiBoZWlnaHQ9IjMyMSIgc3R5bGU9ImZpbGw6IHVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkRDX0ZGRkNCNyZxdW90Oyk7IHN0cm9rZTogIzdCNjk0Rjsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMjMxIiB4PSI0NDUuNSIgeT0iMjcyLjUiIC8+PHRleHQgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDQ1IiB5PSIyNzIiPjx0c3BhbiB4PSI1NzEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjgzLjQyODU3MTQyODU3MTQ0Ij5Db21wdXRlIENhcmQgMTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI1MDYuOTI4NTcxNDI4NTcxNDQiIHhsaW5rOmhyZWY9IiNQaHlzaWNhbE5vZGVDb21wb25lbnRTeW1ib2wiIHk9IjI3My40Mjg1NzE0Mjg1NzE0NCIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBpZD0iX0VmNGJvRklyRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBoZWlnaHQ9IjE0MSIgc3R5bGU9ImZpbGw6IHVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfQzNFNkZGXzk2QjFEQSZxdW90Oyk7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMTgxIiB4PSI0NjUuNSIgeT0iMzAxLjUiIC8+PHRleHQgY2xhc3M9IlBoeXNpY2FsQmVoYXZpb3JDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ2NSIgeT0iMzAxIj48dHNwYW4geD0iNTY2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMxMS4wIj5DYXJkIDEgT1M8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTE5LjA3MTQyODU3MTQyODYiIHhsaW5rOmhyZWY9IiNQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50U3ltYm9sIiB5PSIzMDEuMCIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBpZD0iXzMyS0ZrRklyRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBoZWlnaHQ9IjMxIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9DM0U2RkZfOTZCMURBJnF1b3Q7KTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxNDEiIHg9IjQ4NS41IiB5PSIzMzAuNSIgLz48dGV4dCBjbGFzcz0iUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDg1IiB5PSIzMzAiPjx0c3BhbiB4PSI1NjYuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzQwLjAiPkNhbWVyYSBEcml2ZXIgU1dDPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjQ5My4zNTcxNDI4NTcxNDI5IiB4bGluazpocmVmPSIjUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudFN5bWJvbCIgeT0iMzMwLjAiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ1BfSU4iIGlkPSJfb3VhX2cxSXRFZXlpUk5seUtQSndxdyI+PHVzZSBjbGFzcz0iQ1BfSU4iIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoMjcwIDQ4OC41IDM0Ni41KSIgd2lkdGg9IjEwIiB4PSI0ODMuNSIgeGxpbms6aHJlZj0iI0NvbXBvbmVudFBvcnRTeW1ib2wiIHk9IjM0MS41IiAvPjwvZz48ZyBjbGFzcz0iQm94IENQX09VVCIgaWQ9Il9zSzV0Y0ZJdEVleWlSTmx5S1BKd3F3Ij48dXNlIGNsYXNzPSJDUF9PVVQiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoLTkwIDYyMy41IDM0Ny41KSIgd2lkdGg9IjEwIiB4PSI2MTguNSIgeGxpbms6aHJlZj0iI0NvbXBvbmVudFBvcnRTeW1ib2wiIHk9IjM0Mi41IiAvPjwvZz48ZyBjbGFzcz0iQm94IFBoeXNpY2FsQmVoYXZpb3JDb21wb25lbnQiIGlkPSJfajdGQndGSXNFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBoeXNpY2FsQmVoYXZpb3JDb21wb25lbnQiIGhlaWdodD0iMzEiIHN0eWxlPSJmaWxsOiB1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0MzRTZGRl85NkIxREEmcXVvdDspOyBzdHJva2U6ICM0QTRBOTc7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjE0MSIgeD0iNDg1LjUiIHk9IjQwMC41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0ODUiIHk9IjQwMCI+PHRzcGFuIHg9IjU2Ni41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI0MTEuNDI4NTcxNDI4NTcxNDQiPkFwcCAxIFNXQzwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI1MTYuOTI4NTcxNDI4NTcxNCIgeGxpbms6aHJlZj0iI1BoeXNpY2FsQmVoYXZpb3JDb21wb25lbnRTeW1ib2wiIHk9IjQwMS40Mjg1NzE0Mjg1NzE0NCIgLz48L2c+PGcgY2xhc3M9IkJveCBDUF9JTiIgaWQ9Il9zSzY3a0ZJdEVleWlSTmx5S1BKd3F3Ij48dXNlIGNsYXNzPSJDUF9JTiIgaGVpZ2h0PSIxMCIgc3R5bGU9ImZpbGw6ICNGRkZGRkY7IHN0cm9rZTogIzAwMDAwMDsgc3Ryb2tlLXdpZHRoOiAxIiB0cmFuc2Zvcm09InJvdGF0ZSgyNzAgNDg4LjUgNDE2LjUpIiB3aWR0aD0iMTAiIHg9IjQ4My41IiB4bGluazpocmVmPSIjQ29tcG9uZW50UG9ydFN5bWJvbCIgeT0iNDExLjUiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ1BfT1VUIiBpZD0iX3B3eXdrRkl2RWV5aVJObHlLUEp3cXciPjx1c2UgY2xhc3M9IkNQX09VVCIgaGVpZ2h0PSIxMCIgc3R5bGU9ImZpbGw6ICNGRkZGRkY7IHN0cm9rZTogIzAwMDAwMDsgc3Ryb2tlLXdpZHRoOiAxIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAgNjIzLjUgNDE2LjUpIiB3aWR0aD0iMTAiIHg9IjYxOC41IiB4bGluazpocmVmPSIjQ29tcG9uZW50UG9ydFN5bWJvbCIgeT0iNDExLjUiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ1BfSU5PVVQiIGlkPSJfU2diZDRGSXVFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IkNQX0lOT1VUIiBoZWlnaHQ9IjEwIiBzdHlsZT0iZmlsbDogI0ZGRkZGRjsgc3Ryb2tlOiAjMDAwMDAwOyBzdHJva2Utd2lkdGg6IDEiIHRyYW5zZm9ybT0icm90YXRlKC05MCA2NDMuNSAzMjguNSkiIHdpZHRoPSIxMCIgeD0iNjM4LjUiIHk9IjMyMy41IiAvPjwvZz48ZyBjbGFzcz0iQm94IENQX09VVCIgaWQ9Il9oSHpaUlkyLUVleXczY0VUdGRwYTZnIj48dXNlIGNsYXNzPSJDUF9PVVQiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgNDY4LjUgMzA2LjUpIiB3aWR0aD0iMTAiIHg9IjQ2My41IiB4bGluazpocmVmPSIjQ29tcG9uZW50UG9ydFN5bWJvbCIgeT0iMzAxLjUiIC8+PC9nPjxnIGNsYXNzPSJCb3ggUGh5c2ljYWxOb2RlQ29tcG9uZW50IiBpZD0iX25pY25RRktfRWV5MjBmelgycmlGa1EiPjxyZWN0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGhlaWdodD0iOTgiIHN0eWxlPSJmaWxsOiB1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZEQ19GRkZDQjcmcXVvdDspOyBzdHJva2U6ICM3QjY5NEY7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjE4MCIgeD0iNDY1LjUiIHk9IjQ3MS41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ2NSIgeT0iNDcxIj48dHNwYW4geD0iNTY2LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ4Mi40Mjg1NzE0Mjg1NzE0NCI+Q29vbGluZyBGYW48L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTEzLjU3MTQyODU3MTQyODYiIHhsaW5rOmhyZWY9IiNQaHlzaWNhbE5vZGVDb21wb25lbnRTeW1ib2wiIHk9IjQ3Mi40Mjg1NzE0Mjg1NzE0NCIgLz48L2c+PGcgY2xhc3M9IkJveCBQUCIgaWQ9Il94WGxmb0ZJckVleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iUFAiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGNDc3OyBzdHJva2U6ICM3QjY5NEY7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjEwIiB4PSI2NjguNSIgeT0iMjk1LjUiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjY4MSIgeT0iMjk0Ij48dHNwYW4geD0iNjg4LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjI5OS4wIj5YMjwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IFBoeXNpY2FsTm9kZUNvbXBvbmVudCIgaWQ9Il81ZEkxQUZJc0VleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iUGh5c2ljYWxOb2RlQ29tcG9uZW50IiBoZWlnaHQ9IjEyMSIgc3R5bGU9ImZpbGw6IHVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfRkZGRkRDX0ZGRkNCNyZxdW90Oyk7IHN0cm9rZTogIzdCNjk0Rjsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMjMxIiB4PSI0NDUuNSIgeT0iNjQyLjUiIC8+PHRleHQgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDQ1IiB5PSI2NDIiPjx0c3BhbiB4PSI1NzEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNjUzLjQyODU3MTQyODU3MTQiPkNvbXB1dGUgQ2FyZCAyPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjUwNi45Mjg1NzE0Mjg1NzE0NCIgeGxpbms6aHJlZj0iI1BoeXNpY2FsTm9kZUNvbXBvbmVudFN5bWJvbCIgeT0iNjQzLjQyODU3MTQyODU3MTQiIC8+PC9nPjxnIGNsYXNzPSJCb3ggUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudCIgaWQ9Il84TWhNWUZJc0VleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudCIgaGVpZ2h0PSI2OSIgc3R5bGU9ImZpbGw6IHVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfQzNFNkZGXzk2QjFEQSZxdW90Oyk7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMTYxIiB4PSI0NzUuNSIgeT0iNjcxLjUiIC8+PHRleHQgY2xhc3M9IlBoeXNpY2FsQmVoYXZpb3JDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ3NSIgeT0iNjcxIj48dHNwYW4geD0iNTY2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjY4MS4wIj5DYXJkIDIgT1M8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTE5LjA3MTQyODU3MTQyODYiIHhsaW5rOmhyZWY9IiNQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50U3ltYm9sIiB5PSI2NzEuMCIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBpZD0iX0U4aENZRkl0RWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBoZWlnaHQ9IjMxIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9DM0U2RkZfOTZCMURBJnF1b3Q7KTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxNDEiIHg9IjQ4NS41IiB5PSI3MDAuNSIgLz48dGV4dCBjbGFzcz0iUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDg1IiB5PSI3MDAiPjx0c3BhbiB4PSI1NjYuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzExLjQyODU3MTQyODU3MTQiPkFwcCAyIFNXQzwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI1MTYuOTI4NTcxNDI4NTcxNCIgeGxpbms6aHJlZj0iI1BoeXNpY2FsQmVoYXZpb3JDb21wb25lbnRTeW1ib2wiIHk9IjcwMS40Mjg1NzE0Mjg1NzE0IiAvPjwvZz48ZyBjbGFzcz0iQm94IENQX0lOIiBpZD0iX3B3MU0wRkl2RWV5aVJObHlLUEp3cXciPjx1c2UgY2xhc3M9IkNQX0lOIiBoZWlnaHQ9IjEwIiBzdHlsZT0iZmlsbDogI0ZGRkZGRjsgc3Ryb2tlOiAjMDAwMDAwOyBzdHJva2Utd2lkdGg6IDEiIHRyYW5zZm9ybT0icm90YXRlKDI3MCA0ODguNSA3MTYuNSkiIHdpZHRoPSIxMCIgeD0iNDgzLjUiIHhsaW5rOmhyZWY9IiNDb21wb25lbnRQb3J0U3ltYm9sIiB5PSI3MTEuNSIgLz48L2c+PGcgY2xhc3M9IkJveCBDUF9JTk9VVCIgaWQ9Il82V1Rtd0ZJdUVleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iQ1BfSU5PVVQiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoLTkwIDYzMy41IDY5Ny41KSIgd2lkdGg9IjEwIiB4PSI2MjguNSIgeT0iNjkyLjUiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ1BfSU4iIGlkPSJfaEgwblo0Mi1FZXl3M2NFVHRkcGE2ZyI+PHVzZSBjbGFzcz0iQ1BfSU4iIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoMjcwIDQ3OC41IDY3Ny41KSIgd2lkdGg9IjEwIiB4PSI0NzMuNSIgeGxpbms6aHJlZj0iI0NvbXBvbmVudFBvcnRTeW1ib2wiIHk9IjY3Mi41IiAvPjwvZz48ZyBjbGFzcz0iQm94IFBQIiBpZD0iX05xc1RjRkl0RWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQUCIgaGVpZ2h0PSIxMCIgc3R5bGU9ImZpbGw6ICNGRkY0Nzc7IHN0cm9rZTogIzdCNjk0Rjsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMTAiIHg9IjY2OC41IiB5PSI3MTMuNSIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjgxIiB5PSI3MTMiPjx0c3BhbiB4PSI2ODguNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNzE4LjAiPlgyPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggUGh5c2ljYWxOb2RlQ29tcG9uZW50IiBpZD0iX19iRDI0RklxRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGhlaWdodD0iMTUxIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRENfRkZGQ0I3JnF1b3Q7KTsgc3Ryb2tlOiAjN0I2OTRGOyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIyNTEiIHg9IjQzNS41IiB5PSI4My41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQzNSIgeT0iODMiPjx0c3BhbiB4PSI1NzEuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iOTMuMCI+TmV0d29yayBTd2l0Y2g8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTA5LjA3MTQyODU3MTQyODU2IiB4bGluazpocmVmPSIjUGh5c2ljYWxOb2RlQ29tcG9uZW50U3ltYm9sIiB5PSI4My4wIiAvPjwvZz48ZyBjbGFzcz0iQm94IFBoeXNpY2FsQmVoYXZpb3JDb21wb25lbnQiIGlkPSJfSlFkT3NGSXJFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBoeXNpY2FsQmVoYXZpb3JDb21wb25lbnQiIGhlaWdodD0iNjEiIHN0eWxlPSJmaWxsOiB1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0MzRTZGRl85NkIxREEmcXVvdDspOyBzdHJva2U6ICM0QTRBOTc7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjE0OSIgeD0iNDg1LjUiIHk9IjEyMi41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0ODUiIHk9IjEyMiI+PHRzcGFuIHg9IjU3MC41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMzIuMCI+U3dpdGNoIEZpcm13YXJlPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjUwNS4yMTQyODU3MTQyODU3IiB4bGluazpocmVmPSIjUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudFN5bWJvbCIgeT0iMTIyLjAiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ1BfSU5PVVQiIGlkPSJfU2dkNklGSXVFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IkNQX0lOT1VUIiBoZWlnaHQ9IjEwIiBzdHlsZT0iZmlsbDogI0ZGRkZGRjsgc3Ryb2tlOiAjMDAwMDAwOyBzdHJva2Utd2lkdGg6IDEiIHRyYW5zZm9ybT0icm90YXRlKC05MCA2MzEuNSAxNjguNSkiIHdpZHRoPSIxMCIgeD0iNjI2LjUiIHk9IjE2My41IiAvPjwvZz48ZyBjbGFzcz0iQm94IENQX0lOT1VUIiBpZD0iXzZXVU4wbEl1RWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJDUF9JTk9VVCIgaGVpZ2h0PSIxMCIgc3R5bGU9ImZpbGw6ICNGRkZGRkY7IHN0cm9rZTogIzAwMDAwMDsgc3Ryb2tlLXdpZHRoOiAxIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAgNjMxLjUgMTM4LjUpIiB3aWR0aD0iMTAiIHg9IjYyNi41IiB5PSIxMzMuNSIgLz48L2c+PGcgY2xhc3M9IkJveCBDUF9JTk9VVCIgaWQ9Il9pVTZOMFZJdkVleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iQ1BfSU5PVVQiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgNDg4LjUgMTY4LjUpIiB3aWR0aD0iMTAiIHg9IjQ4My41IiB5PSIxNjMuNSIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBpZD0iX01QMl9FRklyRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBoZWlnaHQ9IjMxIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9DM0U2RkZfOTZCMURBJnF1b3Q7KTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxNDgiIHg9IjQ2NS41IiB5PSIxOTIuNSIgLz48dGV4dCBjbGFzcz0iUGh5c2ljYWxCZWhhdmlvckNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDY1IiB5PSIxOTIiPjx0c3BhbiB4PSI1NTAuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjAzLjQyODU3MTQyODU3MTQyIj5Td2l0Y2ggQ29uZmlndXJhdGlvbjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0NzQuMCIgeGxpbms6aHJlZj0iI1BoeXNpY2FsQmVoYXZpb3JDb21wb25lbnRTeW1ib2wiIHk9IjE5My40Mjg1NzE0Mjg1NzE0MiIgLz48L2c+PGcgY2xhc3M9IkJveCBQUCIgaWQ9Il93YXA5VUZJckVleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iUFAiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGNDc3OyBzdHJva2U6ICM3QjY5NEY7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjEwIiB4PSI0MzMuNSIgeT0iMTI0LjUiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ0NiIgeT0iMTI0Ij48dHNwYW4geD0iNDUyLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEyOS4wIj5QMTwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IFBQIiBpZD0iX3hYa1JnRklyRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQUCIgaGVpZ2h0PSIxMCIgc3R5bGU9ImZpbGw6ICNGRkY0Nzc7IHN0cm9rZTogIzdCNjk0Rjsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMTAiIHg9IjY3OC41IiB5PSIyMDUuNSIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjkxIiB5PSIyMDUiPjx0c3BhbiB4PSI2OTguNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMjEwLjAiPlAzPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJCb3ggUFAiIGlkPSJfTnFzNmdsSXRFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBQIiBoZWlnaHQ9IjEwIiBzdHlsZT0iZmlsbDogI0ZGRjQ3Nzsgc3Ryb2tlOiAjN0I2OTRGOyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxMCIgeD0iNjc4LjUiIHk9IjEwNC41IiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2OTEiIHk9IjEwNCI+PHRzcGFuIHg9IjY5OC41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMDkuMCI+UDI8L3RzcGFuPjwvdGV4dD48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbE5vZGVDb21wb25lbnQiIGlkPSJfMzFjd1lGSXFFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgaGVpZ2h0PSIxOTEiIHN0eWxlPSJmaWxsOiB1cmwoJnF1b3Q7I0N1c3RvbUdyYWRpZW50X0ZGRkZEQ19GRkZDQjcmcXVvdDspOyBzdHJva2U6ICM3QjY5NEY7IHN0cm9rZS13aWR0aDogMSIgd2lkdGg9IjE1MSIgeD0iMTk1LjUiIHk9IjU0LjUiIC8+PHRleHQgY2xhc3M9IlBoeXNpY2FsTm9kZUNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTk1IiB5PSI1NCI+PHRzcGFuIHg9IjI4MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI2NS40Mjg1NzE0Mjg1NzE0MyI+U2Vuc29yIGNvbXBhcnRtZW50PC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjIwNC4wNzE0Mjg1NzE0Mjg1NiIgeGxpbms6aHJlZj0iI1BoeXNpY2FsTm9kZUNvbXBvbmVudFN5bWJvbCIgeT0iNTUuNDI4NTcxNDI4NTcxNDMiIC8+PC9nPjxnIGNsYXNzPSJCb3ggUGh5c2ljYWxOb2RlQ29tcG9uZW50IiBpZD0iX1hCRzdJRklyRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGhlaWdodD0iMTQxIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9GRkZGRENfRkZGQ0I3JnF1b3Q7KTsgc3Ryb2tlOiAjN0I2OTRGOyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxMjEiIHg9IjIwNS41IiB5PSI4My41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbE5vZGVDb21wb25lbnQiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjIwNSIgeT0iODMiPjx0c3BhbiB4PSIyNzYuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iOTMuMCI+Q2FtZXJhPC90c3Bhbj48dHNwYW4geD0iMjc2LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEwNS44NTcxNDI4NTcxNDI4NiI+QXNzZW1ibHk8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMjI5LjA3MTQyODU3MTQyODU2IiB4bGluazpocmVmPSIjUGh5c2ljYWxOb2RlQ29tcG9uZW50U3ltYm9sIiB5PSI5MC44NTcxNDI4NTcxNDI4NiIgLz48L2c+PGcgY2xhc3M9IkJveCBQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBpZD0iX2FacUxVRklyRWV5aVJObHlLUEp3cXciPjxyZWN0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBoZWlnaHQ9IjYxIiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9DM0U2RkZfOTZCMURBJnF1b3Q7KTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSI5MSIgeD0iMjE1LjUiIHk9IjE0Mi41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSIyMTUiIHk9IjE0MiI+PHRzcGFuIHg9IjI3MS41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNTIuMCI+Q2FtZXJhPC90c3Bhbj48dHNwYW4geD0iMjcxLjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE2Mi4wIj5GaXJtd2FyZTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIyMjQuNzg1NzE0Mjg1NzE0MjgiIHhsaW5rOmhyZWY9IiNQaHlzaWNhbEJlaGF2aW9yQ29tcG9uZW50U3ltYm9sIiB5PSIxNDcuMCIgLz48L2c+PGcgY2xhc3M9IkJveCBDUF9PVVQiIGlkPSJfb3VhWWNGSXRFZXlpUk5seUtQSndxdyI+PHVzZSBjbGFzcz0iQ1BfT1VUIiBoZWlnaHQ9IjEwIiBzdHlsZT0iZmlsbDogI0ZGRkZGRjsgc3Ryb2tlOiAjMDAwMDAwOyBzdHJva2Utd2lkdGg6IDEiIHRyYW5zZm9ybT0icm90YXRlKC05MCAzMDMuNSAxODguNSkiIHdpZHRoPSIxMCIgeD0iMjk4LjUiIHhsaW5rOmhyZWY9IiNDb21wb25lbnRQb3J0U3ltYm9sIiB5PSIxODMuNSIgLz48L2c+PGcgY2xhc3M9IkJveCBDUF9JTk9VVCIgaWQ9Il9pVTRfc0ZJdkVleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iQ1BfSU5PVVQiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoLTkwIDMwMy41IDE2OC41KSIgd2lkdGg9IjEwIiB4PSIyOTguNSIgeT0iMTYzLjUiIC8+PC9nPjxnIGNsYXNzPSJCb3ggUFAiIGlkPSJfd2FuaEVGSXJFZXlpUk5seUtQSndxdyI+PHJlY3QgY2xhc3M9IlBQIiBoZWlnaHQ9IjEwIiBzdHlsZT0iZmlsbDogI0ZGRjQ3Nzsgc3Ryb2tlOiAjN0I2OTRGOyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxMCIgeD0iMzE4LjUiIHk9IjEyNC41IiAvPjwvZz48ZyBjbGFzcz0iQm94IFBoeXNpY2FsUGF0aCIgaWQ9Il9URXA2WUZJd0VleWlSTmx5S1BKd3F3Ij48cmVjdCBjbGFzcz0iUGh5c2ljYWxQYXRoIiBoZWlnaHQ9IjIwIiBzdHlsZT0iZmlsbDogIzE4NzJGODsgc3Ryb2tlOiAjMDAwMDAwOyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIyMCIgeD0iODcyLjUiIHk9IjMzMy41IiAvPjx0ZXh0IGNsYXNzPSJQaHlzaWNhbFBhdGgiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijg3MiIgeT0iMzMzIj48dHNwYW4geD0iODgyLjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMzNi41NzE0Mjg1NzE0Mjg1NiI+Y2FyPC90c3Bhbj48dHNwYW4geD0iODgyLjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM0Ni41NzE0Mjg1NzE0Mjg1NiI+ZC4uLjwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iRWRnZSBQaHlzaWNhbExpbmsiIGlkPSJfd2EtR1lGSXJFZXlpUk5seUtQSndxdyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMzI4LjUgMTI5LjUgNDMzLjUgMTI5LjUiIHN0eWxlPSJmaWxsOiBub25lOyBzdHJva2U6ICNFRjI5Mjk7IHN0cm9rZS13aWR0aDogMiIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgc3R5bGU9ImZpbGw6ICNFRjI5MjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjM0OC4wIiB5PSIxMTIiPjx0c3BhbiB4PSIzODMuNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTE3LjAiPlBMIDE8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iMzUxLjA3MTQyODU3MTQyODU2IiB4bGluazpocmVmPSIjUGh5c2ljYWxMaW5rU3ltYm9sIiB5PSIxMDcuMCIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgUGh5c2ljYWxMaW5rIiBpZD0iX3hYbUdzRklyRWV5aVJObHlLUEp3cXciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY4OC41IDIxMC41IDY4OC41IDIxMC41IDgwMC41IDIxMC41IDgwMC41IDMwMC41IDY3OC41IDMwMC41IDY3OC41IDMwMC41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjMTg3MkY4OyBzdHJva2Utd2lkdGg6IDQiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHN0eWxlPSJmaWxsOiAjRUYyOTI5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI3MTAuMCIgeT0iMTg4Ij48dHNwYW4geD0iNzY0LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE5My4wIj5FdGggQ2FibGUgMjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI3MTMuMCIgeGxpbms6aHJlZj0iI1BoeXNpY2FsTGlua1N5bWJvbCIgeT0iMTgzLjAiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIFBoeXNpY2FsTGluayIgaWQ9Il9OcXRoa2xJdEVleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2NzguNSA3MTguNSA2NzguNSA3MTguNSA4MzQuNSA3MTguNSA4MzQuNSAxMDguNSA2ODguNSAxMDguNSA2ODguNSAxMDkuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzE4NzJGODsgc3Ryb2tlLXdpZHRoOiA0IiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBzdHlsZT0iZmlsbDogI0VGMjkyOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjk4LjAiIHk9Ijk2Ij48dHNwYW4geD0iNzUyLjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjEwMS4wIj5FdGggQ2FibGUgMzwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI3MDEuMCIgeGxpbms6aHJlZj0iI1BoeXNpY2FsTGlua1N5bWJvbCIgeT0iOTEuMCIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQ29tcG9uZW50RXhjaGFuZ2UiIGlkPSJfb3VjTm9GSXRFZXlpUk5seUtQSndxdyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMzA4LjUgMTg4LjUgMzU1LjUgMTg4LjUgMzU1LjUgMzQ4LjUgNDgzLjUgMzQ4LjUgNDgzLjUgMzQ2LjUiIHN0eWxlPSJmaWxsOiBub25lOyBzdHJva2U6ICM0QTRBOTc7IHN0cm9rZS13aWR0aDogMiIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgc3R5bGU9ImZpbGw6ICM0QTRBOTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjM2MS4wIiB5PSIzMjYiPjx0c3BhbiB4PSIzOTQuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMzMxLjAiPkMgMTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSIzNjQuNDI4NTcxNDI4NTcxNDQiIHhsaW5rOmhyZWY9IiNDb21wb25lbnRFeGNoYW5nZVN5bWJvbCIgeT0iMzIxLjAiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudEV4Y2hhbmdlIiBpZD0iX3NLN2lvVkl0RWV5aVJObHlLUEp3cXciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDYyOC41IDM0Ny41IDYzNS41IDM0Ny41IDYzNS41IDM5MS41IDQ3NS41IDM5MS41IDQ3NS41IDQxNi41IDQ4My41IDQxNi41IDQ4My41IDQxNi41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDIiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHN0eWxlPSJmaWxsOiAjNEE0QTk3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0ODEuMCIgeT0iMzc0Ij48dHNwYW4geD0iNTE0LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM3OS4wIj5DIDI8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNDg0LjQyODU3MTQyODU3MTQ0IiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjM2OS4wIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBDb21wb25lbnRFeGNoYW5nZSIgaWQ9Il9TZ2dXWUZJdUVleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2NDguNSAzMjguNSA4MDUuNSAzMjguNSA4MDUuNSAxNjguNSA2MzYuNSAxNjguNSA2MzYuNSAxNjguNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAyIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBzdHlsZT0iZmlsbDogIzRBNEE5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjkxLjAiIHk9IjE0OCI+PHRzcGFuIHg9IjcyNC4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNTMuMCI+QyAzPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjY5NC40Mjg1NzE0Mjg1NzE0IiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjE0My4wIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBDb21wb25lbnRFeGNoYW5nZSIgaWQ9Il82V1UwNGxJdUVleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2MzguNSA2OTcuNSA4MTUuNSA2OTcuNSA4MTUuNSAxMzcuNSA2MzYuNSAxMzcuNSA2MzYuNSAxMzguNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAyIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBzdHlsZT0iZmlsbDogIzRBNEE5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjkxLjAiIHk9IjEyNSI+PHRzcGFuIHg9IjcyNC4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxMzAuMCI+QyA0PC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjY5NC40Mjg1NzE0Mjg1NzE0IiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjEyMC4wIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBDb21wb25lbnRFeGNoYW5nZSIgaWQ9Il9pVTdiOEZJdkVleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSAzMDguNSAxNjguNSA0ODMuNSAxNjguNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAyIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBzdHlsZT0iZmlsbDogIzRBNEE5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzY1LjAiIHk9IjE1MyI+PHRzcGFuIHg9IjM5OC4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNTguMCI+QyA1PC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjM2OC40Mjg1NzE0Mjg1NzE0NCIgeGxpbms6aHJlZj0iI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB5PSIxNDguMCIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQ29tcG9uZW50RXhjaGFuZ2UiIGlkPSJfcHczQ0FGSXZFZXlpUk5seUtQSndxdyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gNjI4LjUgNDE2LjUgNzE0LjUgNDE2LjUgNzE0LjUgNjIxLjUgNDY1LjUgNjIxLjUgNDY1LjUgNzE2LjUgNDgzLjUgNzE2LjUgNDgzLjUgNzE2LjUiIHN0eWxlPSJmaWxsOiBub25lOyBzdHJva2U6ICM0QTRBOTc7IHN0cm9rZS13aWR0aDogMiIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgc3R5bGU9ImZpbGw6ICM0QTRBOTciIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ3Mi4wIiB5PSI2MDQiPjx0c3BhbiB4PSI1MDUuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNjA5LjAiPkMgNjwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI0NzUuNDI4NTcxNDI4NTcxNDQiIHhsaW5rOmhyZWY9IiNDb21wb25lbnRFeGNoYW5nZVN5bWJvbCIgeT0iNTk5LjAiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudFBvcnRBbGxvY2F0aW9uIiBpZD0iXzZCZi04Rkl2RWV5aVJObHlLUEp3cXciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDQ0My41IDEzMy41IDQ4My41IDE2My41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjMjc0QzcyOyBzdHJva2Utd2lkdGg6IDEiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjQ3NiIgeT0iMTQxIj48dHNwYW4geD0iNDc2LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjE0MS4wIiAvPjwvdGV4dD48L2c+PGcgY2xhc3M9IkVkZ2UgQ29tcG9uZW50UG9ydEFsbG9jYXRpb24iIGlkPSJfNkJnbUFsSXZFZXlpUk5seUtQSndxdyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gMzIwLjUgMTM0LjUgMzA2LjUgMTYzLjUiIHN0eWxlPSJmaWxsOiBub25lOyBzdHJva2U6ICMyNzRDNzI7IHN0cm9rZS13aWR0aDogMSIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMzIxIiB5PSIxNTQiPjx0c3BhbiB4PSIzMjEuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTU0LjAiIC8+PC90ZXh0PjwvZz48ZyBjbGFzcz0iRWRnZSBDb21wb25lbnRQb3J0QWxsb2NhdGlvbiIgaWQ9Il85WkFHVUZJdkVleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2NzguNSAyMDYuNSA2MzYuNSAxNzEuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzI3NEM3Mjsgc3Ryb2tlLXdpZHRoOiAxIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NjEiIHk9IjE5OCI+PHRzcGFuIHg9IjY2MS4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxOTguMCIgLz48L3RleHQ+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudFBvcnRBbGxvY2F0aW9uIiBpZD0iXzlaQXRWRkl2RWV5aVJObHlLUEp3cXciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY2OC41IDMwNS41IDY0OC41IDMyNC41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjMjc0QzcyOyBzdHJva2Utd2lkdGg6IDEiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjY3NCIgeT0iMzIxIj48dHNwYW4geD0iNjc0LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMyMS4wIiAvPjwvdGV4dD48L2c+PGcgY2xhc3M9IkVkZ2UgQ29tcG9uZW50UG9ydEFsbG9jYXRpb24iIGlkPSJfQTQ2aXdGSXdFZXlpUk5seUtQSndxdyI+PHBhdGggY2xhc3M9IkVkZ2UiIGQ9Ik0gNjc4LjUgMTEyLjUgNjM2LjUgMTM2LjUiIHN0eWxlPSJmaWxsOiBub25lOyBzdHJva2U6ICMyNzRDNzI7IHN0cm9rZS13aWR0aDogMSIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjY0IiB5PSIxMzEiPjx0c3BhbiB4PSI2NjQuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iMTMxLjAiIC8+PC90ZXh0PjwvZz48ZyBjbGFzcz0iRWRnZSBDb21wb25lbnRQb3J0QWxsb2NhdGlvbiIgaWQ9Il9BNDZpeFZJd0VleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2NjguNSA3MTUuNSA2MzguNSA2OTkuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzI3NEM3Mjsgc3Ryb2tlLXdpZHRoOiAxIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NTgiIHk9IjcxNiI+PHRzcGFuIHg9IjY1OC4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI3MTYuMCIgLz48L3RleHQ+PC9nPjxnIGNsYXNzPSJFZGdlIFBoeXNpY2FsUGF0aCIgaWQ9Il9UR0VQb0ZJd0VleWlSTmx5S1BKd3F3Ij48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2ODIuNSAyMDUuNSA2NzQuNSAxNTkuNSA2ODIuNSAxMTQuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzE4NzJGODsgc3Ryb2tlLXdpZHRoOiA0IiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2MDgiIHk9IjE0NSI+PHRzcGFuIHg9IjY3NC4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIxNTAuMCI+Y2FyZDEgLSBjYXJkMiBjb25uZWN0aW9uPC90c3Bhbj48L3RleHQ+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudEV4Y2hhbmdlIiBpZD0iX2prMXZNRkl3RWV5aVJObHlLUEp3cXciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDYyOC41IDY5Ny41IDUxNS41IDY5Ny41IDQ5My41IDcxMy41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDIiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHN0eWxlPSJmaWxsOiAjNEE0QTk3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1MzYuMCIgeT0iNjgyIj48dHNwYW4geD0iNTY5LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjY4Ny4wIj5EIDc8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNTM5LjIxNDI4NTcxNDI4NTciIHhsaW5rOmhyZWY9IiNDb21wb25lbnRFeGNoYW5nZVN5bWJvbCIgeT0iNjc3LjAiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudEV4Y2hhbmdlIiBpZD0iX200dnY4Rkl3RWV5aVJObHlLUEp3cXciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY0NS41IDMzMy41IDY2NS41IDM3My41IDYyOC41IDQxMS41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDIiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHN0eWxlPSJmaWxsOiAjNEE0QTk3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI2NDIuMCIgeT0iMzU1Ij48dHNwYW4geD0iNjc1LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM2MC4wIj5EIDg8L3RzcGFuPjwvdGV4dD48dXNlIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgeD0iNjQ1LjIxNDI4NTcxNDI4NTciIHhsaW5rOmhyZWY9IiNDb21wb25lbnRFeGNoYW5nZVN5bWJvbCIgeT0iMzUwLjAiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIFBoeXNpY2FsTGluayIgaWQ9Il9Pa2ZQR0kyLUVleXczY0VUdGRwYTZnIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2NzMuNSAzMDUuNSA2NzMuNSA3MTMuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogI0VGMjkyOTsgc3Ryb2tlLXdpZHRoOiAyIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBzdHlsZT0iZmlsbDogI0VGMjkyOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNjY5LjAiIHk9IjUwNCI+PHRzcGFuIHg9IjcwNC41IiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSI1MDkuMCI+UEwgMTwvdHNwYW4+PC90ZXh0Pjx1c2UgaGVpZ2h0PSIyMCIgd2lkdGg9IjIwIiB4PSI2NzIuMDcxNDI4NTcxNDI4NiIgeGxpbms6aHJlZj0iI1BoeXNpY2FsTGlua1N5bWJvbCIgeT0iNDk5LjAiIC8+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudEV4Y2hhbmdlIiBpZD0iX2hINFJ3bzItRWV5dzNjRVR0ZHBhNmciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDQ2OC41IDMxMS41IDQ3OC41IDY3Mi41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDIiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHN0eWxlPSJmaWxsOiAjNEE0QTk3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0NTguMCIgeT0iNDg2Ij48dHNwYW4geD0iNDk0LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjQ5MS4wIj5DIDEwPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjQ2MS4zNTcxNDI4NTcxNDI5IiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjQ4MS4wIiAvPjwvZz48ZyBjbGFzcz0iRWRnZSBDb21wb25lbnRQb3J0QWxsb2NhdGlvbiIgaWQ9Il9pdTd2TkkyLUVleXczY0VUdGRwYTZnIj48cGF0aCBjbGFzcz0iRWRnZSIgZD0iTSA2NjguNSAzMDAuNSA0NzMuNSAzMDYuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzI3NEM3Mjsgc3Ryb2tlLXdpZHRoOiAxIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI1ODAiIHk9IjMxNCI+PHRzcGFuIHg9IjU4MC4wIiB4bWw6c3BhY2U9InByZXNlcnZlIiB5PSIzMTQuMCIgLz48L3RleHQ+PC9nPjxnIGNsYXNzPSJFZGdlIENvbXBvbmVudFBvcnRBbGxvY2F0aW9uIiBpZD0iX2l1N3ZPWTItRWV5dzNjRVR0ZHBhNmciPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDY2OC41IDcxNy41IDQ4My41IDY3OC41IiBzdHlsZT0iZmlsbDogbm9uZTsgc3Ryb2tlOiAjMjc0QzcyOyBzdHJva2Utd2lkdGg6IDEiIC8+PHRleHQgY2xhc3M9IkFubm90YXRpb24iIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjU4MyIgeT0iNzA3Ij48dHNwYW4geD0iNTgzLjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjcwNy4wIiAvPjwvdGV4dD48L2c+PC9zdmc+"/></div>
+</div>
+<section id="Example-1:-List-components-that-are-visible-on-a-diagram">
+<h2><span class="section-number">2.1. </span>Example 1: List components that are visible on a diagram<a class="headerlink" href="#Example-1:-List-components-that-are-visible-on-a-diagram" title="Link to this heading">¶</a></h2>
+<p>To start, let’s get all parts on that diagram and turn them into PhysicalComponents.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">components_on_diagram</span> <span class="o">=</span> <span class="n">diagram</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">by_type</span><span class="p">(</span><span class="s2">&quot;Part&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+<span class="n">components_on_diagram</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>PhysicalComponent</strong> &quot;Vehicle&quot; (b327d900-abd2-4138-a111-9ff0684739d8)</li><li><strong>PhysicalComponent</strong> &quot;Equipment compartment&quot; (3d68852d-fcc0-452c-af12-a2fbe22f81fa)</li><li><strong>PhysicalComponent</strong> &quot;Server&quot; (9137f463-7497-40c2-b20a-897158fdba9a)</li><li><strong>PhysicalComponent</strong> &quot;Compute Card 1&quot; (63be604e-883e-41ea-9023-fc74f29906fe)</li><li><strong>PhysicalComponent</strong> &quot;Card 1 OS&quot; (7b188ad0-0d82-4b2c-9913-45292e537871)</li><li><strong>PhysicalComponent</strong> &quot;Camera Driver SWC&quot; (74067f56-33bf-47f5-bb8b-f3604097f653)</li><li><strong>PhysicalComponent</strong> &quot;App 1 SWC&quot; (b80a6fcc-8d35-4675-a2e6-60efcbd61e27)</li><li><strong>PhysicalComponent</strong> &quot;Cooling Fan&quot; (65e82f3f-c5b7-44c1-bfea-8e20bb0230be)</li><li><strong>PhysicalComponent</strong> &quot;Compute Card 2&quot; (3a982128-3281-4d37-8838-a6058b7a25d9)</li><li><strong>PhysicalComponent</strong> &quot;Card 2 OS&quot; (09e19313-c824-467f-9fb5-95ed8b4e2d51)</li><li><strong>PhysicalComponent</strong> &quot;App 2 SWC&quot; (ca5af12c-5259-4844-aaac-9ca9f84aa90b)</li><li><strong>PhysicalComponent</strong> &quot;Network Switch&quot; (b51ccc6f-5f96-4e28-b90e-72463a3b50cf)</li><li><strong>PhysicalComponent</strong> &quot;Switch Firmware&quot; (c78b5d7c-be0c-4ed4-9d12-d447cb39304e)</li><li><strong>PhysicalComponent</strong> &quot;Switch Configuration&quot; (23c47b69-7352-481d-be88-498fb351adbe)</li><li><strong>PhysicalComponent</strong> &quot;Sensor compartment&quot; (3f416925-9d8a-4e9c-99f3-e912efb23d2f)</li><li><strong>PhysicalComponent</strong> &quot;Camera Assembly&quot; (5bfc516b-c20d-4007-9a38-5ba0e889d0a4)</li><li><strong>PhysicalComponent</strong> &quot;Camera Firmware&quot; (db2d86d7-48ee-478b-a6fc-d6387ab0032e)</li></ol></div>
+</div>
+<p>We could also get all components across the entire PA layer by doing <code class="docutils literal notranslate"><span class="pre">model.pa.all_components</span></code>, but we will not go there in this example.</p>
+<p>We can review any single component from that list above:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">components_on_diagram</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/dahbar/projects/py-capellambse/capellambse/model/common/element.py:295: FutureWarning: PhysicalComponent.functions is deprecated, use allocated_functions instead
+  value = getattr(self, attr)
+/home/dahbar/projects/py-capellambse/capellambse/model/common/element.py:363: FutureWarning: PhysicalComponent.functions is deprecated, use allocated_functions instead
+  value = getattr(self, attr)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>Cooling Fan <span style="font-size: 70%;">(org.polarsys.capella.core.data.pa:PhysicalComponent)</span></h1><table><tr><th style="text-align: right;">allocated_functions</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">context_diagram</th><td style="text-align: left;"><b>Context of Cooling Fan</b> (uuid: 65e82f3f-c5b7-44c1-bfea-8e20bb0230be_context)</td></tr><tr><th style="text-align: right;">deployed_components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">deploying_components</th><td style="text-align: left;"><em>Backreference to PhysicalComponent - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">exchanges</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">functions</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">is_abstract</th><td style="text-align: left;"><em>False</em></td></tr><tr><th style="text-align: right;">is_actor</th><td style="text-align: left;"><em>False</em></td></tr><tr><th style="text-align: right;">is_human</th><td style="text-align: left;"><em>False</em></td></tr><tr><th style="text-align: right;">kind</th><td style="text-align: left;"><em>&lt;Kind.HARDWARE: 2&gt;</em></td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">Cooling Fan</td></tr><tr><th style="text-align: right;">nature</th><td style="text-align: left;"><em>&lt;Nature.NODE: 1&gt;</em></td></tr><tr><th style="text-align: right;">owned_components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">owner</th><td style="text-align: left;"><strong>PhysicalComponent</strong> &quot;Compute Card 1&quot; (63be604e-883e-41ea-9023-fc74f29906fe)</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>PhysicalComponent</strong> &quot;Compute Card 1&quot; (63be604e-883e-41ea-9023-fc74f29906fe)</td></tr><tr><th style="text-align: right;">parts</th><td style="text-align: left;"><em>Backreference to Part - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style="text-align: right;">physical_links</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">physical_paths</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">physical_ports</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">ports</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f4a9f006190&gt;</em></td></tr><tr><th style="text-align: right;">realized_components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">realized_logical_components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">realizing_components</th><td style="text-align: left;"><em>Backreference to  - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style="text-align: right;">related_exchanges</th><td style="text-align: left;"><em>Backreference to ComponentExchange - omitted: can be slow to compute. Display this property directly to show.</em></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">state_machines</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">65e82f3f-c5b7-44c1-bfea-8e20bb0230be</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">org.polarsys.capella.core.data.pa:PhysicalComponent</td></tr></table></div>
+</div>
+<p>However we may need just a few of those attributes in a view.</p>
+<p>Now that we have a list of components lets collect some of the attributes of interest in a table. To keep it simple we’ll introduce an attribute extractor function that will turn fields of interest into a nice dictionary.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_attrs_of_interest</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">component</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;nature&quot;</span><span class="p">:</span> <span class="n">component</span><span class="o">.</span><span class="n">nature</span><span class="p">,</span>
+        <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">component</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
+        <span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmp</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">cmp</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">components</span><span class="p">),</span>
+    <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>We can then apply that extractor function to our list of components and use <code class="docutils literal notranslate"><span class="pre">pandas</span></code> to display it for us in a tabular form:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">extract_attrs_of_interest</span><span class="p">,</span> <span class="n">components_on_diagram</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>nature</th>
+      <th>kind</th>
+      <th>components</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Vehicle</td>
+      <td>NODE</td>
+      <td>SOFTWARE_DEPLOYMENT_UNIT</td>
+      <td>Equipment compartment; Sensor compartment</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Equipment compartment</td>
+      <td>NODE</td>
+      <td>FACILITIES</td>
+      <td>Server; Network Switch</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Server</td>
+      <td>NODE</td>
+      <td>HARDWARE</td>
+      <td>Compute Card 1; Compute Card 2</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Compute Card 1</td>
+      <td>NODE</td>
+      <td>HARDWARE</td>
+      <td>Card 1 OS; Cooling Fan</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Card 1 OS</td>
+      <td>BEHAVIOR</td>
+      <td>SERVICES</td>
+      <td>Camera Driver SWC; App 1 SWC</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Camera Driver SWC</td>
+      <td>BEHAVIOR</td>
+      <td>SOFTWARE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>App 1 SWC</td>
+      <td>BEHAVIOR</td>
+      <td>SOFTWARE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>Cooling Fan</td>
+      <td>NODE</td>
+      <td>HARDWARE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>Compute Card 2</td>
+      <td>NODE</td>
+      <td>HARDWARE</td>
+      <td>Card 2 OS</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>Card 2 OS</td>
+      <td>BEHAVIOR</td>
+      <td>SOFTWARE</td>
+      <td>App 2 SWC</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>App 2 SWC</td>
+      <td>BEHAVIOR</td>
+      <td>SOFTWARE</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>Network Switch</td>
+      <td>NODE</td>
+      <td>HARDWARE</td>
+      <td>Switch Firmware; Switch Configuration</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>Switch Firmware</td>
+      <td>BEHAVIOR</td>
+      <td>HARDWARE_COMPUTER</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>Switch Configuration</td>
+      <td>BEHAVIOR</td>
+      <td>DATA</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>Sensor compartment</td>
+      <td>NODE</td>
+      <td>FACILITIES</td>
+      <td>Camera Assembly</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>Camera Assembly</td>
+      <td>NODE</td>
+      <td>HARDWARE</td>
+      <td>Camera Firmware</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>Camera Firmware</td>
+      <td>BEHAVIOR</td>
+      <td>SOFTWARE_EXECUTION_UNIT</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Example-2:-Create-HW-SW-allocation-table">
+<h2><span class="section-number">2.2. </span>Example 2: Create HW-SW allocation table<a class="headerlink" href="#Example-2:-Create-HW-SW-allocation-table" title="Link to this heading">¶</a></h2>
+<p>Now let’s assume that components of “Node” nature are hardware things and “Behavior” corresponds to software components. Assuming that, let’s identify leaf hardware components (lowest replaceable units), and for each of those indicate which software components they have.</p>
+<p>To get there, let’s first filter out the list of components of “Node” nature that have at least one subcomponent of “Behavior” nature. We’ll use the <code class="docutils literal notranslate"><span class="pre">.filter</span></code> method of our object list. To use that method we’ll need to provide a function or lambda that determines whether an object should be selected. We can also make use of the implicit “truthiness” of non-empty list attributes:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cmps</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pa</span><span class="o">.</span><span class="n">all_components</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">by_nature</span><span class="p">(</span><span class="s2">&quot;NODE&quot;</span><span class="p">)</span>
+<span class="c1"># Note: the above [1:] assumes that 0th component is the root component and is not of interest (+ see issue #41)</span>
+<span class="n">cmps_with_sw</span> <span class="o">=</span> <span class="n">cmps</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">i</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">by_nature</span><span class="p">(</span><span class="s2">&quot;BEHAVIOR&quot;</span><span class="p">))</span>
+<span class="n">cmps_with_sw</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>PhysicalComponent</strong> &quot;Sub PC&quot; (793e6da2-d019-4716-a5c5-af8ad550ca5e)</li><li><strong>PhysicalComponent</strong> &quot;Deploy Sub PC&quot; (8a6c6ec9-095d-4d8b-9728-69bc79af5f27)</li><li><strong>PhysicalComponent</strong> &quot;Compute Card 1&quot; (63be604e-883e-41ea-9023-fc74f29906fe)</li><li><strong>PhysicalComponent</strong> &quot;Compute Card 2&quot; (3a982128-3281-4d37-8838-a6058b7a25d9)</li><li><strong>PhysicalComponent</strong> &quot;Network Switch&quot; (b51ccc6f-5f96-4e28-b90e-72463a3b50cf)</li><li><strong>PhysicalComponent</strong> &quot;Camera Assembly&quot; (5bfc516b-c20d-4007-9a38-5ba0e889d0a4)</li><li><strong>PhysicalComponent</strong> &quot;Computer&quot; (b14ff190-9198-4d05-95db-b121c11e9f17)</li><li><strong>PhysicalComponent</strong> &quot;ISP Network&quot; (221cef9f-0582-419c-b67e-96ddb678dd4c)</li></ol></div>
+</div>
+<p>For sure we could come to the above list filtering by <code class="docutils literal notranslate"><span class="pre">kind</span></code> attribute, however in practice not all projects strictly use the <code class="docutils literal notranslate"><span class="pre">kind</span></code> attribute / it needs manual setting and maintenance and therefore is a bit less reliable.</p>
+<p>Our next stop is to list the SW components of those HW components. As SW components may be nested (i.e. apps on OS or partitions, etc.) we would simply “flatten” that hierarchy. We can create function <code class="docutils literal notranslate"><span class="pre">get_sw_components</span></code> that would recursively crawl down the SW components tree and give us back a flat list and test it on one component.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_sw_components</span><span class="p">(</span><span class="n">sw_component</span><span class="p">):</span>
+    <span class="n">subcmp</span> <span class="o">=</span> <span class="n">sw_component</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">by_nature</span><span class="p">(</span><span class="s2">&quot;BEHAVIOR&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">cmp</span> <span class="ow">in</span> <span class="n">subcmp</span><span class="p">:</span>
+        <span class="n">subcmp</span> <span class="o">+=</span> <span class="n">get_sw_components</span><span class="p">(</span><span class="n">cmp</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">subcmp</span>
+
+
+<span class="n">get_sw_components</span><span class="p">(</span><span class="n">cmps_with_sw</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;Compute Card 1&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>PhysicalComponent</strong> &quot;Card 1 OS&quot; (7b188ad0-0d82-4b2c-9913-45292e537871)</li><li><strong>PhysicalComponent</strong> &quot;Camera Driver SWC&quot; (74067f56-33bf-47f5-bb8b-f3604097f653)</li><li><strong>PhysicalComponent</strong> &quot;App 1 SWC&quot; (b80a6fcc-8d35-4675-a2e6-60efcbd61e27)</li></ol></div>
+</div>
+<p>Let’s apply the <code class="docutils literal notranslate"><span class="pre">get_sw_components</span></code> function to the complete list of components with SW, <code class="docutils literal notranslate"><span class="pre">cmps_with_sw</span></code>, and turn the results into a table. In this table we’ll serialize SW components into a semicolon-separated string:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">describe_hw_component_sw_allocations</span><span class="p">(</span><span class="n">hw_component</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;hardware_component&quot;</span><span class="p">:</span> <span class="n">hw_component</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="s2">&quot;deployed_sw_components&quot;</span><span class="p">:</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">get_sw_components</span><span class="p">(</span><span class="n">hw_component</span><span class="p">)</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">describe_hw_component_sw_allocations</span><span class="p">,</span> <span class="n">cmps_with_sw</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>hardware_component</th>
+      <th>deployed_sw_components</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Sub PC</td>
+      <td>PC 16</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Deploy Sub PC</td>
+      <td>PC 17</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Compute Card 1</td>
+      <td>Card 1 OS; Camera Driver SWC; App 1 SWC</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Compute Card 2</td>
+      <td>Card 2 OS; App 2 SWC</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Network Switch</td>
+      <td>Switch Firmware; Switch Configuration</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Camera Assembly</td>
+      <td>Camera Firmware</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>Computer</td>
+      <td>Mail client</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>ISP Network</td>
+      <td>Mail server</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>To complete the picture, we could also list all HW components that don’t have software (so that a sanity check could be performed):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cmps_without_sw</span> <span class="o">=</span> <span class="n">cmps</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">by_nature</span><span class="p">(</span><span class="s2">&quot;BEHAVIOR&quot;</span><span class="p">))</span>
+<span class="n">cmps_without_sw</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>PhysicalComponent</strong> &quot;PC 1&quot; (8a6d68c8-ac3d-4654-a07e-ada7adeed09f)</li><li><strong>PhysicalComponent</strong> &quot;PC 3&quot; (f5d7980d-e1e9-4515-8bb0-be7e80ac5839)</li><li><strong>PhysicalComponent</strong> &quot;Vehicle&quot; (a2c7f619-b38a-4b92-94a5-cbaa631badfc)</li><li><strong>PhysicalComponent</strong> &quot;Vehicle&quot; (b327d900-abd2-4138-a111-9ff0684739d8)</li><li><strong>PhysicalComponent</strong> &quot;Equipment compartment&quot; (3d68852d-fcc0-452c-af12-a2fbe22f81fa)</li><li><strong>PhysicalComponent</strong> &quot;Server&quot; (9137f463-7497-40c2-b20a-897158fdba9a)</li><li><strong>PhysicalComponent</strong> &quot;Cooling Fan&quot; (65e82f3f-c5b7-44c1-bfea-8e20bb0230be)</li><li><strong>PhysicalComponent</strong> &quot;Sensor compartment&quot; (3f416925-9d8a-4e9c-99f3-e912efb23d2f)</li><li><strong>PhysicalComponent</strong> &quot;Router&quot; (69bfe48d-78f0-4b1f-89c0-917dc2339ff9)</li><li><strong>PhysicalComponent</strong> &quot;PA 1&quot; (a0847e9c-8b82-407d-8143-e908e2db97a1)</li></ol></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="03%20Data%20Values.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">3. </span>Data Types and Data Values</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="01%20Introduction.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">1. </span>Introduction</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">2. Introduction to Physical Architecture API</a><ul>
+<li><a class="reference internal" href="#Example-1:-List-components-that-are-visible-on-a-diagram">2.1. Example 1: List components that are visible on a diagram</a></li>
+<li><a class="reference internal" href="#Example-2:-Create-HW-SW-allocation-table">2.2. Example 2: Create HW-SW allocation table</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

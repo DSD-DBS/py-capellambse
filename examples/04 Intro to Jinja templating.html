@@ -1,0 +1,876 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="5. Introduction to Libraries" href="05%20Introduction%20to%20Libraries.html" /><link rel="prev" title="3. Data Types and Data Values" href="03%20Data%20Values.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>4. Using capellambse with Jinja2 - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Using-capellambse-with-Jinja2">
+<h1><span class="section-number">4. </span>Using capellambse with Jinja2<a class="headerlink" href="#Using-capellambse-with-Jinja2" title="Link to this heading">¶</a></h1>
+<p>Welcome to the py-capellambse jinja2 templating showcase. When using capella for systems engineering you might want to generate documentation for your model you can use M2DOC, one of capella’s <a class="reference external" href="https://www.eclipse.org/capella/addons.html">addons</a> which we found too challenging or you can use Jinja2 a richful templating language with high degree of freedom.</p>
+<p>This notebook will introduce you into writing jinja2 templates where you’ll plant model information and diagrams. Additonally we’ll give a side-note on how to handle unique identifiers professionally with PVMT and some hints onto how to use jinja in a professional manner which could give you the option onto developping an automated document generation system.</p>
+<p>With Jinja2 you are able to generate any text-based format(HTML, XML, CSV, LaTex,…) but during this tutorial we will only generate .html files. The jinja2 syntax is inspired by python. Check out their <a class="reference external" href="https://jinja2docs.readthedocs.io/en/stable/">docs</a>!</p>
+<p>Below code loads the needed libraries and instantiates a test model:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jinja2</span>
+<span class="kn">from</span> <span class="nn">IPython.core.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="kn">import</span> <span class="nn">capellambse</span>
+
+<span class="n">path_to_model</span> <span class="o">=</span> <span class="s2">&quot;../../../tests/data/melodymodel/5_0/Melody Model Test.aird&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span><span class="n">path_to_model</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Cannot load PVMT extension: ValueError: Provided model does not have a PropertyValuePkg
+Property values are not available in this model
+</pre></div></div>
+</div>
+<p>In the following we want to make a template to document all modelled actors from the logical layer. Therefore we define a template string where we iterate over all actors and plant the name, uuid and description into it.</p>
+<p><em>Hint: Make sure that you know of capella’s</em><a class="reference external" href="https://dsd-dbs.github.io/py-capellambse/start/intro-to-api.html">metamodel</a><em>as we are implementing the capellambse.layers as close as possible to it while being as efficient and pythonic we can be currently. This knowledge can shorten used statements in the template immensely!</em></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">templ</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;h1&gt;Actor definitions&lt;/h1&gt;</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or actor in model.la.all_components.by_is_actor(True) %}</span>
+<span class="s2">    &lt;h2&gt;{{ actor.name }}&lt;/h2&gt;</span>
+<span class="s2">    &lt;h3&gt;Actor definition&lt;/h3&gt;</span>
+<span class="s2">    &lt;p&gt;UUID: {{ actor.uuid }}&lt;/p&gt;</span>
+<span class="s2">    &lt;p&gt;{{ actor.description }}&lt;/p&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">templ</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>Actor definitions</h1>
+
+    <h2>Prof. A. P. W. B. Dumbledore</h2>
+    <h3>Actor definition</h3>
+    <p>UUID: 08e02248-504d-4ed8-a295-c7682a614f66</p>
+    <p><p>Principal of Hogwarts, wearer of the elder wand and greatest mage of all time.</p>
+</p>
+
+    <h2>Prof. S. Snape</h2>
+    <h3>Actor definition</h3>
+    <p>UUID: 6f463eed-c77b-4568-8078-beec0536f243</p>
+    <p><p>Good guy and teacher of brewing arts.</p>
+</p>
+
+    <h2>Harry J. Potter</h2>
+    <h3>Actor definition</h3>
+    <p>UUID: a8c46457-a702-41c4-a971-c815c4c5a674</p>
+    <p></p>
+
+    <h2>R. Weasley</h2>
+    <h3>Actor definition</h3>
+    <p>UUID: ff7b8672-84db-4b93-9fea-22a410907fb1</p>
+    <p></p>
+
+    <h2>Voldemort</h2>
+    <h3>Actor definition</h3>
+    <p>UUID: 3e0ee19f-0e3f-49d4-ae99-29bd4a3260c5</p>
+    <p></p>
+
+    <h2>Multiport</h2>
+    <h3>Actor definition</h3>
+    <p>UUID: b3888dad-a870-4b8b-97d4-0ddb83ef9251</p>
+    <p></p></div>
+</div>
+<p>As an extra: We don’t use the UUID from capella in our documents. If you still need an identifier, in the following it’s explained how we are doing it:</p>
+<p>With the capella PVMT, one of the various capella addons, you can make property value groups and then set arbitrary values with these. Capellambse is able to recognize the pvmt extension and gives read and write access. In our workflows we are maintaining an ID database for all model elements. If that is done you can access pvmt attributes like:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>{{ ... }}
+<span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>ID: {{ actor.pvmt[&quot;Group.Identification.MY MODEL ID&quot;] }}<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+{{ ... }}
+</pre></div>
+</div>
+<p>For a PVMT showcase look into [TODO: pvmt-showcase notebook].</p>
+<section id="Filters-and-object-manipulation">
+<h2><span class="section-number">4.1. </span>Filters and object manipulation<a class="headerlink" href="#Filters-and-object-manipulation" title="Link to this heading">¶</a></h2>
+<p>Now to step up our templating-game, we’ll bring in more complexity. We want a template that documents functional context of all actors. For that iff the actor has a non-empty functions attribute we make a table with columns for function’s uid, name, description and <code class="docutils literal notranslate"><span class="pre">FunctionalExchange</span></code>s.</p>
+<p>We can define variables in the template via the set statement. Furthermore the builtin jinja <a class="reference external" href="https://jinja.palletsprojects.com/en/3.0.x/templates/#builtin-filters">filters</a> already give much power for object manipulation during rendering. Here we use map(.) to create <code class="docutils literal notranslate"><span class="pre">FunctionalExchange</span></code> iterators and sum these up into one large list that stores all <code class="docutils literal notranslate"><span class="pre">FunctionalExchange</span></code>s that have an an actor as either source or target. In the table for-loop we then filter on this lookup container and
+set outgoing and incoming <code class="docutils literal notranslate"><span class="pre">FunctionalExchange</span></code>s that we need for the last column.</p>
+<p>The jupyter environment is great for writing templates b/c you can investigate possible attributes of objects right away in another cell.</p>
+<p><em>Hint: You can define custom filter-functions and add them to the Environment.filters.</em></p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">templ1</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;h1&gt;Actor definitions&lt;/h1&gt;</span>
+<span class="s2">{</span><span class="si">% s</span><span class="s2">et fexs = model.la.actor_exchanges.map(&quot;func_exchanges&quot;) %}</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or actor in model.la.all_actors %}</span>
+<span class="s2">    &lt;h2&gt;{{ actor.name }}&lt;/h2&gt;</span>
+<span class="s2">    &lt;h3&gt;Actor definition&lt;/h3&gt;</span>
+<span class="s2">    &lt;p&gt;{{ actor.description }}&lt;/p&gt;</span>
+<span class="s2">    &lt;h3&gt;Actor functions&lt;/h3&gt;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f actor.functions %}</span>
+<span class="s2">        &lt;p&gt;The table below identifies functions of {{ actor.name }}.&lt;/p&gt;</span>
+<span class="s2">        &lt;table&gt;</span>
+<span class="s2">            &lt;thead&gt;</span>
+<span class="s2">                &lt;tr&gt;</span>
+<span class="s2">                    &lt;th&gt;ID&lt;/th&gt;</span>
+<span class="s2">                    &lt;th&gt;Function&lt;/th&gt;</span>
+<span class="s2">                    &lt;th&gt;Description&lt;/th&gt;</span>
+<span class="s2">                    &lt;th&gt;Involved Subsystems&lt;/th&gt;</span>
+<span class="s2">                &lt;/tr&gt;</span>
+<span class="s2">            &lt;/thead&gt;</span>
+<span class="s2">            &lt;tbody&gt;</span>
+<span class="s2">            {</span><span class="si">% f</span><span class="s2">or fnc in actor.functions %}</span>
+<span class="s2">                {</span><span class="si">% s</span><span class="s2">et outs = fexs.by_source.owner(fnc) %}</span>
+<span class="s2">                {</span><span class="si">% s</span><span class="s2">et ins = fexs.by_target.owner(fnc) %}</span>
+<span class="s2">                {</span><span class="si">% s</span><span class="s2">et subs = (ins + outs) | map(attribute=&quot;owner.name&quot;) | unique | sort %}</span>
+<span class="s2">                &lt;tr&gt;</span>
+<span class="s2">                    &lt;td&gt;{{ fnc.uuid }}&lt;/td&gt;</span>
+<span class="s2">                    &lt;td&gt;{{ fnc.name }}&lt;/td&gt;</span>
+<span class="s2">                    &lt;td&gt;{{ fnc.description }}&lt;/td&gt;</span>
+<span class="s2">                    &lt;td&gt;{{ subs | join(&#39;, &#39;) }}&lt;/td&gt;</span>
+<span class="s2">                &lt;/tr&gt;</span>
+<span class="s2">            {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">            &lt;/tbody&gt;</span>
+<span class="s2">        &lt;/table&gt;</span>
+<span class="s2">        &lt;p style=&quot;margin-left: 1cm; font-weight: bold; font-style: italic;&quot;&gt;Functions of {{ actor.name }}&lt;/p&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">        &lt;p style=&quot;text-align: left;&quot;&gt;No actor functions were identified.&lt;/p&gt;</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">templ1</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>Actor definitions</h1>
+
+
+    <h2>Harry J. Potter</h2>
+    <h3>Actor definition</h3>
+    <p></p>
+    <h3>Actor functions</h3>
+
+        <p>The table below identifies functions of Harry J. Potter.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Involved Subsystems</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+
+                <tr>
+                    <td>aa9931e3-116c-461e-8215-6b9fdbdd4a1b</td>
+                    <td>kill He Who Must Not Be Named</td>
+                    <td></td>
+                    <td>Learning</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <p style="margin-left: 1cm; font-weight: bold; font-style: italic;">Functions of Harry J. Potter</p>
+
+
+    <h2>Prof. A. P. W. B. Dumbledore</h2>
+    <h3>Actor definition</h3>
+    <p><p>Principal of Hogwarts, wearer of the elder wand and greatest mage of all time.</p>
+</p>
+    <h3>Actor functions</h3>
+
+        <p>The table below identifies functions of Prof. A. P. W. B. Dumbledore.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Involved Subsystems</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+
+                <tr>
+                    <td>f708bc29-d69f-42a0-90cc-11fc01054cd0</td>
+                    <td>manage the school</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+
+
+
+                <tr>
+                    <td>beaf5ba4-8fa9-4342-911f-0266bb29be45</td>
+                    <td>advise Harry</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+            </tbody>
+        </table>
+        <p style="margin-left: 1cm; font-weight: bold; font-style: italic;">Functions of Prof. A. P. W. B. Dumbledore</p>
+
+
+    <h2>Prof. S. Snape</h2>
+    <h3>Actor definition</h3>
+    <p><p>Good guy and teacher of brewing arts.</p>
+</p>
+    <h3>Actor functions</h3>
+
+        <p>The table below identifies functions of Prof. S. Snape.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Involved Subsystems</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+
+                <tr>
+                    <td>a7acb298-d14b-4707-a419-fea272434541</td>
+                    <td>Teaching</td>
+                    <td></td>
+                    <td>Teacher Responsibilities</td>
+                </tr>
+
+
+
+
+                <tr>
+                    <td>4a2a7f3c-d223-4d44-94a7-50dd2906a70c</td>
+                    <td>maintain a layer of defense for the Sorcerer's Stone</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+            </tbody>
+        </table>
+        <p style="margin-left: 1cm; font-weight: bold; font-style: italic;">Functions of Prof. S. Snape</p>
+
+
+    <h2>Multiport</h2>
+    <h3>Actor definition</h3>
+    <p></p>
+    <h3>Actor functions</h3>
+
+        <p>The table below identifies functions of Multiport.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Involved Subsystems</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+
+                <tr>
+                    <td>9c1885f5-fac7-48fd-9d54-a11092508867</td>
+                    <td>LAF 1</td>
+                    <td></td>
+                    <td>C 5</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <p style="margin-left: 1cm; font-weight: bold; font-style: italic;">Functions of Multiport</p>
+
+
+    <h2>Voldemort</h2>
+    <h3>Actor definition</h3>
+    <p></p>
+    <h3>Actor functions</h3>
+
+        <p style="text-align: left;">No actor functions were identified.</p>
+
+
+    <h2>R. Weasley</h2>
+    <h3>Actor definition</h3>
+    <p></p>
+    <h3>Actor functions</h3>
+
+        <p>The table below identifies functions of R. Weasley.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    <th>Involved Subsystems</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+
+                <tr>
+                    <td>c1a42acc-1f53-42bb-8404-77a5c08c414b</td>
+                    <td>assist Harry</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+
+
+
+                <tr>
+                    <td>edbd1ad4-31c0-4d53-b856-3ffa60e0e99b</td>
+                    <td>break school rules</td>
+                    <td></td>
+                    <td>Punishment</td>
+                </tr>
+
+            </tbody>
+        </table>
+        <p style="margin-left: 1cm; font-weight: bold; font-style: italic;">Functions of R. Weasley</p></div>
+</div>
+</section>
+<section id="Beautiful-SVG-diagrams">
+<h2><span class="section-number">4.2. </span>Beautiful SVG diagrams<a class="headerlink" href="#Beautiful-SVG-diagrams" title="Link to this heading">¶</a></h2>
+<p>Finally we will render a template that displays a diagram. There are many ways to do this and with jinja2 you have full control. We like our figures inside tables such that a caption can be displayed</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">templ</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">&lt;h2&gt;{{ component.name }}&lt;/h2&gt;</span>
+<span class="s2">{{ component.description }}</span>
+<span class="s2">&lt;table&gt;</span>
+<span class="s2">    &lt;caption&gt;Figure {{ fig_id }}: {{ fig_caption | e }}&lt;/caption&gt;</span>
+<span class="s2">    &lt;tr&gt;&lt;td&gt;{{ figure.as_svg | safe }}&lt;/td&gt;&lt;/tr&gt;</span>
+<span class="s2">&lt;/table&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">diagram</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">diagrams</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;[LAB] Wizzard Education&quot;</span><span class="p">)</span>
+<span class="n">rendered</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">templ</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+    <span class="n">component</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalComponent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;Hogwarts&quot;</span><span class="p">),</span>
+    <span class="n">fig_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">fig_caption</span><span class="o">=</span><span class="n">diagram</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="n">figure</span><span class="o">=</span><span class="n">diagram</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">rendered</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Unknown global filter &#39;hide.sequencing.information.filter&#39;
+Unknown global filter &#39;ModelExtensionFilter&#39;
+Unknown global filter &#39;hide.simplified.diagram.based.component.exchanges.filter&#39;
+Unknown global filter &#39;hide.simplified.oriented.grouped.component.exchanges.filter&#39;
+Unknown global filter &#39;hide.simplified.group.of.component.exchanges.filter&#39;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h2>Hogwarts</h2>
+<p>This instance is the mighty Hogwarts. Do you really need a description? Then maybe read the books or watch atleast the epic movies.</p>
+
+<table>
+    <caption>Figure 1: [LAB] Wizzard Education</caption>
+    <tr><td><svg baseProfile="full" class="LogicalArchitectureBlank" height="611" style="shape-rendering: geometricPrecision; font-family: 'Segoe UI'; font-size: 8pt; cursor: pointer;" version="1.1" viewBox="15 15 1162 611" width="1162" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><symbol id="ErrorSymbol" viewBox="0 0 2.6458 2.6458"><path d="M 0,0 2.6458333,2.6458333 M 0,2.6458333 2.6458333,0" style="fill: none; stroke: red; stroke-width: 0.5;" /></symbol><symbol id="RequirementSymbol" style="stroke: none;" viewBox="0 0 50 50"><path d="M 12.806813,6.5702324 A 6.244379,5.8113241 0 0 1 6.5624342,12.381557 6.244379,5.8113241 0 0 1 0.31805515,6.5702324 6.244379,5.8113241 0 0 1 6.5624342,0.75890827 6.244379,5.8113241 0 0 1 12.806813,6.5702324 Z" style="fill: #431964" /><path d="m 4.3228658,5.8752475 h 2.9514721 q 0.2945581,0 0.5184223,-0.1413879 Q 8.0225155,5.5865806 8.1462299,5.3214783 8.2699443,5.056376 8.2758355,4.7029063 v 0 q 0,-0.3475786 -0.1237144,-0.6126808 Q 8.0284067,3.8251232 7.7986513,3.6837353 7.5747872,3.5364562 7.2743379,3.5364562 H 4.3228658 V 2.1873801 h 2.9927103 q 0.7246129,0 1.2724909,0.3122316 0.5478781,0.3122316 0.8483274,0.8836743 0.3063404,0.5714427 0.3063404,1.3196203 v 0 q 0,0.7540687 -0.3063404,1.3255114 Q 9.1359451,6.5998605 8.5821759,6.912092 8.0342978,7.2243236 7.3155761,7.2243236 H 4.3228658 Z M 3.7396407,2.1873801 H 5.1476285 V 10.759021 H 3.7396407 Z M 6.3906636,6.9592213 7.8516718,6.6882279 10.102096,10.759021 H 8.4113322 Z" style="fill:#ffffff;" /></symbol><symbol id="ComponentPortSymbol" viewBox="0 0 10 10"><path d="M0 0h10v10H0z" /><path d="M 2,2 5,7 8,2" /></symbol><symbol id="LogicalActorSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><linearGradient id="ls-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#c3e4ff" stop-opacity="1" /><stop offset="1.0" stop-color="#98b0dd" stop-opacity="1" /></linearGradient><path d="M18 237h46v43H18z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 247h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 261h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><g style="fill: #000;" transform="scale(0.83010896,1.2046611)"><path d="m 31.063676,19.942628 h 3.754427 v 26.759494 h -3.754427 z m 1.877213,23.189107 h 15.312173 v 3.570387 H 32.940889 Z" /><path d="m 60.32612,19.942628 h 3.202306 l 9.864572,26.759494 H 69.344107 L 61.927273,25.114167 54.51044,46.702122 H 50.461548 Z M 55.007349,37.260842 H 69.08645 v 3.570387 H 55.007349 Z" /></g></symbol><symbol id="LogicalComponentSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><linearGradient id="ls-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#c3e4ff" stop-opacity="1" /><stop offset="1.0" stop-color="#98b0dd" stop-opacity="1" /></linearGradient><path d="M18 237h46v43H18z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 247h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 261h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><g transform="scale(0.90705135,1.1024734)"><path d="m 37.427456,20.821353 h 4.221475 V 50.90971 H 37.427456 Z M 39.538194,46.89517 H 56.75519 v 4.01454 H 39.538194 Z" style="fill: #000;" /></g></symbol><symbol id="LogicalFunctionSymbol" viewBox="0 0 79 79"><linearGradient id="green" x1="0" x2="1" y1="0" y2="0"><stop offset="0.0" stop-color="#6CB35B" stop-opacity="1" /><stop offset="1.0" stop-color="#ffffff" stop-opacity="1" /></linearGradient><ellipse cx="42.2" cy="32" rx="22.5" ry="15.5" style="fill: url(#green); stroke: #000; stroke-width: 2;" /><text style="font-family: &quot;Segoe UI&quot;; font-size: 12pt; font-weight: bold; fill: black; stroke: none;" text-anchor="middle" x="42.2" y="38">LF</text></symbol><symbol id="LogicalHumanActorSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><use transform="matrix(0.81762456,0,0,0.81762456,-2.5207584,0.47091696)" xlink:href="#StickFigureSymbol" /></symbol><symbol id="LogicalHumanComponentSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><linearGradient id="ls-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#c3e4ff" stop-opacity="1" /><stop offset="1.0" stop-color="#98b0dd" stop-opacity="1" /></linearGradient><path d="M18 237h46v43H18z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 247h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 261h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><use transform="matrix(0.62,0,0,0.62,23.82,16.51)" xlink:href="#StickFigureSymbol" /></symbol><symbol id="PortSymbol" viewBox="0 0 10 10"><path d="M0 0h10v10H0z" /><path d="M5 1L1 9h8z" fill="#fff" /></symbol><symbol id="StickFigureSymbol" style="stroke: #000; stroke-width: 2;" viewBox="362.861 210.892 75 75"><g style="stroke-width: 2.4944; stroke: #000;" transform="matrix(1.0611338,0,0,1.0611338,-24.47665,-12.241673)"><line style="fill: none;" x1="400.362" x2="400.362" y1="232.586" y2="257.534" /><line style="fill: none;" x1="400.83401" x2="388.423" y1="254.299" y2="275.009" /><line style="fill: none;" x1="400.25201" x2="413.97" y1="254.46001" y2="274.987" /><line style="fill: none;" x1="385.634" x2="415.703" y1="244.569" y2="244.49699" /><radialGradient cx="43.766102" cy="87.902298" fx="0" fy="0" gradientTransform="matrix(1.9728 0 0 -2.039 314.1896 402.5936)" gradientUnits="userSpaceOnUse" id="head" r="4.4296999"><stop offset="0" stop-color="#FDFCFA" /><stop offset="1" stop-color="#8B9BA7" /></radialGradient><ellipse cx="400.53201" cy="223.35899" rx="9.2180004" ry="8.5080004" style="fill:url(#head)" /></g></symbol><symbol id="FunctionalExchangeSymbol" viewBox="0 0 40 30"><linearGradient id="FunctionalExchangeSymbol-gradient" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#4F7C45" stop-opacity="1" /><stop offset="1.0" stop-color="#BCDDB4" stop-opacity="1" /></linearGradient><linearGradient id="FunctionalExchangeSymbol-gradientreverse" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#BCDDB4" stop-opacity="1" /><stop offset="1.0" stop-color="#4F7C45" stop-opacity="1" /></linearGradient><g style="stroke:#000;stroke-width:2;"><path d="M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z" style="fill: url(#FunctionalExchangeSymbol-gradientreverse)" /><path d="m 14.372107,10 h 12.622435 c 0.926189,0.585267 1.836022,1.274509 2.268178,5 -0.208657,2.812473 -0.954601,4.503809 -2.273297,5 H 14.296948" style="fill: #61c34c" /><path d="M 3.9464908,5.0048246 V 24.995175 H 10.87518 C 12.433713,24.159139 15.158267,20.291241 15.313795,15 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c -2.2179509,0 -4.5908341,0 -6.9286892,0 z" style="fill: url(#FunctionalExchangeSymbol-gradient)" /></g></symbol><symbol id="ComponentExchangeSymbol" viewBox="0 0 40 30"><linearGradient id="ComponentExchangeSymbol-gradient" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#8FA5B6" stop-opacity="1" /><stop offset="1.0" stop-color="#E0E9F3" stop-opacity="1" /></linearGradient><linearGradient id="ComponentExchangeSymbol-gradientreverse" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#E0E9F3" stop-opacity="1" /><stop offset="1.0" stop-color="#8FA5B6" stop-opacity="1" /></linearGradient><g style="stroke:#000;stroke-width:2;"><path d="M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z" style="fill: url(#ComponentExchangeSymbol-gradientreverse)" /><path d="m 14.372107,10 h 12.622435 c 0.926189,0.585267 1.836022,1.274509 2.268178,5 -0.208657,2.812473 -0.954601,4.503809 -2.273297,5 H 14.296948" style="fill: #A3BCD0" /><path d="M 3.9464908,5.0048246 V 24.995175 H 10.87518 C 12.433713,24.159139 15.158267,20.291241 15.313795,15 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c -2.2179509,0 -4.5908341,0 -6.9286892,0 z" style="fill: url(#ComponentExchangeSymbol-gradient)" /></g></symbol><linearGradient id="CustomGradient_C3E6FF_96B1DA" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#C3E6FF" stop-opacity="1" /><stop offset="1.0" stop-color="#96B1DA" stop-opacity="1" /></linearGradient><linearGradient id="CustomGradient_EF2929_FFFFFF" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#EF2929" stop-opacity="1" /><stop offset="1.0" stop-color="#FFFFFF" stop-opacity="1" /></linearGradient><linearGradient id="CustomGradient_DAFDFF_C6E6FF" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#DAFDFF" stop-opacity="1" /><stop offset="1.0" stop-color="#C6E6FF" stop-opacity="1" /></linearGradient></defs><rect fill="white" height="611" stroke="none" width="1162" x="15" y="15" /><g class="Box LogicalComponent" id="_dqPI4LB8EeqLtsTDMgEHBw"><rect class="LogicalComponent" height="591" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="411" x="355.5" y="25.5" /><text class="LogicalComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="355" y="25"><tspan x="544.7857142857142" xml:space="preserve" y="36.42857142857143">Hogwarts</tspan></text><use height="20" width="20" x="523.7857142857142" xlink:href="#LogicalComponentSymbol" y="26.42857142857143" /></g><g class="Box LogicalFunction" id="_GHiygMECEeqW8_YksX3uDg"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="131" x="385.5" y="514.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="385" y="514"><tspan x="461.5" xml:space="preserve" y="532.5714285714286">produce Great</tspan><tspan x="461.5" xml:space="preserve" y="545.4285714285714">Wizards</tspan></text><use height="20" width="20" x="401.92857142857144" xlink:href="#LogicalFunctionSymbol" y="529.0" /></g><g class="Box FOP" id="_PEjUUMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 513.5 540.5)" width="10" x="508.5" xlink:href="#PortSymbol" y="535.5" /></g><g class="Box FIP" id="_che_8MTnEeqlbN5fRfdrWQ"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 388.5 540.5)" width="10" x="383.5" xlink:href="#PortSymbol" y="535.5" /></g><g class="Box LogicalFunction" id="_IrIUIMEDEeqW8_YksX3uDg"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="110" x="615.5" y="514.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="615" y="514"><tspan x="681.0" xml:space="preserve" y="519.0">protect</tspan><tspan x="681.0" xml:space="preserve" y="531.8571428571429">Students</tspan><tspan x="681.0" xml:space="preserve" y="544.7142857142858">against the</tspan><tspan x="681.0" xml:space="preserve" y="557.5714285714287">Death Eaters</tspan></text><use height="20" width="20" x="625.7142857142857" xlink:href="#LogicalFunctionSymbol" y="529.0" /></g><g class="Box FIP" id="_PElJgcEDEeqW8_YksX3uDg"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 618.5 540.5)" width="10" x="613.5" xlink:href="#PortSymbol" y="535.5" /></g><g class="Box LogicalComponent" id="_8EyHIMZyEeqlbN5fRfdrWQ"><rect class="LogicalComponent" height="421" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="231" x="445.5" y="64.5" /><text class="LogicalComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="445" y="64"><tspan x="548.3571428571429" xml:space="preserve" y="75.42857142857143">Campus</tspan></text><use height="20" width="20" x="527.3571428571429" xlink:href="#LogicalComponentSymbol" y="65.42857142857143" /></g><g class="Box LogicalComponent" id="_parwwLB_EeqLtsTDMgEHBw"><rect class="LogicalComponent" height="94" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="191" x="465.5" y="90.5" /><text class="LogicalComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="465" y="90"><tspan x="552.6428571428571" xml:space="preserve" y="100.0">School</tspan></text><use height="20" width="20" x="531.6428571428571" xlink:href="#LogicalComponentSymbol" y="90.0" /></g><g class="Box LogicalFunction" id="_ilRGMLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="31" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="141" x="489.5" y="132.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="489" y="132"><tspan x="570.5" xml:space="preserve" y="147.5">educate Wizards</tspan></text><use height="20" width="20" x="505.2142857142857" xlink:href="#LogicalFunctionSymbol" y="137.5" /></g><g class="Box FOP" id="_FxI0oMTnEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 627.5 148.5)" width="10" x="622.5" xlink:href="#PortSymbol" y="143.5" /></g><g class="Box FIP" id="_IXOn4uQUEe2jpIKbeHI0hw"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 492.5 138.5)" width="10" x="487.5" xlink:href="#PortSymbol" y="133.5" /></g><g class="Box FOP" id="_IXQdEeQUEe2jpIKbeHI0hw"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(270 492.5 149.5)" width="10" x="487.5" xlink:href="#PortSymbol" y="144.5" /></g><g class="Box CP_UNSET" id="_z8ZnsMTmEeqlbN5fRfdrWQ"><rect class="CP_UNSET" height="10" style="fill: url(&quot;#CustomGradient_EF2929_FFFFFF&quot;); stroke: #000000; stroke-width: 1" transform="rotate(-90 653.5 119.5)" width="10" x="648.5" y="114.5" /></g><g class="Box CP_OUT" id="_B6BbcKjsEeu7PunlgwoBGA"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(0 561.5 181.5)" width="10" x="556.5" xlink:href="#ComponentPortSymbol" y="176.5" /></g><g class="Box LogicalHumanComponent" id="_BkQ1ULB_EeqLtsTDMgEHBw"><rect class="LogicalHumanComponent" height="104" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="191" x="465.5" y="360.5" /><text class="LogicalHumanComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="465" y="360"><tspan x="521.9285714285714" xml:space="preserve" y="371.42857142857144">Whomping Willow</tspan></text><use height="20" width="20" x="500.92857142857144" xlink:href="#LogicalHumanComponentSymbol" y="361.42857142857144" /></g><g class="Box LogicalFunction" id="_otKRgLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="51" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="141" x="485.5" y="392.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="485" y="392"><tspan x="566.5" xml:space="preserve" y="403.2142857142857">defend the</tspan><tspan x="566.5" xml:space="preserve" y="416.07142857142856">surrounding area</tspan><tspan x="566.5" xml:space="preserve" y="428.9285714285714">against Intruders</tspan></text><use height="20" width="20" x="499.07142857142856" xlink:href="#LogicalFunctionSymbol" y="407.5" /></g><g class="Box FOP" id="_TLfg8MTnEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 623.5 418.5)" width="10" x="618.5" xlink:href="#PortSymbol" y="413.5" /></g><g class="Box CP_OUT" id="_3Khk4LB_EeqLtsTDMgEHBw"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-90 653.5 440.5)" width="10" x="648.5" xlink:href="#ComponentPortSymbol" y="435.5" /></g><g class="Box CP_IN" id="_B6D3sKjsEeu7PunlgwoBGA"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(0 561.5 363.5)" width="10" x="556.5" xlink:href="#ComponentPortSymbol" y="358.5" /></g><g class="Box CP_OUT" id="_fZ8zcUybEeyns9TdzUL1Ow"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(90 468.5 365.5)" width="10" x="463.5" xlink:href="#ComponentPortSymbol" y="360.5" /></g><g class="Box CP_IN" id="_WV0_wLB_EeqLtsTDMgEHBw"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 358.5 130.5)" width="10" x="353.5" xlink:href="#ComponentPortSymbol" y="125.5" /></g><g class="Box CP_IN" id="_XNJpULB_EeqLtsTDMgEHBw"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 358.5 401.5)" width="10" x="353.5" xlink:href="#ComponentPortSymbol" y="396.5" /></g><g class="Box LogicalHumanActor" id="_WUfYcLB-EeqLtsTDMgEHBw"><rect class="LogicalHumanActor" height="171" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="158" x="25.5" y="25.5" /><text class="LogicalHumanActor" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="25" y="25"><tspan x="73.28571428571428" xml:space="preserve" y="35.0">Prof. A. P. W. B.</tspan><tspan x="73.28571428571428" xml:space="preserve" y="45.0">Dumbledore</tspan></text><use height="20" width="20" x="52.28571428571428" xlink:href="#LogicalHumanActorSymbol" y="30.0" /></g><g class="Box LogicalFunction" id="_HyCUQLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="74.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="74"><tspan x="101.5" xml:space="preserve" y="92.57142857142857">manage the</tspan><tspan x="101.5" xml:space="preserve" y="105.42857142857143">school</tspan></text><use height="20" width="20" x="48.357142857142854" xlink:href="#LogicalFunctionSymbol" y="89.0" /></g><g class="Box FOP" id="_riSgQMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 100.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="95.5" /></g><g class="Box LogicalFunction" id="_RCi2ULCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="134.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="134"><tspan x="101.5" xml:space="preserve" y="151.14285714285714">advise</tspan><tspan x="101.5" xml:space="preserve" y="164.0">Harry</tspan></text><use height="20" width="20" x="63.35714285714286" xlink:href="#LogicalFunctionSymbol" y="149.0" /></g><g class="Box FOP" id="_qqumIMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 160.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="155.5" /></g><g class="Box CP_OUT" id="_WYyNILB_EeqLtsTDMgEHBw"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-90 180.5 130.5)" width="10" x="175.5" xlink:href="#ComponentPortSymbol" y="125.5" /></g><g class="Box LogicalHumanActor" id="_4CrKULB-EeqLtsTDMgEHBw"><rect class="LogicalHumanActor" height="211" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="158" x="25.5" y="305.5" /><text class="LogicalHumanActor" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="25" y="305"><tspan x="76.85714285714286" xml:space="preserve" y="316.42857142857144">Prof. S. Snape</tspan></text><use height="20" width="20" x="55.85714285714286" xlink:href="#LogicalHumanActorSymbol" y="306.42857142857144" /></g><g class="Box LogicalFunction" id="_aDTsMrCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="54" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="344.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="344"><tspan x="101.5" xml:space="preserve" y="371.0">Teaching</tspan></text><use height="20" width="20" x="56.214285714285715" xlink:href="#LogicalFunctionSymbol" y="361.0" /></g><g class="Box FOP" id="_gQ9V8MEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 360.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="355.5" /></g><g class="Box LogicalFunction" id="_fUFCQLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="81" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="414.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="414"><tspan x="101.5" xml:space="preserve" y="420.92857142857144">maintain a</tspan><tspan x="101.5" xml:space="preserve" y="433.7857142857143">layer of</tspan><tspan x="101.5" xml:space="preserve" y="446.6428571428571">defense for</tspan><tspan x="101.5" xml:space="preserve" y="459.49999999999994">the</tspan><tspan x="101.5" xml:space="preserve" y="472.3571428571428">Sorcerer's</tspan><tspan x="101.5" xml:space="preserve" y="485.2142857142856">Stone</tspan></text><use height="20" width="20" x="49.785714285714285" xlink:href="#LogicalFunctionSymbol" y="444.5" /></g><g class="Box FOP" id="_maL-AMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 431.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="426.5" /></g><g class="Box CP_OUT" id="_XNEJwLB_EeqLtsTDMgEHBw"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-90 180.5 404.5)" width="10" x="175.5" xlink:href="#ComponentPortSymbol" y="399.5" /></g><g class="Box LogicalActor" id="_yCkzoLB_EeqLtsTDMgEHBw"><rect class="LogicalActor" height="131" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="200" x="967.5" y="25.5" /><text class="LogicalActor" dominant-baseline="middle" style="fill: #000000" text-anchor="start" x="967" y="25"><tspan x="1039.142857142857" xml:space="preserve" y="36.42857142857143">Harry J. Potter</tspan></text><use height="20" width="20" x="1018.1428571428571" xlink:href="#LogicalActorSymbol" y="26.42857142857143" /></g><g class="Box LogicalFunction" id="_nccmwMTpEeqlbN5fRfdrWQ"><rect class="LogicalFunction" height="61" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="110" x="1007.5" y="54.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1007" y="54"><tspan x="1073.0" xml:space="preserve" y="74.5">kill He Who</tspan><tspan x="1073.0" xml:space="preserve" y="84.5">Must Not Be</tspan><tspan x="1073.0" xml:space="preserve" y="94.5">Named</tspan></text><use height="20" width="20" x="1018.4285714285714" xlink:href="#LogicalFunctionSymbol" y="74.5" /></g><g class="Box FIP" id="_8Fj_0MTpEeqlbN5fRfdrWQ"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 1010.5 80.5)" width="10" x="1005.5" xlink:href="#PortSymbol" y="75.5" /></g><g class="Box FIP" id="_FNwX8NZEEeqiU8uzTY0Puw"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(0 1024.5 112.5)" width="10" x="1019.5" xlink:href="#PortSymbol" y="107.5" /></g><g class="Box CP_INOUT" id="_z5h54MTmEeqlbN5fRfdrWQ"><rect class="CP_INOUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(90 970.5 40.5)" width="10" x="965.5" y="35.5" /></g><g class="Box CP_IN" id="_YwIt4MTqEeqlbN5fRfdrWQ"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(180 1152.5 153.5)" width="10" x="1147.5" xlink:href="#ComponentPortSymbol" y="148.5" /></g><g class="Box CP_IN" id="_faBE40ybEeyns9TdzUL1Ow"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 970.5 30.5)" width="10" x="965.5" xlink:href="#ComponentPortSymbol" y="25.5" /></g><g class="Box LogicalHumanActor" id="_zuBo0LB_EeqLtsTDMgEHBw"><rect class="LogicalHumanActor" height="171" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="200" x="967.5" y="402.5" /><text class="LogicalHumanActor" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="967" y="402"><tspan x="1047.7142857142858" xml:space="preserve" y="413.42857142857144">R. Weasley</tspan></text><use height="20" width="20" x="1026.7142857142858" xlink:href="#LogicalHumanActorSymbol" y="403.42857142857144" /></g><g class="Box LogicalFunction" id="_toddEMTpEeqlbN5fRfdrWQ"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="101" x="1017.5" y="441.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1017" y="441"><tspan x="1078.5" xml:space="preserve" y="466.0">assist Harry</tspan></text><use height="20" width="20" x="1025.357142857143" xlink:href="#LogicalFunctionSymbol" y="456.0" /></g><g class="Box FOP" id="_8FiKoMTpEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 1115.5 461.5)" width="10" x="1110.5" xlink:href="#PortSymbol" y="456.5" /></g><g class="Box LogicalFunction" id="_0dxIAMTpEeqlbN5fRfdrWQ"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="101" x="1017.5" y="501.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1017" y="501"><tspan x="1078.5" xml:space="preserve" y="521.0">break school</tspan><tspan x="1078.5" xml:space="preserve" y="531.0">rules</tspan></text><use height="20" width="20" x="1023.2142857142857" xlink:href="#LogicalFunctionSymbol" y="516.0" /></g><g class="Box FOP" id="_B7X8oMTqEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 1115.5 511.5)" width="10" x="1110.5" xlink:href="#PortSymbol" y="506.5" /></g><g class="Box FIP" id="_phubwMTqEeqlbN5fRfdrWQ"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 1020.5 520.5)" width="10" x="1015.5" xlink:href="#PortSymbol" y="515.5" /></g><g class="Box CP_IN" id="_3KmdYLB_EeqLtsTDMgEHBw"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 970.5 542.5)" width="10" x="965.5" xlink:href="#ComponentPortSymbol" y="537.5" /></g><g class="Box CP_OUT" id="_YwGRoMTqEeqlbN5fRfdrWQ"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-180 1154.5 405.5)" width="10" x="1149.5" xlink:href="#ComponentPortSymbol" y="400.5" /></g><g class="Edge FunctionalExchange" id="_PEmXoMEDEeqW8_YksX3uDg"><path class="Edge" d="M 518.5 540.5 613.5 540.5 613.5 540.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="529.0" y="523"><tspan x="577.0" xml:space="preserve" y="529.4285714285714">wizardry</tspan></text><use height="20" width="20" x="532.4285714285714" xlink:href="#FunctionalExchangeSymbol" y="519.4285714285714" /></g><g class="Edge FOPAllocation" id="_o4KcUMEDEeqW8_YksX3uDg"><path class="Edge" d="M 175.5 404.5 155.5 404.5 155.5 431.5 138.5 431.5 138.5 431.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="160" y="403"><tspan x="160.0" xml:space="preserve" y="403.0" /></text></g><g class="Edge FOPAllocation" id="_syJloMEDEeqW8_YksX3uDg"><path class="Edge" d="M 175.5 130.5 155.5 130.5 155.5 101.5 138.5 101.5 138.5 100.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="166" y="141"><tspan x="166.0" xml:space="preserve" y="141.0" /></text></g><g class="Edge FOPAllocation" id="_u8br4MEDEeqW8_YksX3uDg"><path class="Edge" d="M 175.5 130.5 155.5 130.5 155.5 161.5 138.5 161.5 138.5 160.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="157" y="129"><tspan x="157.0" xml:space="preserve" y="129.0" /></text></g><g class="Edge ComponentExchange" id="_WbdGoLB_EeqLtsTDMgEHBw"><path class="Edge" d="M 353.5 130.5 185.5 130.5 185.5 130.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="215.0" y="110"><tspan x="294.5" xml:space="preserve" y="115.0">Headmaster</tspan><tspan x="294.5" xml:space="preserve" y="127.85714285714286">Responsibilities</tspan></text><use height="20" width="20" x="232.07142857142856" xlink:href="#ComponentExchangeSymbol" y="112.85714285714286" /></g><g class="Edge ComponentExchange" id="_XNOh0LB_EeqLtsTDMgEHBw"><path class="Edge" d="M 185.5 404.5 353.5 404.5 353.5 401.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="184.0" y="393"><tspan x="263.5" xml:space="preserve" y="398.0">Teacher</tspan><tspan x="263.5" xml:space="preserve" y="410.85714285714283">Responsibilities</tspan></text><use height="20" width="20" x="201.07142857142856" xlink:href="#ComponentExchangeSymbol" y="395.85714285714283" /></g><g class="Edge FIPAllocation" id="_twPK8MTnEeqlbN5fRfdrWQ"><path class="Edge" d="M 363.5 130.5 375.5 130.5 375.5 540.5 383.5 540.5 383.5 540.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="375" y="193"><tspan x="375.0" xml:space="preserve" y="193.0" /></text></g><g class="Edge FIPAllocation" id="_VBCl8MTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 975.5 40.5 987.5 40.5 987.5 80.5 1005.5 80.5 1005.5 80.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="995" y="57"><tspan x="995.0" xml:space="preserve" y="57.0" /></text></g><g class="Edge ComponentExchange" id="_YwLxMMTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 1154.5 400.5 1154.5 158.5 1152.5 158.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="1037.0" y="161"><tspan x="1112.0" xml:space="preserve" y="167.42857142857142">Help for Harry</tspan></text><use height="20" width="20" x="1052.4285714285713" xlink:href="#ComponentExchangeSymbol" y="157.42857142857142" /></g><g class="Edge FunctionalExchange" id="_RmRSwMTrEeqlbN5fRfdrWQ"><path class="Edge" d="M 138.5 360.5 375.5 360.5 375.5 540.5 383.5 540.5 383.5 540.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="251.0" y="337"><tspan x="305.0" xml:space="preserve" y="343.42857142857144">Knowledge</tspan></text><use height="20" width="20" x="254.0" xlink:href="#FunctionalExchangeSymbol" y="333.42857142857144" /></g><g class="Edge ComponentExchange" id="_3Ko5oLB_EeqLtsTDMgEHBw"><path class="Edge" d="M 658.5 440.5 775.5 440.5 775.5 514.5 805.5 514.5 805.5 494.5 825.5 494.5 825.5 474.5 875.5 474.5 875.5 494.5 905.5 494.5 905.5 514.5 935.5 514.5 935.5 464.5 915.5 464.5 915.5 424.5 965.5 424.5 965.5 464.5 945.5 464.5 945.5 539.5 965.5 539.5 965.5 542.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="743.0" y="514"><tspan x="812.5" xml:space="preserve" y="519.0">Punishment</tspan></text><use height="20" width="20" x="759.3571428571429" xlink:href="#ComponentExchangeSymbol" y="509.0" /></g><g class="Edge ComponentExchange" id="_z-LwYMTmEeqlbN5fRfdrWQ"><path class="Edge" d="M 965.5 40.5 855.5 40.5 855.5 120.5 658.5 120.5 658.5 119.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="774.0" y="97"><tspan x="822.0" xml:space="preserve" y="103.42857142857143">Learning</tspan></text><use height="20" width="20" x="777.4285714285714" xlink:href="#ComponentExchangeSymbol" y="93.42857142857143" /></g><g class="Edge FOPAllocation" id="_HDIA8MTnEeqlbN5fRfdrWQ"><path class="Edge" d="M 648.5 124.5 631.5 143.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="640" y="128"><tspan x="640.0" xml:space="preserve" y="128.0" /></text></g><g class="Edge FunctionalExchange" id="_0nQlwMTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 632.5 148.5 885.5 148.5 885.5 78.5 1005.5 78.5 1005.5 80.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="759.0" y="133"><tspan x="832.0" xml:space="preserve" y="138.0">educate &amp; mature</tspan></text><use height="20" width="20" x="762.4285714285714" xlink:href="#FunctionalExchangeSymbol" y="128.0" /></g><g class="Edge FunctionalExchange" id="_B7YjssTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 1120.5 511.5 1145.5 511.5 1145.5 214.5 1022.5 214.5 1022.5 117.5 1024.5 117.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1036.0" y="195"><tspan x="1087.5" xml:space="preserve" y="201.42857142857142">friendship</tspan></text><use height="20" width="20" x="1039.357142857143" xlink:href="#FunctionalExchangeSymbol" y="191.42857142857142" /></g><g class="Edge FunctionalExchange" id="_8FlN8cTpEeqlbN5fRfdrWQ"><path class="Edge" d="M 1120.5 461.5 1135.5 461.5 1135.5 265.5 1022.5 265.5 1022.5 117.5 1024.5 117.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1034.0" y="248"><tspan x="1086.0" xml:space="preserve" y="253.0">assistance</tspan></text><use height="20" width="20" x="1037.142857142857" xlink:href="#FunctionalExchangeSymbol" y="243.0" /></g><g class="Edge FIPAllocation" id="_RP7wgtZEEeqiU8uzTY0Puw"><path class="Edge" d="M 1152.5 148.5 1152.5 135.5 1022.5 135.5 1022.5 117.5 1024.5 117.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="1149" y="137"><tspan x="1149.0" xml:space="preserve" y="137.0" /></text></g><g class="Edge FOPAllocation" id="_RP8XdNZEEeqiU8uzTY0Puw"><path class="Edge" d="M 1154.5 410.5 1159.5 410.5 1159.5 461.5 1120.5 461.5 1120.5 461.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="1159" y="442"><tspan x="1159.0" xml:space="preserve" y="442.0" /></text></g><g class="Edge FOPAllocation" id="_RP8-gtZEEeqiU8uzTY0Puw"><path class="Edge" d="M 1154.5 410.5 1159.5 410.5 1159.5 511.5 1120.5 511.5 1120.5 511.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="1156" y="467"><tspan x="1156.0" xml:space="preserve" y="467.0" /></text></g><g class="Edge ComponentExchange" id="_e8OmYKjsEeu7PunlgwoBGA"><path class="Edge" d="M 561.5 186.5 561.5 358.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="561.0" y="267"><tspan x="598.0" xml:space="preserve" y="272.0">Care</tspan></text><use height="20" width="20" x="564.1428571428571" xlink:href="#ComponentExchangeSymbol" y="262.0" /></g><g class="Edge FIPAllocation" id="_E2dKmkhREeyVkeSUJyVgbw"><path class="Edge" d="M 359.5 406.5 387.5 535.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="382" y="468"><tspan x="382.0" xml:space="preserve" y="468.0" /></text></g><g class="Edge FOPAllocation" id="_E2dxpUhREeyVkeSUJyVgbw"><path class="Edge" d="M 175.5 404.5 155.5 404.5 155.5 361.5 138.5 361.5 138.5 360.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="155" y="374"><tspan x="155.0" xml:space="preserve" y="374.0" /></text></g><g class="Edge FunctionalExchange" id="_phyGIMTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 628.5 418.5 995.5 418.5 995.5 519.5 1015.5 519.5 1015.5 520.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="844.0" y="422"><tspan x="899.0" xml:space="preserve" y="428.42857142857144">punish</tspan></text><use height="20" width="20" x="859.4285714285714" xlink:href="#FunctionalExchangeSymbol" y="418.42857142857144" /></g><g class="Edge FIPAllocation" id="_b-Xr7EhSEeyVkeSUJyVgbw"><path class="Edge" d="M 975.5 539.5 1015.5 522.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="999" y="522"><tspan x="999.0" xml:space="preserve" y="522.0" /></text></g><g class="Edge FOPAllocation" id="_b-Xr8UhSEeyVkeSUJyVgbw"><path class="Edge" d="M 648.5 436.5 628.5 422.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="632" y="437"><tspan x="632.0" xml:space="preserve" y="437.0" /></text></g><g class="Edge FIPAllocation" id="_faMEFEybEeyns9TdzUL1Ow"><path class="Edge" d="M 974.5 35.5 1006.5 75.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="995" y="46"><tspan x="995.0" xml:space="preserve" y="46.0" /></text></g><g class="Edge FOPAllocation" id="_faMrEkybEeyns9TdzUL1Ow"><path class="Edge" d="M 473.5 367.5 618.5 416.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="546" y="379"><tspan x="546.0" xml:space="preserve" y="379.0" /></text></g><g class="Edge FunctionalExchange" id="_IXbcMuQUEe2jpIKbeHI0hw"><path class="Edge" d="M 138.5 357.5 487.5 141.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="268.0" y="230"><tspan x="313.5" xml:space="preserve" y="235.0">educate</tspan></text><use height="20" width="20" x="271.07142857142856" xlink:href="#FunctionalExchangeSymbol" y="225.0" /></g><g class="Edge FIPAllocation" id="_IXg70OQUEe2jpIKbeHI0hw"><path class="Edge" d="M 363.5 130.5 487.5 138.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="417" y="116"><tspan x="417.0" xml:space="preserve" y="116.0" /></text></g></svg></td></tr>
+</table></div>
+</div>
+<p><em>Hint: Take notice of the</em><a class="reference external" href="https://jinja.palletsprojects.com/en/3.0.x/api/#jinja2.Environment">jinja.Environment</a><em>. Instead of handing the figure_table-markup over in the rendering call you could also set an insert_figure_as_table function, which you ideally defined before, in the environment globals or you can define</em><a class="reference external" href="https://jinja.palletsprojects.com/en/3.0.x/templates/#macros">macros</a><em>right in the template. These tools can automate repetitive content placement.</em></p>
+</section>
+<section id="Template-inheritance">
+<h2><span class="section-number">4.3. </span>Template inheritance<a class="headerlink" href="#Template-inheritance" title="Link to this heading">¶</a></h2>
+<p>The last cell will present a routine where a full .html document is generated. Earlier rendered content were HTML-fragments to be precise. On top you can see a showcase on jinja’s <a class="reference external" href="https://jinja.palletsprojects.com/en/3.0.x/templates/#template-inheritance">template-inheritance</a> functionality. The special DictLoader gives support for finding the base template called “template.html”. This was just needed because we are dealing with content in memory and didn’t create template.html in our
+FileSystem before. Per default jinja is using the FileSystemLoader when creating an Environment. It’s not a bad idea to check the <a class="reference external" href="https://jinja.palletsprojects.com/en/3.0.x/api/#loaders">Loaders</a> they have, if you want to understand how template loading is working and/or plan on developing a pipeline system for document distribution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig_templ</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="p">(</span>
+        <span class="s1">&#39;{</span><span class="si">% e</span><span class="s1">xtends &quot;template.html&quot; %}&#39;</span><span class="p">,</span>
+        <span class="s2">&quot;{% block content %}&quot;</span><span class="p">,</span>
+        <span class="n">templ</span><span class="p">,</span>
+        <span class="s2">&quot;{</span><span class="si">% e</span><span class="s2">ndblock %}&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">final_templ</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html&gt;</span>
+
+<span class="s2">&lt;head&gt;</span>
+<span class="s2">    &lt;style&gt;</span>
+<span class="s2">        caption {</span>
+<span class="s2">            caption-side: bottom;</span>
+<span class="s2">            border-top: 1px solid silver;</span>
+<span class="s2">        }</span>
+<span class="s2">    &lt;/style&gt;</span>
+<span class="s2">&lt;/head&gt;</span>
+
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">    {% block content %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndblock %}</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&lt;/html&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">jinja2</span><span class="o">.</span><span class="n">Environment</span><span class="p">(</span>
+    <span class="n">loader</span><span class="o">=</span><span class="n">jinja2</span><span class="o">.</span><span class="n">DictLoader</span><span class="p">({</span><span class="s2">&quot;template.html&quot;</span><span class="p">:</span> <span class="n">final_templ</span><span class="p">})</span>
+<span class="p">)</span>
+<span class="n">rendered</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">from_string</span><span class="p">(</span><span class="n">fig_templ</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+    <span class="n">component</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalComponent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;Hogwarts&quot;</span><span class="p">),</span>
+    <span class="n">fig_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">fig_caption</span><span class="o">=</span><span class="n">diagram</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+    <span class="n">figure</span><span class="o">=</span><span class="n">diagram</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">rendered</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        caption {
+            caption-side: bottom;
+            border-top: 1px solid silver;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Hogwarts</h2>
+<p>This instance is the mighty Hogwarts. Do you really need a description? Then maybe read the books or watch atleast the epic movies.</p>
+
+<table>
+    <caption>Figure 1: [LAB] Wizzard Education</caption>
+    <tr><td><svg baseProfile="full" class="LogicalArchitectureBlank" height="611" style="shape-rendering: geometricPrecision; font-family: 'Segoe UI'; font-size: 8pt; cursor: pointer;" version="1.1" viewBox="15 15 1162 611" width="1162" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><symbol id="ErrorSymbol" viewBox="0 0 2.6458 2.6458"><path d="M 0,0 2.6458333,2.6458333 M 0,2.6458333 2.6458333,0" style="fill: none; stroke: red; stroke-width: 0.5;" /></symbol><symbol id="RequirementSymbol" style="stroke: none;" viewBox="0 0 50 50"><path d="M 12.806813,6.5702324 A 6.244379,5.8113241 0 0 1 6.5624342,12.381557 6.244379,5.8113241 0 0 1 0.31805515,6.5702324 6.244379,5.8113241 0 0 1 6.5624342,0.75890827 6.244379,5.8113241 0 0 1 12.806813,6.5702324 Z" style="fill: #431964" /><path d="m 4.3228658,5.8752475 h 2.9514721 q 0.2945581,0 0.5184223,-0.1413879 Q 8.0225155,5.5865806 8.1462299,5.3214783 8.2699443,5.056376 8.2758355,4.7029063 v 0 q 0,-0.3475786 -0.1237144,-0.6126808 Q 8.0284067,3.8251232 7.7986513,3.6837353 7.5747872,3.5364562 7.2743379,3.5364562 H 4.3228658 V 2.1873801 h 2.9927103 q 0.7246129,0 1.2724909,0.3122316 0.5478781,0.3122316 0.8483274,0.8836743 0.3063404,0.5714427 0.3063404,1.3196203 v 0 q 0,0.7540687 -0.3063404,1.3255114 Q 9.1359451,6.5998605 8.5821759,6.912092 8.0342978,7.2243236 7.3155761,7.2243236 H 4.3228658 Z M 3.7396407,2.1873801 H 5.1476285 V 10.759021 H 3.7396407 Z M 6.3906636,6.9592213 7.8516718,6.6882279 10.102096,10.759021 H 8.4113322 Z" style="fill:#ffffff;" /></symbol><symbol id="ComponentPortSymbol" viewBox="0 0 10 10"><path d="M0 0h10v10H0z" /><path d="M 2,2 5,7 8,2" /></symbol><symbol id="LogicalActorSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><linearGradient id="ls-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#c3e4ff" stop-opacity="1" /><stop offset="1.0" stop-color="#98b0dd" stop-opacity="1" /></linearGradient><path d="M18 237h46v43H18z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 247h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 261h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><g style="fill: #000;" transform="scale(0.83010896,1.2046611)"><path d="m 31.063676,19.942628 h 3.754427 v 26.759494 h -3.754427 z m 1.877213,23.189107 h 15.312173 v 3.570387 H 32.940889 Z" /><path d="m 60.32612,19.942628 h 3.202306 l 9.864572,26.759494 H 69.344107 L 61.927273,25.114167 54.51044,46.702122 H 50.461548 Z M 55.007349,37.260842 H 69.08645 v 3.570387 H 55.007349 Z" /></g></symbol><symbol id="LogicalComponentSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><linearGradient id="ls-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#c3e4ff" stop-opacity="1" /><stop offset="1.0" stop-color="#98b0dd" stop-opacity="1" /></linearGradient><path d="M18 237h46v43H18z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 247h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 261h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><g transform="scale(0.90705135,1.1024734)"><path d="m 37.427456,20.821353 h 4.221475 V 50.90971 H 37.427456 Z M 39.538194,46.89517 H 56.75519 v 4.01454 H 39.538194 Z" style="fill: #000;" /></g></symbol><symbol id="LogicalFunctionSymbol" viewBox="0 0 79 79"><linearGradient id="green" x1="0" x2="1" y1="0" y2="0"><stop offset="0.0" stop-color="#6CB35B" stop-opacity="1" /><stop offset="1.0" stop-color="#ffffff" stop-opacity="1" /></linearGradient><ellipse cx="42.2" cy="32" rx="22.5" ry="15.5" style="fill: url(#green); stroke: #000; stroke-width: 2;" /><text style="font-family: &quot;Segoe UI&quot;; font-size: 12pt; font-weight: bold; fill: black; stroke: none;" text-anchor="middle" x="42.2" y="38">LF</text></symbol><symbol id="LogicalHumanActorSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><use transform="matrix(0.81762456,0,0,0.81762456,-2.5207584,0.47091696)" xlink:href="#StickFigureSymbol" /></symbol><symbol id="LogicalHumanComponentSymbol" style="stroke: #000; stroke-width: 2;" viewBox="0 0 79 79"><linearGradient id="ls-blue" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#c3e4ff" stop-opacity="1" /><stop offset="1.0" stop-color="#98b0dd" stop-opacity="1" /></linearGradient><path d="M18 237h46v43H18z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 247h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><path d="M12 261h11v8H12z" style="fill: url(#ls-blue)" transform="translate(0 -218)" /><use transform="matrix(0.62,0,0,0.62,23.82,16.51)" xlink:href="#StickFigureSymbol" /></symbol><symbol id="PortSymbol" viewBox="0 0 10 10"><path d="M0 0h10v10H0z" /><path d="M5 1L1 9h8z" fill="#fff" /></symbol><symbol id="StickFigureSymbol" style="stroke: #000; stroke-width: 2;" viewBox="362.861 210.892 75 75"><g style="stroke-width: 2.4944; stroke: #000;" transform="matrix(1.0611338,0,0,1.0611338,-24.47665,-12.241673)"><line style="fill: none;" x1="400.362" x2="400.362" y1="232.586" y2="257.534" /><line style="fill: none;" x1="400.83401" x2="388.423" y1="254.299" y2="275.009" /><line style="fill: none;" x1="400.25201" x2="413.97" y1="254.46001" y2="274.987" /><line style="fill: none;" x1="385.634" x2="415.703" y1="244.569" y2="244.49699" /><radialGradient cx="43.766102" cy="87.902298" fx="0" fy="0" gradientTransform="matrix(1.9728 0 0 -2.039 314.1896 402.5936)" gradientUnits="userSpaceOnUse" id="head" r="4.4296999"><stop offset="0" stop-color="#FDFCFA" /><stop offset="1" stop-color="#8B9BA7" /></radialGradient><ellipse cx="400.53201" cy="223.35899" rx="9.2180004" ry="8.5080004" style="fill:url(#head)" /></g></symbol><symbol id="FunctionalExchangeSymbol" viewBox="0 0 40 30"><linearGradient id="FunctionalExchangeSymbol-gradient" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#4F7C45" stop-opacity="1" /><stop offset="1.0" stop-color="#BCDDB4" stop-opacity="1" /></linearGradient><linearGradient id="FunctionalExchangeSymbol-gradientreverse" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#BCDDB4" stop-opacity="1" /><stop offset="1.0" stop-color="#4F7C45" stop-opacity="1" /></linearGradient><g style="stroke:#000;stroke-width:2;"><path d="M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z" style="fill: url(#FunctionalExchangeSymbol-gradientreverse)" /><path d="m 14.372107,10 h 12.622435 c 0.926189,0.585267 1.836022,1.274509 2.268178,5 -0.208657,2.812473 -0.954601,4.503809 -2.273297,5 H 14.296948" style="fill: #61c34c" /><path d="M 3.9464908,5.0048246 V 24.995175 H 10.87518 C 12.433713,24.159139 15.158267,20.291241 15.313795,15 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c -2.2179509,0 -4.5908341,0 -6.9286892,0 z" style="fill: url(#FunctionalExchangeSymbol-gradient)" /></g></symbol><symbol id="ComponentExchangeSymbol" viewBox="0 0 40 30"><linearGradient id="ComponentExchangeSymbol-gradient" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#8FA5B6" stop-opacity="1" /><stop offset="1.0" stop-color="#E0E9F3" stop-opacity="1" /></linearGradient><linearGradient id="ComponentExchangeSymbol-gradientreverse" x1="0" x2="1" y1="0" y2="1"><stop offset="0.0" stop-color="#E0E9F3" stop-opacity="1" /><stop offset="1.0" stop-color="#8FA5B6" stop-opacity="1" /></linearGradient><g style="stroke:#000;stroke-width:2;"><path d="M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z" style="fill: url(#ComponentExchangeSymbol-gradientreverse)" /><path d="m 14.372107,10 h 12.622435 c 0.926189,0.585267 1.836022,1.274509 2.268178,5 -0.208657,2.812473 -0.954601,4.503809 -2.273297,5 H 14.296948" style="fill: #A3BCD0" /><path d="M 3.9464908,5.0048246 V 24.995175 H 10.87518 C 12.433713,24.159139 15.158267,20.291241 15.313795,15 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c -2.2179509,0 -4.5908341,0 -6.9286892,0 z" style="fill: url(#ComponentExchangeSymbol-gradient)" /></g></symbol><linearGradient id="CustomGradient_C3E6FF_96B1DA" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#C3E6FF" stop-opacity="1" /><stop offset="1.0" stop-color="#96B1DA" stop-opacity="1" /></linearGradient><linearGradient id="CustomGradient_EF2929_FFFFFF" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#EF2929" stop-opacity="1" /><stop offset="1.0" stop-color="#FFFFFF" stop-opacity="1" /></linearGradient><linearGradient id="CustomGradient_DAFDFF_C6E6FF" x1="0" x2="0" y1="0" y2="1"><stop offset="0.0" stop-color="#DAFDFF" stop-opacity="1" /><stop offset="1.0" stop-color="#C6E6FF" stop-opacity="1" /></linearGradient></defs><rect fill="white" height="611" stroke="none" width="1162" x="15" y="15" /><g class="Box LogicalComponent" id="_dqPI4LB8EeqLtsTDMgEHBw"><rect class="LogicalComponent" height="591" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="411" x="355.5" y="25.5" /><text class="LogicalComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="355" y="25"><tspan x="544.7857142857142" xml:space="preserve" y="36.42857142857143">Hogwarts</tspan></text><use height="20" width="20" x="523.7857142857142" xlink:href="#LogicalComponentSymbol" y="26.42857142857143" /></g><g class="Box LogicalFunction" id="_GHiygMECEeqW8_YksX3uDg"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="131" x="385.5" y="514.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="385" y="514"><tspan x="461.5" xml:space="preserve" y="532.5714285714286">produce Great</tspan><tspan x="461.5" xml:space="preserve" y="545.4285714285714">Wizards</tspan></text><use height="20" width="20" x="401.92857142857144" xlink:href="#LogicalFunctionSymbol" y="529.0" /></g><g class="Box FOP" id="_PEjUUMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 513.5 540.5)" width="10" x="508.5" xlink:href="#PortSymbol" y="535.5" /></g><g class="Box FIP" id="_che_8MTnEeqlbN5fRfdrWQ"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 388.5 540.5)" width="10" x="383.5" xlink:href="#PortSymbol" y="535.5" /></g><g class="Box LogicalFunction" id="_IrIUIMEDEeqW8_YksX3uDg"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="110" x="615.5" y="514.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="615" y="514"><tspan x="681.0" xml:space="preserve" y="519.0">protect</tspan><tspan x="681.0" xml:space="preserve" y="531.8571428571429">Students</tspan><tspan x="681.0" xml:space="preserve" y="544.7142857142858">against the</tspan><tspan x="681.0" xml:space="preserve" y="557.5714285714287">Death Eaters</tspan></text><use height="20" width="20" x="625.7142857142857" xlink:href="#LogicalFunctionSymbol" y="529.0" /></g><g class="Box FIP" id="_PElJgcEDEeqW8_YksX3uDg"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 618.5 540.5)" width="10" x="613.5" xlink:href="#PortSymbol" y="535.5" /></g><g class="Box LogicalComponent" id="_8EyHIMZyEeqlbN5fRfdrWQ"><rect class="LogicalComponent" height="421" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="231" x="445.5" y="64.5" /><text class="LogicalComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="445" y="64"><tspan x="548.3571428571429" xml:space="preserve" y="75.42857142857143">Campus</tspan></text><use height="20" width="20" x="527.3571428571429" xlink:href="#LogicalComponentSymbol" y="65.42857142857143" /></g><g class="Box LogicalComponent" id="_parwwLB_EeqLtsTDMgEHBw"><rect class="LogicalComponent" height="94" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="191" x="465.5" y="90.5" /><text class="LogicalComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="465" y="90"><tspan x="552.6428571428571" xml:space="preserve" y="100.0">School</tspan></text><use height="20" width="20" x="531.6428571428571" xlink:href="#LogicalComponentSymbol" y="90.0" /></g><g class="Box LogicalFunction" id="_ilRGMLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="31" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="141" x="489.5" y="132.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="489" y="132"><tspan x="570.5" xml:space="preserve" y="147.5">educate Wizards</tspan></text><use height="20" width="20" x="505.2142857142857" xlink:href="#LogicalFunctionSymbol" y="137.5" /></g><g class="Box FOP" id="_FxI0oMTnEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 627.5 148.5)" width="10" x="622.5" xlink:href="#PortSymbol" y="143.5" /></g><g class="Box FIP" id="_IXOn4uQUEe2jpIKbeHI0hw"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 492.5 138.5)" width="10" x="487.5" xlink:href="#PortSymbol" y="133.5" /></g><g class="Box FOP" id="_IXQdEeQUEe2jpIKbeHI0hw"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(270 492.5 149.5)" width="10" x="487.5" xlink:href="#PortSymbol" y="144.5" /></g><g class="Box CP_UNSET" id="_z8ZnsMTmEeqlbN5fRfdrWQ"><rect class="CP_UNSET" height="10" style="fill: url(&quot;#CustomGradient_EF2929_FFFFFF&quot;); stroke: #000000; stroke-width: 1" transform="rotate(-90 653.5 119.5)" width="10" x="648.5" y="114.5" /></g><g class="Box CP_OUT" id="_B6BbcKjsEeu7PunlgwoBGA"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(0 561.5 181.5)" width="10" x="556.5" xlink:href="#ComponentPortSymbol" y="176.5" /></g><g class="Box LogicalHumanComponent" id="_BkQ1ULB_EeqLtsTDMgEHBw"><rect class="LogicalHumanComponent" height="104" style="fill: url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;); stroke: #4A4A97; stroke-width: 1" width="191" x="465.5" y="360.5" /><text class="LogicalHumanComponent" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="465" y="360"><tspan x="521.9285714285714" xml:space="preserve" y="371.42857142857144">Whomping Willow</tspan></text><use height="20" width="20" x="500.92857142857144" xlink:href="#LogicalHumanComponentSymbol" y="361.42857142857144" /></g><g class="Box LogicalFunction" id="_otKRgLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="51" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="141" x="485.5" y="392.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="485" y="392"><tspan x="566.5" xml:space="preserve" y="403.2142857142857">defend the</tspan><tspan x="566.5" xml:space="preserve" y="416.07142857142856">surrounding area</tspan><tspan x="566.5" xml:space="preserve" y="428.9285714285714">against Intruders</tspan></text><use height="20" width="20" x="499.07142857142856" xlink:href="#LogicalFunctionSymbol" y="407.5" /></g><g class="Box FOP" id="_TLfg8MTnEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 623.5 418.5)" width="10" x="618.5" xlink:href="#PortSymbol" y="413.5" /></g><g class="Box CP_OUT" id="_3Khk4LB_EeqLtsTDMgEHBw"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-90 653.5 440.5)" width="10" x="648.5" xlink:href="#ComponentPortSymbol" y="435.5" /></g><g class="Box CP_IN" id="_B6D3sKjsEeu7PunlgwoBGA"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(0 561.5 363.5)" width="10" x="556.5" xlink:href="#ComponentPortSymbol" y="358.5" /></g><g class="Box CP_OUT" id="_fZ8zcUybEeyns9TdzUL1Ow"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(90 468.5 365.5)" width="10" x="463.5" xlink:href="#ComponentPortSymbol" y="360.5" /></g><g class="Box CP_IN" id="_WV0_wLB_EeqLtsTDMgEHBw"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 358.5 130.5)" width="10" x="353.5" xlink:href="#ComponentPortSymbol" y="125.5" /></g><g class="Box CP_IN" id="_XNJpULB_EeqLtsTDMgEHBw"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 358.5 401.5)" width="10" x="353.5" xlink:href="#ComponentPortSymbol" y="396.5" /></g><g class="Box LogicalHumanActor" id="_WUfYcLB-EeqLtsTDMgEHBw"><rect class="LogicalHumanActor" height="171" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="158" x="25.5" y="25.5" /><text class="LogicalHumanActor" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="25" y="25"><tspan x="73.28571428571428" xml:space="preserve" y="35.0">Prof. A. P. W. B.</tspan><tspan x="73.28571428571428" xml:space="preserve" y="45.0">Dumbledore</tspan></text><use height="20" width="20" x="52.28571428571428" xlink:href="#LogicalHumanActorSymbol" y="30.0" /></g><g class="Box LogicalFunction" id="_HyCUQLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="74.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="74"><tspan x="101.5" xml:space="preserve" y="92.57142857142857">manage the</tspan><tspan x="101.5" xml:space="preserve" y="105.42857142857143">school</tspan></text><use height="20" width="20" x="48.357142857142854" xlink:href="#LogicalFunctionSymbol" y="89.0" /></g><g class="Box FOP" id="_riSgQMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 100.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="95.5" /></g><g class="Box LogicalFunction" id="_RCi2ULCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="134.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="134"><tspan x="101.5" xml:space="preserve" y="151.14285714285714">advise</tspan><tspan x="101.5" xml:space="preserve" y="164.0">Harry</tspan></text><use height="20" width="20" x="63.35714285714286" xlink:href="#LogicalFunctionSymbol" y="149.0" /></g><g class="Box FOP" id="_qqumIMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 160.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="155.5" /></g><g class="Box CP_OUT" id="_WYyNILB_EeqLtsTDMgEHBw"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-90 180.5 130.5)" width="10" x="175.5" xlink:href="#ComponentPortSymbol" y="125.5" /></g><g class="Box LogicalHumanActor" id="_4CrKULB-EeqLtsTDMgEHBw"><rect class="LogicalHumanActor" height="211" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="158" x="25.5" y="305.5" /><text class="LogicalHumanActor" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="25" y="305"><tspan x="76.85714285714286" xml:space="preserve" y="316.42857142857144">Prof. S. Snape</tspan></text><use height="20" width="20" x="55.85714285714286" xlink:href="#LogicalHumanActorSymbol" y="306.42857142857144" /></g><g class="Box LogicalFunction" id="_aDTsMrCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="54" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="344.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="344"><tspan x="101.5" xml:space="preserve" y="371.0">Teaching</tspan></text><use height="20" width="20" x="56.214285714285715" xlink:href="#LogicalFunctionSymbol" y="361.0" /></g><g class="Box FOP" id="_gQ9V8MEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 360.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="355.5" /></g><g class="Box LogicalFunction" id="_fUFCQLCBEeqLtsTDMgEHBw"><rect class="LogicalFunction" height="81" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="91" x="45.5" y="414.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="45" y="414"><tspan x="101.5" xml:space="preserve" y="420.92857142857144">maintain a</tspan><tspan x="101.5" xml:space="preserve" y="433.7857142857143">layer of</tspan><tspan x="101.5" xml:space="preserve" y="446.6428571428571">defense for</tspan><tspan x="101.5" xml:space="preserve" y="459.49999999999994">the</tspan><tspan x="101.5" xml:space="preserve" y="472.3571428571428">Sorcerer's</tspan><tspan x="101.5" xml:space="preserve" y="485.2142857142856">Stone</tspan></text><use height="20" width="20" x="49.785714285714285" xlink:href="#LogicalFunctionSymbol" y="444.5" /></g><g class="Box FOP" id="_maL-AMEDEeqW8_YksX3uDg"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 133.5 431.5)" width="10" x="128.5" xlink:href="#PortSymbol" y="426.5" /></g><g class="Box CP_OUT" id="_XNEJwLB_EeqLtsTDMgEHBw"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-90 180.5 404.5)" width="10" x="175.5" xlink:href="#ComponentPortSymbol" y="399.5" /></g><g class="Box LogicalActor" id="_yCkzoLB_EeqLtsTDMgEHBw"><rect class="LogicalActor" height="131" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="200" x="967.5" y="25.5" /><text class="LogicalActor" dominant-baseline="middle" style="fill: #000000" text-anchor="start" x="967" y="25"><tspan x="1039.142857142857" xml:space="preserve" y="36.42857142857143">Harry J. Potter</tspan></text><use height="20" width="20" x="1018.1428571428571" xlink:href="#LogicalActorSymbol" y="26.42857142857143" /></g><g class="Box LogicalFunction" id="_nccmwMTpEeqlbN5fRfdrWQ"><rect class="LogicalFunction" height="61" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="110" x="1007.5" y="54.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1007" y="54"><tspan x="1073.0" xml:space="preserve" y="74.5">kill He Who</tspan><tspan x="1073.0" xml:space="preserve" y="84.5">Must Not Be</tspan><tspan x="1073.0" xml:space="preserve" y="94.5">Named</tspan></text><use height="20" width="20" x="1018.4285714285714" xlink:href="#LogicalFunctionSymbol" y="74.5" /></g><g class="Box FIP" id="_8Fj_0MTpEeqlbN5fRfdrWQ"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 1010.5 80.5)" width="10" x="1005.5" xlink:href="#PortSymbol" y="75.5" /></g><g class="Box FIP" id="_FNwX8NZEEeqiU8uzTY0Puw"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(0 1024.5 112.5)" width="10" x="1019.5" xlink:href="#PortSymbol" y="107.5" /></g><g class="Box CP_INOUT" id="_z5h54MTmEeqlbN5fRfdrWQ"><rect class="CP_INOUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(90 970.5 40.5)" width="10" x="965.5" y="35.5" /></g><g class="Box CP_IN" id="_YwIt4MTqEeqlbN5fRfdrWQ"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(180 1152.5 153.5)" width="10" x="1147.5" xlink:href="#ComponentPortSymbol" y="148.5" /></g><g class="Box CP_IN" id="_faBE40ybEeyns9TdzUL1Ow"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 970.5 30.5)" width="10" x="965.5" xlink:href="#ComponentPortSymbol" y="25.5" /></g><g class="Box LogicalHumanActor" id="_zuBo0LB_EeqLtsTDMgEHBw"><rect class="LogicalHumanActor" height="171" style="fill: url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;); stroke: #4A4A97; stroke-width: 1" width="200" x="967.5" y="402.5" /><text class="LogicalHumanActor" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="start" x="967" y="402"><tspan x="1047.7142857142858" xml:space="preserve" y="413.42857142857144">R. Weasley</tspan></text><use height="20" width="20" x="1026.7142857142858" xlink:href="#LogicalHumanActorSymbol" y="403.42857142857144" /></g><g class="Box LogicalFunction" id="_toddEMTpEeqlbN5fRfdrWQ"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="101" x="1017.5" y="441.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1017" y="441"><tspan x="1078.5" xml:space="preserve" y="466.0">assist Harry</tspan></text><use height="20" width="20" x="1025.357142857143" xlink:href="#LogicalFunctionSymbol" y="456.0" /></g><g class="Box FOP" id="_8FiKoMTpEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 1115.5 461.5)" width="10" x="1110.5" xlink:href="#PortSymbol" y="456.5" /></g><g class="Box LogicalFunction" id="_0dxIAMTpEeqlbN5fRfdrWQ"><rect class="LogicalFunction" height="50" style="fill: #C5FFA6; stroke: #095C2E; stroke-width: 1" width="101" x="1017.5" y="501.5" /><text class="LogicalFunction" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1017" y="501"><tspan x="1078.5" xml:space="preserve" y="521.0">break school</tspan><tspan x="1078.5" xml:space="preserve" y="531.0">rules</tspan></text><use height="20" width="20" x="1023.2142857142857" xlink:href="#LogicalFunctionSymbol" y="516.0" /></g><g class="Box FOP" id="_B7X8oMTqEeqlbN5fRfdrWQ"><use class="FOP" height="10" style="fill: #095C2E; stroke: #000000; stroke-width: 0" transform="rotate(90 1115.5 511.5)" width="10" x="1110.5" xlink:href="#PortSymbol" y="506.5" /></g><g class="Box FIP" id="_phubwMTqEeqlbN5fRfdrWQ"><use class="FIP" height="10" style="fill: #E08503; stroke: #000000; stroke-width: 0" transform="rotate(90 1020.5 520.5)" width="10" x="1015.5" xlink:href="#PortSymbol" y="515.5" /></g><g class="Box CP_IN" id="_3KmdYLB_EeqLtsTDMgEHBw"><use class="CP_IN" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(270 970.5 542.5)" width="10" x="965.5" xlink:href="#ComponentPortSymbol" y="537.5" /></g><g class="Box CP_OUT" id="_YwGRoMTqEeqlbN5fRfdrWQ"><use class="CP_OUT" height="10" style="fill: #FFFFFF; stroke: #000000; stroke-width: 1" transform="rotate(-180 1154.5 405.5)" width="10" x="1149.5" xlink:href="#ComponentPortSymbol" y="400.5" /></g><g class="Edge FunctionalExchange" id="_PEmXoMEDEeqW8_YksX3uDg"><path class="Edge" d="M 518.5 540.5 613.5 540.5 613.5 540.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="529.0" y="523"><tspan x="577.0" xml:space="preserve" y="529.4285714285714">wizardry</tspan></text><use height="20" width="20" x="532.4285714285714" xlink:href="#FunctionalExchangeSymbol" y="519.4285714285714" /></g><g class="Edge FOPAllocation" id="_o4KcUMEDEeqW8_YksX3uDg"><path class="Edge" d="M 175.5 404.5 155.5 404.5 155.5 431.5 138.5 431.5 138.5 431.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="160" y="403"><tspan x="160.0" xml:space="preserve" y="403.0" /></text></g><g class="Edge FOPAllocation" id="_syJloMEDEeqW8_YksX3uDg"><path class="Edge" d="M 175.5 130.5 155.5 130.5 155.5 101.5 138.5 101.5 138.5 100.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="166" y="141"><tspan x="166.0" xml:space="preserve" y="141.0" /></text></g><g class="Edge FOPAllocation" id="_u8br4MEDEeqW8_YksX3uDg"><path class="Edge" d="M 175.5 130.5 155.5 130.5 155.5 161.5 138.5 161.5 138.5 160.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="157" y="129"><tspan x="157.0" xml:space="preserve" y="129.0" /></text></g><g class="Edge ComponentExchange" id="_WbdGoLB_EeqLtsTDMgEHBw"><path class="Edge" d="M 353.5 130.5 185.5 130.5 185.5 130.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="215.0" y="110"><tspan x="294.5" xml:space="preserve" y="115.0">Headmaster</tspan><tspan x="294.5" xml:space="preserve" y="127.85714285714286">Responsibilities</tspan></text><use height="20" width="20" x="232.07142857142856" xlink:href="#ComponentExchangeSymbol" y="112.85714285714286" /></g><g class="Edge ComponentExchange" id="_XNOh0LB_EeqLtsTDMgEHBw"><path class="Edge" d="M 185.5 404.5 353.5 404.5 353.5 401.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="184.0" y="393"><tspan x="263.5" xml:space="preserve" y="398.0">Teacher</tspan><tspan x="263.5" xml:space="preserve" y="410.85714285714283">Responsibilities</tspan></text><use height="20" width="20" x="201.07142857142856" xlink:href="#ComponentExchangeSymbol" y="395.85714285714283" /></g><g class="Edge FIPAllocation" id="_twPK8MTnEeqlbN5fRfdrWQ"><path class="Edge" d="M 363.5 130.5 375.5 130.5 375.5 540.5 383.5 540.5 383.5 540.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="375" y="193"><tspan x="375.0" xml:space="preserve" y="193.0" /></text></g><g class="Edge FIPAllocation" id="_VBCl8MTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 975.5 40.5 987.5 40.5 987.5 80.5 1005.5 80.5 1005.5 80.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="995" y="57"><tspan x="995.0" xml:space="preserve" y="57.0" /></text></g><g class="Edge ComponentExchange" id="_YwLxMMTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 1154.5 400.5 1154.5 158.5 1152.5 158.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="1037.0" y="161"><tspan x="1112.0" xml:space="preserve" y="167.42857142857142">Help for Harry</tspan></text><use height="20" width="20" x="1052.4285714285713" xlink:href="#ComponentExchangeSymbol" y="157.42857142857142" /></g><g class="Edge FunctionalExchange" id="_RmRSwMTrEeqlbN5fRfdrWQ"><path class="Edge" d="M 138.5 360.5 375.5 360.5 375.5 540.5 383.5 540.5 383.5 540.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="251.0" y="337"><tspan x="305.0" xml:space="preserve" y="343.42857142857144">Knowledge</tspan></text><use height="20" width="20" x="254.0" xlink:href="#FunctionalExchangeSymbol" y="333.42857142857144" /></g><g class="Edge ComponentExchange" id="_3Ko5oLB_EeqLtsTDMgEHBw"><path class="Edge" d="M 658.5 440.5 775.5 440.5 775.5 514.5 805.5 514.5 805.5 494.5 825.5 494.5 825.5 474.5 875.5 474.5 875.5 494.5 905.5 494.5 905.5 514.5 935.5 514.5 935.5 464.5 915.5 464.5 915.5 424.5 965.5 424.5 965.5 464.5 945.5 464.5 945.5 539.5 965.5 539.5 965.5 542.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="743.0" y="514"><tspan x="812.5" xml:space="preserve" y="519.0">Punishment</tspan></text><use height="20" width="20" x="759.3571428571429" xlink:href="#ComponentExchangeSymbol" y="509.0" /></g><g class="Edge ComponentExchange" id="_z-LwYMTmEeqlbN5fRfdrWQ"><path class="Edge" d="M 965.5 40.5 855.5 40.5 855.5 120.5 658.5 120.5 658.5 119.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="774.0" y="97"><tspan x="822.0" xml:space="preserve" y="103.42857142857143">Learning</tspan></text><use height="20" width="20" x="777.4285714285714" xlink:href="#ComponentExchangeSymbol" y="93.42857142857143" /></g><g class="Edge FOPAllocation" id="_HDIA8MTnEeqlbN5fRfdrWQ"><path class="Edge" d="M 648.5 124.5 631.5 143.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="640" y="128"><tspan x="640.0" xml:space="preserve" y="128.0" /></text></g><g class="Edge FunctionalExchange" id="_0nQlwMTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 632.5 148.5 885.5 148.5 885.5 78.5 1005.5 78.5 1005.5 80.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="759.0" y="133"><tspan x="832.0" xml:space="preserve" y="138.0">educate &amp; mature</tspan></text><use height="20" width="20" x="762.4285714285714" xlink:href="#FunctionalExchangeSymbol" y="128.0" /></g><g class="Edge FunctionalExchange" id="_B7YjssTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 1120.5 511.5 1145.5 511.5 1145.5 214.5 1022.5 214.5 1022.5 117.5 1024.5 117.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1036.0" y="195"><tspan x="1087.5" xml:space="preserve" y="201.42857142857142">friendship</tspan></text><use height="20" width="20" x="1039.357142857143" xlink:href="#FunctionalExchangeSymbol" y="191.42857142857142" /></g><g class="Edge FunctionalExchange" id="_8FlN8cTpEeqlbN5fRfdrWQ"><path class="Edge" d="M 1120.5 461.5 1135.5 461.5 1135.5 265.5 1022.5 265.5 1022.5 117.5 1024.5 117.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="1034.0" y="248"><tspan x="1086.0" xml:space="preserve" y="253.0">assistance</tspan></text><use height="20" width="20" x="1037.142857142857" xlink:href="#FunctionalExchangeSymbol" y="243.0" /></g><g class="Edge FIPAllocation" id="_RP7wgtZEEeqiU8uzTY0Puw"><path class="Edge" d="M 1152.5 148.5 1152.5 135.5 1022.5 135.5 1022.5 117.5 1024.5 117.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="1149" y="137"><tspan x="1149.0" xml:space="preserve" y="137.0" /></text></g><g class="Edge FOPAllocation" id="_RP8XdNZEEeqiU8uzTY0Puw"><path class="Edge" d="M 1154.5 410.5 1159.5 410.5 1159.5 461.5 1120.5 461.5 1120.5 461.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="1159" y="442"><tspan x="1159.0" xml:space="preserve" y="442.0" /></text></g><g class="Edge FOPAllocation" id="_RP8-gtZEEeqiU8uzTY0Puw"><path class="Edge" d="M 1154.5 410.5 1159.5 410.5 1159.5 511.5 1120.5 511.5 1120.5 511.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="1156" y="467"><tspan x="1156.0" xml:space="preserve" y="467.0" /></text></g><g class="Edge ComponentExchange" id="_e8OmYKjsEeu7PunlgwoBGA"><path class="Edge" d="M 561.5 186.5 561.5 358.5" style="fill: none; stroke: #4A4A97; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #4A4A97" text-anchor="middle" x="561.0" y="267"><tspan x="598.0" xml:space="preserve" y="272.0">Care</tspan></text><use height="20" width="20" x="564.1428571428571" xlink:href="#ComponentExchangeSymbol" y="262.0" /></g><g class="Edge FIPAllocation" id="_E2dKmkhREeyVkeSUJyVgbw"><path class="Edge" d="M 359.5 406.5 387.5 535.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="382" y="468"><tspan x="382.0" xml:space="preserve" y="468.0" /></text></g><g class="Edge FOPAllocation" id="_E2dxpUhREeyVkeSUJyVgbw"><path class="Edge" d="M 175.5 404.5 155.5 404.5 155.5 361.5 138.5 361.5 138.5 360.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="155" y="374"><tspan x="155.0" xml:space="preserve" y="374.0" /></text></g><g class="Edge FunctionalExchange" id="_phyGIMTqEeqlbN5fRfdrWQ"><path class="Edge" d="M 628.5 418.5 995.5 418.5 995.5 519.5 1015.5 519.5 1015.5 520.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="844.0" y="422"><tspan x="899.0" xml:space="preserve" y="428.42857142857144">punish</tspan></text><use height="20" width="20" x="859.4285714285714" xlink:href="#FunctionalExchangeSymbol" y="418.42857142857144" /></g><g class="Edge FIPAllocation" id="_b-Xr7EhSEeyVkeSUJyVgbw"><path class="Edge" d="M 975.5 539.5 1015.5 522.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="999" y="522"><tspan x="999.0" xml:space="preserve" y="522.0" /></text></g><g class="Edge FOPAllocation" id="_b-Xr8UhSEeyVkeSUJyVgbw"><path class="Edge" d="M 648.5 436.5 628.5 422.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="632" y="437"><tspan x="632.0" xml:space="preserve" y="437.0" /></text></g><g class="Edge FIPAllocation" id="_faMEFEybEeyns9TdzUL1Ow"><path class="Edge" d="M 974.5 35.5 1006.5 75.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="995" y="46"><tspan x="995.0" xml:space="preserve" y="46.0" /></text></g><g class="Edge FOPAllocation" id="_faMrEkybEeyns9TdzUL1Ow"><path class="Edge" d="M 473.5 367.5 618.5 416.5" style="fill: none; stroke: #095C2E; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="546" y="379"><tspan x="546.0" xml:space="preserve" y="379.0" /></text></g><g class="Edge FunctionalExchange" id="_IXbcMuQUEe2jpIKbeHI0hw"><path class="Edge" d="M 138.5 357.5 487.5 141.5" style="fill: none; stroke: #095C2E; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" style="fill: #095C2E" text-anchor="middle" x="268.0" y="230"><tspan x="313.5" xml:space="preserve" y="235.0">educate</tspan></text><use height="20" width="20" x="271.07142857142856" xlink:href="#FunctionalExchangeSymbol" y="225.0" /></g><g class="Edge FIPAllocation" id="_IXg70OQUEe2jpIKbeHI0hw"><path class="Edge" d="M 363.5 130.5 487.5 138.5" style="fill: none; stroke: #E08503; stroke-dasharray: 5; stroke-width: 2" /><text class="Annotation" dominant-baseline="middle" text-anchor="middle" x="417" y="116"><tspan x="417.0" xml:space="preserve" y="116.0" /></text></g></svg></td></tr>
+</table>
+
+</body>
+</html></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="05%20Introduction%20to%20Libraries.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">5. </span>Introduction to Libraries</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="03%20Data%20Values.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">3. </span>Data Types and Data Values</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">4. Using capellambse with Jinja2</a><ul>
+<li><a class="reference internal" href="#Filters-and-object-manipulation">4.1. Filters and object manipulation</a></li>
+<li><a class="reference internal" href="#Beautiful-SVG-diagrams">4.2. Beautiful SVG diagrams</a></li>
+<li><a class="reference internal" href="#Template-inheritance">4.3. Template inheritance</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

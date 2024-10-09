@@ -1,0 +1,568 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="12. Complexity Assessment" href="11%20Complexity%20Assessment.html" /><link rel="prev" title="10. Context Diagrams Extension" href="09%20Context%20Diagrams.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>11. Declarative Modeling Example - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Declarative-Modeling-Example">
+<h1><span class="section-number">11. </span>Declarative Modeling Example<a class="headerlink" href="#Declarative-Modeling-Example" title="Link to this heading">¶</a></h1>
+<p>Declarative approach to modeling means that one could define or update a model using a fragment of structured text. A number of fragments could be “played” against a model in a sequence to build it up.</p>
+<p>Enabling declarative modeling for Capella models enables a range of complex automations around modeling process that are explainable / transparent to human auditors.</p>
+<p>This notebook will demonstrate a basic application of this approach to modeling on a coffee machine example. Please note that we will not model any specific modeling process but rather a “free-form” demo.</p>
+<section id="System-Analysis-of-a-Coffee-Machine">
+<h2><span class="section-number">11.1. </span>System Analysis of a Coffee Machine<a class="headerlink" href="#System-Analysis-of-a-Coffee-Machine" title="Link to this heading">¶</a></h2>
+<p>Lets do a quick system analysis of a coffee machine. Lets assume that our meta-solution is an automated coffee machine for a household use. We may look into variant management scenario in a separate example.</p>
+<section id="0.-Initialize">
+<h3><span class="section-number">11.1.1. </span>0. Initialize<a class="headerlink" href="#0.-Initialize" title="Link to this heading">¶</a></h3>
+<p>But before we can model something lets first initialize the model. We will use an empty Capella 5.2 model as a starting point.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">io</span>
+
+<span class="kn">import</span> <span class="nn">capellambse</span>
+<span class="kn">from</span> <span class="nn">capellambse</span> <span class="kn">import</span> <span class="n">decl</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span>
+    <span class="s2">&quot;../../../tests/data/decl/empty_project_52/empty_project_52.aird&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Cannot load PVMT extension: ValueError: Provided model does not have a PropertyValuePkg
+Property values are not available in this model
+</pre></div></div>
+</div>
+<p>to visualize the modeling results we’ll use context-diagrams extension, you may get one by uncommenting and running the command below</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>capellambse_context_diagrams
+</pre></div>
+</div>
+</div>
+<p>lets verify that the model is empty at SA layer:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">functions_allocated</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">root_component</span><span class="o">.</span><span class="n">allocated_functions</span>
+<span class="n">functions_available</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">root_function</span><span class="o">.</span><span class="n">functions</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;At SA layer the model has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">functions_available</span><span class="p">)</span><span class="si">}</span><span class="s2">,&quot;</span>
+    <span class="sa">f</span><span class="s2">&quot; out of which </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">functions_allocated</span><span class="p">)</span><span class="si">}</span><span class="s2"> are allocated to Root Component&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+At SA layer the model has 0, out of which 0 are allocated to Root Component
+</pre></div></div>
+</div>
+<p>Also for this to work we’ll need “coordinates” of some key elements in the model:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">root_function</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">root_function</span>
+<span class="n">root_component</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">root_component</span>
+<span class="n">structure</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">sa</span><span class="o">.</span><span class="n">component_package</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="1.-Context">
+<h3><span class="section-number">11.1.2. </span>1. Context<a class="headerlink" href="#1.-Context" title="Link to this heading">¶</a></h3>
+<p>Lets start by renaming the root component from <strong>System</strong> to <strong>Coffee Machine</strong>, creating a human actor <strong>User</strong> and a component exchange between those two.</p>
+<p>We can achieve this by applying the following YAML patch to an empty Capella model:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model_update</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">- parent: !uuid </span><span class="si">{</span><span class="n">root_component</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span>
+<span class="s2">  modify:</span>
+<span class="s2">    name: Coffee Machine</span>
+<span class="s2">- parent: !uuid </span><span class="si">{</span><span class="n">root_component</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span>
+<span class="s2">  extend:</span>
+<span class="s2">    ports:</span>
+<span class="s2">      - name: usr</span>
+<span class="s2">        direction: INOUT</span>
+<span class="s2">        promise_id: usr-port-promise</span>
+<span class="s2">    exchanges:</span>
+<span class="s2">      - name: user interactions</span>
+<span class="s2">        source: !promise usr-port-promise</span>
+<span class="s2">        target: !promise cm-port-promise</span>
+<span class="s2">- parent: !uuid </span><span class="si">{</span><span class="n">structure</span><span class="o">.</span><span class="n">uuid</span><span class="si">}</span>
+<span class="s2">  extend:</span>
+<span class="s2">    components:</span>
+<span class="s2">      - name: User</span>
+<span class="s2">        is_actor: true</span>
+<span class="s2">        is_human: true</span>
+<span class="s2">        ports:</span>
+<span class="s2">          - name: cm</span>
+<span class="s2">            direction: INOUT</span>
+<span class="s2">            promise_id: cm-port-promise</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="c1"># the below line applies the model_update to the model</span>
+<span class="n">decl</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">model_update</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{Promise(identifier=&#39;usr-port-promise&#39;): &lt;ComponentPort &#39;usr&#39; (3a2ff9e0-adcc-4d2d-ae4f-7001a0c25475)&gt;
+ .applied_property_value_groups = []
+ .applied_property_values = []
+ .constraints = []
+ .description = &#39;&#39;
+ .direction = &lt;FPortDir.INOUT: 3&gt;
+ .exchanges = ... # backreference to ComponentExchange - omitted: can be slow to compute
+ .filtering_criteria = []
+ .name = &#39;usr&#39;
+ .owner = &lt;SystemComponent &#39;Coffee Machine&#39; (7af5971f-1a6c-47d3-b9a8-4e709444113e)&gt;
+ .parent = &lt;SystemComponent &#39;Coffee Machine&#39; (7af5971f-1a6c-47d3-b9a8-4e709444113e)&gt;
+ .progress_status = &#39;NOT_SET&#39;
+ .property_value_groups = []
+ .property_values = []
+ .requirements = []
+ .summary = None
+ .traces = []
+ .uuid = &#39;3a2ff9e0-adcc-4d2d-ae4f-7001a0c25475&#39;
+ .xtype = &#39;org.polarsys.capella.core.data.fa:ComponentPort&#39;,
+ Promise(identifier=&#39;cm-port-promise&#39;): &lt;ComponentPort &#39;cm&#39; (99f8db47-4771-4e4e-993a-b252398d8806)&gt;
+ .applied_property_value_groups = []
+ .applied_property_values = []
+ .constraints = []
+ .description = &#39;&#39;
+ .direction = &lt;FPortDir.INOUT: 3&gt;
+ .exchanges = ... # backreference to ComponentExchange - omitted: can be slow to compute
+ .filtering_criteria = []
+ .name = &#39;cm&#39;
+ .owner = &lt;SystemComponent &#39;User&#39; (d03d179b-5449-4193-94f8-61d614ea9156)&gt;
+ .parent = &lt;SystemComponent &#39;User&#39; (d03d179b-5449-4193-94f8-61d614ea9156)&gt;
+ .progress_status = &#39;NOT_SET&#39;
+ .property_value_groups = []
+ .property_values = []
+ .requirements = []
+ .summary = None
+ .traces = []
+ .uuid = &#39;99f8db47-4771-4e4e-993a-b252398d8806&#39;
+ .xtype = &#39;org.polarsys.capella.core.data.fa:ComponentPort&#39;}
+</pre></div></div>
+</div>
+<p>and now we can verify the changes by visualizing the context of our system under analysis:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">root_component</span><span class="o">.</span><span class="n">context_diagram</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IlN5c3RlbUFyY2hpdGVjdHVyZUJsYW5rIiBoZWlnaHQ9IjU5IiBzdHlsZT0ic2hhcGUtcmVuZGVyaW5nOiBnZW9tZXRyaWNQcmVjaXNpb247IGZvbnQtZmFtaWx5OiAnU2Vnb2UgVUknOyBmb250LXNpemU6IDhwdDsgY3Vyc29yOiBwb2ludGVyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIyIDIgMzc2IDU5IiB3aWR0aD0iMzc2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48ZGVmcz48c3ltYm9sIGlkPSJFcnJvclN5bWJvbCIgdmlld0JveD0iMCAwIDIuNjQ1OCAyLjY0NTgiPjxwYXRoIGQ9Ik0gMCwwIDIuNjQ1ODMzMywyLjY0NTgzMzMgTSAwLDIuNjQ1ODMzMyAyLjY0NTgzMzMsMCIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogcmVkOyBzdHJva2Utd2lkdGg6IDAuNTsiIC8+PC9zeW1ib2w+PHN5bWJvbCBpZD0iUmVxdWlyZW1lbnRTeW1ib2wiIHN0eWxlPSJzdHJva2U6IG5vbmU7IiB2aWV3Qm94PSIwIDAgNTAgNTAiPjxwYXRoIGQ9Ik0gMTIuODA2ODEzLDYuNTcwMjMyNCBBIDYuMjQ0Mzc5LDUuODExMzI0MSAwIDAgMSA2LjU2MjQzNDIsMTIuMzgxNTU3IDYuMjQ0Mzc5LDUuODExMzI0MSAwIDAgMSAwLjMxODA1NTE1LDYuNTcwMjMyNCA2LjI0NDM3OSw1LjgxMTMyNDEgMCAwIDEgNi41NjI0MzQyLDAuNzU4OTA4MjcgNi4yNDQzNzksNS44MTEzMjQxIDAgMCAxIDEyLjgwNjgxMyw2LjU3MDIzMjQgWiIgc3R5bGU9ImZpbGw6ICM0MzE5NjQiIC8+PHBhdGggZD0ibSA0LjMyMjg2NTgsNS44NzUyNDc1IGggMi45NTE0NzIxIHEgMC4yOTQ1NTgxLDAgMC41MTg0MjIzLC0wLjE0MTM4NzkgUSA4LjAyMjUxNTUsNS41ODY1ODA2IDguMTQ2MjI5OSw1LjMyMTQ3ODMgOC4yNjk5NDQzLDUuMDU2Mzc2IDguMjc1ODM1NSw0LjcwMjkwNjMgdiAwIHEgMCwtMC4zNDc1Nzg2IC0wLjEyMzcxNDQsLTAuNjEyNjgwOCBRIDguMDI4NDA2NywzLjgyNTEyMzIgNy43OTg2NTEzLDMuNjgzNzM1MyA3LjU3NDc4NzIsMy41MzY0NTYyIDcuMjc0MzM3OSwzLjUzNjQ1NjIgSCA0LjMyMjg2NTggViAyLjE4NzM4MDEgaCAyLjk5MjcxMDMgcSAwLjcyNDYxMjksMCAxLjI3MjQ5MDksMC4zMTIyMzE2IDAuNTQ3ODc4MSwwLjMxMjIzMTYgMC44NDgzMjc0LDAuODgzNjc0MyAwLjMwNjM0MDQsMC41NzE0NDI3IDAuMzA2MzQwNCwxLjMxOTYyMDMgdiAwIHEgMCwwLjc1NDA2ODcgLTAuMzA2MzQwNCwxLjMyNTUxMTQgUSA5LjEzNTk0NTEsNi41OTk4NjA1IDguNTgyMTc1OSw2LjkxMjA5MiA4LjAzNDI5NzgsNy4yMjQzMjM2IDcuMzE1NTc2MSw3LjIyNDMyMzYgSCA0LjMyMjg2NTggWiBNIDMuNzM5NjQwNywyLjE4NzM4MDEgSCA1LjE0NzYyODUgViAxMC43NTkwMjEgSCAzLjczOTY0MDcgWiBNIDYuMzkwNjYzNiw2Ljk1OTIyMTMgNy44NTE2NzE4LDYuNjg4MjI3OSAxMC4xMDIwOTYsMTAuNzU5MDIxIEggOC40MTEzMzIyIFoiIHN0eWxlPSJmaWxsOiNmZmZmZmY7IiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0eWxlPSJzdHJva2U6IzAwMDtzdHJva2Utd2lkdGg6MjsiPjxwYXRoIGQ9Ik0gMzYuMTkwMDY1LDUuMDM3NzcyNCBWIDI0Ljk2MjIyOCBIIDI2LjE3NDgyIFYgNS4wMzc3NzI0IFoiIHN0eWxlPSJmaWxsOiB1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIHN0eWxlPSJmaWxsOiAjQTNCQ0QwIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgc3R5bGU9ImZpbGw6IHVybCgjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48c3ltYm9sIGlkPSJDb21wb25lbnRQb3J0U3ltYm9sIiB2aWV3Qm94PSIwIDAgMTAgMTAiPjxwYXRoIGQ9Ik0wIDBoMTB2MTBIMHoiIC8+PHBhdGggZD0iTSAyLDIgNSw3IDgsMiIgLz48L3N5bWJvbD48c3ltYm9sIGlkPSJGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHZpZXdCb3g9IjAgMCA0MCAzMCI+PGxpbmVhckdyYWRpZW50IGlkPSJGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzRGN0M0NSIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0JDRERCNCIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZyBzdHlsZT0ic3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjI7Ij48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBzdHlsZT0iZmlsbDogdXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnRyZXZlcnNlKSIgLz48cGF0aCBkPSJtIDE0LjM3MjEwNywxMCBoIDEyLjYyMjQzNSBjIDAuOTI2MTg5LDAuNTg1MjY3IDEuODM2MDIyLDEuMjc0NTA5IDIuMjY4MTc4LDUgLTAuMjA4NjU3LDIuODEyNDczIC0wLjk1NDYwMSw0LjUwMzgwOSAtMi4yNzMyOTcsNSBIIDE0LjI5Njk0OCIgc3R5bGU9ImZpbGw6ICM2MWMzNGMiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBzdHlsZT0iZmlsbDogdXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48c3ltYm9sIGlkPSJQaHlzaWNhbExpbmtTeW1ib2wiIHZpZXdCb3g9IjAgMCA0MCAzMCI+PGxpbmVhckdyYWRpZW50IGlkPSJQaHlzaWNhbExpbmtTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0RGREYwMCIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRThFODA5IiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IlBoeXNpY2FsTGlua1N5bWJvbC1ncmFkaWVudHJldmVyc2UiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iI0U4RTgwOSIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjREZERjAwIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZyBzdHlsZT0ic3Ryb2tlOiMwMDA7c3Ryb2tlLXdpZHRoOjI7Ij48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBzdHlsZT0iZmlsbDogdXJsKCNQaHlzaWNhbExpbmtTeW1ib2wtZ3JhZGllbnRyZXZlcnNlKSIgLz48cGF0aCBkPSJtIDE0LjM3MjEwNywxMCBoIDEyLjYyMjQzNSBjIDAuOTI2MTg5LDAuNTg1MjY3IDEuODM2MDIyLDEuMjc0NTA5IDIuMjY4MTc4LDUgLTAuMjA4NjU3LDIuODEyNDczIC0wLjk1NDYwMSw0LjUwMzgwOSAtMi4yNzMyOTcsNSBIIDE0LjI5Njk0OCIgc3R5bGU9ImZpbGw6ICNGNjBBMEEiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBzdHlsZT0iZmlsbDogdXJsKCNQaHlzaWNhbExpbmtTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48c3ltYm9sIGlkPSJTeXN0ZW1BY3RvclN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLjQzNzYwODMsMCwwLDEuMzAyMjUxMiwtMTUuOTU4Nzc1LC0xNS40MTYyMDEpIj48cGF0aCBkPSJNIDE3LjgxOTg5MSwyMC4wNDExNjEgSCA2NS4yODYzNjQgViA2NC4yNDI2MjMgSCAxNy44MTk4OTEgWiIgc3R5bGU9ImZpbGw6I2JkZjdmZjsgc3Ryb2tlOiM0NTQ2NDc7IiAvPjxwYXRoIGQ9Im0gMTIuMDY0OTQ4LDI1LjgzMjI2MiBoIDExLjUyMTE1NSB2IDYuNjg3MjQ0IEggMTIuMDY0OTQ4IFoiIHN0eWxlPSJmaWxsOiNlM2ViZjg7c3Ryb2tlOiM0NTQ2NDc7IiAvPjxwYXRoIGQ9Im0gMTIuMDUwNDI3LDM0LjUyOTE5NyBoIDExLjQ1NTAwNyB2IDYuNjM1NDUxIEggMTIuMDUwNDI3IFoiIHN0eWxlPSJmaWxsOiNlM2ViZjg7c3Ryb2tlOiM0NTQ2NDc7IiAvPjxnIHN0eWxlPSJmaWxsOiBibGFjazsgc3Ryb2tlOiBub25lOyIgdHJhbnNmb3JtPSJtYXRyaXgoMC44MzEyOTIyNCwwLDAsMC44OTU0NDY0Miw4LjAzMzQzMTgsMTEuNzI5NTczKSI+PHBhdGggZD0ibSAyMi41MDY5OTUsNDcuNjg3NTk3IHYgLTQuNjAyMTQ4IHEgMC42MTk4ODEsMC41NjM1MjggMS40NjUxNzMsMS4wMTQzNTEgMC44NjQwNzcsMC40NTA4MjMgMS44MjIwNzUsMC43NzAxNTUgMC45NTc5OTgsMC4zMDA1NDkgMS45MTU5OTYsMC40Njk2MDcgMC45NTc5OTksMC4xNjkwNTkgMS43NjU3MjIsMC4xNjkwNTkgMi44MTc2NDIsMCA0LjE4ODg5NCwtMC45MzkyMTQgMS4zOTAwMzcsLTAuOTM5MjE0IDEuMzkwMDM3LC0yLjcyMzcyIDAsLTAuOTU3OTk4IC0wLjQ2OTYwNywtMS42NTMwMTcgLTAuNDUwODIzLC0wLjcxMzgwMiAtMS4yNzczMzEsLTEuMjk2MTE1IC0wLjgyNjUwOCwtMC41ODIzMTIgLTEuOTUzNTY1LC0xLjEwODI3MiAtMS4xMDgyNzIsLTAuNTQ0NzQ0IC0yLjM4NTYwMywtMS4xMjcwNTcgLTEuMzcxMjUyLC0wLjczMjU4NyAtMi41NTQ2NjIsLTEuNDgzOTU4IC0xLjE4MzQwOSwtMC43NTEzNzEgLTIuMDY2MjcsLTEuNjUzMDE2IC0wLjg2NDA3NywtMC45MjA0MyAtMS4zNzEyNTIsLTIuMDY2MjcgLTAuNDg4MzkyLC0xLjE0NTg0MSAtMC40ODgzOTIsLTIuNjg2MTUyIDAsLTEuODk3MjEyIDAuODQ1MjkzLC0zLjI4NzI0OSAwLjg2NDA3NywtMS40MDg4MiAyLjI1NDExMywtMi4zMTA0NjYgMS40MDg4MjEsLTAuOTIwNDI5IDMuMTkzMzI3LC0xLjM1MjQ2OCAxLjc4NDUwNywtMC40NTA4MjIgMy42NDQxNSwtMC40NTA4MjIgNC4yMjY0NjIsMCA2LjE2MTI0MywwLjk1Nzk5OCB2IDQuNDE0MzA1IHEgLTIuMjkxNjgyLC0xLjY1MzAxNiAtNS44OTgyNjMsLTEuNjUzMDE2IC0wLjk5NTU2NywwIC0xLjk5MTEzNCwwLjE4Nzg0MiAtMC45NzY3ODIsMC4xODc4NDMgLTEuNzY1NzIyLDAuNjE5ODgyIC0wLjc3MDE1NSwwLjQzMjAzOCAtMS4yNTg1NDYsMS4xMDgyNzIgLTAuNDg4MzkxLDAuNjc2MjM0IC0wLjQ4ODM5MSwxLjYzNDIzMiAwLDAuOTAxNjQ1IDAuMzc1Njg1LDEuNTU5MDk1IDAuMzc1Njg2LDAuNjU3NDUgMS4wODk0ODgsMS4yMDIxOTQgMC43MzI1ODcsMC41NDQ3NDQgMS43NjU3MjIsMS4wNzA3MDMgMS4wNTE5MiwwLjUwNzE3NiAyLjQyMzE3MiwxLjEwODI3MyAxLjQwODgyMSwwLjczMjU4NyAyLjY0ODU4MywxLjU0MDMxMSAxLjI1ODU0NywwLjgwNzcyMyAyLjE5Nzc2MSwxLjc4NDUwNiAwLjk1Nzk5OCwwLjk3Njc4MiAxLjUwMjc0MiwyLjE3ODk3NiAwLjU2MzUyOCwxLjE4MzQxIDAuNTYzNTI4LDIuNzA0OTM2IDAsMi4wNDc0ODYgLTAuODI2NTA4LDMuNDU2MzA3IC0wLjgyNjUwOCwxLjQwODgyMSAtMi4yMzUzMjksMi4yOTE2ODIgLTEuMzkwMDM3LDAuODgyODYxIC0zLjIxMjExMiwxLjI3NzMzMSAtMS44MjIwNzQsMC4zOTQ0NjkgLTMuODUwNzc2LDAuMzk0NDY5IC0wLjY3NjIzNCwwIC0xLjY3MTgwMSwtMC4xMTI3MDUgLTAuOTc2NzgyLC0wLjA5MzkyIC0yLjAwOTkxOCwtMC4zMDA1NDkgLTEuMDMzMTM1LC0wLjE4Nzg0MiAtMS45NTM1NjQsLTAuNDY5NjA3IC0wLjkyMDQzLC0wLjI4MTc2NCAtMS40ODM5NTgsLTAuNjM4NjY1IHoiIC8+PHBhdGggZD0iTSA2Ni44MTkxMDUsNDguNzU4MzAxIEggNjEuOTE2NDA4IEwgNTkuNDkzMjM3LDQxLjkwMjA0IEggNDguODk4OTA0IGwgLTIuMzI5MjUsNi44NTYyNjEgSCA0MS42ODU3NDIgTCA1MS43NzI4OTksMjEuODIxNjQ3IGggNS4wMzQxODYgeiBNIDU4LjMwOTgyNywzOC4yNTc4OSA1NC41NzE3NTYsMjcuNTEzMjgzIHEgLTAuMTY5MDU4LC0wLjUyNTk1OSAtMC4zNTY5MDEsLTEuNjkwNTg1IGggLTAuMDc1MTQgcSAtMC4xNjkwNTksMS4wNzA3MDQgLTAuMzc1Njg2LDEuNjkwNTg1IEwgNTAuMDYzNTMsMzguMjU3ODkgWiIgLz48L2c+PC9nPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN5c3RlbUNvbXBvbmVudFN5bWJvbCIgdmlld0JveD0iMCAxMiA3OSA1NSI+PGcgdHJhbnNmb3JtPSJtYXRyaXgoMC4yNTUwOTcwMywwLDAsMC4yNTUwOTcwMywtMTkuMTE5NDczLC0yNi40NzY3KSI+PGcgc3R5bGU9ImZpbGw6I2UzZWJmODtzdHJva2Utd2lkdGg6MS4zMzE0NSIgdHJhbnNmb3JtPSJtYXRyaXgoMC45MjU0ODE2NSwwLDAsMC45MjI0OTA1NiwtMzIuNDIyMDExLC0xLjI5MDk1MzYpIj48cGF0aCBkPSJtIDE2MC4wMzc4NSwxODAuNDc1MTkgaCAyODAuODg0NSB2IDIwMC42ODUwMiBoIC0yODAuODg0NSB6IiBzdHlsZT0ic3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjc7IiAvPjwvZz48cGF0aCBkPSJtIDgxLjg1NDY5NiwyMTAuMTc1MzMgaCA2Ni4yNTAyNjQgdiAzNS4zNzAyNSBIIDgxLjg1NDY5NiBaIiBzdHlsZT0iZmlsbDojZTdlZmZmO3N0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDo3OyIgLz48cGF0aCBkPSJtIDgzLjU4ODMxNiwyNjguOTQyNzEgaCA2Ni4yNTAyNTQgdiAzNS4zNzAyNCBIIDgzLjU4ODMxNiBaIiBzdHlsZT0iZmlsbDojZTdlZmZmO3N0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDo3OyIgLz48cmVjdCBoZWlnaHQ9IjUiIHN0eWxlPSJmaWxsOiMwMDAwMDA7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjU0LjEwMzg7IiB3aWR0aD0iNSIgeD0iMjE0LjgwNzUiIHk9IjIzNi4zOSIgLz48cmVjdCBoZWlnaHQ9IjUiIHN0eWxlPSJmaWxsOiMwMDAwMDA7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjU0LjEwMzg7IiB3aWR0aD0iNSIgeD0iMjk3LjQ0IiB5PSIyOTguMzYiIC8+PHJlY3QgaGVpZ2h0PSI1IiBzdHlsZT0iZmlsbDojMDAwMDAwO3N0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDo1NC4xMDM4OyIgd2lkdGg9IjUiIHg9IjI5Ny40NCIgeT0iMjE1LjczIiAvPjxwYXRoIGQ9Im0gMjE5LjcwODk2LDIxOC4yMjA5OSBoIDc5LjAyNTcgdiA4NS45MTMyIGggLTgwLjM0MTM1IHoiIHN0eWxlPSJmaWxsOm5vbmU7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjQuMjk5MDFweDsiIC8+PC9nPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN5c3RlbUZ1bmN0aW9uU3ltYm9sIiB2aWV3Qm94PSIwIDAgNzkgNzkiPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JlZW4iIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIwIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzZDQjM1QiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjZmZmZmZmIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48ZWxsaXBzZSBjeD0iNDIuMiIgY3k9IjMyIiByeD0iMjIuNSIgcnk9IjE1LjUiIHN0eWxlPSJmaWxsOiB1cmwoI2dyZWVuKTsgc3Ryb2tlOiAjMDAwOyBzdHJva2Utd2lkdGg6IDI7IiAvPjx0ZXh0IHN0eWxlPSJmb250LWZhbWlseTogJnF1b3Q7U2Vnb2UgVUkmcXVvdDs7IGZvbnQtc2l6ZTogMTJwdDsgZm9udC13ZWlnaHQ6IGJvbGQ7IGZpbGw6IGJsYWNrOyBzdHJva2U6IG5vbmU7IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiB4PSI0Mi4yIiB5PSIzOCI+U0Y8L3RleHQ+PC9zeW1ib2w+PHN5bWJvbCBpZD0iU3lzdGVtSHVtYW5BY3RvclN5bWJvbCIgc3R5bGU9InN0cm9rZTogIzAwMDsgc3Ryb2tlLXdpZHRoOiAyOyIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHlsZT0ic3Ryb2tlLXdpZHRoOiAyLjQ5NDQ7IHN0cm9rZTogIzAwMDsiIHRyYW5zZm9ybT0ibWF0cml4KDEuMDYxMTMzOCwwLDAsMS4wNjExMzM4LC0yNC40NzY2NSwtMTIuMjQxNjczKSI+PGxpbmUgc3R5bGU9ImZpbGw6IG5vbmU7IiB4MT0iNDAwLjM2MiIgeDI9IjQwMC4zNjIiIHkxPSIyMzIuNTg2IiB5Mj0iMjU3LjUzNCIgLz48bGluZSBzdHlsZT0iZmlsbDogbm9uZTsiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgc3R5bGU9ImZpbGw6IG5vbmU7IiB4MT0iNDAwLjI1MjAxIiB4Mj0iNDEzLjk3IiB5MT0iMjU0LjQ2MDAxIiB5Mj0iMjc0Ljk4NyIgLz48bGluZSBzdHlsZT0iZmlsbDogbm9uZTsiIHgxPSIzODUuNjM0IiB4Mj0iNDE1LjcwMyIgeTE9IjI0NC41NjkiIHkyPSIyNDQuNDk2OTkiIC8+PHJhZGlhbEdyYWRpZW50IGN4PSI0My43NjYxMDIiIGN5PSI4Ny45MDIyOTgiIGZ4PSIwIiBmeT0iMCIgZ3JhZGllbnRUcmFuc2Zvcm09Im1hdHJpeCgxLjk3MjggMCAwIC0yLjAzOSAzMTQuMTg5NiA0MDIuNTkzNikiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBpZD0iaGVhZCIgcj0iNC40Mjk2OTk5Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNGREZDRkEiIC8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOEI5QkE3IiAvPjwvcmFkaWFsR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjQwMC41MzIwMSIgY3k9IjIyMy4zNTg5OSIgcng9IjkuMjE4MDAwNCIgcnk9IjguNTA4MDAwNCIgc3R5bGU9ImZpbGw6dXJsKCNoZWFkKSIgLz48L2c+PC9zeW1ib2w+PHN5bWJvbCBpZD0iUG9ydFN5bWJvbCIgdmlld0JveD0iMCAwIDEwIDEwIj48cGF0aCBkPSJNMCAwaDEwdjEwSDB6IiAvPjxwYXRoIGQ9Ik01IDFMMSA5aDh6IiBmaWxsPSIjZmZmIiAvPjwvc3ltYm9sPjxsaW5lYXJHcmFkaWVudCBpZD0iQ3VzdG9tR3JhZGllbnRfREFGREZGX0M2RTZGRiIgeDE9IjAiIHgyPSIwIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjREFGREZGIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNDNkU2RkYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCBmaWxsPSJ3aGl0ZSIgaGVpZ2h0PSI1OSIgc3Ryb2tlPSJub25lIiB3aWR0aD0iMzc2IiB4PSIyIiB5PSIyIiAvPjxnIGNsYXNzPSJCb3ggU3lzdGVtQ29tcG9uZW50IiBpZD0iN2FmNTk3MWYtMWE2Yy00N2QzLWI5YTgtNGU3MDk0NDQxMTNlIj48cmVjdCBjbGFzcz0iU3lzdGVtQ29tcG9uZW50IiBoZWlnaHQ9IjM2IiBzdHlsZT0iZmlsbDogdXJsKCZxdW90OyNDdXN0b21HcmFkaWVudF9EQUZERkZfQzZFNkZGJnF1b3Q7KTsgc3Ryb2tlOiAjNEE0QTk3OyBzdHJva2Utd2lkdGg6IDEiIHdpZHRoPSIxMzgiIHg9IjEyLjUiIHk9IjEyLjUiIC8+PHRleHQgY2xhc3M9IlN5c3RlbUNvbXBvbmVudCIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgc3R5bGU9ImZpbGw6ICMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjEyIiB5PSIxMiI+PHRzcGFuIHg9IjkyLjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjMwLjAiPkNvZmZlZSBNYWNoaW5lPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjI4Ljg1NzE0Mjg1NzE0Mjg1NCIgeGxpbms6aHJlZj0iI1N5c3RlbUNvbXBvbmVudFN5bWJvbCIgeT0iMjAuMCIgLz48L2c+PGcgY2xhc3M9IkVkZ2UgQ29tcG9uZW50RXhjaGFuZ2UiIGlkPSIzODEzZjlhMC03OWIzLTRjYzUtOWRlZS1mZDllZjUxMzBmNDkiPjxwYXRoIGNsYXNzPSJFZGdlIiBkPSJNIDE1Mi41IDMwLjUgMzIzLjUgMzAuNSIgc3R5bGU9ImZpbGw6IG5vbmU7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAyIiAvPjx0ZXh0IGNsYXNzPSJBbm5vdGF0aW9uIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBzdHlsZT0iZmlsbDogIzRBNEE5NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iMTYwLjAiIHk9IjMzIj48dHNwYW4geD0iMjQ0LjAiIHhtbDpzcGFjZT0icHJlc2VydmUiIHk9IjM4LjAiPnVzZXIgaW50ZXJhY3Rpb25zPC90c3Bhbj48L3RleHQ+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjE3OC4wIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjI4LjAiIC8+PC9nPjxnIGNsYXNzPSJCb3ggQ1BfSU5PVVQiIGlkPSIxMDEzOGEyYi1lOTE0LTQ5NjEtOTE5MC1lNmU5ZmU1Mjc5YTYiPjxyZWN0IGNsYXNzPSJDUF9JTk9VVCIgaGVpZ2h0PSIxMCIgc3R5bGU9ImZpbGw6ICNGRkZGRkY7IHN0cm9rZTogIzAwMDAwMDsgc3Ryb2tlLXdpZHRoOiAxIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAgMTQ3LjUgMzAuNSkiIHdpZHRoPSIxMCIgeD0iMTQyLjUiIHk9IjI1LjUiIC8+PC9nPjxnIGNsYXNzPSJCb3ggU3lzdGVtSHVtYW5BY3RvciIgaWQ9IjNmYjI4MTk1LWI0ZjQtNDcwOC1iMjZiLTJlMWYzYjI3MDk4ZSI+PHVzZSBjbGFzcz0iU3lzdGVtSHVtYW5BY3RvciIgaGVpZ2h0PSIxNyIgc3R5bGU9ImZpbGw6IHVybCgmcXVvdDsjQ3VzdG9tR3JhZGllbnRfREFGREZGX0M2RTZGRiZxdW90Oyk7IHN0cm9rZTogIzRBNEE5Nzsgc3Ryb2tlLXdpZHRoOiAxIiB3aWR0aD0iMzAiIHg9IjMyNS41IiB4bGluazpocmVmPSIjU3lzdGVtSHVtYW5BY3RvclN5bWJvbCIgeT0iMjIuNSIgLz48dGV4dCBjbGFzcz0iQW5ub3RhdGlvbiIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgc3R5bGU9ImZpbGw6ICMwMDAwMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9IjMxMiIgeT0iMzkiPjx0c3BhbiB4PSIzNDAuMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeT0iNDQuMCI+VXNlcjwvdHNwYW4+PC90ZXh0PjwvZz48ZyBjbGFzcz0iQm94IENQX0lOT1VUIiBpZD0iNTc3ZWMyYTEtZjliOC00ZDU3LTlhYjctOWZhNjlhMDQ3ZDNhIj48cmVjdCBjbGFzcz0iQ1BfSU5PVVQiIGhlaWdodD0iMTAiIHN0eWxlPSJmaWxsOiAjRkZGRkZGOyBzdHJva2U6ICMwMDAwMDA7IHN0cm9rZS13aWR0aDogMSIgdHJhbnNmb3JtPSJyb3RhdGUoOTAgMzI4LjUgMzAuNSkiIHdpZHRoPSIxMCIgeD0iMzIzLjUiIHk9IjI1LjUiIC8+PC9nPjwvc3ZnPg=="/></div>
+</div>
+<p>Please note: the changes we made are not yet stored - if you like those to be saved you may use <code class="docutils literal notranslate"><span class="pre">model.save()</span></code> method. This will save the model back to where it was loaded from, for example by writing back into local files, or by creating a Git commit and pushing it back to the remote.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="11%20Complexity%20Assessment.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">12. </span>Complexity Assessment</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="09%20Context%20Diagrams.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">10. </span>Context Diagrams Extension</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">11. Declarative Modeling Example</a><ul>
+<li><a class="reference internal" href="#System-Analysis-of-a-Coffee-Machine">11.1. System Analysis of a Coffee Machine</a><ul>
+<li><a class="reference internal" href="#0.-Initialize">11.1.1. 0. Initialize</a></li>
+<li><a class="reference internal" href="#1.-Context">11.1.2. 1. Context</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

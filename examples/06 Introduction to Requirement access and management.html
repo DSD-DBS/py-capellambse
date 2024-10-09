@@ -1,0 +1,646 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="7. Introduction to Code Generation" href="07%20Code%20Generation.html" /><link rel="prev" title="5. Introduction to Libraries" href="05%20Introduction%20to%20Libraries.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>6. Introduction to Requirement access and management - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Introduction-to-Requirement-access-and-management">
+<h1><span class="section-number">6. </span>Introduction to Requirement access and management<a class="headerlink" href="#Introduction-to-Requirement-access-and-management" title="Link to this heading">¶</a></h1>
+<p>Welcome to the ReqIF extension Showcase notebook. This notebook will show you some basic (and not so basic) things that you can get done using this library.</p>
+<p>The below code loads the library and one of the test models:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">capellambse</span>
+
+<span class="n">path_to_model</span> <span class="o">=</span> <span class="s2">&quot;../../../tests/data/melodymodel/5_0/Melody Model Test.aird&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span><span class="n">path_to_model</span><span class="p">)</span>
+<span class="n">model</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;capellambse.model.MelodyModel at 0x7f6c60257ca0&gt;
+</pre></div></div>
+</div>
+<p>You can access a lookup for all requirements defined in a specific layer.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>Requirement</strong> &quot;TestReq1&quot; (3c2d312c-37c9-41b5-8c32-67578fa52dc3)</li><li><strong>Requirement</strong> &quot;TypedReq2&quot; (0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc)</li><li><strong>Requirement</strong> &quot;TestReq3&quot; (79291c33-5147-4543-9398-9077d582576d)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>Requirement</strong> &quot;TestReq&quot; (1092f69a-5f3a-4fe6-a8fd-b2dffde90650)</li></ol></div>
+</div>
+<p>Have a look at all of the available attributes for a Requirement ModelElement:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>TestReq1 <span style="font-size: 70%;">(Requirements:Requirement)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">attributes</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>BooleanValueAttribute</strong> &quot;AttrDef&quot; (9c692405-b8aa-4caa-b988-51d27db5cd1b)</li><li><strong>DateValueAttribute</strong> &quot;AttrDef&quot; (b97c09b5-948a-46e8-a656-69d764ddce7d)</li><li><strong>IntegerValueAttribute</strong> &quot;AttrDef&quot; (85dfd42c-7f6e-4236-a181-bdd784040431)</li><li><strong>RealValueAttribute</strong> &quot;AttrDef&quot; (d2231d14-854d-4625-b48b-6cf1c2554367)</li><li><strong>StringValueAttribute</strong> &quot;AttrDef&quot; (ee8a69ef-61b9-4db9-9a0f-628e5d4704e1)</li><li><strong>BooleanValueAttribute</strong> &quot;None&quot; (dcb8614e-2d1c-4cb3-aa0c-667a297e7489)</li></ol></td></tr><tr><th style="text-align: right;">chapter_name</th><td style="text-align: left;">2</td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;">This is a test requirement of kind 1.</td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">foreign_id</th><td style="text-align: left;"><em>1</em></td></tr><tr><th style="text-align: right;">identifier</th><td style="text-align: left;">REQTYPE-1</td></tr><tr><th style="text-align: right;">long_name</th><td style="text-align: left;">1</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">TestReq1</td></tr><tr><th style="text-align: right;">owner</th><td style="text-align: left;"><strong>Folder</strong> &quot;Folder&quot; (e16f5cc1-3299-43d0-b1a0-82d31a137111)</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>Folder</strong> &quot;Folder&quot; (e16f5cc1-3299-43d0-b1a0-82d31a137111)</td></tr><tr><th style="text-align: right;">prefix</th><td style="text-align: left;">3</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f3afe4e68d0&gt;</em></td></tr><tr><th style="text-align: right;">related</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>Entity</strong> &quot;Weather&quot; (4bf0356c-89dd-45e9-b8a6-e0332c026d33)</li><li><strong>SystemFunction</strong> &quot;Sysexfunc&quot; (00e7b925-cf4c-4cb0-929e-5409a1cd872b)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>LogicalComponent</strong> &quot;Hogwarts&quot; (0d2edb8f-fa34-4e73-89ec-fb9a63001440)</li></ol></td></tr><tr><th style="text-align: right;">relations</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>CapellaIncomingRelation</strong> &quot;Controlling the weather&quot; (078b2c69-4352-4cf9-9ea5-6573b75e5eec)</li><li><strong>CapellaIncomingRelation</strong> &quot;Test req&quot; (24c824ef-b187-4725-a051-a68707e82d70)</li><li><strong>InternalRelation</strong> &quot;None&quot; (7de4c1a5-e106-4171-902a-502b816b60b0)</li><li><strong>CapellaOutgoingRelation</strong> &quot;None&quot; (57033242-3766-4961-8091-ce3d9326ed67)</li></ol></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>Entity</strong> &quot;Weather&quot; (4bf0356c-89dd-45e9-b8a6-e0332c026d33)</li><li><strong>SystemFunction</strong> &quot;Sysexfunc&quot; (00e7b925-cf4c-4cb0-929e-5409a1cd872b)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>LogicalComponent</strong> &quot;Hogwarts&quot; (0d2edb8f-fa34-4e73-89ec-fb9a63001440)</li></ol></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">text</th><td style="text-align: left;"><p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>
+
+<p>&lt; &gt; &quot; &#39;</p>
+
+<ul>
+    <li>This&nbsp;is a list</li>
+    <li>an unordered one</li>
+</ul>
+
+<ol>
+    <li>Ordered list</li>
+    <li>Ok</li>
+</ol>
+</td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">type</th><td style="text-align: left;"><strong>RequirementType</strong> &quot;ReqType&quot; (db47fca9-ddb6-4397-8d4b-e397e53d277e)</td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">3c2d312c-37c9-41b5-8c32-67578fa52dc3</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">Requirements:Requirement</td></tr></table></div>
+</div>
+<section id="Filtering-for-requirements-by-type">
+<h2><span class="section-number">6.1. </span>Filtering for requirements by type<a class="headerlink" href="#Filtering-for-requirements-by-type" title="Link to this heading">¶</a></h2>
+<p>You probably know about typing of your Requirements. You can have a view of all requirement type folders directly on a specific layer and see the stored requirement_types:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">requirement_types_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>CapellaTypesFolder <span style="font-size: 70%;">(CapellaRequirements:CapellaTypesFolder)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">data_type_definitions</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>DataTypeDefinition</strong> &quot;DataTypeDef&quot; (3b7ec38a-e26a-4c23-9fa3-275af3f629ee)</li><li><strong>EnumerationDataTypeDefinition</strong> &quot;EnumDataTypeDef&quot; (637caf95-3229-4607-99a0-7d7b990bc97f)</li></ol></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">identifier</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">long_name</th><td style="text-align: left;">Types</td></tr><tr><th style="text-align: right;">module_types</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>ModuleType</strong> &quot;ModuleType&quot; (a67e7f43-4b49-425c-a6a7-d44e1054a488)</li></ol></td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>OperationalAnalysis</strong> &quot;Operational Analysis&quot; (ddbef16d-ddb9-4162-934c-f1e40e6f8bed)</td></tr><tr><th style="text-align: right;">prefix</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f3ad72c8f50&gt;</em></td></tr><tr><th style="text-align: right;">relation_types</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>RelationType</strong> &quot;RelationType&quot; (f1aceb81-5f70-4469-a127-94830eb9be04)</li></ol></td></tr><tr><th style="text-align: right;">requirement_types</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>RequirementType</strong> &quot;ReqType&quot; (db47fca9-ddb6-4397-8d4b-e397e53d277e)</li></ol></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">type</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">67bba9cf-953c-4f0b-9986-41991c68d241</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">CapellaRequirements:CapellaTypesFolder</td></tr></table></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">reqtype</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">requirement_types_folders</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">requirement_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">reqtype</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>RequirementType <span style="font-size: 70%;">(Requirements:RequirementType)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">attribute_definitions</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>AttributeDefinition</strong> &quot;AttrDef&quot; (682bd51d-5451-4930-a97e-8bfca6c3a127)</li><li><strong>AttributeDefinitionEnumeration</strong> &quot;AttrDefEnum&quot; (c316ab07-c5c3-4866-a896-92e34733055c)</li><li><strong>AttributeDefinitionEnumeration</strong> &quot;MultiEnum&quot; (f31d4dd3-99f7-41d1-b1ce-f07b20d26eac)</li><li><strong>AttributeDefinition</strong> &quot;version&quot; (0bd40628-10a5-451e-86da-187c93bc3b10)</li></ol></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">identifier</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">long_name</th><td style="text-align: left;">ReqType</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">owner</th><td style="text-align: left;"><strong>CapellaTypesFolder</strong> &quot;Types&quot; (67bba9cf-953c-4f0b-9986-41991c68d241)</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>CapellaTypesFolder</strong> &quot;Types&quot; (67bba9cf-953c-4f0b-9986-41991c68d241)</td></tr><tr><th style="text-align: right;">prefix</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f3ad72f7910&gt;</em></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">type</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">db47fca9-ddb6-4397-8d4b-e397e53d277e</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">Requirements:RequirementType</td></tr></table></div>
+</div>
+<p>Now we actually want to filter the requirements by this type with name ‘ReqType’. Very original name, we know. You wouldn’t really see the filtering effect since all requirements in the oa layer are of that type. So let us create one new requirement dynamically:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_req</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">requirement_modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">requirements</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;New showcase req1&quot;</span>
+<span class="p">)</span>
+<span class="n">display</span><span class="p">(</span><span class="n">new_req</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>New showcase req1 <span style="font-size: 70%;">(Requirements:Requirement)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">attributes</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">chapter_name</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">foreign_id</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">identifier</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">long_name</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">New showcase req1</td></tr><tr><th style="text-align: right;">owner</th><td style="text-align: left;"><strong>CapellaModule</strong> &quot;Test Module&quot; (f8e2195d-b5f5-4452-a12b-79233d943d5e)</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>CapellaModule</strong> &quot;Test Module&quot; (f8e2195d-b5f5-4452-a12b-79233d943d5e)</td></tr><tr><th style="text-align: right;">prefix</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f3afc3ddd50&gt;</em></td></tr><tr><th style="text-align: right;">related</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">relations</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">text</th><td style="text-align: left;"></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">type</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">0ce7877e-68d6-4113-8aca-be69b2e25253</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">Requirements:Requirement</td></tr></table></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>Requirement</strong> &quot;TestReq1&quot; (3c2d312c-37c9-41b5-8c32-67578fa52dc3)</li><li><strong>Requirement</strong> &quot;TypedReq2&quot; (0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc)</li><li><strong>Requirement</strong> &quot;TestReq3&quot; (79291c33-5147-4543-9398-9077d582576d)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>Requirement</strong> &quot;New showcase req1&quot; (0ce7877e-68d6-4113-8aca-be69b2e25253)</li><li><strong>Requirement</strong> &quot;TestReq&quot; (1092f69a-5f3a-4fe6-a8fd-b2dffde90650)</li></ol></div>
+</div>
+<p>Info about creation: Whenever you have an ElementList which deals with one specified classtype, here it is Requirement, then the classtype name doesn’t need to be included.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span><span class="o">.</span><span class="n">by_type</span><span class="p">(</span><span class="s2">&quot;ReqType&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>Requirement</strong> &quot;TestReq1&quot; (3c2d312c-37c9-41b5-8c32-67578fa52dc3)</li><li><strong>Requirement</strong> &quot;TypedReq2&quot; (0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc)</li><li><strong>Requirement</strong> &quot;TestReq3&quot; (79291c33-5147-4543-9398-9077d582576d)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>Requirement</strong> &quot;TestReq&quot; (1092f69a-5f3a-4fe6-a8fd-b2dffde90650)</li></ol></div>
+</div>
+<p>We see our Requirements with type <code class="docutils literal notranslate"><span class="pre">ReqType</span></code> are missing the new one. Let’s change that, without using capella.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">new_req</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">reqtype</span>
+<span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span><span class="o">.</span><span class="n">by_type</span><span class="p">(</span><span class="s2">&quot;ReqType&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>Requirement</strong> &quot;TestReq1&quot; (3c2d312c-37c9-41b5-8c32-67578fa52dc3)</li><li><strong>Requirement</strong> &quot;TypedReq2&quot; (0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc)</li><li><strong>Requirement</strong> &quot;TestReq3&quot; (79291c33-5147-4543-9398-9077d582576d)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>Requirement</strong> &quot;New showcase req1&quot; (0ce7877e-68d6-4113-8aca-be69b2e25253)</li><li><strong>Requirement</strong> &quot;TestReq&quot; (1092f69a-5f3a-4fe6-a8fd-b2dffde90650)</li></ol></div>
+</div>
+<p>If you are sure about attributes when creating a Requirement you can also include it during creation.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">requirement_modules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">requirements</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;ReqType during Creation&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="n">reqtype</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span><span class="o">.</span><span class="n">by_type</span><span class="p">(</span><span class="s2">&quot;ReqType&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>Requirement</strong> &quot;TestReq1&quot; (3c2d312c-37c9-41b5-8c32-67578fa52dc3)</li><li><strong>Requirement</strong> &quot;TypedReq2&quot; (0a9a68b1-ba9a-4793-b2cf-4448f0b4b8cc)</li><li><strong>Requirement</strong> &quot;TestReq3&quot; (79291c33-5147-4543-9398-9077d582576d)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>Requirement</strong> &quot;New showcase req1&quot; (0ce7877e-68d6-4113-8aca-be69b2e25253)</li><li><strong>Requirement</strong> &quot;ReqType during Creation&quot; (ec5f6680-501c-4a6c-a2ce-3ae8fe93be00)</li><li><strong>Requirement</strong> &quot;TestReq&quot; (1092f69a-5f3a-4fe6-a8fd-b2dffde90650)</li></ol></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>TestReq1 <span style="font-size: 70%;">(Requirements:Requirement)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">attributes</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>BooleanValueAttribute</strong> &quot;AttrDef&quot; (9c692405-b8aa-4caa-b988-51d27db5cd1b)</li><li><strong>DateValueAttribute</strong> &quot;AttrDef&quot; (b97c09b5-948a-46e8-a656-69d764ddce7d)</li><li><strong>IntegerValueAttribute</strong> &quot;AttrDef&quot; (85dfd42c-7f6e-4236-a181-bdd784040431)</li><li><strong>RealValueAttribute</strong> &quot;AttrDef&quot; (d2231d14-854d-4625-b48b-6cf1c2554367)</li><li><strong>StringValueAttribute</strong> &quot;AttrDef&quot; (ee8a69ef-61b9-4db9-9a0f-628e5d4704e1)</li><li><strong>BooleanValueAttribute</strong> &quot;None&quot; (dcb8614e-2d1c-4cb3-aa0c-667a297e7489)</li></ol></td></tr><tr><th style="text-align: right;">chapter_name</th><td style="text-align: left;">2</td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;">This is a test requirement of kind 1.</td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">foreign_id</th><td style="text-align: left;"><em>1</em></td></tr><tr><th style="text-align: right;">identifier</th><td style="text-align: left;">REQTYPE-1</td></tr><tr><th style="text-align: right;">long_name</th><td style="text-align: left;">1</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">TestReq1</td></tr><tr><th style="text-align: right;">owner</th><td style="text-align: left;"><strong>Folder</strong> &quot;Folder&quot; (e16f5cc1-3299-43d0-b1a0-82d31a137111)</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>Folder</strong> &quot;Folder&quot; (e16f5cc1-3299-43d0-b1a0-82d31a137111)</td></tr><tr><th style="text-align: right;">prefix</th><td style="text-align: left;">3</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f3ad72dfd90&gt;</em></td></tr><tr><th style="text-align: right;">related</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>Entity</strong> &quot;Weather&quot; (4bf0356c-89dd-45e9-b8a6-e0332c026d33)</li><li><strong>SystemFunction</strong> &quot;Sysexfunc&quot; (00e7b925-cf4c-4cb0-929e-5409a1cd872b)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>LogicalComponent</strong> &quot;Hogwarts&quot; (0d2edb8f-fa34-4e73-89ec-fb9a63001440)</li></ol></td></tr><tr><th style="text-align: right;">relations</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>CapellaIncomingRelation</strong> &quot;Controlling the weather&quot; (078b2c69-4352-4cf9-9ea5-6573b75e5eec)</li><li><strong>CapellaIncomingRelation</strong> &quot;Test req&quot; (24c824ef-b187-4725-a051-a68707e82d70)</li><li><strong>InternalRelation</strong> &quot;None&quot; (7de4c1a5-e106-4171-902a-502b816b60b0)</li><li><strong>CapellaOutgoingRelation</strong> &quot;None&quot; (57033242-3766-4961-8091-ce3d9326ed67)</li></ol></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>Entity</strong> &quot;Weather&quot; (4bf0356c-89dd-45e9-b8a6-e0332c026d33)</li><li><strong>SystemFunction</strong> &quot;Sysexfunc&quot; (00e7b925-cf4c-4cb0-929e-5409a1cd872b)</li><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>LogicalComponent</strong> &quot;Hogwarts&quot; (0d2edb8f-fa34-4e73-89ec-fb9a63001440)</li></ol></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">text</th><td style="text-align: left;"><p>Test requirement 1 really l o n g text that is&nbsp;way too long to display here as that</p>
+
+<p>&lt; &gt; &quot; &#39;</p>
+
+<ul>
+    <li>This&nbsp;is a list</li>
+    <li>an unordered one</li>
+</ul>
+
+<ol>
+    <li>Ordered list</li>
+    <li>Ok</li>
+</ol>
+</td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">type</th><td style="text-align: left;"><strong>RequirementType</strong> &quot;ReqType&quot; (db47fca9-ddb6-4397-8d4b-e397e53d277e)</td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">3c2d312c-37c9-41b5-8c32-67578fa52dc3</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">Requirements:Requirement</td></tr></table></div>
+</div>
+</section>
+<section id="Export-all-requirements-to-excel-with-pandas">
+<h2><span class="section-number">6.2. </span>Export all requirements to excel with pandas<a class="headerlink" href="#Export-all-requirements-to-excel-with-pandas" title="Link to this heading">¶</a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">Pandas</span></code> you are able to generate data tables and export to many file-types like .xlsx for excel. Note that this requires the <code class="docutils literal notranslate"><span class="pre">xlsxwriter</span></code> module in addition to <code class="docutils literal notranslate"><span class="pre">pandas</span></code> itself.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="n">requirements</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Req_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">req</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">req</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">req</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">oa</span><span class="o">.</span><span class="n">all_requirements</span><span class="p">)</span>
+<span class="p">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">requirements</span><span class="p">)</span>
+<span class="n">data</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">excel_writer</span><span class="o">=</span><span class="s2">&quot;Test_requirements.xlsx&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Export-a-Requirements-module-as-Requirements-Interchange-Format-(.reqif)-file">
+<h2><span class="section-number">6.3. </span>Export a Requirements module as Requirements Interchange Format (<code class="docutils literal notranslate"><span class="pre">.reqif</span></code>) file<a class="headerlink" href="#Export-a-Requirements-module-as-Requirements-Interchange-Format-(.reqif)-file" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">capellambse</span></code> features basic export functionality for requirements modules, which allows to write <code class="docutils literal notranslate"><span class="pre">.reqif</span></code> or compressed <code class="docutils literal notranslate"><span class="pre">.reqifz</span></code> files. These can then be imported into other ReqIF-compliant applications, like CodeBeamer or IBM DOORS.</p>
+<p>Let’s first take a glance at the module we’re going to export:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">req_module</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">by_uuid</span><span class="p">(</span><span class="s2">&quot;f8e2195d-b5f5-4452-a12b-79233d943d5e&quot;</span><span class="p">)</span>
+<span class="n">req_module</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>Test Module <span style="font-size: 70%;">(CapellaRequirements:CapellaModule)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">attributes</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>EnumerationValueAttribute</strong> &quot;AttrDefEnum&quot; (11a2e07a-41f7-4eee-a94e-f3e33738c487)</li></ol></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;">This is a test requirement module.</td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">folders</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>Folder</strong> &quot;Folder&quot; (e16f5cc1-3299-43d0-b1a0-82d31a137111)</li></ol></td></tr><tr><th style="text-align: right;">identifier</th><td style="text-align: left;">1</td></tr><tr><th style="text-align: right;">long_name</th><td style="text-align: left;">Module</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">Test Module</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>OperationalAnalysis</strong> &quot;Operational Analysis&quot; (ddbef16d-ddb9-4162-934c-f1e40e6f8bed)</td></tr><tr><th style="text-align: right;">prefix</th><td style="text-align: left;">T</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;"><em>&lt;capellambse.extensions.pvmt.PropertyValueProxy object at 0x7f3ad4787a10&gt;</em></td></tr><tr><th style="text-align: right;">requirement_types_folders</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>Requirement</strong> &quot;TypedReq1&quot; (85d41db2-9e17-438b-95cf-49342452ddf3)</li><li><strong>Requirement</strong> &quot;New showcase req1&quot; (0ce7877e-68d6-4113-8aca-be69b2e25253)</li><li><strong>Requirement</strong> &quot;ReqType during Creation&quot; (ec5f6680-501c-4a6c-a2ce-3ae8fe93be00)</li></ol></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">type</th><td style="text-align: left;"><strong>ModuleType</strong> &quot;ModuleType&quot; (a67e7f43-4b49-425c-a6a7-d44e1054a488)</td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">f8e2195d-b5f5-4452-a12b-79233d943d5e</td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">CapellaRequirements:CapellaModule</td></tr></table></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">req_module</span><span class="o">.</span><span class="n">to_reqif</span><span class="p">(</span><span class="n">req_module</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.reqif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>And that’s it! This code has created the file “Test Module.reqif” next to this notebook, which contains all Requirements defined in that module.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="07%20Code%20Generation.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">7. </span>Introduction to Code Generation</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="05%20Introduction%20to%20Libraries.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">5. </span>Introduction to Libraries</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">6. Introduction to Requirement access and management</a><ul>
+<li><a class="reference internal" href="#Filtering-for-requirements-by-type">6.1. Filtering for requirements by type</a></li>
+<li><a class="reference internal" href="#Export-all-requirements-to-excel-with-pandas">6.2. Export all requirements to excel with pandas</a></li>
+<li><a class="reference internal" href="#Export-a-Requirements-module-as-Requirements-Interchange-Format-(.reqif)-file">6.3. Export a Requirements module as Requirements Interchange Format (<code class="docutils literal notranslate"><span class="pre">.reqif</span></code>) file</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

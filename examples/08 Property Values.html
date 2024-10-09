@@ -1,0 +1,845 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="10. Context Diagrams Extension" href="09%20Context%20Diagrams.html" /><link rel="prev" title="7. Introduction to Code Generation" href="07%20Code%20Generation.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>8. Property Values and Property Value Management Tool (PVMT) support - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Property-Values-and-Property-Value-Management-Tool-(PVMT)-support">
+<h1><span class="section-number">8. </span>Property Values and Property Value Management Tool (PVMT) support<a class="headerlink" href="#Property-Values-and-Property-Value-Management-Tool-(PVMT)-support" title="Link to this heading">¶</a></h1>
+<p>capellambse provides access to property values and property value groups, as well as the additional information maintained by the Property Value Management Tool (PVMT) extension.</p>
+<p>Let’s first take a look at how to work with basic property values.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">capellambse</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span>
+    <span class="s2">&quot;../../../tests/data/melodymodel/5_0/Melody Model Test.aird&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Model objects can own property values and PV groups. To access those, use the <code class="docutils literal notranslate"><span class="pre">property_values</span></code> and <code class="docutils literal notranslate"><span class="pre">property_value_groups</span></code> attributes respectively:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalComponent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;Whomping Willow&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_values</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>IntegerPropertyValue</strong> <a href="hlink://a928fa22-cef7-4357-9b87-675a432f6591">&quot;cars_defeated&quot;</a>: 1 (a928fa22-cef7-4357-9b87-675a432f6591)</li></ol></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>cars_defeated <span style="font-size: 70%;">(org.polarsys.capella.core.data.capellacore:IntegerPropertyValue)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">enumerations</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">layer</th><td style="text-align: left;"><strong>LogicalArchitecture</strong> <a href="hlink://853cb005-cba0-489b-8fe3-bb694ad4543b">&quot;Logical Architecture&quot;</a> (853cb005-cba0-489b-8fe3-bb694ad4543b)</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">cars_defeated</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkNvbXBvbmVudFN5bWJvbCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHZpZXdCb3g9IjAgMCA3OSA3OSI+PHBhdGggZD0iTTE4IDIzN2g0NnY0M0gxOHoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI0N2gxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjYxaDExdjhIMTJ6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjx1c2UgdHJhbnNmb3JtPSJtYXRyaXgoMC42MiwwLDAsMC42MiwyMy44MiwxNi41MSkiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgLz48L3N5bWJvbD48c3ltYm9sIGlkPSJTdGlja0ZpZ3VyZVN5bWJvbCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHZpZXdCb3g9IjM2Mi44NjEgMjEwLjg5MiA3NSA3NSI+PGcgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIuNDk0NCIgdHJhbnNmb3JtPSJtYXRyaXgoMS4wNjExMzM4LDAsMCwxLjA2MTEzMzgsLTI0LjQ3NjY1LC0xMi4yNDE2NzMpIj48bGluZSBmaWxsPSJub25lIiB4MT0iNDAwLjM2MiIgeDI9IjQwMC4zNjIiIHkxPSIyMzIuNTg2IiB5Mj0iMjU3LjUzNCIgLz48bGluZSBmaWxsPSJub25lIiB4MT0iNDAwLjgzNDAxIiB4Mj0iMzg4LjQyMyIgeTE9IjI1NC4yOTkiIHkyPSIyNzUuMDA5IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMjUyMDEiIHgyPSI0MTMuOTciIHkxPSIyNTQuNDYwMDEiIHkyPSIyNzQuOTg3IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSIzODUuNjM0IiB4Mj0iNDE1LjcwMyIgeTE9IjI0NC41NjkiIHkyPSIyNDQuNDk2OTkiIC8+PGVsbGlwc2UgY3g9IjQwMC41MzIwMSIgY3k9IjIyMy4zNTg5OSIgZmlsbD0ibm9uZSIgcng9IjkuMjE4MDAwNCIgcnk9IjguNTA4MDAwNCIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjU3RpY2tGaWd1cmVTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://3bdd4fa2-5646-44a1-9fa6-80c68433ddb7">&quot;Whomping Willow&quot;</a> (3bdd4fa2-5646-44a1-9fa6-80c68433ddb7)</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;">Property Value Management for <strong>IntegerPropertyValue</strong> <a href="hlink://a928fa22-cef7-4357-9b87-675a432f6591">&quot;cars_defeated&quot;</a>: 1 (a928fa22-cef7-4357-9b87-675a432f6591)</td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">a928fa22-cef7-4357-9b87-675a432f6591</td></tr><tr><th style="text-align: right;">validation</th><td style="text-align: left;"><em>&lt;capellambse.extensions.validation._validate.ElementValidation object at 0x720dec0f03b0&gt;</em></td></tr><tr><th style="text-align: right;">value</th><td style="text-align: left;"><em>1</em></td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">org.polarsys.capella.core.data.capellacore:IntegerPropertyValue</td></tr></table></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>PropertyValueGroup</strong> <a href="hlink://81bcc3d3-24d2-411e-a296-9943029acfd9">&quot;Stats&quot;</a> (81bcc3d3-24d2-411e-a296-9943029acfd9)</li></ol></div>
+</div>
+<section id="dict-like-access-to-property-values">
+<h2><span class="section-number">8.1. </span>dict-like access to property values<a class="headerlink" href="#dict-like-access-to-property-values" title="Link to this heading">¶</a></h2>
+<p>In addition to standard attribute-based access, these property value-related attributes can also behave like dicts in some cases. Here the dict key equates to the <code class="docutils literal notranslate"><span class="pre">name</span></code> of a property value or group, and the dict value equates to either the <code class="docutils literal notranslate"><span class="pre">value</span></code> of a property value object, or a list of PV objects in the group (which again can behave dict-like).</p>
+<p>This significantly shortens the way to a specific value. For comparison, this would be the “usual” attribute-based way of accessing it:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;Stats&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">property_values</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;WIS&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+150
+</pre></div></div>
+</div>
+<p>And here is the same again, leveraging the dict-like behavior:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span><span class="p">[</span><span class="s2">&quot;Stats&quot;</span><span class="p">][</span><span class="s2">&quot;WIS&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+150
+</pre></div></div>
+</div>
+<p>This of course also works for ungrouped property values:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_values</span><span class="p">[</span><span class="s2">&quot;cars_defeated&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span><span class="p">[</span><span class="s2">&quot;Stats&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>IntegerPropertyValue</strong> <a href="hlink://0e95950d-272f-4b50-b68d-ee8fed002c94">&quot;HP&quot;</a>: 8000 (0e95950d-272f-4b50-b68d-ee8fed002c94)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://32be6f26-4b33-4861-b501-3bfce3df94cb">&quot;STR&quot;</a>: 42 (32be6f26-4b33-4861-b501-3bfce3df94cb)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://addb1e4a-9ecc-411c-b7ef-b76388e5840d">&quot;AGI&quot;</a>: 0 (addb1e4a-9ecc-411c-b7ef-b76388e5840d)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://7c8c9c21-86b9-4dba-9c7c-cd9db2f09c11">&quot;WIS&quot;</a>: 150 (7c8c9c21-86b9-4dba-9c7c-cd9db2f09c11)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://647a5565-a1de-4e15-ab21-eb628eea413c">&quot;INT&quot;</a>: 12 (647a5565-a1de-4e15-ab21-eb628eea413c)</li></ol></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span><span class="p">[</span><span class="s2">&quot;Stats&quot;</span><span class="p">][</span><span class="s2">&quot;WIS&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+150
+</pre></div></div>
+</div>
+<p>These property values can also be written to:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span><span class="p">[</span><span class="s2">&quot;Stats&quot;</span><span class="p">][</span><span class="s2">&quot;INT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="n">obj</span><span class="o">.</span><span class="n">property_value_groups</span><span class="p">[</span><span class="s2">&quot;Stats&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>IntegerPropertyValue</strong> <a href="hlink://0e95950d-272f-4b50-b68d-ee8fed002c94">&quot;HP&quot;</a>: 8000 (0e95950d-272f-4b50-b68d-ee8fed002c94)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://32be6f26-4b33-4861-b501-3bfce3df94cb">&quot;STR&quot;</a>: 42 (32be6f26-4b33-4861-b501-3bfce3df94cb)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://addb1e4a-9ecc-411c-b7ef-b76388e5840d">&quot;AGI&quot;</a>: 0 (addb1e4a-9ecc-411c-b7ef-b76388e5840d)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://7c8c9c21-86b9-4dba-9c7c-cd9db2f09c11">&quot;WIS&quot;</a>: 150 (7c8c9c21-86b9-4dba-9c7c-cd9db2f09c11)</li><li><strong>IntegerPropertyValue</strong> <a href="hlink://647a5565-a1de-4e15-ab21-eb628eea413c">&quot;INT&quot;</a>: 18 (647a5565-a1de-4e15-ab21-eb628eea413c)</li></ol></div>
+</div>
+</section>
+</section>
+<section id="Property-Value-Management-(PVMT)">
+<h1><span class="section-number">9. </span>Property Value Management (PVMT)<a class="headerlink" href="#Property-Value-Management-(PVMT)" title="Link to this heading">¶</a></h1>
+<p>Property values become much more powerful when using the <a class="reference external" href="https://github.com/eclipse-capella/capella/wiki/PVMT">Property Value Management Tool extension</a>. This extension groups property values into domains and groups, and allows to automatically apply certain groups based on specific conditions. These conditions may include the object class, the architectural layer, and other already applied property values.</p>
+<p>Metadata about the defined domains and groups is stored in a package named “EXTENSIONS” at the root level of the model, which is conveniently accessible as <code class="docutils literal notranslate"><span class="pre">model.pvmt</span></code>. The package will automatically be created if it does not exist yet.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">pvmt</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>EXTENSIONS <span style="font-size: 70%;">(org.polarsys.capella.core.data.capellacore:PropertyValuePkg)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">domains</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>ManagedDomain</strong> <a href="hlink://3763dd54-a878-446a-9330-b5d9c7121865">&quot;DarkMagic&quot;</a> (3763dd54-a878-446a-9330-b5d9c7121865)</li></ol></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">EXTENSIONS</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><em>&lt;capellambse.model.MelodyModel object at 0x720df69da180&gt;</em></td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;">Property Value Management for <strong>PropertyValuePkg</strong> <a href="hlink://fdbeb3b8-e1e2-4c6d-aff4-bccb1b9f437f">&quot;EXTENSIONS&quot;</a> (fdbeb3b8-e1e2-4c6d-aff4-bccb1b9f437f)</td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">fdbeb3b8-e1e2-4c6d-aff4-bccb1b9f437f</td></tr><tr><th style="text-align: right;">validation</th><td style="text-align: left;"><em>&lt;capellambse.extensions.validation._validate.ElementValidation object at 0x720dec2e55b0&gt;</em></td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">org.polarsys.capella.core.data.capellacore:PropertyValuePkg</td></tr></table></div>
+</div>
+<p>From there, we can easily enumerate the defined domains:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">pvmt</span><span class="o">.</span><span class="n">domains</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>ManagedDomain</strong> <a href="hlink://3763dd54-a878-446a-9330-b5d9c7121865">&quot;DarkMagic&quot;</a> (3763dd54-a878-446a-9330-b5d9c7121865)</li></ol></div>
+</div>
+<p>And see which groups are defined in that domain:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">domain</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pvmt</span><span class="o">.</span><span class="n">domains</span><span class="p">[</span><span class="s2">&quot;DarkMagic&quot;</span><span class="p">]</span>
+<span class="n">domain</span><span class="o">.</span><span class="n">groups</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>ManagedGroup</strong> <a href="hlink://1e241678-282c-46f3-abbd-e0cf34e743ee">&quot;DarkMagic.Power&quot;</a> (1e241678-282c-46f3-abbd-e0cf34e743ee)</li><li><strong>ManagedGroup</strong> <a href="hlink://a0cb5a23-955e-43d6-a633-2c4e66991364">&quot;DarkMagic.Power Level&quot;</a> (a0cb5a23-955e-43d6-a633-2c4e66991364)</li></ol></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">group</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">groups</span><span class="p">[</span><span class="s2">&quot;Power Level&quot;</span><span class="p">]</span>
+<span class="n">group</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>Power Level <span style="font-size: 70%;">(org.polarsys.capella.core.data.capellacore:PropertyValueGroup)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">fullname</th><td style="text-align: left;">DarkMagic.Power Level</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">Power Level</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>PropertyValuePkg</strong> <a href="hlink://3763dd54-a878-446a-9330-b5d9c7121865">&quot;DarkMagic&quot;</a> (3763dd54-a878-446a-9330-b5d9c7121865)</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>EnumerationPropertyValue</strong> <a href="hlink://7367c731-aabb-4807-9d74-7ef2c6482ec9">&quot;Skill&quot;</a>: <strong>EnumerationPropertyLiteral</strong> <a href="hlink://4da42696-28e2-4f90-bfb6-90ba1fc52d01">&quot;TheOneWhoShallNotBeNamed&quot;</a> (4da42696-28e2-4f90-bfb6-90ba1fc52d01) (7367c731-aabb-4807-9d74-7ef2c6482ec9)</li></ol></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;">Property Value Management for <strong>PropertyValueGroup</strong> <a href="hlink://a0cb5a23-955e-43d6-a633-2c4e66991364">&quot;Power Level&quot;</a> (a0cb5a23-955e-43d6-a633-2c4e66991364)</td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">selector</th><td style="text-align: left;"><em>SelectorRules(raw=&#39;[PROPERTY]DarkMagic.Power.Max&lt;10000.0[/PROPERTY]\n[ARCHITECTURE]LOGICAL[/ARCHITECTURE]&#39;)</em></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">a0cb5a23-955e-43d6-a633-2c4e66991364</td></tr><tr><th style="text-align: right;">validation</th><td style="text-align: left;"><em>&lt;capellambse.extensions.validation._validate.ElementValidation object at 0x720dec0f1850&gt;</em></td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">org.polarsys.capella.core.data.capellacore:PropertyValueGroup</td></tr></table></div>
+</div>
+<p>Group definitions also have a <code class="docutils literal notranslate"><span class="pre">selector</span></code>, which contains rules that determine the applicable model elements.</p>
+<p>The current ruleset can be introspected by reading the attributes of the <code class="docutils literal notranslate"><span class="pre">selector</span></code>:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">classes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">layers</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">properties</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+()
+(&lt;class &#39;capellambse.model.layers.la.LogicalArchitecture&#39;&gt;,)
+((&#39;DarkMagic.Power.Max&#39;, &#39;&lt;&#39;, &#39;10000.0&#39;),)
+</pre></div></div>
+</div>
+<p>The ManagedGroup object provides some helper methods that interpret this selector:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>group.find_applicable
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Signature:</span> group<span class="ansi-blue-fg">.</span>find_applicable<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">&#39;c.ElementList&#39;</span>
+<span class="ansi-red-fg">Docstring:</span> Find all elements in the model that this group applies to.
+<span class="ansi-red-fg">File:</span>      ~/devspace/capellambse/capellambse/extensions/pvmt/_config.py
+<span class="ansi-red-fg">Type:</span>      method
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">group</span><span class="o">.</span><span class="n">find_applicable</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxBY3RvclN5bWJvbCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHZpZXdCb3g9IjAgMCA3OSA3OSI+PHBhdGggZD0iTTE4IDIzN2g0NnY0M0gxOHoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI0N2gxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjYxaDExdjhIMTJ6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjxnIGZpbGw9IiMwMDAiIHN0cm9rZS13aWR0aD0iMC4xIiB0cmFuc2Zvcm09InNjYWxlKDAuODMwMTA4OTYsMS4yMDQ2NjExKSI+PHBhdGggZD0ibSAzMS4wNjM2NzYsMTkuOTQyNjI4IGggMy43NTQ0MjcgdiAyNi43NTk0OTQgaCAtMy43NTQ0MjcgeiBtIDEuODc3MjEzLDIzLjE4OTEwNyBoIDE1LjMxMjE3MyB2IDMuNTcwMzg3IEggMzIuOTQwODg5IFoiIC8+PHBhdGggZD0ibSA2MC4zMjYxMiwxOS45NDI2MjggaCAzLjIwMjMwNiBsIDkuODY0NTcyLDI2Ljc1OTQ5NCBIIDY5LjM0NDEwNyBMIDYxLjkyNzI3MywyNS4xMTQxNjcgNTQuNTEwNDQsNDYuNzAyMTIyIEggNTAuNDYxNTQ4IFogTSA1NS4wMDczNDksMzcuMjYwODQyIEggNjkuMDg2NDUgdiAzLjU3MDM4NyBIIDU1LjAwNzM0OSBaIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsQWN0b3JTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://a8c46457-a702-41c4-a971-c815c4c5a674">&quot;Harry J. Potter&quot;</a> (a8c46457-a702-41c4-a971-c815c4c5a674)</li><li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://08e02248-504d-4ed8-a295-c7682a614f66">&quot;Prof. A. P. W. B. Dumbledore&quot;</a> (08e02248-504d-4ed8-a295-c7682a614f66)</li><li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://ff7b8672-84db-4b93-9fea-22a410907fb1">&quot;R. Weasley&quot;</a> (ff7b8672-84db-4b93-9fea-22a410907fb1)</li><li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://6f463eed-c77b-4568-8078-beec0536f243">&quot;Prof. S. Snape&quot;</a> (6f463eed-c77b-4568-8078-beec0536f243)</li></ol></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">?</span>group.applies_to
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">Signature:</span> group<span class="ansi-blue-fg">.</span>applies_to<span class="ansi-blue-fg">(</span>obj<span class="ansi-blue-fg">:</span> <span class="ansi-blue-fg">&#39;c.ModelObject&#39;</span><span class="ansi-blue-fg">)</span> <span class="ansi-blue-fg">-&gt;</span> <span class="ansi-blue-fg">&#39;bool&#39;</span>
+<span class="ansi-red-fg">Docstring:</span> Determine whether this group applies to a model element.
+<span class="ansi-red-fg">File:</span>      ~/devspace/capellambse/capellambse/extensions/pvmt/_config.py
+<span class="ansi-red-fg">Type:</span>      method
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalComponent&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span>
+    <span class="s2">&quot;Prof. A. P. W. B. Dumbledore&quot;</span>
+<span class="p">)</span>
+<span class="n">group</span><span class="o">.</span><span class="n">applies_to</span><span class="p">(</span><span class="n">dumbledore</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+True
+</pre></div></div>
+</div>
+<p>And finally, a group can be applied to an element with the <code class="docutils literal notranslate"><span class="pre">apply</span></code> method. If the group was already applied earlier, the existing group instance will be returned:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">group</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">dumbledore</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>DarkMagic.Power Level <span style="font-size: 70%;">(org.polarsys.capella.core.data.capellacore:PropertyValueGroup)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>PropertyValueGroup</strong> <a href="hlink://a0cb5a23-955e-43d6-a633-2c4e66991364">&quot;Power Level&quot;</a> (a0cb5a23-955e-43d6-a633-2c4e66991364)</li></ol></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">layer</th><td style="text-align: left;"><strong>LogicalArchitecture</strong> <a href="hlink://853cb005-cba0-489b-8fe3-bb694ad4543b">&quot;Logical Architecture&quot;</a> (853cb005-cba0-489b-8fe3-bb694ad4543b)</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">DarkMagic.Power Level</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://08e02248-504d-4ed8-a295-c7682a614f66">&quot;Prof. A. P. W. B. Dumbledore&quot;</a> (08e02248-504d-4ed8-a295-c7682a614f66)</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>EnumerationPropertyValue</strong> <a href="hlink://ba86dc67-296c-472e-8057-b660d5491532">&quot;Skill&quot;</a>: <strong>EnumerationPropertyLiteral</strong> <a href="hlink://1e5efe87-d919-4bd0-af2b-7c976ef9da96">&quot;Mighty&quot;</a> (1e5efe87-d919-4bd0-af2b-7c976ef9da96) (ba86dc67-296c-472e-8057-b660d5491532)</li></ol></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;">Property Value Management for <strong>PropertyValueGroup</strong> <a href="hlink://6cf12387-7187-4b91-9efe-8fedb8a148cb">&quot;DarkMagic.Power Level&quot;</a> (6cf12387-7187-4b91-9efe-8fedb8a148cb)</td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">6cf12387-7187-4b91-9efe-8fedb8a148cb</td></tr><tr><th style="text-align: right;">validation</th><td style="text-align: left;"><em>&lt;capellambse.extensions.validation._validate.ElementValidation object at 0x720dec24dcd0&gt;</em></td></tr><tr><th style="text-align: right;">values</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>EnumerationPropertyValue</strong> <a href="hlink://ba86dc67-296c-472e-8057-b660d5491532">&quot;Skill&quot;</a>: <strong>EnumerationPropertyLiteral</strong> <a href="hlink://1e5efe87-d919-4bd0-af2b-7c976ef9da96">&quot;Mighty&quot;</a> (1e5efe87-d919-4bd0-af2b-7c976ef9da96) (ba86dc67-296c-472e-8057-b660d5491532)</li></ol></td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">org.polarsys.capella.core.data.capellacore:PropertyValueGroup</td></tr></table></div>
+</div>
+<p>Each model element can have several property value groups applied to it. PVMT-managed groups can be easily inspected by using the element’s <code class="docutils literal notranslate"><span class="pre">pvmt</span></code> attribute:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>Property Value Management</h1><p>Owner: <img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://08e02248-504d-4ed8-a295-c7682a614f66">&quot;Prof. A. P. W. B. Dumbledore&quot;</a> (08e02248-504d-4ed8-a295-c7682a614f66)</p><table><tbody><tr><th colspan="3" style="text-align:left;"><strong>ManagedGroup</strong> <a href="hlink://1e241678-282c-46f3-abbd-e0cf34e743ee">&quot;DarkMagic.Power&quot;</a> (1e241678-282c-46f3-abbd-e0cf34e743ee)</th></tr><tr><td>Min</td><td>800.0</td><td>0.0</td></tr><tr><td>Max</td><td>1600.0</td><td>10000.0</td></tr><tr><th colspan="3" style="text-align:left;"><strong>ManagedGroup</strong> <a href="hlink://a0cb5a23-955e-43d6-a633-2c4e66991364">&quot;DarkMagic.Power Level&quot;</a> (a0cb5a23-955e-43d6-a633-2c4e66991364)</th></tr><tr><td>Skill</td><td><strong>EnumerationPropertyLiteral</strong> <a href="hlink://1e5efe87-d919-4bd0-af2b-7c976ef9da96">&quot;Mighty&quot;</a> (1e5efe87-d919-4bd0-af2b-7c976ef9da96)</td><td><strong>EnumerationPropertyLiteral</strong> <a href="hlink://4da42696-28e2-4f90-bfb6-90ba1fc52d01">&quot;TheOneWhoShallNotBeNamed&quot;</a> (4da42696-28e2-4f90-bfb6-90ba1fc52d01)</td></tr></tbody><thead><tr><th>Property</th><th>Value</th><th>Default</th></tr></thead></table></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">groupdefs</span></code> attribute will give access to the definitions of all groups that apply to this element:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span><span class="o">.</span><span class="n">groupdefs</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>ManagedGroup</strong> <a href="hlink://1e241678-282c-46f3-abbd-e0cf34e743ee">&quot;DarkMagic.Power&quot;</a> (1e241678-282c-46f3-abbd-e0cf34e743ee)</li><li><strong>ManagedGroup</strong> <a href="hlink://a0cb5a23-955e-43d6-a633-2c4e66991364">&quot;DarkMagic.Power Level&quot;</a> (a0cb5a23-955e-43d6-a633-2c4e66991364)</li></ol></div>
+</div>
+<p>On the other hand, the <code class="docutils literal notranslate"><span class="pre">applied_groups</span></code> attribute will yield the group instances that are currently applied to the object.</p>
+<p><strong>Note:</strong> This list may be missing some groups from <code class="docutils literal notranslate"><span class="pre">groupdefs</span></code>. These can be applied using the group definition’s <code class="docutils literal notranslate"><span class="pre">apply</span></code> method (see above).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span><span class="o">.</span><span class="n">applied_groups</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;"><li><strong>PropertyValueGroup</strong> <a href="hlink://42dc9aeb-a06d-4012-8bc6-02fb06f94cdc">&quot;DarkMagic.Power&quot;</a> (42dc9aeb-a06d-4012-8bc6-02fb06f94cdc)</li><li><strong>PropertyValueGroup</strong> <a href="hlink://6cf12387-7187-4b91-9efe-8fedb8a148cb">&quot;DarkMagic.Power Level&quot;</a> (6cf12387-7187-4b91-9efe-8fedb8a148cb)</li></ol></div>
+</div>
+<p>Property values can also be accessed using convenient dict-like semantics.</p>
+<p>With keys like “Domain.Group”, an applied group instance will be returned, where the group is applied first if needed:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span><span class="p">[</span><span class="s2">&quot;DarkMagic.Power&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1>DarkMagic.Power <span style="font-size: 70%;">(org.polarsys.capella.core.data.capellacore:PropertyValueGroup)</span></h1><table><tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>PropertyValueGroup</strong> <a href="hlink://1e241678-282c-46f3-abbd-e0cf34e743ee">&quot;Power&quot;</a> (1e241678-282c-46f3-abbd-e0cf34e743ee)</li></ol></td></tr><tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">description</th><td style="text-align: left;"></td></tr><tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">layer</th><td style="text-align: left;"><strong>LogicalArchitecture</strong> <a href="hlink://853cb005-cba0-489b-8fe3-bb694ad4543b">&quot;Logical Architecture&quot;</a> (853cb005-cba0-489b-8fe3-bb694ad4543b)</td></tr><tr><th style="text-align: right;">name</th><td style="text-align: left;">DarkMagic.Power</td></tr><tr><th style="text-align: right;">parent</th><td style="text-align: left;"><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://08e02248-504d-4ed8-a295-c7682a614f66">&quot;Prof. A. P. W. B. Dumbledore&quot;</a> (08e02248-504d-4ed8-a295-c7682a614f66)</td></tr><tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr><tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>FloatPropertyValue</strong> <a href="hlink://68b3e1b8-2d5a-432a-bf56-a8d3ad6b1742">&quot;Min&quot;</a>: 800.0 (68b3e1b8-2d5a-432a-bf56-a8d3ad6b1742)</li><li><strong>FloatPropertyValue</strong> <a href="hlink://defd6bbb-0209-47a6-b195-0e86f6210417">&quot;Max&quot;</a>: 1600.0 (defd6bbb-0209-47a6-b195-0e86f6210417)</li></ol></td></tr><tr><th style="text-align: right;">pvmt</th><td style="text-align: left;">Property Value Management for <strong>PropertyValueGroup</strong> <a href="hlink://42dc9aeb-a06d-4012-8bc6-02fb06f94cdc">&quot;DarkMagic.Power&quot;</a> (42dc9aeb-a06d-4012-8bc6-02fb06f94cdc)</td></tr><tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">summary</th><td style="text-align: left;"><em>None</em></td></tr><tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr><tr><th style="text-align: right;">uuid</th><td style="text-align: left;">42dc9aeb-a06d-4012-8bc6-02fb06f94cdc</td></tr><tr><th style="text-align: right;">validation</th><td style="text-align: left;"><em>&lt;capellambse.extensions.validation._validate.ElementValidation object at 0x720df5da19d0&gt;</em></td></tr><tr><th style="text-align: right;">values</th><td style="text-align: left;"><ol start="0" style="text-align: left;"><li><strong>FloatPropertyValue</strong> <a href="hlink://68b3e1b8-2d5a-432a-bf56-a8d3ad6b1742">&quot;Min&quot;</a>: 800.0 (68b3e1b8-2d5a-432a-bf56-a8d3ad6b1742)</li><li><strong>FloatPropertyValue</strong> <a href="hlink://defd6bbb-0209-47a6-b195-0e86f6210417">&quot;Max&quot;</a>: 1600.0 (defd6bbb-0209-47a6-b195-0e86f6210417)</li></ol></td></tr><tr><th style="text-align: right;">xtype</th><td style="text-align: left;">org.polarsys.capella.core.data.capellacore:PropertyValueGroup</td></tr></table></div>
+</div>
+<p>Keys may also contain a Property, in which case the value of that property is returned directly. This is similar to the basic property values shown in the first part of this notebook. However, like in the case without a Property, the group will first be applied if needed. Newly applied groups have all their properties set to the default values from the group definition.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span><span class="p">[</span><span class="s2">&quot;DarkMagic.Power.Max&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1600.0
+</pre></div></div>
+</div>
+<p>This latter style also supports directly setting individual properties.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span><span class="p">[</span><span class="s2">&quot;DarkMagic.Power.Max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9000</span>
+<span class="n">dumbledore</span><span class="o">.</span><span class="n">pvmt</span><span class="p">[</span><span class="s2">&quot;DarkMagic.Power.Max&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+9000.0
+</pre></div></div>
+</div>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="09%20Context%20Diagrams.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">10. </span>Context Diagrams Extension</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="07%20Code%20Generation.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title"><span class="section-number">7. </span>Introduction to Code Generation</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">8. Property Values and Property Value Management Tool (PVMT) support</a><ul>
+<li><a class="reference internal" href="#dict-like-access-to-property-values">8.1. dict-like access to property values</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>

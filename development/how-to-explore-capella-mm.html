@@ -1,0 +1,557 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Documentation development" href="developing-docs.html" /><link rel="prev" title="Low-level API" href="low-level-api.html" />
+
+    <!-- Generated with Sphinx 8.0.2 and Furo 2024.08.06 -->
+        <title>How to explore Capella meta-model - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">py-capellambse</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of py-capellambse</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="how-to-explore-capella-meta-model">
+<h1>How to explore Capella meta-model<a class="headerlink" href="#how-to-explore-capella-meta-model" title="Link to this heading">¶</a></h1>
+<p>Initially the API design was mostly based on our understanding of XML files,
+however we soon moved on into exploring the Capella meta-model. Here is a short
+summary of how we do it.</p>
+<section id="getting-the-meta-model-sources">
+<h2>Getting the meta-model sources<a class="headerlink" href="#getting-the-meta-model-sources" title="Link to this heading">¶</a></h2>
+<p>First of all we need to get the data - the most straight-forward way is to
+clone the Capella source code:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>capella-mm<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>capella-mm
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/eclipse/capella.git
+</pre></div>
+</div>
+<p>As there are quite a few files we may want to discover the packages of interest
+using <code class="docutils literal notranslate"><span class="pre">find</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">find</span> <span class="pre">-name</span> <span class="pre">'*.ecore'</span> <span class="pre">-o</span> <span class="pre">-name</span> <span class="pre">'*.genmodel'</span></code> lists all the ECore models and
+Generation files and adds Generation viewpoint for related ecore</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">find</span> <span class="pre">-name</span> <span class="pre">'*.odesign'</span></code> lists all the Sirius definitions (if you like to
+see how the diagram look-and-feel is defined)</p></li>
+</ul>
+<p>You could open all the related projects right where they are but I’d prefer to
+have a clean sandbox.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/common/plugins/org.polarsys.capella.common.data.activity.gen<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/common/plugins/org.polarsys.capella.common.data.behavior.gen<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/common/plugins/org.polarsys.capella.common.data.core.gen<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/common/plugins/org.polarsys.capella.common.libraries.gen<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/common/plugins/org.polarsys.capella.common.re.gen<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/core/plugins/org.polarsys.capella.core.data.gen<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/releng/cdo/plugins/org.polarsys.kitalpha.emde.model.cdo<span class="w"> </span>capella-metamodel
+cp<span class="w"> </span>-r<span class="w"> </span>capella/tests/plugins/org.polarsys.capella.test.diagram.layout.ju<span class="w"> </span>capella-metamodel
+</pre></div>
+</div>
+<p>Now we have all of the meta-model dependencies in one place and can open it as
+a single Eclipse project. You could open those with any Eclipse that has EMF
+(like the Modeling bundle) but I’d advise using <a class="reference external" href="https://www.eclipse.org/capella/download.html">Capella Studio</a> (open the
+link and search for “Studio”) for the best experience - it is provisioned with
+all the extras that help you visualize / review the meta-model.</p>
+<img alt="../_images/2021-05-09_10-32.jpg" src="../_images/2021-05-09_10-32.jpg" />
+<img alt="../_images/2021-05-09_10-36.jpg" src="../_images/2021-05-09_10-36.jpg" />
+<p>After import Eclipse may highlight some projects with error or warning sign -
+that’s fine, we’ll let it go for now.</p>
+<p>Before we dive into visualizations, let’s have a quick look around. The core of
+Capella metamodel is provided by <code class="docutils literal notranslate"><span class="pre">org.polarsys.capella.common.data.core.gen</span></code>
+project. There you’ll find the definitions of the “Capella Layers” and the
+enabling “EnginereengConcerns” components. For example, the <code class="docutils literal notranslate"><span class="pre">SystemAnalysis</span></code>
+is provided by <code class="docutils literal notranslate"><span class="pre">ContextArchitecture.ecore</span></code>.</p>
+<img alt="../_images/2021-05-09_10-50.jpg" src="../_images/2021-05-09_10-50.jpg" />
+<p>Even though the default tree-view (triggered by double-click on a <code class="docutils literal notranslate"><span class="pre">.core</span></code>) is
+already giving us something there are much better ways to review the models.
+We’ll talk about that in the <a class="reference internal" href="#visualizing-ecores">Visualizing ECores</a> chapter. But first we
+should have a look into the package structure and interdependencies.</p>
+</section>
+<section id="quick-intro-to-package-structure">
+<h2>Quick intro to package structure<a class="headerlink" href="#quick-intro-to-package-structure" title="Link to this heading">¶</a></h2>
+<p>If you are unfamiliar with ECore you might be wondering what are those ECore
+files anyways. We could say that they act as UML Packages. Every package
+contains ontology elements (or UML Classes) and “local” element relationships
+(Associations). The packages depend on each-other as elements frequently build
+on top of each-other via Generalization relationship. Thats one of the best
+things about Capella metamodel - it is defined by UML (or well, structural
+subset, but still pretty cool)!</p>
+<p>So, from using Capella we know our model layers - Operational Analysis, System
+Analysis, Logical Architecture, Physical Architecture and EPBS. We can locate
+the corresponding ECores pretty quick, but what are all the other packages
+about? To answer that question we should visualize the package dependency - the
+quickest way to do so is to <a class="reference internal" href="#create-new-representations-file"><span class="std std-ref">create a new representation file</span></a>. And after
+that follow the steps in <a class="reference internal" href="#package-dependency-overview"><span class="std std-ref">create package dependency overview</span></a>. The result may
+look like what we have below:</p>
+<img alt="../_images/2021-05-09_17-38.jpg" src="../_images/2021-05-09_17-38.jpg" />
+<p>And even though there are not too many packages in the meta-model, when we
+visualize the inter-package dependency it may be a bit difficult to understand.
+By the way, the figure above <a class="reference external" href="core-pkg-deps-raw.svg">is also available in SVG</a> - you can open it in
+a new tab and zoom-in if you like or scroll down for a simplified one (but
+opinionated).</p>
+<p>It almost feels like everything depends on everything but that isn’t true
+really. We could change perspective and look for the dependencies of an
+end-user exposed package, such as Operational Analysis (oa). I’ll use Papyrus
+to visualize that:</p>
+<img alt="../_images/2021-05-09_17-44.jpg" src="../_images/2021-05-09_17-44.jpg" />
+<p>When we add all the Capella layers to that picture things get a bit more
+interesting. I added some artificial grouping on top of the existing packages
+that will help us later on - the artificial groups are: <code class="docutils literal notranslate"><span class="pre">CapellaLayers</span></code> -
+packages that cover the layers we used to see in the tool; <code class="docutils literal notranslate"><span class="pre">CrossLayer</span></code> -
+packages that define ontology and patterns that we see in almost every layer;
+<code class="docutils literal notranslate"><span class="pre">Enablers</span></code> - the low level ontology that enables every element.</p>
+<img alt="../_images/2021-05-09_21-21.jpg" src="../_images/2021-05-09_21-21.jpg" />
+<p>To make a further point on <code class="docutils literal notranslate"><span class="pre">CrossLayer</span></code>, lets have a closer look at a
+Function. We know that Functions are quite similar in how they look and feel
+across Capella layers and have a lot in common with OperationalActivity. When
+we open <code class="docutils literal notranslate"><span class="pre">LogicalArchitecture.ecore</span></code> we see it defines a <code class="docutils literal notranslate"><span class="pre">LogicalFunction</span></code>
+as a specialization of <code class="docutils literal notranslate"><span class="pre">AbstractFunction</span></code> that comes from
+<code class="docutils literal notranslate"><span class="pre">FunctionalAnalysis.ecore</span></code>. There is a very nice feature provided by the
+<a class="reference external" href="https://www.eclipse.org/ecoretools/overview.html">Ecore Tools</a> (that is also included in Capella Studio) - Class Inheritance
+view (there is also a tiny <a class="reference internal" href="#"><span class="doc">how-to use it below</span></a>). We’ll use that to
+visualize the way the functions are made.</p>
+<img alt="../_images/2021-05-09_22-09.jpg" src="../_images/2021-05-09_22-09.jpg" />
+<p>Just to be on a safe side I’ve done the above exercise for
+<code class="docutils literal notranslate"><span class="pre">OperationalActivity</span></code>, <code class="docutils literal notranslate"><span class="pre">SystemFunction</span></code>, <code class="docutils literal notranslate"><span class="pre">LogicalFunction</span></code> and
+<code class="docutils literal notranslate"><span class="pre">PhysicalFunction</span></code> - the inheritance tree is exactly the same. I’ve done this
+check for a few other familiar ontology elements and got same result. I think
+this gives a feeling for what the <code class="docutils literal notranslate"><span class="pre">CrossLayer</span></code> is about - to me that’s the
+place where most of the magic happens. And this is how the relationship between
+the <code class="docutils literal notranslate"><span class="pre">CapellaLayers</span></code> and <code class="docutils literal notranslate"><span class="pre">CrossLayer</span></code> looks like when we de-noise it a bit:</p>
+<img alt="../_images/2021-05-09_22-39.jpg" src="../_images/2021-05-09_22-39.jpg" />
+<p>It’s been a lengthy chain of thought and to finish on a hopefully useful
+visualization - lets have a look at the Class contexts of some things that we
+use most frequently</p>
+</section>
+<section id="visualizations-of-some-frequently-used-ontology-elements">
+<h2>Visualizations of some frequently used ontology elements<a class="headerlink" href="#visualizations-of-some-frequently-used-ontology-elements" title="Link to this heading">¶</a></h2>
+<p>Below you’ll find some quick visualizations for frequently used ontology
+elements, grouped by CrossLayer package</p>
+<section id="functional-analysis">
+<h3>Functional Analysis<a class="headerlink" href="#functional-analysis" title="Link to this heading">¶</a></h3>
+<img alt="../_images/2021-05-10_22-35.jpg" src="../_images/2021-05-10_22-35.jpg" />
+<img alt="../_images/2021-05-17_11-50.jpg" src="../_images/2021-05-17_11-50.jpg" />
+<img alt="../_images/2021-05-10_22-59.jpg" src="../_images/2021-05-10_22-59.jpg" />
+<img alt="../_images/2021-05-12_21-03.jpg" src="../_images/2021-05-12_21-03.jpg" />
+</section>
+<section id="state-machines">
+<h3>State Machines<a class="headerlink" href="#state-machines" title="Link to this heading">¶</a></h3>
+<img alt="../_images/2021-05-12_18-18.jpg" src="../_images/2021-05-12_18-18.jpg" />
+<img alt="../_images/2021-05-13_20-46.jpg" src="../_images/2021-05-13_20-46.jpg" />
+<p>The figure above is somewhat a “treasure map” to everything related to state
+machines. It is made in a semi-automatic way with the help of ECore Tools and
+ELK</p>
+</section>
+<section id="composite-structure">
+<h3>Composite Structure<a class="headerlink" href="#composite-structure" title="Link to this heading">¶</a></h3>
+<img alt="../_images/2021-05-12_20-10.jpg" src="../_images/2021-05-12_20-10.jpg" />
+<img alt="../_images/2021-05-12_18-51.jpg" src="../_images/2021-05-12_18-51.jpg" />
+<p>You may also want to have a look at the Block context below as it defines some
+other useful things that a Component (or LogicalComponent) can do.</p>
+<img alt="../_images/2021-05-12_20-06.jpg" src="../_images/2021-05-12_20-06.jpg" />
+<img alt="../_images/2021-05-12_19-12.jpg" src="../_images/2021-05-12_19-12.jpg" />
+</section>
+</section>
+<section id="appendix-visualizing-ecores">
+<span id="visualizing-ecores"></span><h2>Appendix: Visualizing ECores<a class="headerlink" href="#appendix-visualizing-ecores" title="Link to this heading">¶</a></h2>
+<p>If you are new to CapellaStudio and Ecore, here are some practical hints for
+how to get stuff done, ignore the below otherwise:</p>
+<section id="create-new-representations-file">
+<h3>Create new representations file<a class="headerlink" href="#create-new-representations-file" title="Link to this heading">¶</a></h3>
+<p>To start playing with visualizations we need a new representations file
+(.aird). It is pretty easy to get there but just in case, there is figure below
+to guide you through that.</p>
+<img alt="../_images/2021-05-09_17-36.jpg" src="../_images/2021-05-09_17-36.jpg" />
+</section>
+<section id="package-dependency-overview">
+<h3>Package dependency overview<a class="headerlink" href="#package-dependency-overview" title="Link to this heading">¶</a></h3>
+<p>To create a package dependency overview for all packages you may follow the
+guidance in the figure below:</p>
+<img alt="../_images/2021-05-09_17-57.jpg" src="../_images/2021-05-09_17-57.jpg" />
+</section>
+<section id="visualizing-class-inheritance">
+<h3>Visualizing class inheritance<a class="headerlink" href="#visualizing-class-inheritance" title="Link to this heading">¶</a></h3>
+<p>There is a very nice feature that allows given a class to show all of its
+super-classes (generalizations) and specializations. The figure below gives you
+some hints for how to use it:</p>
+<img alt="../_images/2021-05-09_21-46.jpg" src="../_images/2021-05-09_21-46.jpg" />
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="developing-docs.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Documentation development</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="low-level-api.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Low-level API</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/DSD-DBS/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">How to explore Capella meta-model</a><ul>
+<li><a class="reference internal" href="#getting-the-meta-model-sources">Getting the meta-model sources</a></li>
+<li><a class="reference internal" href="#quick-intro-to-package-structure">Quick intro to package structure</a></li>
+<li><a class="reference internal" href="#visualizations-of-some-frequently-used-ontology-elements">Visualizations of some frequently used ontology elements</a><ul>
+<li><a class="reference internal" href="#functional-analysis">Functional Analysis</a></li>
+<li><a class="reference internal" href="#state-machines">State Machines</a></li>
+<li><a class="reference internal" href="#composite-structure">Composite Structure</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appendix-visualizing-ecores">Appendix: Visualizing ECores</a><ul>
+<li><a class="reference internal" href="#create-new-representations-file">Create new representations file</a></li>
+<li><a class="reference internal" href="#package-dependency-overview">Package dependency overview</a></li>
+<li><a class="reference internal" href="#visualizing-class-inheritance">Visualizing class inheritance</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
