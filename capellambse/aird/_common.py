@@ -63,6 +63,13 @@ class SemanticElementBuilder(ElementBuilder):
     melodyobjs: cabc.MutableSequence[etree._Element]
 
 
+class StackingMode(enum.Enum):
+    """The possible modes for stacking child boxes."""
+
+    VERTICAL = "VerticalStack"
+    HORIZONTAL = "HorizontalStack"
+
+
 class StackingBox(diagram.Box):
     """A Box with special child-stacking behavior."""
 
@@ -76,7 +83,7 @@ class StackingBox(diagram.Box):
         pos: diagram.Vector2D,
         size: diagram.Vector2D | None = None,
         *,
-        stacking_mode: StackingBox._StackingChildren.StackingMode,
+        stacking_mode: StackingMode | str,
         minsize: diagram.Vec2ish = (0, 0),
         maxsize: diagram.Vec2ish = (math.inf, math.inf),
         **kw: t.Any,
@@ -91,7 +98,7 @@ class StackingBox(diagram.Box):
             **kw,
         )
         self.children = self._StackingChildren(self)
-        self.stacking_mode = stacking_mode
+        self.stacking_mode = stacking_mode  # type: ignore[assignment]
 
     def _topsection_size(self) -> diagram.Vector2D:
         """Calculate the size of the top section (this Box' own label).
@@ -137,25 +144,24 @@ class StackingBox(diagram.Box):
             raise TypeError("The size of this Box cannot be changed directly")
 
     @property
-    def stacking_mode(self) -> StackingBox._StackingChildren.StackingMode:
+    def stacking_mode(self) -> StackingMode:
         """Return the current stacking mode."""
         return self.children.stacking_mode
 
     @stacking_mode.setter
-    def stacking_mode(self, new_mode: str) -> None:
-        try:
-            self.children.stacking_mode = self._StackingChildren.StackingMode(
-                new_mode
-            )
-        except ValueError:
+    def stacking_mode(self, new_mode: StackingMode | str) -> None:
+        if not isinstance(new_mode, StackingMode):
             try:
-                self.children.stacking_mode = (
-                    self._StackingChildren.StackingMode[new_mode]
-                )
-            except KeyError:
-                raise ValueError(
-                    f"Invalid stacking mode: {new_mode!r}"
-                ) from None
+                new_mode = StackingMode(new_mode)
+            except ValueError:
+                assert not isinstance(new_mode, StackingMode)
+                try:
+                    new_mode = StackingMode[new_mode]
+                except KeyError:
+                    raise ValueError(
+                        f"Invalid stacking mode: {new_mode!r}"
+                    ) from None
+        self.children.stacking_mode = new_mode
 
     @property  # type: ignore[override]
     def features(self) -> cabc.Sequence[str] | None:
@@ -228,12 +234,6 @@ class StackingBox(diagram.Box):
             return repr(self.__list)
 
     class _StackingChildren(t.MutableSequence[diagram.DiagramElement]):
-        class StackingMode(enum.Enum):
-            """The possible modes for stacking child boxes."""
-
-            VERTICAL = "VerticalStack"
-            HORIZONTAL = "HorizontalStack"
-
         def __init__(
             self,
             parent: StackingBox,
@@ -287,10 +287,7 @@ class StackingBox(diagram.Box):
             self._restack()
 
         def _restack(self) -> None:
-            if (
-                self.stacking_mode
-                is StackingBox._StackingChildren.StackingMode.VERTICAL
-            ):
+            if self.stacking_mode is StackingMode.VERTICAL:
                 xpos, ypos = self.__parent.pos
                 ypos += self.__parent._topsection_size()[1]
                 for obj in self.__list:
@@ -298,10 +295,7 @@ class StackingBox(diagram.Box):
                     offset = diagram.Vector2D(xpos, ypos) - obj_bounds.pos
                     obj.move(offset)
                     ypos += obj_bounds.size.y
-            elif (
-                self.stacking_mode
-                is StackingBox._StackingChildren.StackingMode.HORIZONTAL
-            ):
+            elif self.stacking_mode is StackingMode.HORIZONTAL:
                 raise NotImplementedError()
             else:
                 raise RuntimeError(
