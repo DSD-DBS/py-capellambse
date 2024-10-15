@@ -20,6 +20,11 @@ def SystemActor(cmp: mm.sa.SystemComponent) -> bool:
     return cmp.is_actor
 
 
+@virtual_type(mm.sa.SystemComponent)
+def SystemComponent(cmp: mm.sa.SystemComponent) -> bool:
+    return not cmp.is_actor
+
+
 @virtual_type(mm.pa.PhysicalComponent)
 def BehaviourPhysicalComponent(cmp: mm.pa.PhysicalComponent) -> bool:
     return cmp.nature == mm.modeltypes.PhysicalComponentNature.BEHAVIOR
@@ -77,7 +82,8 @@ def _find_layer(
     types=[
         mm.sa.Capability,
         mm.sa.SystemFunction,
-        mm.sa.SystemComponent,
+        SystemActor,
+        SystemComponent,
         mm.oa.Entity,
         mm.oa.OperationalCapability,
         mm.oa.OperationalActivity,
@@ -117,12 +123,18 @@ def has_non_empty_description_or_summary(
         " of the Actors/Entities. By involving an actor / entity in a"
         " Capability we explicitly name stakeholders behind the Capability."
     ),
-    action="Add at least one involved Actor or Entity.",
+    action=(
+        "Add at least one involved Actor or Entity,"
+        " or include the Capability in another one."
+    ),
 )
 def capability_involves_entity(obj: capellambse.model.ModelElement) -> bool:
     if isinstance(obj, mm.oa.OperationalCapability):
-        return bool(obj.involved_entities)
-    return bool(obj.involved_components)
+        has_involvements = bool(obj.involved_entities)
+    else:
+        assert isinstance(obj, mm.sa.Capability)
+        has_involvements = bool(obj.involved_components)
+    return has_involvements or bool(obj.included_by)
 
 
 @rule(
@@ -206,6 +218,24 @@ def functional_exchange_allocated_to_component_exchange(
     if _find_layer(obj).name == "Physical Architecture":
         return bool(obj.allocating_component_exchange)
     return True
+
+
+@rule(
+    category=_validate.Category.REQUIRED,
+    types=[mm.sa.SystemFunction, mm.oa.OperationalActivity],
+    id="Rule-011",
+    name="A Behavior element shall be allocated to a structure element",
+    rationale=(
+        "An unallocated Behavior element implies that it is useless functionality"
+        " or the modelling is incomplete."
+    ),
+    action="Allocate a Behavior Element to a Structure Element",
+)
+def behavior_element_allocated_to_structure_element(
+    obj: m.ModelElement,
+) -> bool:
+    assert isinstance(obj, mm.sa.SystemFunction | mm.oa.OperationalActivity)
+    return obj.owner is not None
 
 
 # 01. Operational Analysis
