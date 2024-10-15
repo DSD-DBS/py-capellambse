@@ -123,12 +123,18 @@ def has_non_empty_description_or_summary(
         " of the Actors/Entities. By involving an actor / entity in a"
         " Capability we explicitly name stakeholders behind the Capability."
     ),
-    action="Add at least one involved Actor or Entity.",
+    action=(
+        "Add at least one involved Actor or Entity,"
+        " or include the Capability in another one."
+    ),
 )
 def capability_involves_entity(obj: capellambse.model.ModelElement) -> bool:
     if isinstance(obj, mm.oa.OperationalCapability):
-        return bool(obj.involved_entities)
-    return bool(obj.involved_components)
+        has_involvements = bool(obj.involved_entities)
+    else:
+        assert isinstance(obj, mm.sa.Capability)
+        has_involvements = bool(obj.involved_components)
+    return has_involvements or bool(obj.included_by)
 
 
 @rule(
