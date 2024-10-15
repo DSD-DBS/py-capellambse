@@ -220,6 +220,24 @@ def functional_exchange_allocated_to_component_exchange(
     return True
 
 
+@rule(
+    category=_validate.Category.REQUIRED,
+    types=[mm.sa.SystemFunction, mm.oa.OperationalActivity],
+    id="Rule-011",
+    name="A Behavior element shall be allocated to a structure element",
+    rationale=(
+        "An unallocated Behavior element implies that it is useless functionality"
+        " or the modelling is incomplete."
+    ),
+    action="Allocate a Behavior Element to a Structure Element",
+)
+def behavior_element_allocated_to_structure_element(
+    obj: m.ModelElement,
+) -> bool:
+    assert isinstance(obj, mm.sa.SystemFunction | mm.oa.OperationalActivity)
+    return obj.owner is not None
+
+
 # 01. Operational Analysis
 @rule(
     category=_validate.Category.REQUIRED,
