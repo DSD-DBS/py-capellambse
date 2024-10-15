@@ -281,6 +281,10 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": RGB(255, 204, 102),
             "text_fill": RGB(0, 0, 0),
         },
+        "Box.PP": {
+            "fill": COLORS["_CAP_PhysicalPort_Yellow"],
+            "stroke": COLORS["_CAP_Class_Border_Brown"],
+        },
         "Box.RepresentationLink": {
             "fill": RGB(255, 255, 203),
             "stroke": RGB(255, 204, 102),
@@ -312,6 +316,11 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
         "Edge.Note": {
             "stroke": COLORS["black"],
             "stroke-dasharray": "1 3",
+        },
+        "Edge.PhysicalLink": {
+            "stroke": COLORS["red"],
+            "stroke-width": 2,
+            "text_fill": COLORS["red"],
         },
         "Edge.RequirementRelation": {  # ReqVP_IncomingRelation
             "stroke": COLORS["dark_purple"],
@@ -771,10 +780,6 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "fill": COLORS["_CAP_xAB_Function_Border_Green"],
             "stroke-width": 0,
         },
-        "Box.PP": {
-            "fill": COLORS["_CAP_PhysicalPort_Yellow"],
-            "stroke": COLORS["_CAP_Class_Border_Brown"],
-        },
         "Box.PhysicalComponent": {
             "fill": [
                 COLORS["_CAP_Unset_Gray_min"],
@@ -823,11 +828,6 @@ STYLES: dict[str, dict[str, dict[str, CSSdef]]] = {
             "stroke": COLORS["_CAP_xAB_Function_Border_Green"],
             "stroke-width": 2,
             "text_fill": COLORS["_CAP_xAB_Function_Border_Green"],
-        },
-        "Edge.PhysicalLink": {
-            "stroke": COLORS["red"],
-            "stroke-width": 2,
-            "text_fill": COLORS["red"],
         },
     },
     "Physical Data Flow Blank": {
