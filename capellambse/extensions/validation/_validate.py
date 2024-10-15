@@ -31,14 +31,16 @@ import capellambse.metamodel as mm
 import capellambse.model as m
 
 LOGGER = logging.getLogger(__name__)
-_T = t.TypeVar("_T", bound=t.Union[m.ModelElement, "VirtualType"])
+_T_co = t.TypeVar(
+    "_T_co", covariant=True, bound=t.Union[m.ModelElement, "VirtualType"]
+)
 
 
 @dataclasses.dataclass(frozen=True)
-class VirtualType(t.Generic[_T]):
+class VirtualType(t.Generic[_T_co]):
     name: str
-    real_type: type[_T]
-    filter: cabc.Callable[[_T], bool]
+    real_type: type[_T_co]
+    filter: cabc.Callable[[_T_co], bool]
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
         assert isinstance(self.real_type, str | type(m.ModelElement))
@@ -49,8 +51,8 @@ class VirtualType(t.Generic[_T]):
 
 
 @dataclasses.dataclass(frozen=True)
-class RealType(t.Generic[_T]):
-    class_: type[_T]
+class RealType(t.Generic[_T_co]):
+    class_: type[_T_co]
 
     @property
     def name(self) -> str:
@@ -100,14 +102,14 @@ _types_registry = _VirtualTypesRegistry()
 
 
 def virtual_type(
-    real_type: str | type[_T],
-) -> cabc.Callable[[cabc.Callable[[_T], bool]], VirtualType[_T]]:
+    real_type: str | type[_T_co],
+) -> cabc.Callable[[cabc.Callable[[_T_co], bool]], VirtualType[_T_co]]:
     if isinstance(real_type, str):
-        (cls,) = t.cast(tuple[type[_T], ...], m.find_wrapper(real_type))
+        (cls,) = t.cast(tuple[type[_T_co], ...], m.find_wrapper(real_type))
     else:
         cls = real_type
 
-    def decorate(func: cabc.Callable[[_T], bool]) -> VirtualType[_T]:
+    def decorate(func: cabc.Callable[[_T_co], bool]) -> VirtualType[_T_co]:
         vtype = VirtualType(func.__name__, cls, func)
         _types_registry.register(vtype)
         return vtype
@@ -166,7 +168,7 @@ class Result:
 
 
 @dataclasses.dataclass(frozen=True)
-class Rule(t.Generic[_T]):
+class Rule(t.Generic[_T_co]):
     """A validation rule."""
 
     id: str
@@ -175,11 +177,11 @@ class Rule(t.Generic[_T]):
     rationale: str
     category: Category
     action: str
-    validate: cabc.Callable[[_T], bool]
+    validate: cabc.Callable[[_T_co], bool]
 
     def find_objects(
         self, model_: capellambse.MelodyModel
-    ) -> cabc.Iterator[_T]:
+    ) -> cabc.Iterator[_T_co]:
         seen: set[str] = set()
         for i in self.types:
             for obj in _types_registry[i].search(model_):

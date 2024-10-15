@@ -20,6 +20,11 @@ def SystemActor(cmp: mm.sa.SystemComponent) -> bool:
     return cmp.is_actor
 
 
+@virtual_type(mm.sa.SystemComponent)
+def SystemComponent(cmp: mm.sa.SystemComponent) -> bool:
+    return not cmp.is_actor
+
+
 @virtual_type(mm.pa.PhysicalComponent)
 def BehaviourPhysicalComponent(cmp: mm.pa.PhysicalComponent) -> bool:
     return cmp.nature == mm.modeltypes.PhysicalComponentNature.BEHAVIOR
@@ -77,7 +82,8 @@ def _find_layer(
     types=[
         mm.sa.Capability,
         mm.sa.SystemFunction,
-        mm.sa.SystemComponent,
+        SystemActor,
+        SystemComponent,
         mm.oa.Entity,
         mm.oa.OperationalCapability,
         mm.oa.OperationalActivity,
