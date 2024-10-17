@@ -9,6 +9,7 @@ __all__ = [
     "FragmentType",
     "MelodyLoader",
     "ModelFile",
+    "qtype_of",
 ]
 
 import collections
@@ -35,6 +36,11 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 E = builder.ElementMaker()
 LOGGER = logging.getLogger(__name__)
 PROJECT_NATURE = "org.polarsys.capella.project.nature"
@@ -55,6 +61,7 @@ SEMANTIC_EXTS = frozenset(
 VALID_EXTS = VISUAL_EXTS | SEMANTIC_EXTS | {".afm"}
 ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 
+TAG_XMI = etree.QName(_n.NAMESPACES["xmi"], "XMI")
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
 IDTYPES_RESOLVED = frozenset(helpers.resolve_namespace(t) for t in IDTYPES)
 IDTYPES_PER_FILETYPE: t.Final[dict[str, frozenset]] = {
@@ -163,6 +170,26 @@ def _round_version(v: str, prec: int) -> str:
     return v[:pos] + re.sub(r"[^.]+", "0", v[pos:])
 
 
+def qtype_of(element: etree._Element) -> etree.QName | None:
+    """Get the qualified type of the element."""
+    parent = element.getparent()
+    if parent is None or parent.getparent() is None and parent.tag == TAG_XMI:
+        return etree.QName(element)
+
+    xtype = element.get(helpers.ATT_XT)
+    if not xtype or ":" not in xtype:
+        xtype = element.get(helpers.ATT_XMT)
+    if not xtype or ":" not in xtype:
+        return None
+    nsalias, clsname = xtype.rsplit(":", 1)
+    try:
+        nsuri = element.nsmap[nsalias]
+    except KeyError:
+        LOGGER.error("Namespace %r not found on element %r", nsalias, element)
+        return None
+    return etree.QName(nsuri, clsname)
+
+
 class FragmentType(enum.Enum):
     """The type of an XML fragment."""
 
@@ -192,6 +219,7 @@ class ResourceLocationManager(dict):
 class ModelFile:
     """Represents a single file in the model (i.e. a fragment)."""
 
+    __qtypecache: dict[etree.QName, dict[int, etree._Element]]
     __xtypecache: dict[str, dict[int, etree._Element]]
     __idcache: dict[str, etree._Element | None]
     __hrefsources: dict[str, etree._Element]
@@ -243,6 +271,9 @@ class ModelFile:
             xtype = helpers.xtype_of(elm)
             if xtype is not None:
                 self.__xtypecache[xtype][id(elm)] = elm
+            qtype = qtype_of(elm)
+            if qtype is not None:
+                self.__qtypecache[qtype][id(elm)] = elm
 
             for idtype in idtypes:
                 elm_id = elm.get(idtype, None)
@@ -275,6 +306,9 @@ class ModelFile:
                 xtype = helpers.xtype_of(elm)
                 if xtype:
                     del self.__xtypecache[xtype][id(elm)]
+                qtype = qtype_of(elm)
+                if qtype is not None:
+                    del self.__qtypecache[qtype][id(elm)]
                 for idtype in IDTYPES_RESOLVED:
                     elm_id = elm.get(idtype, None)
                     if elm_id is None:
@@ -289,6 +323,7 @@ class ModelFile:
     def idcache_rebuild(self) -> None:
         """Invalidate and rebuild this file's ID cache."""
         LOGGER.debug("Indexing file %s...", self.filename)
+        self.__qtypecache = collections.defaultdict(dict)
         self.__xtypecache = collections.defaultdict(dict)
         self.__idcache = {}
         self.__hrefsources = {}
@@ -298,6 +333,35 @@ class ModelFile:
     def idcache_reserve(self, new_id: str) -> None:
         """Reserve the given ID for an element to be inserted later."""
         self.__idcache[new_id] = None
+
+    def add_namespace(self, uri: str, alias: str) -> str:
+        """Add the given namespace to the root of this fragment.
+
+        If a namespace with the same URI is already registered, no
+        changes will be made.
+
+        If the alias is already in use for a namespace with a different
+        URI, a numeric suffix will be added to it.
+
+        This method returns the actual alias in use for the namespace,
+        after applying the aforementioned rules.
+        """
+        new_nsmap = dict(self.root.nsmap)
+        for k, v in new_nsmap.items():
+            if v == uri:
+                assert k is not None
+                return k
+
+        if alias in new_nsmap:
+            for count in range(1, sys.maxsize):
+                alternative = f"{alias}_{count}"
+                if alternative not in new_nsmap:
+                    alias = alternative
+                    break
+
+        new_nsmap[alias] = uri
+        self.__replace_nsmap(new_nsmap)
+        return alias
 
     def update_namespaces(self, viewpoints: cabc.Mapping[str, str]) -> None:
         """Update the current namespace map.
@@ -312,7 +376,7 @@ class ModelFile:
             the Plugin's viewpoint is not activated in the model, an
             error is raised and no update is performed.
         """
-        new_nsmap: dict[str, str] = {
+        new_nsmap: dict[str | None, str] = {
             "xmi": _n.NAMESPACES["xmi"],
             "xsi": _n.NAMESPACES["xsi"],
         }
@@ -344,7 +408,9 @@ class ModelFile:
 
             assert new_nsmap.get(ns) in (None, uri)
             new_nsmap[ns] = uri
+            self.__replace_nsmap(new_nsmap)
 
+    def __replace_nsmap(self, new_nsmap: dict[str | None, str]) -> None:
         assert new_nsmap
         LOGGER.debug("New nsmap: %s", new_nsmap)
         if self.root.nsmap == new_nsmap:
@@ -367,6 +433,10 @@ class ModelFile:
 
         self.root = new_root
 
+    @deprecated(
+        "iterall_xt() is deprecated,"
+        " use iterall() or iter_qtypes() + iter_qtype() instead"
+    )
     def iterall_xt(
         self, xtypes: cabc.Container[str]
     ) -> cabc.Iterator[etree._Element]:
@@ -374,6 +444,21 @@ class ModelFile:
         for xtype, elms in self.__xtypecache.items():
             if xtype in xtypes:
                 yield from elms.values()
+
+    def iterall(self) -> cabc.Iterator[etree._Element]:
+        """Iterate over all elements in this tree."""
+        for qt in self.iter_qtypes():
+            yield from self.iter_qtype(qt)
+
+    def iter_qtypes(self) -> cabc.Iterator[etree.QName]:
+        """Iterate over all qualified types used in this fragment."""
+        for qtype, elems in self.__qtypecache.items():
+            if elems:
+                yield qtype
+
+    def iter_qtype(self, qtype: etree.QName) -> cabc.Iterator[etree._Element]:
+        """Iterate over all elements of the given qualified type."""
+        yield from self.__qtypecache.get(qtype, {}).values()
 
     def write_xml(
         self,
@@ -987,6 +1072,26 @@ class MelodyLoader:
             visited_elements.append(element)
             if element.tag in tagset:
                 yield element
+
+    def iterchildren(
+        self, element: etree._Element, *tags: str
+    ) -> cabc.Iterator[etree._Element]:
+        """Iterate over the element's children.
+
+        This method will follow links into different fragment files and
+        yield those elements as if they were direct children.
+
+        Parameters
+        ----------
+        element
+            The parent element under which to search for children.
+        tags
+            Only consider children which have one of these tags.
+        """
+        tagset = self._nonempty_hashset(tags)
+        for child in element.iterchildren():
+            if child.tag in tagset:
+                yield self._follow_href(child)
 
     def iterchildren_xt(
         self, element: etree._Element, *xtypes: str

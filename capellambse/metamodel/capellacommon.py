@@ -2,217 +2,299 @@
 # SPDX-License-Identifier: Apache-2.0
 """Classes handling Mode/State-Machines and related content."""
 
+from __future__ import annotations
+
+import enum
+import typing as t
+import warnings
+
 import capellambse.model as m
 
-from . import capellacore, modellingcore
+from . import behavior, capellacore, modellingcore
+from . import namespaces as ns
+
+NS = ns.CAPELLACOMMON
 
 
-class AbstractStateRealization(m.ModelElement): ...
+@m.stringy_enum
+@enum.unique
+class ChangeEventKind(enum.Enum):
+    WHEN = "WHEN"
 
 
-class TransfoLink(m.ModelElement): ...
+@m.stringy_enum
+@enum.unique
+class TimeEventKind(enum.Enum):
+    AT = "AT"
+    """Trigger at a specific time.
+
+    An absolute time trigger is specified with the keyword 'at' followed
+    by an expression that evaluates to a time value, such as 'Jan. 1,
+    2000, Noon'.
+    """
+    AFTER = "AFTER"
+    """Trigger after a relative time duration has passed.
+
+    A relative time trigger is specified with the keyword 'after'
+    followed by an expression that evaluates to a time value, such as
+    'after (5 seconds)'.
+    """
 
 
-class CapabilityRealizationInvolvement(m.ModelElement): ...
+@m.stringy_enum
+@enum.unique
+class TransitionKind(enum.Enum):
+    INTERNAL = "internal"
+    LOCAL = "local"
+    EXTERNAL = "external"
 
 
-@m.xtype_handler(None)
-class Region(m.ModelElement):
-    """A region inside a state machine or state/mode."""
+class AbstractCapabilityPkg(capellacore.Structure, abstract=True):
+    pass
 
+
+class GenericTrace(capellacore.Trace):
+    key_value_pairs = m.Containment["capellacore.KeyValue"](
+        "keyValuePairs", (ns.CAPELLACORE, "KeyValue")
+    )
+
+
+class TransfoLink(GenericTrace):
+    pass
+
+
+class JustificationLink(GenericTrace):
+    pass
+
+
+class CapabilityRealizationInvolvement(capellacore.Involvement):
+    pass
+
+
+class CapabilityRealizationInvolvedElement(
+    capellacore.InvolvedElement, abstract=True
+):
+    pass
+
+
+class StateMachine(capellacore.CapellaElement, behavior.AbstractBehavior):
+    regions = m.Containment["Region"]("ownedRegions", (NS, "Region"))
+    connection_points = m.Containment["Pseudostate"](
+        "ownedConnectionPoints", (NS, "Pseudostate")
+    )
+
+
+class Region(capellacore.NamedElement):
     _xmltag = "ownedRegions"
 
-    states: m.Accessor
-    modes: m.Accessor
-    transitions: m.Accessor
+    states = m.Containment["AbstractState"](
+        "ownedStates", (NS, "AbstractState")
+    )
+    modes = m.DeprecatedAccessor["AbstractState"]("states")
+    transitions = m.Containment["StateTransition"](
+        "ownedTransitions", (NS, "StateTransition")
+    )
+    involved_states = m.Association["AbstractState"](
+        (NS, "AbstractState"), "involvedStates"
+    )
 
 
-class AbstractStateMode(m.ModelElement):
-    """Common code for states and modes."""
-
+class AbstractState(
+    capellacore.NamedElement, modellingcore.IState, abstract=True
+):
     _xmltag = "ownedStates"
 
-    regions = m.DirectProxyAccessor(Region, aslist=m.ElementList)
-
-
-@m.xtype_handler(None)
-class State(AbstractStateMode):
-    """A state."""
-
-    entries = m.AttrProxyAccessor(
-        m.ModelElement, "entry", aslist=m.MixedElementList
+    realized_states = m.Allocation["AbstractState"](
+        "ownedAbstractStateRealizations",
+        (NS, "AbstractStateRealization"),
+        (NS, "AbstractState"),
+        attr="targetElement",
+        backattr="sourceElement",
     )
-    do_activity = m.AttrProxyAccessor(
-        m.ModelElement, "doActivity", aslist=m.MixedElementList
-    )
-    exits = m.AttrProxyAccessor(
-        m.ModelElement, "exit", aslist=m.MixedElementList
+    realizing_states = m.Backref["AbstractState"](
+        (NS, "AbstractState"), "realized_states"
     )
 
-    incoming_transitions = m.Accessor
-    outgoing_transitions = m.Accessor
-
-    functions: m.Accessor
-
-
-@m.xtype_handler(None)
-class Mode(AbstractStateMode):
-    """A mode."""
+    incoming_transitions = m.Backref["StateTransition"](
+        (NS, "StateTransition"), "target"
+    )
+    outgoing_transitions = m.Backref["StateTransition"](
+        (NS, "StateTransition"), "source"
+    )
 
 
-@m.xtype_handler(None)
-class DeepHistoryPseudoState(AbstractStateMode):
-    """A deep history pseudo state."""
+class State(AbstractState):
+    """A situation during which some invariant condition holds.
+
+    A condition of a system or element, as defined by some of its
+    properties, which can enable system behaviors and/or structure to
+    occur.
+
+    Note: The enabled behavior may include no actions, such as
+    associated with a wait state. Also, the condition that defines the
+    state may be dependent on one or more previous states.
+    """
+
+    regions = m.Containment["Region"]("ownedRegions", (NS, "Region"))
+    connection_points = m.Containment["Pseudostate"](
+        "ownedConnectionPoints", (NS, "Pseudostate")
+    )
+    entry = m.Association["behavior.AbstractEvent"](
+        (ns.BEHAVIOR, "AbstractEvent"), "entry"
+    )
+    entries = m.DeprecatedAccessor["behavior.AbstractEvent"]("entry")
+    do_activity = m.Association["behavior.AbstractEvent"](
+        (ns.BEHAVIOR, "AbstractEvent"), "doActivity"
+    )
+    exit = m.Association["behavior.AbstractEvent"](
+        (ns.BEHAVIOR, "AbstractEvent"), "exit"
+    )
+    exits = m.DeprecatedAccessor["behavior.AbstractEvent"]("exit")
+    state_invariant = m.Containment["modellingcore.AbstractConstraint"](
+        "stateInvariant", (ns.MODELLINGCORE, "AbstractConstraint")
+    )
 
 
-@m.xtype_handler(None)
-class FinalState(AbstractStateMode):
-    """A final state."""
+class Mode(State):
+    """Characterizes an expected behavior at a point in time.
+
+    A Mode characterizes an expected behaviour through the set of
+    functions or elements available at a point in time.
+    """
 
 
-@m.xtype_handler(None)
-class ForkPseudoState(AbstractStateMode):
-    """A fork pseudo state."""
+class FinalState(State):
+    """Special state signifying that the enclosing region is completed.
+
+    If the enclosing region is directly contained in a state machine and
+    all other regions in the state machine also are completed, then it
+    means that the entire state machine is completed.
+    """
 
 
-@m.xtype_handler(None)
-class InitialPseudoState(AbstractStateMode):
-    """An initial pseudo state."""
+class StateTransition(capellacore.NamedElement, capellacore.Relationship):
+    """A directed relationship between a source and target vertex.
 
-
-@m.xtype_handler(None)
-class JoinPseudoState(AbstractStateMode):
-    """A join pseudo state."""
-
-
-@m.xtype_handler(None)
-class ShallowHistoryPseudoState(AbstractStateMode):
-    """A shallow history pseudo state."""
-
-
-@m.xtype_handler(None)
-class TerminatePseudoState(AbstractStateMode):
-    """A terminate pseudo state."""
-
-
-@m.xtype_handler(None)
-class StateMachine(m.ModelElement):
-    """A state machine."""
-
-    _xmltag = "ownedStateMachines"
-
-    regions = m.DirectProxyAccessor(Region, aslist=m.ElementList)
-
-
-@m.xtype_handler(None)
-class StateTransition(m.ModelElement):
-    r"""A transition between :class:`State`\ s or :class:`Mode`\ s."""
+    It may be part of a compound transition, which takes the state
+    machine from one state configuration to another, representing the
+    complete response of the state machine to an occurrence of an event
+    of a particular type.
+    """
 
     _xmltag = "ownedTransitions"
 
-    source = m.AttrProxyAccessor(m.ModelElement, "source")
-    destination = m.AttrProxyAccessor(m.ModelElement, "target")
-    triggers = m.AttrProxyAccessor(
-        m.ModelElement, "triggers", aslist=m.MixedElementList
+    kind = m.EnumPOD("kind", TransitionKind)
+    trigger_description = m.StringPOD("triggerDescription")
+    guard = m.Association["capellacore.Constraint"](
+        (ns.CAPELLACORE, "Constraint"), "guard"
     )
-    effects = m.AttrProxyAccessor(
-        m.ModelElement, "effect", aslist=m.MixedElementList
+    source = m.Single["AbstractState"](
+        m.Association((NS, "AbstractState"), "source")
     )
-    guard = m.AttrProxyAccessor(capellacore.Constraint, "guard")
-
-
-@m.xtype_handler(None)
-class GenericTrace(modellingcore.TraceableElement):
-    """A trace between two elements."""
-
-    @property
-    def name(self) -> str:  # type: ignore[override]
-        """Return the name."""
-        direction = ""
-        if self.target is not None:
-            direction = f" to {self.target.name} ({self.target.uuid})"
-
-        return f"[{type(self).__name__}]{direction}"
-
-
-m.set_accessor(
-    AbstractStateMode,
-    "realized_states",
-    m.LinkAccessor(
-        None,  # FIXME fill in tag
-        AbstractStateRealization,
-        aslist=m.ElementList,
+    target = m.Single["AbstractState"](
+        m.Association((NS, "AbstractState"), "target")
+    )
+    destination = m.DeprecatedAccessor["AbstractState"]("target")
+    effect = m.Association["behavior.AbstractEvent"](
+        (ns.BEHAVIOR, "AbstractEvent"), "effect"
+    )
+    effects = m.DeprecatedAccessor["behavior.AbstractEvent"]("effect")
+    triggers = m.Association["behavior.AbstractEvent"](
+        (ns.BEHAVIOR, "AbstractEvent"), "triggers"
+    )
+    realized_transitions = m.Allocation["StateTransition"](
+        "ownedStateTransitionRealizations",
+        (NS, "StateTransitionRealization"),
+        (NS, "StateTransition"),
         attr="targetElement",
-    ),
-)
-for cls in [
-    State,
-    Mode,
-    DeepHistoryPseudoState,
-    FinalState,
-    ForkPseudoState,
-    InitialPseudoState,
-    JoinPseudoState,
-    ShallowHistoryPseudoState,
-    TerminatePseudoState,
-]:
-    m.set_accessor(
-        cls,
-        "realizing_states",
-        m.ReferenceSearchingAccessor(
-            cls, "realized_states", aslist=m.ElementList
-        ),
+        backattr="sourceElement",
     )
 
-for cls in [
-    State,
-    Mode,
-    DeepHistoryPseudoState,
-    FinalState,
-    ForkPseudoState,
-    JoinPseudoState,
-    ShallowHistoryPseudoState,
-    TerminatePseudoState,
-]:
-    m.set_accessor(
-        cls,
-        "incoming_transitions",
-        m.ReferenceSearchingAccessor(
-            StateTransition, "destination", aslist=m.ElementList
-        ),
+
+class Pseudostate(AbstractState, abstract=True):
+    pass
+
+
+class InitialPseudoState(Pseudostate):
+    pass
+
+
+class JoinPseudoState(Pseudostate):
+    pass
+
+
+class ForkPseudoState(Pseudostate):
+    pass
+
+
+class ChoicePseudoState(Pseudostate):
+    pass
+
+
+class TerminatePseudoState(Pseudostate):
+    pass
+
+
+class AbstractStateRealization(capellacore.Allocation):
+    pass
+
+
+class StateTransitionRealization(capellacore.Allocation):
+    pass
+
+
+class ShallowHistoryPseudoState(Pseudostate):
+    pass
+
+
+class DeepHistoryPseudoState(Pseudostate):
+    pass
+
+
+class EntryPointPseudoState(Pseudostate):
+    pass
+
+
+class ExitPointPseudoState(Pseudostate):
+    pass
+
+
+class StateEventRealization(capellacore.Allocation):
+    pass
+
+
+class StateEvent(
+    capellacore.NamedElement, behavior.AbstractEvent, abstract=True
+):
+    expression = m.Association["capellacore.Constraint"](
+        (ns.CAPELLACORE, "Constraint"), "expression"
     )
-for cls in [
-    State,
-    Mode,
-    DeepHistoryPseudoState,
-    ForkPseudoState,
-    InitialPseudoState,
-    JoinPseudoState,
-    ShallowHistoryPseudoState,
-]:
-    m.set_accessor(
-        cls,
-        "outgoing_transitions",
-        m.ReferenceSearchingAccessor(
-            StateTransition, "source", aslist=m.ElementList
-        ),
+    realized_events = m.Allocation["StateEvent"](
+        "ownedStateEventRealizations",
+        (NS, "StateEventRealization"),
+        (NS, "StateEvent"),
+        attr="targetElement",
+        backattr="sourceElement",
     )
 
-m.set_accessor(
-    Region,
-    "states",
-    m.RoleTagAccessor(AbstractStateMode._xmltag, aslist=m.ElementList),
-)
-m.set_accessor(
-    Region, "modes", m.DirectProxyAccessor(Mode, aslist=m.ElementList)
-)
-m.set_accessor(
-    Region,
-    "transitions",
-    m.DirectProxyAccessor(StateTransition, aslist=m.ElementList),
-)
-m.set_accessor(
-    m.ModelElement,
-    "traces",
-    m.DirectProxyAccessor(GenericTrace, aslist=m.ElementList),
-)
+
+class ChangeEvent(StateEvent):
+    kind = m.EnumPOD("kind", ChangeEventKind)
+
+
+class TimeEvent(StateEvent):
+    kind = m.EnumPOD("kind", TimeEventKind)
+
+
+if not t.TYPE_CHECKING:
+
+    def __getattr__(name):
+        if name == "AbstractStateMode":
+            warnings.warn(
+                "AbstractStateMode has been renamed to AbstractState",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return AbstractState
+
+        raise AttributeError(name)
