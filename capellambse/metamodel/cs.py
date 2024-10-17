@@ -163,6 +163,9 @@ class ComponentArchitecture(m.ModelElement):
 
     data_package = m.DirectProxyAccessor(information.DataPkg)
     interface_package = m.DirectProxyAccessor(InterfacePkg)
+    component_exchange_categories = m.DirectProxyAccessor(
+        fa.ComponentExchangeCategory, aslist=m.ElementList
+    )
 
     all_classes = m.DeepProxyAccessor(information.Class, aslist=m.ElementList)
     all_collections = m.DeepProxyAccessor(

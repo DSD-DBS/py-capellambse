@@ -34,6 +34,9 @@ class SystemFunctionPkg(m.ModelElement):
         "ownedSystemFunctions", SystemFunction, aslist=m.ElementList
     )
     packages: m.Accessor
+    categories = m.DirectProxyAccessor(
+        fa.ExchangeCategory, aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
@@ -71,6 +74,9 @@ class SystemComponentPkg(m.ModelElement):
     )
 
     packages: m.Accessor
+    exchange_categories = m.DirectProxyAccessor(
+        fa.ComponentExchangeCategory, aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
