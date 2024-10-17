@@ -365,7 +365,6 @@ class Box:
                     intersections.append(intersection)
 
         assert len(intersections) > 0, f"{edge} doesn't intersect {edges}"
-        assert len(intersections) < 2, f"{edge} intersects multiple {edges}"
         return intersections[0]
 
     def __vector_snap_manhattan(
