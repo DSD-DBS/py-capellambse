@@ -109,15 +109,19 @@ def test_adding_a_namespace_preserves_the_capella_version_comment(
     assert len(prev_elements) == 1
 
 
-def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
+def test_deleting_an_object_purges_references_from_Association(
     model: m.MelodyModel, caplog
 ) -> None:
     part = model.by_uuid("1bd59e23-3d45-4e39-88b4-33a11c56d4e3")
     assert isinstance(part, mm.cs.Part)
-    assert isinstance(type(part).type, m.AttrProxyAccessor)
+    acc = type(part).type
+    assert isinstance(acc, m.Single)
+    assert isinstance(acc.wrapped, m.Association)
     component = model.by_uuid("ea5f09e6-a0ec-46b2-bd3e-b572f9bf99d6")
+    parent = component.parent
 
-    component.parent.components.remove(component)
+    parent.components.remove(component)
+    parent.components.append(component)
 
     assert not list(model.find_references(component))
     assert part.type is None
@@ -129,7 +133,7 @@ def test_deleting_an_object_purges_references_from_LinkAccessor(
 ) -> None:
     entity = model50.by_uuid("e37510b9-3166-4f80-a919-dfaac9b696c7")
     assert isinstance(entity, mm.oa.Entity)
-    assert isinstance(type(entity).activities, m.LinkAccessor)
+    assert isinstance(type(entity).activities, m.Allocation)
     activity = model50.by_uuid("f1cb9586-ce85-4862-849c-2eea257f706b")
 
     activity.parent.activities.remove(activity)

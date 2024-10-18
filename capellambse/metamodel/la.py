@@ -7,243 +7,188 @@
 
 from __future__ import annotations
 
-from capellambse import model as m
+import typing as t
 
-from . import capellacommon, capellacore, cs, fa, interaction, sa
+import capellambse.model as m
+
+from . import capellacommon, cs, fa, interaction
+from . import namespaces as ns
+from . import sa
+
+if t.TYPE_CHECKING:
+    from . import pa  # noqa: F401
+
+NS = ns.LA
 
 
-@m.xtype_handler(None)
-class LogicalFunction(fa.Function):
-    """A logical function on the Logical Architecture layer."""
-
-    realized_system_functions = m.TypecastAccessor(
-        sa.SystemFunction, "realized_functions"
-    )
-    owner: m.Accessor[LogicalComponent]
-
-
-@m.xtype_handler(None)
-class LogicalFunctionPkg(m.ModelElement):
-    """A logical function package."""
-
-    _xmltag = "ownedFunctionPkg"
-
-    functions = m.RoleTagAccessor(
-        "ownedLogicalFunctions", LogicalFunction, aslist=m.ElementList
-    )
-
-    packages: m.Accessor
-    categories = m.DirectProxyAccessor(
-        fa.ExchangeCategory, aslist=m.ElementList
+class LogicalArchitecturePkg(cs.BlockArchitecturePkg):
+    architectures = m.Containment["LogicalArchitecture"](
+        "ownedLogicalArchitectures", (NS, "LogicalArchitecture")
     )
 
 
-@m.xtype_handler(None)
-class LogicalComponent(cs.Component):
-    """A logical component on the Logical Architecture layer."""
-
-    _xmltag = "ownedLogicalComponents"
-
-    allocated_functions = m.LinkAccessor[LogicalFunction](
-        "ownedFunctionalAllocation",
-        fa.ComponentFunctionalAllocation,
-        aslist=m.ElementList,
+class LogicalArchitecture(cs.ComponentArchitecture):
+    component_pkg = m.Single["LogicalComponentPkg"](
+        m.Containment("ownedLogicalComponentPkg", (NS, "LogicalComponentPkg"))
+    )
+    component_package = m.DeprecatedAccessor["LogicalComponentPkg"](
+        "component_pkg"
+    )
+    realized_system_analysis = m.Allocation["sa.SystemAnalysis"](
+        "ownedSystemAnalysisRealizations",
+        (NS, "SystemAnalysisRealization"),
+        (ns.SA, "SystemAnalysis"),
         attr="targetElement",
         backattr="sourceElement",
     )
-    realized_system_components = m.TypecastAccessor(
-        sa.SystemComponent,
-        "realized_components",
-    )
 
-    components: m.Accessor
+    @property
+    def root_component(self) -> LogicalComponent:
+        assert self.component_pkg is not None
+        return self.component_pkg.components.by_is_actor(False, single=True)
 
+    @property
+    def all_components(self) -> m.ElementList[LogicalComponent]:
+        return self._model.search((NS, "LogicalComponent"), below=self)
 
-@m.xtype_handler(None)
-class LogicalComponentPkg(m.ModelElement):
-    """A logical component package."""
+    @property
+    def all_actors(self) -> m.ElementList[LogicalComponent]:
+        return self._model.search(LogicalComponent).by_is_actor(True)
 
-    _xmltag = "ownedLogicalComponentPkg"
+    @property
+    def all_actor_exchanges(self) -> m.ElementList[fa.ComponentExchange]:
+        return self._model.search(
+            (ns.FA, "ComponentExchange"), below=self
+        ).filter(
+            lambda e: (
+                (e.source is not None and e.source.is_actor)
+                or (e.target is not None and e.target.is_actor)
+            )
+        )
 
-    components = m.DirectProxyAccessor(LogicalComponent, aslist=m.ElementList)
-    state_machines = m.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=m.ElementList
-    )
-    exchanges = m.DirectProxyAccessor(
-        fa.ComponentExchange, aslist=m.ElementList
-    )
-
-    packages: m.Accessor
-    exchange_categories = m.DirectProxyAccessor(
-        fa.ComponentExchangeCategory, aslist=m.ElementList
-    )
-
-
-@m.xtype_handler(None)
-class CapabilityRealization(m.ModelElement):
-    """A capability."""
-
-    _xmltag = "ownedCapabilityRealizations"
-
-    owned_chains = m.DirectProxyAccessor(
-        fa.FunctionalChain, aslist=m.ElementList
-    )
-    involved_functions = m.LinkAccessor[LogicalFunction](
-        "ownedAbstractFunctionAbstractCapabilityInvolvements",
-        interaction.AbstractFunctionAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
-        attr="involved",
-    )
-    involved_chains = m.LinkAccessor[fa.FunctionalChain](
-        "ownedFunctionalChainAbstractCapabilityInvolvements",
-        interaction.FunctionalChainAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
-        attr="involved",
-    )
-    involved_components = m.LinkAccessor[LogicalComponent](
-        "ownedCapabilityRealizationInvolvements",
-        capellacommon.CapabilityRealizationInvolvement,
-        aslist=m.MixedElementList,
-        attr="involved",
-    )
-    realized_capabilities = m.LinkAccessor[sa.Capability](
-        "ownedAbstractCapabilityRealizations",
-        interaction.AbstractCapabilityRealization,
-        aslist=m.ElementList,
-        attr="targetElement",
-    )
-
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
-    )
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
-    scenarios = m.DirectProxyAccessor(
-        interaction.Scenario, aslist=m.ElementList
-    )
-    states = m.AttrProxyAccessor(
-        capellacommon.State, "availableInStates", aslist=m.ElementList
-    )
-
-    packages: m.Accessor
-
-
-@m.xtype_handler(None)
-class CapabilityRealizationPkg(m.ModelElement):
-    """A capability package that can hold capabilities."""
-
-    _xmltag = "ownedAbstractCapabilityPkg"
-
-    capabilities = m.DirectProxyAccessor(
-        CapabilityRealization, aslist=m.ElementList
-    )
-
-    packages: m.Accessor
-
-
-@m.xtype_handler(None)
-class LogicalArchitecture(cs.ComponentArchitecture):
-    """Provides access to the LogicalArchitecture layer of the model."""
-
-    root_component = m.AttributeMatcherAccessor(
-        LogicalComponent,
-        attributes={"is_actor": False},
-        rootelem=LogicalComponentPkg,
-    )
-    root_function = m.DirectProxyAccessor(
-        LogicalFunction, rootelem=LogicalFunctionPkg
-    )
-
-    function_package = m.DirectProxyAccessor(LogicalFunctionPkg)
-    component_package = m.DirectProxyAccessor(LogicalComponentPkg)
-    capability_package = m.DirectProxyAccessor(CapabilityRealizationPkg)
-
-    all_functions = m.DeepProxyAccessor(
-        LogicalFunction,
-        aslist=m.ElementList,
-        rootelem=LogicalFunctionPkg,
-    )
-    all_capabilities = m.DeepProxyAccessor(
-        CapabilityRealization, aslist=m.ElementList
-    )
-    all_components = (  # maybe this should exclude .is_actor
-        m.DeepProxyAccessor(LogicalComponent, aslist=m.ElementList)
-    )
-    all_actors = property(
-        lambda self: self._model.search(LogicalComponent).by_is_actor(True)
-    )
-    all_functional_chains = property(
-        lambda self: self._model.search(fa.FunctionalChain, below=self)
-    )
-
-    actor_exchanges = m.DirectProxyAccessor(
-        fa.ComponentExchange,
-        aslist=m.ElementList,
-        rootelem=LogicalComponentPkg,
-    )
-    component_exchanges = m.DeepProxyAccessor(
-        fa.ComponentExchange,
-        aslist=m.ElementList,
-        rootelem=[LogicalComponentPkg, LogicalComponent],
-    )
-
-    all_function_exchanges = m.DeepProxyAccessor(
-        fa.FunctionalExchange,
-        aslist=m.ElementList,
-        rootelem=[LogicalFunctionPkg, LogicalFunction],
-    )
-    all_component_exchanges = m.DeepProxyAccessor(
-        fa.ComponentExchange, aslist=m.ElementList
-    )
+    @property
+    def all_component_exchanges(self) -> m.ElementList[fa.ComponentExchange]:
+        return self._model.search((ns.FA, "ComponentExchange"), below=self)
 
     diagrams = m.DiagramAccessor(
         "Logical Architecture", cacheattr="_MelodyModel__diagram_cache"
     )
 
 
-m.set_accessor(
-    sa.Capability,
-    "realizing_capabilities",
-    m.ReferenceSearchingAccessor(
-        CapabilityRealization, "realized_capabilities", aslist=m.ElementList
-    ),
-)
-m.set_accessor(
-    sa.SystemComponent,
-    "realizing_logical_components",
-    m.ReferenceSearchingAccessor(
-        LogicalComponent, "realized_components", aslist=m.ElementList
-    ),
-)
-m.set_accessor(
-    sa.SystemFunction,
-    "realizing_logical_functions",
-    m.ReferenceSearchingAccessor(
-        LogicalFunction, "realized_system_functions", aslist=m.ElementList
-    ),
-)
-m.set_accessor(
-    LogicalFunction,
-    "owner",
-    m.ReferenceSearchingAccessor(LogicalComponent, "allocated_functions"),
-)
-m.set_accessor(
-    LogicalFunction,
-    "packages",
-    m.DirectProxyAccessor(
-        LogicalFunctionPkg,
-        aslist=m.ElementList,
-    ),
-)
-m.set_accessor(
-    LogicalFunction,
-    "involved_in",
-    m.ReferenceSearchingAccessor(
-        CapabilityRealization, "involved_functions", aslist=m.ElementList
-    ),
-)
-m.set_self_references(
-    (LogicalComponent, "components"),
-    (LogicalComponentPkg, "packages"),
-    (LogicalFunction, "functions"),
-    (LogicalFunctionPkg, "packages"),
-)
+class LogicalFunction(fa.AbstractFunction):
+    functions = m.Containment["LogicalFunction"](
+        "ownedFunctions", (NS, "LogicalFunction")
+    )
+    packages = m.Containment["LogicalFunctionPkg"](
+        "ownedLogicalFunctionPkgs", (NS, "LogicalFunctionPkg")
+    )
+    realized_system_functions = m.DeprecatedAccessor["sa.SystemFunction"](
+        "realized_functions"
+    )
+    owner = m.Single["LogicalComponent"](
+        m.Backref((NS, "LogicalComponent"), "allocated_functions")
+    )
+    involved_in = m.Backref["CapabilityRealization"](
+        (NS, "CapabilityRealization"), "involved_functions"
+    )
+    realizing_physical_functions = m.Backref["pa.PhysicalFunction"](
+        (ns.PA, "PhysicalFunction"), "realized_logical_functions"
+    )
+
+
+class LogicalFunctionPkg(fa.FunctionPkg):
+    _xmltag = "ownedFunctionPkg"
+
+    functions = m.Containment["LogicalFunction"](
+        "ownedLogicalFunctions", (NS, "LogicalFunction")
+    )
+    packages = m.Containment["LogicalFunctionPkg"](
+        "ownedLogicalFunctionPkgs", (NS, "LogicalFunctionPkg")
+    )
+
+
+class LogicalComponent(
+    cs.Component, capellacommon.CapabilityRealizationInvolvedElement
+):
+    _xmltag = "ownedLogicalComponents"
+
+    components = m.Containment["LogicalComponent"](
+        "ownedLogicalComponents", (NS, "LogicalComponent")
+    )
+    architectures = m.Containment["LogicalArchitecture"](
+        "ownedLogicalArchitectures", (NS, "LogicalArchitecture")
+    )
+    packages = m.Containment["LogicalComponentPkg"](
+        "ownedLogicalComponentPkgs", (NS, "LogicalComponentPkg")
+    )
+    realized_system_components = m.DeprecatedAccessor["sa.SystemComponent"](
+        "realized_components"
+    )
+    realizing_physical_components = m.Backref["pa.PhysicalComponent"](
+        (ns.PA, "PhysicalComponent"), "realized_logical_components"
+    )
+
+
+class LogicalComponentPkg(cs.ComponentPkg):
+    _xmltag = "ownedLogicalComponentPkg"
+
+    components = m.Containment["LogicalComponent"](
+        "ownedLogicalComponents", (NS, "LogicalComponent")
+    )
+    packages = m.Containment["LogicalComponentPkg"](
+        "ownedLogicalComponentPkgs", (NS, "LogicalComponentPkg")
+    )
+
+
+class CapabilityRealization(interaction.AbstractCapability):
+    _xmltag = "ownedCapabilityRealizations"
+
+    owned_chains = m.DirectProxyAccessor(
+        fa.FunctionalChain, aslist=m.ElementList
+    )
+    involved_functions = m.Allocation[LogicalFunction](  # TODO
+        "ownedAbstractFunctionAbstractCapabilityInvolvements",
+        interaction.AbstractFunctionAbstractCapabilityInvolvement,
+        attr="involved",
+    )
+    involved_chains = m.Allocation[fa.FunctionalChain](  # TODO
+        "ownedFunctionalChainAbstractCapabilityInvolvements",
+        interaction.FunctionalChainAbstractCapabilityInvolvement,
+        attr="involved",
+    )
+    involved_elements = m.Allocation[
+        "capellacommon.CapabilityRealizationInvolvedElement"
+    ](
+        "ownedCapabilityRealizationInvolvements",
+        (ns.CAPELLACOMMON, "CapabilityRealizationInvolvement"),
+        (ns.CAPELLACOMMON, "CapabilityRealizationInvolvedElement"),
+        attr="involved",
+    )
+    realized_capabilities = m.Allocation[sa.Capability](  # TODO
+        "ownedAbstractCapabilityRealizations",
+        interaction.AbstractCapabilityRealization,
+        attr="targetElement",
+    )
+
+    packages: m.Accessor  # TODO
+
+
+class CapabilityRealizationPkg(capellacommon.AbstractCapabilityPkg):
+    """A capability package that can hold capabilities."""
+
+    _xmltag = "ownedAbstractCapabilityPkg"
+
+    capabilities = m.Containment["CapabilityRealization"](
+        "ownedCapabilityRealizations", (NS, "CapabilityRealization")
+    )
+    packages = m.Containment["CapabilityRealizationPkg"](
+        "ownedCapabilityRealizationPkgs", (NS, "CapabilityRealizationPkg")
+    )
+
+
+class SystemAnalysisRealization(cs.ArchitectureAllocation):
+    pass
+
+
+class ContextInterfaceRealization(cs.InterfaceAllocation):
+    pass
