@@ -33,6 +33,9 @@ class LogicalFunctionPkg(m.ModelElement):
     )
 
     packages: m.Accessor
+    categories = m.DirectProxyAccessor(
+        fa.ExchangeCategory, aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
@@ -71,6 +74,9 @@ class LogicalComponentPkg(m.ModelElement):
     )
 
     packages: m.Accessor
+    exchange_categories = m.DirectProxyAccessor(
+        fa.ComponentExchangeCategory, aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)

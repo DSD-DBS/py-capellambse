@@ -28,6 +28,20 @@ class ComponentFunctionalAllocation(m.ModelElement): ...
 
 
 @m.xtype_handler(None)
+class ExchangeCategory(m.ModelElement):
+    _xmltag = "ownedCategories"
+
+    exchanges: m.AttrProxyAccessor[FunctionalExchange]
+
+
+@m.xtype_handler(None)
+class ComponentExchangeCategory(m.ModelElement):
+    _xmltag = "ownedComponentExchangeCategories"
+
+    exchanges: m.AttrProxyAccessor[ComponentExchange]
+
+
+@m.xtype_handler(None)
 class ControlNode(m.ModelElement):
     """A node with a specific control-kind."""
 
@@ -138,6 +152,7 @@ class FunctionalExchange(AbstractExchange):
         backattr="sourceElement",
     )
     realizing_functional_exchanges: m.Accessor[FunctionalExchange]
+    categories = m.ReferenceSearchingAccessor(ExchangeCategory, "exchanges")
 
     @property
     def owner(self) -> ComponentExchange | None:
@@ -261,6 +276,9 @@ class ComponentExchange(AbstractExchange):
         "convoyedInformations",
         aslist=m.ElementList,
     )
+    categories = m.ReferenceSearchingAccessor(
+        ComponentExchangeCategory, "exchanges"
+    )
 
     @property
     def owner(self) -> cs.PhysicalLink | None:
@@ -369,6 +387,12 @@ m.set_accessor(
         "allocated_exchange_items",
         aslist=m.ElementList,
     ),
+)
+ExchangeCategory.exchanges = m.AttrProxyAccessor(
+    FunctionalExchange, "exchanges", aslist=m.ElementList
+)
+ComponentExchangeCategory.exchanges = m.AttrProxyAccessor(
+    ComponentExchange, "exchanges", aslist=m.ElementList
 )
 
 

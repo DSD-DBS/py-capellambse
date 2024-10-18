@@ -33,6 +33,9 @@ class PhysicalFunctionPkg(m.ModelElement):
     )
 
     packages: m.Accessor
+    categories = m.DirectProxyAccessor(
+        fa.ExchangeCategory, aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
@@ -92,6 +95,9 @@ class PhysicalComponentPkg(m.ModelElement):
     )
 
     packages: m.Accessor
+    exchange_categories = m.DirectProxyAccessor(
+        fa.ComponentExchangeCategory, aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
