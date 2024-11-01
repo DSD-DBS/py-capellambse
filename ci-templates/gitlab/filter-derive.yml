@@ -34,6 +34,8 @@ derive:
         git fetch;
         git reset --hard origin/$CI_COMMIT_BRANCH;
       fi
+    - python -m venv /tmp/.venv
+    - source /tmp/.venv/bin/activate
     - pip install "capellambse[cli] @ git+https://github.com/DSD-DBS/py-capellambse.git@${CAPELLAMBSE_REVISION:-release-0.5}"
     - export DISPLAY=:99
     - |
