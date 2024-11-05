@@ -50,6 +50,11 @@ def PhysicalState(state: mm.capellacommon.State) -> bool:
     return isinstance(state.layer, mm.pa.PhysicalArchitecture)
 
 
+@virtual_type(mm.fa.FunctionalExchange)
+def PhysicalFunctionExchange(fex: mm.fa.FunctionalExchange) -> bool:
+    return isinstance(fex.layer, mm.pa.PhysicalArchitecture)
+
+
 # 00. Common
 @rule(
     category=_validate.Category.RECOMMENDED,
@@ -170,7 +175,7 @@ def has_postcondition(obj):
 
 @rule(
     category=_validate.Category.REQUIRED,
-    types=[mm.fa.FunctionalExchange],
+    types=[PhysicalFunctionExchange],
     id="Rule-006",
     name=(
         "All Functional exchanges shall be allocated to at least one component"
@@ -189,9 +194,7 @@ def has_postcondition(obj):
 def functional_exchange_allocated_to_component_exchange(
     obj: m.ModelElement,
 ) -> bool:
-    if isinstance(obj.layer, mm.pa.PhysicalArchitecture):
-        return bool(obj.allocating_component_exchange)
-    return True
+    return bool(obj.allocating_component_exchange)
 
 
 @rule(
