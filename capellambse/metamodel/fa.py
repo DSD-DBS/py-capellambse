@@ -71,6 +71,9 @@ class AbstractFunction(m.ModelElement):
     available_in_states = m.AttrProxyAccessor(
         capellacommon.State, "availableInStates", aslist=m.ElementList
     )
+    scenarios = m.ReferenceSearchingAccessor[interaction.Scenario](
+        (), "related_functions", aslist=m.ElementList
+    )
 
 
 @m.xtype_handler(None)
