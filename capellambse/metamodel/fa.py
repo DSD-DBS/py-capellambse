@@ -194,6 +194,10 @@ class FunctionalChain(m.ModelElement):
     _xmltag = "ownedFunctionalChains"
 
     kind = m.EnumPOD("kind", modeltypes.FunctionalChainKind, default="SIMPLE")
+    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    postcondition = m.AttrProxyAccessor(
+        capellacore.Constraint, "postCondition"
+    )
 
     involvements = m.DirectProxyAccessor(
         m.ModelElement,

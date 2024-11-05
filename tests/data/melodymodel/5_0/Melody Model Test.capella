@@ -229,7 +229,16 @@
         <ownedOperationalActivities xsi:type="org.polarsys.capella.core.data.oa:OperationalActivity"
             id="99df05af-71bf-4233-9035-bcd3d4439182" name="Root Operational Activity">
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.oa:OperationalProcess"
-              id="d588e41f-ec4d-4fa9-ad6d-056868c66274" name="Obtain food via hunting">
+              id="d588e41f-ec4d-4fa9-ad6d-056868c66274" name="Obtain food via hunting"
+              preCondition="#a7e96d09-5cd6-43e9-b230-9f44b601fdce">
+            <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                id="a7e96d09-5cd6-43e9-b230-9f44b601fdce" name="">
+              <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                  id="9b23f594-adaa-4949-9039-0e07f2d26362">
+                <bodies>&lt;a href=&quot;0e0164c3-076e-42c1-8f82-7a43ab84385c&quot;/></bodies>
+                <languages>capella:linkedText</languages>
+              </ownedSpecification>
+            </ownedConstraints>
             <ownedFunctionalChainInvolvements xsi:type="org.polarsys.capella.core.data.fa:FunctionalChainInvolvementLink"
                 id="41e2ff3c-bc49-4eb1-ace9-66920b21179d" involved="#55b90f9a-c5af-47fc-9c1c-48090414d1f1"
                 source="#3ecb9f00-67ce-49b1-9294-d48c6d95d066" target="#8e732f5a-a760-468c-b862-ba1a276206d1"/>
@@ -1333,7 +1342,15 @@ The predator is far away</bodies>
       <ownedAbstractCapabilityPkg xsi:type="org.polarsys.capella.core.data.ctx:CapabilityPkg"
           id="1fded3ea-675d-4b0d-b018-3502a77a5b67" name="Capabilities hehe">
         <ownedCapabilities xsi:type="org.polarsys.capella.core.data.ctx:Capability"
-            id="9390b7d5-598a-42db-bef8-23677e45ba06" name="Capability">
+            id="9390b7d5-598a-42db-bef8-23677e45ba06" name="Capability" preCondition="#76805ab0-6441-4dda-a15b-f08d917b8c8c">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="76805ab0-6441-4dda-a15b-f08d917b8c8c" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="d9d17e59-8224-4b7a-aba8-787968ae03bd">
+              <bodies>&lt;a href=&quot;55cdd645-fb98-459a-a1c5-52d6a504c164&quot;/> or &lt;a href=&quot;ab016025-d456-4c2d-8359-d50cf9de3825&quot;/></bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
           <extends xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityExtend"
               id="992c4ba5-0165-470d-b2d0-f117e00a645c" extended="#562c5128-5acd-45cc-8b49-1d8d686f450a"/>
           <superGeneralizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityGeneralization"
@@ -2257,12 +2274,20 @@ The predator is far away</bodies>
         <ownedLogicalFunctions xsi:type="org.polarsys.capella.core.data.la:LogicalFunction"
             id="f28ec0f8-f3b3-43a0-8af7-79f194b29a2d" name="Root Logical Function">
           <ownedFunctionalChains xsi:type="org.polarsys.capella.core.data.fa:FunctionalChain"
-              id="22b9c1d6-a754-4614-9fcb-fa4f53837d9a" name="Test Chain">
+              id="22b9c1d6-a754-4614-9fcb-fa4f53837d9a" name="Test Chain" preCondition="#c51c98f4-1ebe-44fc-b589-a402e7508a03">
             <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
                 id="faca7a9b-b6a6-4105-a556-861804828c0f" name="" constrainedElements="#9abb92e7-24d3-4156-ba41-9151bb2fe4b1">
               <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
                   id="b00ce988-9033-46bd-bcba-725e4f69630c">
                 <bodies>&lt;a href=&quot;a0159943-264f-4a97-a245-565fb6bf9db4&quot;/></bodies>
+                <languages>capella:linkedText</languages>
+              </ownedSpecification>
+            </ownedConstraints>
+            <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                id="c51c98f4-1ebe-44fc-b589-a402e7508a03" name="">
+              <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                  id="9affe747-1e67-4bc1-b438-c47725882a1b">
+                <bodies>&lt;a href=&quot;f708bc29-d69f-42a0-90cc-11fc01054cd0&quot;/> that is it!</bodies>
                 <languages>capella:linkedText</languages>
               </ownedSpecification>
             </ownedConstraints>
@@ -2488,7 +2513,16 @@ The predator is far away</bodies>
       <ownedAbstractCapabilityPkg xsi:type="org.polarsys.capella.core.data.la:CapabilityRealizationPkg"
           id="a724c16e-fbd2-4100-94b6-99af0bf270ab" name="Capabilities">
         <ownedCapabilityRealizations xsi:type="org.polarsys.capella.core.data.la:CapabilityRealization"
-            id="b80b3141-a7fc-48c7-84b2-1467dcef5fce" name="Capability Realization">
+            id="b80b3141-a7fc-48c7-84b2-1467dcef5fce" name="Capability Realization"
+            preCondition="#e9d60f7e-fddd-4200-8c03-ba3bf73c7fcf">
+          <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+              id="e9d60f7e-fddd-4200-8c03-ba3bf73c7fcf" name="">
+            <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                id="352a3d05-35f4-4aad-8b64-42a7820d3609">
+              <bodies>&lt;a href=&quot;c1a42acc-1f53-42bb-8404-77a5c08c414b&quot;/> and &lt;a href=&quot;edbd1ad4-31c0-4d53-b856-3ffa60e0e99b&quot;/></bodies>
+              <languages>capella:linkedText</languages>
+            </ownedSpecification>
+          </ownedConstraints>
           <ownedAbstractCapabilityRealizations xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityRealization"
               id="3e22f774-d699-4183-8436-da1da9900d1c" targetElement="#562c5128-5acd-45cc-8b49-1d8d686f450a"
               sourceElement="#b80b3141-a7fc-48c7-84b2-1467dcef5fce"/>
@@ -2501,7 +2535,15 @@ The predator is far away</bodies>
             id="bd8f76a9-a4ae-47e8-990e-197e0aac1803" name="Punish naughty students">
           <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
               id="d32922dc-2686-4434-a5f5-9374c124b88c" name="[IS] Punish naughty students"
-              kind="INTERFACE">
+              kind="INTERFACE" postCondition="#71641f1d-8b67-44d2-9ab6-f909367b3224">
+            <ownedConstraints xsi:type="org.polarsys.capella.core.data.capellacore:Constraint"
+                id="71641f1d-8b67-44d2-9ab6-f909367b3224" name="">
+              <ownedSpecification xsi:type="org.polarsys.capella.core.data.information.datavalue:OpaqueExpression"
+                  id="f40f6f9f-860f-41ad-bd85-e28785902c19">
+                <bodies>&lt;a href=&quot;1188fc31-789b-424f-a2d4-06791873a351&quot;/> can attack</bodies>
+                <languages>capella:linkedText</languages>
+              </ownedSpecification>
+            </ownedConstraints>
             <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
                 id="028045ed-5e22-4cb0-8f7f-1db73f223fa1" name="Harry J. Potter" representedInstance="#26543596-7646-4d81-8f15-c4e01ec930a7"/>
             <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"

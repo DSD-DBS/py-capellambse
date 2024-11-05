@@ -226,6 +226,36 @@ def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
+    "uuid",
+    [
+        pytest.param(
+            "53c58b24-3938-4d6a-b84a-bb9bff355a41", id="OperationalCapability"
+        ),
+        pytest.param(
+            "b80b3141-a7fc-48c7-84b2-1467dcef5fce", id="CapabilityRealization"
+        ),
+        pytest.param("9390b7d5-598a-42db-bef8-23677e45ba06", id="Capability"),
+        pytest.param(
+            "22b9c1d6-a754-4614-9fcb-fa4f53837d9a", id="FunctionalChain"
+        ),
+        pytest.param(
+            "d588e41f-ec4d-4fa9-ad6d-056868c66274", id="OperationalProcess"
+        ),
+        pytest.param("d32922dc-2686-4434-a5f5-9374c124b88c", id="Scenario"),
+    ],
+)
+def test_model_elements_have_pre_or_post_conditions(
+    model: m.MelodyModel, uuid: str
+):
+    elm = model.by_uuid(uuid)
+
+    condition = elm.precondition or elm.postcondition
+
+    assert condition
+    assert condition.specification["capella:linkedText"]
+
+
+@pytest.mark.parametrize(
     ("uuid", "trg_uuid", "attr_name"),
     [
         pytest.param(
