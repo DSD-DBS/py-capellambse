@@ -32,48 +32,22 @@ def BehaviourPhysicalComponent(cmp: mm.pa.PhysicalComponent) -> bool:
 
 @virtual_type(mm.capellacommon.State)
 def OperationalState(state: mm.capellacommon.State) -> bool:
-    layer = _find_layer(state)
-    return isinstance(layer, mm.oa.OperationalAnalysis)
+    return isinstance(state.layer, mm.oa.OperationalAnalysis)
 
 
 @virtual_type(mm.capellacommon.State)
 def SystemState(state: mm.capellacommon.State) -> bool:
-    layer = _find_layer(state)
-    return isinstance(layer, mm.sa.SystemAnalysis)
+    return isinstance(state.layer, mm.sa.SystemAnalysis)
 
 
 @virtual_type(mm.capellacommon.State)
 def LogicalState(state: mm.capellacommon.State) -> bool:
-    layer = _find_layer(state)
-    return isinstance(layer, mm.la.LogicalArchitecture)
+    return isinstance(state.layer, mm.la.LogicalArchitecture)
 
 
 @virtual_type(mm.capellacommon.State)
 def PhysicalState(state: mm.capellacommon.State) -> bool:
-    layer = _find_layer(state)
-    return isinstance(layer, mm.pa.PhysicalArchitecture)
-
-
-def _find_layer(
-    obj,
-) -> (
-    mm.oa.OperationalAnalysis
-    | mm.sa.SystemAnalysis
-    | mm.la.LogicalArchitecture
-    | mm.pa.PhysicalArchitecture
-):
-    parent = obj.parent
-    while not isinstance(
-        parent,
-        (
-            mm.oa.OperationalAnalysis
-            | mm.sa.SystemAnalysis
-            | mm.la.LogicalArchitecture
-            | mm.pa.PhysicalArchitecture
-        ),
-    ):
-        parent = parent.parent
-    return parent
+    return isinstance(state.layer, mm.pa.PhysicalArchitecture)
 
 
 # 00. Common
@@ -215,7 +189,7 @@ def has_postcondition(obj):
 def functional_exchange_allocated_to_component_exchange(
     obj: m.ModelElement,
 ) -> bool:
-    if _find_layer(obj).name == "Physical Architecture":
+    if isinstance(obj.layer, mm.pa.PhysicalArchitecture):
         return bool(obj.allocating_component_exchange)
     return True
 
