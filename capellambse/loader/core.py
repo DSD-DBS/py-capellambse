@@ -53,7 +53,6 @@ SEMANTIC_EXTS = frozenset(
     }
 )
 VALID_EXTS = VISUAL_EXTS | SEMANTIC_EXTS | {".afm"}
-ERR_BAD_EXT = "Model file {} has an unsupported extension: {}"
 
 IDTYPES = frozenset({"id", "uid", "xmi:id"})
 IDTYPES_RESOLVED = frozenset(helpers.resolve_namespace(t) for t in IDTYPES)
@@ -111,13 +110,6 @@ def _derive_entrypoint(
     entrypoint = pathlib.PurePosixPath(aird_files[0])
 
     return path, entrypoint
-
-
-def _verify_extension(filename: pathlib.PurePosixPath) -> None:
-    """Check whether ``filename`` has a valid extension."""
-    file = pathlib.PurePosixPath(filename)
-    if file.suffix not in VALID_EXTS:
-        raise TypeError(ERR_BAD_EXT.format(file, file.suffix))
 
 
 def _find_refs(root: etree._Element) -> cabc.Iterable[str]:
@@ -216,7 +208,6 @@ class ModelFile:
         self.__ignore_uuid_dups = (
             ignore_uuid_dups or self.fragment_type is FragmentType.VISUAL
         )
-        _verify_extension(filename)
 
         with handler.open(filename) as f:
             tree = etree.parse(
@@ -464,6 +455,7 @@ class MelodyLoader:
         self.__ignore_uuid_dups: bool = (
             ignore_duplicate_uuids_and_void_all_warranties
         )
+        self.__may_be_corrupt = False
 
         handler, self.entrypoint = _derive_entrypoint(
             path, entrypoint, **kwargs
@@ -511,6 +503,7 @@ class MelodyLoader:
                     fragment,
                     duplicates,
                 )
+                self.__may_be_corrupt = True
                 has_dups = True
         if has_dups and not self.__ignore_uuid_dups:
             raise CorruptModelError(
@@ -522,6 +515,17 @@ class MelodyLoader:
         self, resource_path: pathlib.PurePosixPath
     ) -> None:
         if resource_path in self.trees:
+            return
+
+        if resource_path.suffix not in VALID_EXTS:
+            LOGGER.warning(
+                (
+                    "Ignoring file of unknown type,"
+                    " loaded model may be incomplete: %s"
+                ),
+                resource_path.name,
+            )
+            self.__may_be_corrupt = True
             return
 
         handler = self.resources[resource_path.parts[0]]
@@ -564,7 +568,7 @@ class MelodyLoader:
         self.check_duplicate_uuids()
 
         overwrite_corrupt = kw.pop("i_have_a_recent_backup", False)
-        if self.__ignore_uuid_dups and not overwrite_corrupt:
+        if self.__may_be_corrupt and not overwrite_corrupt:
             raise CorruptModelError(
                 "Refusing to save a corrupt model without having a backup"
                 " (hint: pass i_have_a_recent_backup=True)"
