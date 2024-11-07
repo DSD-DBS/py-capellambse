@@ -1,5 +1,7 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
+from __future__ import annotations
+
 import capellambse.model as m
 
 from . import capellacore
@@ -95,6 +97,10 @@ class Scenario(m.ModelElement):
         capellacore.Constraint, "postCondition"
     )
     precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+
+    @property
+    def related_functions(self) -> m.ElementList[fa.AbstractFunction]:
+        return self.fragments.map("function")
 
 
 class InteractionFragment(m.ModelElement):
@@ -196,3 +202,6 @@ class AbstractInvolvement(m.ModelElement):
 @m.xtype_handler(None)
 class AbstractFunctionAbstractCapabilityInvolvement(AbstractInvolvement):
     """An abstract CapabilityInvolvement linking to SystemFunctions."""
+
+
+from . import fa

@@ -1171,3 +1171,37 @@ def test_lists_of_links_disallow_insertion_of_duplicate_members(
     assert "involved_activities" in str(catch.value)
     assert parent.uuid in str(catch.value)
     assert target.uuid in str(catch.value)
+
+
+@pytest.mark.parametrize(
+    "uuid",
+    [
+        pytest.param(
+            "55cdd645-fb98-459a-a1c5-52d6a504c164", id="OperationalActivity"
+        ),
+        pytest.param(
+            "ceffa011-7b66-4b3c-9885-8e075e312ffa", id="SystemFunction"
+        ),
+    ],
+)
+def test_scenarios_on_functions(model_6_0: m.MelodyModel, uuid: str):
+    fnc = model_6_0.by_uuid(uuid)
+
+    assert fnc.scenarios
+
+
+@pytest.mark.parametrize(
+    "uuid",
+    [
+        pytest.param(
+            "6daa8cf7-6a23-461e-9bf3-abdd8f36c4bc", id="OA - Activities"
+        ),
+        pytest.param(
+            "140943be-c865-4505-8459-67dd626ef0d4", id="SA - Functions"
+        ),
+    ],
+)
+def test_related_functions_on_scenarios(model_6_0: m.MelodyModel, uuid: str):
+    scenario = model_6_0.by_uuid(uuid)
+
+    assert scenario.related_functions

@@ -411,27 +411,33 @@ The predator is far away</bodies>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
                 id="50bdce7c-e24a-467d-8890-125c8837dc3b" coveredInstanceRoles="#f0e3d041-dce1-43cf-b191-7d95a26d738a"
                 relatedAbstractState="#2cb7e396-4f28-435a-a130-600116da049f"/>
-            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
-                id="5d2698de-c58e-4d5b-99ac-1f5efa29f77d" coveredInstanceRoles="#f0e3d041-dce1-43cf-b191-7d95a26d738a"
-                relatedAbstractState="#2cb7e396-4f28-435a-a130-600116da049f"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
                 id="13426e0d-d2f5-4519-a7c2-e1031f6f5a4a" name="Receive Call Arm Timer"
                 coveredInstanceRoles="#19acc581-7629-43fc-b9a8-93edb306c6f0" event="#46c4cace-b771-4390-ab06-42994b7d368e"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
-                id="2997e7c8-0ef4-4492-b1f1-01385aba13bf" coveredInstanceRoles="#5e682408-781a-4078-86e4-deb007707010"
-                relatedAbstractState="#4f3cb28d-2547-48f9-9f84-598a2da165ab"/>
+                id="5d2698de-c58e-4d5b-99ac-1f5efa29f77d" coveredInstanceRoles="#f0e3d041-dce1-43cf-b191-7d95a26d738a"
+                relatedAbstractState="#2cb7e396-4f28-435a-a130-600116da049f"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
-                id="411be7c4-5f86-4059-89ac-0f7b4fa92b80" coveredInstanceRoles="#5e682408-781a-4078-86e4-deb007707010"
+                id="2997e7c8-0ef4-4492-b1f1-01385aba13bf" coveredInstanceRoles="#5e682408-781a-4078-86e4-deb007707010"
                 relatedAbstractState="#4f3cb28d-2547-48f9-9f84-598a2da165ab"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:ExecutionEnd"
                 id="56345696-fab3-4b71-be31-ec7cf7239ff3" name="endExec" coveredInstanceRoles="#19acc581-7629-43fc-b9a8-93edb306c6f0"
                 event="#a75f280d-bd78-460d-a163-536f49451e02"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
+                id="f4cad492-dfac-453a-9482-0402cb31efa3" name="Kill" coveredInstanceRoles="#19acc581-7629-43fc-b9a8-93edb306c6f0"
+                relatedAbstractFunction="#55cdd645-fb98-459a-a1c5-52d6a504c164"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
+                id="411be7c4-5f86-4059-89ac-0f7b4fa92b80" coveredInstanceRoles="#5e682408-781a-4078-86e4-deb007707010"
+                relatedAbstractState="#4f3cb28d-2547-48f9-9f84-598a2da165ab"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
                 id="0b82cd50-58e9-4ff4-b3b7-0fd59919d725" name="Send Call " coveredInstanceRoles="#d77b2aa9-006e-4049-9ba2-f0387754733d"
                 event="#2fd20d1c-869c-4257-b1a8-152e6a444159"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
                 id="bfca4485-3752-4368-af8b-44e97cb373b0" name="Receive Call " coveredInstanceRoles="#f0e3d041-dce1-43cf-b191-7d95a26d738a"
                 event="#64024434-74a2-4cf7-a1a3-9adca4bcd030"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
+                id="c0cdf4e4-9025-458c-ba96-b3081f5ed188" name="Kill" coveredInstanceRoles="#19acc581-7629-43fc-b9a8-93edb306c6f0"
+                relatedAbstractFunction="#55cdd645-fb98-459a-a1c5-52d6a504c164"/>
             <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:MessageEnd"
                 id="10de42e5-fa0e-4ac5-abac-bddb57c2aefb" name="Send Call Cancel Timer"
                 coveredInstanceRoles="#19acc581-7629-43fc-b9a8-93edb306c6f0" event="#0d75a60e-5e1c-435c-bc4f-a1d8e39330c0"/>
@@ -462,6 +468,9 @@ The predator is far away</bodies>
             <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:StateFragment"
                 id="5a8a327a-eaa6-479f-ad30-eec8ece261aa" start="#45362e45-ad1d-45ee-a24d-066de362befe"
                 finish="#1094f8a7-fc51-4dd2-b7e7-ea4eae538f9f" relatedAbstractFunction="#04babdbf-6cf6-4846-a207-bf27cfc8eb32"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:StateFragment"
+                id="a6b11f1b-df27-40dd-98f6-a23f72895c41" start="#f4cad492-dfac-453a-9482-0402cb31efa3"
+                finish="#c0cdf4e4-9025-458c-ba96-b3081f5ed188" relatedAbstractFunction="#55cdd645-fb98-459a-a1c5-52d6a504c164"/>
             <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventSentOperation"
                 id="0b4321d6-26f7-4d8a-a2d7-a50288cfdb02" operation="#8ea2c558-569d-469c-a18c-2065d4365b86"/>
             <ownedEvents xsi:type="org.polarsys.capella.core.data.interaction:EventReceiptOperation"
@@ -1204,7 +1213,16 @@ The predator is far away</bodies>
           <ownedScenarios xsi:type="org.polarsys.capella.core.data.interaction:Scenario"
               id="140943be-c865-4505-8459-67dd626ef0d4" name="Scenario" kind="INTERFACE">
             <ownedInstanceRoles xsi:type="org.polarsys.capella.core.data.interaction:InstanceRole"
-                id="f91992cb-a463-4d88-8b3a-da70206eb017" name="System" representedInstance="#3b9e56b1-e8b5-4605-9924-d332d79ca8c3"/>
+                id="dac6acf4-cbf8-4a07-814b-66a92573e1c8" name="SystemActor" representedInstance="#3c7d40ac-4f28-4dc0-90e3-9ff856eaa058"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
+                id="01db41a6-3164-428c-9871-ecb92cb759e6" name="Important Function"
+                coveredInstanceRoles="#dac6acf4-cbf8-4a07-814b-66a92573e1c8" relatedAbstractFunction="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
+            <ownedInteractionFragments xsi:type="org.polarsys.capella.core.data.interaction:InteractionState"
+                id="c0cb9f07-1bd0-4eb0-9b9f-20f3b9be77be" name="Important Function"
+                coveredInstanceRoles="#dac6acf4-cbf8-4a07-814b-66a92573e1c8" relatedAbstractFunction="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
+            <ownedTimeLapses xsi:type="org.polarsys.capella.core.data.interaction:StateFragment"
+                id="16aaf887-7845-4a1c-b3e0-bc343e28faaf" start="#01db41a6-3164-428c-9871-ecb92cb759e6"
+                finish="#c0cb9f07-1bd0-4eb0-9b9f-20f3b9be77be" relatedAbstractFunction="#ceffa011-7b66-4b3c-9885-8e075e312ffa"/>
           </ownedScenarios>
           <extends xsi:type="org.polarsys.capella.core.data.interaction:AbstractCapabilityExtend"
               id="992c4ba5-0165-470d-b2d0-f117e00a645c" extended="#562c5128-5acd-45cc-8b49-1d8d686f450a"/>
@@ -1224,6 +1242,12 @@ The predator is far away</bodies>
               sourceElement="#9390b7d5-598a-42db-bef8-23677e45ba06"/>
           <ownedCapabilityInvolvements xsi:type="org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
               id="6904fba2-5d7d-49ed-b13d-32a7182d8ccc" involved="#230c4621-7e0a-4d0a-9db2-d4ba5e97b3df"/>
+          <ownedCapabilityInvolvements xsi:type="org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
+              id="da454c08-b6c6-40f0-83ad-c194a16648cd" involved="#344a405e-c7e5-4367-8a9a-41d3d9a27f81"/>
+          <ownedCapabilityInvolvements xsi:type="org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
+              id="d7af6da9-4d4a-48ae-9d94-cb537a64f62f" involved="#6241d0c5-65d2-4c0b-b79c-a2a8ed7273f6"/>
+          <ownedCapabilityInvolvements xsi:type="org.polarsys.capella.core.data.ctx:CapabilityInvolvement"
+              id="43262e6a-2e1f-4185-90d3-d0e8e3eb54c6" involved="#d4a22478-5717-4ca7-bfc9-9a193e6218a8"/>
         </ownedCapabilities>
         <ownedCapabilityPkgs xsi:type="org.polarsys.capella.core.data.ctx:CapabilityPkg"
             id="532fcc2c-1aae-4e57-bd56-04e6a17f8818" name="Subcap">
