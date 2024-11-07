@@ -205,6 +205,12 @@ class ExchangeItem(m.ModelElement):
     )
     elements = m.DirectProxyAccessor(ExchangeItemElement, aslist=m.ElementList)
     exchanges: m.Accessor[m.ModelElement]
+    instances: m.RoleTagAccessor
+
+
+@m.xtype_handler(None)
+class ExchangeItemInstance(Property):
+    pass
 
 
 m.set_accessor(
@@ -260,5 +266,14 @@ m.set_accessor(
     "realized_by",
     m.ReferenceSearchingAccessor(
         Class, "realized_classes", aslist=m.ElementList
+    ),
+)
+m.set_accessor(
+    ExchangeItem,
+    "instances",
+    m.RoleTagAccessor(
+        "ownedExchangeItemInstances",
+        ExchangeItemInstance,
+        aslist=m.ElementList,
     ),
 )
