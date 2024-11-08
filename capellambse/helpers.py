@@ -20,6 +20,7 @@ import re
 import sys
 import time
 import typing as t
+import urllib.parse
 
 import lxml.html
 import markupsafe
@@ -546,16 +547,18 @@ def replace_hlinks(
     """
 
     def cb(el: etree._Element) -> None:
-        if (
-            el.tag != "a"
-            or "href" not in el.attrib
-            or not el.attrib["href"].startswith("hlink://")
-        ):
+        if el.tag != "a" or "href" not in el.attrib:
             return
-        target = el.attrib["href"][8:]
 
         try:
-            obj = model.by_uuid(target)
+            url = urllib.parse.urlparse(el.attrib["href"])
+        except ValueError:
+            return
+        if url.scheme != "hlink":
+            return
+
+        try:
+            obj = model.by_uuid(url.netloc)
         except KeyError:
             pass
         else:
