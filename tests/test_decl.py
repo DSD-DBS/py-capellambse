@@ -876,7 +876,7 @@ class TestStrictMetadata:
             """
         )
 
-        with pytest.raises(ValueError, match="No metadata found$"):
+        with pytest.raises(ValueError, match="^No metadata found"):
             decl.apply(model, io.StringIO(yml), strict=True)
 
     @staticmethod
