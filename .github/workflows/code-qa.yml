@@ -108,3 +108,44 @@ jobs:
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  docs:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          cache: pip
+          cache-dependency-path: pyproject.toml
+          python-version: "3.12"
+      - name: Upgrade pip
+        run: python -m pip install -U pip
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y pandoc
+          python -m pip install '.[docs]'
+      - name: Auto-generate APIDOC sources
+        run: make -C docs apidoc
+      - name: Create docs
+        env:
+          SPHINXOPTS: ${{ github.ref != 'refs/heads/master' && '-W' || '' }}
+        run: make -C docs html
+      - name: Upload built docs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Documentation
+          path: docs/build/html
+          if-no-files-found: error
+          retention-days: 5
+      - name: Deploy
+        if: github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          force_orphan: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
