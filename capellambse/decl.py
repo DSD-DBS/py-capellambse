@@ -218,12 +218,15 @@ def apply(
     promises = dict[Promise, capellambse.ModelObject]()
     deferred = collections.defaultdict[Promise, list[_FutureAction]](list)
 
-    try:
+    if strict:
+        if not metadata:
+            raise ValueError("No metadata found to verify in strict mode")
         _verify_metadata(model, metadata)
-    except ValueError as err:
-        if strict:
-            raise
-        logger.warning("Metadata does not match provided model: %s", err)
+    elif metadata:
+        try:
+            _verify_metadata(model, metadata)
+        except ValueError as err:
+            logger.warning("Metadata does not match provided model: %s", err)
 
     while instructions:
         instruction = instructions.popleft()
@@ -269,8 +272,7 @@ def apply(
 def _verify_metadata(
     model: capellambse.MelodyModel, metadata: Metadata
 ) -> None:
-    if not metadata:
-        raise ValueError("Cannot verify decl metadata: No metadata found")
+    assert metadata
 
     written_by = metadata.get("written_by", {}).get("capellambse", "")
     if not written_by:
