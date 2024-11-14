@@ -11,7 +11,7 @@ class Constraint(m.ModelElement):
 
     _xmltag = "ownedConstraints"
 
-    constrained_elements = m.AttrProxyAccessor(
+    constrained_elements = m.Association(
         m.ModelElement,
         "constrainedElements",
         aslist=m.MixedElementList,
@@ -56,7 +56,7 @@ class PropertyValue(m.ModelElement):
         EnumerationPropertyType, aslist=m.ElementList
     )
 
-    value: m.BasePOD | m.AttrProxyAccessor
+    value: m.BasePOD | m.Association
 
 
 @m.xtype_handler(None)
@@ -91,8 +91,8 @@ class StringPropertyValue(PropertyValue):
 class EnumerationPropertyValue(PropertyValue):
     """An enumeration property value."""
 
-    type = m.AttrProxyAccessor(EnumerationPropertyType, "type")
-    value = m.AttrProxyAccessor(EnumerationPropertyLiteral, "value")
+    type = m.Association(EnumerationPropertyType, "type")
+    value = m.Association(EnumerationPropertyLiteral, "value")
 
 
 @m.xtype_handler(None)
@@ -186,12 +186,10 @@ m.set_accessor(
 m.set_accessor(
     m.ModelElement,
     "applied_property_values",
-    m.AttrProxyAccessor(None, "appliedPropertyValues", aslist=m.ElementList),
+    m.Association(None, "appliedPropertyValues", aslist=m.ElementList),
 )
 m.set_accessor(
     m.ModelElement,
     "applied_property_value_groups",
-    m.AttrProxyAccessor(
-        None, "appliedPropertyValueGroups", aslist=m.ElementList
-    ),
+    m.Association(None, "appliedPropertyValueGroups", aslist=m.ElementList),
 )

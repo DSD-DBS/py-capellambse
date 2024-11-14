@@ -30,7 +30,7 @@ class SystemFunctionPkg(m.ModelElement):
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.RoleTagAccessor(
+    functions = m.Containment(
         "ownedSystemFunctions", SystemFunction, aslist=m.ElementList
     )
     packages: m.Accessor
@@ -45,7 +45,7 @@ class SystemComponent(cs.Component):
 
     _xmltag = "ownedSystemComponents"
 
-    allocated_functions = m.LinkAccessor[SystemFunction](
+    allocated_functions = m.Allocation[SystemFunction](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
         aslist=m.ElementList,
@@ -93,19 +93,19 @@ class Capability(m.ModelElement):
     extends = m.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=m.ElementList
     )
-    extended_by = m.ReferenceSearchingAccessor(
+    extended_by = m.Backref(
         interaction.AbstractCapabilityExtend, "target", aslist=m.ElementList
     )
     includes = m.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=m.ElementList
     )
-    included_by = m.ReferenceSearchingAccessor(
+    included_by = m.Backref(
         interaction.AbstractCapabilityInclude, "target", aslist=m.ElementList
     )
     generalizes = m.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=m.ElementList
     )
-    generalized_by = m.ReferenceSearchingAccessor(
+    generalized_by = m.Backref(
         interaction.AbstractCapabilityGeneralization,
         "target",
         aslist=m.ElementList,
@@ -113,19 +113,19 @@ class Capability(m.ModelElement):
     owned_chains = m.DirectProxyAccessor(
         fa.FunctionalChain, aslist=m.ElementList
     )
-    involved_functions = m.LinkAccessor[SystemFunction](
+    involved_functions = m.Allocation[SystemFunction](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
-    involved_chains = m.LinkAccessor[fa.FunctionalChain](
+    involved_chains = m.Allocation[fa.FunctionalChain](
         "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.FunctionalChainAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
-    involved_components = m.LinkAccessor[SystemComponent](
+    involved_components = m.Allocation[SystemComponent](
         "ownedCapabilityInvolvements",
         CapabilityInvolvement,
         aslist=m.MixedElementList,
@@ -134,21 +134,19 @@ class Capability(m.ModelElement):
     component_involvements = m.DirectProxyAccessor(
         CapabilityInvolvement, aslist=m.ElementList
     )
-    realized_capabilities = m.LinkAccessor[oa.OperationalCapability](
+    realized_capabilities = m.Allocation[oa.OperationalCapability](
         None,  # FIXME fill in tag
         interaction.AbstractCapabilityRealization,
         aslist=m.ElementList,
         attr="targetElement",
     )
 
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
-    )
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    postcondition = m.Association(capellacore.Constraint, "postCondition")
+    precondition = m.Association(capellacore.Constraint, "preCondition")
     scenarios = m.DirectProxyAccessor(
         interaction.Scenario, aslist=m.ElementList
     )
-    states = m.AttrProxyAccessor(
+    states = m.Association(
         capellacommon.State, "availableInStates", aslist=m.ElementList
     )
 
@@ -168,7 +166,7 @@ class CapabilityExploitation(m.ModelElement):
 
     _xmltag = "ownedCapabilityExploitations"
 
-    capability = m.AttrProxyAccessor(Capability, "capability")
+    capability = m.Association(Capability, "capability")
 
     @property
     def name(self) -> str:  # type: ignore[override]
@@ -189,10 +187,10 @@ class Mission(m.ModelElement):
     involvements = m.DirectProxyAccessor(
         MissionInvolvement, aslist=m.ElementList
     )
-    incoming_involvements = m.ReferenceSearchingAccessor(
+    incoming_involvements = m.Backref(
         MissionInvolvement, "target", aslist=m.ElementList
     )
-    exploits = m.LinkAccessor[Capability](
+    exploits = m.Allocation[Capability](
         None,  # FIXME fill in tag
         CapabilityExploitation,
         aslist=m.ElementList,
@@ -284,7 +282,7 @@ class SystemAnalysis(cs.ComponentArchitecture):
 m.set_accessor(
     SystemFunction,
     "owner",
-    m.ReferenceSearchingAccessor(SystemComponent, "allocated_functions"),
+    m.Backref(SystemComponent, "allocated_functions"),
 )
 m.set_accessor(
     SystemFunction,
@@ -294,37 +292,31 @@ m.set_accessor(
 m.set_accessor(
     oa.OperationalCapability,
     "realizing_capabilities",
-    m.ReferenceSearchingAccessor(
-        Capability, "realized_capabilities", aslist=m.ElementList
-    ),
+    m.Backref(Capability, "realized_capabilities", aslist=m.ElementList),
 )
 m.set_accessor(
     Capability,
     "incoming_exploitations",
-    m.ReferenceSearchingAccessor(
-        CapabilityExploitation, "capability", aslist=m.ElementList
-    ),
+    m.Backref(CapabilityExploitation, "capability", aslist=m.ElementList),
 )
 m.set_accessor(
     oa.Entity,
     "realizing_system_components",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         SystemComponent, "realized_operational_entities", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     oa.OperationalActivity,
     "realizing_system_functions",
-    m.ReferenceSearchingAccessor(
+    m.Backref(
         SystemFunction, "realized_operational_activities", aslist=m.ElementList
     ),
 )
 m.set_accessor(
     SystemFunction,
     "involved_in",
-    m.ReferenceSearchingAccessor(
-        Capability, "involved_functions", aslist=m.ElementList
-    ),
+    m.Backref(Capability, "involved_functions", aslist=m.ElementList),
 )
 m.set_self_references(
     (MissionPkg, "packages"),

@@ -316,7 +316,7 @@ class ModelElement:
                 continue
 
             acc = getattr(type(self), attr, None)
-            if isinstance(acc, _descriptors.ReferenceSearchingAccessor):
+            if isinstance(acc, _descriptors.Backref):
                 classes = ", ".join(i.__name__ for i in acc.target_classes)
                 attrs.append(
                     f".{attr} = ... # backreference to {classes}"
@@ -406,7 +406,7 @@ class ModelElement:
                 continue
 
             acc = getattr(type(self), attr, None)
-            if isinstance(acc, _descriptors.ReferenceSearchingAccessor):
+            if isinstance(acc, _descriptors.Backref):
                 classes = ", ".join(i.__name__ for i in acc.target_classes)
                 fragments.append('<tr><th style="text-align: right;">')
                 fragments.append(escape(attr))

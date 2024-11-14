@@ -17,15 +17,15 @@ class AbstractCapabilityRealization(m.ModelElement): ...
 class Execution(m.ModelElement):
     """An execution."""
 
-    start = m.AttrProxyAccessor(m.ModelElement, "start")
-    finish = m.AttrProxyAccessor(m.ModelElement, "finish")
+    start = m.Association(m.ModelElement, "start")
+    finish = m.Association(m.ModelElement, "finish")
 
 
 @m.xtype_handler(None)
 class StateFragment(Execution):
     """A state fragment."""
 
-    function = m.AttrProxyAccessor(m.ModelElement, "relatedAbstractFunction")
+    function = m.Association(m.ModelElement, "relatedAbstractFunction")
 
 
 @m.xtype_handler(None)
@@ -33,7 +33,7 @@ class CombinedFragment(Execution):
     """A combined fragment."""
 
     operator = m.StringPOD("operator")
-    operands = m.AttrProxyAccessor(
+    operands = m.Association(
         m.ModelElement, "referencedOperands", aslist=m.ElementList
     )
 
@@ -42,15 +42,15 @@ class CombinedFragment(Execution):
 class InstanceRole(m.ModelElement):
     """An instance role."""
 
-    instance = m.AttrProxyAccessor[m.ModelElement](None, "representedInstance")
+    instance = m.Association[m.ModelElement](None, "representedInstance")
 
 
 @m.xtype_handler(None)
 class SequenceMessage(m.ModelElement):
     """A sequence message."""
 
-    source = m.AttrProxyAccessor(m.ModelElement, "sendingEnd")
-    target = m.AttrProxyAccessor(m.ModelElement, "receivingEnd")
+    source = m.Association(m.ModelElement, "sendingEnd")
+    target = m.Association(m.ModelElement, "receivingEnd")
 
 
 class Event(m.ModelElement):
@@ -60,7 +60,7 @@ class Event(m.ModelElement):
 class EventOperation(Event):
     """Abstract super class for events about operations."""
 
-    operation = m.AttrProxyAccessor(m.ModelElement, "operation")
+    operation = m.Association(m.ModelElement, "operation")
 
 
 @m.xtype_handler(None)
@@ -86,17 +86,13 @@ class Scenario(m.ModelElement):
         InstanceRole, aslist=m.ElementList
     )
     messages = m.DirectProxyAccessor(SequenceMessage, aslist=m.ElementList)
-    events = m.RoleTagAccessor("ownedEvents", aslist=m.MixedElementList)
-    fragments = m.RoleTagAccessor(
+    events = m.Containment("ownedEvents", aslist=m.MixedElementList)
+    fragments = m.Containment(
         "ownedInteractionFragments", aslist=m.MixedElementList
     )
-    time_lapses = m.RoleTagAccessor(
-        "ownedTimeLapses", aslist=m.MixedElementList
-    )
-    postcondition = m.AttrProxyAccessor(
-        capellacore.Constraint, "postCondition"
-    )
-    precondition = m.AttrProxyAccessor(capellacore.Constraint, "preCondition")
+    time_lapses = m.Containment("ownedTimeLapses", aslist=m.MixedElementList)
+    postcondition = m.Association(capellacore.Constraint, "postCondition")
+    precondition = m.Association(capellacore.Constraint, "preCondition")
 
     @property
     def related_functions(self) -> m.ElementList[fa.AbstractFunction]:
@@ -106,7 +102,7 @@ class Scenario(m.ModelElement):
 class InteractionFragment(m.ModelElement):
     """Abstract super class of all interaction fragments in a Scenario."""
 
-    covered = m.AttrProxyAccessor[m.ModelElement](
+    covered = m.Association[m.ModelElement](
         None, "coveredInstanceRoles", aslist=m.MixedElementList
     )
 
@@ -115,7 +111,7 @@ class InteractionFragment(m.ModelElement):
 class ExecutionEnd(InteractionFragment):
     """An end for an execution."""
 
-    event = m.AttrProxyAccessor[Event](None, "event")
+    event = m.Association[Event](None, "event")
 
 
 @m.xtype_handler(None)
@@ -127,22 +123,22 @@ class FragmentEnd(InteractionFragment):
 class InteractionOperand(InteractionFragment):
     """An interaction-operand."""
 
-    guard = m.AttrProxyAccessor(capellacore.Constraint, "guard")
+    guard = m.Association(capellacore.Constraint, "guard")
 
 
 @m.xtype_handler(None)
 class InteractionState(InteractionFragment):
     """An interaction-state."""
 
-    state = m.AttrProxyAccessor(m.ModelElement, "relatedAbstractState")
-    function = m.AttrProxyAccessor(m.ModelElement, "relatedAbstractFunction")
+    state = m.Association(m.ModelElement, "relatedAbstractState")
+    function = m.Association(m.ModelElement, "relatedAbstractFunction")
 
 
 @m.xtype_handler(None)
 class MessageEnd(InteractionFragment):
     """A message-end."""
 
-    event = m.AttrProxyAccessor[Event](None, "event")
+    event = m.Association[Event](None, "event")
 
 
 class Exchange(m.ModelElement):
@@ -158,7 +154,7 @@ class AbstractCapabilityExtend(Exchange):
     _xmltag = "extends"
 
     source = m.ParentAccessor(m.ModelElement)
-    target = m.AttrProxyAccessor(m.ModelElement, "extended")
+    target = m.Association(m.ModelElement, "extended")
 
 
 @m.xtype_handler(None)
@@ -168,7 +164,7 @@ class AbstractCapabilityInclude(Exchange):
     _xmltag = "includes"
 
     source = m.ParentAccessor(m.ModelElement)
-    target = m.AttrProxyAccessor(m.ModelElement, "included")
+    target = m.Association(m.ModelElement, "included")
 
 
 @m.xtype_handler(None)
@@ -178,16 +174,16 @@ class AbstractCapabilityGeneralization(Exchange):
     _xmltag = "superGeneralizations"
 
     source = m.ParentAccessor(m.ModelElement)
-    target = m.AttrProxyAccessor(m.ModelElement, "super")
+    target = m.Association(m.ModelElement, "super")
 
 
 class AbstractInvolvement(m.ModelElement):
     """An abstract Involvement."""
 
     source = m.ParentAccessor(m.ModelElement)
-    target = m.AttrProxyAccessor(m.ModelElement, "involved")
+    target = m.Association(m.ModelElement, "involved")
 
-    involved = m.AttrProxyAccessor(m.ModelElement, "involved")
+    involved = m.Association(m.ModelElement, "involved")
 
     @property
     def name(self) -> str:  # type: ignore[override]

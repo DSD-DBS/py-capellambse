@@ -76,14 +76,14 @@ class Property(m.ModelElement):
     kind = m.EnumPOD(
         "aggregationKind", modeltypes.AggregationKind, default="UNSET"
     )
-    type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
-    default_value = m.RoleTagAccessor("ownedDefaultValue")
-    min_value = m.RoleTagAccessor("ownedMinValue")
-    max_value = m.RoleTagAccessor("ownedMaxValue")
-    null_value = m.RoleTagAccessor("ownedNullValue")
-    min_card = m.RoleTagAccessor("ownedMinCard")
-    max_card = m.RoleTagAccessor("ownedMaxCard")
-    association = m.ReferenceSearchingAccessor(Association, "roles")
+    type = m.Association(m.ModelElement, "abstractType")
+    default_value = m.Containment("ownedDefaultValue")
+    min_value = m.Containment("ownedMinValue")
+    max_value = m.Containment("ownedMaxValue")
+    null_value = m.Containment("ownedNullValue")
+    min_card = m.Containment("ownedMinCard")
+    max_card = m.Containment("ownedMaxCard")
+    association = m.Backref(Association, "roles")
 
 
 @m.xtype_handler(None)
@@ -187,11 +187,11 @@ class ExchangeItemElement(m.ModelElement):
 
     _xmltag = "ownedElements"
 
-    abstract_type = m.AttrProxyAccessor(m.ModelElement, "abstractType")
+    abstract_type = m.Association(m.ModelElement, "abstractType")
     owner = m.ParentAccessor["ExchangeItem"]()
 
-    min_card = m.RoleTagAccessor("ownedMinCard")
-    max_card = m.RoleTagAccessor("ownedMaxCard")
+    min_card = m.Containment("ownedMinCard")
+    max_card = m.Containment("ownedMaxCard")
 
 
 @m.xtype_handler(None)
@@ -205,7 +205,7 @@ class ExchangeItem(m.ModelElement):
     )
     elements = m.DirectProxyAccessor(ExchangeItemElement, aslist=m.ElementList)
     exchanges: m.Accessor[m.ModelElement]
-    instances: m.RoleTagAccessor
+    instances: m.Containment
 
 
 @m.xtype_handler(None)
@@ -214,13 +214,13 @@ class ExchangeItemInstance(Property):
 
 
 m.set_accessor(
-    capellacore.Generalization, "super", m.AttrProxyAccessor(None, "super")
+    capellacore.Generalization, "super", m.Association(None, "super")
 )
 for cls in [Class, Union, datatype.Enumeration, Collection]:
     m.set_accessor(
         cls,
         "super",
-        m.LinkAccessor(
+        m.Allocation(
             "ownedGeneralizations",
             capellacore.Generalization,
             attr="super",
@@ -230,7 +230,7 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
     m.set_accessor(
         cls,
         "sub",
-        m.ReferenceSearchingAccessor(cls, "super", aslist=m.MixedElementList),
+        m.Backref(cls, "super", aslist=m.MixedElementList),
     )
 
 m.set_accessor(
@@ -239,17 +239,17 @@ m.set_accessor(
 m.set_accessor(
     Association,
     "members",
-    m.RoleTagAccessor("ownedMembers", aslist=m.ElementList),
+    m.Containment("ownedMembers", aslist=m.ElementList),
 )
 m.set_accessor(
     Association,
     "navigable_members",
-    m.AttrProxyAccessor(Property, "navigableMembers", aslist=m.ElementList),
+    m.Association(Property, "navigableMembers", aslist=m.ElementList),
 )
 m.set_accessor(
     Class,
     "realized_classes",
-    m.LinkAccessor[Class](
+    m.Allocation[Class](
         "ownedInformationRealizations",
         InformationRealization,
         aslist=m.ElementList,
@@ -264,14 +264,12 @@ m.set_accessor(
 m.set_accessor(
     Class,
     "realized_by",
-    m.ReferenceSearchingAccessor(
-        Class, "realized_classes", aslist=m.ElementList
-    ),
+    m.Backref(Class, "realized_classes", aslist=m.ElementList),
 )
 m.set_accessor(
     ExchangeItem,
     "instances",
-    m.RoleTagAccessor(
+    m.Containment(
         "ownedExchangeItemInstances",
         ExchangeItemInstance,
         aslist=m.ElementList,

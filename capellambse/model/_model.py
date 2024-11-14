@@ -636,7 +636,7 @@ def _reference_attributes(
         _descriptors.DeepProxyAccessor,
         _descriptors.DeprecatedAccessor,
         _descriptors.ParentAccessor,
-        _descriptors.ReferenceSearchingAccessor,
+        _descriptors.Backref,
     )
 
     attrs: list[str] = []
