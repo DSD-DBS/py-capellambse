@@ -155,7 +155,7 @@ class FunctionalExchange(AbstractExchange):
         backattr="sourceElement",
     )
     realizing_functional_exchanges: m.Accessor[FunctionalExchange]
-    categories = m.Backref(ExchangeCategory, "exchanges")
+    categories = m.Backref(ExchangeCategory, "exchanges", aslist=m.ElementList)
 
     @property
     def owner(self) -> ComponentExchange | None:
