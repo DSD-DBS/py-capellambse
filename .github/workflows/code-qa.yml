@@ -129,6 +129,7 @@ jobs:
         run: |
           jq --version
           set -o pipefail
+          ok=true
           function celloutputs() {
             jq -r '.cells[] | select(.cell_type=="code") | .outputs[] | (.text, .data["text/plain"]) | .[]?' < "$1" |
               grep -v '^$' |
@@ -139,10 +140,14 @@ jobs:
             if [[ "${file##*/}" = "06 Introduction to Requirement access and management.ipynb" ]]; then continue; fi
 
             old_outputs="$(celloutputs "$file")"
-            jupyter nbconvert --to notebook --execute "$file" --output "${file##*/}" --ExecutePreprocessor.timeout "${NOTEBOOK_TIMEOUT_SEC:-300}"
+            if ! jupyter nbconvert --to notebook --execute "$file" --output "${file##*/}" --ExecutePreprocessor.timeout "${NOTEBOOK_TIMEOUT_SEC:-300}"; then
+              ok=false
+              continue
+            fi
             new_outputs="$(celloutputs "$file")"
-            diff -u3 <(echo "$old_outputs") <(echo "$new_outputs")
+            diff -u3 <(echo "$old_outputs") <(echo "$new_outputs") || ok=false
           done
+          $ok
 
   docs:
     name: Build documentation
