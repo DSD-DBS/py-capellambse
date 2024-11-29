@@ -189,7 +189,7 @@ extend-select = [
   "RET",    # flake8-return
   "RUF",    # ruff
   "SIM",    # flake8-simplify
-  "TCH005", # "Found empty type-checking block"
+  "TC005",  # "Found empty type-checking block"
   "T1",     # flake8-debugger
   "UP",     # pyupgrade
   "YTT",    # flake8-2020
