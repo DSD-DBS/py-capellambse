@@ -93,6 +93,14 @@ class Scenario(m.ModelElement):
     time_lapses = m.Containment("ownedTimeLapses", aslist=m.MixedElementList)
     postcondition = m.Association(capellacore.Constraint, "postCondition")
     precondition = m.Association(capellacore.Constraint, "preCondition")
+    realized_scenarios = m.Allocation["Scenario"](
+        "ownedScenarioRealization",
+        "org.polarsys.capella.core.data.interaction:ScenarioRealization",
+        attr="targetElement",
+        backattr="sourceElement",
+        aslist=m.ElementList,
+    )
+    realizing_scenarios: m.Backref[Scenario]
 
     @property
     def related_functions(self) -> m.ElementList[fa.AbstractFunction]:
@@ -198,6 +206,11 @@ class AbstractInvolvement(m.ModelElement):
 @m.xtype_handler(None)
 class AbstractFunctionAbstractCapabilityInvolvement(AbstractInvolvement):
     """An abstract CapabilityInvolvement linking to SystemFunctions."""
+
+
+Scenario.realizing_scenarios = m.Backref(
+    Scenario, "realized_scenarios", aslist=m.ElementList
+)
 
 
 from . import fa
