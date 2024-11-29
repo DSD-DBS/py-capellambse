@@ -444,7 +444,7 @@
               id="fb9456b9-72fe-40b1-add2-ef131e675652" targetElement="#af388362-bb6f-43bf-805f-a360f0a1bd81"
               sourceElement="#81ea3e64-9412-4775-86d4-3230dfebe6c3"/>
           <ownedPhysicalLinks xsi:type="org.polarsys.capella.core.data.cs:PhysicalLink"
-              id="d32caffc-b9a1-448e-8e96-65a36ba06292" name="DP-1" appliedPropertyValueGroups="#65db4b2e-4e14-47e8-af67-e5fc59fdd01a #5b1390f5-f7ac-4afd-bef0-8567f19f34a3 #00000000-0000-0000-0000-000000000001"
+              id="d32caffc-b9a1-448e-8e96-65a36ba06292" name="DP-1" appliedPropertyValueGroups="#65db4b2e-4e14-47e8-af67-e5fc59fdd01a #5b1390f5-f7ac-4afd-bef0-8567f19f34a3 #cd072cd8-be6f-4f62-ac4c-09c28206e7e3"
               linkEnds="#d7737b9b-02da-4c7d-af45-d5274c89ffe6 #8c8e9fdd-ace7-4322-9c6d-b6ec2ed2c0b3">
             <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
                 id="65db4b2e-4e14-47e8-af67-e5fc59fdd01a" name="Computer.Cables" appliedPropertyValueGroups="#0fb1fbfb-43a6-4f96-9ec3-2cb83d80c702">
@@ -469,10 +469,10 @@
                   appliedPropertyValues="#8ef4a68a-a50f-453d-b63a-351546488782" value="1"/>
             </ownedPropertyValueGroups>
             <ownedPropertyValueGroups xsi:type="org.polarsys.capella.core.data.capellacore:PropertyValueGroup"
-                id="00000000-0000-0000-0000-000000000001" name="External Data.Object IDs"
+                id="cd072cd8-be6f-4f62-ac4c-09c28206e7e3" name="External Data.Object IDs"
                 appliedPropertyValueGroups="#00fd06dd-cedc-403a-9742-261510c70b76">
               <ownedPropertyValues xsi:type="org.polarsys.capella.core.data.capellacore:StringPropertyValue"
-                  id="00000000-0000-0000-0000-000000000002" name="Object ID" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
+                  id="5594aa6b-342f-4d0a-ba5e-4842fab428f7" name="Object ID" appliedPropertyValues="#4ae427b8-af5d-4d42-b454-a656ddce9b1d"
                   value="CABLE-0001"/>
             </ownedPropertyValueGroups>
           </ownedPhysicalLinks>

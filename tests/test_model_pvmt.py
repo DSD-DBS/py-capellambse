@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pathlib
+import random
 import shutil
 
 import pytest
 
 import capellambse
+from capellambse import loader
 from capellambse.extensions import pvmt
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "pvmt"
@@ -136,21 +138,9 @@ class TestAppliedPropertyValueGroupXML:
         assert actual == expected
 
     def test_apply(self, model, monkeypatch):
-        call_count = 0
-
-        def mock_generate_uuid(*__, **_):
-            nonlocal call_count
-            call_count += 1
-            return f"00000000-0000-0000-0000-{call_count:012x}"
-
-        monkeypatch.setattr(
-            "capellambse.loader.MelodyLoader.generate_uuid",
-            mock_generate_uuid,
-        )
-
+        monkeypatch.setattr(loader.core, "UUID_GENERATOR", random.Random(0))
         elem = model.by_uuid(self.elem_uuid)
 
         elem.pvmt["External Data.Object IDs.Object ID"] = "CABLE-0001"
 
-        assert call_count == 2
         self.compare_xml(model, "apply.capella")

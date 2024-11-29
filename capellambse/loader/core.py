@@ -20,6 +20,7 @@ import logging
 import operator
 import os
 import pathlib
+import random
 import re
 import shutil
 import sys
@@ -74,6 +75,8 @@ ROOT_XT = (
     "org.polarsys.capella.core.data.capellamodeller:Project",
     "org.polarsys.capella.core.data.capellamodeller:Library",
 )
+
+UUID_GENERATOR = random.Random(os.getenv("CAPELLAMBSE_UUID_SEED") or None)
 
 
 def _derive_entrypoint(
@@ -688,7 +691,8 @@ class MelodyLoader:
                 raise ValueError(f"UUID {want!r} is already in use")
 
         while True:
-            new_id = str(uuid.uuid4())
+            new_uuid = uuid.UUID(bytes=UUID_GENERATOR.randbytes(16), version=4)
+            new_id = str(new_uuid)
             try:
                 self[new_id]
             except KeyError:
