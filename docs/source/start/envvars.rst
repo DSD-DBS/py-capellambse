@@ -36,6 +36,18 @@ understands, and how they affect regular operation.
 - ``TERM`` is used to determine whether the terminal supports PNG display, in
   order to preview diagrams in the REPL.
 
+- ``CAPELLAMBSE_UUID_SEED`` sets a seed for the pseudo-random number generator
+  used for generating new UUIDs, when inserting new elements into a model. If
+  unset or empty, a randomized seed will be used.
+
+  This may be helpful when debugging CI runs or other automations. Note however
+  that the code creating the objects must then also be deterministic (i.e.
+  create the same objects in the same order), which usually rules out
+  multi-threaded applications.
+
+  Be aware that the generated UUIDs will be checked against the model that they
+  will be used in to prevent duplications.
+
 Debugging helpers
 -----------------
 
