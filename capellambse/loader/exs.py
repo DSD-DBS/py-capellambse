@@ -25,9 +25,10 @@ INDENT = b"  "
 LINESEP = os.linesep.encode("ascii")
 LINE_LENGTH = 80
 
-ESCAPE_CHARS = r"[\x00-\x1F\x7F{}]"
+ESCAPE_CHARS = r"[\x00-\x08\x0A-\x1F\x7F{}]"
 P_ESCAPE_TEXT = re.compile(ESCAPE_CHARS.format('"&<'))
 P_ESCAPE_COMMENTS = re.compile(ESCAPE_CHARS.format(">"))
+P_ESCAPE_ATTR = re.compile(ESCAPE_CHARS.format('"&<\x09'))
 P_NAME = re.compile(r"^(?:\{([^}]*)\})?(.+)$")
 
 ALWAYS_EXPANDED_TAGS = frozenset({"bodies"})
@@ -218,6 +219,7 @@ def serialize(
             errors=errors,
             pos=pos,
             multiline=True,
+            escape_pattern=P_ESCAPE_TEXT,
         )
 
     for i in following_siblings:
@@ -241,7 +243,7 @@ def _declare(encoding: str) -> bytes:
     )
 
 
-def _escape(string: str, *, pattern: re.Pattern[str] = P_ESCAPE_TEXT) -> str:
+def _escape(string: str, *, pattern: re.Pattern[str]) -> str:
     return pattern.sub(_escape_char, string)
 
 
@@ -273,7 +275,10 @@ def _unmapped_attrs(
     ):
         value = attribs.pop(attr, None)
         if value is not None:
-            yield (_unmap_namespace(nsmap, attr), _escape(value))
+            yield (
+                _unmap_namespace(nsmap, attr),
+                _escape(value, pattern=P_ESCAPE_ATTR),
+            )
 
     assert None not in element.nsmap
     for nsname, value in sorted(element.nsmap.items(), key=_ns_sortkey):
@@ -282,7 +287,10 @@ def _unmapped_attrs(
         yield (f"xmlns:{nsname}", value)
 
     for attr, value in attribs.items():
-        yield (_unmap_namespace(nsmap, attr), _escape(value))
+        yield (
+            _unmap_namespace(nsmap, attr),
+            _escape(value, pattern=P_ESCAPE_ATTR),
+        )
 
 
 def _ns_sortkey(v: tuple[str | None, str]) -> tuple[int, str | None]:
@@ -315,13 +323,18 @@ def _serialize_comment(
         encoding=encoding,
         errors=errors,
         pos=len(INDENT) * indent,
-        pattern=re.compile(r">"),
+        escape_pattern=P_ESCAPE_COMMENTS,
     )
     buffer.write(b"-->")
 
     if (comment.tail or "").strip():
         pos = _serialize_text(
-            buffer, comment.tail, encoding=encoding, errors=errors, pos=pos
+            buffer,
+            comment.tail,
+            encoding=encoding,
+            errors=errors,
+            pos=pos,
+            escape_pattern=P_ESCAPE_TEXT,
         )
     else:
         buffer.write(LINESEP)
@@ -387,6 +400,7 @@ def _serialize_element(
             errors=errors,
             pos=pos,
             multiline=True,
+            escape_pattern=P_ESCAPE_TEXT,
         )
         text_content = True
     else:
@@ -409,7 +423,12 @@ def _serialize_element(
         )
         if (element.tail or "").strip():
             pos = _serialize_text(
-                buffer, element.tail, encoding=encoding, errors=errors, pos=pos
+                buffer,
+                element.tail,
+                encoding=encoding,
+                errors=errors,
+                pos=pos,
+                escape_pattern=P_ESCAPE_TEXT,
             )
             text_content = True
         else:
@@ -435,7 +454,7 @@ def _serialize_text(
     errors: str,
     pos: int,
     multiline: bool = False,
-    pattern: re.Pattern[str] = P_ESCAPE_TEXT,
+    escape_pattern: re.Pattern[str],
 ) -> int:
     if not text:
         return pos
@@ -443,7 +462,9 @@ def _serialize_text(
     for i, line in enumerate(text.split("\n")):
         if multiline and i:
             buffer.write(LINESEP)
-        buffer.write(_escape(line, pattern=pattern).encode(encoding, errors))
+        buffer.write(
+            _escape(line, pattern=escape_pattern).encode(encoding, errors)
+        )
     return len(line) + bool(i) * pos
 
 
