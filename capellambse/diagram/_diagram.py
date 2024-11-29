@@ -5,13 +5,13 @@
 from __future__ import annotations
 
 __all__ = [
-    "Diagram",
-    "DiagramElement",
+    "SNAPPING",
     "Box",
     "Circle",
+    "Diagram",
+    "DiagramElement",
     "Edge",
     "RoutingStyle",
-    "SNAPPING",
     "StyleOverrides",
 ]
 
@@ -407,18 +407,14 @@ class Box:
             return diagram.Vector2D(point.x + 1, point.y)
 
         if self.port:
-            if (
-                direction.y < 0.0
-                or math.isclose(direction.y, 0.0)
-                and point.y != self.pos.y
+            if direction.y < 0.0 or (
+                math.isclose(direction.y, 0.0) and point.y != self.pos.y
             ):
                 return self.pos + self.size @ (0.5, 1.0)
             return self.pos + self.size @ (0.5, 0.0)
 
-        if (
-            direction.y < 0.0
-            or math.isclose(direction.y, 0.0)
-            and point.y != self.pos.y
+        if direction.y < 0.0 or (
+            math.isclose(direction.y, 0.0) and point.y != self.pos.y
         ):
             return diagram.Vector2D(point.x, self.pos.y + self.size.y)
 

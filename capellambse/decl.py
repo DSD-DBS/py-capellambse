@@ -13,18 +13,17 @@ from __future__ import annotations
 
 __all__ = [
     "FindBy",
+    "Metadata",
+    "ModelMetadata",
     "Promise",
     "UUIDReference",
     "UnfulfilledPromisesError",
+    "WriterMetadata",
     "YDMDumper",
     "YDMLoader",
     "apply",
     "dump",
     "load",
-    # Metadata handling
-    "Metadata",
-    "ModelMetadata",
-    "WriterMetadata",
     "load_with_metadata",
 ]
 

@@ -33,12 +33,12 @@ class BasePOD(t.Generic[U]):
     """A plain-old-data descriptor."""
 
     __slots__ = (
+        "__dict__",
+        "__name__",
+        "__objclass__",
         "attribute",
         "default",
         "writable",
-        "__name__",
-        "__objclass__",
-        "__dict__",
     )
 
     NOT_OPTIONAL = object()

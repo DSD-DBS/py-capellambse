@@ -4,14 +4,14 @@
 from __future__ import annotations
 
 __all__ = [
-    "ModelObject",
-    "ModelElement",
-    "ElementList",
     "CachedElementList",
-    "MixedElementList",
-    "ElementListMapKeyView",
-    "ElementListMapItemsView",
+    "ElementList",
     "ElementListCouplingMixin",
+    "ElementListMapItemsView",
+    "ElementListMapKeyView",
+    "MixedElementList",
+    "ModelElement",
+    "ModelObject",
 ]
 
 import collections.abc as cabc
@@ -534,10 +534,10 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
     """Provides access to elements without affecting the underlying model."""
 
     __slots__ = (
-        "_elemclass",
-        "_elements",
         "_ElementList__mapkey",
         "_ElementList__mapvalue",
+        "_elemclass",
+        "_elements",
         "_model",
     )
 

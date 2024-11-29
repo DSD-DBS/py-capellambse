@@ -5,26 +5,22 @@
 from __future__ import annotations
 
 __all__ = [
-    # main interface
+    "REPR_DRAW",
     "AbstractDiagram",
+    "ConfluenceSVGFormat",
     "Diagram",
     "DiagramAccessor",
-    "DiagramType",
-    # format converters
     "DiagramFormat",
-    "PrettyDiagramFormat",
-    "convert_svgdiagram",
-    "SVGFormat",
+    "DiagramType",
     "PNGFormat",
-    "ConfluenceSVGFormat",
+    "PrettyDiagramFormat",
     "SVGDataURIFormat",
+    "SVGFormat",
     "SVGInHTMLIMGFormat",
     "TerminalGraphicsFormat",
-    # exceptions
     "UnknownOutputFormat",
-    # helpers
     "convert_format",
-    "REPR_DRAW",
+    "convert_svgdiagram",
 ]
 
 import abc

@@ -5,16 +5,16 @@
 from __future__ import annotations
 
 __all__ = [
-    "DRepresentationDescriptor",
+    "GLOBAL_FILTERS",
     "ActiveFilters",
+    "DRepresentationDescriptor",
+    "GlobalFilter",
     "enumerate_descriptors",
     "find_target",
     "get_styleclass",
-    "parse_diagrams",
-    "parse_diagram",
     "iter_visible",
-    "GLOBAL_FILTERS",
-    "GlobalFilter",
+    "parse_diagram",
+    "parse_diagrams",
 ]
 
 import collections.abc as cabc

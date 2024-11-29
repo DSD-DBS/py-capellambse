@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-__all__ = ["COLORS", "CSSdef", "STYLES", "RGB", "get_style"]
+__all__ = ["COLORS", "RGB", "STYLES", "CSSdef", "get_style"]
 
 import logging
 import typing as t

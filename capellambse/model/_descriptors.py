@@ -4,33 +4,27 @@
 from __future__ import annotations
 
 __all__ = [
-    # exceptions
-    "InvalidModificationError",
-    "NonUniqueMemberError",
-    # descriptor ABCs
     "Accessor",
-    "WritableAccessor",
-    "PhysicalAccessor",
-    # relationship descriptors
+    "Alias",
     "Allocation",
+    "AlternateAccessor",
     "Association",
+    "AttributeMatcherAccessor",
     "Backref",
     "Containment",
-    # misc descriptors
-    "Alias",
-    "DeprecatedAccessor",
     "DeepProxyAccessor",
-    "PhysicalLinkEndsAccessor",
+    "DeprecatedAccessor",
+    "DirectProxyAccessor",
     "IndexAccessor",
-    "AlternateAccessor",
+    "InvalidModificationError",
+    "NewObject",
+    "NonUniqueMemberError",
     "ParentAccessor",
-    "AttributeMatcherAccessor",
+    "PhysicalAccessor",
+    "PhysicalLinkEndsAccessor",
     "SpecificationAccessor",
     "TypecastAccessor",
-    # legacy
-    "DirectProxyAccessor",
-    # helpers
-    "NewObject",
+    "WritableAccessor",
 ]
 
 import abc
@@ -1638,11 +1632,8 @@ class Backref(PhysicalAccessor[T_co]):
                     value = attr(candidate)
                 except AttributeError:
                     continue
-                if (
-                    isinstance(value, _obj.ElementList)
-                    and obj in value
-                    or isinstance(value, _obj.ModelElement)
-                    and obj == value
+                if (isinstance(value, _obj.ElementList) and obj in value) or (
+                    isinstance(value, _obj.ModelElement) and obj == value
                 ):
                     matches.append(candidate._element)
                     break

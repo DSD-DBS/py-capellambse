@@ -269,7 +269,7 @@ class ActiveFilters(t.MutableSet[str]):
     :class:`~capellambse.diagram.Diagram`.
     """
 
-    __slots__ = ("_model", "_target", "_diagram")
+    __slots__ = ("_diagram", "_model", "_target")
     _xml_tag = "activatedFilters"
 
     def __init__(

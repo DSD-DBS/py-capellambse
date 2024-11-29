@@ -224,7 +224,7 @@ class Vector2D(t.NamedTuple):
 class Vec2Property:
     """A property that automatically converts 2-tuples into Vector2D."""
 
-    __slots__ = ("default", "name", "__objclass__")
+    __slots__ = ("__objclass__", "default", "name")
     default: Vector2D | None
     name: str | None
     __objclass__: type[t.Any]

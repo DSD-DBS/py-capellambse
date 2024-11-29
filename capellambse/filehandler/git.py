@@ -439,7 +439,7 @@ class GitFileHandler(abc.FileHandler):
                     "Writing to git requires a transaction"
                 )
             return _WritableGitFile(self._transaction, self.cache_dir, path)
-        return open(self.cache_dir / path, "rb")  # noqa: SIM115
+        return open(self.cache_dir / path, "rb")
 
     def get_model_info(self) -> abc.HandlerInfo:
         def revparse(*args: str) -> str:

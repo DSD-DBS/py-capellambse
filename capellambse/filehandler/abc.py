@@ -5,11 +5,11 @@
 from __future__ import annotations
 
 __all__ = [
+    "AbstractFilePath",
     "FileHandler",
     "FilePath",
-    "AbstractFilePath",
-    "TransactionClosedError",
     "HandlerInfo",
+    "TransactionClosedError",
 ]
 
 import abc
@@ -250,7 +250,8 @@ class FilePath(os.PathLike[str], ira.Traversable, t.Generic[_F]):
         if (
             type(self).is_dir is FilePath.is_dir
             and ptype.is_dir is FileHandler.is_dir
-            or type(self).is_file is FilePath.is_file
+        ) or (
+            type(self).is_file is FilePath.is_file
             and ptype.is_file is FileHandler.is_file
         ):
             raise TypeError(
