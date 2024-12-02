@@ -368,7 +368,9 @@ class ModelFile:
         """Iterate over all elements in this tree by ``xsi:type``."""
         for xtype, elms in self.__xtypecache.items():
             if xtype in xtypes:
-                yield from elms.values()
+                for elm in elms.values():
+                    if not elm.get("href"):
+                        yield elm
 
     def write_xml(
         self,
