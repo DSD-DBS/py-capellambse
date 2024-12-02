@@ -221,7 +221,10 @@ def apply(
     if strict:
         if not metadata:
             raise ValueError("No metadata found to verify in strict mode")
-        _verify_metadata(model, metadata)
+        try:
+            _verify_metadata(model, metadata)
+        except TypeError as err:
+            raise TypeError(f"Cannot apply decl: {err}") from None
     elif metadata:
         try:
             _verify_metadata(model, metadata)
@@ -276,9 +279,7 @@ def _verify_metadata(
 
     written_by = metadata.get("written_by", {}).get("capellambse", "")
     if not written_by:
-        raise ValueError(
-            "Unsupported YAML: Can't find 'written_by:capellambse' in metadata"
-        )
+        raise ValueError("Can't find 'written_by:capellambse' in metadata")
     if not _is_pep440(written_by):
         raise ValueError(f"Malformed version number in metadata: {written_by}")
 
@@ -294,13 +295,13 @@ def _verify_metadata(
         version_matches = current >= written_version
     except Exception as err:
         raise ValueError(
-            "Cannot apply decl: Cannot verify required capellambse version:"
+            "Cannot verify required capellambse version:"
             f" {type(err).__name__}: {err}"
         ) from None
 
     if not version_matches:
         raise ValueError(
-            "Cannot apply decl: This capellambse is too old for this YAML:"
+            "This capellambse is too old for this YAML:"
             f" Need at least v{written_by}, but have only v{current})"
         )
 
@@ -309,21 +310,21 @@ def _verify_metadata(
     url = model_metadata.get("url")
     if url != res_info.url:
         raise ValueError(
-            "Cannot apply decl: Model URL mismatch:"
+            "Model URL mismatch:"
             f" YAML expects {url}, current is {res_info.url}"
         )
 
     hash = model_metadata.get("revision")
     if hash != res_info.rev_hash:
         raise ValueError(
-            "Cannot apply decl: Model version mismatch:"
+            "Model version mismatch:"
             f" YAML expects {hash}, current is {res_info.rev_hash}"
         )
 
     entrypoint = pathlib.PurePosixPath(model_metadata.get("entrypoint", ""))
     if entrypoint != model.info.entrypoint:
         raise ValueError(
-            "Cannot apply decl: Model entrypoint mismatch:"
+            "Model entrypoint mismatch:"
             f" YAML expects {entrypoint}, current is {model.info.entrypoint}"
         )
 
