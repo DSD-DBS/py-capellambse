@@ -387,7 +387,10 @@ class ModelElement:
         except Exception:
             icon = None
 
-        fragments.append("<h1>")
+        fragments.append(
+            '<h1 style="display: flex; align-items: baseline; '
+            'gap: 5px; font-size: 150%;">'
+        )
         if icon:
             fragments.append(
                 f'<img src="{icon}" alt="" width="20" height="20"> '
