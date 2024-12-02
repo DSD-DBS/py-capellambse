@@ -41,6 +41,7 @@ import sys
 import typing as t
 
 import awesomeversion as av
+import markupsafe
 import typing_extensions as te
 import yaml
 
@@ -745,11 +746,16 @@ class YDMDumper(yaml.SafeDumper):
         attrs = dict(data.attributes)
         return self.represent_mapping("!find", attrs)
 
+    def represent_markup(self, data: t.Any) -> yaml.Node:
+        assert isinstance(data, markupsafe.Markup)
+        return self.represent_scalar("!html", str(data))
+
 
 YDMDumper.add_representer(Promise, YDMDumper.represent_promise)
 YDMDumper.add_representer(UUIDReference, YDMDumper.represent_uuidref)
 YDMDumper.add_representer(NewObject, YDMDumper.represent_newobj)
 YDMDumper.add_representer(FindBy, YDMDumper.represent_findby)
+YDMDumper.add_representer(markupsafe.Markup, YDMDumper.represent_markup)
 
 
 class YDMLoader(yaml.SafeLoader):
@@ -787,11 +793,17 @@ class YDMLoader(yaml.SafeLoader):
         data = self.construct_mapping(node)
         return FindBy(t.cast(t.Any, data))
 
+    def construct_markup(self, node: yaml.Node) -> markupsafe.Markup:
+        if not isinstance(node, yaml.ScalarNode):
+            raise TypeError("!html only accepts scalar nodes")
+        return markupsafe.Markup(self.construct_scalar(node))
+
 
 YDMLoader.add_constructor("!promise", YDMLoader.construct_promise)
 YDMLoader.add_constructor("!uuid", YDMLoader.construct_uuidref)
 YDMLoader.add_constructor("!new_object", YDMLoader.construct_newobj)
 YDMLoader.add_constructor("!find", YDMLoader.construct_findby)
+YDMLoader.add_constructor("!html", YDMLoader.construct_markup)
 
 
 try:
