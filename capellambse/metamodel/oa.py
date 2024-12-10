@@ -7,119 +7,249 @@
 
 from __future__ import annotations
 
-from capellambse import model as m
+import typing as t
+import warnings
 
-from . import capellacommon, capellacore, cs, fa, information, interaction
+import capellambse.model as m
+
+from . import (
+    activity,
+    capellacommon,
+    capellacore,
+    cs,
+    fa,
+    information,
+    interaction,
+    modellingcore,
+)
 from . import namespaces as ns
+
+if t.TYPE_CHECKING:
+    from . import sa  # noqa: F401
 
 NS = ns.OA
 
 
-class OperationalActivity(fa.AbstractFunction):
-    """An operational activity."""
+class OperationalAnalysis(cs.BlockArchitecture):
+    """Provides access to the OperationalAnalysis layer of the model."""
 
-    _xmltag = "ownedOperationalActivities"
-
-    exchanges = m.DirectProxyAccessor(
-        fa.FunctionalExchange, aslist=m.ElementList
+    role_pkg = m.Containment["RolePkg"]("ownedRolePkg", (NS, "RolePkg"))
+    entity_pkg = m.Containment["EntityPkg"](
+        "ownedEntityPkg", (NS, "EntityPkg")
+    )
+    entity_package = m.DeprecatedAccessor["EntityPkg"]("entity_pkg")
+    concept_pkg = m.Containment["ConceptPkg"](
+        "ownedConceptPkg", (NS, "ConceptPkg")
     )
 
-    inputs = m.Backref(fa.FunctionalExchange, "target")
-    outputs = m.Backref(fa.FunctionalExchange, "source")
+    root_entity = m.DirectProxyAccessor(Entity, rootelem=EntityPkg)
+    root_activity = m.DirectProxyAccessor(
+        OperationalActivity, rootelem=OperationalActivityPkg
+    )
 
-    owner: m.Single[Entity]
+    activity_package = m.DirectProxyAccessor(OperationalActivityPkg)
+    capability_package = m.DirectProxyAccessor(OperationalCapabilityPkg)
 
     @property
-    def related_exchanges(self) -> m.ElementList[fa.FunctionalExchange]:
-        seen: set[str] = set()
-        exchanges = []
-        for fex in self.inputs + self.outputs:
-            if fex.uuid not in seen:
-                exchanges.append(fex._element)
-                seen.add(fex.uuid)
-        return self.inputs._newlist(exchanges)
+    def all_activities(self) -> m.ElementList[OperationalActivity]:
+        return self._model.search((NS, "OperationalActivity"), below=self)
+
+    @property
+    def all_processes(self) -> m.ElementList[OperationalProcess]:
+        return self._model.search((NS, "OperationalProcess"), below=self)
+
+    @property
+    def all_actors(self) -> m.ElementList[Entity]:
+        return self._model.search((NS, "Entity")).by_is_actor(True)
+
+    @property
+    def all_entities(self) -> m.ElementList[Entity]:
+        return self._model.search((NS, "Entity"), below=self)
+
+    @property
+    def all_activity_exchanges(self) -> m.ElementList[fa.FunctionalExchange]:
+        return self._model.search((ns.FA, "FunctionalExchange"), below=self)
+
+    @property
+    def all_entity_exchanges(self) -> m.ElementList[CommunicationMean]:
+        return self._model.search((NS, "CommunicationMean"), below=self)
+
+    @property
+    def all_operational_processes(self) -> m.ElementList[OperationalProcess]:
+        return self._model.search(OperationalProcess, below=self)
+
+    diagrams = m.DiagramAccessor(
+        "Operational Analysis", cacheattr="_MelodyModel__diagram_cache"
+    )
+
+
+class OperationalScenario(capellacore.NamedElement, abstract=True):
+    context = m.StringPOD("context")
+    objective = m.StringPOD("objective")
+
+
+class OperationalActivityPkg(fa.FunctionPkg):
+    _xmltag = "ownedFunctionPkg"
+
+    activities = m.Containment["OperationalActivity"](
+        "ownedOperationalActivities", (NS, "OperationalActivity")
+    )
+    packages = m.Containment["OperationalActivityPkg"](
+        "ownedOperationalActivityPkgs", (NS, "OperationalActivityPkg")
+    )
+    owner = m.Single["Entity"](m.Backref((NS, "Entity"), "activities"))  # TODO
+
+
+class OperationalActivity(fa.AbstractFunction):
+    _xmltag = "ownedOperationalActivities"
+
+    packages = m.Containment["OperationalActivityPkg"](
+        "ownedOperationalActivityPkgs", (NS, "OperationalActivityPkg")
+    )
+    activities = m.Alias["OperationalActivity"]("functions")
+    inputs = m.Backref["fa.FunctionalExchange"](  # type: ignore[assignment]
+        (ns.FA, "FunctionalExchange"), "target"
+    )
+    outputs = m.Backref["fa.FunctionalExchange"](  # type: ignore[assignment]
+        (ns.FA, "FunctionalExchange"), "source"
+    )
+    realizing_system_functions = m.Backref["sa.SystemFunction"](
+        (ns.SA, "SystemFunction"), "realized_operational_activities"
+    )
+
+    owner = m.Single["Entity"](m.Backref((NS, "Entity"), "activities"))
+
+    related_exchanges = m.Backref[fa.FunctionalExchange](
+        (ns.FA, "FunctionalExchange"), "source", "target"
+    )
 
 
 class OperationalProcess(fa.FunctionalChain):
-    """An operational process."""
+    pass
 
 
-class EntityOperationalCapabilityInvolvement(interaction.AbstractInvolvement):
-    """An EntityOperationalCapabilityInvolvement."""
+class Swimlane(capellacore.NamedElement, activity.ActivityPartition):
+    pass
 
 
-class OperationalCapability(m.ModelElement):
+class OperationalCapabilityPkg(capellacommon.AbstractCapabilityPkg):
+    _xmltag = "ownedAbstractCapabilityPkg"
+
+    capabilities = m.Containment["OperationalCapability"](
+        "ownedOperationalCapabilities", (NS, "OperationalCapability")
+    )
+    packages = m.Containment["OperationalCapabilityPkg"](
+        "ownedOperationalCapabilityPkgs", (NS, "OperationalCapabilityPkg")
+    )
+    capability_configurations = m.Containment["CapabilityConfiguration"](
+        "ownedCapabilityConfigurations", (NS, "CapabilityConfiguration")
+    )
+    concept_compliances = m.Containment["ConceptCompliance"](
+        "ownedConceptCompliances", (NS, "ConceptCompliance")
+    )
+    complies_with_concepts = m.Allocation["Concept"](
+        "ownedConceptCompliances",
+        (NS, "ConceptCompliance"),
+        (NS, "Concept"),
+        attr="complyWithConcept",
+        backattr="compliantCapability",
+    )
+
+
+class OperationalCapability(
+    interaction.AbstractCapability, capellacore.Namespace
+):
     """A capability in the OperationalAnalysis layer."""
 
     _xmltag = "ownedOperationalCapabilities"
 
-    extends = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityExtend, aslist=m.ElementList
+    compliances = m.Association["ConceptCompliance"](
+        (NS, "ConceptCompliance"), "compliances"
     )
-    extended_by = m.Backref(interaction.AbstractCapabilityExtend, "target")
-    includes = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityInclude, aslist=m.ElementList
+    configurations = m.Association["CapabilityConfiguration"](
+        (NS, "CapabilityConfiguration"), "configurations"
     )
-    included_by = m.Backref(interaction.AbstractCapabilityInclude, "target")
-    generalizes = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityGeneralization, aslist=m.ElementList
-    )
-    generalized_by = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityGeneralization,
-        "target",
-        aslist=m.ElementList,
-    )
-    involved_activities = m.Allocation[OperationalActivity](
-        "ownedAbstractFunctionAbstractCapabilityInvolvements",
-        interaction.AbstractFunctionAbstractCapabilityInvolvement,
-        attr="involved",
-    )
-    involved_entities = m.Allocation[m.ModelElement](
+    entity_involvements = m.Containment[
+        "EntityOperationalCapabilityInvolvement"
+    ](
         "ownedEntityOperationalCapabilityInvolvements",
-        EntityOperationalCapabilityInvolvement,
+        (NS, "EntityOperationalCapabilityInvolvement"),
+    )
+    involved_entities = m.Allocation["Entity"](
+        "ownedEntityOperationalCapabilityInvolvements",
+        (NS, "EntityOperationalCapabilityInvolvement"),
+        (NS, "Entity"),
         attr="involved",
     )
-    entity_involvements = m.DirectProxyAccessor(
-        EntityOperationalCapabilityInvolvement, aslist=m.ElementList
-    )
-    involved_processes = m.Allocation[OperationalProcess](
-        "ownedFunctionalChainAbstractCapabilityInvolvements",
-        interaction.FunctionalChainAbstractCapabilityInvolvement,
-        attr="involved",
-    )
-    owned_processes = m.DirectProxyAccessor(
-        OperationalProcess, aslist=m.ElementList
-    )
-
-    postcondition = m.Single(
-        m.Association(capellacore.Constraint, "postCondition")
-    )
-    precondition = m.Single(
-        m.Association(capellacore.Constraint, "preCondition")
-    )
-    scenarios = m.DirectProxyAccessor(
-        interaction.Scenario, aslist=m.ElementList
-    )
-    states = m.Association(capellacommon.State, "availableInStates")
-
-    packages: m.Accessor
+    involved_activities = m.Alias["OperationalActivity"]("involved_functions")
+    involved_processes = m.Alias["OperationalProcess"]("involved_chains")
+    owned_processes = m.Alias["OperationalProcess"]("functional_chains")
+    packages: m.Accessor  # TODO
 
 
-class OperationalCapabilityPkg(m.ModelElement):
-    """A package that holds operational capabilities."""
+class ActivityAllocation(capellacore.Allocation):
+    pass
 
-    _xmltag = "ownedAbstractCapabilityPkg"
 
-    capabilities = m.DirectProxyAccessor(
-        OperationalCapability, aslist=m.ElementList
+class RolePkg(capellacore.Structure):
+    packages = m.Containment["RolePkg"]("ownedRolePkgs", (NS, "RolePkg"))
+    roles = m.Containment["Role"]("ownedRoles", (NS, "Role"))
+
+
+class Role(information.AbstractInstance):
+    assembly_usages = m.Containment["RoleAssemblyUsage"](
+        "ownedRoleAssemblyUsages", (NS, "RoleAssemblyUsage")
+    )
+    activity_allocations = m.Containment["ActivityAllocation"](
+        "ownedActivityAllocations", (NS, "ActivityAllocation")
     )
 
-    packages: m.Accessor
+
+class RoleAssemblyUsage(capellacore.NamedElement):
+    child = m.Association["Role"]((NS, "Role"), "child")
 
 
-class AbstractEntity(cs.Component):
-    """Common code for Entities."""
+class RoleAllocation(capellacore.Allocation):
+    pass
 
+
+class EntityPkg(cs.ComponentPkg):
+    _xmltag = "ownedEntityPkg"
+
+    entities = m.Containment["Entity"]("ownedEntities", (NS, "Entity"))
+    packages = m.Containment["EntityPkg"]("ownedEntityPkgs", (NS, "EntityPkg"))
+    locations = m.Containment["Location"]("ownedLocations", (NS, "Location"))
+    communication_means = m.Alias["CommunicationMean"]("exchanges")
+
+
+class AbstractConceptItem(cs.Component, abstract=True):
+    composing_links = m.Association["ItemInConcept"](
+        (NS, "ItemInConcept"), "composingLinks"
+    )
+
+
+class Entity(
+    AbstractConceptItem,
+    modellingcore.InformationsExchanger,
+    capellacore.InvolvedElement,
+):
+    """An Entity in the OperationalAnalysis layer."""
+
+    _xmltag = "ownedEntities"
+
+    organisational_unit_memberships = m.Association[
+        "OrganisationalUnitComposition"
+    ]((NS, "OrganisationalUnitComposition"), "organisationalUnitMemberships")
+    actual_location = m.Association["Location"](
+        (NS, "Location"), "actualLocation"
+    )
+    entities = m.Containment["Entity"]("ownedEntities", (NS, "Entity"))
+    communication_means = m.Containment["CommunicationMean"](
+        "ownedCommunicationMeans", (NS, "CommunicationMean")
+    )
+    exchanges = m.Alias["m.ElementList[CommunicationMean]"](  # type: ignore[assignment]
+        "communication_means"
+    )
     activities = m.Allocation[OperationalActivity](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
@@ -127,14 +257,14 @@ class AbstractEntity(cs.Component):
         backattr="sourceElement",
     )
     capabilities = m.Backref(OperationalCapability, "involved_entities")
-
-
-class Entity(AbstractEntity):
-    """An Entity in the OperationalAnalysis layer."""
-
-    _xmltag = "ownedEntities"
-
-    entities: m.Accessor
+    exchanges = m.DirectProxyAccessor(
+        CommunicationMean,  # type: ignore[arg-type] # FIXME
+        aslist=m.ElementList,
+    )
+    related_exchanges = m.Backref(CommunicationMean, "source", "target")
+    realizing_system_components = m.Backref(
+        (ns.SA, "SystemComponent"), "realized_operational_entities"
+    )
 
     @property
     def inputs(self) -> m.ElementList[CommunicationMean]:
@@ -145,117 +275,116 @@ class Entity(AbstractEntity):
         return self._model.search(CommunicationMean).by_source(self)
 
 
-class OperationalActivityPkg(m.ModelElement):
-    """A package that holds operational entities."""
+class ConceptPkg(capellacore.Structure):
+    packages = m.Containment["ConceptPkg"](
+        "ownedConceptPkgs", (NS, "ConceptPkg")
+    )
+    concepts = m.Containment["Concept"]("ownedConcepts", (NS, "Concept"))
 
-    _xmltag = "ownedFunctionPkg"
 
-    activities = m.DirectProxyAccessor(
-        OperationalActivity, aslist=m.ElementList
+class Concept(capellacore.NamedElement):
+    compliances = m.Association["ConceptCompliance"](
+        (NS, "ConceptCompliance"), "compliances"
+    )
+    composite_links = m.Containment["ItemInConcept"](
+        "compositeLinks", (NS, "ItemInConcept")
     )
 
-    packages: m.Accessor
+
+class ConceptCompliance(capellacore.Relationship):
+    comply_with_concept = m.Single["Concept"](
+        m.Association((NS, "Concept"), "complyWithConcept")
+    )
+    compliant_capability = m.Single["OperationalCapability"](
+        m.Association((NS, "OperationalCapability"), "compliantCapability")
+    )
 
 
-class CommunicationMean(fa.AbstractExchange):
+class ItemInConcept(capellacore.NamedElement):
+    concept = m.Single["Concept"](m.Association((NS, "Concept"), "concept"))
+    item = m.Single["AbstractConceptItem"](
+        m.Association((NS, "AbstractConceptItem"), "item")
+    )
+
+
+class CommunityOfInterest(capellacore.NamedElement):
+    community_of_interest_compositions = m.Containment[  # TODO
+        "CommunityOfInterestComposition"
+    ](
+        "communityOfInterestCompositions",
+        (NS, "CommunityOfInterestComposition"),
+    )
+
+
+class CommunityOfInterestComposition(capellacore.NamedElement):
+    community_of_interest = m.Association["CommunityOfInterest"](
+        (NS, "CommunityOfInterest"), "communityOfInterest"
+    )
+    interested_organisational_unit = m.Association["OrganisationalUnit"](
+        (NS, "OrganisationalUnit"), "interestedOrganisationUnit"
+    )
+
+
+class OrganisationalUnit(capellacore.NamedElement):
+    organisational_unit_compositions = m.Containment[  # TODO
+        "OrganisationalUnitComposition"
+    ]("organisationalUnitCompositions", (NS, "OrganisationalUnitComposition"))
+    community_of_interest_memberships = m.Association[  # TODO
+        "CommunityOfInterestComposition"
+    ]((NS, "CommunityOfInterestComposition"), "communityOfInterestMemberships")
+
+
+class OrganisationalUnitComposition(capellacore.NamedElement):
+    organisational_unit = m.Association["OrganisationalUnit"](  # TODO
+        (NS, "OrganisationalUnit"), "organisationalUnit"
+    )
+    participating_entity = m.Association["Entity"](  # TODO
+        (NS, "Entity"), "participatingEntity"
+    )
+
+
+class Location(AbstractConceptItem):
+    location_description = m.StringPOD("locationDescription")
+    entities = m.Association["Entity"]((NS, "Entity"), "locatedEntities")
+
+
+class CapabilityConfiguration(AbstractConceptItem):
+    configured_capability = m.Association["OperationalCapability"](
+        (NS, "OperationalCapability"), "configuredCapability"
+    )
+
+
+class CommunicationMean(
+    fa.ComponentExchange,
+    capellacore.NamedRelationship,
+):
     """An operational entity exchange."""
 
     _xmltag = "ownedComponentExchanges"
 
-    allocated_interactions = m.Allocation[fa.FunctionalExchange](
+    allocated_interactions = m.Allocation[fa.FunctionalExchange](  # TODO
         None,  # FIXME fill in tag
         fa.ComponentExchangeFunctionalExchangeAllocation,
         attr="targetElement",
     )
-    allocated_exchange_items = m.Association(
+    allocated_exchange_items = m.Association(  # TODO
         information.ExchangeItem,
         "convoyedInformations",
     )
 
-    exchange_items = fa.ComponentExchange.exchange_items
+
+class EntityOperationalCapabilityInvolvement(capellacore.Involvement):
+    pass
 
 
-class EntityPkg(m.ModelElement):
-    """A package that holds operational entities."""
+if not t.TYPE_CHECKING:
 
-    _xmltag = "ownedEntityPkg"
-
-    entities = m.DirectProxyAccessor(Entity, aslist=m.ElementList)
-    state_machines = m.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=m.ElementList
-    )
-
-    packages: m.Accessor
-    exchanges = m.DirectProxyAccessor(CommunicationMean, aslist=m.ElementList)
-
-
-class OperationalAnalysis(cs.ComponentArchitecture):
-    """Provides access to the OperationalAnalysis layer of the model."""
-
-    root_entity = m.DirectProxyAccessor(Entity, rootelem=EntityPkg)
-    root_activity = m.DirectProxyAccessor(
-        OperationalActivity, rootelem=OperationalActivityPkg
-    )
-
-    activity_package = m.DirectProxyAccessor(OperationalActivityPkg)
-    capability_package = m.DirectProxyAccessor(OperationalCapabilityPkg)
-    entity_package = m.DirectProxyAccessor(EntityPkg)
-
-    all_activities = m.DeepProxyAccessor(
-        OperationalActivity,
-        aslist=m.ElementList,
-    )
-    all_processes = m.DeepProxyAccessor(
-        OperationalProcess,
-        aslist=m.ElementList,
-    )
-    all_capabilities = m.DeepProxyAccessor(
-        OperationalCapability,
-        aslist=m.ElementList,
-    )
-    all_actors = property(
-        lambda self: self._model.search(Entity).by_is_actor(True)
-    )
-    all_entities = m.DeepProxyAccessor(
-        Entity,
-        aslist=m.ElementList,
-    )
-
-    all_activity_exchanges = m.DeepProxyAccessor(
-        fa.FunctionalExchange,
-        aslist=m.ElementList,
-        rootelem=[OperationalActivityPkg, OperationalActivity],
-    )
-    all_entity_exchanges = m.DeepProxyAccessor(
-        CommunicationMean,
-        aslist=m.ElementList,
-    )
-    all_operational_processes = property(
-        lambda self: self._model.search(OperationalProcess, below=self)
-    )
-
-    diagrams = m.DiagramAccessor(
-        "Operational Analysis", cacheattr="_MelodyModel__diagram_cache"
-    )
-
-
-OperationalActivity.packages = m.DirectProxyAccessor(
-    OperationalActivityPkg, aslist=m.ElementList
-)
-OperationalActivity.owner = m.Single(m.Backref(Entity, "activities"))
-Entity.exchanges = m.DirectProxyAccessor(
-    CommunicationMean,  # type: ignore[arg-type] # FIXME
-    aslist=m.ElementList,
-)
-Entity.related_exchanges = m.Backref(CommunicationMean, "source", "target")  # type: ignore[arg-type] # FIXME
-OperationalActivity.activities = m.DirectProxyAccessor(
-    OperationalActivity, aslist=m.ElementList
-)
-OperationalActivityPkg.packages = m.DirectProxyAccessor(
-    OperationalActivityPkg, aslist=m.ElementList
-)
-OperationalCapabilityPkg.packages = m.DirectProxyAccessor(
-    OperationalCapabilityPkg, aslist=m.ElementList
-)
-Entity.entities = m.DirectProxyAccessor(Entity, aslist=m.ElementList)
-EntityPkg.packages = m.DirectProxyAccessor(EntityPkg, aslist=m.ElementList)
+    def __getattr__(name):
+        if name == "AbstractEntity":
+            warnings.warn(
+                "AbstractEntity has been merged into Entity",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return Entity
+        raise AttributeError(name)
