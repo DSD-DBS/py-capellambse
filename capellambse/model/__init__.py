@@ -10,6 +10,10 @@ import functools
 import typing as t
 import warnings
 
+VIRTUAL_NAMESPACE_PREFIX = (
+    "https://dsd-dbs.github.io/py-capellambse/virtual-namespace/"
+)
+
 E = t.TypeVar("E", bound=enum.Enum)
 """TypeVar for ":py:class:`~enum.Enum`"."""
 S = t.TypeVar("S", bound=str | None)
@@ -20,6 +24,8 @@ T_co = t.TypeVar("T_co", bound="ModelObject", covariant=True)
 """Covariant TypeVar for ":py:class:`capellambse.model.ModelObject`"."""
 U = t.TypeVar("U")
 """TypeVar (unbound)."""
+U_co = t.TypeVar("U_co", covariant=True)
+"""Covariant TypeVar (unbound)."""
 
 
 def set_accessor(
@@ -31,7 +37,7 @@ def set_accessor(
 
 def set_self_references(*args: tuple[type[ModelObject], str]) -> None:
     for cls, attr in args:
-        set_accessor(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
+        setattr(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
 
 
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
@@ -87,12 +93,19 @@ def stringy_enum(et: type[enum.Enum]) -> type[enum.Enum]:
     return et
 
 
+def reset_entrypoint_caches() -> None:
+    """Reset all cached data from entrypoints."""
+    for i in globals().values():
+        if hasattr(i, "cache_clear"):
+            i.cache_clear()
+
+
 from . import diagram
 from ._descriptors import *
+from ._meta import *
 from ._model import *
 from ._obj import *
 from ._pods import *
-from ._xtype import *
 
 # NOTE: These are not in __all__ to avoid duplicate documentation in Sphinx,
 #       however their docstring should mention the re-export.
@@ -100,16 +113,14 @@ from .diagram import AbstractDiagram as AbstractDiagram
 from .diagram import Diagram as Diagram
 from .diagram import DiagramAccessor as DiagramAccessor
 from .diagram import DiagramType as DiagramType
-
-ModelElement.parent = ParentAccessor(ModelElement)
-
+from .diagram import DRepresentationDescriptor as DRepresentationDescriptor
 
 if not t.TYPE_CHECKING:
     from ._descriptors import __all__ as _all1
-    from ._model import __all__ as _all2
-    from ._obj import __all__ as _all3
-    from ._pods import __all__ as _all4
-    from ._xtype import __all__ as _all5
+    from ._meta import __all__ as _all2
+    from ._model import __all__ as _all3
+    from ._obj import __all__ as _all4
+    from ._pods import __all__ as _all5
 
     __all__ = [
         "E",
@@ -117,8 +128,10 @@ if not t.TYPE_CHECKING:
         "T",
         "T_co",
         "U",
+        "U_co",
         "attr_equal",
         "diagram",
+        "reset_entrypoint_caches",
         "set_self_references",
         "stringy_enum",
         *_all1,
@@ -144,4 +157,27 @@ if not t.TYPE_CHECKING:
                 stacklevel=2,
             )
             return target
+
+        if attr == "XTYPE_ANCHORS":
+            warnings.warn(
+                f"{attr} is deprecated, define a Namespace instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return {}
+
+        if attr == "XTYPE_HANDLERS":
+            warnings.warn(
+                f"{attr} is deprecated, use Namespace-based discovery instead",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return {
+                None: [
+                    cls[0][0]
+                    for ns in enumerate_namespaces()
+                    for cls in ns._classes.values()
+                ]
+            }
+
         raise AttributeError(f"{__name__} has no attribute {attr}")
