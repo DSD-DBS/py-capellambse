@@ -23,7 +23,9 @@ import typing as t
 
 import markupsafe
 import typing_extensions as te
+from lxml import etree
 
+import capellambse
 from capellambse import helpers
 
 from . import E, U
@@ -77,7 +79,7 @@ class BasePOD(t.Generic[U]):
         assert data is None or isinstance(data, str)
         if data is None:
             return self.default
-        return self._from_xml(data)
+        return self._from_xml(data, obj._model)
 
     def __set__(self, obj: t.Any, value: U | None) -> None:
         if not self.writable and self.attribute in obj._element.attrib:
@@ -101,7 +103,9 @@ class BasePOD(t.Generic[U]):
         self.__objclass__ = owner
 
     @abc.abstractmethod
-    def _from_xml(self, value: str, /) -> U: ...
+    def _from_xml(
+        self, value: str, model: capellambse.MelodyModel, /
+    ) -> U: ...
     @abc.abstractmethod
     def _to_xml(self, value: U, /) -> str | None: ...
 
@@ -123,7 +127,8 @@ class StringPOD(BasePOD[str]):
         """
         super().__init__(attribute, default="", writable=writable)
 
-    def _from_xml(self, value: str, /) -> str:
+    def _from_xml(self, value: str, model: capellambse.MelodyModel, /) -> str:
+        del model
         return value
 
     def _to_xml(self, value: str, /) -> str:
@@ -151,13 +156,37 @@ class HTMLStringPOD(BasePOD[markupsafe.Markup]):
             writable=writable,
         )
 
-    def _from_xml(self, value: str, /) -> markupsafe.Markup:
+    def _from_xml(
+        self,
+        value: str,
+        model: capellambse.MelodyModel,
+        /,
+    ) -> markupsafe.Markup:
         if os.getenv("CAPELLAMBSE_XHTML") == "1":
             value = helpers.repair_html(value)
-        return markupsafe.Markup(value)
+
+        return self._resolve_embedded_images(value, model)
 
     def _to_xml(self, value: markupsafe.Markup, /) -> str:
         return helpers.repair_html(value)
+
+    def _resolve_embedded_images(
+        self, value: str, model: capellambse.MelodyModel, /
+    ) -> markupsafe.Markup:
+        """Resolve embedded images in HTML markup.
+
+        Embedded images in Capella use the project name as prefix. Since
+        the project name is not part of the real file system path, we
+        remove the prefix from the image source attribute.
+        """
+
+        def cb(node: etree._Element) -> None:
+            if node.tag == "img" and model.info.title:
+                node.attrib["src"] = node.attrib["src"].removeprefix(
+                    model.info.title + "/"
+                )
+
+        return helpers.process_html_fragments(value, cb)
 
 
 class BoolPOD(BasePOD[bool]):
@@ -175,7 +204,8 @@ class BoolPOD(BasePOD[bool]):
         """
         super().__init__(attribute, default=False, writable=True)
 
-    def _from_xml(self, value: str, /) -> bool:
+    def _from_xml(self, value: str, model: capellambse.MelodyModel, /) -> bool:
+        del model
         return value == "true"
 
     def _to_xml(self, value: bool, /) -> str:
@@ -200,7 +230,8 @@ class IntPOD(BasePOD[int]):
         """
         super().__init__(attribute, default=0, writable=writable)
 
-    def _from_xml(self, data: str, /) -> int:
+    def _from_xml(self, data: str, model: capellambse.MelodyModel, /) -> int:
+        del model
         return int(data)
 
     def _to_xml(self, value: int, /) -> str | None:
@@ -232,7 +263,8 @@ class FloatPOD(BasePOD[float]):
         """
         super().__init__(attribute, default=0.0, writable=writable)
 
-    def _from_xml(self, data: str, /) -> float:
+    def _from_xml(self, data: str, model: capellambse.MelodyModel, /) -> float:
+        del model
         return float(data)
 
     def _to_xml(self, value: float, /) -> str | None:
@@ -278,7 +310,10 @@ class DatetimePOD(BasePOD[datetime.datetime | None]):
         """
         super().__init__(attribute, default=None, writable=writable)
 
-    def _from_xml(self, value: str, /) -> datetime.datetime:
+    def _from_xml(
+        self, value: str, model: capellambse.MelodyModel, /
+    ) -> datetime.datetime:
+        del model
         formatted = self.re_get.sub(":", value)
         return datetime.datetime.fromisoformat(formatted)
 
@@ -360,7 +395,8 @@ class EnumPOD(BasePOD[E]):
         super().__init__(attribute, default=default, writable=writable)
         self.enumcls = enumcls
 
-    def _from_xml(self, value: str, /) -> E:
+    def _from_xml(self, value: str, model: capellambse.MelodyModel, /) -> E:
+        del model
         return self.enumcls(value)
 
     def _to_xml(self, value: E | str, /) -> str | None:
