@@ -303,7 +303,8 @@ class ModelFile:
             the Plugin's viewpoint is not activated in the model, an
             error is raised and no update is performed.
         """
-        new_nsmap: dict[str, str] = {
+        new_nsmap: dict[str | None, str] = {
+            **self.root.nsmap,
             "xmi": _n.NAMESPACES["xmi"],
             "xsi": _n.NAMESPACES["xsi"],
         }
