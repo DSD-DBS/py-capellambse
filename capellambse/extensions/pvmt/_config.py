@@ -268,6 +268,7 @@ class ManagedDomain(m.ModelElement):
     types = m.Containment(
         "ownedEnumerationPropertyTypes",
         mm.capellacore.EnumerationPropertyType,
+        aslist=m.ElementList,
     )
     groups = m.Containment(
         "ownedPropertyValueGroups",
