@@ -157,7 +157,7 @@ class ObjectPVMT:
         fragments: list[str] = [
             "<h1>Property Value Management</h1><p>Owner: ",
             self.owner._short_html_(),
-            "</p><table><tbody>",
+            "</p>\n<table><tbody>\n",
         ]
 
         for group in self.groupdefs:
@@ -170,7 +170,7 @@ class ObjectPVMT:
             fragments.append(group._short_html_())
             if groupobj is None:
                 fragments.append(" <em>(not applied)</em>")
-            fragments.append("</th></tr>")
+            fragments.append("</th></tr>\n")
             for prop in group.property_values:
                 if groupobj is None:
                     actual = "<em>not applied</em>"
@@ -189,15 +189,15 @@ class ObjectPVMT:
                     f"<td>{e(prop.name)}</td>"
                     f"<td>{actual}</td>"
                     f"<td>{default}</td>"
-                    "</tr>"
+                    "</tr>\n"
                 )
 
         fragments.append(
-            "</tbody><thead><tr>"
+            "</tbody><thead>\n<tr>"
             "<th>Property</th>"
             "<th>Value</th>"
             "<th>Default</th>"
-            "</tr></thead></table>"
+            "</tr>\n</thead></table>"
         )
 
         return markupsafe.Markup("".join(fragments))

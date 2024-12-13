@@ -398,9 +398,9 @@ class ModelElement:
             fragments.append(escape(self.name or type(self).__name__))
         fragments.append(' <span style="font-size: 70%;">(')
         fragments.append(escape(self.xtype))
-        fragments.append(")</span></h1>")
+        fragments.append(")</span></h1>\n")
 
-        fragments.append("<table>")
+        fragments.append("<table>\n")
         for attr in dir(self):
             if attr.startswith("_"):
                 continue
@@ -414,7 +414,7 @@ class ModelElement:
                 fragments.append(f"Backreference to {escape(classes)}")
                 fragments.append(" - omitted: can be slow to compute.")
                 fragments.append(" Display this property directly to show.")
-                fragments.append("</em></td></tr>")
+                fragments.append("</em></td></tr>\n")
                 continue
 
             try:
@@ -440,7 +440,7 @@ class ModelElement:
                 fragments.append("<em>")
                 fragments.append(escape(value))
                 fragments.append("</em>")
-            fragments.append("</td></tr>")
+            fragments.append("</td></tr>\n")
         fragments.append("</table>")
         return markupsafe.Markup("".join(fragments))
 
@@ -740,10 +740,10 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         if not self:
             return markupsafe.Markup("<p><em>(Empty list)</em></p>")
 
-        fragments = ['<ol start="0" style="text-align: left;">']
+        fragments = ['<ol start="0" style="text-align: left;">\n']
         for i in self:
             assert hasattr(i, "_short_html_")
-            fragments.append(f"<li>{i._short_html_()}</li>")
+            fragments.append(f"<li>{i._short_html_()}</li>\n")
         fragments.append("</ol>")
         return markupsafe.Markup("".join(fragments))
 
