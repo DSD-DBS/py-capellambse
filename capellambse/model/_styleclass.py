@@ -111,7 +111,7 @@ def _part(obj: _obj.ModelObject) -> str:
     assert not isinstance(obj.type, _obj.ElementList)
     xclass = _default(obj.type)
     if xclass == "PhysicalComponent":
-        return _physical_component(obj)
+        return _physical_component(obj.type)
     if xclass == "Entity":
         return xclass
     return _generic_component(obj.type)
