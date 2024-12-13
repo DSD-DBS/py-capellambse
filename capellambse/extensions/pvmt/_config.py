@@ -239,12 +239,14 @@ class ManagedGroup(m.ModelElement):
             applied_property_value_groups=[self],
         )
         for propdef in self.property_values:
-            groupobj.property_values.create(
+            pv = groupobj.property_values.create(
                 m.build_xtype(type(propdef)),
                 name=propdef.name,
                 applied_property_values=[propdef],
                 value=propdef.value,
             )
+            if isinstance(propdef, mm.capellacore.EnumerationPropertyValue):
+                pv.type = propdef.type
         assert hasattr(obj, "applied_property_value_groups")
         obj.applied_property_value_groups.append(groupobj)
         return groupobj
@@ -268,6 +270,7 @@ class ManagedDomain(m.ModelElement):
     types = m.Containment(
         "ownedEnumerationPropertyTypes",
         mm.capellacore.EnumerationPropertyType,
+        aslist=m.ElementList,
     )
     groups = m.Containment(
         "ownedPropertyValueGroups",

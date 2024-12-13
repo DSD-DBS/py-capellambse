@@ -119,6 +119,23 @@ class TestPVMTConfiguration:
         default_values = {i.name: i.value for i in group.property_values}
         assert applied_values == default_values
 
+    def test_applying_sets_type_on_applied_enums(self, model, monkeypatch):
+        monkeypatch.setattr(loader.core, "UUID_GENERATOR", random.Random(0))
+
+        obj = model.pa.root_component.owned_components.create(
+            name="Test extension card",
+            nature="NODE",
+        )
+        assert not obj.property_value_groups, "PV group already exists?"
+        domain = model.pvmt.domains["Computer"]
+        group = domain.groups["Components"]
+        expected_type = domain.types.by_name("ComponentType")
+
+        ag = group.apply(obj)
+
+        pv = ag.property_values.by_name("ComponentType")
+        assert pv.type == expected_type
+
 
 class TestAppliedPropertyValueGroupXML:
     """Tests that rely on writing back and comparing the output XML."""
