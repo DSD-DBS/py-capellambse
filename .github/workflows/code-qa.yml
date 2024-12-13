@@ -152,7 +152,6 @@ jobs:
   docs:
     name: Build documentation
     runs-on: ubuntu-latest
-    needs: [example-notebooks]
     permissions:
       contents: write
     steps:
