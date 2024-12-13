@@ -120,6 +120,10 @@ class Component(m.ModelElement):
     is_actor = m.BoolPOD("actor")
     """Boolean flag for an actor Component."""
 
+    owned_features = m.Containment(
+        "ownedFeatures", m.ModelElement, aslist=m.ElementList
+    )
+
     owner = m.ParentAccessor(m.ModelElement)
     state_machines = m.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=m.ElementList
