@@ -179,12 +179,15 @@ You can install the latest released version directly from PyPI.
 pip install capellambse
 ```
 
+Development
+-----------
+
 To set up a development environment, clone the project and install it into a
 virtual environment.
 
 ```bash
 git clone https://github.com/DSD-DBS/py-capellambse
-cd capellambse
+cd py-capellambse
 python -m venv .venv
 
 source .venv/bin/activate.sh  # for Linux / Mac
@@ -195,9 +198,12 @@ pip install -e '.[docs,test]'
 pre-commit install
 ```
 
-We recommend developing within a local [Jupyter notebook server] environment.
-In order to install and run it in the same virtual environment, execute the
-following additional commands:
+The example notebooks (see above) are verified during CI, to ensure their
+output is up to date. This means they have to be re-run whenever the expected
+output changes.
+
+Use the following command to start a Jupyter server, which can be used to
+develop and re-run the example notebooks:
 
 ```bash
 pip install jupyter capellambse
