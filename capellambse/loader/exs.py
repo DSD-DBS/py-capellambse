@@ -31,7 +31,7 @@ P_ESCAPE_COMMENTS = re.compile(ESCAPE_CHARS.format(">"))
 P_ESCAPE_ATTR = re.compile(ESCAPE_CHARS.format('"&<\x09'))
 P_NAME = re.compile(r"^(?:\{([^}]*)\})?(.+)$")
 
-ALWAYS_EXPANDED_TAGS = frozenset({"bodies"})
+ALWAYS_EXPANDED_TAGS = frozenset({"bodies", "semanticResources"})
 
 
 @t.runtime_checkable
