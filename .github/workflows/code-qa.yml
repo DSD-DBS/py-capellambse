@@ -129,6 +129,7 @@ jobs:
         run: |
           jq --version
           set -o pipefail
+          export CAPELLAMBSE_UUID_SEED=0
           ok=true
           function celloutputs() {
             jq -r '.cells[] | select(.cell_type=="code") | .outputs[] | (.text, .data["text/plain"]) | .[]?' < "$1" |
@@ -136,9 +137,6 @@ jobs:
               sed -e 's/ at 0x[0-9a-fA-F]\+/ at 0x0/'
           }
           for file in docs/source/examples/*.ipynb; do
-            # Requirement notebook creates objects, which will get randomized UUIDs
-            if [[ "${file##*/}" = "06 Introduction to Requirement access and management.ipynb" ]]; then continue; fi
-
             old_outputs="$(celloutputs "$file")"
             if ! jupyter nbconvert --to notebook --execute "$file" --output "${file##*/}" --ExecutePreprocessor.timeout "${NOTEBOOK_TIMEOUT_SEC:-300}"; then
               ok=false

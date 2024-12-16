@@ -208,8 +208,15 @@ develop and re-run the example notebooks:
 ```bash
 pip install jupyter capellambse
 cd docs/source/examples
-jupyter-notebook
+CAPELLAMBSE_UUID_SEED=0 jupyter-notebook
 ```
+
+.. note::
+
+   The above command provides a static seed for the internal pseudo-random
+   number generator. This is not recommended for production environments. [Read
+   more about
+   CAPELLAMBSE_UUID_SEED.](https://dsd-dbs.github.io/py-capellambse/start/envvars.html)
 
 If your browser did not open automatically, follow the instructions in the
 terminal to start it manually.
