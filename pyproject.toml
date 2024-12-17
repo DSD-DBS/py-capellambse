@@ -215,6 +215,7 @@ ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = """
+  -W error::pytest.PytestUnraisableExceptionWarning
   --import-mode=importlib
   --strict-config
   --strict-markers
