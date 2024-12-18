@@ -70,10 +70,6 @@ repos:
           - LICENSES/.license_header.txt
           - --comment-style
           - "..|  |"
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
   - repo: https://github.com/PyCQA/docformatter
     rev: eb1df347edd128b30cd3368dddc3aa65edcfac38
     hooks:
@@ -89,7 +85,7 @@ repos:
         name: Ruff (main Python code)
         types_or: [python, pyi, jupyter]
         exclude: 'docs/.*\.ipynb$'
-        args: [--extend-ignore=FIX]
+        args: [--extend-ignore=FIX, --fix]
       - id: ruff
         name: Ruff (demo notebooks)
         types_or: [jupyter]

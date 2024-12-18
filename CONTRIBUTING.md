@@ -39,16 +39,7 @@ We additionally recommend that you set up your editor / IDE as follows.
 - *If you use Visual Studio Code*: Consider using a platform which supports
   third-party language servers more easily, and continue with the next point.
 
-  Otherwise, set up the editor to run `ruff` and `mypy` when saving. To enable
-  automatic import sorting with `isort`, add the following to your
-  `settings.json`:
-
-  ```json
-  "[python]": {
-      "editor.codeActionsOnSave": {
-          "source.organizeImports": true
-      }
-  }
+  Otherwise, set up the editor to run `ruff` and `mypy` when saving.
   ```
 
   Note that the Pylance language server is not recommended, as it occasionally
@@ -60,7 +51,7 @@ We additionally recommend that you set up your editor / IDE as follows.
   You can install everything that's needed into the virtualenv with pip:
 
   ```sh
-  pip install "python-lsp-server" pyls-isort pylsp-mypy ruff
+  pip install "python-lsp-server" pylsp-mypy ruff
   ```
 
   This will provide as-you-type linting as well as automatic formatting on
@@ -121,9 +112,6 @@ Python code]. The key differences are:
   break up strings that are presented to the user in e.g. log messages, as that
   makes it significantly harder to grep for them.
 
-  Use [isort] for automatic sorting of imports. Its settings should
-  automatically be picked up from the `pyproject.toml` file as well.
-
 - **Typing**: We do not make an exception for `typing` imports. Instead of
   writing `from typing import SomeName`, use `import typing as t` and access
   typing related classes like `t.TypedDict`.
@@ -151,7 +139,6 @@ Python code]. The key differences are:
 
 [google style guide for python code]:
   https://google.github.io/styleguide/pyguide.html
-[isort]: https://github.com/PyCQA/isort
 [mypy]: https://github.com/python/mypy
 [numpy style guide]:
   https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard

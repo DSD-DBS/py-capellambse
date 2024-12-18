@@ -11,7 +11,6 @@ Python-Capellambse
 ![License: Apache-2.0](https://img.shields.io/github/license/dsd-dbs/py-capellambse)
 ![REUSE status](https://api.reuse.software/badge/github.com/DSD-DBS/py-capellambse)
 ![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
-![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)
 
 *A Python 3 headless implementation of the Capella modeling tool*
 
