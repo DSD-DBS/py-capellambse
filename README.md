@@ -181,47 +181,8 @@ pip install capellambse
 Development
 -----------
 
-To set up a development environment, clone the project and install it into a
-virtual environment.
-
-```bash
-git clone https://github.com/DSD-DBS/py-capellambse
-cd py-capellambse
-python -m venv .venv
-
-source .venv/bin/activate.sh  # for Linux / Mac
-.venv\Scripts\activate  # for Windows
-
-pip install -U pip pre-commit
-pip install -e '.[docs,test]'
-pre-commit install
-```
-
-The example notebooks (see above) are verified during CI, to ensure their
-output is up to date. This means they have to be re-run whenever the expected
-output changes.
-
-Use the following command to start a Jupyter server, which can be used to
-develop and re-run the example notebooks:
-
-```bash
-pip install jupyter capellambse
-cd docs/source/examples
-CAPELLAMBSE_UUID_SEED=0 jupyter-notebook
-```
-
-> [!NOTE]
-> The above command provides a static seed for the internal pseudo-random
-> number generator. This is not recommended for production environments. [Read
-> more about
-> CAPELLAMBSE_UUID_SEED.](https://dsd-dbs.github.io/py-capellambse/start/envvars.html)
-
-If your browser did not open automatically, follow the instructions in the
-terminal to start it manually.
-
-Once in the browser, simply click on the [01
-Introduction.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/01%20Introduction.html)
-notebook to start!
+For details on how to set up a local development environment, please refer to
+the [CONTRIBUTING guide](CONTRIBUTING.md).
 
 Current limitations
 -------------------
