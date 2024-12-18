@@ -256,6 +256,12 @@ class Alias(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
     def __delete__(self, obj: _obj.ModelObject) -> None:
         delattr(obj, self.target)
 
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" to {self.target!r}{' (hidden)' * self.dirhide}>"
+        )
+
 
 class DeprecatedAccessor(Accessor[T_co]):
     """Provides a deprecated alias to another attribute."""
@@ -296,6 +302,12 @@ class DeprecatedAccessor(Accessor[T_co]):
     def __warn(self) -> None:
         msg = f"{self._qualname} is deprecated, use {self.alternative} instead"
         warnings.warn(msg, FutureWarning, stacklevel=3)
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r},"
+            f" use {self.alternative!r} instead>"
+        )
 
 
 class Single(Accessor[T_co | None], t.Generic[T_co]):
@@ -1044,6 +1056,12 @@ class DirectProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
         else:
             raise TypeError(f"Cannot delete {self._qualname}")
 
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" of {self.xtypes!r}>"
+        )
+
     def _delete(
         self, model: capellambse.MelodyModel, elements: list[etree._Element]
     ) -> None:
@@ -1234,6 +1252,9 @@ class DeepProxyAccessor(PhysicalAccessor[T_co]):
         elems = [e for e in self._getsubelems(obj) if e.get("id") is not None]
         assert self.aslist is not None
         return self.aslist(obj._model, elems)
+
+    def __repr__(self) -> str:
+        return f"<{type(self).__name__} {self._qualname!r} to {self.class_!r}>"
 
     def _getsubelems(
         self, obj: _obj.ModelObject
@@ -1503,6 +1524,13 @@ class Allocation(Relationship[T_co]):
         for i in refobjs:
             obj._model._loader.idcache_remove(i)
             obj._element.remove(i)
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" to {self.class_[0].alias}:{self.class_[1]}"
+            f" via {self.tag!r} {self.alloc_type!r}>"
+        )
 
     def __follow_ref(
         self, obj: _obj.ModelObject, refelm: etree._Element
@@ -1827,6 +1855,13 @@ class Association(Relationship[T_co]):
 
         del obj._element.attrib[self.attr]
 
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" to {self.class_[0].alias}:{self.class_[1]}"
+            f" on {self.attr!r}>"
+        )
+
     def insert(
         self,
         elmlist: _obj.ElementListCouplingMixin,
@@ -1990,6 +2025,13 @@ class IndexAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             )
         container[self.index] = value
 
+    def __repr__(self) -> str:
+        wrapped = repr(self.wrapped).replace(" " + repr(self._qualname), "")
+        return (
+            f"<{type(self).__name__} {self._qualname!r},"
+            f" index {self.index} of {wrapped}>"
+        )
+
 
 class AlternateAccessor(Accessor[T_co]):
     """Provides access to an "alternate" form of the object."""
@@ -2012,6 +2054,11 @@ class AlternateAccessor(Accessor[T_co]):
         alt._model = obj._model  # type: ignore[misc]
         alt._element = obj._element  # type: ignore[misc]
         return alt
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r} for {self.class_!r}>"
+        )
 
 
 class ParentAccessor(Accessor["_obj.ModelObject"]):
@@ -2077,6 +2124,12 @@ class AttributeMatcherAccessor(DirectProxyAccessor[T_co]):
         if self.__aslist is None:
             return no_list(self, obj._model, matches, self.class_)
         return self.__aslist(obj._model, matches, self.class_)
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r},"
+            f" matching {self.attributes!r} on {self.class_.__name__!r}>"
+        )
 
 
 class _Specification(t.MutableMapping[str, str]):
@@ -2304,6 +2357,19 @@ class Backref(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             obj._model, matches, None, **self.list_extra_args
         )
 
+    def __repr__(self) -> str:
+        try:
+            attrs: cabc.Sequence[t.Any] = [
+                i for (_, (i,), *_) in t.cast(t.Any, self.attrs.__reduce__())
+            ]
+        except Exception:
+            attrs = self.attrs
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" to {self.class_[0].alias}:{self.class_[1]}"
+            f" through {attrs}>"
+        )
+
 
 class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
     """Provides access to a filtered subset of another attribute."""
@@ -2397,6 +2463,14 @@ class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         self.wrapped = wrapped  # type: ignore
 
         super().__set_name__(owner, name)
+
+    def __repr__(self) -> str:
+        wrapped = repr(self.wrapped).replace(" " + repr(self._qualname), "")
+        return (
+            f"<{type(self).__name__} {self._qualname!r},"
+            f" using {self.class_[0].alias}:{self.class_[1]}"
+            f" on {wrapped}>"
+        )
 
     def insert(
         self,
@@ -2534,6 +2608,12 @@ class TypecastAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
 
     def __delete__(self, obj):
         delattr(obj, self.attr)
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" to {self.class_!r} from {self.attr!r}>"
+        )
 
     def create(
         self,
@@ -2737,6 +2817,13 @@ class Containment(Relationship[T_co]):
                 previous.pop(id(i._element), None)
         for i in previous.values():
             current.remove(i)
+
+    def __repr__(self) -> str:
+        return (
+            f"<{type(self).__name__} {self._qualname!r}"
+            f" of {self.class_[0].alias}:{self.class_[1]}"
+            f" in {self.role_tag!r}>"
+        )
 
     def insert(
         self,
