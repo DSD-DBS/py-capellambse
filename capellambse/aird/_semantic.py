@@ -20,9 +20,8 @@ from lxml import etree
 import capellambse
 from capellambse import diagram
 
-from . import _box_factories
+from . import _box_factories, _edge_factories
 from . import _common as c
-from . import _edge_factories
 
 LOGGER = logging.getLogger(__name__)
 NO_RENDER_XMT = frozenset(
