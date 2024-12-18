@@ -10,12 +10,15 @@ __all__ = [
     "FloatPOD",
     "HTMLStringPOD",
     "IntPOD",
+    "MultiStringPOD",
     "StringPOD",
 ]
 
 import abc
+import collections.abc as cabc
 import datetime
 import enum
+import itertools
 import math
 import os
 import re
@@ -23,6 +26,7 @@ import typing as t
 
 import markupsafe
 import typing_extensions as te
+from lxml import etree
 
 from capellambse import helpers
 
@@ -371,3 +375,128 @@ class EnumPOD(BasePOD[E]):
         if isinstance(value, str):
             value = self.enumcls[value]
         return value.value
+
+
+class MultiStringPOD(BasePOD[cabc.MutableSequence[str]]):
+    """A POD that provides access to a list of strings."""
+
+    __slots__ = (
+        "__name__",
+        "__objclass__",
+        "tag",
+    )
+
+    def __init__(self, tag: str) -> None:
+        super().__init__(tag, default=[], writable=True)
+        self.tag = tag
+
+        self.__name__ = "(unknown)"
+        self.__objclass__: type[t.Any] | None = None
+
+    @t.overload
+    def __get__(self, obj: None, objtype: type) -> te.Self: ...
+    @t.overload
+    def __get__(
+        self, obj: t.Any, objtype: type | None = None
+    ) -> cabc.MutableSequence[str]: ...
+    def __get__(self, obj, objtype=None):
+        del objtype
+        if obj is None:
+            return self
+
+        return _MultiPODValues(obj._element, self.tag)
+
+    def __set__(self, obj: t.Any, value: cabc.Sequence[str] | None) -> None:
+        if value is None:
+            value = ()
+        self.__get__(obj)[:] = value
+
+    def __delete__(self, obj: t.Any) -> None:
+        self.__get__(obj)[:] = ()
+
+    def _from_xml(self, value: str, /) -> cabc.MutableSequence[str]:
+        del value
+        raise TypeError("Not used for this POD type")
+
+    def _to_xml(self, value: cabc.MutableSequence[str], /) -> str | None:
+        del value
+        raise TypeError("Not used for this POD type")
+
+
+class _MultiPODValues(cabc.MutableSequence[str]):
+    def __init__(self, parent: etree._Element, tag: str) -> None:
+        self._parent = parent
+        self._tag = tag
+
+    @t.overload
+    def __getitem__(self, _: int, /) -> str: ...
+    @t.overload
+    def __getitem__(self, _: slice, /) -> cabc.MutableSequence[str]: ...
+    def __getitem__(
+        self, i: int | slice, /
+    ) -> str | cabc.MutableSequence[str]:
+        values = list(self._parent.iterchildren(self._tag))
+        if isinstance(i, slice):
+            return [v.text or "" for v in values[i]]
+        return values[i].text or ""
+
+    @t.overload
+    def __setitem__(self, i: int, v: str, /) -> None: ...
+    @t.overload
+    def __setitem__(self, i: slice, v: cabc.Iterable[str], /) -> None: ...
+    def __setitem__(
+        self, idx: int | slice, value: str | cabc.Iterable[str], /
+    ) -> None:
+        if not isinstance(idx, int | slice):
+            raise TypeError(
+                "indices must be integers or slices, not {type(i).__name__}"
+            )
+
+        if isinstance(idx, slice) and isinstance(value, cabc.Iterable):
+            it = self._parent.iterchildren(self._tag)
+            elems = list(itertools.islice(it, idx.start, idx.stop, idx.step))
+            values = [i.text for i in elems]
+            values[idx] = value
+            for e, v in zip(elems, values, strict=True):
+                e.text = v
+
+        elif isinstance(idx, int) and isinstance(value, str):
+            if idx < 0:
+                idx += len(self)
+                if idx < 0:
+                    raise IndexError("assignment index out of range")
+
+            it = self._parent.iterchildren(self._tag)
+            elem = next(itertools.islice(it, idx, idx + 1), None)
+            if elem is None:
+                raise IndexError("assignment index out of range") from None
+            elem.text = value
+
+    def __delitem__(self, i: int | slice, /) -> None:
+        it = self._parent.iterchildren(self._tag)
+        if isinstance(i, slice):
+            elems = list(itertools.islice(it, i.start, i.stop, i.step))
+        else:
+            elems = list(itertools.islice(it, i, i + 1, 1))
+        for e in elems:
+            self._parent.remove(e)
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self._parent.iterchildren(self._tag))
+
+    def insert(self, index: int, value: str, /) -> None:
+        if index < 0:
+            index = max(index + len(self), 0)
+        e: etree._Element | None = None
+
+        container = self._parent.makeelement(self._tag)
+        container.text = value
+
+        for i, e in enumerate(self._parent.iterchildren(self._tag)):
+            if i == index:
+                e.addprevious(container)
+                break
+        else:
+            if e is not None:
+                e.addnext(container)
+            e.append(container)
