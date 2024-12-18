@@ -22,7 +22,7 @@ it directly from the source tree with:
 
 .. code-block:: bash
 
-    ./capellambse/repl.py test-5.0
+    ./src/capellambse/repl.py test-5.0
 
 On Unix-like operating systems, this will automatically enable ``-Xdev``
 on the Python interpreter.
@@ -32,7 +32,7 @@ argument, add a JSON file to your user ``known_models`` directory. This
 file defines the instantiation parameters for the
 :class:`capellambse.model.MelodyModel`:
 
-.. literalinclude:: ../../../capellambse/known_models/test-lib.json
+.. literalinclude:: ../../../src/capellambse/known_models/test-lib.json
    :language: json
    :lineno-start: 1
    :linenos:
@@ -363,7 +363,7 @@ def fzf(
 
 def main() -> None:
     """Launch a simple Python REPL with a Capella model."""
-    os.chdir(pathlib.Path(capellambse.__file__).parents[1])
+    os.chdir(pathlib.Path(capellambse.__file__).parents[2])
 
     interactive_locals = {
         "__doc__": None,

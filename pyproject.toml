@@ -247,7 +247,7 @@ zip-safe = false
 "capellambse" = ["OpenSans-Regular.ttf"]
 
 [tool.setuptools.packages.find]
-include = ["capellambse", "capellambse.*"]
+where = ["src"]
 
 [tool.setuptools_scm]
 # This section must exist for setuptools_scm to work

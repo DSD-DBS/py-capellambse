@@ -3,7 +3,7 @@
 
 # Ignore all custom known_models by default, to avoid accidental information
 # leaks. To commit one anyway, use: git add -f filename.json
-capellambse/known_models/*.json
+src/capellambse/known_models/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

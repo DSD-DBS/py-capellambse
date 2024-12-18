@@ -25,11 +25,11 @@ help:
 
 # Auto-generate API documentation
 apidoc:
-	sphinx-apidoc --module-first --output-dir source/code --force .. \
-		../capellambse/aird/diagram.py \
-		../capellambse/extensions/reqif/elements.py \
-		../capellambse/repl.py \
-		../capellambse/sphinx.py
+	sphinx-apidoc --module-first --output-dir source/code --force ../src \
+		../src/capellambse/aird/diagram.py \
+		../src/capellambse/extensions/reqif/elements.py \
+		../src/capellambse/repl.py \
+		../src/capellambse/sphinx.py
 	sed -i -e '/^\.\. automodule:: capellambse$$/a \   :no-index:' source/code/capellambse.rst
 
 clean-apidoc:
