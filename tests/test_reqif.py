@@ -376,6 +376,7 @@ class TestReqIFAccess:
 
         assert len(mod.folders) == 1
         assert len(mod.requirements) == 1
+        assert mod.type is not None
         assert mod.type.long_name == "ModuleType"
         for attr, expected in {
             "identifier": "1",
@@ -392,6 +393,7 @@ class TestReqIFAccess:
 
         assert len(folder.folders) == 1
         assert len(folder.requirements) == 2
+        assert folder.type is not None
         assert folder.type.long_name == "ReqType"
         for attr, expected in {
             "identifier": "1",
@@ -408,6 +410,7 @@ class TestReqIFAccess:
     def test_Requirement_attributes(self, model: m.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
+        assert req.type is not None
         assert req.type.long_name == "ReqType"
 
         for attr, expected in {
