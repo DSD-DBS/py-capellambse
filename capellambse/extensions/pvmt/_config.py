@@ -157,7 +157,10 @@ class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
         super().__init__(attribute, default=SelectorRules(""), writable=True)
         self.__doc__ = "The element selector rules for this group."
 
-    def _from_xml(self, data: str, /) -> SelectorRules:
+    def _from_xml(
+        self, data: str, model: capellambse.MelodyModel, /
+    ) -> SelectorRules:
+        del model
         return SelectorRules(data)
 
     def _to_xml(self, value: SelectorRules | str, /) -> str:
