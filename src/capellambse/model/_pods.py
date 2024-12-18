@@ -97,6 +97,10 @@ class BasePOD(t.Generic[U]):
         self.__set__(obj, None)
 
     def __set_name__(self, owner: type[t.Any], name: str) -> None:
+        if self.__objclass__ is not None:
+            raise RuntimeError(
+                f"__set_name__ called twice on {self._qualname}"
+            )
         self.__name__ = name
         self.__objclass__ = owner
 

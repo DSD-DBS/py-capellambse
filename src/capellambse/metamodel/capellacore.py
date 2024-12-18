@@ -2,25 +2,27 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import typing as t
+
 import capellambse.model as m
 
+from . import namespaces as ns
 
-@m.xtype_handler(None)
+NS = ns.CAPELLACORE
+
+
 class Constraint(m.ModelElement):
     """A constraint."""
 
     _xmltag = "ownedConstraints"
 
     constrained_elements = m.Association(
-        m.ModelElement,
-        "constrainedElements",
-        aslist=m.MixedElementList,
+        m.ModelElement, "constrainedElements", legacy_by_type=True
     )
 
     specification = m.SpecificationAccessor()
 
 
-@m.xtype_handler(None)
 class Generalization(m.ModelElement):
     """A Generalization."""
 
@@ -29,14 +31,12 @@ class Generalization(m.ModelElement):
     super: m.Accessor
 
 
-@m.xtype_handler(None)
 class EnumerationPropertyLiteral(m.ModelElement):
     """A Literal for EnumerationPropertyType."""
 
     _xmltag = "ownedLiterals"
 
 
-@m.xtype_handler(None)
 class EnumerationPropertyType(m.ModelElement):
     """An EnumerationPropertyType."""
 
@@ -56,46 +56,40 @@ class PropertyValue(m.ModelElement):
         EnumerationPropertyType, aslist=m.ElementList
     )
 
-    value: m.BasePOD | m.Association
+    value: t.ClassVar[m.BasePOD | m.Single]
 
 
-@m.xtype_handler(None)
 class BooleanPropertyValue(PropertyValue):
     """A boolean property value."""
 
     value = m.BoolPOD("value")
 
 
-@m.xtype_handler(None)
 class FloatPropertyValue(PropertyValue):
     """A floating point property value."""
 
     value = m.FloatPOD("value")
 
 
-@m.xtype_handler(None)
 class IntegerPropertyValue(PropertyValue):
     """An integer property value."""
 
     value = m.IntPOD("value")
 
 
-@m.xtype_handler(None)
 class StringPropertyValue(PropertyValue):
     """A string property value."""
 
     value = m.StringPOD("value")
 
 
-@m.xtype_handler(None)
 class EnumerationPropertyValue(PropertyValue):
     """An enumeration property value."""
 
-    type = m.Association(EnumerationPropertyType, "type")
-    value = m.Association(EnumerationPropertyLiteral, "value")
+    type = m.Single(m.Association(EnumerationPropertyType, "type"))
+    value = m.Single(m.Association(EnumerationPropertyLiteral, "value"))
 
 
-@m.xtype_handler(None)
 class PropertyValueGroup(m.ModelElement):
     """A group for PropertyValues."""
 
@@ -116,7 +110,6 @@ class PropertyValueGroup(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class PropertyValuePkg(m.ModelElement):
     """A Package for PropertyValues."""
 
@@ -125,9 +118,9 @@ class PropertyValuePkg(m.ModelElement):
     enumeration_property_types = m.DirectProxyAccessor(
         EnumerationPropertyType, aslist=m.ElementList
     )
-    groups = m.DirectProxyAccessor(
+    groups = m.Containment["PropertyValueGroup"](
+        "ownedPropertyValueGroups",
         PropertyValueGroup,
-        aslist=m.ElementList,
         mapkey="name",
         mapvalue="values",
     )
@@ -146,55 +139,39 @@ class PropertyValuePkg(m.ModelElement):
     )
 
 
-m.set_self_references(
-    (PropertyValuePkg, "packages"),
+PropertyValuePkg.packages = m.DirectProxyAccessor(
+    PropertyValuePkg, aslist=m.ElementList
 )
-m.set_accessor(
-    m.ModelElement,
-    "extensions",
-    m.Containment("ownedExtensions", aslist=m.ElementList),
+m.ModelElement.extensions = m.Containment(
+    "ownedExtensions", aslist=m.ElementList
 )
-m.set_accessor(
-    m.ModelElement,
-    "constraints",
-    m.DirectProxyAccessor(Constraint, aslist=m.ElementList),
+m.ModelElement.constraints = m.DirectProxyAccessor(
+    Constraint, aslist=m.ElementList
 )
 
-m.set_accessor(
+m.ModelElement.property_values = m.DirectProxyAccessor(
     m.ModelElement,
-    "property_values",
-    m.DirectProxyAccessor(
-        m.ModelElement,
-        (
-            BooleanPropertyValue,
-            EnumerationPropertyValue,
-            FloatPropertyValue,
-            IntegerPropertyValue,
-            StringPropertyValue,
-        ),
-        aslist=m.MixedElementList,
-        mapkey="name",
-        mapvalue="value",
+    (
+        BooleanPropertyValue,
+        EnumerationPropertyValue,
+        FloatPropertyValue,
+        IntegerPropertyValue,
+        StringPropertyValue,
     ),
+    aslist=m.MixedElementList,
+    mapkey="name",
+    mapvalue="value",
 )
-m.set_accessor(
-    m.ModelElement,
-    "property_value_groups",
-    m.DirectProxyAccessor(
-        PropertyValueGroup,
-        aslist=m.ElementList,
-        mapkey="name",
-        mapvalue="values",
-    ),
+m.ModelElement.property_value_groups = m.DirectProxyAccessor(
+    PropertyValueGroup,
+    aslist=m.ElementList,
+    mapkey="name",
+    mapvalue="values",
 )
 
-m.set_accessor(
-    m.ModelElement,
-    "applied_property_values",
-    m.Association(None, "appliedPropertyValues", aslist=m.ElementList),
+m.ModelElement.applied_property_values = m.Association(
+    None, "appliedPropertyValues"
 )
-m.set_accessor(
-    m.ModelElement,
-    "applied_property_value_groups",
-    m.Association(None, "appliedPropertyValueGroups", aslist=m.ElementList),
+m.ModelElement.applied_property_value_groups = m.Association(
+    None, "appliedPropertyValueGroups"
 )

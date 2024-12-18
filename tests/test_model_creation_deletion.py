@@ -22,14 +22,31 @@ def model():
     return m.MelodyModel(TEST_ROOT / TEST_MODEL)
 
 
-def test_created_elements_can_be_accessed_in_model(
+def test_DirectProxyAccessor_created_elements_can_be_accessed_in_model(
     model: m.MelodyModel,
 ):
-    newobj = model.la.root_component.components.create(name="TestComponent")
+    parent = model.la.root_component
+    assert isinstance(type(parent).components, m.DirectProxyAccessor)
+
+    newobj = parent.components.create(name="TestComponent")
 
     assert newobj is not None
     assert isinstance(newobj, mm.la.LogicalComponent)
     assert newobj in model.la.root_component.components
+
+
+def test_Containment_created_elements_can_be_accessed_in_model(
+    model: m.MelodyModel,
+):
+    parent = model.by_uuid("df30d27f-0efb-4896-b6b6-0757145c7ad5")
+    assert isinstance(parent, mm.capellacommon.Region)
+    assert isinstance(type(parent).states, m.Containment)
+
+    newobj = parent.states.create("State", name="Booting up")
+
+    assert newobj is not None
+    assert isinstance(newobj, mm.capellacommon.State)
+    assert newobj in parent.states
 
 
 def test_created_elements_show_up_in_xml_after_adding_them(
@@ -107,15 +124,19 @@ def test_adding_a_namespace_preserves_the_capella_version_comment(
     assert len(prev_elements) == 1
 
 
-def test_deleting_an_object_purges_references_from_AttrProxyAccessor(
+def test_deleting_an_object_purges_references_from_Association(
     model: m.MelodyModel, caplog
 ) -> None:
     part = model.by_uuid("1bd59e23-3d45-4e39-88b4-33a11c56d4e3")
     assert isinstance(part, mm.cs.Part)
-    assert isinstance(type(part).type, m.Association)
+    acc = type(part).type
+    assert isinstance(acc, m.Single)
+    assert isinstance(acc.wrapped, m.Association)
     component = model.by_uuid("ea5f09e6-a0ec-46b2-bd3e-b572f9bf99d6")
+    parent = component.parent
 
-    component.parent.components.remove(component)
+    parent.components.remove(component)
+    parent.components.append(component)
 
     assert not list(model.find_references(component))
     assert part.type is None

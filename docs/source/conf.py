@@ -57,13 +57,16 @@ nitpick_ignore = [
     ("any", "capellambse.aird.GLOBAL_FILTERS"),
     # Private type hinting helpers
     ("py:class", "_MapFunction"),
+    ("py:class", "_NotSpecifiedType"),
     ("py:class", "capellambse.model._descriptors._Specification"),
 ]
 nitpick_ignore_regex = [
-    ("py:.*", r"^yaml\..*"),
+    ("py:.*", r"^(?:awesomeversion|yaml)\..*"),
     ("py:.*", r"^(?:.*\.)?_[A-Z]$"),  # Single-letter TypeVars (e.g. _T)
     # Super/subclass and "see also" references sometimes break
     ("py:(meth|obj)", r"(?:.*\.)?write_transaction"),
+    # Sometimes autodoc_typehints doesn't properly resolve aliases
+    ("py:class", r"(?:cabc|etree|t|_obj)\..*"),
 ]
 
 

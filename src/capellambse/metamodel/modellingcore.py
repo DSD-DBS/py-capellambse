@@ -1,15 +1,17 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
-"""Abstract classes acting as templates for concrete classes.
+from __future__ import annotations
 
-These base classes are used between different layers.
-"""
+import capellambse.model as m
+from capellambse.model._obj import ModelElement as ModelElement
 
-from capellambse import model as m
+from . import namespaces as ns
+
+NS = ns.MODELLINGCORE
 
 
 class TraceableElement(m.ModelElement):
     """A template for traceable ModelObjects."""
 
-    source = m.Association(m.ModelElement, attr="sourceElement")
-    target = m.Association(m.ModelElement, attr="targetElement")
+    source = m.Single(m.Association(m.ModelElement, attr="sourceElement"))
+    target = m.Single(m.Association(m.ModelElement, attr="targetElement"))

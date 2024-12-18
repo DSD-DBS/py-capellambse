@@ -9,28 +9,27 @@ from __future__ import annotations
 
 import capellambse.model as m
 
-from . import capellacommon, cs, fa, la, modeltypes
+from .. import capellacommon, cs, fa, la, modeltypes
+from .. import namespaces as ns
+
+NS = ns.PA
 
 
-@m.xtype_handler(None)
 class PhysicalFunction(fa.Function):
     """A physical function on the Physical Architecture layer."""
 
-    owner: m.Accessor[PhysicalComponent]
+    owner: m.Single[PhysicalComponent]
     realized_logical_functions = m.TypecastAccessor(
         la.LogicalFunction, "realized_functions"
     )
 
 
-@m.xtype_handler(None)
 class PhysicalFunctionPkg(m.ModelElement):
     """A logical component package."""
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.Containment(
-        "ownedPhysicalFunctions", PhysicalFunction, aslist=m.ElementList
-    )
+    functions = m.Containment("ownedPhysicalFunctions", PhysicalFunction)
 
     packages: m.Accessor
     categories = m.DirectProxyAccessor(
@@ -38,7 +37,6 @@ class PhysicalFunctionPkg(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class PhysicalComponent(cs.Component):
     """A physical component on the Physical Architecture layer."""
 
@@ -52,7 +50,6 @@ class PhysicalComponent(cs.Component):
     allocated_functions = m.Allocation[PhysicalFunction](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
-        aslist=m.ElementList,
         attr="targetElement",
         backattr="sourceElement",
     )
@@ -84,7 +81,6 @@ class PhysicalComponent(cs.Component):
         )
 
 
-@m.xtype_handler(None)
 class PhysicalComponentPkg(m.ModelElement):
     """A logical component package."""
 
@@ -104,7 +100,6 @@ class PhysicalComponentPkg(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class PhysicalArchitecture(cs.ComponentArchitecture):
     """Provides access to the Physical Architecture layer of the model."""
 
@@ -169,38 +164,30 @@ class PhysicalArchitecture(cs.ComponentArchitecture):
     )
 
 
-m.set_accessor(
-    la.LogicalComponent,
-    "realizing_physical_components",
-    m.Backref(
-        PhysicalComponent, "realized_logical_components", aslist=m.ElementList
-    ),
+la.LogicalComponent.realizing_physical_components = m.Backref(
+    PhysicalComponent, "realized_logical_components"
 )
-m.set_accessor(
-    la.LogicalFunction,
-    "realizing_physical_functions",
-    m.Backref(
-        PhysicalFunction, "realized_logical_functions", aslist=m.ElementList
-    ),
+la.LogicalFunction.realizing_physical_functions = m.Backref(
+    PhysicalFunction, "realized_logical_functions"
 )
-m.set_accessor(
-    PhysicalComponent,
-    "deploying_components",
-    m.Backref(PhysicalComponent, "deployed_components", aslist=m.ElementList),
+PhysicalComponent.deploying_components = m.Backref(
+    PhysicalComponent, "deployed_components"
 )
-m.set_accessor(
-    PhysicalFunction,
-    "owner",
-    m.Backref(PhysicalComponent, "allocated_functions"),
+PhysicalFunction.owner = m.Single(
+    m.Backref(PhysicalComponent, "allocated_functions")
 )
-m.set_accessor(
-    PhysicalFunction,
-    "packages",
-    m.DirectProxyAccessor(PhysicalFunctionPkg, aslist=m.ElementList),
+PhysicalFunction.packages = m.DirectProxyAccessor(
+    PhysicalFunctionPkg, aslist=m.ElementList
 )
-m.set_self_references(
-    (PhysicalComponent, "owned_components"),
-    (PhysicalComponentPkg, "packages"),
-    (PhysicalFunction, "functions"),
-    (PhysicalFunctionPkg, "packages"),
+PhysicalComponent.owned_components = m.DirectProxyAccessor(
+    PhysicalComponent, aslist=m.ElementList
+)
+PhysicalComponentPkg.packages = m.DirectProxyAccessor(
+    PhysicalComponentPkg, aslist=m.ElementList
+)
+PhysicalFunction.functions = m.DirectProxyAccessor(
+    PhysicalFunction, aslist=m.ElementList
+)
+PhysicalFunctionPkg.packages = m.DirectProxyAccessor(
+    PhysicalFunctionPkg, aslist=m.ElementList
 )

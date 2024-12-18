@@ -11,9 +11,11 @@ functions, actors etc. which is best presented in a glossary document.
 import capellambse.model as m
 
 from . import capellacommon, capellacore, cs, fa, interaction, oa
+from . import namespaces as ns
+
+NS = ns.SA
 
 
-@m.xtype_handler(None)
 class SystemFunction(fa.Function):
     """A system function."""
 
@@ -24,22 +26,18 @@ class SystemFunction(fa.Function):
     owner: m.Accessor
 
 
-@m.xtype_handler(None)
 class SystemFunctionPkg(m.ModelElement):
     """A function package that can hold functions."""
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.Containment(
-        "ownedSystemFunctions", SystemFunction, aslist=m.ElementList
-    )
+    functions = m.Containment("ownedSystemFunctions", SystemFunction)
     packages: m.Accessor
     categories = m.DirectProxyAccessor(
         fa.ExchangeCategory, aslist=m.ElementList
     )
 
 
-@m.xtype_handler(None)
 class SystemComponent(cs.Component):
     """A system component."""
 
@@ -48,7 +46,6 @@ class SystemComponent(cs.Component):
     allocated_functions = m.Allocation[SystemFunction](
         "ownedFunctionalAllocation",
         fa.ComponentFunctionalAllocation,
-        aslist=m.ElementList,
         attr="targetElement",
         backattr="sourceElement",
     )
@@ -62,7 +59,6 @@ class SystemComponent(cs.Component):
     )
 
 
-@m.xtype_handler(None)
 class SystemComponentPkg(m.ModelElement):
     """A system component package."""
 
@@ -79,12 +75,10 @@ class SystemComponentPkg(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class CapabilityInvolvement(interaction.AbstractInvolvement):
     """A CapabilityInvolvement."""
 
 
-@m.xtype_handler(None)
 class Capability(m.ModelElement):
     """A capability."""
 
@@ -93,22 +87,16 @@ class Capability(m.ModelElement):
     extends = m.DirectProxyAccessor(
         interaction.AbstractCapabilityExtend, aslist=m.ElementList
     )
-    extended_by = m.Backref(
-        interaction.AbstractCapabilityExtend, "target", aslist=m.ElementList
-    )
+    extended_by = m.Backref(interaction.AbstractCapabilityExtend, "target")
     includes = m.DirectProxyAccessor(
         interaction.AbstractCapabilityInclude, aslist=m.ElementList
     )
-    included_by = m.Backref(
-        interaction.AbstractCapabilityInclude, "target", aslist=m.ElementList
-    )
+    included_by = m.Backref(interaction.AbstractCapabilityInclude, "target")
     generalizes = m.DirectProxyAccessor(
         interaction.AbstractCapabilityGeneralization, aslist=m.ElementList
     )
     generalized_by = m.Backref(
-        interaction.AbstractCapabilityGeneralization,
-        "target",
-        aslist=m.ElementList,
+        interaction.AbstractCapabilityGeneralization, "target"
     )
     owned_chains = m.DirectProxyAccessor(
         fa.FunctionalChain, aslist=m.ElementList
@@ -116,20 +104,18 @@ class Capability(m.ModelElement):
     involved_functions = m.Allocation[SystemFunction](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
         attr="involved",
     )
     involved_chains = m.Allocation[fa.FunctionalChain](
         "ownedFunctionalChainAbstractCapabilityInvolvements",
         interaction.FunctionalChainAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
         attr="involved",
     )
     involved_components = m.Allocation[SystemComponent](
         "ownedCapabilityInvolvements",
         CapabilityInvolvement,
-        aslist=m.MixedElementList,
         attr="involved",
+        legacy_by_type=True,
     )
     component_involvements = m.DirectProxyAccessor(
         CapabilityInvolvement, aslist=m.ElementList
@@ -137,36 +123,35 @@ class Capability(m.ModelElement):
     realized_capabilities = m.Allocation[oa.OperationalCapability](
         None,  # FIXME fill in tag
         interaction.AbstractCapabilityRealization,
-        aslist=m.ElementList,
         attr="targetElement",
     )
 
-    postcondition = m.Association(capellacore.Constraint, "postCondition")
-    precondition = m.Association(capellacore.Constraint, "preCondition")
+    postcondition = m.Single(
+        m.Association(capellacore.Constraint, "postCondition")
+    )
+    precondition = m.Single(
+        m.Association(capellacore.Constraint, "preCondition")
+    )
     scenarios = m.DirectProxyAccessor(
         interaction.Scenario, aslist=m.ElementList
     )
-    states = m.Association(
-        capellacommon.State, "availableInStates", aslist=m.ElementList
-    )
+    states = m.Association(capellacommon.State, "availableInStates")
 
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class MissionInvolvement(interaction.AbstractInvolvement):
     """A MissionInvolvement."""
 
     _xmltag = "ownedMissionInvolvements"
 
 
-@m.xtype_handler(None)
 class CapabilityExploitation(m.ModelElement):
     """A CapabilityExploitation."""
 
     _xmltag = "ownedCapabilityExploitations"
 
-    capability = m.Association(Capability, "capability")
+    capability = m.Single(m.Association(Capability, "capability"))
 
     @property
     def name(self) -> str:  # type: ignore[override]
@@ -178,7 +163,6 @@ class CapabilityExploitation(m.ModelElement):
         return f"[{self.__class__.__name__}]{direction}"
 
 
-@m.xtype_handler(None)
 class Mission(m.ModelElement):
     """A mission."""
 
@@ -187,13 +171,10 @@ class Mission(m.ModelElement):
     involvements = m.DirectProxyAccessor(
         MissionInvolvement, aslist=m.ElementList
     )
-    incoming_involvements = m.Backref(
-        MissionInvolvement, "target", aslist=m.ElementList
-    )
+    incoming_involvements = m.Backref(MissionInvolvement, "target")
     exploits = m.Allocation[Capability](
         None,  # FIXME fill in tag
         CapabilityExploitation,
-        aslist=m.ElementList,
         attr="capability",
     )
     exploitations = m.DirectProxyAccessor(
@@ -201,7 +182,6 @@ class Mission(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class MissionPkg(m.ModelElement):
     """A system mission package that can hold missions."""
 
@@ -211,7 +191,6 @@ class MissionPkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class CapabilityPkg(m.ModelElement):
     """A capability package that can hold capabilities."""
 
@@ -222,7 +201,6 @@ class CapabilityPkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class SystemAnalysis(cs.ComponentArchitecture):
     """Provides access to the SystemAnalysis layer of the model."""
 
@@ -279,49 +257,35 @@ class SystemAnalysis(cs.ComponentArchitecture):
     )
 
 
-m.set_accessor(
-    SystemFunction,
-    "owner",
-    m.Backref(SystemComponent, "allocated_functions"),
+SystemFunction.owner = m.Single(
+    m.Backref(SystemComponent, "allocated_functions")
 )
-m.set_accessor(
-    SystemFunction,
-    "packages",
-    m.DirectProxyAccessor(SystemFunctionPkg, aslist=m.ElementList),
+SystemFunction.packages = m.DirectProxyAccessor(
+    SystemFunctionPkg, aslist=m.ElementList
 )
-m.set_accessor(
-    oa.OperationalCapability,
-    "realizing_capabilities",
-    m.Backref(Capability, "realized_capabilities", aslist=m.ElementList),
+oa.OperationalCapability.realizing_capabilities = m.Backref(
+    Capability, "realized_capabilities"
 )
-m.set_accessor(
-    Capability,
-    "incoming_exploitations",
-    m.Backref(CapabilityExploitation, "capability", aslist=m.ElementList),
+Capability.incoming_exploitations = m.Backref(
+    CapabilityExploitation, "capability"
 )
-m.set_accessor(
-    oa.Entity,
-    "realizing_system_components",
-    m.Backref(
-        SystemComponent, "realized_operational_entities", aslist=m.ElementList
-    ),
+oa.Entity.realizing_system_components = m.Backref(
+    SystemComponent, "realized_operational_entities"
 )
-m.set_accessor(
-    oa.OperationalActivity,
-    "realizing_system_functions",
-    m.Backref(
-        SystemFunction, "realized_operational_activities", aslist=m.ElementList
-    ),
+oa.OperationalActivity.realizing_system_functions = m.Backref(
+    SystemFunction, "realized_operational_activities"
 )
-m.set_accessor(
-    SystemFunction,
-    "involved_in",
-    m.Backref(Capability, "involved_functions", aslist=m.ElementList),
+SystemFunction.involved_in = m.Backref(Capability, "involved_functions")
+MissionPkg.packages = m.DirectProxyAccessor(MissionPkg, aslist=m.ElementList)
+SystemComponent.components = m.DirectProxyAccessor(
+    SystemComponent, aslist=m.ElementList
 )
-m.set_self_references(
-    (MissionPkg, "packages"),
-    (SystemComponent, "components"),
-    (SystemComponentPkg, "packages"),
-    (SystemFunction, "functions"),
-    (SystemFunctionPkg, "packages"),
+SystemComponentPkg.packages = m.DirectProxyAccessor(
+    SystemComponentPkg, aslist=m.ElementList
+)
+SystemFunction.functions = m.DirectProxyAccessor(
+    SystemFunction, aslist=m.ElementList
+)
+SystemFunctionPkg.packages = m.DirectProxyAccessor(
+    SystemFunctionPkg, aslist=m.ElementList
 )
