@@ -1,0 +1,219 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Declarative Modeling Example\n",
+    "\n",
+    "Declarative approach to modeling means that one could define or update a model using a fragment of structured text. A number of fragments could be \"played\" against a model in a sequence to build it up.\n",
+    "\n",
+    "Enabling declarative modeling for Capella models enables a range of complex automations around modeling process that are explainable / transparent to human auditors.\n",
+    "\n",
+    "This notebook will demonstrate a basic application of this approach to modeling on a coffee machine example. Please note that we will not model any specific modeling process but rather a \"free-form\" demo."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## System Analysis of a Coffee Machine\n",
+    "\n",
+    "Lets do a quick system analysis of a coffee machine. Lets assume that our meta-solution is an automated coffee machine for a household use. We may look into variant management scenario in a separate example.\n",
+    "\n",
+    "### 0. Initialize\n",
+    "\n",
+    "But before we can model something lets first initialize the model. We will use an empty Capella 5.2 model as a starting point."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import io\n",
+    "\n",
+    "import capellambse\n",
+    "from capellambse import decl\n",
+    "\n",
+    "model = capellambse.MelodyModel(\n",
+    "    \"../../../tests/data/decl/empty_project_52/empty_project_52.aird\"\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "to visualize the modeling results we'll use context-diagrams extension, you may get one by uncommenting and running the command below"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "!pip install -q capellambse_context_diagrams"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "lets verify that the model is empty at SA layer:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "At SA layer the model has 0, out of which 0 are allocated to Root Component\n"
+     ]
+    }
+   ],
+   "source": [
+    "functions_allocated = model.sa.root_component.allocated_functions\n",
+    "functions_available = model.sa.root_function.functions\n",
+    "print(\n",
+    "    f\"At SA layer the model has {len(functions_available)},\"\n",
+    "    f\" out of which {len(functions_allocated)} are allocated to Root Component\"\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Also for this to work we'll need \"coordinates\" of some key elements in the model:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "root_function = model.sa.root_function\n",
+    "root_component = model.sa.root_component\n",
+    "structure = model.sa.component_package"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### 1. Context\n",
+    "\n",
+    "Lets start by renaming the root component from **System** to **Coffee Machine**, creating a human actor **User** and a component exchange between those two.\n",
+    "\n",
+    "We can achieve this by applying the following YAML patch to an empty Capella model:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "model_update = f\"\"\"\n",
+    "- parent: !uuid {root_component.uuid}\n",
+    "  set:\n",
+    "    name: Coffee Machine\n",
+    "- parent: !uuid {root_component.uuid}\n",
+    "  extend:\n",
+    "    ports:\n",
+    "      - name: usr\n",
+    "        direction: INOUT\n",
+    "        promise_id: usr-port-promise\n",
+    "    exchanges:\n",
+    "      - name: user interactions\n",
+    "        source: !promise usr-port-promise\n",
+    "        target: !promise cm-port-promise\n",
+    "- parent: !uuid {structure.uuid}\n",
+    "  extend:\n",
+    "    components:\n",
+    "      - name: User\n",
+    "        is_actor: true\n",
+    "        is_human: true\n",
+    "        ports:\n",
+    "          - name: cm\n",
+    "            direction: INOUT\n",
+    "            promise_id: cm-port-promise\n",
+    "\"\"\"\n",
+    "# the below line applies the model_update to the model\n",
+    "decl.apply(model, io.StringIO(model_update));"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "and now we can verify the changes by visualizing the context of our system under analysis:"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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",
+      "image/svg+xml": [
+       "<svg baseProfile=\"full\" class=\"SystemArchitectureBlank\" font-family=\"'Open Sans','Segoe UI',Arial,sans-serif\" font-size=\"10px\" height=\"57\" shape-rendering=\"geometricPrecision\" version=\"1.1\" viewBox=\"2 2 362 57\" width=\"362\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><defs><symbol id=\"SystemComponentSymbol\" viewBox=\"0 12 79 55\"><g transform=\"matrix(0.25509703,0,0,0.25509703,-19.119473,-26.4767)\"><g fill=\"#e3ebf8\" stroke-width=\"1.33145\" transform=\"matrix(0.92548165,0,0,0.92249056,-32.422011,-1.2909536)\"><path d=\"m 160.03785,180.47519 h 280.8845 v 200.68502 h -280.8845 z\" stroke=\"#000\" stroke-width=\"7\" /></g><path d=\"m 81.854696,210.17533 h 66.250264 v 35.37025 H 81.854696 Z\" fill=\"#e7efff\" stroke=\"#000\" stroke-width=\"7\" /><path d=\"m 83.588316,268.94271 h 66.250254 v 35.37024 H 83.588316 Z\" fill=\"#e7efff\" stroke=\"#000\" stroke-width=\"7\" /><rect fill=\"#000\" height=\"5\" stroke=\"#000\" stroke-width=\"54.1038\" width=\"5\" x=\"214.8075\" y=\"236.39\" /><rect fill=\"#000\" height=\"5\" stroke=\"#000\" stroke-width=\"54.1038\" width=\"5\" x=\"297.44\" y=\"298.36\" /><rect fill=\"#000\" height=\"5\" stroke=\"#000\" stroke-width=\"54.1038\" width=\"5\" x=\"297.44\" y=\"215.73\" /><path d=\"m 219.70896,218.22099 h 79.0257 v 85.9132 h -80.34135 z\" fill=\"none\" stroke=\"#000\" stroke-width=\"4.29901px\" /></g></symbol><linearGradient id=\"CustomGradient_C3E6FF_96B1DA\" x1=\"0\" x2=\"0\" y1=\"0\" y2=\"1\"><stop offset=\"0.0\" stop-color=\"#C3E6FF\" stop-opacity=\"1\" /><stop offset=\"1.0\" stop-color=\"#96B1DA\" stop-opacity=\"1\" /></linearGradient><symbol id=\"SystemHumanActorSymbol\" stroke=\"#000\" stroke-width=\"2\" viewBox=\"0 0 79 79\"><use transform=\"matrix(0.81762456,0,0,0.81762456,-2.5207584,0.47091696)\" xlink:href=\"#StickFigureSymbol\" /></symbol><symbol id=\"StickFigureSymbol\" stroke=\"#000\" stroke-width=\"2\" viewBox=\"362.861 210.892 75 75\"><g stroke=\"#000\" stroke-width=\"2.4944\" transform=\"matrix(1.0611338,0,0,1.0611338,-24.47665,-12.241673)\"><line fill=\"none\" x1=\"400.362\" x2=\"400.362\" y1=\"232.586\" y2=\"257.534\" /><line fill=\"none\" x1=\"400.83401\" x2=\"388.423\" y1=\"254.299\" y2=\"275.009\" /><line fill=\"none\" x1=\"400.25201\" x2=\"413.97\" y1=\"254.46001\" y2=\"274.987\" /><line fill=\"none\" x1=\"385.634\" x2=\"415.703\" y1=\"244.569\" y2=\"244.49699\" /><ellipse cx=\"400.53201\" cy=\"223.35899\" fill=\"none\" rx=\"9.2180004\" ry=\"8.5080004\" /></g></symbol><linearGradient id=\"CustomGradient_DAFDFF_C6E6FF\" x1=\"0\" x2=\"0\" y1=\"0\" y2=\"1\"><stop offset=\"0.0\" stop-color=\"#DAFDFF\" stop-opacity=\"1\" /><stop offset=\"1.0\" stop-color=\"#C6E6FF\" stop-opacity=\"1\" /></linearGradient><symbol id=\"ComponentExchangeSymbol\" viewBox=\"0 0 40 30\"><linearGradient id=\"ComponentExchangeSymbol-gradient\" x1=\"0\" x2=\"1\" y1=\"0\" y2=\"1\"><stop offset=\"0.0\" stop-color=\"#8FA5B6\" stop-opacity=\"1\" /><stop offset=\"1.0\" stop-color=\"#E0E9F3\" stop-opacity=\"1\" /></linearGradient><linearGradient id=\"ComponentExchangeSymbol-gradientreverse\" x1=\"0\" x2=\"1\" y1=\"0\" y2=\"1\"><stop offset=\"0.0\" stop-color=\"#E0E9F3\" stop-opacity=\"1\" /><stop offset=\"1.0\" stop-color=\"#8FA5B6\" stop-opacity=\"1\" /></linearGradient><g stroke=\"#000\" stroke-width=\"2\"><path d=\"M 36.190065,5.0377724 V 24.962228 H 26.17482 V 5.0377724 Z\" fill=\"url(#ComponentExchangeSymbol-gradientreverse)\" /><path d=\"m 14.372107,10 h 12.622435 c 0.926189,0.585267 1.836022,1.274509 2.268178,5 -0.208657,2.812473 -0.954601,4.503809 -2.273297,5 H 14.296948\" fill=\"#A3BCD0\" /><path d=\"M 3.9464908,5.0048246 V 24.995175 H 10.87518 C 12.433713,24.159139 15.158267,20.291241 15.313795,15 15.498614,11.583142 14.059659,6.6240913 10.87518,5.0048246 c -2.2179509,0 -4.5908341,0 -6.9286892,0 z\" fill=\"url(#ComponentExchangeSymbol-gradient)\" /></g></symbol></defs><rect fill=\"#fff\" height=\"57\" stroke=\"none\" width=\"362\" x=\"2\" y=\"2\" /><g class=\"Box SystemComponent context-0681a392-246d-46ab-95f9-f3cbd7448caf context-08e13729-ea0e-4d62-b415-20b00c387aeb context-4bb1b790-4498-4728-91e1-b2e739d33b0f context-7af5971f-1a6c-47d3-b9a8-4e709444113e context-902fb6a9-637e-492f-a2c9-9cf2bd3200a2\" id=\"7af5971f-1a6c-47d3-b9a8-4e709444113e\"><rect class=\"SystemComponent\" fill=\"url(&quot;#CustomGradient_C3E6FF_96B1DA&quot;)\" height=\"37\" stroke=\"#4A4A97\" stroke-width=\"4\" width=\"118\" x=\"13.5\" y=\"12.5\" /><text class=\"SystemComponent\" dominant-baseline=\"middle\" fill=\"#000000\" text-anchor=\"middle\" x=\"12\" y=\"24\"><tspan x=\"78.5\" xml:space=\"preserve\" y=\"30.714285714285715\">Coffee Machine</tspan></text><use height=\"20\" width=\"20\" x=\"23.0\" xlink:href=\"#SystemComponentSymbol\" y=\"20.714285714285715\" /></g><g class=\"Box SystemHumanActor context-0681a392-246d-46ab-95f9-f3cbd7448caf context-08e13729-ea0e-4d62-b415-20b00c387aeb context-4bb1b790-4498-4728-91e1-b2e739d33b0f context-7af5971f-1a6c-47d3-b9a8-4e709444113e context-902fb6a9-637e-492f-a2c9-9cf2bd3200a2\" id=\"4bb1b790-4498-4728-91e1-b2e739d33b0f\"><rect class=\"SystemHumanActor\" fill=\"url(&quot;#CustomGradient_DAFDFF_C6E6FF&quot;)\" height=\"37\" stroke=\"#4A4A97\" stroke-width=\"1\" width=\"59\" x=\"294.5\" y=\"12.5\" /><text class=\"SystemHumanActor\" dominant-baseline=\"middle\" fill=\"#000000\" text-anchor=\"middle\" x=\"301\" y=\"24\"><tspan x=\"338.0\" xml:space=\"preserve\" y=\"30.714285714285715\">User</tspan></text><use height=\"20\" width=\"20\" x=\"308.0\" xlink:href=\"#SystemHumanActorSymbol\" y=\"20.714285714285715\" /></g><g class=\"Edge ComponentExchange context-0681a392-246d-46ab-95f9-f3cbd7448caf context-08e13729-ea0e-4d62-b415-20b00c387aeb context-4bb1b790-4498-4728-91e1-b2e739d33b0f context-7af5971f-1a6c-47d3-b9a8-4e709444113e context-902fb6a9-637e-492f-a2c9-9cf2bd3200a2\" id=\"902fb6a9-637e-492f-a2c9-9cf2bd3200a2\"><path class=\"Edge\" d=\"M 133.5 31.5 292.5 31.5\" fill=\"none\" stroke=\"#4A4A97\" stroke-width=\"2\" /><text class=\"Annotation\" dominant-baseline=\"middle\" fill=\"#4A4A97\" text-anchor=\"middle\" x=\"142.5\" y=\"34\"><tspan x=\"224.0\" xml:space=\"preserve\" y=\"42.714285714285715\">user interactions</tspan></text><use height=\"20\" width=\"20\" x=\"164.5\" xlink:href=\"#ComponentExchangeSymbol\" y=\"32.714285714285715\" /></g><g class=\"Box CP_INOUT context-0681a392-246d-46ab-95f9-f3cbd7448caf context-08e13729-ea0e-4d62-b415-20b00c387aeb context-4bb1b790-4498-4728-91e1-b2e739d33b0f context-7af5971f-1a6c-47d3-b9a8-4e709444113e context-902fb6a9-637e-492f-a2c9-9cf2bd3200a2\" id=\"0681a392-246d-46ab-95f9-f3cbd7448caf\"><rect class=\"CP_INOUT\" fill=\"#FFFFFF\" height=\"10\" stroke=\"#000000\" stroke-width=\"1\" transform=\"rotate(-90 128.5 31.5)\" width=\"10\" x=\"123.5\" y=\"26.5\" /></g><g class=\"Box CP_INOUT context-0681a392-246d-46ab-95f9-f3cbd7448caf context-08e13729-ea0e-4d62-b415-20b00c387aeb context-4bb1b790-4498-4728-91e1-b2e739d33b0f context-7af5971f-1a6c-47d3-b9a8-4e709444113e context-902fb6a9-637e-492f-a2c9-9cf2bd3200a2\" id=\"08e13729-ea0e-4d62-b415-20b00c387aeb\"><rect class=\"CP_INOUT\" fill=\"#FFFFFF\" height=\"10\" stroke=\"#000000\" stroke-width=\"1\" transform=\"rotate(90 297.5 31.5)\" width=\"10\" x=\"292.5\" y=\"26.5\" /></g></svg>"
+      ],
+      "text/plain": [
+       "<Diagram 'Context of Coffee Machine'>"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "root_component.context_diagram"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Please note: the changes we made are not yet stored - if you like those to be saved you may use `model.save()` method. This will save the model back to where it was loaded from, for example by writing back into local files, or by creating a Git commit and pushing it back to the remote.\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  },
+  "vscode": {
+   "interpreter": {
+    "hash": "c5ea7dc634d8047a259e5b898f154d237fbe6934b444b1a949475949608d751e"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}

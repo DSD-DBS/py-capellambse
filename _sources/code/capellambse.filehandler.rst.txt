@@ -1,0 +1,74 @@
+capellambse.filehandler package
+===============================
+
+.. automodule:: capellambse.filehandler
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.filehandler.abc module
+----------------------------------
+
+.. automodule:: capellambse.filehandler.abc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.git module
+----------------------------------
+
+.. automodule:: capellambse.filehandler.git
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.git\_askpass module
+-------------------------------------------
+
+.. automodule:: capellambse.filehandler.git_askpass
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.gitlab\_artifacts module
+------------------------------------------------
+
+.. automodule:: capellambse.filehandler.gitlab_artifacts
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.http module
+-----------------------------------
+
+.. automodule:: capellambse.filehandler.http
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.local module
+------------------------------------
+
+.. automodule:: capellambse.filehandler.local
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.memory module
+-------------------------------------
+
+.. automodule:: capellambse.filehandler.memory
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.filehandler.zip module
+----------------------------------
+
+.. automodule:: capellambse.filehandler.zip
+   :members:
+   :undoc-members:
+   :show-inheritance:
