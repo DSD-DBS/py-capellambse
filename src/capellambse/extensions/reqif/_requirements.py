@@ -38,7 +38,11 @@ from capellambse import helpers
 if t.TYPE_CHECKING:
     import markupsafe
 
-m.XTYPE_ANCHORS[__name__] = "Requirements"
+NS = m.Namespace(
+    "http://www.polarsys.org/kitalpha/requirements",
+    "Requirements",
+    "org.polarsys.kitalpha.vp.requirements",
+)
 
 
 class ReqIFElement(m.ModelElement):
@@ -46,9 +50,7 @@ class ReqIFElement(m.ModelElement):
 
     identifier = m.StringPOD("ReqIFIdentifier")
     long_name = m.StringPOD("ReqIFLongName")
-    description: str = m.StringPOD(  # type: ignore[assignment]
-        "ReqIFDescription"
-    )
+    description: str = m.StringPOD("ReqIFDescription")  # type: ignore[assignment]
     name = m.StringPOD("ReqIFName")
     prefix = m.StringPOD("ReqIFPrefix")
     type: m.Accessor = property(lambda _: None)  # type: ignore[assignment]
@@ -82,26 +84,24 @@ class ReqIFElement(m.ModelElement):
         return helpers.make_short_html(type(self).__name__, self.uuid, name)
 
 
-@m.xtype_handler(None)
 class DataTypeDefinition(ReqIFElement):
     """A data type definition for requirement types."""
 
     _xmltag = "ownedDefinitionTypes"
 
 
-@m.xtype_handler(None)
 class AttributeDefinition(ReqIFElement):
     """An attribute definition for requirement types."""
 
     _xmltag = "ownedAttributes"
 
-    data_type = m.Association(DataTypeDefinition, "definitionType")
+    data_type = m.Single(m.Association(DataTypeDefinition, "definitionType"))
 
 
-class AbstractRequirementsAttribute(m.ModelElement):
+class AbstractRequirementsAttribute(m.ModelElement, abstract=True):
     _xmltag = "ownedAttributes"
 
-    definition = m.Association(AttributeDefinition, "definition")
+    definition = m.Single(m.Association(AttributeDefinition, "definition"))
 
     value: t.Any
 
@@ -155,14 +155,12 @@ class AttributeAccessor(m.DirectProxyAccessor[AbstractRequirementsAttribute]):
             raise ValueError(f"Invalid type hint given: {type_!r}") from None
 
 
-@m.xtype_handler(None)
 class BooleanValueAttribute(AbstractRequirementsAttribute):
     """A string value attribute."""
 
     value = m.BoolPOD("value")
 
 
-@m.xtype_handler(None)
 class DateValueAttribute(AbstractRequirementsAttribute):
     """A value attribute that stores a date and time."""
 
@@ -174,30 +172,25 @@ class DateValueAttribute(AbstractRequirementsAttribute):
         return self.value.isoformat()
 
 
-@m.xtype_handler(None)
 class IntegerValueAttribute(AbstractRequirementsAttribute):
     """An integer value attribute."""
 
     value = m.IntPOD("value")
 
 
-@m.xtype_handler(None)
 class RealValueAttribute(AbstractRequirementsAttribute):
     """A floating-point number value attribute."""
 
     value = m.FloatPOD("value")
 
 
-@m.xtype_handler(None)
 class StringValueAttribute(AbstractRequirementsAttribute):
     """A string value attribute."""
 
     value = m.StringPOD("value")
 
 
-@m.xtype_handler(None)
-@m.attr_equal("long_name")
-class EnumValue(ReqIFElement):
+class EnumValue(ReqIFElement, eq="long_name"):
     """An enumeration value for :class:`.EnumerationDataTypeDefinition`."""
 
     _xmltag = "specifiedValues"
@@ -206,35 +199,29 @@ class EnumValue(ReqIFElement):
         return self.long_name
 
 
-@m.xtype_handler(None)
-class EnumerationDataTypeDefinition(ReqIFElement):
+class EnumerationDataTypeDefinition(DataTypeDefinition):
     """An enumeration data type definition for requirement types."""
-
-    _xmltag = "ownedDefinitionTypes"
 
     values = m.DirectProxyAccessor(
         EnumValue, aslist=m.ElementList, single_attr="long_name"
     )
 
 
-@m.xtype_handler(None)
-class AttributeDefinitionEnumeration(ReqIFElement):
+class AttributeDefinitionEnumeration(AttributeDefinition):
     """An enumeration attribute definition for requirement types."""
 
-    _xmltag = "ownedAttributes"
-
-    data_type = m.Association(EnumerationDataTypeDefinition, "definitionType")
+    data_type = m.Single(
+        m.Association(EnumerationDataTypeDefinition, "definitionType")
+    )
     multi_valued = m.BoolPOD("multiValued")
     """Whether to allow setting multiple values on this attribute."""
 
 
-@m.xtype_handler(None)
 class EnumerationValueAttribute(AbstractRequirementsAttribute):
     """An enumeration attribute."""
 
-    definition = m.Association(
-        AttributeDefinitionEnumeration,  # type: ignore[arg-type]
-        "definition",
+    definition = m.Single(
+        m.Association(AttributeDefinitionEnumeration, "definition")
     )
     values = m.Association(EnumValue, "values", aslist=m.ElementList)
 
@@ -251,9 +238,8 @@ class EnumerationValueAttribute(AbstractRequirementsAttribute):
         return repr([i.long_name for i in self.values])
 
 
-@m.attr_equal("long_name")
-class AbstractType(ReqIFElement):
-    owner = m.ParentAccessor(m.ModelElement)
+class AbstractType(ReqIFElement, eq="long_name"):
+    owner = m.ParentAccessor()
     attribute_definitions = m.DirectProxyAccessor(
         m.ModelElement,
         (AttributeDefinition, AttributeDefinitionEnumeration),
@@ -261,46 +247,41 @@ class AbstractType(ReqIFElement):
     )
 
 
-@m.xtype_handler(None)
 class ModuleType(AbstractType):
     """A requirement-module type."""
 
     _xmltag = "ownedTypes"
 
 
-@m.xtype_handler(None)
 class RelationType(AbstractType):
     """A requirement-relation type."""
 
     _xmltag = "ownedTypes"
 
 
-@m.xtype_handler(None)
 class RequirementType(AbstractType):
     """A requirement type."""
 
     _xmltag = "ownedTypes"
 
 
-@m.xtype_handler(None)
 class Requirement(ReqIFElement):
     """A ReqIF Requirement."""
 
     _xmltag = "ownedRequirements"
 
-    owner = m.ParentAccessor(m.ModelElement)
+    owner = m.ParentAccessor()
 
     chapter_name = m.StringPOD("ReqIFChapterName")
     foreign_id = m.IntPOD("ReqIFForeignID")
     text = m.HTMLStringPOD("ReqIFText")
     attributes = AttributeAccessor()
-    type = m.Association(RequirementType, "requirementType")
+    type = m.Single(m.Association(RequirementType, "requirementType"))
 
-    relations: m.Accessor[AbstractRequirementsRelation]
-    related: m.Accessor[m.ModelElement]
+    relations: m.Accessor[m.ElementList[AbstractRequirementsRelation]]
+    related: m.Accessor[m.ElementList[AbstractRequirementsRelation]]
 
 
-@m.xtype_handler(None)
 class Folder(Requirement):
     """A folder that stores Requirements."""
 
@@ -313,9 +294,9 @@ class Folder(Requirement):
 class AbstractRequirementsRelation(ReqIFElement):
     _required_attrs = frozenset({"source", "target"})
 
-    type = m.Association(RelationType, "relationType")
-    source = m.Association(Requirement, "source")
-    target = m.Association(m.ModelElement, "target")
+    type = m.Single(m.Association(RelationType, "relationType"))
+    source = m.Single(m.Association(Requirement, "source"))
+    target = m.Single(m.Association(m.ModelElement, "target"))
 
     def _short_repr_(self) -> str:
         direction = ""
@@ -329,7 +310,6 @@ class AbstractRequirementsRelation(ReqIFElement):
         )
 
 
-@m.xtype_handler(None)
 class InternalRelation(AbstractRequirementsRelation):
     """A Relation between two requirements."""
 
