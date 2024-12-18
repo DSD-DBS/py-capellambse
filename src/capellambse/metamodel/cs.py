@@ -11,30 +11,32 @@ Composite Structure object-relations map (ontology):
 .. diagram:: [CDB] CompositeStructure [Ontology]
 """
 
+import typing as t
+
 import capellambse.model as m
 
 from . import capellacommon, fa, information
+from . import namespaces as ns
+
+NS = ns.CS
 
 
-@m.xtype_handler(None)
 class Part(m.ModelElement):
     """A representation of a physical component."""
 
     _xmltag = "ownedParts"
 
-    type = m.Association(m.ModelElement, "abstractType")
+    type = m.Single(m.Association(m.ModelElement, "abstractType"))
 
     deployed_parts: m.Accessor
 
 
-@m.xtype_handler(None)
 class ExchangeItemAllocation(m.ModelElement):
     """An allocation of an ExchangeItem to an Interface."""
 
-    item = m.Association(information.ExchangeItem, "allocatedItem")
+    item = m.Single(m.Association(information.ExchangeItem, "allocatedItem"))
 
 
-@m.xtype_handler(None)
 class Interface(m.ModelElement):
     """An interface."""
 
@@ -43,7 +45,6 @@ class Interface(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class InterfacePkg(m.ModelElement):
     """A package that can hold interfaces and exchange items."""
 
@@ -55,17 +56,15 @@ class InterfacePkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class PhysicalPort(m.ModelElement):
     """A physical port."""
 
     _xmltag = "ownedFeatures"
 
-    owner = m.ParentAccessor(m.ModelElement)
+    owner = m.ParentAccessor()
     links: m.Accessor
 
 
-@m.xtype_handler(None)
 class PhysicalLink(PhysicalPort):
     """A physical link."""
 
@@ -75,7 +74,6 @@ class PhysicalLink(PhysicalPort):
     exchanges = m.Allocation[fa.ComponentExchange](
         "ownedComponentExchangeAllocations",
         fa.ComponentExchangeAllocation,
-        aslist=m.ElementList,
         attr="targetElement",
         backattr="sourceElement",
     )
@@ -86,7 +84,6 @@ class PhysicalLink(PhysicalPort):
     target = m.IndexAccessor[PhysicalPort]("ends", 1)
 
 
-@m.xtype_handler(None)
 class PhysicalPath(m.ModelElement):
     """A physical path."""
 
@@ -95,19 +92,21 @@ class PhysicalPath(m.ModelElement):
     involved_items = m.Allocation[m.ModelElement](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.cs:PhysicalPathInvolvement",
-        aslist=m.MixedElementList,
         attr="involved",
+        legacy_by_type=True,
     )
     exchanges = m.Allocation[fa.ComponentExchange](
         None,  # FIXME fill in tag
         "org.polarsys.capella.core.data.fa:ComponentExchangeAllocation",
-        aslist=m.ElementList,
         attr="targetElement",
     )
 
     @property
     def involved_links(self) -> m.ElementList[PhysicalLink]:
-        return self.involved_items.by_class("PhysicalLink")
+        items = self.involved_items.by_class("PhysicalLink")
+        assert isinstance(items, m.ElementList)
+        assert all(isinstance(i, PhysicalLink) for i in items)
+        return t.cast(m.ElementList[PhysicalLink], items)
 
 
 class Component(m.ModelElement):
@@ -124,13 +123,13 @@ class Component(m.ModelElement):
         "ownedFeatures", m.ModelElement, aslist=m.ElementList
     )
 
-    owner = m.ParentAccessor(m.ModelElement)
+    owner = m.ParentAccessor()
     state_machines = m.DirectProxyAccessor(
         capellacommon.StateMachine, aslist=m.ElementList
     )
     ports = m.DirectProxyAccessor(fa.ComponentPort, aslist=m.ElementList)
     physical_ports = m.DirectProxyAccessor(PhysicalPort, aslist=m.ElementList)
-    parts = m.Backref(Part, "type", aslist=m.ElementList)
+    parts = m.Backref(Part, "type")
     physical_paths = m.DirectProxyAccessor(PhysicalPath, aslist=m.ElementList)
     physical_links = m.DirectProxyAccessor(PhysicalLink, aslist=m.ElementList)
     exchanges = m.DirectProxyAccessor(
@@ -141,21 +140,16 @@ class Component(m.ModelElement):
         fa.ComponentExchange,
         "source.owner",
         "target.owner",
-        aslist=m.ElementList,
     )
 
     realized_components = m.Allocation["Component"](
         "ownedComponentRealizations",
         "org.polarsys.capella.core.data.cs:ComponentRealization",
-        aslist=m.ElementList,
         attr="targetElement",
     )
-    realizing_components = m.Backref["Component"](
-        (), "realized_components", aslist=m.ElementList
-    )
+    realizing_components = m.Backref["Component"]((), "realized_components")
 
 
-@m.xtype_handler(None)
 class ComponentRealization(m.ModelElement):
     """A realization that links to a component."""
 
@@ -185,39 +179,20 @@ class ComponentArchitecture(m.ModelElement):
     all_interfaces = m.DeepProxyAccessor(Interface, aslist=m.ElementList)
 
 
-m.set_accessor(
-    InterfacePkg,
-    "packages",
-    m.DirectProxyAccessor(InterfacePkg, aslist=m.ElementList),
+InterfacePkg.packages = m.DirectProxyAccessor(
+    InterfacePkg, aslist=m.ElementList
 )
-m.set_accessor(
-    Part,
-    "deployed_parts",
-    m.Allocation(
-        "ownedDeploymentLinks",
-        "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink",
-        aslist=m.ElementList,
-        attr="deployedElement",
-        backattr="location",
-    ),
+Part.deployed_parts = m.Allocation(
+    "ownedDeploymentLinks",
+    "org.polarsys.capella.core.data.pa.deployment:PartDeploymentLink",
+    attr="deployedElement",
+    backattr="location",
 )
-m.set_accessor(
-    PhysicalPort,
-    "links",
-    m.Backref(PhysicalLink, "ends", aslist=m.ElementList),
+PhysicalPort.links = m.Backref(PhysicalLink, "ends")
+PhysicalLink.physical_paths = m.Backref(PhysicalPath, "involved_items")
+fa.ComponentExchange.allocating_physical_link = m.Single(
+    m.Backref(PhysicalLink, "exchanges")
 )
-m.set_accessor(
-    PhysicalLink,
-    "physical_paths",
-    m.Backref(PhysicalPath, "involved_items", aslist=m.ElementList),
-)
-m.set_accessor(
-    fa.ComponentExchange,
-    "allocating_physical_link",
-    m.Backref(PhysicalLink, "exchanges"),
-)
-m.set_accessor(
-    fa.ComponentExchange,
-    "allocating_physical_paths",
-    m.Backref(PhysicalPath, "exchanges", aslist=m.ElementList),
+fa.ComponentExchange.allocating_physical_paths = m.Backref(
+    PhysicalPath, "exchanges"
 )
