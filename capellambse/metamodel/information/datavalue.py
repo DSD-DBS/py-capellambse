@@ -2,11 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import collections.abc as cabc
 import enum
+import types
 import typing as t
 import warnings
 
 import capellambse.model as m
+from capellambse import helpers
 
 from .. import capellacore, modellingcore
 from .. import namespaces as ns
@@ -226,11 +229,80 @@ class UnaryExpression(AbstractExpressionValue):
 
 
 class OpaqueExpression(
-    capellacore.CapellaElement, modellingcore.ValueSpecification
+    capellacore.CapellaElement,
+    modellingcore.ValueSpecification,
+    cabc.MutableMapping[str, str],
 ):
-    # TODO reimplement specification stuff
-    bodies = m.StringPOD("bodies")
-    languages = m.StringPOD("languages")
+    bodies = m.MultiStringPOD("bodies")
+    languages = m.MultiStringPOD("languages")
+
+    _aliases = types.MappingProxyType({"LinkedText": "capella:linkedText"})
+    _linked_text = frozenset({"capella:linkedText"})
+
+    def __getitem__(self, k: str, /) -> str:
+        if len(self.bodies) != len(self.languages):
+            raise TypeError(
+                "Cannot map: 'languages' and 'bodies' have different sizes"
+            )
+
+        k = self._aliases.get(k, k)
+        try:
+            i = self.languages.index(k)
+        except ValueError:
+            raise KeyError(k) from None
+        return self.bodies[i]
+
+    def __setitem__(self, k: str, v: str, /) -> None:
+        if len(self.bodies) != len(self.languages):
+            raise TypeError(
+                "Cannot map: 'languages' and 'bodies' have different sizes"
+            )
+
+        k = self._aliases.get(k, k)
+        if k in self._linked_text:
+            v = helpers.escape_linked_text(self._model._loader, v)
+        try:
+            i = self.languages.index(k)
+        except ValueError:
+            self.languages.append(k)
+            self.bodies.append(v)
+        else:
+            self.bodies[i] = v
+
+    def __delitem__(self, k: str, /) -> None:
+        if len(self.bodies) != len(self.languages):
+            raise TypeError(
+                "Cannot map: 'languages' and 'bodies' have different sizes"
+            )
+
+        k = self._aliases.get(k, k)
+        try:
+            i = self.languages.index(k)
+        except ValueError:
+            raise KeyError(k) from None
+
+        del self.languages[i]
+        del self.bodies[i]
+
+    def __iter__(self) -> cabc.Iterator[str]:
+        if len(self.bodies) != len(self.languages):
+            raise TypeError(
+                "Cannot map: 'languages' and 'bodies' have different sizes"
+            )
+
+        yield from self.languages
+
+    def __len__(self) -> int:
+        blen = len(self.bodies)
+        if blen != len(self.languages):
+            raise TypeError(
+                "Cannot map: 'languages' and 'bodies' have different sizes"
+            )
+
+        return blen
+
+    def __str__(self) -> str:
+        return next(iter(self.values()))
 
 
 if t.TYPE_CHECKING:
