@@ -13,27 +13,30 @@ Information object-relations map (ontology):
 
 from __future__ import annotations
 
+import typing as t
+
 import capellambse.model as m
 
 from .. import capellacommon, capellacore, modellingcore, modeltypes
+from .. import namespaces as ns
 from . import datatype, datavalue
 
+NS = ns.INFORMATION
 
-@m.xtype_handler(None)
+
 class Unit(m.ModelElement):
     """Unit."""
 
     _xmltag = "ownedUnits"
 
 
-@m.xtype_handler(None)
 class Association(m.ModelElement):
     """An Association."""
 
     _xmltag = "ownedAssociations"
 
-    members: m.Accessor[Property]
-    navigable_members: m.Accessor[Property]
+    members: m.Accessor[m.ElementList[Property]]
+    navigable_members: m.Accessor[m.ElementList[Property]]
 
     @property
     def roles(self) -> m.ElementList[Property]:
@@ -43,14 +46,12 @@ class Association(m.ModelElement):
         return m.ElementList(self._model, roles, Property)
 
 
-@m.xtype_handler(None)
 class PortAllocation(modellingcore.TraceableElement):
     """An exchange between a ComponentPort and FunctionalPort."""
 
     _xmltag = "ownedPortAllocations"
 
 
-@m.xtype_handler(None)
 class Property(m.ModelElement):
     """A Property of a Class."""
 
@@ -76,17 +77,16 @@ class Property(m.ModelElement):
     kind = m.EnumPOD(
         "aggregationKind", modeltypes.AggregationKind, default="UNSET"
     )
-    type = m.Association(m.ModelElement, "abstractType")
-    default_value = m.Containment("ownedDefaultValue")
-    min_value = m.Containment("ownedMinValue")
-    max_value = m.Containment("ownedMaxValue")
-    null_value = m.Containment("ownedNullValue")
-    min_card = m.Containment("ownedMinCard")
-    max_card = m.Containment("ownedMaxCard")
-    association = m.Backref(Association, "roles")
+    type = m.Single(m.Association(m.ModelElement, "abstractType"))
+    default_value = m.Single[t.Any](m.Containment("ownedDefaultValue"))
+    min_value = m.Single[t.Any](m.Containment("ownedMinValue"))
+    max_value = m.Single[t.Any](m.Containment("ownedMaxValue"))
+    null_value = m.Single[t.Any](m.Containment("ownedNullValue"))
+    min_card = m.Single[t.Any](m.Containment("ownedMinCard"))
+    max_card = m.Single[t.Any](m.Containment("ownedMaxCard"))
+    association = m.Single[t.Any](m.Backref(Association, "roles"))
 
 
-@m.xtype_handler(None)
 class Class(m.ModelElement):
     """A Class."""
 
@@ -121,14 +121,12 @@ class Class(m.ModelElement):
         )
 
 
-@m.xtype_handler(None)
 class InformationRealization(modellingcore.TraceableElement):
     """A realization for a Class."""
 
     _xmltag = "ownedInformationRealizations"
 
 
-@m.xtype_handler(None)
 class Union(Class):
     """A Union."""
 
@@ -137,7 +135,6 @@ class Union(Class):
     kind = m.EnumPOD("kind", modeltypes.UnionKind, default="UNION")
 
 
-@m.xtype_handler(None)
 class Collection(m.ModelElement):
     """A Collection."""
 
@@ -149,7 +146,6 @@ class Collection(m.ModelElement):
     super: m.Accessor[Collection]
 
 
-@m.xtype_handler(None)
 class DataPkg(m.ModelElement):
     """A data package that can hold classes."""
 
@@ -181,20 +177,18 @@ class DataPkg(m.ModelElement):
     packages: m.Accessor
 
 
-@m.xtype_handler(None)
 class ExchangeItemElement(m.ModelElement):
     """An ExchangeItemElement (proxy link)."""
 
     _xmltag = "ownedElements"
 
-    abstract_type = m.Association(m.ModelElement, "abstractType")
-    owner = m.ParentAccessor["ExchangeItem"]()
+    abstract_type = m.Single(m.Association(m.ModelElement, "abstractType"))
+    owner = m.ParentAccessor()
 
-    min_card = m.Containment("ownedMinCard")
-    max_card = m.Containment("ownedMaxCard")
+    min_card = m.Single[t.Any](m.Containment("ownedMinCard"))
+    max_card = m.Single[t.Any](m.Containment("ownedMaxCard"))
 
 
-@m.xtype_handler(None)
 class ExchangeItem(m.ModelElement):
     """An item that can be exchanged on an Exchange."""
 
@@ -204,22 +198,17 @@ class ExchangeItem(m.ModelElement):
         "exchangeMechanism", modeltypes.ExchangeMechanism, default="UNSET"
     )
     elements = m.DirectProxyAccessor(ExchangeItemElement, aslist=m.ElementList)
-    exchanges: m.Accessor[m.ModelElement]
+    exchanges: m.Accessor[m.ElementList[m.ModelElement]]
     instances: m.Containment
 
 
-@m.xtype_handler(None)
 class ExchangeItemInstance(Property):
     pass
 
 
-m.set_accessor(
-    capellacore.Generalization, "super", m.Association(None, "super")
-)
+capellacore.Generalization.super = m.Single(m.Association(None, "super"))
 for cls in [Class, Union, datatype.Enumeration, Collection]:
-    m.set_accessor(
-        cls,
-        "super",
+    cls.super = m.Single(
         m.Allocation(
             "ownedGeneralizations",
             capellacore.Generalization,
@@ -227,51 +216,20 @@ for cls in [Class, Union, datatype.Enumeration, Collection]:
             backattr="sub",
         ),
     )
-    m.set_accessor(
-        cls,
-        "sub",
-        m.Backref(cls, "super", aslist=m.MixedElementList),
-    )
+    cls.sub = m.Backref(cls, "super", legacy_by_type=True)
 
-m.set_accessor(
-    DataPkg, "packages", m.DirectProxyAccessor(DataPkg, aslist=m.ElementList)
+DataPkg.packages = m.DirectProxyAccessor(DataPkg, aslist=m.ElementList)
+Association.members = m.Containment("ownedMembers")
+Association.navigable_members = m.Association(Property, "navigableMembers")
+Class.realized_classes = m.Allocation(
+    "ownedInformationRealizations",
+    InformationRealization,
+    attr="targetElement",
 )
-m.set_accessor(
-    Association,
-    "members",
-    m.Containment("ownedMembers", aslist=m.ElementList),
+Class.realizations = m.DirectProxyAccessor(
+    InformationRealization, aslist=m.ElementList
 )
-m.set_accessor(
-    Association,
-    "navigable_members",
-    m.Association(Property, "navigableMembers", aslist=m.ElementList),
-)
-m.set_accessor(
-    Class,
-    "realized_classes",
-    m.Allocation[Class](
-        "ownedInformationRealizations",
-        InformationRealization,
-        aslist=m.ElementList,
-        attr="targetElement",
-    ),
-)
-m.set_accessor(
-    Class,
-    "realizations",
-    m.DirectProxyAccessor(InformationRealization, aslist=m.ElementList),
-)
-m.set_accessor(
-    Class,
-    "realized_by",
-    m.Backref(Class, "realized_classes", aslist=m.ElementList),
-)
-m.set_accessor(
-    ExchangeItem,
-    "instances",
-    m.Containment(
-        "ownedExchangeItemInstances",
-        ExchangeItemInstance,
-        aslist=m.ElementList,
-    ),
+Class.realized_by = m.Backref(Class, "realized_classes")
+ExchangeItem.instances = m.Containment(
+    "ownedExchangeItemInstances", ExchangeItemInstance
 )
