@@ -466,6 +466,8 @@ class Relationship(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         elmlist: _obj.ElementListCouplingMixin,
         index: int,
         value: T_co | NewObject,
+        *,
+        bounds: tuple[_obj.ClassName, ...] = (),
     ) -> T_co:
         """Insert the ``value`` object into the model.
 
@@ -2912,6 +2914,8 @@ class Containment(Relationship[T_co]):
         elmlist: _obj.ElementListCouplingMixin,
         index: int,
         value: T_co | NewObject,
+        *,
+        bounds: tuple[_obj.ClassName, ...] = (),
     ) -> T_co:
         if self.role_tag is None:
             raise RuntimeError(
@@ -2942,9 +2946,18 @@ class Containment(Relationship[T_co]):
 
         if isinstance(value, NewObject):
             if not value._type_hint:
-                cls = self._guess_xtype(elmlist._model)
+                cls = self._guess_xtype(elmlist._model, bounds)
             else:
                 cls = self._match_xtype(elmlist._model, value._type_hint)
+
+                for bound in bounds:
+                    bound_cls = elmlist._model.resolve_class(bound)
+                    if not isinstance(cls, bound_cls):
+                        raise InvalidModificationError(
+                            f"Requested class {cls!r}"
+                            f" does not satisfy bound {bound}"
+                        )
+
             attrs = dict(value._kw)
             if not hasattr(cls, "__capella_namespace__"):
                 raise TypeError(
@@ -3017,8 +3030,43 @@ class Containment(Relationship[T_co]):
             raise TypeError(f"Cannot insert elements into {self}")
         return t.cast(type[T_co], cls)
 
-    def _guess_xtype(self, model: capellambse.MelodyModel) -> type[T_co]:
-        return t.cast(type[T_co], model.resolve_class(self.class_))
+    def _guess_xtype(
+        self,
+        model: capellambse.MelodyModel,
+        bounds: tuple[_obj.ClassName, ...],
+    ) -> type[T_co]:
+        cls = t.cast(type[T_co], model.resolve_class(self.class_))
+        if not bounds:
+            return cls
+
+        candidates = _find_all_subclasses(cls)
+
+        for bound in bounds:
+            candidates &= _find_all_subclasses(model.resolve_class(bound))
+
+        if not candidates:
+            strbounds = ", ".join(f"{b[0].alias}:{b[1]}" for b in bounds)
+            raise InvalidModificationError(
+                f"No subclass of {self.class_[0].alias}:{self.class_[1]}"
+                f" satisfies all bounds: {strbounds}"
+            )
+
+        filtered_candidates: set[type[T_co]] = set()
+        for c in candidates:
+            if c.__capella_abstract__ or any(
+                c != o and issubclass(c, o) for o in candidates
+            ):
+                filtered_candidates.add(c)
+        candidates -= filtered_candidates
+        assert candidates
+
+        if len(candidates) > 1:
+            raise RuntimeError(
+                "Multiple eligible classes found, specify a type hint:"
+                f" {candidates}"
+            )
+
+        return candidates.pop()
 
     def _resolve_super_attributes(
         self, super_acc: Accessor[t.Any] | None
@@ -3069,6 +3117,13 @@ def make_coupled_list_type(
     list_type._accessor = parent
     list_type.__module__ = __name__
     return list_type
+
+
+def _find_all_subclasses(cls: type[U]) -> set[type[U]]:
+    classes = set(cls.__subclasses__())
+    for scls in classes.copy():
+        classes.update(_find_all_subclasses(scls))
+    return classes
 
 
 from . import _obj
