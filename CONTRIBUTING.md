@@ -22,13 +22,47 @@ our style guidelines outlined below.
 Developing
 ----------
 
-We recommend that you [develop inside of a virtual
-environment](README.md#installation). After you have set it up, simply run the
-unit tests to verify that everything is set up correctly:
+Use [uv](https://docs.astral.sh/uv/) to set up a local development environment.
+
+```bash
+git clone https://github.com/DSD-DBS/py-capellambse
+cd py-capellambse
+uv sync
+uv run pre-commit install
+
+# You may need to explicitly activate the project venv
+# to make code completion and tools available:
+source .venv/bin/activate.sh  # for Linux / Mac
+.venv\Scripts\activate  # for Windows
+```
+
+You can use `uv run <tool>` to avoid having to manually activate the project
+venv. For example, to run the unit tests, use:
 
 ```sh
-pytest
+uv run pytest
 ```
+
+The example notebooks (see above) are verified during CI, to ensure their
+output is up to date. This means they have to be re-run whenever the expected
+output changes.
+
+Use the following command to start a Jupyter server, which can be used to
+develop and re-run the example notebooks:
+
+```bash
+cd docs/source/examples
+CAPELLAMBSE_UUID_SEED=0 uv run jupyter lab
+```
+
+> [!NOTE]
+> The above command provides a static seed for the internal pseudo-random
+> number generator. This is not recommended for production environments. [Read
+> more about
+> CAPELLAMBSE_UUID_SEED.](https://dsd-dbs.github.io/py-capellambse/start/envvars.html)
+
+If your browser did not open automatically, follow the instructions in the
+terminal to start it manually.
 
 We additionally recommend that you set up your editor / IDE as follows.
 
