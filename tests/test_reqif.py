@@ -485,21 +485,21 @@ class TestReqIFModification:
             pytest.param("InternalRelation", id="IntRelation"),
         ],
     )
-    def test_creating_Requirements_raises_TypeError(
+    def test_creating_invalid_Requirements_raises_InvalidModificationError(
         self, model: m.MelodyModel, relcls: str
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(relcls)
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(
                 relcls, target="e16f5cc1-3299-43d0-b1a0-82d31a137111"
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(relcls, type="RelationType")
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(relcls, target=req.attributes[0].definition)
 
     def test_created_Requirements_are_found_from_both_sides(

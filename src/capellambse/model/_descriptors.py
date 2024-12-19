@@ -479,6 +479,8 @@ class Relationship(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         elmlist: _obj.ElementListCouplingMixin,
         index: int,
         value: T_co | NewObject,
+        *,
+        bounds: tuple[_obj.ClassName, ...] = (),
     ) -> T_co:
         """Insert the ``value`` object into the model.
 
@@ -1659,7 +1661,7 @@ class Allocation(Relationship[T_co]):
         for b in (self.class_, *bounds):
             bcls = elmlist._model.resolve_class(b)
             if not isinstance(value, bcls):
-                raise TypeError(
+                raise InvalidModificationError(
                     f"Cannot insert into {self._qualname}:"
                     f" Objects must be instances of {b[0].alias}:{b[1]},"
                     f" not {type(value)}"
@@ -1934,7 +1936,7 @@ class Association(Relationship[T_co]):
         for b in bounds:
             bcls = elmlist._model.resolve_class(b)
             if not isinstance(value, bcls):
-                raise TypeError(
+                raise InvalidModificationError(
                     f"Cannot insert into {self._qualname}:"
                     f" Objects must be instances of {b[0].alias}:{b[1]},"
                     f" not {type(value)}"
@@ -1963,7 +1965,7 @@ class Association(Relationship[T_co]):
         parts: list[str] = []
         for value in values:
             if not isinstance(value, class_):
-                raise TypeError(
+                raise InvalidModificationError(
                     f"Cannot insert into {self._qualname}:"
                     " Objects must be instances of"
                     f" {self.class_[0].alias}:{self.class_[1]},"
@@ -2574,6 +2576,8 @@ class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         elmlist: _obj.ElementListCouplingMixin,
         index: int,
         value: T_co | NewObject,
+        *,
+        bounds: tuple[_obj.ClassName, ...] = (),
     ) -> T_co:
         if self.wrapped is None:
             raise RuntimeError(
@@ -2593,7 +2597,9 @@ class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         else:
             real_index = unfiltered.index(elmlist[index])
 
-        return self.wrapped.insert(unfiltered, real_index, value)
+        return self.wrapped.insert(
+            unfiltered, real_index, value, bounds=bounds + (self.class_,)
+        )
 
     def delete(
         self, elmlist: _obj.ElementListCouplingMixin, obj: _obj.ModelObject
@@ -2933,6 +2939,8 @@ class Containment(Relationship[T_co]):
         elmlist: _obj.ElementListCouplingMixin,
         index: int,
         value: T_co | NewObject,
+        *,
+        bounds: tuple[_obj.ClassName, ...] = (),
     ) -> T_co:
         if self.role_tag is None:
             raise RuntimeError(
@@ -2962,27 +2970,9 @@ class Containment(Relationship[T_co]):
             parent_index = len(elmlist._parent._element)
 
         if isinstance(value, NewObject):
-            if not value._type_hint:
-                cls = self._guess_xtype(elmlist._model)
-            else:
-                cls = self._match_xtype(elmlist._model, value._type_hint)
-            attrs = dict(value._kw)
-            if not hasattr(cls, "__capella_namespace__"):
-                raise TypeError(
-                    f"Invalid class without associated namespace: {cls!r}"
-                )
-            if getattr(cls, "__capella_abstract__", True):
-                raise TypeError(f"Cannot instantiate abstract class: {cls!r}")
-            with elmlist._model._loader.new_uuid(
-                elmlist._parent._element, want=attrs.pop("uuid", None)
-            ) as uuid:
-                value = cls(
-                    elmlist._model,
-                    elmlist._parent._element,
-                    self.role_tag,
-                    uuid=uuid,
-                    **attrs,
-                )
+            value = self._insert_create(
+                elmlist._model, elmlist._parent, value, bounds=bounds
+            )
 
         else:
             assert isinstance(value, _obj.ModelObject)
@@ -3030,19 +3020,92 @@ class Containment(Relationship[T_co]):
         del obj, target
         yield
 
-    def _match_xtype(
-        self, model: capellambse.MelodyModel, hint: str, /
-    ) -> type[T_co]:
-        basecls = model.resolve_class(self.class_)
-        cls = model.resolve_class(hint)
-        if cls is _obj.ModelElement:
-            raise TypeError(f"Unknown class: {hint!r}")
-        if not issubclass(cls, basecls):
-            raise ValueError(f"Invalid class for {self._qualname}: {hint}")
-        return t.cast(type[T_co], cls)
+    def _find_candidate_classes(
+        self,
+        model: capellambse.MelodyModel,
+        *,
+        bounds: tuple[_obj.ClassName, ...],
+        hint: str,
+    ) -> list[type[T_co]]:
+        clsbounds = tuple(
+            model.resolve_class(i) for i in bounds or ("ModelElement",)
+        )
+        subclasses = _find_all_subclasses(model.resolve_class(self.class_))
+        classes = [
+            i
+            for i in subclasses
+            if not i.__capella_abstract__ and issubclass(i, clsbounds)
+        ]
+        if not classes:
+            basecls = model.resolve_class(self.class_)
+            raise InvalidModificationError(
+                f"No concrete subclass of {basecls!r}"
+                f" satisfies all bounds: {clsbounds!r}"
+            )
 
-    def _guess_xtype(self, model: capellambse.MelodyModel) -> type[T_co]:
-        return t.cast(type[T_co], model.resolve_class(self.class_))
+        if hint:
+            *_, clsname = hint.rsplit(":", 1)
+            for i in classes:
+                if i.__name__ == clsname:
+                    LOGGER.debug(
+                        "Found exact match for type hint %r: %r", hint, i
+                    )
+                    classes = [i]
+                    break
+            else:
+                raise ValueError(f"Invalid type hint: {hint}")
+
+        return t.cast(list[type[T_co]], classes)
+
+    def _insert_create(
+        self,
+        model: capellambse.MelodyModel,
+        parent: _obj.ModelObject,
+        value: NewObject,
+        *,
+        bounds: tuple[_obj.ClassName, ...],
+    ) -> T_co:
+        classes = self._find_candidate_classes(
+            model, bounds=bounds, hint=value._type_hint
+        )
+        attrs = dict(value._kw)
+        uuid: str | None = attrs.pop("uuid", None)
+        with model._loader.new_uuid(parent._element, want=uuid) as uuid:
+            LOGGER.debug(
+                "Trying to create object %r in %s with %d classes: %r",
+                uuid,
+                self._qualname,
+                len(classes),
+                classes,
+            )
+            for cls in classes:
+                assert hasattr(cls, "__capella_namespace__")
+                assert not cls.__capella_abstract__
+
+                try:
+                    return cls(
+                        model,
+                        parent._element,
+                        self.role_tag,
+                        uuid=uuid,
+                        **attrs,
+                    )
+                except InvalidModificationError as err:
+                    LOGGER.debug("%r rejected %r: %s", cls, uuid, err)
+
+            arg_repr = ", ".join(
+                f"{k!r}: {getattr(v, '_short_repr_', v.__repr__)()}"
+                for k, v in value._kw.items()
+            )
+            raise InvalidModificationError(
+                "Cannot construct model object with"
+                + (
+                    f" type hint {value._type_hint!r} and"
+                    if value._type_hint
+                    else ""
+                )
+                + f" arguments {{{arg_repr}}} in {self._qualname!r}"
+            )
 
     def _resolve_super_attributes(
         self, super_acc: Accessor[t.Any] | None
@@ -3093,6 +3156,13 @@ def make_coupled_list_type(
     list_type._accessor = parent
     list_type.__module__ = __name__
     return list_type
+
+
+def _find_all_subclasses(cls: type[U]) -> dict[type[U], None]:
+    classes = {cls: None}
+    for scls in cls.__subclasses__():
+        classes.update(_find_all_subclasses(scls))
+    return classes
 
 
 from . import _obj

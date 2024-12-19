@@ -180,7 +180,9 @@ class RequirementsRelationAccessor(
         del typehint
 
         if "target" not in kw:
-            raise TypeError("No `target` for new requirement relation")
+            raise m.InvalidModificationError(
+                "No `target` for new requirement relation"
+            )
         cls = self._find_relation_type(kw["target"])
         parent = elmlist._parent._element
         with elmlist._model._loader.new_uuid(parent) as uuid:
@@ -250,7 +252,7 @@ class RequirementsRelationAccessor(
         if isinstance(target, rq.Requirement):
             return rq.InternalRelation
         if isinstance(target, rq.ReqIFElement):
-            raise TypeError(
+            raise m.InvalidModificationError(
                 "Cannot create relations to targets of type"
                 f" {type(target).__name__}"
             )
