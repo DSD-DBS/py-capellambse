@@ -312,21 +312,25 @@ class TestApplyExtend:
             - parent: !uuid {PHYS_COMPONENT}
               extend:
                 physical_links:
-                  - name: My new link
+                  - _type: PhysicalLink
+                    name: My new link
                     exchanges:
                       - !promise my_exchange
             - parent: !uuid {PHYS_COMPONENT}
               extend:
                 exchanges:
-                  - source: !promise first-port
+                  - _type: FunctionalExchange
+                    source: !promise first-port
                     target: !promise second-port
                     promise_id: my_exchange
             - parent: !uuid {PHYS_COMPONENT}
               extend:
                 ports:
-                  - name: First port
+                  - _type: PhysicalPort
+                    name: First port
                     promise_id: first-port
-                  - name: Second port
+                  - _type: PhysicalPort
+                    name: Second port
                     promise_id: second-port
             """
 

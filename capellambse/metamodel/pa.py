@@ -1,65 +1,215 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
-"""Tools for the Physical Architecture layer.
-
-.. diagram:: [CDB] Physical Architecture [Ontology]
-"""
+"""Tools for the Physical Architecture layer."""
 
 from __future__ import annotations
 
+import enum
+import typing as t
+
 import capellambse.model as m
 
-from . import capellacommon, cs, fa, la, modeltypes
+from . import capellacommon, cs, fa, information
 from . import namespaces as ns
+
+if t.TYPE_CHECKING:
+    from . import la  # noqa: F401
 
 NS = ns.PA
 
 
-class PhysicalFunction(fa.Function):
-    """A physical function on the Physical Architecture layer."""
+@m.stringy_enum
+@enum.unique
+class PhysicalComponentKind(enum.Enum):
+    """Categories of physical components.
 
-    owner: m.Single[PhysicalComponent]
-    realized_logical_functions = m.TypecastAccessor(
-        la.LogicalFunction, "realized_functions"
+    Allows to categorize a physical component, with respect to real life
+    physical entities.
+    """
+
+    UNSET = "UNSET"
+    """The physical component kind is not specified."""
+    HARDWARE = "HARDWARE"
+    """The physical component is a hardware resource."""
+    HARDWARE_COMPUTER = "HARDWARE_COMPUTER"
+    """The physical component is a computing resource."""
+    SOFTWARE = "SOFTWARE"
+    """The physical component is a software entity."""
+    SOFTWARE_DEPLOYMENT_UNIT = "SOFTWARE_DEPLOYMENT_UNIT"
+    """The physical component is a software deployment unit."""
+    SOFTWARE_EXECUTION_UNIT = "SOFTWARE_EXECUTION_UNIT"
+    """The physical component is a software execution unit."""
+    SOFTWARE_APPLICATION = "SOFTWARE_APPLICATION"
+    """The physical component is a software application."""
+    FIRMWARE = "FIRMWARE"
+    """The physical component is a firmware part."""
+    PERSON = "PERSON"
+    """The physical component is a person."""
+    FACILITIES = "FACILITIES"
+    """The physical component refers to Facilities."""
+    DATA = "DATA"
+    """The physical component represents a set of data."""
+    MATERIALS = "MATERIALS"
+    """The physical component represents a bunch of materials."""
+    SERVICES = "SERVICES"
+    """The physical component represents a set of services."""
+    PROCESSES = "PROCESSES"
+    """The physical component represents a set of processes."""
+
+
+@m.stringy_enum
+@enum.unique
+class PhysicalComponentNature(enum.Enum):
+    """The nature of a physical component."""
+
+    UNSET = "UNSET"
+    """The physical component nature is not specified."""
+    BEHAVIOR = "BEHAVIOR"
+    """The physical component nature is behavioral.
+
+    This typically means a piece of software.
+    """
+    NODE = "NODE"
+    """The physical component is a host for behavioral components.
+
+    This typically means a computing resource.
+    """
+
+
+class PhysicalArchitecturePkg(cs.BlockArchitecturePkg):
+    packages = m.Containment["PhysicalArchitecturePkg"](
+        "ownedPhysicalArchitecturePkgs", (NS, "PhysicalArchitecturePkg")
+    )
+    architectures = m.Containment["PhysicalArchitecture"](
+        "ownedPhysicalArchitectures", (NS, "PhysicalArchitecture")
     )
 
 
-class PhysicalFunctionPkg(m.ModelElement):
+class PhysicalArchitecture(cs.ComponentArchitecture):
+    """Provides access to the Physical Architecture layer of the model."""
+
+    component_pkg = m.Containment["PhysicalComponentPkg"](
+        "ownedPhysicalComponentPkg", (NS, "PhysicalComponentPkg")
+    )
+    component_package = m.DeprecatedAccessor["PhysicalComponentPkg"](
+        "component_pkg"
+    )
+    deployments = m.Containment["cs.AbstractDeploymentLink"](
+        "ownedDeployments", (ns.CS, "AbstractDeploymentLink")
+    )
+    realized_logical_architectures = m.Allocation["la.LogicalArchitecture"](
+        "ownedLogicalArchitectureRealizations",
+        (NS, "LogicalArchitectureRealization"),
+        (ns.LA, "LogicalArchitecture"),
+        attr="sourceElement",
+        backattr="targetElement",
+    )
+
+    @property
+    def root_component(self) -> PhysicalComponent:
+        return self.component_pkg.by_is_actor(False, single=True)
+
+    @property
+    def all_functions(self) -> m.ElementList[PhysicalFunction]:  # type: ignore[override]
+        return self._model.search((NS, "PhysicalFunction"), below=self)
+
+    @property
+    def all_components(self) -> m.ElementList[PhysicalComponent]:
+        return self._model.search((NS, "PhysicalComponent"), below=self)
+
+    @property
+    def all_actors(self) -> m.ElementList[PhysicalComponent]:
+        return self._model.search((NS, "PhysicalComponent")).by_is_actor(True)
+
+    @property
+    def all_function_exchanges(self) -> m.ElementList[fa.FunctionalExchange]:
+        return self._model.search((ns.FA, "FunctionalExchange"), below=self)
+
+    @property
+    def all_physical_paths(self) -> m.ElementList[cs.PhysicalPath]:
+        return self._model.search((ns.CS, "PhysicalPath"), below=self)
+
+    @property
+    def all_component_exchanges(self) -> m.ElementList[fa.ComponentExchange]:
+        return self._model.search((ns.FA, "ComponentExchange"), below=self)
+
+    @property
+    def all_physical_exchanges(self) -> m.ElementList[fa.FunctionalExchange]:
+        return self._model.search((ns.FA, "FunctionalExchange"), below=self)
+
+    @property
+    def all_physical_links(self) -> m.ElementList[cs.PhysicalLink]:
+        return self._model.search((ns.CS, "PhysicalLink"), below=self)
+
+    @property
+    def all_functional_chains(self) -> m.ElementList[fa.FunctionalChain]:
+        return self._model.search((ns.FA, "FunctionalChain"), below=self)
+
+    diagrams = m.DiagramAccessor(
+        "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
+    )
+
+
+class PhysicalFunction(fa.AbstractFunction):
+    """A physical function on the Physical Architecture layer."""
+
+    owner = m.Single["PhysicalComponent"](
+        m.Backref((NS, "PhysicalComponent"), "allocated_functions")
+    )
+    realized_logical_functions = m.DeprecatedAccessor["la.LogicalFunction"](
+        "realized_functions"
+    )
+    functions = m.Containment["PhysicalFunction"](
+        "ownedPhysicalComponents", (NS, "PhysicalComponent")
+    )
+    packages = m.Containment["PhysicalFunctionPkg"](
+        "ownedPhysicalFunctionPkgs", (NS, "PhysicalFunctionPkg")
+    )
+
+
+class PhysicalFunctionPkg(fa.FunctionPkg):
     """A logical component package."""
 
     _xmltag = "ownedFunctionPkg"
 
-    functions = m.Containment("ownedPhysicalFunctions", PhysicalFunction)
-
-    packages: m.Accessor
-    categories = m.DirectProxyAccessor(
-        fa.ExchangeCategory, aslist=m.ElementList
+    functions = m.Containment["PhysicalFunction"](
+        "ownedPhysicalFunctions", (NS, "PhysicalFunction")
+    )
+    packages = m.Containment["PhysicalFunctionPkg"](
+        "ownedPhysicalFunctionPkgs", (NS, "PhysicalFunctionPkg")
     )
 
 
-class PhysicalComponent(cs.Component):
-    """A physical component on the Physical Architecture layer."""
-
+class PhysicalComponent(
+    cs.AbstractPhysicalArtifact,
+    cs.Component,
+    capellacommon.CapabilityRealizationInvolvedElement,
+    cs.DeployableElement,
+    cs.DeploymentTarget,
+):
     _xmltag = "ownedPhysicalComponents"
 
-    nature = m.EnumPOD(
-        "nature", modeltypes.PhysicalComponentNature, default="UNSET"
+    kind = m.EnumPOD("kind", PhysicalComponentKind)
+    nature = m.EnumPOD("nature", PhysicalComponentNature)
+    deployment_links = m.Containment["cs.AbstractDeploymentLink"](
+        "ownedDeploymentLinks", (ns.CS, "AbstractDeploymentLink")
     )
-    kind = m.EnumPOD("kind", modeltypes.PhysicalComponentKind, default="UNSET")
+    owned_components = m.Containment["PhysicalComponent"](
+        "ownedPhysicalComponents", (NS, "PhysicalComponent")
+    )
+    component_pkgs = m.Containment["PhysicalComponentPkg"](
+        "ownedPhysicalComponentPkgs", (NS, "PhysicalComponentPkg")
+    )
+    deploying_components = m.Backref["PhysicalComponent"](
+        (NS, "PhysicalComponent"), "deployed_components"
+    )
 
-    allocated_functions = m.Allocation[PhysicalFunction](
-        "ownedFunctionalAllocation",
-        fa.ComponentFunctionalAllocation,
-        attr="targetElement",
-        backattr="sourceElement",
+    realized_logical_components = m.DeprecatedAccessor["la.LogicalComponent"](
+        "realized_components"
     )
-    realized_logical_components = m.TypecastAccessor(
-        la.LogicalComponent,
-        "realized_components",
+    allocated_functions = m.Allocation["PhysicalFunction"](
+        None, None, (NS, "PhysicalFunction")
     )
-
-    owned_components: m.Accessor
-    deploying_components: m.Accessor
 
     @property
     def deployed_components(
@@ -77,113 +227,18 @@ class PhysicalComponent(cs.Component):
         return self.deployed_components + self.owned_components
 
 
-class PhysicalComponentPkg(m.ModelElement):
-    """A logical component package."""
-
+class PhysicalComponentPkg(cs.ComponentPkg, information.AssociationPkg):
     _xmltag = "ownedPhysicalComponentPkg"
 
-    components = m.DirectProxyAccessor(PhysicalComponent, aslist=m.ElementList)
-    exchanges = m.DirectProxyAccessor(
-        fa.ComponentExchange, aslist=m.ElementList
+    components = m.Containment["PhysicalComponent"](
+        "ownedPhysicalComponents", (NS, "PhysicalComponent")
     )
-    state_machines = m.DirectProxyAccessor(
-        capellacommon.StateMachine, aslist=m.ElementList
+    packages = m.Containment["PhysicalComponentPkg"](
+        "ownedPhysicalComponentPkgs", (NS, "PhysicalComponentPkg")
     )
-
-    packages: m.Accessor
-    exchange_categories = m.DirectProxyAccessor(
-        fa.ComponentExchangeCategory, aslist=m.ElementList
+    key_parts = m.Containment["information.KeyPart"](
+        "ownedKeyParts", (ns.INFORMATION, "KeyPart")
     )
-
-
-class PhysicalArchitecture(cs.ComponentArchitecture):
-    """Provides access to the Physical Architecture layer of the model."""
-
-    root_component = m.AttributeMatcherAccessor(
-        PhysicalComponent,
-        attributes={"is_actor": False},
-        rootelem=PhysicalComponentPkg,
+    deployments = m.Containment["cs.AbstractDeploymentLink"](
+        "ownedDeployments", (ns.CS, "AbstractDeploymentLink")
     )
-    root_function = m.DirectProxyAccessor(
-        PhysicalFunction, rootelem=PhysicalFunctionPkg
-    )
-
-    function_package = m.DirectProxyAccessor(PhysicalFunctionPkg)
-    component_package = m.DirectProxyAccessor(PhysicalComponentPkg)
-    capability_package = m.DirectProxyAccessor(la.CapabilityRealizationPkg)
-
-    all_functions = m.DeepProxyAccessor(
-        PhysicalFunction,
-        aslist=m.ElementList,
-        rootelem=PhysicalFunctionPkg,
-    )
-    all_capabilities = m.DeepProxyAccessor(
-        la.CapabilityRealization, aslist=m.ElementList
-    )
-    all_components = m.DeepProxyAccessor(
-        PhysicalComponent, aslist=m.ElementList
-    )
-    all_actors = property(
-        lambda self: self._model.search(PhysicalComponent).by_is_actor(True)
-    )
-
-    all_function_exchanges = m.DeepProxyAccessor(
-        fa.FunctionalExchange,
-        aslist=m.ElementList,
-        rootelem=[PhysicalFunctionPkg, PhysicalFunction],
-    )
-    all_physical_paths = m.DeepProxyAccessor(
-        cs.PhysicalPath,
-        aslist=m.ElementList,
-        rootelem=PhysicalComponentPkg,
-    )
-    all_component_exchanges = m.DeepProxyAccessor(
-        fa.ComponentExchange,
-        aslist=m.ElementList,
-        rootelem=PhysicalComponentPkg,
-    )
-
-    all_physical_exchanges = m.DeepProxyAccessor(
-        fa.FunctionalExchange,
-        aslist=m.ElementList,
-        rootelem=[PhysicalFunctionPkg, PhysicalFunction],
-    )
-    all_physical_links = m.DeepProxyAccessor(
-        cs.PhysicalLink, aslist=m.ElementList
-    )
-    all_functional_chains = property(
-        lambda self: self._model.search(fa.FunctionalChain, below=self)
-    )
-
-    diagrams = m.DiagramAccessor(
-        "Physical Architecture", cacheattr="_MelodyModel__diagram_cache"
-    )
-
-
-la.LogicalComponent.realizing_physical_components = m.Backref(
-    PhysicalComponent, "realized_logical_components"
-)
-la.LogicalFunction.realizing_physical_functions = m.Backref(
-    PhysicalFunction, "realized_logical_functions"
-)
-PhysicalComponent.deploying_components = m.Backref(
-    PhysicalComponent, "deployed_components"
-)
-PhysicalFunction.owner = m.Single(
-    m.Backref(PhysicalComponent, "allocated_functions")
-)
-PhysicalFunction.packages = m.DirectProxyAccessor(
-    PhysicalFunctionPkg, aslist=m.ElementList
-)
-PhysicalComponent.owned_components = m.DirectProxyAccessor(
-    PhysicalComponent, aslist=m.ElementList
-)
-PhysicalComponentPkg.packages = m.DirectProxyAccessor(
-    PhysicalComponentPkg, aslist=m.ElementList
-)
-PhysicalFunction.functions = m.DirectProxyAccessor(
-    PhysicalFunction, aslist=m.ElementList
-)
-PhysicalFunctionPkg.packages = m.DirectProxyAccessor(
-    PhysicalFunctionPkg, aslist=m.ElementList
-)
