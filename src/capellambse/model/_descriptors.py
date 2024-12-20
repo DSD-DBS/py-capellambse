@@ -1541,9 +1541,13 @@ class Allocation(Relationship[T_co]):
                 " make sure that __set_name__ gets called"
             )
 
-        self.__delete__(obj)
-        for v in value:
-            self.__create_link(obj, v)
+        elmlist = self.__get__(obj)
+        assert isinstance(elmlist, _obj.ElementListCouplingMixin)
+        i = -1
+        for i, v in enumerate(value):
+            self.insert(elmlist, i, v)
+        for o in elmlist[i + 1 :]:
+            self.delete(elmlist, o)
 
     def __delete__(self, obj: _obj.ModelObject) -> None:
         refobjs = list(self.__find_refs(obj))
@@ -1621,13 +1625,7 @@ class Allocation(Relationship[T_co]):
         with model._loader.new_uuid(parent._element) as obj_id:
             link = model._loader.create_link(parent._element, target._element)
             refobj = parent._element.makeelement(self.tag)
-            if before is None:
-                parent._element.append(refobj)
-            else:
-                before_elm = self.__backref(parent, before)
-                assert before_elm is not None
-                assert before_elm in parent._element
-                before_elm.addprevious(refobj)
+            self.__insert_refobj(parent, refobj, before=before)
             try:
                 refobj.set(helpers.ATT_XT, xtype)
                 refobj.set("id", obj_id)
@@ -1642,6 +1640,21 @@ class Allocation(Relationship[T_co]):
                 parent._element.remove(refobj)
                 raise
         return refobj
+
+    def __insert_refobj(
+        self,
+        parent: _obj.ModelObject,
+        refobj: etree._Element,
+        *,
+        before: _obj.ModelObject | None,
+    ) -> None:
+        if before is None:
+            parent._element.append(refobj)
+        else:
+            before_elm = self.__backref(parent, before)
+            assert before_elm is not None
+            assert before_elm in parent._element
+            before_elm.addprevious(refobj)
 
     def insert(
         self,
@@ -1667,11 +1680,26 @@ class Allocation(Relationship[T_co]):
                     f" not {type(value)}"
                 )
 
-        self.__create_link(
-            elmlist._parent,
-            value,
-            before=elmlist[index] if index < len(elmlist) else None,
-        )
+        try:
+            refobj = next(
+                r
+                for r in self.__find_refs(elmlist._parent)
+                if self.__follow_ref(elmlist._parent, r) is value._element
+            )
+        except StopIteration:
+            self.__create_link(
+                elmlist._parent,
+                value,
+                before=elmlist[index] if index < len(elmlist) else None,
+            )
+        else:
+            if index < len(elmlist):
+                self.__insert_refobj(
+                    elmlist._parent, refobj, before=elmlist[index]
+                )
+            else:
+                self.__insert_refobj(elmlist._parent, refobj, before=None)
+        elmlist._elements = list(self.__find_refs(elmlist._parent))
         return t.cast(T_co, value)
 
     def delete(
