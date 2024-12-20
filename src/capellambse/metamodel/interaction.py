@@ -150,8 +150,8 @@ class Scenario(capellacore.Namespace, behavior.AbstractBehavior):
 
 
 class InteractionFragment(capellacore.NamedElement, abstract=True):
-    covered_instance_roles = m.Association[m.ModelElement](
-        None, "coveredInstanceRoles", legacy_by_type=True
+    covered_instance_roles = m.Association["InstanceRole"](
+        (NS, "InstanceRole"), "coveredInstanceRoles", legacy_by_type=True
     )
 
     if not t.TYPE_CHECKING:

@@ -236,7 +236,7 @@ class RequirementsRelationAccessor(
                 " (e.g. Requirement.owned_relations)"
             ),
             category=FutureWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
 
         if "target" not in kw:

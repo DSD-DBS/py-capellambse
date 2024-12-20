@@ -87,7 +87,9 @@ def test_ReqIFElement_short_repr_(
     uuid = matches[-1]
     obj = model_5_2.by_uuid(uuid)
 
-    assert repr(obj).startswith(expected)
+    actual = obj._short_repr_()
+
+    assert actual == expected
 
 
 def test_extension_was_loaded():
@@ -107,9 +109,11 @@ def test_extension_was_loaded():
 def test_path_nesting(model: m.MelodyModel) -> None:
     modules = model.oa.requirement_modules
     assert len(modules) == 2
-    assert len(modules[0].folders) == 1
-    assert len(modules[0].folders[0].folders) == 1
-    assert len(modules[0].folders[0].folders[0].requirements) == 1
+    folders = modules[0].requirements.by_class("Folder")
+    assert len(folders) == 1
+    subfolders = folders[0].requirements.by_class("Folder")
+    assert len(subfolders) == 1
+    assert len(subfolders[0].requirements) == 1
 
 
 class TestRequirementAttributes:
@@ -370,7 +374,6 @@ class TestReqIFAccess:
         mod = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
         assert isinstance(mod, reqif.CapellaModule)
 
-        assert len(mod.folders) == 1
         assert len(mod.requirements) == 2
         assert mod.type is not None
         assert mod.type.long_name == "ModuleType"
@@ -387,7 +390,6 @@ class TestReqIFAccess:
         folder = model.by_uuid("e16f5cc1-3299-43d0-b1a0-82d31a137111")
         assert isinstance(folder, reqif.Folder)
 
-        assert len(folder.folders) == 1
         assert len(folder.requirements) == 3
         assert folder.type is not None
         assert folder.type.long_name == "ReqType"
@@ -447,8 +449,8 @@ class TestReqIFAccess:
         attr_def = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         enum_def = model.by_uuid("c316ab07-c5c3-4866-a896-92e34733055c")
 
-        assert attr_def in reqtype.attribute_definitions
-        assert enum_def in reqtype.attribute_definitions
+        assert attr_def in reqtype.attributes
+        assert enum_def in reqtype.attributes
 
 
 class TestReqIFModification:
@@ -778,36 +780,34 @@ class TestReqIFModification:
         self, model: m.MelodyModel
     ):
         reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
-        definitions = reqtype.attribute_definitions
+        definitions = reqtype.attributes
 
-        attr_def = reqtype.attribute_definitions.create(
+        attr_def = reqtype.attributes.create(
             "AttributeDefinition", long_name="First"
         )
-        enum_def = reqtype.attribute_definitions.create(
+        enum_def = reqtype.attributes.create(
             "AttributeDefinitionEnumeration", long_name="Second"
         )
 
-        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
-        assert attr_def in reqtype.attribute_definitions
-        assert enum_def in reqtype.attribute_definitions
+        assert len(definitions) + 2 == len(reqtype.attributes)
+        assert attr_def in reqtype.attributes
+        assert enum_def in reqtype.attributes
 
     def test_create_EnumDataTypeDefinition_setting_EnumValues(
         self, model: m.MelodyModel
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
-        dt_definitions = reqtypesfolder.data_type_definitions
+        dt_definitions = reqtypesfolder.definition_types
 
-        edt_def = reqtypesfolder.data_type_definitions.create(
+        edt_def = reqtypesfolder.definition_types.create(
             "EnumerationDataTypeDefinition",
             long_name="Enum",
         )
         edt_def.values.create(long_name="val")
         edt_def.values.create(long_name="val1")
 
-        assert len(dt_definitions) + 1 == len(
-            reqtypesfolder.data_type_definitions
-        )
-        assert edt_def in reqtypesfolder.data_type_definitions
+        assert len(dt_definitions) + 1 == len(reqtypesfolder.definition_types)
+        assert edt_def in reqtypesfolder.definition_types
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
     def test_create_EnumDataTypeDefinition_creating_EnumValues(
@@ -815,18 +815,16 @@ class TestReqIFModification:
         model: m.MelodyModel,
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
-        dt_definitions = reqtypesfolder.data_type_definitions
+        dt_definitions = reqtypesfolder.definition_types
 
-        edt_def = reqtypesfolder.data_type_definitions.create(
+        edt_def = reqtypesfolder.definition_types.create(
             "EnumerationDataTypeDefinition",
             long_name="Enum",
             values=["val", "val1"],
         )
 
-        assert len(dt_definitions) + 1 == len(
-            reqtypesfolder.data_type_definitions
-        )
-        assert edt_def in reqtypesfolder.data_type_definitions
+        assert len(dt_definitions) + 1 == len(reqtypesfolder.definition_types)
+        assert edt_def in reqtypesfolder.definition_types
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
 

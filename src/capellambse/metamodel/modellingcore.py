@@ -59,7 +59,7 @@ ModelElement.property_value_groups = m.Containment(
     "ownedPropertyValueGroups",
     (ns.CAPELLACORE, "PropertyValueGroup"),
     mapkey="name",
-    mapvalue="values",
+    mapvalue="property_values",
 )
 ModelElement.applied_property_values = m.Association(
     (ns.CAPELLACORE, "AbstractPropertyValue"), "appliedPropertyValues"

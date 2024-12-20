@@ -26,9 +26,9 @@ import typing_extensions as te
 from lxml import etree
 
 import capellambse
-import capellambse.metamodel as mm
 import capellambse.model as m
 from capellambse import helpers
+from capellambse.metamodel import capellacore, cs, la, oa, pa, sa
 
 LOGGER = logging.getLogger(__name__)
 
@@ -92,7 +92,7 @@ def _matchprops(
             ismatch = cmp(actual, type(actual)(wanted))
         elif isinstance(actual, bool):
             ismatch = cmp(actual, wanted == "true")
-        elif isinstance(actual, mm.capellacore.EnumerationPropertyLiteral):
+        elif isinstance(actual, capellacore.EnumerationPropertyLiteral):
             ismatch = cmp(actual.name, wanted)
         else:
             raise TypeError(
@@ -123,21 +123,21 @@ class SelectorRules:
         return tuple(classes)
 
     @property
-    def layers(self) -> tuple[type[mm.cs.BlockArchitecture], ...]:
-        classes: list[type[mm.cs.BlockArchitecture]] = []
+    def layers(self) -> tuple[type[cs.BlockArchitecture], ...]:
+        classes: list[type[cs.BlockArchitecture]] = []
         for match in _RULES_RE.finditer(self.raw):
             if match.group("key") != "ARCHITECTURE":
                 continue
 
             for arch in match.group("value").split(";"):
                 if arch == "OPERATIONAL":
-                    classes.append(mm.oa.OperationalAnalysis)
+                    classes.append(oa.OperationalAnalysis)
                 elif arch == "SYSTEM":
-                    classes.append(mm.sa.SystemAnalysis)
+                    classes.append(sa.SystemAnalysis)
                 elif arch == "LOGICAL":
-                    classes.append(mm.la.LogicalArchitecture)
+                    classes.append(la.LogicalArchitecture)
                 elif arch == "PHYSICAL":
-                    classes.append(mm.pa.PhysicalArchitecture)
+                    classes.append(pa.PhysicalArchitecture)
                 else:
                     LOGGER.debug("Unknown ARCHITECTURE, ignoring: %r", arch)
 
@@ -186,7 +186,7 @@ class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
         return value
 
 
-class ManagedGroup(mm.capellacore.PropertyValueGroup):
+class ManagedGroup(capellacore.PropertyValueGroup):
     """A managed group of property values."""
 
     _required_attrs = frozenset({"name"})
@@ -221,7 +221,7 @@ class ManagedGroup(mm.capellacore.PropertyValueGroup):
             objs = objs.filter(lambda i: _matchprops(i, props))
         return objs
 
-    def apply(self, obj: m.ModelObject) -> mm.capellacore.PropertyValueGroup:
+    def apply(self, obj: m.ModelObject) -> capellacore.PropertyValueGroup:
         """Apply this group to the model element, and return the applied group.
 
         If the group is not applicable to the passed element, a
@@ -254,12 +254,12 @@ class ManagedGroup(mm.capellacore.PropertyValueGroup):
         )
         for propdef in self.property_values:
             pv = groupobj.property_values.create(
-                m.build_xtype(type(propdef)),
+                type(propdef).__name__,
                 name=propdef.name,
                 applied_property_values=[propdef],
                 value=propdef.value,
             )
-            if isinstance(propdef, mm.capellacore.EnumerationPropertyValue):
+            if isinstance(propdef, capellacore.EnumerationPropertyValue):
                 pv.type = propdef.type
         assert hasattr(obj, "applied_property_value_groups")
         obj.applied_property_value_groups.append(groupobj)
@@ -273,7 +273,7 @@ class ManagedGroup(mm.capellacore.PropertyValueGroup):
         )
 
 
-class ManagedDomain(mm.capellacore.PropertyValuePkg):
+class ManagedDomain(capellacore.PropertyValuePkg):
     """A "domain" in the property value management extension."""
 
     _required_attrs = frozenset({"name"})
@@ -281,14 +281,13 @@ class ManagedDomain(mm.capellacore.PropertyValuePkg):
     version = property(
         lambda self: self.property_values.by_name("version").value
     )
-    types = m.Containment(
+    types = m.Containment[capellacore.EnumerationPropertyType](
         "ownedEnumerationPropertyTypes",
-        mm.capellacore.EnumerationPropertyType,
-        aslist=m.ElementList,
+        (capellacore.NS, "EnumerationPropertyType"),
     )
-    groups: m.Containment[mm.capellacore.PropertyValueGroup] = m.Containment(  # type: ignore[assignment]
+    property_value_groups = m.Containment[capellacore.PropertyValueGroup](
         "ownedPropertyValueGroups",
-        mm.capellacore.PropertyValueGroup,
+        (capellacore.NS, "PropertyValueGroup"),
         mapkey="name",
         alternate=ManagedGroup,
     )
@@ -324,12 +323,12 @@ class ManagedDomain(mm.capellacore.PropertyValuePkg):
         return self
 
 
-class PVMTConfiguration(mm.capellacore.PropertyValuePkg):
+class PVMTConfiguration(capellacore.PropertyValuePkg):
     """Provides access to the model-wide PVMT configuration."""
 
-    domains = m.Containment[mm.capellacore.PropertyValuePkg](
+    domains = m.Containment[capellacore.PropertyValuePkg](
         "ownedPropertyValuePkgs",
-        mm.capellacore.PropertyValuePkg,
+        (capellacore.NS, "PropertyValuePkg"),
         mapkey="name",
         alternate=ManagedDomain,
     )

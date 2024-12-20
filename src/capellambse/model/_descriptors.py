@@ -724,7 +724,7 @@ class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         **kw: t.Any,
     ) -> T_co:
         if typehint:
-            elmclass, kw["xtype"] = self._match_xtype(typehint)
+            elmclass, kw["xtype"] = self._match_xtype(parent._model, typehint)
         else:
             elmclass, kw["xtype"] = self._guess_xtype()
         assert elmclass is not None
@@ -750,14 +750,19 @@ class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             **self.list_extra_args,
         )
 
-    def _match_xtype(self, hint: str, /) -> tuple[type[T_co], str]:
+    def _match_xtype(
+        self,
+        model: capellambse.MelodyModel,
+        hint: str,
+        /,
+    ) -> tuple[type[T_co], str]:
         """Find the right class for the given ``xsi:type``."""
         if not isinstance(hint, str):
             raise TypeError(
                 f"Expected str as first type, got {type(hint).__name__!r}"
             )
 
-        (cls,) = t.cast(tuple[type[T_co]], _obj.find_wrapper(hint))
+        (cls,) = t.cast(tuple[type[T_co]], model.resolve_class(hint))
         return (cls, build_xtype(cls))  # type: ignore[deprecated]
 
     def _guess_xtype(self) -> tuple[type[T_co], str]:
