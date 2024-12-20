@@ -1220,20 +1220,22 @@ def test_lists_of_links_can_be_removed_from(model: m.MelodyModel):
     assert protect_students not in hogwarts.allocated_functions
 
 
-def test_lists_of_links_disallow_insertion_of_duplicate_members(
+def test_lists_of_links_reorder_existing_members_when_appending_duplicates(
     model: m.MelodyModel,
 ):
     parent = model.by_uuid("3b83b4ba-671a-4de8-9c07-a5c6b1d3c422")
     target = model.by_uuid("dfaf473d-257f-4455-90fd-fe9489dac617")
     assert target in parent.involved_activities
+    assert target != parent.involved_activities[-1]
+    links_before = set(parent.involved_activities._elements)
 
-    with pytest.raises(m.NonUniqueMemberError) as catch:
-        parent.involved_activities.append(target)
+    parent.involved_activities.append(target)
 
-    assert catch.value.args == (parent, "involved_activities", target)
-    assert "involved_activities" in str(catch.value)
-    assert parent.uuid in str(catch.value)
-    assert target.uuid in str(catch.value)
+    count = sum(1 for ia in parent.involved_activities if ia == target)
+    assert count == 1
+    assert parent.involved_activities[-1] == target
+    links_after = set(parent.involved_activities._elements)
+    assert links_before == links_after
 
 
 @pytest.mark.parametrize(
