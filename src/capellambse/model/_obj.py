@@ -16,13 +16,13 @@ __all__ = [
 
 import collections.abc as cabc
 import contextlib
-import enum
 import inspect
 import logging
 import operator
 import re
 import textwrap
 import typing as t
+import warnings
 
 import markupsafe
 import typing_extensions as te
@@ -535,6 +535,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
     """Provides access to elements without affecting the underlying model."""
 
     __slots__ = (
+        "_ElementList__legacy_by_type",
         "_ElementList__mapkey",
         "_ElementList__mapvalue",
         "_elemclass",
@@ -553,6 +554,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         *,
         mapkey: str | None = None,
         mapvalue: str | None = None,
+        legacy_by_type: bool = False,
     ) -> None:
         assert None not in elements
         self._model = model
@@ -568,6 +570,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         else:
             self.__mapkey = mapkey
             self.__mapvalue = mapvalue
+        self.__legacy_by_type = legacy_by_type
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, cabc.Sequence):
@@ -684,14 +687,32 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         return any(i == obj for i in self)
 
     def __getattr__(self, attr: str) -> _ListFilter:
+        if self.__legacy_by_type and attr in {"by_type", "exclude_types"}:
+            if isinstance(self, ElementListCouplingMixin):
+                acc = type(self)._accessor
+                text = f"{attr!r} on {acc._qualname}"
+            else:
+                text = f"This {attr!r}"
+            attr = attr.replace("type", "class")
+            text = (
+                f"{text} will soon change to filter"
+                " on the 'type' attribute of the contained elements,"
+                f" change calls to use {attr!r} instead"
+            )
+            warnings.warn(text, UserWarning, stacklevel=2)
+
         if attr.startswith("by_"):
             attr = attr[len("by_") :]
             if attr in {"name", "uuid"}:
                 return _ListFilter(self, attr, single=True)
+            if attr == "class":
+                attr = "__class__"
             return _ListFilter(self, attr)
 
         if attr.startswith("exclude_") and attr.endswith("s"):
             attr = attr[len("exclude_") : -len("s")]
+            if attr == "classe":
+                attr = "__class__"
             return _ListFilter(self, attr, positive=False)
 
         return getattr(super(), attr)
@@ -714,6 +735,8 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
         attrs = list(super().__dir__())
         attrs.extend(filterable_attrs())
+        if self.__legacy_by_type:
+            attrs.extend(("by_type", "exclude_types"))
         return attrs
 
     def __repr__(self) -> str:  # pragma: no cover
@@ -939,7 +962,10 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 class _ListFilter(t.Generic[T]):
     """Filters this list based on an extractor function."""
 
-    __slots__ = ("_attr", "_parent", "_positive", "_single")
+    __slots__ = ("_attr", "_lower", "_parent", "_positive", "_single")
+
+    __special_filterable: t.Final = frozenset({"__class__", "_element"})
+    """Attributes starting with an underscore that can still be filtered on."""
 
     def __init__(
         self,
@@ -948,12 +974,9 @@ class _ListFilter(t.Generic[T]):
         *,
         positive: bool = True,
         single: bool = False,
+        case_insensitive: bool = False,
     ) -> None:
         """Create a filter object.
-
-        If the extractor returns an :class:`enum.Enum` member for any
-        element, the enum member's name will be used for comparisons
-        against any ``values``.
 
         Parameters
         ----------
@@ -971,31 +994,76 @@ class _ListFilter(t.Generic[T]):
             instead. If multiple elements match, it is an error; if
             none match, a ``KeyError`` is raised. Can be overridden
             at call time.
+        case_insensitive
+            Use case-insensitive matching.
         """
         self._attr = attr
         self._parent = parent
         self._positive = positive
         self._single = single
+        self._lower = case_insensitive
 
-    def extract_key(self, element: T) -> t.Any:
-        extractor = operator.attrgetter(self._attr)
-        value = extractor(element)
-        if isinstance(value, enum.Enum):
-            value = value.name
-        return value
+    def __find_candidates(self) -> cabc.Iterator[tuple[etree._Element, t.Any]]:
+        attrs = self._attr.split(".")
+        assert "class" not in attrs, (
+            "'class' should have been replaced with '__class__' already"
+        )
 
-    def make_values_container(self, *values: t.Any) -> cabc.Iterable[t.Any]:
-        return values
+        if any(
+            not i or (i.startswith("_") and i not in self.__special_filterable)
+            for i in attrs
+        ):
+            raise ValueError(f"Invalid filter attribute: {self._attr}")
 
-    def ismatch(self, element: T, valueset: cabc.Iterable[t.Any]) -> bool:
-        try:
-            value = self.extract_key(element)
-        except AttributeError:
-            return False
+        for elem in self._parent._elements:
+            o: t.Any = ModelElement.from_model(self._parent._model, elem)
+            want = True
 
-        if isinstance(value, str) or not isinstance(value, cabc.Iterable):
-            return self._positive == (value in valueset)
-        return self._positive == any(v in value for v in valueset)
+            for attr in attrs:
+                if isinstance(o, cabc.Iterable) and not isinstance(o, str):
+                    o = [getattr(c, attr) for c in o if hasattr(c, attr)]
+                    if not o:
+                        want = False
+                        break
+                else:
+                    try:
+                        o = getattr(o, attr)
+                    except AttributeError:
+                        want = False
+                        break
+
+            if want:
+                yield (elem, o)
+
+    def __filter_candidates(
+        self, values: tuple[t.Any, ...]
+    ) -> cabc.Iterator[etree._Element]:
+        valueset: cabc.Container[t.Any]
+        if self._attr.rsplit(".", 1)[-1] == "__class__":
+            valueset = {
+                v.__name__.lower() if isinstance(v, type) else v.lower()
+                for v in values
+            }
+
+            def ismatch(o: t.Any) -> bool:
+                return o.__name__.lower() in valueset
+        else:
+            if self._lower:
+                valueset = tuple(
+                    value.lower() if isinstance(value, str) else value
+                    for value in values
+                )
+            else:
+                valueset = values
+
+            def ismatch(o: t.Any) -> bool:
+                if isinstance(o, cabc.Iterable) and not isinstance(o, str):
+                    return any(i in valueset for i in o)
+                return o in valueset
+
+        for elem, candidate in self.__find_candidates():
+            if ismatch(candidate) == self._positive:
+                yield elem
 
     @t.overload
     def __call__(self, *values: t.Any, single: t.Literal[True]) -> T: ...
@@ -1022,13 +1090,8 @@ class _ListFilter(t.Generic[T]):
         """
         if single is None:
             single = self._single
-        valueset = self.make_values_container(*values)
-        indices = []
-        elements = []
-        for i, elm in enumerate(self._parent):
-            if self.ismatch(elm, valueset):
-                indices.append(i)
-                elements.append(self._parent._elements[i])
+
+        elements = list(self.__filter_candidates(values))
 
         if not single:
             return self._parent._newlist(elements)
@@ -1037,7 +1100,9 @@ class _ListFilter(t.Generic[T]):
             raise KeyError(f"Multiple matches for {value!r}")
         if len(elements) == 0:
             raise KeyError(values[0] if len(values) == 1 else values)
-        return self._parent[indices[0]]  # Ensure proper construction
+        return t.cast(
+            T, ModelElement.from_model(self._parent._model, elements[0])
+        )
 
     def __iter__(self) -> cabc.Iterator[t.Any]:
         """Yield values that result in a non-empty list when filtered for.
@@ -1051,35 +1116,33 @@ class _ListFilter(t.Generic[T]):
         """
         yielded: set[t.Any] = set()
 
-        for elm in self._parent:
-            key = self.extract_key(elm)
+        for _, key in self.__find_candidates():
             if key not in yielded:
                 yield key
                 yielded.add(key)
 
     def __contains__(self, value: t.Any) -> bool:
-        valueset = self.make_values_container(value)
-        return any(self.ismatch(elm, valueset) for elm in self._parent)
+        try:
+            next(self.__filter_candidates((value,)))
+        except StopIteration:
+            return False
+        return True
 
     def __getattr__(self, attr: str) -> te.Self:
-        if attr.startswith("_"):
+        if "." in attr:
             raise AttributeError(f"Invalid filter attribute name: {attr}")
+        if attr.startswith("_") and attr not in self.__special_filterable:
+            raise AttributeError(f"Invalid filter attribute name: {attr}")
+
+        if attr == "class":
+            attr = "__class__"
+
         return type(self)(
             self._parent,
             f"{self._attr}.{attr}",
             positive=self._positive,
             single=self._single,
         )
-
-
-class _LowercaseListFilter(_ListFilter[T], t.Generic[T]):
-    def extract_key(self, element: T) -> t.Any:
-        value = super().extract_key(element)
-        assert isinstance(value, str)
-        return value.lower()
-
-    def make_values_container(self, *values: t.Any) -> cabc.Iterable[t.Any]:
-        return tuple(map(operator.methodcaller("lower"), values))
 
 
 class CachedElementList(ElementList[T], t.Generic[T]):
@@ -1155,15 +1218,8 @@ class MixedElementList(ElementList[ModelElement]):
             Additional arguments are passed to the superclass.
         """
         del elemclass
+        kw["legacy_by_type"] = True
         super().__init__(model, elements, ModelElement, **kw)
-
-    def __getattr__(self, attr: str) -> _ListFilter[ModelElement]:
-        if attr == "by_type":
-            return _LowercaseListFilter(self, "__class__.__name__")
-        return super().__getattr__(attr)
-
-    def __dir__(self) -> list[str]:  # pragma: no cover
-        return [*super().__dir__(), "by_type", "exclude_types"]
 
 
 class ElementListMapKeyView(cabc.Sequence):
