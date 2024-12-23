@@ -52,9 +52,9 @@ def test_rules_can_be_filtered_by_object_type(fake_registry):
         return True
 
     assert list(fake_registry.items()) == [(testrule.id, testrule)]
-    assert fake_registry.by_type(mm.la.LogicalComponent) == [testrule]
-    assert fake_registry.by_type(mm.la.LogicalFunction) == [testrule]
-    assert fake_registry.by_type(mm.sa.SystemFunction) == []
+    assert fake_registry.by_class(mm.la.LogicalComponent) == [testrule]
+    assert fake_registry.by_class(mm.la.LogicalFunction) == [testrule]
+    assert fake_registry.by_class(mm.sa.SystemFunction) == []
 
 
 def test_model_gives_access_to_the_full_set_of_rules(
@@ -105,7 +105,7 @@ def test_validation_results_filtering(model: m.MelodyModel) -> None:
     assert len(required) > 0
     assert all(i.category.name == "REQUIRED" for i in required.iter_rules())
 
-    component = results.by_type("LogicalComponent")
+    component = results.by_class("LogicalComponent")
     assert len(component) > 0
     assert sum(1 for _ in component.iter_objects()) == len(
         model.search("LogicalComponent")
@@ -115,7 +115,7 @@ def test_validation_results_filtering(model: m.MelodyModel) -> None:
         for i in component.iter_objects()
     )
 
-    function = results.by_type("LogicalFunction")
+    function = results.by_class("LogicalFunction")
     assert len(function) > 0
     assert (
         sum(1 for _ in function.iter_objects())
