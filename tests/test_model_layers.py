@@ -100,9 +100,9 @@ def test_ElementList_filter_contains(model: m.MelodyModel):
     involvements = model.oa.all_processes.by_uuid(
         "d588e41f-ec4d-4fa9-ad6d-056868c66274"
     ).involved
-    assert "OperationalActivity" in involvements.by_type
-    assert "OperationalCapability" not in involvements.by_type
-    assert "LogicalComponent" not in involvements.by_type
+    assert "OperationalActivity" in involvements.by_class
+    assert "OperationalCapability" not in involvements.by_class
+    assert "LogicalComponent" not in involvements.by_class
 
 
 def test_ElementList_filter_iter(model: m.MelodyModel):
@@ -114,6 +114,59 @@ def test_ElementList_filter_by_type(model: m.MelodyModel):
     diags = model.diagrams.by_type("OCB")
     assert len(diags) == 1
     assert diags[0].type is m.DiagramType.OCB
+
+
+@pytest.mark.parametrize(
+    "filter_arg",
+    [
+        pytest.param(mm.oa.Entity, id="type-object"),
+        pytest.param("Entity", id="type-name"),
+    ],
+)
+def test_filtering_lists_by_the_only_contained_class_doesnt_change_the_content(
+    model: m.MelodyModel, filter_arg
+) -> None:
+    pkg = model.oa.entity_package
+    assert pkg is not None
+    base = pkg.entities
+    base_ids = [i.uuid for i in base]
+    assert all(type(i) is mm.oa.Entity for i in base)
+
+    filtered = base.by_class(filter_arg)
+    filtered_ids = [i.uuid for i in filtered]
+
+    assert filtered_ids == base_ids
+
+
+def test_filtering_dotted_names_filters_on_nested_attributes(
+    model: m.MelodyModel,
+) -> None:
+    base = model.la.all_component_exchanges
+    assert len(base) > 1
+    expected = [
+        "c31491db-817d-44b3-a27c-67e9cc1e06a2",  # Care
+    ]
+    assert {i.uuid for i in base} >= set(expected)
+
+    filtered = base.by_target.parent.name("Whomping Willow")
+
+    assert isinstance(filtered, m.ElementList)
+    found = [i.uuid for i in filtered]
+    assert found == expected
+
+
+def test_filtering_on_list_attributes_returns_match_if_any_member_matches(
+    model: m.MelodyModel,
+) -> None:
+    base = model.la.all_components
+    willow = model.by_uuid("3bdd4fa2-5646-44a1-9fa6-80c68433ddb7")
+    expected = [willow.parent.uuid]
+
+    filtered = base.by_components(willow)
+
+    assert isinstance(filtered, m.ElementList)
+    found = [i.uuid for i in filtered]
+    assert found == expected
 
 
 def test_ElementList_dictlike_getitem(model: m.MelodyModel):
@@ -140,8 +193,8 @@ def test_MixedElementList_filter_by_type(model: m.MelodyModel):
     assert isinstance(process, mm.oa.OperationalProcess)
 
     involvements = process.involved
-    acts = involvements.by_type("OperationalActivity")
-    fexs = involvements.by_type("FunctionalExchange")
+    acts = involvements.by_class("OperationalActivity")
+    fexs = involvements.by_class("FunctionalExchange")
 
     assert len(involvements) == 7
     assert len(acts) == 4

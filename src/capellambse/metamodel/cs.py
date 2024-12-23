@@ -107,7 +107,7 @@ class PhysicalPath(m.ModelElement):
 
     @property
     def involved_links(self) -> m.ElementList[PhysicalLink]:
-        return self.involved_items.by_type("PhysicalLink")
+        return self.involved_items.by_class("PhysicalLink")
 
 
 class Component(m.ModelElement):
