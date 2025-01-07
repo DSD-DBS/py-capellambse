@@ -40,19 +40,19 @@ source .venv/bin/activate.sh  # for Linux / Mac
 ### Updating the metamodel
 
 The modules below [`src/capellambse/metamodel`](src/capellambse/metamodel) are
-mostly generated using the [ecore2py script](scripts/ecore2py.py), however
-there are also some manual adjustments. Those include:
+in large parts generated using the [ecore2py script](scripts/ecore2py.py),
+however there are also some manual adjustments. Those include:
 
-- Something the ecore files don't have the correct metadata on how many
-  elements are actually expected on a property, which means something
+- Sometimes the ecore files don't have the correct metadata on how many
+  elements are actually expected on a property, which means sometimes
   properties are not marked using `m.Single()` even though they should.
 
 - capellambse's metamodel includes some additional properties that make working
   with allocations and involvements easier, most of the time by using
   `m.Allocation()`. These do not appear in the upstream metamodel at all.
 
-As such, the files committed here not 100% equivalent to the script output (and
-probably will never be). That said, the ecore2py script is very useful for
+As such, the files committed here are not 100% equivalent to the script output
+(and probably will never be). That said, the ecore2py script is very useful for
 finding and eliminating gaps in the current metamodel, or for updating the
 metamodel for newer Capella versions.
 
