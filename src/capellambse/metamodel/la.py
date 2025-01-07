@@ -111,9 +111,6 @@ class LogicalFunction(fa.AbstractFunction):
     realized_system_functions = m.Alias["m.ElementList[sa.SystemFunction]"](
         "realized_functions"
     )
-    owner = m.Single["LogicalComponent"](
-        m.Backref((NS, "LogicalComponent"), "allocated_functions")
-    )
     involved_in = m.Backref["CapabilityRealization"](
         (NS, "CapabilityRealization"), "involved_functions"
     )
