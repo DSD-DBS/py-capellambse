@@ -3,10 +3,10 @@
 
 *	@Wuestengecko @vik378
 
-/capellambse/loader/	@Wuestengecko
-/capellambse/model/	@Wuestengecko
-/capellambse/repl.py	@Wuestengecko
+/src/capellambse/loader/	@Wuestengecko
+/src/capellambse/model/	@Wuestengecko
+/src/capellambse/repl.py	@Wuestengecko
 
-/capellambse/svg/	@ewuerger
+/src/capellambse/svg/	@ewuerger
 
 # vim:set ts=32 sw=0 noet:

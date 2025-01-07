@@ -98,7 +98,7 @@ repos:
         name: mypy
         types_or: [python, pyi, toml, yaml]
         pass_filenames: false
-        args: [capellambse, tests]
+        args: [src/capellambse, tests]
         additional_dependencies:
           - mypypp==0.1.1
 
