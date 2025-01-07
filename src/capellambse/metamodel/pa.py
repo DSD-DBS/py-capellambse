@@ -77,7 +77,11 @@ class PhysicalComponent(cs.Component):
 
     @property
     def components(self) -> m.ElementList[PhysicalComponent]:
-        return self.deployed_components + self.owned_components
+        components = dict.fromkeys(self.deployed_components._elements)
+        components.update(dict.fromkeys(self.owned_components._elements))
+        return m.ElementList(
+            self._model, list(components.keys()), PhysicalComponent
+        )
 
 
 @m.xtype_handler(None)
