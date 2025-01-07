@@ -1,12 +1,6 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: CC0-1.0
 
-*	@Wuestengecko @vik378
-
-/src/capellambse/loader/	@Wuestengecko
-/src/capellambse/model/	@Wuestengecko
-/src/capellambse/repl.py	@Wuestengecko
-
-/src/capellambse/svg/	@ewuerger
+*	@Wuestengecko
 
 # vim:set ts=32 sw=0 noet:
