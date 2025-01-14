@@ -9,6 +9,11 @@ on:
     branches: [master]
     tags: ["v*.*.*"]
   workflow_dispatch:
+    inputs:
+      wheel_build:
+        type: boolean
+        required: true
+        description: Build wheels for all supported architectures
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref_type == 'tag' && github.sha || '0' }}
@@ -60,38 +65,86 @@ jobs:
         run: uv run pre-commit run --all-files
 
   build:
-    name: Build wheel
-    runs-on: ubuntu-latest
+    name: Build wheel for ${{ matrix.target }} ${{ matrix.os }} (${{ matrix.interpreter || 'all' }}${{ matrix.os == 'linux' && ', ml=' || '' }}${{ matrix.os == 'linux' && (matrix.manylinux || 'auto') || '' }})
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/master' || contains(github.event.pull_request.labels.*.name, 'Wheel Build') || github.event.inputs.wheel_build == 'true'
+    runs-on: ${{ matrix.os == 'linux' && 'ubuntu' || matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            manylinux: manylinux2014
+            target: x86_64
+          - os: linux
+            manylinux: manylinux2014
+            target: aarch64
+          - os: linux
+            manylinux: manylinux2014
+            target: i686
+          - os: linux
+            manylinux: manylinux2014
+            target: armv7
+          - os: linux
+            manylinux: manylinux2014
+            target: ppc64le
+          - os: linux
+            manylinux: manylinux2014
+            target: s390x
+
+          - os: linux
+            manylinux: musllinux_1_1
+            target: x86_64
+          - os: linux
+            manylinux: musllinux_1_1
+            target: aarch64
+
+          - os: macos
+            target: x86_64
+          - os: macos
+            target: aarch64
+
+          - os: windows
+            target: x86_64
+          - os: windows
+            target: i686
+            python-architecture: x86
+          - os: windows
+            target: aarch64
+            interpreter: 3.11 3.12 3.13
+    env:
+      CIBW_ENABLE: 'cpython-freethreading pypy'
+      CIBW_BUILD_FRONTEND: 'build[uv]'
+      CIBW_TEST_COMMAND: 'cd {project} && pytest tests -s'
+      CIBW_TEST_COMMAND_WINDOWS: 'cd {project} & pytest tests -s'
+      CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+      CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+      CIBW_BEFORE_BUILD: |-
+        pip install --break-system-packages -U setuptools-rust & ^
+          rustup default nightly & ^
+          rustup show
+      CIBW_BEFORE_BUILD_LINUX: |-
+        pip install --break-system-packages -U uv setuptools-rust &&
+          curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y &&
+          rustup show
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: astral-sh/setup-uv@v4
+      - uses: actions/setup-python@v5
         with:
-          enable-cache: true
-          cache-dependency-glob: "**/pyproject.toml"
           python-version: "3.12"
-      - name: Build packages
-        run: uv build
-      - name: Verify packages
-        run: uvx twine check dist/*
+          architecture: ${{ matrix.os == 'windows' && matrix.target == 'i686' && 'x86' || 'x64' }}
+      - run: pip install uv
+      - name: Build and verify packages
+        run: uvx cibuildwheel --output-dir dist/
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions
+          name: wheels-${{matrix.os}}
           path: dist/
           if-no-files-found: error
-      - name: Push to release branch
-        if: startsWith(github.ref, 'refs/tags/v')
-        continue-on-error: true
-        env:
-          GITHUB_REF: ${{github.ref}}
-        run: |-
-          releasever="$(echo "$GITHUB_REF" | grep -Po '(?<=^refs/tags/v)(?:0\.)?[1-9][0-9]*').x"
-          if [[ "$releasever" = 0.5.x ]]; then releasever="${releasever%.x}"; fi
-          git push origin "HEAD:release-$releasever"
-  pypi:
-    name: Publish to PyPI
+  publish:
+    name: Publish release
     runs-on: ubuntu-latest
     needs: [build, test, example-notebooks]
     if: startsWith(github.ref, 'refs/tags/v')
@@ -101,13 +154,22 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Download built wheel
+      - name: Download built wheels
         uses: actions/download-artifact@v4
         with:
-          name: python-package-distributions
           path: dist/
+          pattern: wheels-*
+          merge-multiple: true
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Push to release branch
+        continue-on-error: true
+        env:
+          GITHUB_REF: ${{github.ref}}
+        run: |-
+          releasever="$(echo "$GITHUB_REF" | grep -Po '(?<=^refs/tags/v)(?:0\.)?[1-9][0-9]*').x"
+          if [[ "$releasever" = 0.5.x ]]; then releasever="${releasever%.x}"; fi
+          git push origin "HEAD:release-$releasever"
 
   example-notebooks:
     name: Run and verify the example notebooks
