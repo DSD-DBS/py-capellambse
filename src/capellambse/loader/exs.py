@@ -17,9 +17,12 @@ import html.entities
 import io
 import os
 import re
+import sys
 import typing as t
 
 import lxml.etree
+
+from capellambse._compiled import serialize as _native_serialize
 
 INDENT = b"  "
 LINESEP = os.linesep.encode("ascii")
@@ -175,10 +178,7 @@ def serialize(
     Iterator[str]
         An iterator that yields the serialized XML piece by piece.
     """
-    buffer = io.BytesIO()
     root: lxml.etree._Element
-    preceding_siblings: cabc.Iterable[lxml.etree._Element]
-    following_siblings: cabc.Iterable[lxml.etree._Element]
     if isinstance(tree, lxml.etree._ElementTree):
         if siblings is None:
             siblings = True
@@ -187,6 +187,16 @@ def serialize(
         if siblings is None:
             siblings = False
         root = tree
+
+    if encoding == "utf-8" and errors == "strict":
+        line_length = min(line_length, sys.maxsize)
+        return _native_serialize(
+            root, line_length=int(line_length), siblings=siblings
+        )
+
+    buffer = io.BytesIO()
+    preceding_siblings: cabc.Iterable[lxml.etree._Element]
+    following_siblings: cabc.Iterable[lxml.etree._Element]
 
     if siblings:
         preceding_siblings = reversed(list(root.itersiblings(preceding=True)))
