@@ -43,4 +43,4 @@ clean: clean-apidoc
 .PHONY: serve
 html: apidoc
 serve: html
-	cd build/html && exec python -m http.server --bind 127.0.0.1
+	cd $(BUILDDIR)/html && exec python -m http.server --bind 127.0.0.1
