@@ -17,9 +17,26 @@ import html.entities
 import io
 import os
 import re
+import sys
 import typing as t
 
 import lxml.etree
+
+try:
+    from capellambse._compiled import serialize as _native_serialize
+except ImportError:
+    if (
+        os.environ.get("CIBUILDWHEEL", "0") == "1"
+        or os.environ.get("CAPELLAMBSE_REQUIRE_NATIVE", "0") == "1"
+    ):
+        raise
+
+    def _native_serialize(*_1, **_2):  # type: ignore[misc]
+        raise TypeError("Native module is not available")
+
+    HAS_NATIVE = False
+else:
+    HAS_NATIVE = True
 
 INDENT = b"  "
 LINESEP = os.linesep.encode("ascii")
@@ -175,10 +192,7 @@ def serialize(
     Iterator[str]
         An iterator that yields the serialized XML piece by piece.
     """
-    buffer = io.BytesIO()
     root: lxml.etree._Element
-    preceding_siblings: cabc.Iterable[lxml.etree._Element]
-    following_siblings: cabc.Iterable[lxml.etree._Element]
     if isinstance(tree, lxml.etree._ElementTree):
         if siblings is None:
             siblings = True
@@ -187,6 +201,32 @@ def serialize(
         if siblings is None:
             siblings = False
         root = tree
+
+    if HAS_NATIVE and encoding == "utf-8" and errors == "strict":
+        line_length = min(line_length, sys.maxsize)
+        return _native_serialize(
+            root, line_length=int(line_length), siblings=siblings
+        )
+    return _python_serialize(
+        root,
+        encoding=encoding,
+        errors=errors,
+        line_length=line_length,
+        siblings=siblings,
+    )
+
+
+def _python_serialize(
+    root,
+    *,
+    encoding: str,
+    errors: str,
+    line_length: float | int,
+    siblings: bool,
+) -> bytes:
+    buffer = io.BytesIO()
+    preceding_siblings: cabc.Iterable[lxml.etree._Element]
+    following_siblings: cabc.Iterable[lxml.etree._Element]
 
     if siblings:
         preceding_siblings = reversed(list(root.itersiblings(preceding=True)))
