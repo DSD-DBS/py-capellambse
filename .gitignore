@@ -164,6 +164,7 @@ cython_debug/
 
 # don't commit lock files for library projects
 uv.lock
+Cargo.lock
 
 # Mac garbage
 .DS_Store

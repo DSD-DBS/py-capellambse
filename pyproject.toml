@@ -2,7 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=3.4", "wheel"]
+requires = [
+  "setuptools>=64",
+  "setuptools-rust",
+  "setuptools-scm[toml]>=3.4",
+  "wheel",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -134,6 +139,26 @@ docs = [
   "tomli>=2.2.1 ; python_full_version < '3.11'",
 ]
 
+[tool.cibuildwheel]
+enable = "pypy"
+build-frontend = "build"
+before-build = ["rustup default stable", "rustup show"]
+test-groups = ["dev"]
+test-command = ["cd {project}", "coverage run", "coverage report"]
+
+[tool.cibuildwheel.linux]
+before-build = [
+  "curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=stable --profile=minimal -y",
+  "rustup show",
+]
+repair-wheel-command = [
+  "pipx run abi3audit {wheel}",
+  "auditwheel repair -w {dest_dir} {wheel}",
+]
+
+[tool.cibuildwheel.windows]
+test-command = ["cd /d {project}", "coverage run", "coverage report"]
+
 [tool.coverage.run]
 branch = true
 command_line = "-m pytest"
@@ -147,6 +172,9 @@ exclude_also = [
   '@t\.overload',
 ]
 skip_covered = true
+
+[tool.distutils.bdist_wheel]
+py_limited_api = "cp310"
 
 [tool.docformatter]
 wrap-descriptions = 72
@@ -279,6 +307,10 @@ zip-safe = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[[tool.setuptools-rust.ext-modules]]
+target = "capellambse._compiled"
+optional = true
 
 [tool.setuptools_scm]
 # This section must exist for setuptools_scm to work

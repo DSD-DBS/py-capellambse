@@ -23,6 +23,7 @@ Developing
 ----------
 
 Use [uv](https://docs.astral.sh/uv/) to set up a local development environment.
+Additionally, a Rust compiler is required to build the native module.
 
 ```bash
 git clone https://github.com/DSD-DBS/py-capellambse
@@ -41,6 +42,13 @@ venv. For example, to run the unit tests, use:
 
 ```sh
 uv run pytest
+```
+
+To rebuild the native module after modifying the Rust source code, run the
+following command:
+
+```bash
+uv sync --reinstall-package capellambse
 ```
 
 The example notebooks (see above) are verified during CI, to ensure their
