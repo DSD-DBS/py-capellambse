@@ -32,7 +32,7 @@ repos:
     hooks:
       - id: insert-license
         name: Insert license headers (shell-style comments)
-        files: '(?:^|/)(?:.*\.(?:py|sh|toml|ya?ml)|Dockerfile|Makefile)$'
+        files: '(?:^|/)(?:.*\.(?:pyi?|sh|toml|ya?ml)|Dockerfile|Makefile)$'
         exclude: '(?:^|/)\..+|^docs/Makefile$'
         args:
           - --detect-license-in-X-top-lines=15
@@ -60,6 +60,16 @@ repos:
           - LICENSES/.license_header.txt
           - --comment-style
           - "/*| *| */"
+      - id: insert-license
+        name: Insert license headers (Rust-style comments)
+        files: '\.rs$'
+        exclude: '(?:^|/)\..+'
+        args:
+          - --detect-license-in-X-top-lines=15
+          - --license-filepath
+          - LICENSES/.license_header.txt
+          - --comment-style
+          - "//"
       - id: insert-license
         name: Insert license headers (reST comments)
         files: '\.rst$'

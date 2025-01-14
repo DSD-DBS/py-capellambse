@@ -43,6 +43,13 @@ venv. For example, to run the unit tests, use:
 uv run pytest
 ```
 
+To rebuild the native module after modifying the Rust source code, run the
+following command:
+
+```bash
+uv sync --reinstall-package capellambse
+```
+
 The example notebooks (see above) are verified during CI, to ensure their
 output is up to date. This means they have to be re-run whenever the expected
 output changes.

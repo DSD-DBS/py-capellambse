@@ -15,37 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test with Python ${{matrix.python_version}} on ${{matrix.os}}
-    runs-on: ${{matrix.os}}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        python_version:
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-        include:
-          - os: windows-latest
-            python_version: "3.10"
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "**/pyproject.toml"
-          python-version: ${{matrix.python_version}}
-      - name: Run unit tests
-        run: uv run coverage run
-      - name: Report coverage
-        if: always()
-        run: uv run coverage report
-
-  pre-commit:
+  pre-commit: # {{{1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,41 +29,73 @@ jobs:
       - name: Run Pre-Commit
         run: uv run pre-commit run --all-files
 
-  build:
-    name: Build wheel
-    runs-on: ubuntu-latest
+  build: # {{{1
+    name: Build wheel for ${{matrix.os}} / ${{matrix.arch}}${{ matrix.manylinux && ' / ' || '' }}${{ matrix.manylinux || '' }}
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux manylinux {{{
+          - os: ubuntu-latest
+            arch: x86_64
+            manylinux: manylinux
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+            manylinux: manylinux
+          # }}}
+          # Linux musllinux {{{
+          - os: ubuntu-latest
+            arch: x86_64
+            manylinux: musllinux
+          - os: ubuntu-24.04-arm
+            arch: aarch64
+            manylinux: musllinux
+          # }}}
+          # macOS {{{
+          - os: macos-13
+            arch: x86_64
+          - os: macos-14
+            arch: arm64
+          # }}}
+          # Windows {{{
+          - os: windows-latest
+            arch: x86
+          - os: windows-latest
+            arch: AMD64
+          # }}}
+    env:
+      CIBW_ARCHS: ${{matrix.arch}}
+      CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
+      CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
+      MACOSX_DEPLOYMENT_TARGET: '10.13'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-          cache-dependency-glob: "**/pyproject.toml"
-          python-version: "3.12"
-      - name: Build packages
-        run: uv build
-      - name: Verify packages
-        run: uvx twine check dist/*
+      - name: Determine which Python versions to test against
+        env:
+          ENV_TAG: ${{runner.os}}-${{matrix.arch}}-${{matrix.manylinux}}
+          MANYLINUX: ${{matrix.manylinux}}
+        run: |-
+          if [[ "$ENV_TAG" == "Linux-x86_64-manylinux" || "$ENV_TAG" == "macOS-arm64-" ]]; then
+            echo "CIBW_BUILD=cp*-$MANYLINUX*" >> $GITHUB_OUTPUT
+          else
+            echo "CIBW_BUILD=cp310-$MANYLINUX* cp313-$MANYLINUX*" >> $GITHUB_OUTPUT
+          fi
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.22.0
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: python-package-distributions
-          path: dist/
+          name: wheel-${{runner.os}}-${{matrix.arch}}${{ matrix.manylinux && '-' || '' }}${{ matrix.manylinux || '' }}
+          path: wheelhouse/
           if-no-files-found: error
-      - name: Push to release branch
-        if: startsWith(github.ref, 'refs/tags/v')
-        continue-on-error: true
-        env:
-          GITHUB_REF: ${{github.ref}}
-        run: |-
-          releasever="$(echo "$GITHUB_REF" | grep -Po '(?<=^refs/tags/v)(?:0\.)?[1-9][0-9]*').x"
-          if [[ "$releasever" = 0.5.x ]]; then releasever="${releasever%.x}"; fi
-          git push origin "HEAD:release-$releasever"
-  pypi:
-    name: Publish to PyPI
+
+  publish: # {{{1
+    name: Publish release
     runs-on: ubuntu-latest
-    needs: [build, test, example-notebooks]
+    needs: [build, example-notebooks]
     if: startsWith(github.ref, 'refs/tags/v')
     environment:
       name: pypi
@@ -101,15 +103,24 @@ jobs:
     permissions:
       id-token: write
     steps:
-      - name: Download built wheel
+      - name: Download built wheels
         uses: actions/download-artifact@v4
         with:
-          name: python-package-distributions
           path: dist/
+          pattern: wheel-*
+          merge-multiple: true
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Push to release branch
+        continue-on-error: true
+        env:
+          GITHUB_REF: ${{github.ref}}
+        run: |-
+          releasever="$(echo "$GITHUB_REF" | grep -Po '(?<=^refs/tags/v)(?:0\.)?[1-9][0-9]*').x"
+          if [[ "$releasever" = 0.5.x ]]; then releasever="${releasever%.x}"; fi
+          git push origin "HEAD:release-$releasever"
 
-  example-notebooks:
+  example-notebooks: # {{{1
     name: Run and verify the example notebooks
     runs-on: ubuntu-latest
     steps:
@@ -124,7 +135,7 @@ jobs:
       - name: Run example notebooks
         run: make -C docs verify-examples
 
-  docs:
+  docs: # {{{1
     name: Build documentation
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
@@ -153,3 +164,5 @@ jobs:
           force_orphan: true
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/html
+
+# vim:set fdm=marker:

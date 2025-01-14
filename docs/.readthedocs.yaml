@@ -17,6 +17,9 @@ build:
       - asdf plugin add uv
       - asdf install uv latest
       - asdf global uv latest
+      - asdf plugin add rust
+      - asdf install rust stable
+      - asdf global rust stable
     build:
       html:
         - make -C docs html BUILDDIR=$READTHEDOCS_OUTPUT
