@@ -19,6 +19,7 @@ SERIALIZERS = [
             exs._native_serialize,
             line_length=sys.maxsize,
             siblings=True,
+            file=None,
         ),
         id="native",
         marks=pytest.mark.skipif(
@@ -32,6 +33,7 @@ SERIALIZERS = [
             errors="strict",
             line_length=sys.maxsize,
             siblings=True,
+            file=None,
         ),
         id="python",
     ),
