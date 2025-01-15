@@ -148,7 +148,7 @@ notebook.
 - [09 Context
   Diagrams.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/09%20Context%20Diagrams.html)
   shows the [capellambse-context-diagrams
-  extension](https://dsd-dbs.github.io/capellambse-context-diagrams/) that
+  extension](https://capellambse-context-diagrams.readthedocs.io/) that
   visualizes contexts of Capella objects. The extension is external to the
   capellambse library and needs to be installed separately.
 
