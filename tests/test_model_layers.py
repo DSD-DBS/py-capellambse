@@ -58,7 +58,7 @@ def test_model_compatibility(folder: str, aird: str) -> None:
         (
             "91dc2eec-c878-4fdb-91d8-8f4a4527424e",
             [
-                ("88d7f9a7-1fae-4884-8233-7582153cc5a7", "destination", None),
+                ("88d7f9a7-1fae-4884-8233-7582153cc5a7", "target", None),
                 ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "modes", 0),
                 ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "states", 0),
                 ("d0ea4afa-4231-4a3d-b1db-03655738dab8", "source", None),
@@ -114,6 +114,60 @@ def test_ElementList_filter_by_type(model: m.MelodyModel):
     diags = model.diagrams.by_type("OCB")
     assert len(diags) == 1
     assert diags[0].type is m.DiagramType.OCB
+
+
+@pytest.mark.parametrize(
+    "filter_arg",
+    [
+        pytest.param(mm.oa.Entity, id="type-object"),
+        pytest.param("Entity", id="type-name"),
+        pytest.param((mm.oa.NS, "Entity"), id="classname-tuple"),
+    ],
+)
+def test_filtering_lists_by_the_only_contained_class_doesnt_change_the_content(
+    model: m.MelodyModel, filter_arg
+) -> None:
+    pkg = model.oa.entity_package
+    assert pkg is not None
+    base = pkg.entities
+    base_ids = [i.uuid for i in base]
+    assert all(type(i) is mm.oa.Entity for i in base)
+
+    filtered = base.by_class(filter_arg)
+    filtered_ids = [i.uuid for i in filtered]
+
+    assert filtered_ids == base_ids
+
+
+def test_filtering_dotted_names_filters_on_nested_attributes(
+    model: m.MelodyModel,
+) -> None:
+    base = model.la.all_component_exchanges
+    assert len(base) > 1
+    expected = [
+        "c31491db-817d-44b3-a27c-67e9cc1e06a2",  # Care
+    ]
+    assert {i.uuid for i in base} >= set(expected)
+
+    filtered = base.by_target.parent.name("Whomping Willow")
+
+    assert isinstance(filtered, m.ElementList)
+    found = [i.uuid for i in filtered]
+    assert found == expected
+
+
+def test_filtering_on_list_attributes_returns_match_if_any_member_matches(
+    model: m.MelodyModel,
+) -> None:
+    base = model.la.all_components
+    willow = model.by_uuid("3bdd4fa2-5646-44a1-9fa6-80c68433ddb7")
+    expected = [willow.parent.uuid]
+
+    filtered = base.by_components(willow)
+
+    assert isinstance(filtered, m.ElementList)
+    found = [i.uuid for i in filtered]
+    assert found == expected
 
 
 def test_ElementList_dictlike_getitem(model: m.MelodyModel):
@@ -222,7 +276,9 @@ def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
         " is near the actor"
     )
 
-    assert markupsafe.escape(elm.precondition.specification) == expected
+    assert elm.precondition is not None
+    spec = elm.precondition.specification
+    assert markupsafe.escape(spec) == expected
 
 
 @pytest.mark.parametrize(
@@ -252,7 +308,8 @@ def test_model_elements_have_pre_or_post_conditions(
     condition = elm.precondition or elm.postcondition
 
     assert condition
-    assert condition.specification["capella:linkedText"]
+    spec = condition.specification
+    assert spec["capella:linkedText"]
 
 
 @pytest.mark.parametrize(
@@ -595,6 +652,7 @@ def test_model_search_finds_elements(
     session_shared_model: m.MelodyModel, searchkey
 ):
     expected = {
+        # Classes
         "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
         "1adf8097-18f9-474e-b136-6c845fc6d9e9",
         "2a923851-a4ca-4fd2-a4b3-302edb8ac178",
@@ -610,6 +668,11 @@ def test_model_search_finds_elements(
         "c89849fd-0643-4708-a4da-74c9ea9ca7b1",
         "ca79bf38-5e82-4104-8c49-e6e16b3748e9",
         "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
+        # Unions
+        "246ab250-2a80-487f-b022-1123c02e33ff",
+        "2f34192f-088b-4511-95ea-b1a29fb6028b",
+        "31c5c280-64e1-4d11-b874-412966aa547c",
+        "be06f4a0-aff2-4475-a8a8-766e5fa26006",
     }
 
     found = session_shared_model.search(searchkey)
@@ -635,17 +698,15 @@ def test_model_search_below_filters_elements_by_ancestor(
     assert actual == expected
 
 
-@pytest.mark.parametrize(
-    "xtype",
-    {i for map in m.XTYPE_HANDLERS.values() for i in map.values()},
-)
 def test_model_search_does_not_contain_duplicates(
-    session_shared_model: m.MelodyModel, xtype: type[t.Any]
+    session_shared_model: m.MelodyModel,
 ) -> None:
-    results = session_shared_model.search(xtype)
-    uuids = [i.uuid for i in results]
+    results = session_shared_model.search()
+    uuids = sorted(i.uuid for i in results)
+    uuids_dedup = sorted(set(uuids))
 
-    assert len(uuids) == len(set(uuids))
+    assert len(uuids) > 0
+    assert len(uuids) == len(uuids_dedup)
 
 
 def test_CommunicationMean(model: m.MelodyModel) -> None:
@@ -1157,20 +1218,22 @@ def test_lists_of_links_can_be_removed_from(model: m.MelodyModel):
     assert protect_students not in hogwarts.allocated_functions
 
 
-def test_lists_of_links_disallow_insertion_of_duplicate_members(
+def test_lists_of_links_reorder_existing_members_when_appending_duplicates(
     model: m.MelodyModel,
 ):
     parent = model.by_uuid("3b83b4ba-671a-4de8-9c07-a5c6b1d3c422")
     target = model.by_uuid("dfaf473d-257f-4455-90fd-fe9489dac617")
     assert target in parent.involved_activities
+    assert target != parent.involved_activities[-1]
+    links_before = set(parent.involved_activities._elements)
 
-    with pytest.raises(m.NonUniqueMemberError) as catch:
-        parent.involved_activities.append(target)
+    parent.involved_activities.append(target)
 
-    assert catch.value.args == (parent, "involved_activities", target)
-    assert "involved_activities" in str(catch.value)
-    assert parent.uuid in str(catch.value)
-    assert target.uuid in str(catch.value)
+    count = sum(1 for ia in parent.involved_activities if ia == target)
+    assert count == 1
+    assert parent.involved_activities[-1] == target
+    links_after = set(parent.involved_activities._elements)
+    assert links_before == links_after
 
 
 @pytest.mark.parametrize(
