@@ -17,9 +17,12 @@ import html.entities
 import io
 import os
 import re
+import sys
 import typing as t
 
 import lxml.etree
+
+from capellambse._compiled import serialize as _native_serialize
 
 INDENT = b"  "
 LINESEP = os.linesep.encode("ascii")
@@ -38,7 +41,7 @@ ALWAYS_EXPANDED_TAGS = frozenset({"bodies", "semanticResources"})
 class HasWrite(t.Protocol):
     """A simple protocol to check for a writable file-like object."""
 
-    def write(self, chunk: bytes) -> int: ...
+    def write(self, chunk: bytes) -> t.Any: ...
 
 
 def to_string(tree: lxml.etree._Element, /) -> str:
@@ -130,18 +133,40 @@ def write(
     else:
         ctx = open(file, "wb")  # noqa: SIM115
 
-    payload = serialize(
-        tree,
-        encoding=encoding,
-        errors=errors,
-        line_length=line_length,
-        siblings=siblings,
-    )
     with ctx as f:
         f.write(_declare(encoding))
-        f.write(payload)
+        serialize(
+            tree,
+            encoding=encoding,
+            errors=errors,
+            line_length=line_length,
+            siblings=siblings,
+            file=f,
+        )
 
 
+@t.overload
+def serialize(
+    tree: lxml.etree._Element | lxml.etree._ElementTree,
+    /,
+    *,
+    encoding: str = ...,
+    errors: str = ...,
+    line_length: float | int = ...,
+    siblings: bool | None = ...,
+    file: None = ...,
+) -> bytes: ...
+@t.overload
+def serialize(
+    tree: lxml.etree._Element | lxml.etree._ElementTree,
+    /,
+    *,
+    encoding: str = ...,
+    errors: str = ...,
+    line_length: float | int = ...,
+    siblings: bool | None = ...,
+    file: HasWrite,
+) -> None: ...
 def serialize(
     tree: lxml.etree._Element | lxml.etree._ElementTree,
     /,
@@ -150,7 +175,8 @@ def serialize(
     errors: str = "strict",
     line_length: float | int = LINE_LENGTH,
     siblings: bool | None = None,
-) -> bytes:
+    file: HasWrite | None = None,
+) -> bytes | None:
     """Serialize an XML tree.
 
     The iterator returned by this function yields the serialized XML
@@ -169,16 +195,16 @@ def serialize(
     siblings
         Also include siblings of the given subtree. Defaults to yes if
         'tree' is an element tree, no if it's a single element.
+    file
+        A file-like object to write the serialized tree to. If None, the
+        serialized tree will be returned as bytes instead.
 
     Returns
     -------
-    Iterator[str]
-        An iterator that yields the serialized XML piece by piece.
+    bytes | None
+        The serialized tree (if no *file* was given), or None.
     """
-    buffer = io.BytesIO()
     root: lxml.etree._Element
-    preceding_siblings: cabc.Iterable[lxml.etree._Element]
-    following_siblings: cabc.Iterable[lxml.etree._Element]
     if isinstance(tree, lxml.etree._ElementTree):
         if siblings is None:
             siblings = True
@@ -187,6 +213,16 @@ def serialize(
         if siblings is None:
             siblings = False
         root = tree
+
+    if encoding == "utf-8" and errors == "strict":
+        line_length = min(line_length, sys.maxsize)
+        return _native_serialize(
+            root, line_length=int(line_length), siblings=siblings, file=file
+        )
+
+    buffer = io.BytesIO()
+    preceding_siblings: cabc.Iterable[lxml.etree._Element]
+    following_siblings: cabc.Iterable[lxml.etree._Element]
 
     if siblings:
         preceding_siblings = reversed(list(root.itersiblings(preceding=True)))
@@ -229,6 +265,10 @@ def serialize(
         )
 
     buffer.write(b"\n")
+
+    if file is not None:
+        file.write(buffer.getvalue())
+        return None
     return buffer.getvalue()
 
 

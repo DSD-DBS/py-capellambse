@@ -2,7 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=3.4", "wheel"]
+requires = [
+  "setuptools>=64",
+  "setuptools-rust",
+  "setuptools_scm[toml]>=3.4",
+  "wheel",
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -126,6 +131,9 @@ exclude_also = [
   '@t\.overload',
 ]
 skip_covered = true
+
+[tool.distutils.bdist_wheel]
+py_limited_api = "cp310"
 
 [tool.docformatter]
 wrap-descriptions = 72
@@ -260,6 +268,10 @@ zip-safe = false
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[[tool.setuptools-rust.ext-modules]]
+target = "capellambse._compiled"
+debug = false
 
 [tool.setuptools_scm]
 # This section must exist for setuptools_scm to work
