@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2022 Copyright DB InfraGO AG
+# SPDX-License-Identifier: Apache-2.0
+
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Set the OS, Python version, and other tools you might need
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.12"
+  jobs:
+    create_environment:
+      - asdf plugin add uv
+      - asdf install uv latest
+      - asdf global uv latest
+    build:
+      html:
+        - make -C docs html BUILDDIR=$READTHEDOCS_OUTPUT

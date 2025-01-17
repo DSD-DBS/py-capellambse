@@ -145,6 +145,7 @@ jobs:
   docs:
     name: Build documentation
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     permissions:
       contents: write
     steps:
@@ -162,17 +163,9 @@ jobs:
         run: make -C docs apidoc
       - name: Create docs
         env:
-          SPHINXOPTS: ${{ github.ref != 'refs/heads/master' && '-W' || '' }}
+          SPHINXOPTS: ''
         run: make -C docs html
-      - name: Upload built docs as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Documentation
-          path: docs/build/html
-          if-no-files-found: error
-          retention-days: 5
       - name: Deploy
-        if: github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           force_orphan: true
