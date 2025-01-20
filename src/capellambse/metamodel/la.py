@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from capellambse import model as m
 
-from . import capellacommon, capellacore, cs, fa, interaction, sa
+from . import capellacommon, cs, fa, interaction, sa
 
 
 @m.xtype_handler(None)
@@ -80,23 +80,14 @@ class LogicalComponentPkg(m.ModelElement):
 
 
 @m.xtype_handler(None)
-class CapabilityRealization(m.ModelElement):
+class CapabilityRealization(cs.CapabilityBase):
     """A capability."""
 
     _xmltag = "ownedCapabilityRealizations"
 
-    owned_chains = m.DirectProxyAccessor(
-        fa.FunctionalChain, aslist=m.ElementList
-    )
     involved_functions = m.Allocation[LogicalFunction](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
-        attr="involved",
-    )
-    involved_chains = m.Allocation[fa.FunctionalChain](
-        "ownedFunctionalChainAbstractCapabilityInvolvements",
-        interaction.FunctionalChainAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
@@ -106,23 +97,24 @@ class CapabilityRealization(m.ModelElement):
         aslist=m.MixedElementList,
         attr="involved",
     )
+    component_involvements = m.DirectProxyAccessor(
+        capellacommon.CapabilityRealizationInvolvement, aslist=m.ElementList
+    )
+    involved_chains = m.Allocation[fa.FunctionalChain](
+        "ownedFunctionalChainAbstractCapabilityInvolvements",
+        interaction.FunctionalChainAbstractCapabilityInvolvement,
+        aslist=m.ElementList,
+        attr="involved",
+    )
+    owned_chains = m.DirectProxyAccessor(
+        fa.FunctionalChain, aslist=m.ElementList
+    )
     realized_capabilities = m.Allocation[sa.Capability](
         "ownedAbstractCapabilityRealizations",
         interaction.AbstractCapabilityRealization,
         aslist=m.ElementList,
         attr="targetElement",
     )
-
-    postcondition = m.Association(capellacore.Constraint, "postCondition")
-    precondition = m.Association(capellacore.Constraint, "preCondition")
-    scenarios = m.DirectProxyAccessor(
-        interaction.Scenario, aslist=m.ElementList
-    )
-    states = m.Association(
-        capellacommon.State, "availableInStates", aslist=m.ElementList
-    )
-
-    packages: m.Accessor
 
 
 @m.xtype_handler(None)

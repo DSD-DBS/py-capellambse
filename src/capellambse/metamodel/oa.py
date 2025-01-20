@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from capellambse import model as m
 
-from . import capellacommon, capellacore, cs, fa, information, interaction
+from . import capellacommon, cs, fa, information, interaction
 
 
 @m.xtype_handler(None)
@@ -49,31 +49,11 @@ class EntityOperationalCapabilityInvolvement(interaction.AbstractInvolvement):
 
 
 @m.xtype_handler(None)
-class OperationalCapability(m.ModelElement):
+class OperationalCapability(cs.CapabilityBase):
     """A capability in the OperationalAnalysis layer."""
 
     _xmltag = "ownedOperationalCapabilities"
 
-    extends = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityExtend, aslist=m.ElementList
-    )
-    extended_by = m.Backref(
-        interaction.AbstractCapabilityExtend, "target", aslist=m.ElementList
-    )
-    includes = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityInclude, aslist=m.ElementList
-    )
-    included_by = m.Backref(
-        interaction.AbstractCapabilityInclude, "target", aslist=m.ElementList
-    )
-    generalizes = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityGeneralization, aslist=m.ElementList
-    )
-    generalized_by = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityGeneralization,
-        "target",
-        aslist=m.ElementList,
-    )
     involved_activities = m.Allocation[OperationalActivity](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
@@ -98,17 +78,6 @@ class OperationalCapability(m.ModelElement):
     owned_processes = m.DirectProxyAccessor(
         OperationalProcess, aslist=m.ElementList
     )
-
-    postcondition = m.Association(capellacore.Constraint, "postCondition")
-    precondition = m.Association(capellacore.Constraint, "preCondition")
-    scenarios = m.DirectProxyAccessor(
-        interaction.Scenario, aslist=m.ElementList
-    )
-    states = m.Association(
-        capellacommon.State, "availableInStates", aslist=m.ElementList
-    )
-
-    packages: m.Accessor
 
 
 @m.xtype_handler(None)

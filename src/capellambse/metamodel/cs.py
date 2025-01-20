@@ -13,7 +13,41 @@ Composite Structure object-relations map (ontology):
 
 import capellambse.model as m
 
-from . import capellacommon, fa, information
+from . import capellacommon, capellacore, fa, information, interaction
+
+
+class CapabilityBase(m.ModelElement):
+    """Base class for capabilities."""
+
+    postcondition = m.Association(capellacore.Constraint, "postCondition")
+    precondition = m.Association(capellacore.Constraint, "preCondition")
+    scenarios = m.DirectProxyAccessor(
+        interaction.Scenario, aslist=m.ElementList
+    )
+    states = m.Association(
+        capellacommon.State, "availableInStates", aslist=m.ElementList
+    )
+
+    extends = m.DirectProxyAccessor(
+        interaction.AbstractCapabilityExtend, aslist=m.ElementList
+    )
+    extended_by = m.Backref(
+        interaction.AbstractCapabilityExtend, "target", aslist=m.ElementList
+    )
+    includes = m.DirectProxyAccessor(
+        interaction.AbstractCapabilityInclude, aslist=m.ElementList
+    )
+    included_by = m.Backref(
+        interaction.AbstractCapabilityInclude, "target", aslist=m.ElementList
+    )
+    generalizes = m.DirectProxyAccessor(
+        interaction.AbstractCapabilityGeneralization, aslist=m.ElementList
+    )
+    generalized_by = m.DirectProxyAccessor(
+        interaction.AbstractCapabilityGeneralization,
+        "target",
+        aslist=m.ElementList,
+    )
 
 
 @m.xtype_handler(None)

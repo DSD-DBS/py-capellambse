@@ -13,7 +13,10 @@ class AbstractStateRealization(m.ModelElement): ...
 class TransfoLink(m.ModelElement): ...
 
 
-class CapabilityRealizationInvolvement(m.ModelElement): ...
+class CapabilityRealizationInvolvement(m.ModelElement):
+    """An involvement in a capability realization."""
+
+    involved = m.Association(m.ModelElement, "involved")
 
 
 @m.xtype_handler(None)
