@@ -74,19 +74,12 @@ We additionally recommend that you set up your editor / IDE as follows.
   third-party language servers more easily, and continue with the next point.
 
   Otherwise, set up the editor to run `ruff` and `mypy` when saving.
-  ```
 
   Note that the Pylance language server is not recommended, as it occasionally
   causes false-positive errors for perfectly valid code.
 
 - *If you do not use VSC*: Set up your editor to use the [python-lsp-server]
-  and [ruff], and make sure that the relevant pylsp plugins are installed.
-
-  You can install everything that's needed into the virtualenv with pip:
-
-  ```sh
-  pip install "python-lsp-server" pylsp-mypy ruff
-  ```
+  and [ruff], which are installed into the development virtualenv by default.
 
   This will provide as-you-type linting as well as automatic formatting on
   save. Language server clients are available for a wide range of editors, from
@@ -97,11 +90,10 @@ Quality controls
 
 We use the [pre-commit] framework to perform some basic code checks at commit
 time. Before you commit your changes, make sure it is installed and set up, as
-described in the [installation instructions](README.md#installation):
+described in the [installation instructions](#Developing):
 
 ```bash
-pip install pre-commit
-pre-commit install
+uv run pre-commit install
 ```
 
 Commit message format
