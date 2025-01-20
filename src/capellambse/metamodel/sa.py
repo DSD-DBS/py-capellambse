@@ -10,7 +10,7 @@ functions, actors etc. which is best presented in a glossary document.
 
 import capellambse.model as m
 
-from . import capellacommon, capellacore, cs, fa, interaction, oa
+from . import capellacommon, cs, fa, interaction, oa
 
 
 @m.xtype_handler(None)
@@ -85,43 +85,14 @@ class CapabilityInvolvement(interaction.AbstractInvolvement):
 
 
 @m.xtype_handler(None)
-class Capability(m.ModelElement):
+class Capability(cs.CapabilityBase):
     """A capability."""
 
     _xmltag = "ownedCapabilities"
 
-    extends = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityExtend, aslist=m.ElementList
-    )
-    extended_by = m.Backref(
-        interaction.AbstractCapabilityExtend, "target", aslist=m.ElementList
-    )
-    includes = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityInclude, aslist=m.ElementList
-    )
-    included_by = m.Backref(
-        interaction.AbstractCapabilityInclude, "target", aslist=m.ElementList
-    )
-    generalizes = m.DirectProxyAccessor(
-        interaction.AbstractCapabilityGeneralization, aslist=m.ElementList
-    )
-    generalized_by = m.Backref(
-        interaction.AbstractCapabilityGeneralization,
-        "target",
-        aslist=m.ElementList,
-    )
-    owned_chains = m.DirectProxyAccessor(
-        fa.FunctionalChain, aslist=m.ElementList
-    )
     involved_functions = m.Allocation[SystemFunction](
         "ownedAbstractFunctionAbstractCapabilityInvolvements",
         interaction.AbstractFunctionAbstractCapabilityInvolvement,
-        aslist=m.ElementList,
-        attr="involved",
-    )
-    involved_chains = m.Allocation[fa.FunctionalChain](
-        "ownedFunctionalChainAbstractCapabilityInvolvements",
-        interaction.FunctionalChainAbstractCapabilityInvolvement,
         aslist=m.ElementList,
         attr="involved",
     )
@@ -134,23 +105,21 @@ class Capability(m.ModelElement):
     component_involvements = m.DirectProxyAccessor(
         CapabilityInvolvement, aslist=m.ElementList
     )
+    involved_chains = m.Allocation[fa.FunctionalChain](
+        "ownedFunctionalChainAbstractCapabilityInvolvements",
+        interaction.FunctionalChainAbstractCapabilityInvolvement,
+        aslist=m.ElementList,
+        attr="involved",
+    )
+    owned_chains = m.DirectProxyAccessor(
+        fa.FunctionalChain, aslist=m.ElementList
+    )
     realized_capabilities = m.Allocation[oa.OperationalCapability](
         None,  # FIXME fill in tag
         interaction.AbstractCapabilityRealization,
         aslist=m.ElementList,
         attr="targetElement",
     )
-
-    postcondition = m.Association(capellacore.Constraint, "postCondition")
-    precondition = m.Association(capellacore.Constraint, "preCondition")
-    scenarios = m.DirectProxyAccessor(
-        interaction.Scenario, aslist=m.ElementList
-    )
-    states = m.Association(
-        capellacommon.State, "availableInStates", aslist=m.ElementList
-    )
-
-    packages: m.Accessor
 
 
 @m.xtype_handler(None)
