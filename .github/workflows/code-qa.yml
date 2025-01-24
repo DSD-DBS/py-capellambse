@@ -122,26 +122,7 @@ jobs:
           cache-dependency-glob: "**/pyproject.toml"
           python-version: "3.12"
       - name: Run example notebooks
-        run: |
-          jq --version
-          set -o pipefail
-          export CAPELLAMBSE_UUID_SEED=0
-          ok=true
-          function celloutputs() {
-            jq -r '.cells[] | select(.cell_type=="code") | .outputs[] | (.text, .data["text/plain"]) | .[]?' < "$1" |
-              grep -v '^$' |
-              sed -e 's/ at 0x[0-9a-fA-F]\+/ at 0x0/'
-          }
-          for file in docs/source/examples/*.ipynb; do
-            old_outputs="$(celloutputs "$file")"
-            if ! uv run --all-extras jupyter nbconvert --to notebook --execute "$file" --output "${file##*/}" --ExecutePreprocessor.timeout "${NOTEBOOK_TIMEOUT_SEC:-300}"; then
-              ok=false
-              continue
-            fi
-            new_outputs="$(celloutputs "$file")"
-            diff -u3 <(echo "$old_outputs") <(echo "$new_outputs") || ok=false
-          done
-          $ok
+        run: make -C docs verify-examples
 
   docs:
     name: Build documentation
