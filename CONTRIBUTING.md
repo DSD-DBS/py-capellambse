@@ -47,6 +47,12 @@ The example notebooks (see above) are verified during CI, to ensure their
 output is up to date. This means they have to be re-run whenever the expected
 output changes.
 
+The same script can be run locally with the following command:
+
+```sh
+make -C docs verify-examples
+```
+
 Use the following command to start a Jupyter server, which can be used to
 develop and re-run the example notebooks:
 
@@ -63,6 +69,9 @@ CAPELLAMBSE_UUID_SEED=0 uv run jupyter lab
 
 If your browser did not open automatically, follow the instructions in the
 terminal to start it manually.
+
+IDE / editor setup
+------------------
 
 We additionally recommend that you set up your editor / IDE as follows.
 

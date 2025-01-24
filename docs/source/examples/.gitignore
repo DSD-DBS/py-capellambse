@@ -5,3 +5,4 @@
 !/.gitignore
 !/*.ipynb
 !/*.ipynb.license
+/_*_tmp_verify.ipynb
