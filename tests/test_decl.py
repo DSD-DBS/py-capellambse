@@ -307,6 +307,7 @@ class TestApplyExtend:
     ) -> None:
         PHYS_COMPONENT = "b327d900-abd2-4138-a111-9ff0684739d8"
         cmp = model.by_uuid(PHYS_COMPONENT)
+        assert isinstance(cmp, mm.pa.PhysicalComponent)
         previous_ports = len(cmp.ports)
         yml = f"""\
             - parent: !uuid {PHYS_COMPONENT}
@@ -318,15 +319,18 @@ class TestApplyExtend:
             - parent: !uuid {PHYS_COMPONENT}
               extend:
                 exchanges:
-                  - source: !promise first-port
+                  - _type: FunctionalExchange
+                    source: !promise first-port
                     target: !promise second-port
                     promise_id: my_exchange
             - parent: !uuid {PHYS_COMPONENT}
               extend:
                 ports:
-                  - name: First port
+                  - _type: PhysicalPort
+                    name: First port
                     promise_id: first-port
-                  - name: Second port
+                  - _type: PhysicalPort
+                    name: Second port
                     promise_id: second-port
             """
 

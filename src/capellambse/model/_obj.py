@@ -51,6 +51,9 @@ from capellambse import helpers
 
 from . import VIRTUAL_NAMESPACE_PREFIX, T, U, _descriptors, _pods, _styleclass
 
+if t.TYPE_CHECKING:
+    import capellambse.metamodel as mm
+
 LOGGER = logging.getLogger(__name__)
 CORE_VIEWPOINT = "org.polarsys.capella.core.viewpoint"
 
@@ -503,6 +506,23 @@ class _ModelElementMeta(abc.ABCMeta):
         ns.register(cls, minver=minver, maxver=maxver)
         return cls
 
+    def __subclasscheck__(self, subclass) -> bool:
+        import capellambse.metamodel as mm
+
+        if self is mm.cs.ComponentArchitecture and issubclass(
+            subclass, mm.oa.OperationalAnalysis
+        ):
+            warnings.warn(
+                (
+                    "OperationalAnalysis will soon no longer be considered a subclass of ComponentArchitecture,"
+                    " use cs.BlockArchitecture for issubclass/isinstance checks instead"
+                ),
+                UserWarning,
+                stacklevel=2,
+            )
+            return True
+        return super().__subclasscheck__(subclass)
+
 
 class ModelElement(metaclass=_ModelElementMeta):
     """A model element.
@@ -548,11 +568,19 @@ class ModelElement(metaclass=_ModelElementMeta):
     )
 
     parent = _descriptors.ParentAccessor()
-    constraints: _descriptors.Accessor[ElementList[t.Any]]
-    property_values: _descriptors.Accessor[ElementList[t.Any]]
-    property_value_groups: _descriptors.Accessor[ElementList[t.Any]]
-    applied_property_values: _descriptors.Accessor[ElementList[t.Any]]
-    applied_property_value_groups: _descriptors.Accessor[ElementList[t.Any]]
+    constraints: _descriptors.Containment[mm.capellacore.Constraint]
+    property_values: _descriptors.Containment[
+        mm.capellacore.AbstractPropertyValue
+    ]
+    property_value_groups: _descriptors.Containment[
+        mm.capellacore.PropertyValueGroup
+    ]
+    applied_property_values: _descriptors.Association[
+        mm.capellacore.AbstractPropertyValue
+    ]
+    applied_property_value_groups: _descriptors.Association[
+        mm.capellacore.PropertyValueGroup
+    ]
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
@@ -608,7 +636,7 @@ class ModelElement(metaclass=_ModelElementMeta):
         return wrap_xml(model, element, cls)
 
     @property
-    def layer(self) -> capellambse.metamodel.cs.ComponentArchitecture:
+    def layer(self) -> capellambse.metamodel.cs.BlockArchitecture:
         """Find the layer that this element belongs to.
 
         Note that an architectural layer normally does not itself have a
@@ -624,7 +652,7 @@ class ModelElement(metaclass=_ModelElementMeta):
         obj: ModelElement | None = self
         assert obj is not None
         while obj := getattr(obj, "parent", None):
-            if isinstance(obj, mm.cs.ComponentArchitecture):
+            if isinstance(obj, mm.cs.BlockArchitecture):
                 return obj
         raise AttributeError(
             f"No parent layer found for {self._short_repr_()}"
@@ -2055,7 +2083,8 @@ def wrap_xml(
     """
     try:
         cls = model.resolve_class(element)
-    except (UnknownNamespaceError, MissingClassError):
+    except (UnknownNamespaceError, MissingClassError) as err:
+        LOGGER.warning("Current metamodel is incomplete: %s", err)
         cls = ModelElement
 
     if type is not None:
