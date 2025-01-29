@@ -121,6 +121,7 @@ class SelectorRules:
 
         return tuple(classes)
 
+    # FIXME make this AttributeError-safe
     @property
     def layers(self) -> tuple[type[mm.cs.BlockArchitecture], ...]:
         classes: list[type[mm.cs.BlockArchitecture]] = []
@@ -142,6 +143,7 @@ class SelectorRules:
 
         return tuple(classes)
 
+    # FIXME make this AttributeError-safe
     @property
     def properties(self) -> tuple[tuple[str, str, str], ...]:
         propdefs = []

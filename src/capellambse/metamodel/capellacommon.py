@@ -102,6 +102,7 @@ class Region(capellacore.NamedElement):
 
     __modes = m.Filter["Mode"]("states", (NS, "Mode"))
 
+    # FIXME make this AttributeError-safe
     @property
     def modes(self) -> m.ElementList[Mode]:
         warnings.warn(

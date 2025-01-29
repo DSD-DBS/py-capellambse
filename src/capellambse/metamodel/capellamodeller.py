@@ -24,6 +24,7 @@ class Project(capellacore.Structure):
         "ownedModelRoots", (NS, "ModelRoot")
     )
 
+    # FIXME make this AttributeError-safe
     @property
     def model_root(self) -> ModelRoot:
         if self.model_roots:
