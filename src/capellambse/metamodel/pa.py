@@ -216,6 +216,7 @@ class PhysicalComponent(
         None, None, (NS, "PhysicalFunction")
     )
 
+    # FIXME make this AttributeError-safe
     @property
     def deployed_components(
         self,
@@ -227,6 +228,7 @@ class PhysicalComponent(
         ]
         return m.ElementList(self._model, items, PhysicalComponent)
 
+    # FIXME make this AttributeError-safe
     @property
     def components(self) -> m.ElementList[PhysicalComponent]:
         components = dict.fromkeys(self.deployed_components._elements)

@@ -504,6 +504,7 @@ class LayerValidation(ObjectValidation):
 class ElementValidation(ObjectValidation):
     """Provides access to the element's validation rules and results."""
 
+    # FIXME make this AttributeError-safe
     @property
     def rules(self) -> list[Rule]:
         """Return all registered validation rules that apply to this object."""

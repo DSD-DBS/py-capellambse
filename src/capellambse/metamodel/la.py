@@ -44,6 +44,7 @@ class LogicalArchitecture(cs.ComponentArchitecture):
         backattr="sourceElement",
     )
 
+    # FIXME make this AttributeError-safe
     @property
     def root_component(self) -> LogicalComponent:
         assert self.component_package is not None
@@ -59,6 +60,7 @@ class LogicalArchitecture(cs.ComponentArchitecture):
     def all_actors(self) -> m.ElementList[LogicalComponent]:
         return self._model.search(LogicalComponent).by_is_actor(True)
 
+    # FIXME make this AttributeError-safe
     @property
     def all_actor_exchanges(self) -> m.ElementList[fa.ComponentExchange]:
         return self._model.search(

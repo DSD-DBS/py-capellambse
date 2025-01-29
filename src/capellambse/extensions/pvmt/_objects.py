@@ -55,11 +55,13 @@ class ObjectPVMT:
 
     owner = m.AlternateAccessor(m.ModelElement)
 
+    # FIXME make this AttributeError-safe
     @property
     def groupdefs(self) -> m.ElementList[_config.ManagedGroup]:
         groups = self._model.pvmt.domains.map("groups")
         return groups.filter(lambda i: i.applies_to(self.owner))
 
+    # FIXME make this AttributeError-safe
     @property
     def applied_groups(self) -> m.ElementList[capellacore.PropertyValueGroup]:
         elms: list[etree._Element] = []

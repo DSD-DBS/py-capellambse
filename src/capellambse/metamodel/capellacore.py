@@ -266,6 +266,7 @@ class Involvement(Relationship, abstract=True):
     source = m.DeprecatedAccessor["m.ModelElement"]("parent")
     target = m.DeprecatedAccessor["InvolvedElement"]("involved")
 
+    # FIXME make this AttributeError-safe
     @property
     def name(self) -> str:  # type: ignore[override]
         """Return the name."""
