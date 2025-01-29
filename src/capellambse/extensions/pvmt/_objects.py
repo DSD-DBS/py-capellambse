@@ -62,8 +62,14 @@ class ObjectPVMT:
 
     @property
     def applied_groups(self) -> m.ElementList[capellacore.PropertyValueGroup]:
+        try:
+            groupdefs = self.owner.property_value_groups
+        except AttributeError:
+            return m.ElementList(
+                self._model, [], capellacore.PropertyValueGroup
+            )
+
         elms: list[etree._Element] = []
-        groupdefs = self.owner.property_value_groups
         for group in groupdefs:
             assert isinstance(group, capellacore.PropertyValueGroup)
             try:
