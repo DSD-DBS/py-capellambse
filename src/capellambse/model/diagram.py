@@ -357,6 +357,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 elem = self._model.by_uuid(elemid)
             except KeyError:
                 continue
+            except ValueError as err:
+                if (
+                    err.args
+                    and isinstance(err.args[0], str)
+                    and err.args[0].startswith("Malformed link:")
+                ):
+                    continue
+                raise
 
             elems.append(elem._element)
         return _obj.ElementList(self._model, elems, legacy_by_type=True)
