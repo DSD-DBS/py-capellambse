@@ -246,6 +246,7 @@ class Class(capellacore.GeneralClass):
 
     owned_properties = m.Filter["Property"]("owned_features", (NS, "Property"))
 
+    # FIXME make this AttributeError-safe
     @property
     def properties(self) -> m.ElementList[Property]:
         """Return all owned and inherited properties."""

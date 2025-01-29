@@ -354,6 +354,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         for elemid in allids:
             assert elemid is not None
             try:
+                # TODO investigate why this may raise ValueError and whether that's intended
                 elem = self._model.by_uuid(elemid)
             except KeyError:
                 continue
@@ -667,6 +668,7 @@ class DRepresentationDescriptor(AbstractDiagram):
             return NotImplemented
         return self._model is other._model and self._element == other._element
 
+    # FIXME make this AttributeError-safe
     @property
     def nodes(self) -> _obj.ElementList:
         if not hasattr(self, "_node_cache"):
@@ -677,6 +679,7 @@ class DRepresentationDescriptor(AbstractDiagram):
             self._model, self._node_cache.copy(), legacy_by_type=True
         )
 
+    # FIXME make this AttributeError-safe
     @property
     def semantic_nodes(self) -> _obj.ElementList:
         if not hasattr(self, "_node_cache"):
