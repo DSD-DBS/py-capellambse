@@ -272,8 +272,11 @@ class Involvement(Relationship, abstract=True):
     def name(self) -> str:
         """Return the name."""
         direction = ""
-        if self.involved is not None:
-            direction = f" to {self.involved.name} ({self.involved.uuid})"
+        try:
+            if self.involved is not None:
+                direction = f" to {self.involved.name} ({self.involved.uuid})"
+        except AttributeError:
+            pass
 
         return f"[{self.__class__.__name__}]{direction}"
 
