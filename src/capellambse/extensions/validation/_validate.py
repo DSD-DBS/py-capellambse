@@ -507,8 +507,11 @@ class ElementValidation(ObjectValidation):
     @property
     def rules(self) -> list[Rule]:
         """Return all registered validation rules that apply to this object."""
-        obj = self.parent
-        return [i for i in _VALIDATION_RULES.values() if i.applies_to(obj)]
+        try:
+            obj = self.parent
+            return [i for i in _VALIDATION_RULES.values() if i.applies_to(obj)]
+        except AttributeError as err:
+            raise RuntimeError("Cannot compute applicable rules") from err
 
     def validate(self) -> Results:
         """Validate this element against the rules that apply to it."""
