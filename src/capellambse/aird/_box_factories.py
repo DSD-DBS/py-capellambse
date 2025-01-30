@@ -379,7 +379,7 @@ def region_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     except KeyError:
         pass
     else:
-        seb.styleclass = f'{parent.styleclass or ""}Region'
+        seb.styleclass = f"{parent.styleclass or ''}Region"
 
     box = generic_factory(seb)
     if box.label:

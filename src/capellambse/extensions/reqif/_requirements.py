@@ -67,7 +67,7 @@ class ReqIFElement(m.ModelElement):
             "Requirements:AttributeDefinition",
             "Requirements:AttributeDefinitionEnumeration",
         }:
-            return f'<{mytype} {parent.get("ReqIFLongName")!r} ({self.uuid})>'
+            return f"<{mytype} {parent.get('ReqIFLongName')!r} ({self.uuid})>"
 
         name = (
             parent.get("ReqIFName")
