@@ -223,6 +223,8 @@ def load_font(fonttype: str, size: int) -> ImageFont.FreeTypeFont:
 
     fontfile = imr.files(capellambse).joinpath(FALLBACK_FONT)
     with fontfile.open("rb") as fallback_font:
+        te.assert_type(fallback_font, t.IO[bytes])
+        fallback_font = t.cast(t.BinaryIO, fallback_font)
         return ImageFont.truetype(fallback_font, size)
 
 
@@ -252,7 +254,7 @@ def extent_func(
     """
     width = height = 0
     font = load_font(fonttype, size)
-    (width, height), _ = font.font.getsize(text)
+    (width, height), _ = font.font.getsize(text)  # type: ignore[call-arg] # broken type stubs
     return (
         width * LABEL_WIDTH_PADDING_FACTOR,
         height * LABEL_HEIGHT_PADDING_FACTOR,

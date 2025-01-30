@@ -9,9 +9,7 @@ import pytest
 import capellambse.metamodel as mm
 import capellambse.model as m
 
-from .conftest import (  # type: ignore[import-untyped] # noqa: F401
-    model as model50,
-)
+from .conftest import model as model50  # type: ignore # noqa: F401
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "writemodel"
 TEST_MODEL = "WriteTestModel.aird"
