@@ -44,7 +44,7 @@ def draw_group(
         + (f' font-family="{font_family}"' if font_family else "")
         + (f' font-size="{font_size:.2}"' if font_size else "")
         + (f' fill="{fill}"' if fill else "")
-        + f'>\n{"".join(contents)}</g>\n'
+        + f">\n{''.join(contents)}</g>\n"
     )
 
 
@@ -91,7 +91,7 @@ def draw_bar(
     for i, width in enumerate(widths[:-1]):
         offsets.append(offsets[i] + width)
     label = [
-        f"{x*100.0:.0f}%" if x >= show_label_threshold else "" for x in data
+        f"{x * 100.0:.0f}%" if x >= show_label_threshold else "" for x in data
     ]
     return draw_group(
         [
@@ -177,6 +177,6 @@ def draw_summary_badge(
     )
     return (
         '<svg xmlns="http://www.w3.org/2000/svg"'
-        f' width="{scale*134}" height="{scale*30}" viewBox="0 0 134 30">'
+        f' width="{scale * 134}" height="{scale * 30}" viewBox="0 0 134 30">'
         f"{text}</svg>\n"
     )

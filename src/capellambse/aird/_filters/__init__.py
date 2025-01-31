@@ -246,7 +246,7 @@ def _set_composite_filter(
         return
     if not hasattr(dgobject, "_compfilters"):
         dgobject._compfilters = []  # type: ignore[union-attr]
-    dgobject._compfilters.append((flttype, phase2))
+    dgobject._compfilters.append((flttype, phase2))  # type: ignore[union-attr]
 
 
 def _extract_filter_type(flt_elm: etree._Element) -> str:

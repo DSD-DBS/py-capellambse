@@ -9,9 +9,7 @@ import pytest
 import capellambse.metamodel as mm
 import capellambse.model as m
 
-from .conftest import (  # type: ignore[import-untyped] # noqa: F401
-    model as model50,
-)
+from .conftest import model as model50  # type: ignore # noqa: F401
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "writemodel"
 TEST_MODEL = "WriteTestModel.aird"
@@ -46,9 +44,9 @@ def test_created_elements_show_up_in_xml_after_adding_them(
             "Cannot find added element via subscripting"
         ) from err
 
-    assert model._loader.xpath(
-        XPATH_UUID.format(newobj.uuid)
-    ), "Cannot find added element via XPath"
+    assert model._loader.xpath(XPATH_UUID.format(newobj.uuid)), (
+        "Cannot find added element via XPath"
+    )
 
 
 @pytest.mark.parametrize(
@@ -67,9 +65,9 @@ def test_deleted_elements_are_removed(model: m.MelodyModel, deletion_target):
     with pytest.raises(KeyError):
         model._loader[olduuid]
 
-    assert not model._loader.xpath(
-        XPATH_UUID.format(olduuid)
-    ), "Element is still present in tree after deleting"
+    assert not model._loader.xpath(XPATH_UUID.format(olduuid)), (
+        "Element is still present in tree after deleting"
+    )
 
 
 def test_delete_all_deletes_matching_objects(model: m.MelodyModel):

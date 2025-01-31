@@ -1372,7 +1372,7 @@ class IndexAccessor(Accessor[T_co]):
             )
         if len(container) < self.index:
             raise RuntimeError(
-                f"Broken XML: Expected at least {self.index+1} elements,"
+                f"Broken XML: Expected at least {self.index + 1} elements,"
                 f" found {len(container)}"
             )
         container[self.index] = value

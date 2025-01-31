@@ -5,11 +5,7 @@ import pytest
 
 import capellambse
 
-from .conftest import (  # type: ignore[import-untyped]
-    INSTALLED_PACKAGE,
-    TEST_MODEL,
-    TEST_ROOT,
-)
+from .conftest import INSTALLED_PACKAGE, TEST_MODEL, TEST_ROOT  # type: ignore
 
 TEST_MODEL_AIRD = TEST_ROOT / "5_0" / TEST_MODEL
 TEST_MODEL_JSON = INSTALLED_PACKAGE / "known_models" / "test-5.0.json"

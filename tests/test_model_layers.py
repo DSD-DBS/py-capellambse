@@ -11,7 +11,7 @@ import pytest
 import capellambse.metamodel as mm
 import capellambse.model as m
 
-from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import-untyped]
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore
 
 
 def test_model_info_contains_capella_version(model: m.MelodyModel):

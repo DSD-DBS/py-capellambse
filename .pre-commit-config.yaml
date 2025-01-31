@@ -70,66 +70,50 @@ repos:
           - LICENSES/.license_header.txt
           - --comment-style
           - "..|  |"
-  - repo: https://github.com/PyCQA/docformatter
-    rev: eb1df347edd128b30cd3368dddc3aa65edcfac38
+  - repo: local # docformatter
     hooks:
       - id: docformatter
-        additional_dependencies:
-          - docformatter[tomli]
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.8.2
+        name: docformatter
+        language: system
+        entry: uv run --dev docformatter
+        types_or: [python]
+  - repo: local # ruff
     hooks:
       - id: ruff-format
+        name: Format with ruff
+        language: system
+        entry: uv run --dev ruff format
         types_or: [python, pyi, jupyter]
       - id: ruff
-        name: Ruff (main Python code)
+        name: Lint with ruff (main Python code)
+        language: system
+        entry: uv run --dev ruff check
         types_or: [python, pyi, jupyter]
         exclude: 'docs/.*\.ipynb$'
         args: [--extend-ignore=FIX, --fix]
       - id: ruff
-        name: Ruff (demo notebooks)
+        name: Lint with ruff (demo notebooks)
+        language: system
+        entry: uv run --dev ruff check
         types_or: [jupyter]
         files: 'docs/.*\.ipynb$'
         args: [--extend-ignore=FIX, --extend-ignore=ERA001]
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.13.0
+  - repo: local # mypy
     hooks:
       - id: mypy
         name: mypy
+        language: system
+        entry: uv run --dev --group typecheck mypy src/capellambse tests
         types_or: [python, pyi, toml, yaml]
         pass_filenames: false
-        args: [src/capellambse, tests]
-        additional_dependencies:
-          - mypypp==0.1.1
-
-          - awesomeversion==24.2.0
-          - click==8.1.7
-          - diskcache==5.0
-          - jinja2==3.1.3
-          - markupsafe==2.0
-          - platformdirs==4.2.0
-          - pytest-cov
-          - pytest==8.0.0
-          - requests-mock==1.11.0
-          - sphinx-argparse-cli
-          - sphinx==7.2.3
-          - tomli; python_version<'3.11'
-          - types-Pygments==2.15.0.1
-          - types-colorama==0.4.15.11
-          - types-docutils==0.20.0.1
-          - types-lxml==2024.04.14
-          - types-pytz==2023.3.0.0
-          - types-pyyaml==6.0.11
-          - types-requests==2.25.11
-          - types-setuptools==68.0.0.1
-          - types-six==1.16.21.8
-          - typing-extensions==4.9.0
-  - repo: https://github.com/fsfe/reuse-tool
-    rev: v5.0.2
+  - repo: local # reuse
     hooks:
       - id: reuse-lint-file
+        name: reuse lint-file
+        language: system
+        entry: uv run --dev reuse lint-file
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.19.0
+    rev: v9.20.0
     hooks:
       - id: commitlint
         stages: [commit-msg]

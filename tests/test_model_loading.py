@@ -18,7 +18,7 @@ import requests_mock
 import capellambse
 from capellambse.filehandler import gitlab_artifacts
 
-from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore[import-untyped]
+from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 

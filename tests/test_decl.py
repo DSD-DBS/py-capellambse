@@ -18,11 +18,7 @@ from capellambse import decl, helpers
 from capellambse.extensions import reqif
 from capellambse.filehandler import git
 
-from .conftest import (  # type: ignore[import-untyped]
-    INSTALLED_PACKAGE,
-    TEST_MODEL,
-    TEST_ROOT,
-)
+from .conftest import INSTALLED_PACKAGE, TEST_MODEL, TEST_ROOT  # type: ignore
 
 DATAPATH = pathlib.Path(__file__).parent / "data" / "decl"
 MODELPATH = pathlib.Path(TEST_ROOT / "5_0")

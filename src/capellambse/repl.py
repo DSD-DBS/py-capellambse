@@ -390,16 +390,16 @@ def main() -> None:
         banner = textwrap.dedent(
             f"""\
 
-            {' Model exploration ':=^80}
+            {" Model exploration ":=^80}
             `model` is {model.info.title!r}
-            from {modelinfo['path']}
+            from {modelinfo["path"]}
             """
         )
     else:
         banner = textwrap.dedent(
             f"""\
 
-            {' Model exploration ':=^80}
+            {" Model exploration ":=^80}
             Load a model with `model = capellambse.loadcli("model-name")`
             or `model = capellambse.MelodyModel("uri", arg=...)`.
             """
