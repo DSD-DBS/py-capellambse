@@ -77,6 +77,7 @@ repos:
         language: system
         entry: uv run --dev docformatter
         types_or: [python]
+        require_serial: true
   - repo: local # ruff
     hooks:
       - id: ruff-format
@@ -84,6 +85,7 @@ repos:
         language: system
         entry: uv run --dev ruff format
         types_or: [python, pyi, jupyter]
+        require_serial: true
       - id: ruff
         name: Lint with ruff (main Python code)
         language: system
@@ -91,6 +93,7 @@ repos:
         types_or: [python, pyi, jupyter]
         exclude: 'docs/.*\.ipynb$'
         args: [--extend-ignore=FIX, --fix]
+        require_serial: true
       - id: ruff
         name: Lint with ruff (demo notebooks)
         language: system
@@ -98,6 +101,7 @@ repos:
         types_or: [jupyter]
         files: 'docs/.*\.ipynb$'
         args: [--extend-ignore=FIX, --extend-ignore=ERA001]
+        require_serial: true
   - repo: local # mypy
     hooks:
       - id: mypy
@@ -105,6 +109,7 @@ repos:
         language: system
         entry: uv run --dev --group typecheck mypy src/capellambse tests
         types_or: [python, pyi, toml, yaml]
+        require_serial: true
         pass_filenames: false
   - repo: local # reuse
     hooks:
@@ -112,6 +117,7 @@ repos:
         name: reuse lint-file
         language: system
         entry: uv run --dev reuse lint-file
+        require_serial: true
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.20.0
     hooks:
