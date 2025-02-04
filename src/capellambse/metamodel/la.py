@@ -229,6 +229,13 @@ m.set_accessor(
         CapabilityRealization, "involved_functions", aslist=m.ElementList
     ),
 )
+m.set_accessor(
+    LogicalComponent,
+    "involved_capabilities",
+    m.Backref(
+        CapabilityRealization, "involved_components", aslist=m.ElementList
+    ),
+)
 m.set_self_references(
     (LogicalComponent, "components"),
     (LogicalComponentPkg, "packages"),
