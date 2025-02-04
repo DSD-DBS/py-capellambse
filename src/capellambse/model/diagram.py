@@ -938,7 +938,7 @@ def convert_format(
         if i is source:
             break
         chain.append(i)
-    else:
+    if not chain or getattr(chain[-1], "depends", None) is not source:
         raise ValueError(f"Cannot convert from {sourcefmt} to {targetfmt}")
 
     return _run_converter_chain(chain, data, pretty_print=pretty_print)
