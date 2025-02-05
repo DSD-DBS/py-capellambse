@@ -14,27 +14,27 @@ from . import _requirements as rq
 def init() -> None:
     rq.Folder.folders = m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList)
     m.ModelElement.requirements = cr.ElementRelationAccessor()
-    cs.ComponentArchitecture.requirement_modules = m.DirectProxyAccessor(
+    cs.BlockArchitecture.requirement_modules = m.DirectProxyAccessor(
         cr.CapellaModule, aslist=m.ElementList
     )
-    cs.ComponentArchitecture.all_requirements = m.DeepProxyAccessor(
+    cs.BlockArchitecture.all_requirements = m.DeepProxyAccessor(
         rq.Requirement, aslist=m.ElementList, rootelem=cr.CapellaModule
     )
-    cs.ComponentArchitecture.requirement_types_folders = m.DirectProxyAccessor(
+    cs.BlockArchitecture.requirement_types_folders = m.DirectProxyAccessor(
         cr.CapellaTypesFolder, aslist=m.ElementList
     )
     cr.CapellaModule.requirement_types_folders = m.DirectProxyAccessor(
         cr.CapellaTypesFolder, aslist=m.ElementList
     )
-    cs.ComponentArchitecture.all_requirement_types = m.DeepProxyAccessor(
+    cs.BlockArchitecture.all_requirement_types = m.DeepProxyAccessor(
         rq.RequirementType,
         aslist=m.ElementList,
         rootelem=cr.CapellaTypesFolder,
     )
-    cs.ComponentArchitecture.all_module_types = m.DeepProxyAccessor(
+    cs.BlockArchitecture.all_module_types = m.DeepProxyAccessor(
         rq.ModuleType, aslist=m.ElementList, rootelem=cr.CapellaTypesFolder
     )
-    cs.ComponentArchitecture.all_relation_types = m.DeepProxyAccessor(
+    cs.BlockArchitecture.all_relation_types = m.DeepProxyAccessor(
         rq.RelationType,
         aslist=m.ElementList,
         rootelem=cr.CapellaTypesFolder,
