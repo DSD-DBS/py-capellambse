@@ -223,6 +223,16 @@ class DeprecatedAccessor(Accessor[T_co]):
         self.__warn()
         delattr(obj, self.alternative)
 
+    def __set_name__(self, owner: type[t.Any], name: str) -> None:
+        if not hasattr(owner, self.alternative):
+            raise TypeError(
+                f"Cannot deprecate {owner.__name__}.{name}:"
+                f" Alternative {self.alternative!r} is not defined"
+                " (make sure to define the DeprecatedAccessor"
+                " after the alternative, not before)"
+            )
+        super().__set_name__(owner, name)
+
     def __warn(self) -> None:
         msg = f"{self._qualname} is deprecated, use {self.alternative} instead"
         warnings.warn(msg, FutureWarning, stacklevel=3)
