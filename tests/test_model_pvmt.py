@@ -91,12 +91,15 @@ class TestPVMTConfiguration:
             "Property (String, ends with)",
         ],
     )
-    def test_apply_outofscope(self, model, group):
+    def test_apply_outofscope(self, model, group: str):
         obj = model.by_uuid("d32caffc-b9a1-448e-8e96-65a36ba06292")
         domain = model.pvmt.domains["Out of scope"]
-        group = domain.groups[group]
+        assert isinstance(domain, pvmt.ManagedDomain)
+        group_obj = domain.groups[group]
+        assert isinstance(group_obj, pvmt.ManagedGroup)
+
         with pytest.raises(pvmt.ScopeError):
-            group.apply(obj)
+            group_obj.apply(obj)
 
     @pytest.mark.parametrize(
         "group",

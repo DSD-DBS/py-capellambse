@@ -40,8 +40,10 @@ else:
 
 LOGGER = logging.getLogger(__name__)
 
+TAG_XMI = etree.QName(_n.NAMESPACES["xmi"], "XMI")
 ATT_XT = f"{{{_n.NAMESPACES['xsi']}}}type"
 ATT_XMT = f"{{{_n.NAMESPACES['xmi']}}}type"
+
 FALLBACK_FONT = "OpenSans-Regular.ttf"
 RE_VALID_UUID = re.compile(r"[A-Za-z0-9_-]+")
 LINEBREAK_AFTER = frozenset({"br", "p", "ul", "li"})
@@ -830,6 +832,28 @@ def xpath_fetch_unique(
         )
 
     return result[0] if result else None
+
+
+def qtype_of(element: etree._Element) -> etree.QName | None:
+    """Get the qualified type of the element."""
+    parent = element.getparent()
+    if parent is None or (
+        parent.getparent() is None and parent.tag == TAG_XMI
+    ):
+        return etree.QName(element)
+
+    xtype = element.get(ATT_XT)
+    if not xtype or ":" not in xtype:
+        xtype = element.get(ATT_XMT)
+    if not xtype or ":" not in xtype:
+        return None
+    nsalias, clsname = xtype.rsplit(":", 1)
+    try:
+        nsuri = element.nsmap[nsalias]
+    except KeyError:
+        LOGGER.error("Namespace %r not found on element %r", nsalias, element)
+        return None
+    return etree.QName(nsuri, clsname)
 
 
 def xtype_of(elem: etree._Element) -> str | None:
