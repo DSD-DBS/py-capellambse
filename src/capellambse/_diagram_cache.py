@@ -359,7 +359,7 @@ def _calculate_svg_viewbox(root: etree._Element) -> ViewBox:
     x_max = y_max = float("-inf")
     for element in root.iter():
         if (
-            isinstance(element, etree._Comment)
+            isinstance(element, etree._Comment | etree._ProcessingInstruction)
             or not hasattr(element, "tag")
             or element.get("transform")
         ):
