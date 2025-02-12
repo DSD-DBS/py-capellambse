@@ -105,7 +105,7 @@ def export(
     force: t.Literal["exe", "docker", None],
     background: bool,
     refresh: bool = False,
-) -> None:
+) -> list[IndexEntry]:
     if model.diagram_cache is None:
         raise TypeError("No diagram cache configured for the model")
     if not isinstance(model.diagram_cache, local.LocalFileHandler):
@@ -154,6 +154,7 @@ def export(
         )
         if index:
             _write_index(model, format, diag_cache_dir, diagrams)
+        return diagrams
 
 
 def _find_executor(
