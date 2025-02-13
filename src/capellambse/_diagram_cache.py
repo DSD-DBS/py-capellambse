@@ -392,6 +392,9 @@ def _crop_svg_viewbox(src: pathlib.Path, root: etree._Element):
     except _NoBoundingBoxFound:
         LOGGER.warning("Cannot determine bounding box in file: %s", src)
         return
+    except Exception:
+        LOGGER.exception("Cannot determine bounding box in file: %s", src)
+        return
 
     old_width = float(root.get("width", 0))
     old_height = float(root.get("height", 0))
