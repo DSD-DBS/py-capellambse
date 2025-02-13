@@ -359,7 +359,7 @@ def _calculate_svg_viewbox(root: etree._Element) -> ViewBox:
     x_max = y_max = float("-inf")
     for element in root.iter():
         if (
-            isinstance(element, etree._Comment)
+            isinstance(element, etree._Comment | etree._ProcessingInstruction)
             or not hasattr(element, "tag")
             or element.get("transform")
         ):
@@ -391,6 +391,9 @@ def _crop_svg_viewbox(src: pathlib.Path, root: etree._Element):
         min_x, min_y, new_width, new_height = _calculate_svg_viewbox(root)
     except _NoBoundingBoxFound:
         LOGGER.warning("Cannot determine bounding box in file: %s", src)
+        return
+    except Exception:
+        LOGGER.exception("Cannot determine bounding box in file: %s", src)
         return
 
     old_width = float(root.get("width", 0))
