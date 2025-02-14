@@ -100,6 +100,18 @@ else:
         with `capellambse.MelodyModel`.
 
         \b
+        Exit codes
+        ----------
+
+        The CLI will indicate the success status via exit codes:
+
+        \b
+        - 0 in case of success
+        - 1 for general errors
+        - 2 for CLI usage errors
+        - 3 if some diagrams failed to export, but others were successful
+
+        \b
         Refreshing representations
         --------------------------
 
@@ -137,7 +149,7 @@ else:
             capella = exe or "capella{VERSION}"
             force = "exe"
 
-        _diagram_cache.export(
+        diagrams = _diagram_cache.export(
             capella,
             model_,
             format=format,
@@ -146,6 +158,11 @@ else:
             background=background,
             refresh=refresh,
         )
+        ok = sum(1 for i in diagrams if i["success"])
+        if ok == 0:
+            raise SystemExit(1)
+        if ok < len(diagrams):
+            raise SystemExit(3)
 
 
 if __name__ == "__main__":
