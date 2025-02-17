@@ -532,8 +532,9 @@ class Drawing:
         class_: str,
         obj_style: style.Styling,
         text_style: style.Styling,
+        **kw: t.Any,
     ):
-        del label_  # Symbol labels always in floating_labels!
+        del label_, kw
         assert isinstance(floating_labels_, list | dict | type(None))
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
@@ -612,7 +613,7 @@ class Drawing:
         text_style: style.Styling,
         **kw: t.Any,
     ) -> container.Group:
-        del kw  # Dismiss additional info from json, for e.g.: ports_
+        del kw
         pos = (x_ + 0.5, y_ + 0.5)
         size = (width_, height_)
         rect_style = {"text_style": text_style, "obj_style": obj_style}
@@ -667,7 +668,9 @@ class Drawing:
         context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         text_style: style.Styling,
+        **kw: t.Any,
     ) -> container.Group:
+        del kw
         grp = self._draw_box(
             x_=x_,
             y_=y_,
@@ -708,8 +711,9 @@ class Drawing:
         context_: cabc.Sequence[str] = (),
         obj_style: style.Styling,
         text_style: style.Styling,
+        **kw: t.Any,
     ) -> container.Group:
-        del text_style  # No label for circles
+        del kw, text_style
         center_ = (center_[0] + 0.5, center_[1] + 0.5)
         obj_style.fill = obj_style.stroke or diagram.RGB(0, 0, 0)
         del obj_style.stroke
