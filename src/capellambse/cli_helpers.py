@@ -255,7 +255,7 @@ def _load_from_file(value: str) -> dict[str, t.Any]:
 
     proto, _ = filehandler.split_protocol(value)
     if proto != "file":
-        return {"path": capellambse.get_filehandler(value)}
+        return {"path": value}
 
     raise ValueError(
         "value is not a known model,"
