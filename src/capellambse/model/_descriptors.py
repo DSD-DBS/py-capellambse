@@ -1926,8 +1926,16 @@ class Containment(WritableAccessor, PhysicalAccessor):
         if not self.classes:
             return super()._match_xtype(hint)
 
-        cls = next((i for i in self.classes if i.__name__ == hint), None)
-        if cls is None:
+        classes = _xtype.find_wrapper(hint)
+        if not classes:
+            raise ValueError(f"Unknown class: {hint!r}")
+        if len(classes) > 1:
+            raise ValueError(
+                f"Ambiguous type hint: {hint!r},"
+                f" found {len(classes)} matches: {classes}"
+            )
+        (cls,) = classes
+        if not any(issubclass(cls, i) for i in self.classes):
             raise ValueError(f"Invalid class for {self._qualname}: {hint}")
         return cls, _xtype.build_xtype(cls)
 
