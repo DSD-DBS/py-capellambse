@@ -1,0 +1,113 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Complexity Assessment\n",
+    "\n",
+    "This notebook demonstrates how to use / view the model complexity badge for a Capella model."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from IPython.display import SVG\n",
+    "\n",
+    "import capellambse"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/svg+xml": [
+       "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"536.0\" height=\"120.0\" viewBox=\"0 0 134 30\"><g font-family=\"sans-serif\" font-size=\"3.2\">\n",
+       "<rect fill=\"#FFF\" stroke=\"#333\" stroke-width=\"0.2\" x=\"1\" y=\"0\" width=\"132\" height=\"30\"/>\n",
+       "<rect fill=\"#FFF\" stroke=\"#333\" stroke-width=\"0.2\" x=\"23.8\" y=\"1.4\" width=\"108\" height=\"22\"/>\n",
+       "<g stroke=\"#555\" stroke-width=\".3\"><path fill=\"#ffdd87\" d=\"M3 5.5 h1.9 V7.4 h-2 z\"/><path fill=\"#a5c2e6\" d=\"M3.8 6.4 h2 v1.8 h-2 z\"/></g><text x=\"7\" y=\"6.4\">180</text>\n",
+       "<text x=\"7\" y=\"9.4\">objects</text>\n",
+       "<g font-size=\"3.2\">\n",
+       "<rect fill=\"#ffdd87\" stroke=\"#333\" stroke-width=\"0\" x=\"24.2\" y=\"3.4\" width=\"31.77777777777778\" height=\"8\"/>\n",
+       "<text x=\"25.2\" y=\"8.4\">31%</text>\n",
+       "<rect fill=\"#91cc84\" stroke=\"#333\" stroke-width=\"0\" x=\"55.977777777777774\" y=\"3.4\" width=\"16.177777777777777\" height=\"8\"/>\n",
+       "<text x=\"56.977777777777774\" y=\"8.4\">16%</text>\n",
+       "<rect fill=\"#a5c2e6\" stroke=\"#333\" stroke-width=\"0\" x=\"72.15555555555555\" y=\"3.4\" width=\"28.31111111111111\" height=\"8\"/>\n",
+       "<text x=\"73.15555555555555\" y=\"8.4\">27%</text>\n",
+       "<rect fill=\"#f89f9f\" stroke=\"#333\" stroke-width=\"0\" x=\"100.46666666666667\" y=\"3.4\" width=\"27.733333333333334\" height=\"8\"/>\n",
+       "<text x=\"101.46666666666667\" y=\"8.4\">27%</text>\n",
+       "</g>\n",
+       "<g stroke=\"#555\" stroke-width=\".2\"><path fill=\"#FFF\" d=\"M2.5 15.200000000000001 h3.6 v3.1 H2.5 z\"/><path fill=\"#a5c2e6\" d=\"M3 15.8 h1v.7 H3z m.8 1.2h1v.7h-1z m.9-1.1h.8v.6h-.8z\"/><path fill=\"none\" d=\"M3.9 16.2 h.8 m-1.3.3.4.8 m1 .1.4-.9\"/></g><text x=\"7\" y=\"16.4\">18</text>\n",
+       "<text x=\"7\" y=\"19.4\">diagrams</text>\n",
+       "<g font-size=\"3.2\">\n",
+       "<rect fill=\"#ffdd87\" stroke=\"#333\" stroke-width=\"0\" x=\"24.2\" y=\"13.4\" width=\"40.44444444444444\" height=\"8\"/>\n",
+       "<text x=\"25.2\" y=\"18.4\">39%</text>\n",
+       "<rect fill=\"#91cc84\" stroke=\"#333\" stroke-width=\"0\" x=\"64.64444444444445\" y=\"13.4\" width=\"23.11111111111111\" height=\"8\"/>\n",
+       "<text x=\"65.64444444444445\" y=\"18.4\">22%</text>\n",
+       "<rect fill=\"#a5c2e6\" stroke=\"#333\" stroke-width=\"0\" x=\"87.75555555555556\" y=\"13.4\" width=\"28.88888888888889\" height=\"8\"/>\n",
+       "<text x=\"88.75555555555556\" y=\"18.4\">28%</text>\n",
+       "<rect fill=\"#f89f9f\" stroke=\"#333\" stroke-width=\"0\" x=\"116.64444444444445\" y=\"13.4\" width=\"11.555555555555555\" height=\"8\"/>\n",
+       "<text x=\"117.64444444444445\" y=\"18.4\">11%</text>\n",
+       "</g>\n",
+       "<g font-size=\"2.8\" fill=\"#555\">\n",
+       "<rect fill=\"#ffdd87\" stroke=\"#333\" stroke-width=\"0\" x=\"3\" y=\"25\" width=\"5\" height=\"3\"/>\n",
+       "<text x=\"9\" y=\"27.6\">Operational Analysis</text>\n",
+       "<rect fill=\"#91cc84\" stroke=\"#333\" stroke-width=\"0\" x=\"37\" y=\"25\" width=\"5\" height=\"3\"/>\n",
+       "<text x=\"43\" y=\"27.6\">System Analysis</text>\n",
+       "<rect fill=\"#a5c2e6\" stroke=\"#333\" stroke-width=\"0\" x=\"67\" y=\"25\" width=\"5\" height=\"3\"/>\n",
+       "<text x=\"73\" y=\"27.6\">Logical Architecture</text>\n",
+       "<rect fill=\"#f89f9f\" stroke=\"#333\" stroke-width=\"0\" x=\"100\" y=\"25\" width=\"5\" height=\"3\"/>\n",
+       "<text x=\"106\" y=\"27.6\">Physical Architecture</text>\n",
+       "</g>\n",
+       "</g>\n",
+       "</svg>"
+      ],
+      "text/plain": [
+       "<IPython.core.display.SVG object>"
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "path_to_model = \"../../../tests/data/melodymodel/5_2/Melody Model Test.aird\"\n",
+    "model = capellambse.MelodyModel(path_to_model)\n",
+    "SVG(model.description_badge)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.5"
+  },
+  "vscode": {
+   "interpreter": {
+    "hash": "f5c9192943a88c565de58e6fd7c534c9de794a35889e45ad6809ab92c821a96c"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 4
+}
