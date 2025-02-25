@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import collections.abc as cabc
+import errno
 import itertools
 import logging
 import os
@@ -21,6 +22,13 @@ from . import abc
 
 LOGGER = logging.getLogger(__name__)
 
+NOT_FOUND_CODES = (
+    400,  # Bad Request
+    404,  # Not Found
+    410,  # Gone
+    418,  # I'm a teapot
+)
+
 
 class DownloadStream(t.BinaryIO):
     __stream: cabc.Iterator[bytes]
@@ -35,8 +43,11 @@ class DownloadStream(t.BinaryIO):
 
         response = session.get(self.url, stream=True)
         LOGGER.debug("Status: %d %s", response.status_code, response.reason)
-        if response.status_code == 404:
-            raise FileNotFoundError(url)
+        if response.status_code in NOT_FOUND_CODES:
+            raise FileNotFoundError(
+                errno.ENOENT,
+                f"Got {response.status_code} {response.reason} for URL {url}",
+            )
         response.raise_for_status()
         self.__stream = response.iter_content(
             self.chunk_size, decode_unicode=False
