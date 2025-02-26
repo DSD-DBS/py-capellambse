@@ -113,6 +113,15 @@ class MelodyModel:
 
     diagram_cache: filehandler.FileHandler | None
 
+    _diagram_cache_index: (
+        dict[str, capellambse._diagram_cache.IndexEntry] | None
+    )
+    """An index describing the diagrams in the cache.
+
+    If the attribute does not exist, the index has not been loaded from
+    the file handler yet. If the attribute is None, it means that the
+    index file could not be found and all diagram files need to tried.
+    """
     __diagram_cache: t.Any
     """Stores proxy instances for Diagram.
 

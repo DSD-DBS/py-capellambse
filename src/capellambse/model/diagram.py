@@ -30,6 +30,7 @@ import contextlib
 import enum
 import importlib.metadata as imm
 import io
+import json
 import logging
 import os
 import traceback
@@ -527,6 +528,25 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         if cache_handler is None:
             raise KeyError(self.uuid)
 
+        try:
+            index = self._model._diagram_cache_index
+        except AttributeError:
+            LOGGER.debug("Loading diagram cache index from file...")
+            try:
+                with cache_handler.open("index.json") as f:
+                    index = {
+                        f"{i['uuid']}.{i['format']}": i for i in json.load(f)
+                    }
+                LOGGER.debug("Index loaded")
+            except FileNotFoundError:
+                LOGGER.debug("No index found")
+                index = None
+            except Exception as err:
+                err.__suppress_context__ = True
+                LOGGER.debug("Invalid or old index, ignoring", exc_info=err)
+                index = None
+            self._model._diagram_cache_index = index
+
         data: t.Any = None
         for i, cv in enumerate(chain):
             ext = getattr(cv, "filename_extension", None)
@@ -534,6 +554,15 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 continue
 
             filename = self.uuid + ext
+            if index is not None:
+                index_entry = index.get(filename)
+                if index_entry is None:
+                    LOGGER.debug("Not found in index: %s", filename)
+                    continue
+                if not index_entry["success"]:
+                    LOGGER.debug("Export failed, ignoring: %s", filename)
+                    continue
+
             try:
                 with cache_handler.open(filename) as f:
                     cache = f.read()
