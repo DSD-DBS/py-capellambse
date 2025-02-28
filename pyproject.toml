@@ -85,20 +85,23 @@ reqif = "capellambse.extensions.reqif:init"
 validation = "capellambse.extensions.validation:init"
 
 [dependency-groups]
-dev = [
+test = [
   "cairosvg>=2.5.2",
-  "capellambse-context-diagrams>=0.6.1",
   "click>=8.1.7",
   "coverage>=7.6.9",
-  "docformatter[tomli]>=1.7.5",
   "jinja2>=3.1.3",
+  "pytest>=8.3.4",
+  "requests-mock>=1.12.1",
+]
+
+dev = [
+  "capellambse-context-diagrams>=0.6.1",
+  "docformatter[tomli]>=1.7.5",
   "jupyterlab>=4.3.3",
   "pandas>=2.2.3",
   "pre-commit>=4.0.1",
   "pylsp-mypy>=0.6.9",
-  "pytest>=8.3.4",
   "python-lsp-server[rope]>=1.12.0",
-  "requests-mock>=1.12.1",
   "reuse>=5.0.2",
   "ruff==0.9.3",
   "xlsxwriter>=3.2.0",
@@ -143,7 +146,7 @@ docs = [
 enable = "pypy"
 build-frontend = "build"
 before-build = ["rustup default stable", "rustup show"]
-test-groups = ["dev"]
+test-groups = ["test"]
 test-command = ["cd {project}", "coverage run", "coverage report"]
 
 [tool.cibuildwheel.linux]
@@ -316,4 +319,4 @@ optional = true
 # This section must exist for setuptools_scm to work
 
 [tool.uv]
-default-groups = ["dev", "typecheck"]
+default-groups = ["dev", "test", "typecheck"]
