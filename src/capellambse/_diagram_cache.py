@@ -90,6 +90,7 @@ class IndexEntry(t.TypedDict):
     """An entry for the index JSON file."""
 
     uuid: str
+    format: str
     name: str
     type: m.DiagramType
     viewpoint: str
@@ -195,6 +196,7 @@ def _copy_images(
     for i in model.diagrams:
         entry: IndexEntry = {
             "uuid": i.uuid,
+            "format": extension,
             "name": i.name,
             "type": i.type,
             "viewpoint": i.viewpoint,
