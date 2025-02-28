@@ -228,7 +228,7 @@ def serialize(
             buffer, i, encoding=encoding, errors=errors, pos=pos, indent=0
         )
 
-    buffer.write(b"\n")
+    buffer.write(LINESEP)
     return buffer.getvalue()
 
 
