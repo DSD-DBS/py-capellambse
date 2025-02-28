@@ -117,7 +117,7 @@ repos:
       - id: mypy
         name: mypy
         language: system
-        entry: uv run --dev --group typecheck mypy src/capellambse tests
+        entry: uv run --dev --group test --group typecheck mypy src/capellambse tests
         types_or: [python, pyi, toml, yaml]
         require_serial: true
         pass_filenames: false
