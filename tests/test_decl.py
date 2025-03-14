@@ -732,43 +732,57 @@ class TestApplySync:
         assert subpackage_name in package.packages.by_name
 
     @staticmethod
-    def test_sync_operation_no_duplicates(
+    def test_sync_does_not_duplicate_elements_during_deferred_nested_syncs(
         model: m.MelodyModel,
     ) -> None:
-        root_package = model.la.data_package
-        class_name = "The new class"
-        property_name = "The new property"
-        assert class_name not in root_package.classes.by_name
-        yml = f"""\
-            - parent: !uuid {root_package.uuid}
+        yml = """\
+            - parent: !find {_type: LogicalArchitecture}
               sync:
-                classes:
+                requirement_modules:
                   - find:
-                      name: "{class_name}"
+                      long_name: Test module
+                    promise_id: module
                     sync:
-                      properties:
+                      requirements:
                         - find:
-                            name: "{property_name}"
+                            identifier: req
+                          promise_id: req
                           set:
-                            kind: COMPOSITION
-                            max_card: !new_object
-                              _type: LiteralNumericValue
-                              value: '1'
-                            min_card: !new_object
-                              _type: LiteralNumericValue
-                              value: '1'
-                            type: !promise 'datatype.string'
-                datatypes:
+                            long_name: Test Requirement
+                            type: !promise reqtype
+                          sync:
+                            attributes:
+                              - find:
+                                  _type: StringValueAttribute
+                                  definition: !promise attrtype
+                                set:
+                                  value: The value
+                requirement_types_folders:
                   - find:
-                      name: "String"
-                      _type: StringType
-                    promise_id: datatype.string
+                      long_name: Test types folder
+                    sync:
+                      data_type_definitions:
+                        - find:
+                            _type: DataTypeDefinition
+                            long_name: String
+                          promise_id: attrtype
+                      requirement_types:
+                        - find:
+                            long_name: Test type
+                          promise_id: reqtype
             """
 
-        decl.apply(model, io.StringIO(yml))
-        actual_class = root_package.classes.by_name(class_name)
+        resolved = decl.apply(model, io.StringIO(yml))
 
-        assert len(actual_class.properties) == 1
+        module = resolved[decl.Promise("module")]
+        assert isinstance(module, reqif.CapellaModule)
+        assert len(module.requirements) == 1
+
+        req = resolved[decl.Promise("req")]
+        assert isinstance(req, reqif.Requirement)
+        assert req.type is not None
+        assert req.type == resolved[decl.Promise("reqtype")]
+        assert len(req.attributes) == 1
 
     @staticmethod
     def test_sync_operation_creates_a_new_object_if_it_didnt_find_a_match(
