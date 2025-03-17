@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import logging
 import pathlib
 import sys
 import typing as t
@@ -11,6 +12,8 @@ import typing as t
 import capellambse
 from capellambse import _diagram_cache, cli_helpers
 from capellambse._diagram_cache import IndexEntry as IndexEntry
+
+logger = logging.getLogger(__name__)
 
 try:
     import click
@@ -142,6 +145,10 @@ else:
         modelinfo["diagram_cache"] = {"path": output}
         model_ = capellambse.MelodyModel(**modelinfo)
 
+        if not model_.diagrams:
+            logger.info("No diagrams found in the model, nothing to export")
+            raise SystemExit(0)
+
         if docker:
             capella = docker
             force = "docker"
@@ -158,10 +165,15 @@ else:
             background=background,
             refresh=refresh,
         )
+
         ok = sum(1 for i in diagrams if i["success"])
         if ok == 0:
+            logger.error("Could not export any diagrams")
             raise SystemExit(1)
-        if ok < len(diagrams):
+
+        failed = len(diagrams) - ok
+        if failed > 0:
+            logger.error("%d diagrams failed to export (%d ok)", failed, ok)
             raise SystemExit(3)
 
 
