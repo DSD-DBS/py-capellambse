@@ -472,18 +472,30 @@ def _operate_sync(
                         promise = Promise(promise)
                     yield (promise, candidate)
             else:
-                newobj_props = (
-                    find_args.attributes
-                    | obj.pop("set", {})
-                    | obj.pop("extend", {})
-                )
-                if "promise_id" in obj:
-                    newobj_props["promise_id"] = obj.pop("promise_id")
-                yield from _create_complex_objects(
-                    promises, parent, attr, [newobj_props]
-                )
-                if "sync" in obj:
-                    yield from _operate_sync(promises, parent, {attr: [obj]})
+                mods = obj.setdefault("set", {})
+                ext = obj.setdefault("extend", {})
+                try:
+                    for k, v in mods.items():
+                        mods[k] = _resolve(promises, parent, v)
+                    for k, v in ext.items():
+                        ext[k] = _resolve(promises, parent, v)
+                except _UnresolvablePromise as p:
+                    deferred = {
+                        "parent": parent,
+                        "sync": {attr: [obj]},
+                    }
+                    yield p.args[0], deferred
+                else:
+                    newobj_props = find_args.attributes | mods | ext
+                    if "promise_id" in obj:
+                        newobj_props["promise_id"] = obj.pop("promise_id")
+                    yield from _create_complex_objects(
+                        promises, parent, attr, [newobj_props]
+                    )
+                    if "sync" in obj:
+                        yield from _operate_sync(
+                            promises, parent, {attr: [obj]}
+                        )
 
 
 def _resolve(
