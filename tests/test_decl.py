@@ -754,22 +754,23 @@ class TestApplySync:
                             attributes:
                               - find:
                                   _type: StringValueAttribute
-                                  definition: !promise attrtype
+                                  definition: !promise attrdef
                                 set:
                                   value: The value
                 requirement_types_folders:
                   - find:
                       long_name: Test types folder
                     sync:
-                      data_type_definitions:
-                        - find:
-                            _type: DataTypeDefinition
-                            long_name: String
-                          promise_id: attrtype
                       requirement_types:
                         - find:
                             long_name: Test type
                           promise_id: reqtype
+                          sync:
+                            attribute_definitions:
+                              - find:
+                                  _type: AttributeDefinition
+                                  long_name: Attribute
+                                promise_id: attrdef
             """
 
         resolved = decl.apply(model, io.StringIO(yml))
