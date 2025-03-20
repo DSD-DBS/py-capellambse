@@ -22,6 +22,7 @@ import collections.abc as cabc
 import dataclasses
 import enum
 import logging
+import sys
 import typing as t
 
 from lxml import etree
@@ -29,6 +30,11 @@ from lxml import etree
 import capellambse
 import capellambse.metamodel as mm
 import capellambse.model as m
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 LOGGER = logging.getLogger(__name__)
 _T_co = t.TypeVar(
@@ -204,7 +210,11 @@ class Rules(dict[str, Rule]):
             category = Category[category]
         return [i for i in self.values() if i.category == category]
 
+    @deprecated("by_type has been renamed to by_class")
     def by_type(self, type: type[m.ModelElement] | str) -> list[Rule]:
+        return self.by_class(type)
+
+    def by_class(self, type: type[m.ModelElement] | str) -> list[Rule]:
         """Filter the validation rules by type."""
         if not isinstance(type, str):
             type = type.__name__
@@ -302,10 +312,14 @@ class Results:
             if result.passed == passed
         )
 
+    @deprecated("by_type has been renamed to by_class")
     def by_type(self, /, *types: str) -> Results:
+        return self.by_class(*types)
+
+    def by_class(self, /, *types: str) -> Results:
         """Filter the validation results by target object type."""
         if not types:
-            raise TypeError("Results.by_type requires at least one argument")
+            raise TypeError("Results.by_class requires at least one argument")
         typeobjs = [_types_registry[i] for i in types]
         return Results(
             ((rule_, objid), result)
