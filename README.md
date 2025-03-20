@@ -178,6 +178,11 @@ You can install the latest released version directly from PyPI.
 pip install capellambse
 ```
 
+On supported platforms, the downloaded wheel includes an optional native
+module, which provides faster implementations of some functions. Other
+platforms will fall back to a pure Python wheel without this speedup. To build
+the native module, a Rust compiler is required.
+
 Development
 -----------
 
