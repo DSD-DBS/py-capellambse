@@ -3,7 +3,7 @@
 
 [build-system]
 requires = [
-  "setuptools>=64",
+  "setuptools>=77",
   "setuptools-rust",
   "setuptools-scm[toml]>=3.4",
   "wheel",
@@ -17,13 +17,13 @@ name = "capellambse"
 description = "Provides access to Capella MBSE projects in Python"
 readme = "README.md"
 requires-python = ">=3.10, <3.14"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0 AND OFL-1.1"
+license-files = ["LICENSES/*.txt"]
 authors = [{ name = "DB InfraGO AG" }]
 keywords = ["arcadia", "capella", "mbse", "model-based systems engineering"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: Apache Software License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3 :: Only",

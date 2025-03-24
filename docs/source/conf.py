@@ -28,9 +28,6 @@ project = "py-capellambse"
 pypi = "capellambse"
 author = _metadata["authors"][0]["name"]
 copyright = f"{author} and the {_metadata['name']} contributors"
-license = _metadata["license"]["text"]
-install_requirements = _metadata["dependencies"]
-python_requirement = _metadata["requires-python"]
 
 # -- General configuration ---------------------------------------------------
 
@@ -137,10 +134,6 @@ html_theme_options = {
 }
 html_short_title = "py-capellambse"
 html_show_sourcelink = False
-html_context = {
-    "dependencies": install_requirements,
-    "py_req": python_requirement,
-}
 
 # -- Extra options for Furo theme --------------------------------------------
 
