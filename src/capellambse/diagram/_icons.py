@@ -741,7 +741,7 @@ def _requirement_symbol() -> container.Symbol:
 
 @_factory()
 def _system_component_symbol() -> container.Symbol:
-    symb = container.Symbol(id="SystemComponentSymbol", viewBox="0 12 79 55")
+    symb = container.Symbol(id="SystemComponentSymbol", viewBox="0 12 90 59")
     grp = container.Group(
         transform="matrix(0.25509703,0,0,0.25509703,-19.119473,-26.4767)"
     )
@@ -799,7 +799,7 @@ def _system_component_symbol() -> container.Symbol:
 
 @_factory()
 def _system_actor_symbol() -> container.Symbol:
-    symb = container.Symbol(id="SystemActorSymbol", viewBox="0 0 79 79")
+    symb = container.Symbol(id="SystemActorSymbol", viewBox="0 12 90 59")
     grp = container.Group(
         transform="matrix(1.4376083,0,0,1.3022512,-15.958775,-15.416201)"
     )
