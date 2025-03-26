@@ -77,14 +77,12 @@ display here as that</p>
         ),
     ],
 )
-def test_ReqIFElement_short_repr_(
-    model_5_2: m.MelodyModel, expected: str
-) -> None:
+def test_ReqIFElement_short_repr_(model: m.MelodyModel, expected: str) -> None:
     r"""Test display of ``ReqIFElement``\ s appearance."""
     matches = helpers.RE_VALID_UUID.findall(expected)
     assert matches is not None
     uuid = matches[-1]
-    obj = model_5_2.by_uuid(uuid)
+    obj = model.by_uuid(uuid)
 
     assert repr(obj).startswith(expected)
 
