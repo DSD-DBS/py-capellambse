@@ -13,14 +13,13 @@ import capellambse
 import capellambse.diagram
 from capellambse.svg import SVGDiagram, generate, helpers
 
-TEST_LAB = "[LAB] Wizzard Education"
+TEST_LAB = "[LAB] Wizard Education"
 TEST_DIAGS = [
     TEST_LAB,
     "[OAB] Operational Context",
     "[OCB] Operational Capabilities",
     "[OPD] Obtain food via hunting",
     "[MSM] States of Functional Human Being",
-    "[SAB] System",
     "[OEBD] Operational Context",
     "[PAB] Physical System",
     "[LDFB] Test flow",

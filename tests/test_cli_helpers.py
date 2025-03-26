@@ -5,14 +5,14 @@ import pytest
 
 import capellambse
 
-from .conftest import INSTALLED_PACKAGE, TEST_MODEL, TEST_ROOT  # type: ignore
+from .conftest import INSTALLED_PACKAGE, Models  # type: ignore
 
-TEST_MODEL_AIRD = TEST_ROOT / "5_0" / TEST_MODEL
-TEST_MODEL_JSON = INSTALLED_PACKAGE / "known_models" / "test-5.0.json"
+(MODEL_PATH,) = Models.test7_0.glob("*.aird")
+JSON_PATH = INSTALLED_PACKAGE.joinpath("known_models", "test-7.0.json")
 
 
 def test_enumerate_known_models_contains_known_test_models():
-    expected = {"test-5.0.json", "test-5.2.json", "test-lib.json"}
+    expected = {"test-7.0.json", "test-lib.json"}
 
     actual = {i.name for i in capellambse.enumerate_known_models()}
 
@@ -32,12 +32,12 @@ def test_climodel_is_idempotent(
 @pytest.mark.parametrize(
     "value",
     [
-        pytest.param(TEST_MODEL_JSON.stem, id="str-known"),
-        pytest.param(TEST_MODEL_AIRD, id="str-aird"),
-        pytest.param(str(TEST_MODEL_AIRD), id="path-aird"),
-        pytest.param(TEST_MODEL_JSON, id="str-jsonfile"),
-        pytest.param(str(TEST_MODEL_JSON), id="path-jsonfile"),
-        pytest.param(TEST_MODEL_JSON.read_text(), id="json"),
+        pytest.param(JSON_PATH.stem, id="str-known"),
+        pytest.param(str(MODEL_PATH), id="str-aird"),
+        pytest.param(MODEL_PATH, id="path-aird"),
+        pytest.param(str(JSON_PATH), id="str-jsonfile"),
+        pytest.param(JSON_PATH, id="path-jsonfile"),
+        pytest.param(JSON_PATH.read_text(), id="json"),
     ],
 )
 def test_climodel_loads_model(value):
@@ -51,12 +51,12 @@ def test_climodel_loads_model(value):
 @pytest.mark.parametrize(
     "value",
     [
-        pytest.param(TEST_MODEL_JSON.stem, id="str-known"),
-        pytest.param(TEST_MODEL_AIRD, id="str-aird"),
-        pytest.param(str(TEST_MODEL_AIRD), id="path-aird"),
-        pytest.param(TEST_MODEL_JSON, id="str-jsonfile"),
-        pytest.param(str(TEST_MODEL_JSON), id="path-jsonfile"),
-        pytest.param(TEST_MODEL_JSON.read_text(), id="json"),
+        pytest.param(JSON_PATH.stem, id="str-known"),
+        pytest.param(str(MODEL_PATH), id="str-aird"),
+        pytest.param(MODEL_PATH, id="path-aird"),
+        pytest.param(str(JSON_PATH), id="str-jsonfile"),
+        pytest.param(JSON_PATH, id="path-jsonfile"),
+        pytest.param(JSON_PATH.read_text(), id="json"),
     ],
 )
 def test_loadcli_loads_model(value):

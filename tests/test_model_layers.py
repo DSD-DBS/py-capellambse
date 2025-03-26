@@ -12,7 +12,7 @@ import pytest
 import capellambse.metamodel as mm
 import capellambse.model as m
 
-from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore
+from .conftest import Models  # type: ignore
 
 
 def test_model_info_contains_capella_version(model: m.MelodyModel):
@@ -20,15 +20,13 @@ def test_model_info_contains_capella_version(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    ("folder", "aird"),
+    "aird",
     [
-        ("6_0", TEST_MODEL),
-        ("5_2", TEST_MODEL),
-        ("5_0", TEST_MODEL),
+        pytest.param(Models.test7_0, id="7.0"),
     ],
 )
-def test_model_compatibility(folder: str, aird: str) -> None:
-    m.MelodyModel(TEST_ROOT / folder / aird)
+def test_model_compatibility(aird: str) -> None:
+    m.MelodyModel(aird)
 
 
 @pytest.mark.parametrize(
@@ -335,10 +333,10 @@ def test_model_elements_have_pre_or_post_conditions(
         ),
     ],
 )
-def test_CapabilityExtend(model_5_2: m.MelodyModel, uuid: str, trg_uuid: str):
-    cap = model_5_2.by_uuid(uuid)
+def test_CapabilityExtend(model: m.MelodyModel, uuid: str, trg_uuid: str):
+    cap = model.by_uuid(uuid)
     assert isinstance(cap, mm.interaction.AbstractCapability)
-    expected = model_5_2.by_uuid(trg_uuid)
+    expected = model.by_uuid(trg_uuid)
     assert isinstance(expected, mm.interaction.AbstractCapability)
 
     actual = [i.extended for i in cap.extends]
@@ -361,10 +359,10 @@ def test_CapabilityExtend(model_5_2: m.MelodyModel, uuid: str, trg_uuid: str):
         ),
     ],
 )
-def test_CapabilityInclude(model_5_2: m.MelodyModel, uuid: str, trg_uuid: str):
-    cap = model_5_2.by_uuid(uuid)
+def test_CapabilityInclude(model: m.MelodyModel, uuid: str, trg_uuid: str):
+    cap = model.by_uuid(uuid)
     assert isinstance(cap, mm.interaction.AbstractCapability)
-    expected = model_5_2.by_uuid(trg_uuid)
+    expected = model.by_uuid(trg_uuid)
     assert isinstance(expected, mm.interaction.AbstractCapability)
 
     actual = [i.included for i in cap.includes]
@@ -388,11 +386,11 @@ def test_CapabilityInclude(model_5_2: m.MelodyModel, uuid: str, trg_uuid: str):
     ],
 )
 def test_CapabilityGeneralization(
-    model_5_2: m.MelodyModel, uuid: str, trg_uuid: str
+    model: m.MelodyModel, uuid: str, trg_uuid: str
 ):
-    cap = model_5_2.by_uuid(uuid)
+    cap = model.by_uuid(uuid)
     assert isinstance(cap, mm.interaction.AbstractCapability)
-    expected = model_5_2.by_uuid(trg_uuid)
+    expected = model.by_uuid(trg_uuid)
     assert isinstance(expected, mm.interaction.AbstractCapability)
 
     actual = [i.super for i in cap.generalizations]
@@ -537,7 +535,6 @@ class TestStateMachines:
             "0c7b7899-49a7-4e41-ab11-eb7d9c2becf6"
         )
         assert isinstance(state, mm.capellacommon.State)
-        sleep_region = state.regions[0]
 
         assert default_region.diagrams
         assert isinstance(default_region.diagrams, m.ElementList)
@@ -545,9 +542,6 @@ class TestStateMachines:
             default_region.diagrams[0].name
             == "[MSM] States of Functional Human Being"
         )
-
-        assert sleep_region.diagrams
-        assert sleep_region.diagrams[0].name == "[MSM] Keep the sleep schedule"
 
 
 def test_exchange_items_of_a_function_port(model: m.MelodyModel):
@@ -711,10 +705,13 @@ def test_model_search_finds_elements(
         "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
         "1adf8097-18f9-474e-b136-6c845fc6d9e9",
         "2a923851-a4ca-4fd2-a4b3-302edb8ac178",
+        "2b34c799-769c-42f2-8a1b-4533dba209a0",
         "3eb1833e-7a42-4297-8ee0-88cdc5fd6025",
+        "7a3bdb81-b58f-46c7-a639-18298acc1a53",
         "8164ae8b-36d5-4502-a184-5ec064db4ec3",
         "959b5222-7717-4ee9-bd3a-f8a209899464",
         "a7ecc231-c55e-4ab9-ae14-9558e3ec2a34",
+        "ad876857-33d3-4f2e-9fe2-71545a78352d",
         "bbc296e1-ed4c-40cf-b37d-c8eb8613228a",
         "c371cebb-8021-4a38-8706-4525734de76d",
         "c3c96805-d6f6-4092-b9f4-df7970651cdc",
@@ -723,6 +720,7 @@ def test_model_search_finds_elements(
         "c89849fd-0643-4708-a4da-74c9ea9ca7b1",
         "ca79bf38-5e82-4104-8c49-e6e16b3748e9",
         "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
+        "ed272baf-43f2-4fa1-ad50-49c00563258b",
         # Unions
         "246ab250-2a80-487f-b022-1123c02e33ff",
         "2f34192f-088b-4511-95ea-b1a29fb6028b",
@@ -795,14 +793,14 @@ def test_CommunicationMean(model: m.MelodyModel) -> None:
     ],
 )
 def test_FunctionalChainInvolvementLink_has_items_and_context(
-    model_5_2: m.MelodyModel,
+    model: m.MelodyModel,
     chain_uuid: str,
     link_uuid: str,
     target_uuid: str,
 ) -> None:
-    chain = model_5_2.by_uuid(chain_uuid)
-    link = model_5_2.by_uuid(link_uuid)
-    target = model_5_2.by_uuid(target_uuid)
+    chain = model.by_uuid(chain_uuid)
+    link = model.by_uuid(link_uuid)
+    target = model.by_uuid(target_uuid)
     ex_item_uuids = [ex.uuid for ex in link.exchanged_items]
     expected_uuids = ["1ca7b206-be29-4315-a036-0b532b26a191"]
     expected_context = "This is a test context."
@@ -828,10 +826,10 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
     ],
 )
 def test_ModelElement_has_GenericTraces(
-    model_5_2: m.MelodyModel, trace_uuid: str, target_uuid: str
+    model: m.MelodyModel, trace_uuid: str, target_uuid: str
 ) -> None:
-    cls = model_5_2.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")
-    trace = model_5_2.by_uuid(trace_uuid)
+    cls = model.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")
+    trace = model.by_uuid(trace_uuid)
 
     assert trace in cls.traces
     assert trace.target.uuid == target_uuid
@@ -855,14 +853,14 @@ def test_ModelElement_has_GenericTraces(
     ],
 )
 def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
-    model_5_2: m.MelodyModel,
+    model: m.MelodyModel,
     chain_uuid: str,
     fnc_uuid: str,
     target_uuid: str,
 ) -> None:
-    chain = model_5_2.by_uuid(chain_uuid)
-    fnc = model_5_2.by_uuid(fnc_uuid)
-    target = model_5_2.by_uuid(target_uuid)
+    chain = model.by_uuid(chain_uuid)
+    fnc = model.by_uuid(fnc_uuid)
+    target = model.by_uuid(target_uuid)
 
     assert fnc in chain.involvements
     assert fnc.involved == target
@@ -898,9 +896,9 @@ def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
     ],
 )
 def test_FunctionalChainInvolvement_has_sequence_nodes(
-    model_5_2: m.MelodyModel, chain_uuid: str, nodes: list[str]
+    model: m.MelodyModel, chain_uuid: str, nodes: list[str]
 ) -> None:
-    chain = model_5_2.by_uuid(chain_uuid)
+    chain = model.by_uuid(chain_uuid)
 
     actual = list(chain.sequence_nodes.by_uuid)
 
@@ -1206,7 +1204,10 @@ class TestArchitectureLayers:
                 " them.</p>\n"
             ),
         ),
-        ("filters", {"ModelExtensionFilter"}),
+        (
+            "filters",
+            {"hide.computed.transitions.filter", "ModelExtensionFilter"},
+        ),
         ("target.uuid", "eeeb98a7-6063-4115-8b4b-40a51cc0df49"),
         ("type", "MSM"),
         ("type", m.DiagramType.MSM),
@@ -1301,35 +1302,15 @@ def test_lists_of_links_reorder_existing_members_when_appending_duplicates(
     assert links_before == links_after
 
 
-@pytest.mark.parametrize(
-    "uuid",
-    [
-        pytest.param(
-            "55cdd645-fb98-459a-a1c5-52d6a504c164", id="OperationalActivity"
-        ),
-        pytest.param(
-            "ceffa011-7b66-4b3c-9885-8e075e312ffa", id="SystemFunction"
-        ),
-    ],
-)
-def test_scenarios_on_functions(model_6_0: m.MelodyModel, uuid: str):
-    fnc = model_6_0.by_uuid(uuid)
+def test_scenarios_on_functions(model: m.MelodyModel):
+    fnc = model.by_uuid("04babdbf-6cf6-4846-a207-bf27cfc8eb32")
+    assert isinstance(fnc, mm.oa.OperationalActivity)
 
     assert fnc.scenarios
 
 
-@pytest.mark.parametrize(
-    "uuid",
-    [
-        pytest.param(
-            "6daa8cf7-6a23-461e-9bf3-abdd8f36c4bc", id="OA - Activities"
-        ),
-        pytest.param(
-            "140943be-c865-4505-8459-67dd626ef0d4", id="SA - Functions"
-        ),
-    ],
-)
-def test_related_functions_on_scenarios(model_6_0: m.MelodyModel, uuid: str):
-    scenario = model_6_0.by_uuid(uuid)
+def test_related_functions_on_scenarios(model: m.MelodyModel):
+    scenario = model.by_uuid("6daa8cf7-6a23-461e-9bf3-abdd8f36c4bc")
+    assert isinstance(scenario, mm.interaction.Scenario)
 
     assert scenario.related_functions

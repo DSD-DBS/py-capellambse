@@ -22,17 +22,17 @@ NAME_AND_EX_ITEMS_FILTER = "show.functional.exchanges.exchange.items.filter"
 
 
 def test_diagram_has_activated_filters(
-    model_5_2: capellambse.MelodyModel,
+    model: capellambse.MelodyModel,
 ) -> None:
-    diag: m.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: m.Diagram = model.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     assert diag.filters == DEFAULT_ACTIVATED_FILTERS
 
 
 def test_add_activated_filter_to_diagram(
-    model_5_2: capellambse.MelodyModel,
+    model: capellambse.MelodyModel,
 ) -> None:
-    diag: m.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: m.Diagram = model.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     diag.filters.add(EX_ITEMS_FILTER)
 
@@ -41,9 +41,9 @@ def test_add_activated_filter_to_diagram(
 
 @pytest.mark.parametrize("filter_name", sorted(DEFAULT_ACTIVATED_FILTERS))
 def test_remove_activated_filter_on_diagram(
-    model_5_2: capellambse.MelodyModel, filter_name: str
+    model: capellambse.MelodyModel, filter_name: str
 ) -> None:
-    diag: m.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: m.Diagram = model.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     diag.filters.remove(filter_name)
 
@@ -51,9 +51,9 @@ def test_remove_activated_filter_on_diagram(
 
 
 def test_remove_activated_filter_fails_if_not_active(
-    model_5_2: capellambse.MelodyModel,
+    model: capellambse.MelodyModel,
 ) -> None:
-    diag: m.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: m.Diagram = model.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     with pytest.raises(KeyError):
         diag.filters.remove(EX_ITEMS_FILTER)
@@ -74,9 +74,9 @@ def test_component_ports_filter_is_applied(
 
 
 def test_fex_exchangeitems_filter_is_applied(
-    model_5_2: capellambse.MelodyModel,
+    model: capellambse.MelodyModel,
 ) -> None:
-    diag: m.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: m.Diagram = model.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     diag.filters.add(EX_ITEMS_FILTER)
     rendered = diag.render(None, sorted_exchangedItems=False)
@@ -105,9 +105,9 @@ def test_fex_exchangeitems_filter_is_applied(
     ],
 )
 def test_fex_exchangeitems_filter_with_name_is_applied(
-    model_5_2: capellambse.MelodyModel, sort: bool, expected_labels: str
+    model: capellambse.MelodyModel, sort: bool, expected_labels: str
 ) -> None:
-    diag: m.Diagram = model_5_2.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
+    diag: m.Diagram = model.diagrams.by_name(EX_ITEMS_FILTER_DIAG)
 
     diag.filters.add(NAME_AND_EX_ITEMS_FILTER)
     rendered = diag.render(None, sorted_exchangedItems=sort)
