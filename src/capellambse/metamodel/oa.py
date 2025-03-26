@@ -73,6 +73,7 @@ class OperationalAnalysis(cs.BlockArchitecture):
     def all_operational_processes(self) -> m.ElementList[OperationalProcess]:
         return self._model.search(OperationalProcess, below=self)
 
+    # FIXME make this AttributeError-safe
     @property
     def root_activity(self) -> OperationalActivity:
         pkg = self.activity_pkg
@@ -92,6 +93,7 @@ class OperationalAnalysis(cs.BlockArchitecture):
             )
         return candidates[0]
 
+    # FIXME make this AttributeError-safe
     @property
     def root_entity(self) -> Entity:
         pkg = self.entity_pkg

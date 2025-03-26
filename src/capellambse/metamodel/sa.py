@@ -61,6 +61,7 @@ class SystemAnalysis(cs.ComponentArchitecture):
     def all_missions(self) -> m.ElementList[Mission]:
         return self._model.search((NS, "Mission"), below=self)
 
+    # FIXME make this AttributeError-safe
     @property
     def all_actor_exchanges(self) -> m.ElementList[fa.ComponentExchange]:
         return self._model.search(
