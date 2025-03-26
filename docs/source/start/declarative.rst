@@ -379,3 +379,104 @@ component, but the function still exists afterwards:
      delete:
        allocated_functions:
          - !uuid 0e71a0d3-0a18-4671-bba0-71b5f88f95dd
+
+Cookbook
+========
+
+Components and parts
+--------------------
+
+Components should always have at least one Part that's using them. This is
+currently not enforced by capellambse, but will cause issues in Capella.
+Examples include Components not being recognized as possible target for certain
+operations, or being unable to show them in some diagram types.
+
+By default, component reuse through parts is disabled for Capella models. In
+that case, components should have *exactly* one Part associated with them.
+
+As a rule of thumb, apply the same ``extend`` or ``sync`` of a Component to at
+least one Part, or delete all Parts that belonged to a deleted component. For
+example, to synchronize a Component into the model, you can use YAML similar to
+the following:
+
+.. code-block:: yaml
+
+   - parent: !find
+       _type: "LogicalComponent"
+       name: "System"
+     sync:
+       components:
+         - find:
+             name: "My Component"
+           set:
+             description: This is my new component.
+           promise_id: my-component
+       parts:
+         - find:
+             # Note: `type` (no leading underscore) should be the only `find` argument
+             # if component reuse through parts is disabled, as it is by default.
+             type: !promise my-component
+           set:
+             name: "My Component"
+
+Class associations
+------------------
+
+Associations between ``Class`` objects need to follow some very strict rules in
+order to form a valid model and be usable in Capella. One possible approach is
+as follows:
+
+- Declare two classes A and B.
+
+- Declare a ``Property`` of kind "ASSOCIATION" on class A that refers to class
+  B in its ``type`` field.
+
+- Add an Association to the containing DataPkg, which refers to that Property
+  in its ``navigable_members`` field, and contains another ``Property``
+  describing the opposite relation.
+
+Example YAML:
+
+.. code-block:: yaml
+
+   - parent: !todo Navigate to the desired DataPkg
+     sync:
+       classes:
+         - find:
+             name: "Class B"
+           promise_id: "Class B"
+         - find:
+             name: "Class A"
+           promise_id: "Class A"
+           sync:
+             properties:
+               - find:
+                   type: !promise "Class B"
+                   name: association_to_b # Can also be in 'set' to ignore the name when matching an existing property
+                 promise_id: "Prop A -> B"
+                 set:
+                   kind: ASSOCIATION
+                   min_card: !new_object
+                     _type: LiteralNumericValue
+                     value: "1"
+                   max_card: !new_object
+                     _type: LiteralNumericValue
+                     value: "1"
+       owned_associations:
+         - find:
+             navigable_members:
+               - !promise "Prop A -> B"
+           sync:
+             members:
+               - find:
+                   _type: Property
+                   type: !promise "Class A"
+                   name: association_from_b # Can also be in 'set' to ignore the name when matching an existing property
+                 set:
+                   kind: ASSOCIATION
+                   min_card: !new_object
+                     _type: LiteralNumericValue
+                     value: "1"
+                   max_card: !new_object
+                     _type: LiteralNumericValue
+                     value: "1"
