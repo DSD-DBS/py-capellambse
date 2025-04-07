@@ -221,7 +221,7 @@ def _build_datatypes(
 
         if isinstance(attrdef, rq.AttributeDefinitionEnumeration):
             values = etree.Element("SPECIFIED-VALUES")
-            for i in attrdef.data_type.values:
+            for i in getattr(attrdef.data_type, "values", ()):
                 v = etree.Element("ENUM-VALUE")
                 v.set("IDENTIFIER", "_" + i.uuid.upper())
                 v.set("LAST-CHANGE", timestamp)

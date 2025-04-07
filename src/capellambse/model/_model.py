@@ -10,6 +10,7 @@ import itertools
 import logging
 import os
 import typing as t
+import warnings
 
 from lxml import etree
 
@@ -17,7 +18,7 @@ import capellambse
 import capellambse.helpers
 from capellambse import _diagram_cache, aird, filehandler, loader
 
-from . import _descriptors, _obj, _xtype, diagram
+from . import _descriptors, _obj, diagram
 
 # `pathlib` is referenced by the `dataclasses` auto-generated init.
 # Sphinx-autodoc-typehints needs this import here to resolve the forward ref.
@@ -39,10 +40,13 @@ class MelodyModel:
     def project(self) -> capellambse.metamodel.capellamodeller.Project:
         import capellambse.metamodel as mm
 
-        target_xt = {
-            _xtype.build_xtype(mm.capellamodeller.Project),
-            _xtype.build_xtype(mm.capellamodeller.Library),
-        }
+        cls_project = self.resolve_class((mm.capellamodeller.NS, "Project"))
+        if __debug__:
+            cls_library = self.resolve_class(
+                (mm.capellamodeller.NS, "Library")
+            )
+            assert issubclass(cls_library, cls_project)
+
         roots: list[etree._Element] = []
         for fname, frag in self._loader.trees.items():
             if fname.parts[0] != "\x00":
@@ -53,7 +57,14 @@ class MelodyModel:
                     elem = next(iter(elem))
                 except StopIteration:
                     continue
-            if capellambse.helpers.xtype_of(elem) not in target_xt:
+            qname = capellambse.helpers.qtype_of(elem)
+            if qname is None:
+                continue
+            try:
+                elemcls = self.resolve_class(qname)
+            except (_obj.UnknownNamespaceError, _obj.MissingClassError):
+                continue
+            if not issubclass(elemcls, cls_project):
                 continue
             roots.append(elem)
 
@@ -61,7 +72,7 @@ class MelodyModel:
             raise RuntimeError("No root project or library found")
         if len(roots) > 1:
             raise RuntimeError(f"Found {len(roots)} Project/Library objects")
-        obj = _obj.ModelElement.from_model(self, roots[0])
+        obj = _obj.wrap_xml(self, roots[0])
         assert isinstance(obj, mm.capellamodeller.Project)
         return obj
 
@@ -268,6 +279,7 @@ class MelodyModel:
         capellambse.load_model_extensions()
 
         self._loader = loader.MelodyLoader(path, **kwargs)
+        self.__viewpoints = dict(self._loader.referenced_viewpoints())
         self._fallback_render_aird = fallback_render_aird
 
         if diagram_cache:
@@ -317,59 +329,111 @@ class MelodyModel:
 
     def search(
         self,
-        *xtypes: str | type[_obj.ModelObject],
+        *clsnames: str | type[_obj.ModelObject] | _obj.UnresolvedClassName,
         below: _obj.ModelElement | None = None,
     ) -> _obj.ElementList:
-        r"""Search for all elements with any of the given ``xsi:type``\ s.
-
-        If only one xtype is given, the return type will be
-        :class:`~capellambse.model.ElementList`, otherwise it will be
-        :class:`~capellambse.model.MixedElementList`.
-
-        If no ``xtypes`` are given at all, this method will return an
-        exhaustive list of all (semantic) model objects that have an
-        ``xsi:type`` set.
+        """Search for all elements with any of the given types.
 
         Parameters
         ----------
-        xtypes
-            The ``xsi:type``\ s to search for, or the classes
-            corresponding to them (or a mix of both).
+        clsnames
+            The classes to search for. Instances of subclasses of any of
+            the given types will also be returned. If no class is
+            specified, all model elements are returned.
+
+            Each element can be:
+
+            - A string containing the name of a class. All namespaces
+              belonging to an activated viewpoint are searched for
+              classes with that name.
+            - A "namespace.alias:ClassName" string.
+            - A (Namespace, 'ClassName') tuple.
+            - A ('namespace.alias', 'ClassName') tuple.
+            - A Class object. It must have the ``__capella_namespace__``
+              attribute set to its namespace, which is automatically
+              done for subclasses of
+              :class:`~capellambse.model.ModelElement`.
+
+            .. note::
+
+               This method treats the
+               :class:`~capellambse.model.ModelElement`
+               class as the superclass of every concrete model element
+               class. This means that any search query including it will
+               return all model elements regardless of their type.
         below
             A model element to constrain the search. If given, only
             those elements will be returned that are (immediate or
             nested) children of this element. This option takes into
             account model fragmentation, but it does not treat link
             elements specially.
+
+        Notes
+        -----
+        For performance reasons, this method only takes into account
+        semantic fragments and diagram descriptors.
+
+        Examples
+        --------
+        The following calls are functionally identical, and will all
+        return a list of every Logical Component in the model:
+
+        >>> model.search("LogicalComponent")
+        >>> model.search("org.polarsys.capella.core.data.la:LogicalComponent")
+        >>> model.search( (capellambse.metamodel.la.NS, "LogicalComponent") )
+        >>> model.search( ("org.polarsys.capella.core.data.la", "LogicalComponent") )
         """
-        xtypes_: list[str] = []
-        for xtype in xtypes:
-            if isinstance(xtype, type):
-                xtypes_.append(_xtype.build_xtype(xtype))
-            elif ":" in xtype:
-                xtypes_.append(xtype)
-            elif xtype in {"GenericElement", "ModelElement", "ModelObject"}:
-                xtypes_.clear()
-                break
+        classes: set[type[_obj.ModelObject]] = set()
+        for clsname in clsnames:
+            if isinstance(clsname, type):
+                if not hasattr(clsname, "__capella_namespace__"):
+                    raise TypeError(
+                        f"Class does not belong to a namespace: {clsname!r}"
+                    )
+                resolved = self.resolve_class(
+                    (clsname.__capella_namespace__, clsname.__name__)
+                )
+            elif clsname == "GenericElement":
+                warnings.warn(
+                    "GenericElement has been renamed to ModelElement",
+                    DeprecationWarning,
+                    stacklevel=2,
+                )
+                resolved = _obj.ModelElement
+            elif clsname == "ModelObject":
+                resolved = _obj.ModelElement
             else:
-                suffix = ":" + xtype
-                matching_types: list[str] = []
-                for i in _xtype.XTYPE_HANDLERS.values():
-                    matching_types.extend(c for c in i if c.endswith(suffix))
-                if not matching_types:
-                    raise ValueError(f"Unknown incomplete type name: {xtype}")
-                xtypes_.extend(matching_types)
+                resolved = self.resolve_class(clsname)
+            if resolved is _obj.ModelElement:
+                classes.clear()
+                break
+            classes.add(resolved)
 
-        cls = (_obj.MixedElementList, _obj.ElementList)[len(xtypes_) == 1]
+        trees = [
+            t
+            for t in self._loader.trees.values()
+            if t.fragment_type is loader.FragmentType.SEMANTIC
+        ]
+        matches: cabc.Iterable[etree._Element]
+        if not classes:
+            matches = itertools.chain.from_iterable(
+                tree.iterall() for tree in trees
+            )
+        else:
+            matches = []
+            for tree in trees:
+                for qtype in tree.iter_qtypes():
+                    try:
+                        cls = self.resolve_class(qtype)
+                    except (
+                        _obj.UnknownNamespaceError,
+                        _obj.MissingClassError,
+                    ):
+                        continue
+                    if any(issubclass(cls, i) for i in classes):
+                        matches.extend(tree.iter_qtype(qtype))
 
-        trees = {
-            k
-            for k, v in self._loader.trees.items()
-            if v.fragment_type is loader.FragmentType.SEMANTIC
-        }
-        matches = self._loader.iterall_xt(*xtypes_, trees=trees)
-
-        if not xtypes_ or "viewpoint:DRepresentationDescriptor" in xtypes_:
+        if not classes or diagram.Diagram in classes:
             matches = itertools.chain(
                 matches,
                 aird.enumerate_descriptors(self._loader),
@@ -381,11 +445,24 @@ class MelodyModel:
                 for i in matches
                 if below._element in self._loader.iterancestors(i)
             )
-        return cls(self, list(matches), _obj.ModelElement)
+        seen: set[int] = set()
+        elements: list[etree._Element] = []
+        for elem in matches:
+            if id(elem) not in seen:
+                elements.append(elem)
+                seen.add(id(elem))
+            else:
+                LOGGER.warning("Found element twice (bad caches?): %r", elem)
+        return _obj.ElementList(
+            self,
+            elements,
+            _obj.ModelElement,
+            legacy_by_type=len(clsnames) != 1,
+        )
 
     def by_uuid(self, uuid: str) -> t.Any:
         """Search the entire model for an element with the given UUID."""
-        return _obj.ModelElement.from_model(self, self._loader[uuid])
+        return _obj.wrap_xml(self, self._loader[uuid])
 
     def find_references(
         self, target: _obj.ModelObject | str, /
@@ -429,7 +506,7 @@ class MelodyModel:
                 if i.fragment_type != loader.FragmentType.VISUAL
             ],
         ):
-            obj = _obj.ModelElement.from_model(self, elem)
+            obj = _obj.wrap_xml(self, elem)
             for attr in _reference_attributes(type(obj)):
                 if attr.startswith("_"):
                     continue
@@ -615,10 +692,107 @@ class MelodyModel:
         return metrics.get_summary_badge(self)
 
     def referenced_viewpoints(self) -> dict[str, str]:
-        return dict(self._loader.referenced_viewpoints())
+        return self.__viewpoints.copy()
 
     def activate_viewpoint(self, name: str, version: str) -> None:
+        self.__viewpoints[name] = version
         self._loader.activate_viewpoint(name, version)
+
+    def resolve_class(
+        self,
+        typehint: (
+            str | _obj.UnresolvedClassName | etree.QName | etree._Element
+        ),
+    ) -> type[_obj.ModelObject]:
+        """Resolve a class based on a type hint.
+
+        The type hint can be any one of:
+
+        - A string like ``'namespace.alias:ClassName'``, as used in the
+          ``xsi:type`` XML attribute
+        - A string like ``'{http://name/space/url}ClassName'``, as used
+          in XML tags for fragment roots. For versioned namespaces,
+          the version included in the URL is ignored. Future versions
+          may raise an error if the version doesn't match the activated
+          viewpoint.
+        - A :class:`~lxml.etree.QName` object, as obtained by
+          :func:`~capellambse.helpers.qtype_of`.
+        - An :class:`~lxml.etree._Element` object.
+        - A simple ClassName string, which will be searched across all
+          namespaces. It is an error if multiple namespaces provide a
+          class with that name; to avoid such errors, always use a form
+          that explicitly provides the namespace.
+        - A tuple of ``('name.space.alias', 'ClassName')``
+        - A tuple of ``(NamespaceInstance, 'ClassName')``
+        """
+        if isinstance(typehint, etree._Element):
+            qtype = capellambse.helpers.qtype_of(typehint)
+            if qtype is None:
+                raise ValueError(
+                    f"Element is not a proper model element: {typehint!r}"
+                )
+            typehint = qtype
+
+        if isinstance(typehint, etree.QName):
+            ns, _ = _obj.find_namespace_by_uri(typehint.namespace)
+            clsname = typehint.localname
+
+        elif isinstance(typehint, str):
+            if typehint.startswith("{"):
+                qn = etree.QName(typehint)
+                ns, _ = _obj.find_namespace_by_uri(qn.namespace)
+                clsname = qn.localname
+            elif ":" in typehint:
+                nsalias, clsname = typehint.rsplit(":", 1)
+                ns = _obj.find_namespace(nsalias)
+            else:
+                clsname = typehint
+                providers = [
+                    i for i in _obj.enumerate_namespaces() if clsname in i
+                ]
+                if len(providers) < 1:
+                    raise _obj.MissingClassError(None, None, clsname)
+                if len(providers) > 1:
+                    raise ValueError(
+                        f"Multiple namespaces providing class {clsname!r}:"
+                        f" {', '.join(i.alias for i in providers)}"
+                    )
+                (ns,) = providers
+
+        elif isinstance(typehint, tuple) and len(typehint) == 2:
+            clsname = typehint[1]
+            if isinstance(typehint[0], str):
+                ns = _obj.find_namespace(typehint[0])
+            else:
+                ns = typehint[0]
+
+        else:
+            raise TypeError(
+                f"Invalid typehint, expected a str or 2-tuple: {typehint!r}"
+            )
+
+        if ns.viewpoint is None or "{VERSION}" not in ns.uri:
+            return ns.get_class(clsname)
+        viewpoint = self.referenced_viewpoints().get(ns.viewpoint)
+        if viewpoint is None:
+            raise RuntimeError(
+                f"Required viewpoint not activated: {viewpoint!r}"
+            )
+        return ns.get_class(clsname, viewpoint)
+
+    def qualify_classname(self, cls: _obj.ClassName, /) -> etree.QName:
+        """Qualify a ClassName based on the activated viewpoints."""
+        ns, clsname = cls
+        if "{VERSION}" not in ns.uri or not ns.viewpoint:
+            return etree.QName(ns.uri, clsname)
+
+        vp = self.referenced_viewpoints().get(ns.viewpoint)
+        if vp is None:
+            raise _descriptors.InvalidModificationError(
+                f"Required viewpoint is not activated: {ns.viewpoint}"
+            )
+        vp = ns.trim_version(vp)
+        return etree.QName(ns.uri.format(VERSION=vp), clsname)
 
     if t.TYPE_CHECKING:
 
@@ -642,6 +816,7 @@ def _reference_attributes(
     objtype: type[_obj.ModelObject], /
 ) -> tuple[str, ...]:
     ignored_accessors: tuple[type[_descriptors.Accessor], ...] = (
+        _descriptors.AlternateAccessor,
         _descriptors.DeepProxyAccessor,
         _descriptors.DeprecatedAccessor,
         _descriptors.ParentAccessor,
@@ -653,8 +828,17 @@ def _reference_attributes(
         if i.startswith("_") or i == "parent":
             continue
         acc = getattr(objtype, i, None)
-        if isinstance(acc, _descriptors.Accessor) and not isinstance(
-            acc, ignored_accessors
+        if (
+            isinstance(acc, _descriptors.Relationship)
+            or (
+                isinstance(acc, _descriptors.Single)
+                and isinstance(acc.wrapped, _descriptors.Relationship)
+            )
+            # TODO remove checks for deprecated Accessor classes
+            or (
+                isinstance(acc, _descriptors.Accessor)
+                and not isinstance(acc, ignored_accessors)
+            )
         ):
             attrs.append(i)
     return tuple(attrs)

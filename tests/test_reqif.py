@@ -77,14 +77,12 @@ display here as that</p>
         ),
     ],
 )
-def test_ReqIFElement_short_repr_(
-    model_5_2: m.MelodyModel, expected: str
-) -> None:
+def test_ReqIFElement_short_repr_(model: m.MelodyModel, expected: str) -> None:
     r"""Test display of ``ReqIFElement``\ s appearance."""
     matches = helpers.RE_VALID_UUID.findall(expected)
     assert matches is not None
     uuid = matches[-1]
-    obj = model_5_2.by_uuid(uuid)
+    obj = model.by_uuid(uuid)
 
     assert repr(obj).startswith(expected)
 
@@ -375,6 +373,7 @@ class TestReqIFAccess:
 
         assert len(mod.folders) == 1
         assert len(mod.requirements) == 1
+        assert mod.type is not None
         assert mod.type.long_name == "ModuleType"
         for attr, expected in {
             "identifier": "1",
@@ -391,6 +390,7 @@ class TestReqIFAccess:
 
         assert len(folder.folders) == 1
         assert len(folder.requirements) == 2
+        assert folder.type is not None
         assert folder.type.long_name == "ReqType"
         for attr, expected in {
             "identifier": "1",
@@ -407,6 +407,7 @@ class TestReqIFAccess:
     def test_Requirement_attributes(self, model: m.MelodyModel):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
+        assert req.type is not None
         assert req.type.long_name == "ReqType"
 
         for attr, expected in {
@@ -481,21 +482,21 @@ class TestReqIFModification:
             pytest.param("InternalRelation", id="IntRelation"),
         ],
     )
-    def test_creating_Requirements_raises_TypeError(
+    def test_creating_invalid_Requirements_raises_InvalidModificationError(
         self, model: m.MelodyModel, relcls: str
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
 
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(relcls)
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(
                 relcls, target="e16f5cc1-3299-43d0-b1a0-82d31a137111"
             )
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(relcls, type="RelationType")
-        with pytest.raises(TypeError):
+        with pytest.raises(m.InvalidModificationError):
             req.relations.create(relcls, target=req.attributes[0].definition)
 
     def test_created_Requirements_are_found_from_both_sides(

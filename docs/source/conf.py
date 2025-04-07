@@ -59,10 +59,21 @@ nitpick_ignore = [
     ("any", "capellambse.aird.GLOBAL_FILTERS"),
     # Private type hinting helpers
     ("py:class", "_MapFunction"),
+    ("py:class", "_NotSpecifiedType"),
     ("py:class", "capellambse.model._descriptors._Specification"),
+    # Sphinx currently doesn't handle TypeAliases well
+    ("py:class", "_obj.ClassName"),
+    ("py:class", "_obj.ElementList[T_co]"),
+    ("py:class", "_obj.UnresolvedClassName"),
+    # TODO figure out why this broke again
+    # (and where, because Sphinx doesn't seem to know either)
+    ("py:class", "cabc.Iterable"),
+    ("py:class", "etree.QName"),
+    ("py:class", "etree._Element"),
+    ("py:class", "t.Any"),
 ]
 nitpick_ignore_regex = [
-    ("py:.*", r"^yaml\..*"),
+    ("py:.*", r"^(?:awesomeversion|yaml)\..*"),
     ("py:.*", r"^(?:.*\.)?_[A-Z]$"),  # Single-letter TypeVars (e.g. _T)
     # Super/subclass and "see also" references sometimes break
     ("py:(meth|obj)", r"(?:.*\.)?write_transaction"),

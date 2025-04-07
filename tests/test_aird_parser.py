@@ -10,15 +10,11 @@ import pytest
 import capellambse
 from capellambse import aird, diagram, loader
 
-EMPTY_MODEL = pathlib.Path(__file__).parent.joinpath(
-    "data/decl/empty_project_52/empty_project_52.aird"
-)
+from .conftest import TEST_DATA
 
 
 class TestAIRDBasicFunctionality:
-    test_model = (
-        pathlib.Path(__file__).parent / "data" / "parser" / "TestItems.aird"
-    )
+    test_model = TEST_DATA.joinpath("models", "aird_parser")
     test_diagram = "[LAB] Logical System"
     test_json = test_model.with_suffix(".json")
     test_repr = test_model.with_suffix(".repr.txt")
@@ -83,9 +79,10 @@ class TestAIRDBasicFunctionality:
         actual = repr(diagram_under_test)
         assert actual == expected
 
-    def test_enumerate_descriptors_doesnt_crash_if_there_are_no_diagrams(self):
-        model = loader.MelodyLoader(EMPTY_MODEL)
-        for _ in aird.enumerate_descriptors(model):
+    def test_enumerate_descriptors_doesnt_crash_if_there_are_no_diagrams(
+        self, empty_model
+    ):
+        for _ in aird.enumerate_descriptors(empty_model):
             pass
 
 

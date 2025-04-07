@@ -3,18 +3,14 @@
 """Global fixtures for pytest."""
 
 import importlib.metadata as imm
-import io
 import pathlib
-import sys
 
 import pytest
 
 import capellambse
 
 INSTALLED_PACKAGE = pathlib.Path(capellambse.__file__).parent
-
-TEST_ROOT = pathlib.Path(__file__).parent / "data" / "melodymodel"
-TEST_MODEL = "Melody Model Test.aird"
+TEST_DATA = pathlib.Path(__file__).parent / "data"
 
 capellambse.load_model_extensions()
 
@@ -39,25 +35,16 @@ def session_shared_model() -> capellambse.MelodyModel:
     This fixture exists as a speed optimization for tests that only read
     from the model.
     """
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    return capellambse.MelodyModel(TEST_DATA.joinpath("models", "7.0"))
 
 
 @pytest.fixture
-def model(monkeypatch) -> capellambse.MelodyModel:
-    """Return the Capella 5.0 test model."""
-    monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+def model() -> capellambse.MelodyModel:
+    """Load the Capella 7.0 test model."""
+    return capellambse.MelodyModel(TEST_DATA.joinpath("models", "7.0"))
 
 
 @pytest.fixture
-def model_5_2(monkeypatch) -> capellambse.MelodyModel:
-    """Return the Capella 5.2 test model."""
-    monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_2" / TEST_MODEL)
-
-
-@pytest.fixture
-def model_6_0(monkeypatch) -> capellambse.MelodyModel:
-    """Return the Capella 6.0 test model."""
-    monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "6_0" / TEST_MODEL)
+def empty_model() -> capellambse.MelodyModel:
+    """Load the empty test model."""
+    return capellambse.MelodyModel(TEST_DATA.joinpath("models", "empty"))
