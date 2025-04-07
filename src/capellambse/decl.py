@@ -582,9 +582,7 @@ def _resolve_findby(
             + candidates._short_repr_()
         )
     if not candidates:
-        raise _NoObjectFoundError(
-            f"No object found for !find {value.attributes!r}"
-        )
+        raise _NoObjectFoundError(value.attributes)
     return candidates[0]
 
 
@@ -593,7 +591,10 @@ class _UnresolvablePromise(BaseException):
 
 
 class _NoObjectFoundError(ValueError):
-    pass
+    def __str__(self) -> str:
+        if len(self.args) == 1:
+            return f"No object found for !find {self.args[0]!r}"
+        return super().__str__()
 
 
 _OPERATIONS = collections.OrderedDict(
