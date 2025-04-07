@@ -82,6 +82,7 @@ class Enumeration(DataType):
         m.Association((NS, "DataType"), "domainType")
     )
 
+    # FIXME make this AttributeError-safe
     @property
     def literals(self) -> m.ElementList[datavalue.EnumerationLiteral]:
         """Return all owned and inherited literals."""

@@ -126,6 +126,7 @@ class AbstractFunctionalArchitecture(
         (NS, "ComponentExchangeRealization"),
     )
 
+    # FIXME make this AttributeError-safe
     @property
     def root_function(self) -> AbstractFunction:
         """Returns the first function in the function_pkg."""
