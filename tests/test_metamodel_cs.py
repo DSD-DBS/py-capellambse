@@ -16,7 +16,7 @@ def test_PhysicalPath_has_ordered_list_of_involved_items(model: MelodyModel):
 
     path = model.pa.all_physical_paths.by_name("card1 - card2 connection")
 
-    actual = [i.uuid for i in path.involved_items]
+    actual = [i.uuid for i in path.involved_paths]
     assert actual == expected
 
 
@@ -27,6 +27,7 @@ def test_PhysicalPath_has_ordered_list_of_involved_links(model: MelodyModel):
     ]
 
     path = model.pa.all_physical_paths.by_name("card1 - card2 connection")
+    assert isinstance(path, cs.PhysicalPath)
 
     actual = [i.uuid for i in path.involved_links]
     assert actual == expected
