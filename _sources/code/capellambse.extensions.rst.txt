@@ -1,0 +1,29 @@
+capellambse.extensions package
+==============================
+
+.. automodule:: capellambse.extensions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   capellambse.extensions.metrics
+   capellambse.extensions.pvmt
+   capellambse.extensions.reqif
+   capellambse.extensions.validation
+
+Submodules
+----------
+
+capellambse.extensions.filtering module
+---------------------------------------
+
+.. automodule:: capellambse.extensions.filtering
+   :members:
+   :undoc-members:
+   :show-inheritance:
