@@ -121,7 +121,6 @@ class ModelElement:
     sid = _pods.StringPOD("sid")
     """The unique system identifier of this object."""
 
-    xtype = property(lambda self: helpers.xtype_of(self._element))
     name = _pods.StringPOD("name")
     description = _pods.HTMLStringPOD("description")
     summary = _pods.StringPOD("summary")
@@ -224,6 +223,10 @@ class ModelElement:
         raise AttributeError(
             f"No parent layer found for {self._short_repr_()}"
         )
+
+    @property
+    def xtype(self) -> str | None:
+        return helpers.xtype_of(self._element)
 
     def __init__(
         self,

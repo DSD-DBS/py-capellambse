@@ -198,7 +198,8 @@ class TestRequirementAttributes:
 
         assert len(module.attributes) == 1
         assert isinstance(attr, reqif.EnumerationValueAttribute)
-        assert attr.xtype.rsplit(":")[-1] == "EnumerationValueAttribute"
+        xtype = (attr.xtype or "").rsplit(":")[-1]
+        assert xtype == "EnumerationValueAttribute"
         assert isinstance(
             attr.definition, reqif.AttributeDefinitionEnumeration
         )
