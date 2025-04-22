@@ -251,7 +251,8 @@ def test_SystemCapability_has_realized_capabilities(model: m.MelodyModel):
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 2
-    assert elm.realized_capabilities[0].xtype.endswith("OperationalCapability")
+    xtype = elm.realized_capabilities[0].xtype or ""
+    assert xtype.endswith("OperationalCapability")
 
 
 def test_Capability_of_logical_layer_has_realized_capabilities(
@@ -262,7 +263,8 @@ def test_Capability_of_logical_layer_has_realized_capabilities(
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 1
-    assert elm.realized_capabilities[0].xtype.endswith("Capability")
+    xtype = elm.realized_capabilities[0].xtype or ""
+    assert xtype.endswith("Capability")
 
 
 def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):

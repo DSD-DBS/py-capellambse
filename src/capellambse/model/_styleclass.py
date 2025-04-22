@@ -34,7 +34,7 @@ def get_styleclass(obj: _obj.ModelObject) -> str:
 def _default(obj: _obj.ModelObject) -> str:
     from . import _obj
 
-    if isinstance(obj, _obj.ModelElement):
+    if isinstance(obj, _obj.ModelElement) and obj.xtype:
         return obj.xtype.split(":")[-1]
     return type(obj).__name__
 
