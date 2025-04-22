@@ -2813,6 +2813,9 @@ class Containment(Relationship[T_co]):
         single_attr: str | None = ...,
         fixed_length: int = ...,
         legacy_by_type: bool = ...,
+        type_hint_map: (
+            cabc.Mapping[str, _obj.UnresolvedClassName] | None
+        ) = None,
     ) -> None: ...
     @t.overload
     def __init__(
@@ -2827,6 +2830,9 @@ class Containment(Relationship[T_co]):
         single_attr: str | None = ...,
         fixed_length: int = ...,
         legacy_by_type: bool = ...,
+        type_hint_map: (
+            cabc.Mapping[str, _obj.UnresolvedClassName] | None
+        ) = None,
     ) -> None: ...
     def __init__(
         self,
@@ -2845,6 +2851,9 @@ class Containment(Relationship[T_co]):
         single_attr: str | None = None,
         fixed_length: int = 0,
         legacy_by_type: bool = False,
+        type_hint_map: (
+            cabc.Mapping[str, _obj.UnresolvedClassName] | None
+        ) = None,
     ) -> None:
         if aslist is not _NOT_SPECIFIED:
             warnings.warn(
@@ -2862,6 +2871,7 @@ class Containment(Relationship[T_co]):
         )
         self.role_tag = role_tag
         self.alternate = alternate
+        self.type_hint_map = type_hint_map or {}
 
         if (
             isinstance(class_, tuple)
@@ -3071,7 +3081,16 @@ class Containment(Relationship[T_co]):
                 f" satisfies all bounds: {clsbounds!r}"
             )
 
-        if hint:
+        if uclsname := self.type_hint_map.get(hint.lower()):
+            cls = model.resolve_class(uclsname)
+            if cls not in classes:
+                raise InvalidModificationError(
+                    f"Type hint {hint!r} maps to class {cls.__name__!r},"
+                    f" which doesn't satisfy all bounds: {clsbounds!r}"
+                )
+            classes = [cls]
+
+        elif hint:
             *_, clsname = hint.rsplit(":", 1)
             for i in classes:
                 if i.__name__ == clsname:
