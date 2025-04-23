@@ -49,8 +49,6 @@ nitpicky = True
 nitpick_ignore = [
     # in inventory as "py:function"
     ("py:class", "operator.attrgetter"),
-    # exposed as "new_object" factory function
-    ("py:class", "capellambse.model.common.accessors._NewObject"),
     # exposed as `json.JSONEncoder`
     ("py:class", "json.encoder.JSONEncoder"),
     # TODO figure out why sphinx doesn't document these
@@ -96,6 +94,10 @@ rst_epilog = f"""
 autoclass_content = "class"
 autodoc_class_signature = "separated"
 autodoc_typehints = "description"
+
+autodoc_type_aliases = {
+    "capellambse.model.common.accessors._NewObject": "capellambse.model.new_object",
+}
 
 
 # -- Options for napoleon ----------------------------------------------------
