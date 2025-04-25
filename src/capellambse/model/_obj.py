@@ -134,6 +134,7 @@ class ModelElement:
     )
 
     parent: _descriptors.ParentAccessor
+    extensions: _descriptors.Accessor
     constraints: _descriptors.Accessor
     property_value_packages: _descriptors.Accessor
 

@@ -151,6 +151,11 @@ m.set_self_references(
 )
 m.set_accessor(
     m.ModelElement,
+    "extensions",
+    m.Containment("ownedExtensions", aslist=m.ElementList),
+)
+m.set_accessor(
+    m.ModelElement,
     "constraints",
     m.DirectProxyAccessor(Constraint, aslist=m.ElementList),
 )
