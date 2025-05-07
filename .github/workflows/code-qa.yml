@@ -107,6 +107,11 @@ jobs:
           python-version: "3.13"
       - name: Build the wheel
         run: |-
+          export SETUPTOOLS_SCM_PRETEND_VERSION="$(
+            uvx --with setuptools_scm python -c \
+              "import setuptools_scm as scm; print(scm.get_version())"
+          )"
+
           uvx --with tomli_w python <<EOF
           import tomllib, tomli_w
           with open("pyproject.toml", "rb") as f:
