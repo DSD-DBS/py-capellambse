@@ -29,6 +29,28 @@ jobs:
       - name: Run Pre-Commit
         run: uv run pre-commit run --all-files
 
+  sdist: # {{{1
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "**/pyproject.toml"
+          python-version: "3.13"
+      - name: Package the sources
+        run: |-
+          uv build --sdist --out-dir wheelhouse/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: wheelhouse/
+          if-no-files-found: error
+
   build: # {{{1
     name: Build wheel for ${{matrix.os}} / ${{matrix.arch}}${{ matrix.manylinux && ' / ' || '' }}${{ matrix.manylinux || '' }}
     runs-on: ${{matrix.os}}
@@ -107,6 +129,11 @@ jobs:
           python-version: "3.13"
       - name: Build the wheel
         run: |-
+          export SETUPTOOLS_SCM_PRETEND_VERSION="$(
+            uvx --with setuptools_scm python -c \
+              "import setuptools_scm as scm; print(scm.get_version())"
+          )"
+
           uvx --with tomli_w python <<EOF
           import tomllib, tomli_w
           with open("pyproject.toml", "rb") as f:
@@ -144,6 +171,11 @@ jobs:
     permissions:
       id-token: write
     steps:
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          path: dist/
+          name: sdist
       - name: Download built wheels
         uses: actions/download-artifact@v4
         with:
