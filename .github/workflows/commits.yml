@@ -25,10 +25,11 @@ jobs:
           SHA_FROM: ${{ github.event.pull_request.base.sha }}
           SHA_TO: ${{ github.event.pull_request.head.sha }}
         run: |
+          set -e -o pipefail
           delim="_EOF_$(uuidgen)"
           echo "validation-result<<$delim" >> "$GITHUB_OUTPUT"
           r=0
-          npx commitlint --from "$SHA_FROM" --to "$SHA_TO" >> "$GITHUB_OUTPUT" 2>&1 || r=$?
+          npx commitlint --from "$SHA_FROM" --to "$SHA_TO" 2>&1 | tee -a "$GITHUB_OUTPUT" || r=$?
           echo "$delim" >> "$GITHUB_OUTPUT"
           exit $r
       - name: Find conventional commit comment on PR
