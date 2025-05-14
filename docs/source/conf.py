@@ -59,6 +59,10 @@ nitpick_ignore = [
     ("py:class", "_MapFunction"),
     ("py:class", "_NotSpecifiedType"),
     ("py:class", "capellambse.model._descriptors._Specification"),
+    # Deprecated ABC
+    ("py:class", "capellambse.metamodel.fa._AbstractExchange"),
+    ("py:class", "capellambse.metamodel.interaction._CapabilityRelation"),
+    ("py:class", "capellambse.metamodel.interaction._EventOperation"),
 ]
 nitpick_ignore_regex = [
     ("py:.*", r"^(?:awesomeversion|yaml)\..*"),
@@ -66,7 +70,7 @@ nitpick_ignore_regex = [
     # Super/subclass and "see also" references sometimes break
     ("py:(meth|obj)", r"(?:.*\.)?write_transaction"),
     # Sometimes autodoc_typehints doesn't properly resolve aliases
-    ("py:class", r"(?:cabc|etree|t|_obj)\..*"),
+    ("py:class", r"(?:cabc|etree|m|t|_obj)\..*"),
 ]
 
 
