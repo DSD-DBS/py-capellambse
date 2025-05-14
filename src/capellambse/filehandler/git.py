@@ -752,13 +752,13 @@ class GitFileHandler(abc.FileHandler):
             os.rmdir(worktree)
             raise
         self.cache_dir = worktree
-        gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
-        assert isinstance(gitdir, str)
-        self.__repo = pathlib.Path(self.cache_dir, gitdir.strip()).resolve()
-
         self.__fnz = weakref.finalize(
             self, self.__cleanup_worktree, self.__repo, worktree
         )
+
+        gitdir = self.__git_nolock("rev-parse", "--git-dir", encoding="utf-8")
+        assert isinstance(gitdir, str)
+        self.__repo = pathlib.Path(self.cache_dir, gitdir.strip()).resolve()
 
         if not self.__is_local_repo():
             try:
