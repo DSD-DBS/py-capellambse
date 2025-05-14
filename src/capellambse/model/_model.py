@@ -36,6 +36,7 @@ class MelodyModel:
     aspects.
     """
 
+    # FIXME make this AttributeError-safe
     @property
     def project(self) -> capellambse.metamodel.capellamodeller.Project:
         import capellambse.metamodel as mm

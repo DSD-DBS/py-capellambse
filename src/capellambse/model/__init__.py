@@ -7,8 +7,14 @@ from __future__ import annotations
 import collections.abc as cabc
 import enum
 import functools
+import sys
 import typing as t
 import warnings
+
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
 
 VIRTUAL_NAMESPACE_PREFIX = (
     "https://dsd-dbs.github.io/py-capellambse/virtual-namespace/"
@@ -34,6 +40,7 @@ U_co = t.TypeVar("U_co", covariant=True)
 """Covariant TypeVar (unbound)."""
 
 
+@deprecated("set_accessor is deprecated and no longer needed")
 def set_accessor(
     cls: type[ModelObject], attr: str, accessor: Accessor
 ) -> None:
@@ -41,11 +48,16 @@ def set_accessor(
     accessor.__set_name__(cls, attr)
 
 
+@deprecated("set_self_references is deprecated, use a 'Containment' instead")
 def set_self_references(*args: tuple[type[ModelObject], str]) -> None:
     for cls, attr in args:
-        setattr(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))
+        setattr(cls, attr, DirectProxyAccessor(cls, aslist=ElementList))  # type: ignore[deprecated]
 
 
+@deprecated(
+    '`@attr_equal("...")` is deprecated,'
+    ' use `class X(ModelElement, eq="...")` instead'
+)
 def attr_equal(attr: str) -> cabc.Callable[[type[T]], type[T]]:
     def add_wrapped_eq(cls: type[T]) -> type[T]:
         orig_eq = cls.__eq__

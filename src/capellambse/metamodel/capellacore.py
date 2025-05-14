@@ -267,6 +267,7 @@ class Involvement(Relationship, abstract=True):
         m.Association((NS, "InvolvedElement"), "involved")
     )
 
+    # FIXME make this AttributeError-safe
     @property
     @deprecated("Synthetic names are deprecated", category=FutureWarning)
     def name(self) -> str:

@@ -230,6 +230,7 @@ class PhysicalComponent(
         None, None, (NS, "PhysicalFunction")
     )
 
+    # FIXME make this AttributeError-safe
     @property
     @deprecated(
         (
