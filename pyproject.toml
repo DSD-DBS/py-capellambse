@@ -85,6 +85,34 @@ pvmt = "capellambse.extensions.pvmt:init"
 reqif = "capellambse.extensions.reqif:init"
 validation = "capellambse.extensions.validation:init"
 
+[project.entry-points."capellambse.namespaces"]
+viewpoint = "capellambse.model.diagram:VIEWPOINT_NS"
+
+activity = "capellambse.metamodel.namespaces:ACTIVITY"
+behavior = "capellambse.metamodel.namespaces:BEHAVIOR"
+capellacommon = "capellambse.metamodel.namespaces:CAPELLACOMMON"
+capellacore = "capellambse.metamodel.namespaces:CAPELLACORE"
+capellamodeller = "capellambse.metamodel.namespaces:CAPELLAMODELLER"
+cs = "capellambse.metamodel.namespaces:CS"
+epbs = "capellambse.metamodel.namespaces:EPBS"
+fa = "capellambse.metamodel.namespaces:FA"
+information = "capellambse.metamodel.namespaces:INFORMATION"
+information_communication = "capellambse.metamodel.namespaces:INFORMATION_COMMUNICATION"
+information_datatype = "capellambse.metamodel.namespaces:INFORMATION_DATATYPE"
+information_datavalue = "capellambse.metamodel.namespaces:INFORMATION_DATAVALUE"
+interaction = "capellambse.metamodel.namespaces:INTERACTION"
+la = "capellambse.metamodel.namespaces:LA"
+libraries = "capellambse.metamodel.namespaces:LIBRARIES"
+metadata = "capellambse.metamodel.namespaces:METADATA"
+modellingcore = "capellambse.metamodel.namespaces:MODELLINGCORE"
+oa = "capellambse.metamodel.namespaces:OA"
+pa = "capellambse.metamodel.namespaces:PA"
+pa_deployment = "capellambse.metamodel.namespaces:PA_DEPLOYMENT"
+sa = "capellambse.metamodel.namespaces:SA"
+
+capellarequirements = "capellambse.extensions.reqif:CapellaRequirementsNS"
+requirements = "capellambse.extensions.reqif:RequirementsNS"
+
 [dependency-groups]
 test = [
   "cairosvg>=2.5.2",

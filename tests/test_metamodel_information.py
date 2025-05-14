@@ -105,7 +105,8 @@ class TestClasses:
         elm = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")
         assert isinstance(elm, information.Class)
 
-        assert elm.xtype.endswith("Class")
+        xtype = elm.xtype or ""
+        assert xtype.endswith("Class")
         assert hasattr(elm, "state_machines")
         assert len(elm.state_machines) == 1
 

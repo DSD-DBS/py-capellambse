@@ -34,7 +34,7 @@ def get_styleclass(obj: _obj.ModelObject) -> str:
 def _default(obj: _obj.ModelObject) -> str:
     from . import _obj
 
-    if isinstance(obj, _obj.ModelElement):
+    if isinstance(obj, _obj.ModelElement) and obj.xtype:
         return obj.xtype.split(":")[-1]
     return type(obj).__name__
 
@@ -74,7 +74,7 @@ def _functional_exchange(obj: _obj.ModelObject) -> str:
 
     assert isinstance(obj, mm.fa.FunctionalExchange)
     styleclass = _default(obj)
-    if get_styleclass(obj.target) == "OperationalActivity":
+    if obj.target and get_styleclass(obj.target) == "OperationalActivity":
         return styleclass.replace("Functional", "Operational")
     return styleclass
 
@@ -108,7 +108,7 @@ def _part(obj: _obj.ModelObject) -> str:
     from . import _obj
 
     assert isinstance(obj, mm.cs.Part)
-    assert not isinstance(obj.type, _obj.ElementList)
+    assert isinstance(obj.type, _obj.ModelElement)
     xclass = _default(obj.type)
     if xclass == "PhysicalComponent":
         return _physical_component(obj.type)
@@ -126,7 +126,8 @@ def _port_allocation(obj: _obj.ModelObject) -> str:
     styleclasses = {
         get_styleclass(p)
         for p in (obj.source, obj.target)
-        if not isinstance(p, mm.fa.ComponentPort | _obj.ElementList)
+        if isinstance(p, _obj.ModelElement)
+        and not isinstance(p, mm.fa.ComponentPort)
     }
     return f"{'_'.join(sorted(styleclasses))}Allocation"
 
