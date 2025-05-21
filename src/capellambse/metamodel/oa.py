@@ -276,6 +276,11 @@ m.set_accessor(
     "related_exchanges",
     m.Backref(CommunicationMean, "source", "target", aslist=m.ElementList),
 )
+m.set_accessor(
+    OperationalProcess,
+    "involving_chains",
+    m.Backref(OperationalProcess, "involved_chains", aslist=m.ElementList),
+)
 m.set_self_references(
     (OperationalActivity, "activities"),
     (OperationalActivityPkg, "packages"),
