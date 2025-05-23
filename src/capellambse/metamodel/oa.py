@@ -27,6 +27,15 @@ class OperationalActivity(fa.AbstractFunction):
 
     owner: m.Accessor[Entity]
 
+    def _switch_xmltag(self) -> None:
+        if self == self._model.oa.root_activity:
+            return
+
+        new_tag = "ownedFunctions"
+        if self._element.tag != new_tag:
+            self._xmltag = new_tag
+            self._element.tag = new_tag
+
     @property
     def related_exchanges(self) -> m.ElementList[fa.FunctionalExchange]:
         seen: set[str] = set()
