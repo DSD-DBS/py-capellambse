@@ -255,6 +255,8 @@ class ModelElement:
         self._model = model
         self._element: etree._Element = etree.Element(xmltag)
         parent.append(self._element)
+        self._model.by_uuid(parent.get("id", ""))._reevaluate()
+        self._reevaluate()
         try:
             self.uuid = uuid
             for key, val in kw.items():
@@ -524,6 +526,17 @@ class ModelElement:
             )
         _ICON_CACHE[sc, format, size] = data
         return data
+
+    def _reevaluate(self) -> None:
+        """Re-evaluate the element.
+
+        This is called when the element is modified, and should be
+        overridden by subclasses to update any cached values.
+        """
+        element_modification_triggers = ("_switch_xmltag",)
+        for trigger in element_modification_triggers:
+            if hasattr(self, trigger):
+                getattr(self, trigger)()
 
     if t.TYPE_CHECKING:
 
