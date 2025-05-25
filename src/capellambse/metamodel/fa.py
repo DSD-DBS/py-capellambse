@@ -279,7 +279,9 @@ class ComponentExchange(AbstractExchange):
         "convoyedInformations",
         aslist=m.ElementList,
     )
-    categories = m.Backref(ComponentExchangeCategory, "exchanges")
+    categories = m.Backref(
+        ComponentExchangeCategory, "exchanges", aslist=m.ElementList
+    )
 
     @property
     def owner(self) -> cs.PhysicalLink | None:
