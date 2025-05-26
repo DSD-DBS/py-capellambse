@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: Copyright DB InfraGO AG
 # SPDX-License-Identifier: Apache-2.0
-"""The 'CapellaRequirements' namespace."""
-
 from __future__ import annotations
 
 __all__ = [
     "CapellaIncomingRelation",
     "CapellaModule",
     "CapellaOutgoingRelation",
+    "CapellaRelation",
     "CapellaTypesFolder",
     "ElementRelationAccessor",
     "RelationsList",
@@ -17,29 +16,86 @@ __all__ = [
 import collections.abc as cabc
 import contextlib
 import os
+import sys
 import typing as t
+import warnings
 
 from lxml import etree
 
 import capellambse
 import capellambse.model as m
+from capellambse.metamodel import namespaces as ns
 
-from . import _requirements as rq
-from . import exporter
+from . import exporter, requirements
 
-m.XTYPE_ANCHORS[__name__] = "CapellaRequirements"
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
+if t.TYPE_CHECKING:
+    from capellambse.metamodel import capellacore  # noqa: F401
+
+NS = m.Namespace(
+    "http://www.polarsys.org/capella/requirements",
+    "CapellaRequirements",
+    "org.polarsys.capella.vp.requirements",
+)
 
 
-@m.xtype_handler(None)
-class CapellaModule(rq.ReqIFElement):
-    """A ReqIF Module that bundles multiple Requirement folders."""
-
+class CapellaTypesFolder(requirements.TypesFolder):
     _xmltag = "ownedExtensions"
 
-    folders = m.DirectProxyAccessor(rq.Folder, aslist=m.ElementList)
-    requirements = m.DirectProxyAccessor(rq.Requirement, aslist=m.ElementList)
-    type = m.Association(rq.ModuleType, "moduleType")
-    attributes = rq.AttributeAccessor()
+    @property
+    @deprecated(
+        (
+            "CapellaTypesFolder.module_types is deprecated,"
+            " use 'types.by_class(ModuleType)' instead"
+        ),
+        category=FutureWarning,
+    )
+    def module_types(self) -> m.ElementList[requirements.ModuleType]:
+        return self.types.by_class(requirements.ModuleType)
+
+    @property
+    @deprecated(
+        (
+            "CapellaTypesFolder.relation_types is deprecated,"
+            " use 'types.by_class(ModuleType)' instead"
+        ),
+        category=FutureWarning,
+    )
+    def relation_types(self) -> m.ElementList[requirements.RelationType]:
+        return self.types.by_class(requirements.RelationType)
+
+    @property
+    @deprecated(
+        (
+            "CapellaTypesFolder.requirement_types is deprecated,"
+            " use 'types.by_class(ModuleType)' instead"
+        ),
+        category=FutureWarning,
+    )
+    def requirement_types(self) -> m.ElementList[requirements.RequirementType]:
+        return self.types.by_class(requirements.RequirementType)
+
+    if not t.TYPE_CHECKING:
+        data_type_definitions = m.DeprecatedAccessor("definition_types")
+
+
+class CapellaModule(requirements.Module):
+    _xmltag = "ownedExtensions"
+
+    @property
+    @deprecated(
+        (
+            "CapellaModule.folders is deprecated,"
+            " use 'requirements.by_class(Folder)' instead"
+        ),
+        category=FutureWarning,
+    )
+    def folders(self) -> m.ElementList[requirements.Folder]:
+        return self.requirements.by_class(requirements.Folder)
 
     def to_reqif(
         self,
@@ -81,43 +137,36 @@ class CapellaModule(rq.ReqIFElement):
         )
 
 
-@m.xtype_handler(None)
-class CapellaIncomingRelation(rq.AbstractRequirementsRelation):
-    """A Relation between a requirement and an object."""
+class CapellaRelation(requirements.AbstractRelation, abstract=True):
+    pass
 
+
+class CapellaIncomingRelation(CapellaRelation):
     _xmltag = "ownedRelations"
 
+    source = m.Single["requirements.Requirement"](
+        m.Association((requirements.NS, "Requirement"), "source")
+    )
+    target = m.Single["capellacore.CapellaElement"](
+        m.Association((ns.CAPELLACORE, "CapellaElement"), "target")
+    )
 
-@m.xtype_handler(None)
-class CapellaOutgoingRelation(rq.AbstractRequirementsRelation):
-    """A Relation between an object and a requirement."""
 
+class CapellaOutgoingRelation(CapellaRelation):
     _xmltag = "ownedExtensions"
 
-    source = m.Association(rq.Requirement, "target")
-    target = m.Association(m.ModelElement, "source")
-
-
-@m.xtype_handler(None)
-class CapellaTypesFolder(rq.ReqIFElement):
-    _xmltag = "ownedExtensions"
-
-    data_type_definitions = m.DirectProxyAccessor(
-        m.ModelElement,
-        (rq.DataTypeDefinition, rq.EnumerationDataTypeDefinition),
-        aslist=m.MixedElementList,
+    # NOTE: source/target are swapped intentionally here,
+    # so that 'some_relation.source' is always a Requirement
+    target = m.Single["capellacore.CapellaElement"](
+        m.Association((ns.CAPELLACORE, "CapellaElement"), "source")
     )
-    module_types = m.DirectProxyAccessor(rq.ModuleType, aslist=m.ElementList)
-    relation_types = m.DirectProxyAccessor(
-        rq.RelationType, aslist=m.ElementList
-    )
-    requirement_types = m.DirectProxyAccessor(
-        rq.RequirementType, aslist=m.ElementList
+    source = m.Single["requirements.Requirement"](
+        m.Association((requirements.NS, "Requirement"), "target")
     )
 
 
 class RequirementsRelationAccessor(
-    m.WritableAccessor[rq.AbstractRequirementsRelation]
+    m.WritableAccessor[requirements.AbstractRelation]
 ):
     """Searches for requirement relations in the architecture layer."""
 
@@ -159,7 +208,7 @@ class RequirementsRelationAccessor(
     def _find_relations(self, obj) -> list[etree._Element]:
         rels = obj._model.search(
             CapellaIncomingRelation,
-            rq.InternalRelation,
+            requirements.InternalRelation,
             CapellaOutgoingRelation,
         )
         return [i._element for i in rels if obj in (i.source, i.target)]
@@ -176,11 +225,24 @@ class RequirementsRelationAccessor(
         typehint: str | None = None,
         /,
         **kw: t.Any,
-    ) -> rq.InternalRelation | CapellaIncomingRelation:
+    ) -> requirements.InternalRelation | CapellaIncomingRelation:
         del typehint
 
+        warnings.warn(
+            (
+                "Mutating Requirement.relations directly is deprecated"
+                " and will soon no longer affect the model,"
+                " mutate the respective Containment feature instead"
+                " (e.g. Requirement.owned_relations)"
+            ),
+            category=FutureWarning,
+            stacklevel=2,
+        )
+
         if "target" not in kw:
-            raise TypeError("No `target` for new requirement relation")
+            raise m.InvalidModificationError(
+                "No `target` for new requirement relation"
+            )
         cls = self._find_relation_type(kw["target"])
         parent = elmlist._parent._element
         with elmlist._model._loader.new_uuid(parent) as uuid:
@@ -194,6 +256,17 @@ class RequirementsRelationAccessor(
             )
 
     def delete(self, elmlist, obj) -> None:
+        warnings.warn(
+            (
+                "Mutating Requirement.relations directly is deprecated"
+                " and will soon no longer affect the model,"
+                " mutate the respective Containment feature instead"
+                " (e.g. Requirement.owned_relations)"
+            ),
+            category=FutureWarning,
+            stacklevel=2,
+        )
+
         assert self.aslist is not None
         relations = self._find_relations(elmlist._parent)
         for relation in relations:
@@ -210,14 +283,30 @@ class RequirementsRelationAccessor(
         index: int,
         value: m.ModelObject | m.NewObject,
     ) -> None:
+        warnings.warn(
+            (
+                "Mutating Requirement.relations directly is deprecated"
+                " and will soon no longer affect the model,"
+                " mutate the respective Containment feature instead"
+                " (e.g. Requirement.owned_relations)"
+            ),
+            category=FutureWarning,
+            stacklevel=2,
+        )
+
         if isinstance(value, m.NewObject):
             raise NotImplementedError("Cannot insert new objects yet")
 
         if isinstance(value, CapellaOutgoingRelation):
+            if not value.target:
+                raise RuntimeError(
+                    "Cannot insert outgoing relation without target:"
+                    f" {value._short_repr_()}"
+                )
             parent = value.target._element
         else:
             assert isinstance(
-                value, CapellaIncomingRelation | rq.InternalRelation
+                value, CapellaIncomingRelation | requirements.InternalRelation
             )
             assert elmlist._parent == value.source
             parent = elmlist._parent._element
@@ -241,18 +330,18 @@ class RequirementsRelationAccessor(
 
     def _find_relation_type(
         self, target: m.ModelElement
-    ) -> type[rq.InternalRelation | CapellaIncomingRelation]:
-        if isinstance(target, rq.Requirement):
-            return rq.InternalRelation
-        if isinstance(target, rq.ReqIFElement):
-            raise TypeError(
+    ) -> type[requirements.InternalRelation | CapellaIncomingRelation]:
+        if isinstance(target, requirements.Requirement):
+            return requirements.InternalRelation
+        if isinstance(target, requirements.ReqIFElement):
+            raise m.InvalidModificationError(
                 "Cannot create relations to targets of type"
                 f" {type(target).__name__}"
             )
         return CapellaIncomingRelation
 
 
-class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
+class RelationsList(m.ElementList[requirements.AbstractRelation]):
     def __init__(
         self,
         model: capellambse.MelodyModel,
@@ -262,11 +351,11 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
         source: m.ModelObject,
     ) -> None:
         del elemclass
-        super().__init__(model, elements, rq.AbstractRequirementsRelation)
+        super().__init__(model, elements)
         self._source = source
 
     @t.overload
-    def __getitem__(self, idx: int) -> rq.AbstractRequirementsRelation: ...
+    def __getitem__(self, idx: int) -> requirements.AbstractRelation: ...
     @t.overload
     def __getitem__(self, idx: slice) -> RelationsList: ...
     @t.overload
@@ -276,28 +365,46 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
         if isinstance(rel, m.ElementList):
             return rel
 
-        assert isinstance(rel, rq.AbstractRequirementsRelation)
+        assert isinstance(rel, requirements.AbstractRelation)
         assert self._source in (rel.source, rel.target)
         if self._source == rel.source:
             return rel.target
         return rel.source
 
     def by_relation_type(self, reltype: str) -> RelationsList:
+        warnings.warn(
+            (
+                "Requirement.related.by_relation_type is deprecated,"
+                "use 'Requirement.relations.by_type(...)' instead"
+            ),
+            category=FutureWarning,
+            stacklevel=2,
+        )
+
         matches = []
         for elm in self._elements:
             rel_elm = m.ModelElement.from_model(self._model, elm)
-            assert isinstance(rel_elm, rq.AbstractRequirementsRelation)
-            if rel_elm.type is not None and rel_elm.type.name == reltype:
+            assert isinstance(rel_elm, requirements.AbstractRelation)
+            if rel_elm.type is not None and rel_elm.type.long_name == reltype:
                 matches.append(elm)
         return self._newlist(matches)
 
     def by_relation_class(
         self, class_: t.Literal["incoming", "outgoing", "internal"]
     ) -> RelationsList:
+        warnings.warn(
+            (
+                "Requirement.related.by_relation_class is deprecated,"
+                "use 'Requirement.relations.by_class(...)' instead"
+            ),
+            category=FutureWarning,
+            stacklevel=2,
+        )
+
         relation_types = {
             "incoming": CapellaIncomingRelation,
             "outgoing": CapellaOutgoingRelation,
-            "internal": rq.InternalRelation,
+            "internal": requirements.InternalRelation,
         }
         matches: list[etree._Element] = []
         for elm in self._elements:
@@ -312,9 +419,7 @@ class RelationsList(m.ElementList[rq.AbstractRequirementsRelation]):
         return listtype(self._model, elements, source=self._source)
 
 
-class ElementRelationAccessor(
-    m.WritableAccessor[rq.AbstractRequirementsRelation]
-):
+class ElementRelationAccessor(m.WritableAccessor[m.ModelElement]):
     """Provides access to RequirementsRelations of a ModelElement."""
 
     __slots__ = ("aslist",)
@@ -330,7 +435,7 @@ class ElementRelationAccessor(
         relations: list[etree._Element] = []
         for relation in obj._model.search(
             CapellaIncomingRelation,
-            rq.InternalRelation,
+            requirements.InternalRelation,
             CapellaOutgoingRelation,
         ):
             if None in (relation.source, relation.target):
@@ -364,5 +469,5 @@ class ElementRelationAccessor(
         )
 
 
-m.set_accessor(rq.Requirement, "relations", RequirementsRelationAccessor())
-m.set_accessor(rq.Requirement, "related", ElementRelationAccessor())
+requirements.Requirement.relations = RequirementsRelationAccessor()
+requirements.Requirement.related = ElementRelationAccessor()

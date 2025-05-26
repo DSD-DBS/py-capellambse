@@ -4,7 +4,7 @@
 -#}
 
 {% set CATEGORIES = ["REQUIRED", "RECOMMENDED", "SUGGESTED"] -%}
-{% set object_types = [
+{% set object_classes = [
   "SystemCapability",
   "SystemActor",
   "SystemComponent",
@@ -12,7 +12,7 @@
   "ComponentExchange",
   "FunctionalExchange"
 ] -%}
-{% set results = results.by_type(*object_types) -%}
+{% set results = results.by_class(*object_classes) -%}
 
 {% macro show_compliance_score(results, align=None) -%}
   {% if results | count > 0 -%}
@@ -143,7 +143,7 @@ tr:nth-child(even) { background-color: #f8f8f8; }
 </p>
 
 <h2>Assessment Summary</h2>
-We reviewed <strong>{{ model.validation.search(*object_types) | list | count }}</strong> model objects and found that overall compliance with the modelling rules is:<br>
+We reviewed <strong>{{ model.validation.search(*object_classes) | list | count }}</strong> model objects and found that overall compliance with the modelling rules is:<br>
 {% for category in CATEGORIES -%}
   {% set category_results = results.by_category(category) -%}
   {% set total = category_results | count -%}
@@ -174,12 +174,12 @@ We reviewed <strong>{{ model.validation.search(*object_types) | list | count }}<
     </tr>
   </thead>
   <tbody>
-    {% for obj_type in object_types %}<tr>
-      {% set total = model.validation.search(obj_type) | count %}
-      <th><a href="#{{ obj_type }}">{{ obj_type }}</a></th>
+    {% for obj_cls in object_classes %}<tr>
+      {% set total = model.validation.search(obj_cls) | count %}
+      <th><a href="#{{ obj_cls }}">{{ obj_cls }}</a></th>
       <td>{{ total }}</td>
       {% for category in CATEGORIES %}<td>
-        {{ show_compliance_score(results.by_category(category).by_type(obj_type)) }}
+        {{ show_compliance_score(results.by_category(category).by_class(obj_cls)) }}
       </td>{% endfor %}
     </tr>{% endfor %}
   </tbody>
@@ -189,17 +189,17 @@ We reviewed <strong>{{ model.validation.search(*object_types) | list | count }}<
 <p>This section evaluates the selected objects' adherence to modeling rules. If an object needs additional work or has
   potential for improvement, we provide actionable suggestions to enhance its compliance.</p>
 
-{% for obj_type in object_types %}
-<h3 id="{{ obj_type }}">{{ obj_type }}</h3>
-{% if not results.by_type(obj_type) -%}
-<p>No rules apply to {{ obj_type }} objects or no objects of interest found in the selected layer.</p>
+{% for obj_cls in object_classes %}
+<h3 id="{{ obj_cls }}">{{ obj_cls }}</h3>
+{% if not results.by_class(obj_cls) -%}
+<p>No rules apply to {{ obj_cls }} objects or no objects of interest found in the selected layer.</p>
 {% else -%}
-{% for obj in results.by_type(obj_type).by_passed(False).iter_objects() | sort(attribute="name") -%}
+{% for obj in results.by_class(obj_cls).by_passed(False).iter_objects() | sort(attribute="name") -%}
   {% if loop.first -%}
     <table>
       <thead>
         <tr>
-          <th width="250px">{{ obj_type }}</th>
+          <th width="250px">{{ obj_cls }}</th>
           <th width="220px">Rule Compliance (%)</th>
           <th>Improvement Suggestions (Actions)</th>
         </tr>
@@ -244,11 +244,11 @@ We reviewed <strong>{{ model.validation.search(*object_types) | list | count }}<
     {% set _ = categories_of_interest.append([category, objects_of_interest]) -%}
   {% endif -%}
 {% endfor -%}
-{% for category in CATEGORIES if results.by_type(obj_type).by_category(category) | count > 0 and results.by_type(obj_type).by_category(category).iter_compliant_objects() | list | count > 0 %}
+{% for category in CATEGORIES if results.by_class(obj_cls).by_category(category) | count > 0 and results.by_class(obj_cls).by_category(category).iter_compliant_objects() | list | count > 0 %}
   {% if loop.first %}
   <p>These objects fully comply with at least one rule category:</p>
   {% endif %}
-  {% set results_of_interest = results.by_type(obj_type).by_category(category) -%}
+  {% set results_of_interest = results.by_class(obj_cls).by_category(category) -%}
   {% set compliant_objects = results_of_interest.iter_compliant_objects() | sort(attribute="name") -%}
   <p>
     All <strong>{{ results_of_interest.iter_rules() | list | count }}</strong>

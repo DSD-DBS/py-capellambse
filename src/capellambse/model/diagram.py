@@ -8,6 +8,7 @@ __all__ = [
     "REPR_DRAW",
     "AbstractDiagram",
     "ConfluenceSVGFormat",
+    "DRepresentationDescriptor",
     "Diagram",
     "DiagramAccessor",
     "DiagramFormat",
@@ -43,7 +44,12 @@ from lxml import etree
 import capellambse
 from capellambse import aird, diagram, helpers, svg
 
-from . import _descriptors, _obj, _pods, _xtype, stringy_enum
+from . import _descriptors, _obj, _pods, stringy_enum
+
+VIEWPOINT_NS = _obj.Namespace(
+    "http://www.eclipse.org/sirius/1.1.0",
+    "viewpoint",
+)
 
 
 @stringy_enum
@@ -189,14 +195,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         @property
         def name(self) -> str: ...
         @property
-        def target(self) -> _obj.ModelElement: ...
+        def target(self) -> _obj.ModelObject: ...
 
     else:
         uuid: str
         """Unique ID of this diagram."""
         name: str
         """Human-readable name for this diagram."""
-        target: _obj.ModelElement
+        target: _obj.ModelObject
         """This diagram's "target".
 
         The target of a diagram is usually:
@@ -239,7 +245,6 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __init__(self, model: capellambse.MelodyModel) -> None:
         self._model = model
-        self._last_render_params = {}
 
     def __dir__(self) -> list[str]:
         return dir(type(self)) + [
@@ -342,7 +347,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return bundle
 
     @property
-    def nodes(self) -> _obj.MixedElementList:
+    def nodes(self) -> _obj.ElementList:
         """Return a list of all nodes visible in this diagram."""
         allids = {e.uuid for e in self.render(None) if not e.hidden}
         elems = []
@@ -354,7 +359,7 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 continue
 
             elems.append(elem._element)
-        return _obj.MixedElementList(self._model, elems, _obj.ModelElement)
+        return _obj.ElementList(self._model, elems, legacy_by_type=True)
 
     @t.overload
     def render(self, fmt: None, /, **params) -> diagram.Diagram: ...
@@ -590,7 +595,10 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
         return data
 
     def __render_fresh(self, params: dict[str, t.Any]) -> diagram.Diagram:
-        if not hasattr(self, "_render") or self._last_render_params != params:
+        if (
+            not hasattr(self, "_render")
+            or getattr(self, "_last_render_params", {}) != params
+        ):
             self.invalidate_cache()
             try:
                 self._render = self._create_diagram(params)
@@ -611,28 +619,23 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
             del self._error
 
 
-@_xtype.xtype_handler(
-    None,
-    "viewpoint:DRepresentationDescriptor",
-    "diagram:DSemanticDiagram",
-    "sequence:SequenceDDiagram",
-)
-class Diagram(AbstractDiagram):
+class DRepresentationDescriptor(AbstractDiagram):
     """Provides access to a single diagram.
 
     Also directly exposed as ``capellambse.model.Diagram``.
     """
 
-    uuid: str = _pods.StringPOD(  # type: ignore[assignment]
-        "uid", writable=False
-    )
+    __capella_namespace__: t.ClassVar[_obj.Namespace] = VIEWPOINT_NS
+    __capella_abstract__: t.ClassVar[bool] = False
+
+    uuid: str = _pods.StringPOD("uid", writable=False)  # type: ignore[assignment]
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name: str = _pods.StringPOD("name")  # type: ignore[assignment]
     description = _pods.HTMLStringPOD("documentation")
 
     _element: aird.DRepresentationDescriptor
 
-    __nodes: list[etree._Element] | None
+    _node_cache: list[etree._Element]
 
     @classmethod
     def from_model(
@@ -646,7 +649,6 @@ class Diagram(AbstractDiagram):
             self._model = model
             self._element = element
             self._last_render_params = {}
-            self.__nodes = None
             return self
 
         target_id = element.get("uid")
@@ -666,37 +668,37 @@ class Diagram(AbstractDiagram):
         return self._model is other._model and self._element == other._element
 
     @property
-    def nodes(self) -> _obj.MixedElementList:
-        if self.__nodes is None:
-            self.__nodes = list(
+    def nodes(self) -> _obj.ElementList:
+        if not hasattr(self, "_node_cache"):
+            self._node_cache = list(
                 aird.iter_visible(self._model._loader, self._element)
             )
-        return _obj.MixedElementList(
-            self._model, self.__nodes.copy(), _obj.ModelElement
+        return _obj.ElementList(
+            self._model, self._node_cache.copy(), legacy_by_type=True
         )
 
     @property
-    def semantic_nodes(self) -> _obj.MixedElementList:
-        if self.__nodes is None:
-            self.__nodes = list(
+    def semantic_nodes(self) -> _obj.ElementList:
+        if not hasattr(self, "_node_cache"):
+            self._node_cache = list(
                 aird.iter_visible(self._model._loader, self._element)
             )
 
-        from capellambse.metamodel import cs, interaction
+        from capellambse.metamodel import capellacore, cs, interaction
 
         elems: list[etree._Element] = []
-        for i in self.__nodes:
-            obj = _obj.ModelElement.from_model(self._model, i)
+        for i in self._node_cache:
+            obj: _obj.ModelElement | None = _obj.wrap_xml(self._model, i)
             if isinstance(obj, cs.Part):
                 obj = obj.type
-            elif isinstance(obj, interaction.AbstractInvolvement):
+            elif isinstance(obj, capellacore.Involvement):
                 obj = obj.involved
             elif isinstance(obj, interaction.StateFragment):
                 obj = obj.function
 
             if obj is not None:
                 elems.append(obj._element)
-        return _obj.MixedElementList(self._model, elems)
+        return _obj.ElementList(self._model, elems, legacy_by_type=True)
 
     @property
     def _allow_render(self) -> bool:
@@ -719,9 +721,9 @@ class Diagram(AbstractDiagram):
         return self._element.attrib["repPath"]
 
     @property
-    def target(self) -> _obj.ModelElement:
+    def target(self) -> _obj.ModelObject:
         target = aird.find_target(self._model._loader, self._element)
-        return _obj.ModelElement.from_model(self._model, target)
+        return _obj.wrap_xml(self._model, target)
 
     @property
     def type(self) -> DiagramType:
@@ -751,6 +753,10 @@ class Diagram(AbstractDiagram):
         """Reset internal diagram cache."""
         self.__nodes = None
         super().invalidate_cache()
+
+
+VIEWPOINT_NS.register(DRepresentationDescriptor, None, None)
+Diagram = DRepresentationDescriptor
 
 
 class DiagramAccessor(_descriptors.Accessor):

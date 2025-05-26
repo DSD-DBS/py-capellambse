@@ -20,16 +20,20 @@ import capellambse.metamodel as mm
 import capellambse.model as m
 from capellambse import _native, helpers
 
-VIEWPOINT: t.Final = "org.polarsys.capella.filtering"
-NAMESPACE: t.Final = "http://www.polarsys.org/capella/filtering/6.0.0"
-SYMBOLIC_NAME: t.Final = "filtering"
-
 _LOGGER = logging.getLogger(__name__)
 
-m.XTYPE_ANCHORS[__name__] = SYMBOLIC_NAME
+NS = m.Namespace(
+    "http://www.polarsys.org/capella/filtering/{VERSION}",
+    "filtering",
+    "org.polarsys.capella.filtering",
+    "7.0.0",
+)
+
+VIEWPOINT: t.Final = NS.viewpoint
+NAMESPACE: t.Final = NS.uri.format(VERSION="6.0.0")
+SYMBOLIC_NAME: t.Final = NS.alias
 
 
-@m.xtype_handler(None)
 class FilteringCriterion(m.ModelElement):
     """A single filtering criterion."""
 
@@ -40,17 +44,15 @@ class FilteringCriterion(m.ModelElement):
     )
 
 
-@m.xtype_handler(None)
 class FilteringCriterionPkg(m.ModelElement):
     """A package containing multiple filtering criteria."""
 
     _xmltag = "ownedFilteringCriterionPkgs"
 
     criteria = m.DirectProxyAccessor(FilteringCriterion, aslist=m.ElementList)
-    packages: m.Accessor[FilteringCriterionPkg]
+    packages: m.Accessor[m.ElementList[FilteringCriterionPkg]]
 
 
-@m.xtype_handler(None)
 class FilteringModel(m.ModelElement):
     """A filtering model containing criteria to filter by."""
 
@@ -83,7 +85,7 @@ class AssociatedCriteriaAccessor(m.PhysicalAccessor[FilteringCriterion]):
 
         loader = obj._model._loader
         try:
-            xt_critset = f"{SYMBOLIC_NAME}:AssociatedFilteringCriterionSet"
+            xt_critset = f"{NS.alias}:AssociatedFilteringCriterionSet"
             critset = next(loader.iterchildren_xt(obj._element, xt_critset))
         except StopIteration:
             elems = []
@@ -94,32 +96,26 @@ class AssociatedCriteriaAccessor(m.PhysicalAccessor[FilteringCriterion]):
         return self._make_list(obj, elems)
 
 
-@m.xtype_handler(None)
 class FilteringResult(m.ModelElement):
     """A filtering result."""
 
 
-@m.xtype_handler(None)
 class ComposedFilteringResult(m.ModelElement):
     """A composed filtering result."""
 
 
 def init() -> None:
-    m.set_accessor(
-        mm.capellamodeller.SystemEngineering,
-        "filtering_model",
-        m.DirectProxyAccessor(FilteringModel),
+    mm.capellamodeller.SystemEngineering.filtering_model = (
+        m.DirectProxyAccessor(FilteringModel)
     )
     m.MelodyModel.filtering_model = property(  # type: ignore[attr-defined]
         operator.attrgetter("project.model_root.filtering_model")
     )
-    m.set_accessor(
-        m.ModelElement, "filtering_criteria", AssociatedCriteriaAccessor()
-    )
+    m.ModelElement.filtering_criteria = AssociatedCriteriaAccessor()
 
 
-m.set_self_references(
-    (FilteringCriterionPkg, "packages"),
+FilteringCriterionPkg.packages = m.DirectProxyAccessor(
+    FilteringCriterionPkg, aslist=m.ElementList
 )
 
 try:

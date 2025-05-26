@@ -301,37 +301,42 @@ class TestApplyExtend:
     def test_promises_are_resolved_during_the_second_attempt(
         model: m.MelodyModel,
     ) -> None:
-        PHYS_COMPONENT = "b327d900-abd2-4138-a111-9ff0684739d8"
-        cmp = model.by_uuid(PHYS_COMPONENT)
-        previous_ports = len(cmp.ports)
+        cmp = model.by_uuid("b327d900-abd2-4138-a111-9ff0684739d8")
+        assert isinstance(cmp, mm.pa.PhysicalComponent)
+        func = model.by_uuid("6320d7e0-cfba-4298-a10c-820b02b5c7a9")
+        assert isinstance(func, mm.pa.PhysicalFunction)
+        previous_ports = len(func.inputs) + len(func.outputs)
         yml = f"""\
-            - parent: !uuid {PHYS_COMPONENT}
+            - parent: !uuid {cmp.uuid}
               extend:
                 physical_links:
                   - name: My new link
-                    exchanges:
+                    allocated_functional_exchanges:
                       - !promise my_exchange
-            - parent: !uuid {PHYS_COMPONENT}
+            - parent: !uuid {func.uuid}
               extend:
                 exchanges:
                   - source: !promise first-port
                     target: !promise second-port
                     promise_id: my_exchange
-            - parent: !uuid {PHYS_COMPONENT}
+            - parent: !uuid {func.uuid}
               extend:
-                ports:
+                outputs:
                   - name: First port
                     promise_id: first-port
+                inputs:
                   - name: Second port
                     promise_id: second-port
             """
 
         decl.apply(model, io.StringIO(yml))
 
-        assert len(cmp.ports) == previous_ports + 2
+        assert len(func.inputs) + len(func.outputs) == previous_ports + 2
         ex = cmp.physical_links.by_name("My new link")
-        assert len(ex.exchanges) == 1
-        assert ex.exchanges[0].source.name == "First port"
+        assert len(ex.allocated_functional_exchanges) == 1
+        port = ex.allocated_functional_exchanges[0].source
+        assert port is not None
+        assert port.name == "First port"
 
 
 class TestApplyPromises:
@@ -591,6 +596,7 @@ class TestApplyDelete:
         model: m.MelodyModel,
     ) -> None:
         root_function = model.by_uuid(ROOT_FUNCTION)
+        assert isinstance(root_function, mm.la.LogicalFunction)
         assert len(root_function.functions) > 0
         yml = f"""\
             - parent: !uuid {ROOT_FUNCTION}
@@ -761,8 +767,9 @@ class TestApplySync:
                   - find:
                       long_name: Test types folder
                     sync:
-                      requirement_types:
+                      types:
                         - find:
+                            _type: RequirementType
                             long_name: Test type
                           promise_id: reqtype
                           sync:

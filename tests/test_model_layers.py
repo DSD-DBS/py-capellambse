@@ -37,29 +37,34 @@ def test_model_compatibility(folder: str, aird: str) -> None:
             "a8c42033-fdf2-458f-bae9-1cfd1207c49f",
             [
                 ("1bba6377-90b7-42d6-ad03-6c536e5519fd", "involved", None),
-                ("1bba6377-90b7-42d6-ad03-6c536e5519fd", "target", None),
+                ("2d86d2fe-577f-4dfe-8f6b-b029df3e2056", "source", None),
+                ("3da0cc89-f82f-4b67-9386-453fd06ba7c7", "source", None),
+                ("432e5fce-24cd-4288-9096-6795f985b75d", "source", None),
+                ("523cf480-183f-4527-8d37-20b823a127e0", "source", None),
                 (
                     "53c58b24-3938-4d6a-b84a-bb9bff355a41",
                     "involved_entities",
                     2,
                 ),
                 ("55c6adbe-63a5-4d1f-8319-e2f768b79fbf", "involved", None),
-                ("55c6adbe-63a5-4d1f-8319-e2f768b79fbf", "target", None),
                 ("6638ccd2-61cc-481e-bb23-4c1b147e1dbc", "target", None),
+                ("70e4d2ca-7895-484f-b4f2-a86628fa0262", "source", None),
+                ("7a6657e7-0973-441c-8634-0802c7bfcadd", "source", None),
                 (
                     "83d1334f-6180-46c4-a80d-6839341df688",
                     "involved_entities",
                     0,
                 ),
                 ("9ac82bfc-1aa6-4773-9a99-91f910389668", "type", None),
+                ("dbc6b4b0-82a1-4c28-bb48-073df1437e43", "source", None),
                 ("e37510b9-3166-4f80-a919-dfaac9b696c7", "entities", 3),
             ],
         ),
         (
             "91dc2eec-c878-4fdb-91d8-8f4a4527424e",
             [
-                ("88d7f9a7-1fae-4884-8233-7582153cc5a7", "destination", None),
-                ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "modes", 0),
+                ("88d7f9a7-1fae-4884-8233-7582153cc5a7", "target", None),
+                ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "involved_states", 0),
                 ("a94806d8-71bb-4eb8-987b-bdce6ca99cb8", "states", 0),
                 ("d0ea4afa-4231-4a3d-b1db-03655738dab8", "source", None),
             ],
@@ -100,9 +105,9 @@ def test_ElementList_filter_contains(model: m.MelodyModel):
     involvements = model.oa.all_processes.by_uuid(
         "d588e41f-ec4d-4fa9-ad6d-056868c66274"
     ).involved
-    assert "OperationalActivity" in involvements.by_type
-    assert "OperationalCapability" not in involvements.by_type
-    assert "LogicalComponent" not in involvements.by_type
+    assert "OperationalActivity" in involvements.by_class
+    assert "OperationalCapability" not in involvements.by_class
+    assert "LogicalComponent" not in involvements.by_class
 
 
 def test_ElementList_filter_iter(model: m.MelodyModel):
@@ -114,6 +119,60 @@ def test_ElementList_filter_by_type(model: m.MelodyModel):
     diags = model.diagrams.by_type("OCB")
     assert len(diags) == 1
     assert diags[0].type is m.DiagramType.OCB
+
+
+@pytest.mark.parametrize(
+    "filter_arg",
+    [
+        pytest.param(mm.oa.Entity, id="type-object"),
+        pytest.param("Entity", id="type-name"),
+        pytest.param((mm.oa.NS, "Entity"), id="classname-tuple"),
+    ],
+)
+def test_filtering_lists_by_the_only_contained_class_doesnt_change_the_content(
+    model: m.MelodyModel, filter_arg
+) -> None:
+    pkg = model.oa.entity_package
+    assert pkg is not None
+    base = pkg.entities
+    base_ids = [i.uuid for i in base]
+    assert all(type(i) is mm.oa.Entity for i in base)
+
+    filtered = base.by_class(filter_arg)
+    filtered_ids = [i.uuid for i in filtered]
+
+    assert filtered_ids == base_ids
+
+
+def test_filtering_dotted_names_filters_on_nested_attributes(
+    model: m.MelodyModel,
+) -> None:
+    base = model.la.all_component_exchanges
+    assert len(base) > 1
+    expected = [
+        "c31491db-817d-44b3-a27c-67e9cc1e06a2",  # Care
+    ]
+    assert {i.uuid for i in base} >= set(expected)
+
+    filtered = base.by_target.parent.name("Whomping Willow")
+
+    assert isinstance(filtered, m.ElementList)
+    found = [i.uuid for i in filtered]
+    assert found == expected
+
+
+def test_filtering_on_list_attributes_returns_match_if_any_member_matches(
+    model: m.MelodyModel,
+) -> None:
+    base = model.la.all_components
+    willow = model.by_uuid("3bdd4fa2-5646-44a1-9fa6-80c68433ddb7")
+    expected = [willow.parent.uuid]
+
+    filtered = base.by_components(willow)
+
+    assert isinstance(filtered, m.ElementList)
+    found = [i.uuid for i in filtered]
+    assert found == expected
 
 
 def test_ElementList_dictlike_getitem(model: m.MelodyModel):
@@ -140,8 +199,8 @@ def test_MixedElementList_filter_by_type(model: m.MelodyModel):
     assert isinstance(process, mm.oa.OperationalProcess)
 
     involvements = process.involved
-    acts = involvements.by_type("OperationalActivity")
-    fexs = involvements.by_type("FunctionalExchange")
+    acts = involvements.by_class("OperationalActivity")
+    fexs = involvements.by_class("FunctionalExchange")
 
     assert len(involvements) == 7
     assert len(acts) == 4
@@ -198,7 +257,8 @@ def test_SystemCapability_has_realized_capabilities(model: m.MelodyModel):
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 2
-    assert elm.realized_capabilities[0].xtype.endswith("OperationalCapability")
+    xtype = elm.realized_capabilities[0].xtype or ""
+    assert xtype.endswith("OperationalCapability")
 
 
 def test_Capability_of_logical_layer_has_realized_capabilities(
@@ -209,7 +269,8 @@ def test_Capability_of_logical_layer_has_realized_capabilities(
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 1
-    assert elm.realized_capabilities[0].xtype.endswith("Capability")
+    xtype = elm.realized_capabilities[0].xtype or ""
+    assert xtype.endswith("Capability")
 
 
 def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
@@ -222,7 +283,9 @@ def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
         " is near the actor"
     )
 
-    assert markupsafe.escape(elm.precondition.specification) == expected
+    assert elm.precondition is not None
+    spec = elm.precondition.specification
+    assert markupsafe.escape(spec) == expected
 
 
 @pytest.mark.parametrize(
@@ -252,7 +315,8 @@ def test_model_elements_have_pre_or_post_conditions(
     condition = elm.precondition or elm.postcondition
 
     assert condition
-    assert condition.specification["capella:linkedText"]
+    spec = condition.specification
+    assert spec["capella:linkedText"]
 
 
 @pytest.mark.parametrize(
@@ -300,6 +364,7 @@ def test_Capability_exchange(
     model_5_2: m.MelodyModel, uuid: str, trg_uuid: str, attr_name: str
 ):
     cap = model_5_2.by_uuid(uuid)
+    assert isinstance(cap, mm.interaction.AbstractCapability)
     expected = model_5_2.by_uuid(trg_uuid)
     exchange_targets = (ex.target for ex in getattr(cap, attr_name))
 
@@ -408,6 +473,10 @@ class TestStateMachines:
 
         assert hasattr(transition, "guard")
         assert transition.guard is not None
+        assert isinstance(
+            transition.guard.specification,
+            mm.information.datavalue.OpaqueExpression,
+        )
         assert transition.guard.specification["LinkedText"] == "Food is cooked"
 
         assert hasattr(transition, "triggers")
@@ -423,6 +492,10 @@ class TestStateMachines:
         assert isinstance(transition, mm.capellacommon.StateTransition)
 
         assert transition.guard is not None
+        assert isinstance(
+            transition.guard.specification,
+            mm.information.datavalue.OpaqueExpression,
+        )
         assert (
             transition.guard.specification["LinkedText"]
             == "Actor feels hungry"
@@ -460,7 +533,9 @@ def test_exchange_items_on_logical_function_exchanges(model: m.MelodyModel):
     exchange = model.la.all_function_exchanges.by_uuid(
         "cdc69c5e-ddd8-4e59-8b99-f510400650aa"
     )
+    assert isinstance(exchange, mm.fa.FunctionalExchange)
     exchange_item = exchange.exchange_items.by_name("ExchangeItem 3")
+    assert isinstance(exchange_item, mm.information.ExchangeItem)
 
     assert exchange_item.type == "SHARED_DATA"
     assert exchange in exchange_item.exchanges
@@ -523,6 +598,9 @@ def test_constraint_specification_has_linked_object_name_in_body(
     expected_linked_text = f'<a href="hlink://{uuid}">Hunted animal</a>'
 
     assert isinstance(con, mm.capellacore.Constraint)
+    assert isinstance(
+        con.specification, mm.information.datavalue.OpaqueExpression
+    )
     assert con.specification["LinkedText"] == expected_linked_text
 
 
@@ -557,6 +635,12 @@ def test_specification_linkedText_to_internal_linkedText_transformation(
     assert isinstance(c1, mm.capellacore.Constraint)
     c2 = model.by_uuid("0b546f8b-408c-4520-9f6a-f77efe97640b")
     assert isinstance(c2, mm.capellacore.Constraint)
+    assert isinstance(
+        c1.specification, mm.information.datavalue.OpaqueExpression
+    )
+    assert isinstance(
+        c2.specification, mm.information.datavalue.OpaqueExpression
+    )
 
     c2.specification["LinkedText"] = c1.specification["LinkedText"]
 
@@ -595,6 +679,7 @@ def test_model_search_finds_elements(
     session_shared_model: m.MelodyModel, searchkey
 ):
     expected = {
+        # Classes
         "0fef2887-04ce-4406-b1a1-a1b35e1ce0f3",
         "1adf8097-18f9-474e-b136-6c845fc6d9e9",
         "2a923851-a4ca-4fd2-a4b3-302edb8ac178",
@@ -610,6 +695,11 @@ def test_model_search_finds_elements(
         "c89849fd-0643-4708-a4da-74c9ea9ca7b1",
         "ca79bf38-5e82-4104-8c49-e6e16b3748e9",
         "d2b4a93c-73ef-4f01-8b59-f86c074ec521",
+        # Unions
+        "246ab250-2a80-487f-b022-1123c02e33ff",
+        "2f34192f-088b-4511-95ea-b1a29fb6028b",
+        "31c5c280-64e1-4d11-b874-412966aa547c",
+        "be06f4a0-aff2-4475-a8a8-766e5fa26006",
     }
 
     found = session_shared_model.search(searchkey)
@@ -635,17 +725,15 @@ def test_model_search_below_filters_elements_by_ancestor(
     assert actual == expected
 
 
-@pytest.mark.parametrize(
-    "xtype",
-    {i for map in m.XTYPE_HANDLERS.values() for i in map.values()},
-)
 def test_model_search_does_not_contain_duplicates(
-    session_shared_model: m.MelodyModel, xtype: type[t.Any]
+    session_shared_model: m.MelodyModel,
 ) -> None:
-    results = session_shared_model.search(xtype)
-    uuids = [i.uuid for i in results]
+    results = session_shared_model.search()
+    uuids = sorted(i.uuid for i in results)
+    uuids_dedup = sorted(set(uuids))
 
-    assert len(uuids) == len(set(uuids))
+    assert len(uuids) > 0
+    assert len(uuids) == len(uuids_dedup)
 
 
 def test_CommunicationMean(model: m.MelodyModel) -> None:
@@ -694,9 +782,8 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
 
     assert link in chain.involvements
     assert ex_item_uuids == expected_uuids
-    assert markupsafe.escape(link.exchange_context.specification).startswith(
-        expected_context
-    )
+    spec = markupsafe.escape(link.exchange_context.specification)
+    assert spec.startswith(expected_context)
     assert link.involved == target
     assert link.name == f"[FunctionalChainInvolvementLink] to {expected_end}"
 
@@ -873,7 +960,6 @@ class TestArchitectureLayers:
                     "all_classes",
                     "all_actors",
                     "all_components",
-                    # TODO: actor_exchanges
                     "all_component_exchanges",
                     "all_function_exchanges",
                     "all_physical_exchanges",
@@ -1055,9 +1141,12 @@ class TestArchitectureLayers:
         self, model: m.MelodyModel
     ) -> None:
         cex = model.by_uuid("a647a577-0dc1-454f-917f-ce1c89089a2f")
+        assert isinstance(cex, mm.fa.ComponentExchange)
         link = model.by_uuid("90517d41-da3e-430c-b0a9-e3badf416509")
+        assert isinstance(link, mm.cs.PhysicalLink)
 
-        assert cex.allocating_physical_link == cex.owner == link
+        assert cex.owner == link
+        assert cex.allocating_physical_link == link
 
     def test_ComponentExchange_has_allocating_PhysicalPath(
         self, model: m.MelodyModel
@@ -1157,20 +1246,22 @@ def test_lists_of_links_can_be_removed_from(model: m.MelodyModel):
     assert protect_students not in hogwarts.allocated_functions
 
 
-def test_lists_of_links_disallow_insertion_of_duplicate_members(
+def test_lists_of_links_reorder_existing_members_when_appending_duplicates(
     model: m.MelodyModel,
 ):
     parent = model.by_uuid("3b83b4ba-671a-4de8-9c07-a5c6b1d3c422")
     target = model.by_uuid("dfaf473d-257f-4455-90fd-fe9489dac617")
     assert target in parent.involved_activities
+    assert target != parent.involved_activities[-1]
+    links_before = set(parent.involved_activities._elements)
 
-    with pytest.raises(m.NonUniqueMemberError) as catch:
-        parent.involved_activities.append(target)
+    parent.involved_activities.append(target)
 
-    assert catch.value.args == (parent, "involved_activities", target)
-    assert "involved_activities" in str(catch.value)
-    assert parent.uuid in str(catch.value)
-    assert target.uuid in str(catch.value)
+    count = sum(1 for ia in parent.involved_activities if ia == target)
+    assert count == 1
+    assert parent.involved_activities[-1] == target
+    links_after = set(parent.involved_activities._elements)
+    assert links_before == links_after
 
 
 @pytest.mark.parametrize(
