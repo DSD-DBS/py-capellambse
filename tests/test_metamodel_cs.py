@@ -4,6 +4,8 @@
 from capellambse import MelodyModel
 from capellambse.metamodel import cs
 
+HOGWARTS_UUID = "0d2edb8f-fa34-4e73-89ec-fb9a63001440"
+
 
 def test_PhysicalPath_has_ordered_list_of_involved_items(model: MelodyModel):
     expected = [
@@ -80,3 +82,14 @@ def test_PhysicalLink_setting_source_and_target(model: MelodyModel):
     assert source_pp == link.source
     assert target_pp == link.ends[1]
     assert target_pp == link.target
+
+
+def test_creating_a_component_also_creates_a_part(model: MelodyModel):
+    name = "Component and part creation test"
+    obj = model.by_uuid(HOGWARTS_UUID)
+    assert name not in obj.owned_parts.by_name
+
+    comp = obj.components.create(name=name)
+
+    part = obj.owned_parts.by_type(comp, single=True)
+    assert part.name == comp.name
