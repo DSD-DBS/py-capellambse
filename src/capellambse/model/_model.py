@@ -243,10 +243,14 @@ class MelodyModel:
 
             *This argument is **not** passed to the file handler.*
         fallback_render_aird: bool
-            If set to True, enable the internal engine to render
-            diagrams that were not found in the pre-rendered cache.
-            Defaults to False, which means an exception is raised
-            instead. Ignored if no ``diagram_cache`` was specified.
+            If set to True, always fall back to rendering diagrams
+            internally if the configured ``diagram_cache`` is not
+            available.
+
+            By default, the internal renderer is entirely disabled for
+            AIRD diagrams, and only used during cache misses
+            (``FileNotFoundError`` from the underlying file handler) for
+            all other types of diagrams.
         **kwargs
             Additional arguments are passed on to the underlying
             :class:`~capellambse.loader.core.MelodyLoader`, which in
