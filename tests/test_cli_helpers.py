@@ -12,7 +12,7 @@ TEST_MODEL_JSON = INSTALLED_PACKAGE / "known_models" / "test-5.0.json"
 
 
 def test_enumerate_known_models_contains_known_test_models():
-    expected = {"docs.json", "test-5.0.json", "test-5.2.json", "test-lib.json"}
+    expected = {"test-5.0.json", "test-5.2.json", "test-lib.json"}
 
     actual = {i.name for i in capellambse.enumerate_known_models()}
 

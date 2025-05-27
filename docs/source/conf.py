@@ -35,7 +35,6 @@ copyright = f"{author} and the {_metadata['name']} contributors"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "capellambse.sphinx",
     "nbsphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.coverage",
@@ -153,10 +152,6 @@ pygments_dark_style = "monokai"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-
-
-# -- Options for CapellaMBSE-Sphinx ------------------------------------------
-capellambse_model = "../capella-python-api/capella-python-api.aird"
 
 
 # -- Skip __new__ methods ----------------------------------------------------
