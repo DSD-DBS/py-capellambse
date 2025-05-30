@@ -126,7 +126,8 @@ def virtual_type(
 @virtual_type(mm.oa.OperationalActivity)
 def OperationalActivity(obj):
     assert hasattr(obj._model, "oa"), "Model doesn't have an OA layer?"
-    return obj != obj._model.oa.root_activity
+    pkg = obj._model.oa.activity_pkg
+    return obj not in pkg.activities
 
 
 @virtual_type(mm.sa.SystemFunction)
@@ -444,7 +445,7 @@ class ModelValidation:
         for i in typenames:
             objs = _types_registry[i].search(self._model)
             found.update((o.uuid, o._element) for o in objs)
-        return m.MixedElementList(self._model, list(found.values()))
+        return m.ElementList(self._model, list(found.values()))
 
 
 class ObjectValidation:
@@ -498,7 +499,7 @@ class LayerValidation(ObjectValidation):
         for i in typenames:
             objs = _types_registry[i].search(self._model).by_layer(self.parent)
             found.update((o.uuid, o._element) for o in objs)
-        return m.MixedElementList(self._model, list(found.values()))
+        return m.ElementList(self._model, list(found.values()))
 
 
 class ElementValidation(ObjectValidation):
@@ -507,8 +508,11 @@ class ElementValidation(ObjectValidation):
     @property
     def rules(self) -> list[Rule]:
         """Return all registered validation rules that apply to this object."""
-        obj = self.parent
-        return [i for i in _VALIDATION_RULES.values() if i.applies_to(obj)]
+        try:
+            obj = self.parent
+            return [i for i in _VALIDATION_RULES.values() if i.applies_to(obj)]
+        except AttributeError as err:
+            raise RuntimeError("Cannot compute applicable rules") from err
 
     def validate(self) -> Results:
         """Validate this element against the rules that apply to it."""
