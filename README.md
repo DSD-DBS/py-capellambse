@@ -192,14 +192,7 @@ the [CONTRIBUTING guide](CONTRIBUTING.md).
 Current limitations
 -------------------
 
-We are continuously improving coverage of Capella onthology with our
-[high-level API](#TODO) (the current coverage map is available [here](#TODO)),
-however it is still incomplete. It covers most of the commonly used paths but
-when you need to get to an ontology element that isnt covered yet you may do so
-by using the [low-level
-API](https://dsd-dbs.github.io/py-capellambse/development/low-level-api.html).
-
-Also, as we started in mid 2019 and there was no such thing as
+As we started in mid 2019 and there was no such thing as
 [Python4Capella](https://github.com/labs4capella/python4capella) yet, we are
 not API compatible with that project.
 
