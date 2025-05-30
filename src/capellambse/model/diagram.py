@@ -223,12 +223,14 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     else:
         _allow_render: bool = True
-        """Allow this diagram to be rendered by the internal rendering engine.
+        """Always allow rendering this diagram with the internal engine.
 
         If this property is set to False, and a diagram cache was
         specified for the model, this diagram can only be loaded from
-        the cache, and will never be rendered. Has no effect if there
-        was no diagram cache specified.
+        the cache, and will never be rendered. If set to True, a cache
+        miss will instead cause the diagram to be rendered internally.
+
+        Has no effect if there was no diagram cache specified.
 
         :meta public:
         """
@@ -400,10 +402,25 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
                 try:
                     return self.__load_cache(chain)
                 except KeyError:
-                    pass
-
-                if not self._allow_render:
-                    raise RuntimeError(f"Diagram not in cache: {self.name}")
+                    if not (
+                        self._model._fallback_render_aird or self._allow_render
+                    ):
+                        raise RuntimeError(
+                            f"Diagram not in cache: {self.name}"
+                        ) from None
+                except Exception:
+                    if not self._model._fallback_render_aird:
+                        raise
+                    LOGGER.warning(
+                        (
+                            "Diagram cache lookup failed,"
+                            " falling back to internal renderer"
+                            " for diagram %r (%s)"
+                        ),
+                        self.name,
+                        self.uuid,
+                        exc_info=True,
+                    )
 
         render = self.__render_fresh(params)
         return _run_converter_chain(chain, render, pretty_print=pretty_print)
@@ -634,8 +651,9 @@ class DRepresentationDescriptor(AbstractDiagram):
     description = _pods.HTMLStringPOD("documentation")
 
     _element: aird.DRepresentationDescriptor
-
     _node_cache: list[etree._Element]
+
+    _allow_render = False
 
     @classmethod
     def from_model(
@@ -699,10 +717,6 @@ class DRepresentationDescriptor(AbstractDiagram):
             if obj is not None:
                 elems.append(obj._element)
         return _obj.ElementList(self._model, elems, legacy_by_type=True)
-
-    @property
-    def _allow_render(self) -> bool:
-        return self._model._fallback_render_aird
 
     @property
     def viewpoint(self) -> str:
