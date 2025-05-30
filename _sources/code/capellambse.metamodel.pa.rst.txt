@@ -1,0 +1,18 @@
+capellambse.metamodel.pa package
+================================
+
+.. automodule:: capellambse.metamodel.pa
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.metamodel.pa.deployment module
+------------------------------------------
+
+.. automodule:: capellambse.metamodel.pa.deployment
+   :members:
+   :undoc-members:
+   :show-inheritance:
