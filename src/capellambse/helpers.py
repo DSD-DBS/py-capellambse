@@ -14,6 +14,7 @@ import importlib.resources as imr
 import itertools
 import logging
 import math
+import mimetypes
 import operator
 import os
 import pathlib
@@ -25,6 +26,7 @@ import typing as t
 import urllib.parse
 import uuid
 
+import datauri
 import lxml.html
 import markupsafe
 import typing_extensions as te
@@ -34,6 +36,7 @@ from PIL import ImageFont
 
 import capellambse
 import capellambse._namespaces as _n
+import capellambse.filehandler as fh
 
 if sys.platform.startswith("win"):
     import msvcrt
@@ -651,6 +654,122 @@ def replace_hlinks(
         el.attrib["style"] = broken_link_css
         del el.attrib["href"]
         return
+
+    return process_html_fragments(markup, cb)
+
+
+def _parse_image_path(
+    resources: cabc.Mapping[str, fh.FileHandler], raw_path: str, /
+) -> tuple[fh.FileHandler | None, pathlib.PurePosixPath]:
+    if not raw_path or "://" in raw_path:
+        return (None, pathlib.PurePosixPath())
+
+    parts = pathlib.PurePosixPath(raw_path).parts
+    if len(parts) < 2:
+        return (None, pathlib.PurePosixPath())
+
+    srcpath = pathlib.PurePosixPath(*parts[1:])
+    hdl = (
+        resources.get(parts[0])
+        or resources.get(parts[0].removesuffix(".team"))
+        or resources.get("\x00")
+    )
+    return hdl, srcpath
+
+
+def embed_images(
+    markup: str,
+    /,
+    resources: cabc.Mapping[str, fh.FileHandler],
+) -> markupsafe.Markup:
+    """Embed images into description text.
+
+    This function replaces ``<img>`` tags linking to an image file in
+    one of the given resources with a base64-encoded data URI containing
+    the image data directly. The original path is preserved in the
+    ``data-capella-path`` attribute.
+
+    See Also
+    --------
+    unembed_images : The inverse operation.
+    """
+
+    def cb(el: etree._Element) -> None:
+        if el.tag != "img":
+            return
+
+        src = el.get("src", "")
+        hdl, srcpath = _parse_image_path(resources, src)
+        if hdl is None:
+            return
+
+        try:
+            content = hdl.read_file(srcpath)
+        except FileNotFoundError:
+            LOGGER.warning("Image not found: %s", srcpath)
+            return
+
+        mime, _ = mimetypes.guess_type(srcpath.as_posix(), strict=False)
+        if not mime:
+            LOGGER.warning("Unknown image format: %s", srcpath)
+            return
+        el.set("src", datauri.DataURI.make(mime, None, True, content))
+        el.set("data-capella-path", src)
+
+    return process_html_fragments(markup, cb)
+
+
+def unembed_images(
+    markup: str,
+    /,
+    resources: cabc.Mapping[str, fh.FileHandler],
+) -> markupsafe.Markup:
+    """Unembed images from description text.
+
+    This function replaces ``<img>`` tags containing data URIs with links that
+    can be interpreted by Capella, and writes the image data into files in the
+    provided model's resources.
+
+    See Also
+    --------
+    embed_images : The inverse operation.
+    """
+
+    def cb(el: etree._Element) -> None:
+        if el.tag != "img":
+            return
+
+        src = el.get("src", "")
+        if not src.startswith("data:"):
+            return
+        src = datauri.DataURI(src)
+
+        if path := el.get("data-capella-path"):
+            hdl, srcpath = _parse_image_path(resources, path)
+            if hdl is None:
+                return
+            hdlname = pathlib.PurePosixPath(path).parts[0]
+        else:
+            ext = (
+                mimetypes.guess_extension(src.mimetype, strict=False) or ""
+                if src.mimetype
+                else ""
+            )
+            srcpath = pathlib.PurePosixPath("images", f"{generate_id()}{ext}")
+            hdl = resources.get("\x00")
+            if hdl is None:
+                return
+            try:
+                dotproject = hdl.read_file(".project")
+                ptree = etree.fromstring(dotproject)
+                (hdlname,) = ptree.xpath("/projectDescription/name/text()")
+            except Exception:
+                LOGGER.debug("Could not read project name of default handler")
+                return
+
+        hdl.write_file(srcpath, src.data)
+        el.set("src", f"{hdlname}/{srcpath.as_posix()}")
+        el.attrib.pop("data-capella-path", None)
 
     return process_html_fragments(markup, cb)
 

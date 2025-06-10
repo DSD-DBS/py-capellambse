@@ -80,6 +80,9 @@ class MemoryFileHandler(abc.FileHandler):
             if p.parent == path:
                 yield MemoryFilePath(self, p)
 
+    def all_files(self) -> dict[pathlib.PurePosixPath, bytes]:
+        return {k: bytes(v) for k, v in self._data.items()}
+
 
 class MemoryFile(t.BinaryIO):
     def __init__(self, data: bytearray, mode: t.Literal["r", "w"]) -> None:

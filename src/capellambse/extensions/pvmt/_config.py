@@ -162,10 +162,17 @@ class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
         super().__init__(attribute, default=SelectorRules(""), writable=True)
         self.__doc__ = "The element selector rules for this group."
 
-    def _from_xml(self, data: str, /) -> SelectorRules:
+    def _from_xml(self, obj: m.ModelElement, data: str, /) -> SelectorRules:
+        del obj
         return SelectorRules(data)
 
-    def _to_xml(self, value: SelectorRules | str, /) -> str:
+    def _to_xml(
+        self,
+        obj: m.ModelElement,
+        value: SelectorRules | str,
+        /,
+    ) -> str:
+        del obj
         if isinstance(value, SelectorRules):
             value = value.raw
         elif not isinstance(value, str):

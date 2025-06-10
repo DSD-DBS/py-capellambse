@@ -14,19 +14,23 @@ from importlib import metadata
 
 import pytest
 import requests_mock
+from lxml import etree
+from lxml.builder import E
 
 import capellambse
-from capellambse.filehandler import gitlab_artifacts
+from capellambse import helpers
+from capellambse.filehandler import gitlab_artifacts, memory
 
 from .conftest import TEST_MODEL, TEST_ROOT  # type: ignore
 
 TEST_MODEL_5_0 = TEST_ROOT / "5_0" / TEST_MODEL
 
 DUMMY_SVG = b'<svg xmlns="http://www.w3.org/2000/svg"/>'
-DUMMY_PNG = base64.standard_b64decode(
+DUMMY_PNG_B64 = (
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQott"
     "AAAAABJRU5ErkJggg=="
 )
+DUMMY_PNG = base64.standard_b64decode(DUMMY_PNG_B64)
 
 
 @pytest.fixture(autouse=True)
@@ -670,3 +674,57 @@ def test_updated_namespaces_use_rounded_versions(
     ns = "org.polarsys.capella.core.data.capellacommon"
     nsver = model_5_2.project._element.nsmap[ns].rsplit("/", 1)[-1]
     assert nsver == "5.0.0"
+
+
+def test_embed_images_finds_images_in_primary_resource():
+    hdl = memory.MemoryFileHandler()
+    hdl.write_file("images/test.png", DUMMY_PNG)
+    resources = {"\x00": hdl}
+
+    input = '<p><img src="mymodel/images/test.png"/></p>'
+    expected = (
+        f'<p><img src="data:image/png;base64,{DUMMY_PNG_B64}"'
+        ' data-capella-path="mymodel/images/test.png"/></p>'
+    )
+
+    actual = helpers.embed_images(input, resources)
+
+    assert actual == expected
+
+
+def test_unembed_images_writes_data_uris_to_provided_paths():
+    hdl = memory.MemoryFileHandler()
+    resources = {"\x00": hdl}
+
+    input = (
+        f'<p><img src="data:image/png;base64,{DUMMY_PNG_B64}"'
+        ' data-capella-path="mymodel/images/test.png"/></p>'
+    )
+    expected = '<p><img src="mymodel/images/test.png"/></p>'
+
+    actual = helpers.unembed_images(input, resources)
+
+    assert actual == expected
+    written = hdl.all_files()
+    assert written == {pathlib.PurePosixPath("images/test.png"): DUMMY_PNG}
+
+
+@helpers.deterministic_ids()
+def test_unembed_images_writes_data_uris_without_path_to_random_filename():
+    hdl = memory.MemoryFileHandler()
+    dotproject = E.projectDescription(
+        E.name("mymodel"),
+        E.natures(E.nature("org.polarsys.capella.project.nature")),
+    )
+    hdl.write_file(".project", etree.tostring(dotproject))
+    resources = {"\x00": hdl}
+    filename = "images/cd072cd8-be6f-4f62-ac4c-09c28206e7e3.png"
+
+    input = f'<p><img src="data:image/png;base64,{DUMMY_PNG_B64}"/></p>'
+    expected = f'<p><img src="mymodel/{filename}"/></p>'
+
+    actual = helpers.unembed_images(input, resources)
+
+    assert actual == expected
+    written = hdl.all_files()
+    assert written[pathlib.PurePosixPath(filename)] == DUMMY_PNG
