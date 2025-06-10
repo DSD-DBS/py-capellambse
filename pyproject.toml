@@ -113,6 +113,8 @@ re = "capellambse.metamodel.namespaces:RE"
 sa = "capellambse.metamodel.namespaces:SA"
 shared_model = "capellambse.metamodel.namespaces:SHARED_MODEL"
 
+filtering = "capellambse.extensions.filtering:NS"
+pvmt = "capellambse.extensions.pvmt:NS"
 capellarequirements = "capellambse.extensions.reqif:CapellaRequirementsNS"
 requirements = "capellambse.extensions.reqif:RequirementsNS"
 
