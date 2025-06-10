@@ -15,12 +15,15 @@ import itertools
 import logging
 import math
 import operator
+import os
 import pathlib
+import random
 import re
 import sys
 import time
 import typing as t
 import urllib.parse
+import uuid
 
 import lxml.html
 import markupsafe
@@ -68,6 +71,8 @@ CROSS_FRAGMENT_LINK = re.compile(
     re.VERBOSE,
 )
 
+_UUID_GENERATOR = random.Random(os.getenv("CAPELLAMBSE_UUID_SEED") or None)
+
 UUIDString = t.NewType("UUIDString", str)
 """A string that represents a unique ID within the model."""
 _T = t.TypeVar("_T")
@@ -114,6 +119,78 @@ def _flatten_subtree(element: etree._Element) -> cabc.Iterator[str]:
 def is_uuid_string(string: t.Any) -> te.TypeGuard[UUIDString]:
     """Validate that ``string`` is a valid UUID."""
     return isinstance(string, str) and bool(RE_VALID_UUID.fullmatch(string))
+
+
+def generate_id() -> str:
+    """Generate a new, random ID to be used in the model."""
+    return str(uuid.UUID(bytes=_UUID_GENERATOR.randbytes(16), version=4))
+
+
+@contextlib.contextmanager
+def deterministic_ids(*, seed: t.Any = None) -> cabc.Iterator[None]:
+    """Enter a context during which generated IDs are deterministic.
+
+    This function is primarily intended for testing.
+
+    It can be used as a context manager, where deterministic IDs will be
+    generated until the context ends:
+
+    >>> with deterministic_ids():
+    ...     print(generate_id())
+    ...     print(generate_id())
+    ...
+    cd072cd8-be6f-4f62-ac4c-09c28206e7e3
+    5594aa6b-342f-4d0a-ba5e-4842fab428f7
+    >>> with deterministic_ids():
+    ...     print(generate_id())
+    ...     print(generate_id())
+    ...
+    cd072cd8-be6f-4f62-ac4c-09c28206e7e3
+    5594aa6b-342f-4d0a-ba5e-4842fab428f7
+
+    It can also be used to annotate a function, in which case
+    deterministic IDs will be generated while that function is being
+    called:
+
+    >>> @deterministic_ids()
+    ... def print_the_same_ids():
+    ...     print(generate_id())
+    ...     print(generate_id())
+    ...
+    >>> print_the_same_ids()
+    cd072cd8-be6f-4f62-ac4c-09c28206e7e3
+    5594aa6b-342f-4d0a-ba5e-4842fab428f7
+    >>> print_the_same_ids()
+    cd072cd8-be6f-4f62-ac4c-09c28206e7e3
+    5594aa6b-342f-4d0a-ba5e-4842fab428f7
+
+    A seed for the PRNG may be passed using the *seed* keyword argument:
+
+    >>> with deterministic_ids(seed=1234):
+    ...     print(generate_id())
+    ...     print(generate_id())
+    ...
+    b97f69f7-5edf-45c7-9fda-d37066eae91d
+    14f6ea01-456b-4417-b0b8-35e942f549f1
+    >>> @deterministic_ids(seed=1234)
+    ... def print_the_same_ids():
+    ...     print(generate_id())
+    ...     print(generate_id())
+    ...
+    >>> print_the_same_ids()
+    b97f69f7-5edf-45c7-9fda-d37066eae91d
+    14f6ea01-456b-4417-b0b8-35e942f549f1
+    """
+    global _UUID_GENERATOR
+
+    if seed is None:
+        seed = 0
+    orig_generator = _UUID_GENERATOR
+    _UUID_GENERATOR = random.Random(seed)
+    try:
+        yield
+    finally:
+        _UUID_GENERATOR = orig_generator
 
 
 # File name and path manipulation

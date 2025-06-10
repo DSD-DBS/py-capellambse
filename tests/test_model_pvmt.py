@@ -8,7 +8,7 @@ import shutil
 import pytest
 
 import capellambse
-from capellambse import loader
+from capellambse import helpers, loader
 from capellambse.extensions import pvmt
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "pvmt"
@@ -157,8 +157,8 @@ class TestAppliedPropertyValueGroupXML:
 
         assert actual == expected
 
-    def test_apply(self, model, monkeypatch):
-        monkeypatch.setattr(loader.core, "UUID_GENERATOR", random.Random(0))
+    @helpers.deterministic_ids()
+    def test_apply(self, model):
         elem = model.by_uuid(self.elem_uuid)
 
         elem.pvmt["External Data.Object IDs.Object ID"] = "CABLE-0001"
