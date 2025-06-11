@@ -253,12 +253,13 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 addopts = """
   -W error::pytest.PytestUnraisableExceptionWarning
+  --doctest-modules
   --import-mode=importlib
   --strict-config
   --strict-markers
   --tb=short
 """
-testpaths = ["tests"]
+testpaths = ["src/capellambse", "tests"]
 xfail_strict = true
 
 [tool.ruff]

@@ -787,13 +787,14 @@ class MelodyLoader:
         .. note:: You still need to call :meth:`idcache_index()` on the
             newly inserted element!
 
-        Example usage::
+        Example usage:
 
-            >>> with ldr.new_uuid(parent_elm) as obj_id:
-            ...     child_elm = parent_elm.makeelement("ownedObjects")
-            ...     child_elm.set("id", obj_id)
-            ...     parent_elm.append(child_elm)
-            ...     ldr.idcache_index(child_elm)
+        >>> parent_elm = loader["08e02248-504d-4ed8-a295-c7682a614f66"]
+        >>> with loader.new_uuid(parent_elm) as obj_id:
+        ...     child_elm = parent_elm.makeelement("ownedObjects")
+        ...     child_elm.set("id", obj_id)
+        ...     parent_elm.append(child_elm)
+        ...     loader.idcache_index(child_elm)
 
         If you intend to reserve a UUID that should be inserted later,
         use :meth:`generate_uuid()` directly.

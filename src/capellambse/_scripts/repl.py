@@ -294,10 +294,11 @@ def showxml(obj: capellambse.ModelObject | etree._Element) -> None:
 
     Examples
     --------
-    >>> my_obj = model.search("LogicalComponent").by_name("My Component")
+    >>> my_obj = model.search("LogicalComponent").by_name("School")
     >>> showxml(my_obj)
-    <ownedLogicalComponents name="My Component">
-      ...
+    <ownedLogicalComponents xsi:type="org.polarsys.capella.core.data.la:LogicalComponent"
+        id="a58821df-c5b4-4958-9455-0d30755be6b1" name="School">
+    ...
     </ownedLogicalComponents>
     """
     if isinstance(obj, etree._Element):
@@ -319,10 +320,10 @@ def fzf(
     Examples
     --------
     >>> # Select a LogicalComponent by name
-    >>> obj = fzf(model.search("LogicalComponent"))
+    >>> obj = fzf(model.search("LogicalComponent"))                             # doctest: +SKIP
 
     >>> # Select a ComponentExchange by the name of its target component
-    >>> obj = fzf(model.search("ComponentExchange"), "target.parent.name")
+    >>> obj = fzf(model.search("ComponentExchange"), "target.parent.name")      # doctest: +SKIP
     """
 
     def repr(obj):
