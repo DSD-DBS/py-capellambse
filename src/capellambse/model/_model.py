@@ -383,9 +383,17 @@ class MelodyModel:
         return a list of every Logical Component in the model:
 
         >>> model.search("LogicalComponent")
+        [0] <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)>
+        ...
         >>> model.search("org.polarsys.capella.core.data.la:LogicalComponent")
+        [0] <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)>
+        ...
         >>> model.search( (capellambse.metamodel.la.NS, "LogicalComponent") )
+        [0] <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)>
+        ...
         >>> model.search( ("org.polarsys.capella.core.data.la", "LogicalComponent") )
+        [0] <LogicalComponent 'Hogwarts' (0d2edb8f-fa34-4e73-89ec-fb9a63001440)>
+        ...
         """
         classes: set[type[_obj.ModelObject]] = set()
         for clsname in clsnames:
@@ -625,37 +633,23 @@ class MelodyModel:
 
         Examples
         --------
-        **Running a local installation of Capella**
+        Passing a bare filename looks up the executable in the PATH,
+        after replacing a possible '{VERSION}' field:
 
-        All the following examples call the method
-        :meth:`update_diagram_cache` on a model
-        for which a diagram cache has been specified, example:
-
-        >>> import capellambse
-        >>> model = capellambse.MelodyModel(
-        ...    "/path/to/model.aird",
-        ...    diagram_cache="/path/to/diagram_cache",
-        ... )
-
-        Passing an executable/ symlink named ``capella`` that is in the
-        ``PATH`` environment variable:
-
-        >>> model.update_diagram_cache(
-        ...     "capella", "png", True
-        ... )
+        >>> model.update_diagram_cache("capella", "png")  # doctest: +SKIP
+        >>> model.update_diagram_cache("capella{VERSION}", "png")  # doctest: +SKIP
 
         Passing an absolute path to a local installation of Capella that
-        contains the Capella version:
+        contains the Capella version will use that executable:
 
-        >>> model.update_diagram_cache(
-        ...     "/Applications/Capella_{VERSION}.app/Contents/MacOS/capella"
-        ... )
+        >>> model.update_diagram_cache("/opt/capella{VERSION}/capella", "png")  # doctest: +SKIP
 
-        **Running a Capella container**
+        Passing a docker image name will launch a docker container, using the
+        Capella binary at the image's ENTRYPOINT:
 
-        >>> model.update_diagram_cache(
-        ...     "ghcr.io/dsd-dbs/capella-dockerimages/capella/base"
-        ...     ":{VERSION}-selected-dropins-main"
+        >>> model.update_diagram_cache(  # doctest: +SKIP
+        ...     "ghcr.io/dsd-dbs/capella-dockerimages/capella/base:{VERSION}-selected-dropins-main",
+        ...     "png",
         ... )
         """
         if self.diagram_cache is None:
