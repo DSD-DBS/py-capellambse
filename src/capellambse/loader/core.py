@@ -20,14 +20,13 @@ import logging
 import operator
 import os
 import pathlib
-import random
 import re
 import shutil
 import sys
 import tempfile
 import typing as t
 import urllib.parse
-import uuid
+import warnings
 
 from lxml import builder, etree
 
@@ -75,8 +74,6 @@ ROOT_XT = (
     "org.polarsys.capella.core.data.capellamodeller:Project",
     "org.polarsys.capella.core.data.capellamodeller:Library",
 )
-
-UUID_GENERATOR = random.Random(os.getenv("CAPELLAMBSE_UUID_SEED") or None)
 
 
 def _derive_entrypoint(
@@ -748,8 +745,7 @@ class MelodyLoader:
                 raise ValueError(f"UUID {want!r} is already in use")
 
         while True:
-            rb = UUID_GENERATOR.randbytes(16)
-            new_id = str(uuid.UUID(bytes=rb, version=4))
+            new_id = helpers.generate_id()
             try:
                 self[new_id]
             except KeyError:
@@ -1436,3 +1432,19 @@ class MelodyLoader:
                 ):
                     shutil.copyfileobj(fsrc, fdst)
             yield workspace
+
+
+if not t.TYPE_CHECKING:
+
+    def __getattr__(name):
+        if name == "UUID_GENERATOR":
+            warnings.warn(
+                (
+                    "Using the UUID_GENERATOR directly is deprecated,"
+                    " use 'helpers.generate_id()' instead"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            return helpers._UUID_GENERATOR
+        raise AttributeError(name)

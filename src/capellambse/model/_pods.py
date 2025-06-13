@@ -32,6 +32,9 @@ from capellambse import helpers
 
 from . import E, U
 
+if t.TYPE_CHECKING:
+    from . import _obj
+
 
 class BasePOD(t.Generic[U]):
     """A plain-old-data descriptor."""
@@ -81,14 +84,14 @@ class BasePOD(t.Generic[U]):
         assert data is None or isinstance(data, str)
         if data is None:
             return self.default
-        return self._from_xml(data)
+        return self._from_xml(obj, data)
 
     def __set__(self, obj: t.Any, value: U | None) -> None:
         if not self.writable and self.attribute in obj._element.attrib:
             raise TypeError(f"{self._qualname} is not writable")
 
         if value is not None and value != self.default:
-            data = self._to_xml(value)
+            data = self._to_xml(obj, value)
         else:
             data = None
 
@@ -109,9 +112,9 @@ class BasePOD(t.Generic[U]):
         self.__objclass__ = owner
 
     @abc.abstractmethod
-    def _from_xml(self, value: str, /) -> U: ...
+    def _from_xml(self, obj: _obj.ModelElement, value: str, /) -> U: ...
     @abc.abstractmethod
-    def _to_xml(self, value: U, /) -> str | None: ...
+    def _to_xml(self, obj: _obj.ModelElement, value: U, /) -> str | None: ...
 
 
 class StringPOD(BasePOD[str]):
@@ -131,10 +134,12 @@ class StringPOD(BasePOD[str]):
         """
         super().__init__(attribute, default="", writable=writable)
 
-    def _from_xml(self, value: str, /) -> str:
+    def _from_xml(self, obj: _obj.ModelElement, value: str, /) -> str:
+        del obj
         return value
 
-    def _to_xml(self, value: str, /) -> str:
+    def _to_xml(self, obj: _obj.ModelElement, value: str, /) -> str:
+        del obj
         return value
 
 
@@ -159,13 +164,19 @@ class HTMLStringPOD(BasePOD[markupsafe.Markup]):
             writable=writable,
         )
 
-    def _from_xml(self, value: str, /) -> markupsafe.Markup:
+    def _from_xml(
+        self, obj: _obj.ModelElement, value: str, /
+    ) -> markupsafe.Markup:
         if os.getenv("CAPELLAMBSE_XHTML") == "1":
             value = helpers.repair_html(value)
+        value = helpers.embed_images(value, obj._model.resources)
         return markupsafe.Markup(value)
 
-    def _to_xml(self, value: markupsafe.Markup, /) -> str:
-        return helpers.repair_html(value)
+    def _to_xml(
+        self, obj: _obj.ModelElement, value: markupsafe.Markup, /
+    ) -> str:
+        value = helpers.repair_html(value)
+        return helpers.unembed_images(value, obj._model.resources)
 
 
 class BoolPOD(BasePOD[bool]):
@@ -183,10 +194,12 @@ class BoolPOD(BasePOD[bool]):
         """
         super().__init__(attribute, default=False, writable=True)
 
-    def _from_xml(self, value: str, /) -> bool:
+    def _from_xml(self, obj: _obj.ModelElement, value: str, /) -> bool:
+        del obj
         return value == "true"
 
-    def _to_xml(self, value: bool, /) -> str:
+    def _to_xml(self, obj: _obj.ModelElement, value: bool, /) -> str:
+        del obj
         assert isinstance(value, bool)
         return ("false", "true")[value]
 
@@ -208,10 +221,12 @@ class IntPOD(BasePOD[int]):
         """
         super().__init__(attribute, default=0, writable=writable)
 
-    def _from_xml(self, data: str, /) -> int:
+    def _from_xml(self, obj: _obj.ModelElement, data: str, /) -> int:
+        del obj
         return int(data)
 
-    def _to_xml(self, value: int, /) -> str | None:
+    def _to_xml(self, obj: _obj.ModelElement, value: int, /) -> str | None:
+        del obj
         if not isinstance(value, int):
             raise TypeError(
                 f"{self._qualname} only accepts int,"
@@ -240,10 +255,12 @@ class FloatPOD(BasePOD[float]):
         """
         super().__init__(attribute, default=0.0, writable=writable)
 
-    def _from_xml(self, data: str, /) -> float:
+    def _from_xml(self, obj: _obj.ModelElement, data: str, /) -> float:
+        del obj
         return float(data)
 
-    def _to_xml(self, value: float, /) -> str | None:
+    def _to_xml(self, obj: _obj.ModelElement, value: float, /) -> str | None:
+        del obj
         if isinstance(value, int):
             value = float(value)
         elif not isinstance(value, float):
@@ -286,11 +303,17 @@ class DatetimePOD(BasePOD[datetime.datetime | None]):
         """
         super().__init__(attribute, default=None, writable=writable)
 
-    def _from_xml(self, value: str, /) -> datetime.datetime:
+    def _from_xml(
+        self, obj: _obj.ModelElement, value: str, /
+    ) -> datetime.datetime:
+        del obj
         formatted = self.re_get.sub(":", value)
         return datetime.datetime.fromisoformat(formatted)
 
-    def _to_xml(self, value: datetime.datetime | None, /) -> str:
+    def _to_xml(
+        self, obj: _obj.ModelElement, value: datetime.datetime | None, /
+    ) -> str:
+        del obj
         assert value is not None
         if not isinstance(value, datetime.datetime):
             raise TypeError(f"Expected datetime instance, not {value!r}")
@@ -368,10 +391,12 @@ class EnumPOD(BasePOD[E]):
         super().__init__(attribute, default=default, writable=writable)
         self.enumcls = enumcls
 
-    def _from_xml(self, value: str, /) -> E:
+    def _from_xml(self, obj: _obj.ModelElement, value: str, /) -> E:
+        del obj
         return self.enumcls(value)
 
-    def _to_xml(self, value: E | str, /) -> str | None:
+    def _to_xml(self, obj: _obj.ModelElement, value: E | str, /) -> str | None:
+        del obj
         if isinstance(value, str):
             value = self.enumcls[value]
         return value.value
@@ -414,12 +439,16 @@ class MultiStringPOD(BasePOD[cabc.MutableSequence[str]]):
     def __delete__(self, obj: t.Any) -> None:
         self.__get__(obj)[:] = ()
 
-    def _from_xml(self, value: str, /) -> cabc.MutableSequence[str]:
-        del value
+    def _from_xml(
+        self, obj: _obj.ModelElement, value: str, /
+    ) -> cabc.MutableSequence[str]:
+        del obj, value
         raise TypeError("Not used for this POD type")
 
-    def _to_xml(self, value: cabc.MutableSequence[str], /) -> str | None:
-        del value
+    def _to_xml(
+        self, obj: _obj.ModelElement, value: cabc.MutableSequence[str], /
+    ) -> str | None:
+        del obj, value
         raise TypeError("Not used for this POD type")
 
 
