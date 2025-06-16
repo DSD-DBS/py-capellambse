@@ -246,11 +246,7 @@ def _sanitize_filename(fname: str) -> str:
     __ https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file?redirectedfrom=MSDN#naming-conventions
     """
     fname = fname.rstrip(" .")
-    fname = re.sub(
-        '[\x00-\x1f<>:"/\\\\|?*]',
-        lambda m: "-"[ord(m.group(0)) < ord(" ") :],
-        fname,
-    )
+    fname = re.sub('[\x00-\x1f<>:"/\\\\|?*]', "-", fname)
     if fname.split(".")[0].upper() in BAD_FILENAMES:
         fname = f"_{fname}"
     return fname

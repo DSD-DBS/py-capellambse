@@ -173,7 +173,14 @@ else:
 
         failed = len(diagrams) - ok
         if failed > 0:
-            logger.error("%d diagrams failed to export (%d ok)", failed, ok)
+            msg = "\n".join(
+                f" - {i['name']!r} ({i['uuid']})"
+                for i in diagrams
+                if not i["success"]
+            )
+            logger.error(
+                "%d diagrams failed to export (%d ok)\n%s", failed, ok, msg
+            )
             raise SystemExit(3)
 
 
