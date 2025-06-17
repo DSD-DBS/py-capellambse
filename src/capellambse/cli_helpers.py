@@ -18,7 +18,10 @@ import importlib.resources as imr
 import json
 import logging
 import os
+import subprocess
+import sys
 import typing as t
+import warnings
 
 import capellambse
 from capellambse import filehandler
@@ -265,14 +268,15 @@ def _load_from_file(value: str) -> dict[str, t.Any]:
 
 
 def _main() -> None:
-    print("User-defined 'known models' are searched in:")
-    print()
-    print(f"   {capellambse.dirs.user_config_path / 'known_models'}")
-    print()
-    print("The following models are currently known:")
-    for file in enumerate_known_models():
-        name, _, _ = file.name.rpartition(".")
-        print(f"  - {name}")
+    name = "list-known"
+    warnings.warn(
+        f"This CLI entry point is deprecated, use 'capellambse {name}' instead",
+        FutureWarning,
+        stacklevel=2,
+    )
+
+    cmd = [sys.executable, "-mcapellambse", name, *sys.argv[1:]]
+    raise SystemExit(subprocess.run(cmd, check=False).returncode)
 
 
 if __name__ == "__main__":

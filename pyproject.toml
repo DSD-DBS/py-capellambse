@@ -63,6 +63,9 @@ httpfiles = []
 png = ["cairosvg>=2.5.2"]
 termgraphics = ["cairosvg>=2.5.2"]
 
+[project.scripts]
+capellambse = "capellambse.__main__:main"
+
 [project.entry-points."capellambse.diagram.formats"]
 datauri_svg = "capellambse.model.diagram:SVGDataURIFormat"
 html_img = "capellambse.model.diagram:SVGInHTMLIMGFormat"
@@ -172,8 +175,8 @@ docs = [
   "jinja2>=3.1.3",
   "nbsphinx>=0.9.5",
   "sphinx>=8.1.3",
-  "sphinx-argparse-cli>=1.19.0",
   "sphinx-autodoc-typehints>=2.5.0",
+  "sphinx-click>=6.0.0",
   "tomli>=2.2.1 ; python_full_version < '3.11'",
 ]
 

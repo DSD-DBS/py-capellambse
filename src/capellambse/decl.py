@@ -37,8 +37,10 @@ import operator
 import os
 import pathlib
 import re
+import subprocess
 import sys
 import typing as t
+import warnings
 
 import awesomeversion as av
 import markupsafe
@@ -820,29 +822,16 @@ YDMLoader.add_constructor("!find", YDMLoader.construct_findby)
 YDMLoader.add_constructor("!html", YDMLoader.construct_markup)
 
 
-try:
-    import click
-except ImportError:
+def _main() -> None:
+    name = "decl-apply"
+    warnings.warn(
+        f"This CLI entry point is deprecated, use 'capellambse {name}' instead",
+        FutureWarning,
+        stacklevel=2,
+    )
 
-    def _main() -> None:
-        """Display a dependency error."""
-        print("Error: Please install 'click' and retry", file=sys.stderr)
-        raise SystemExit(1)
-
-else:
-
-    @click.command()
-    @click.option("-m", "--model", type=capellambse.ModelCLI(), required=True)
-    @click.option("-s", "--strict/--relaxed", is_flag=True, default=False)
-    @click.argument("file", type=click.File("r"))
-    def _main(
-        model: capellambse.MelodyModel,
-        file: t.IO[str],
-        strict: bool,
-    ) -> None:
-        """Apply a declarative modelling YAML file to a model."""
-        apply(model, file, strict=strict)
-        model.save()
+    cmd = [sys.executable, "-mcapellambse", name, *sys.argv[1:]]
+    raise SystemExit(subprocess.run(cmd, check=False).returncode)
 
 
 if __name__ == "__main__":

@@ -7,10 +7,7 @@ The |project| REPL
 
 .. automodule:: capellambse.repl
 
-.. sphinx_argparse_cli::
-   :module: capellambse.repl
-   :func: main
-   :hook:
-   :prog: capellambse/repl.py
-   :title: Capellambse Repl
-   :group_title_prefix:
+.. click:: capellambse.__main__:main
+   :prog: capellambse
+   :commands: repl
+   :nested: full
