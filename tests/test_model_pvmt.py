@@ -24,6 +24,14 @@ def model(monkeypatch, tmp_path):
 
 
 class TestPVMTConfiguration:
+    def test_the_first_found_pvmt_configuration_is_used(self, model):
+        model.project.property_value_packages.create(name="EXTENSIONS")
+        assert len(model.project.property_value_packages) == 2
+
+        domains = {i.name for i in model.pvmt.domains}
+
+        assert domains
+
     def test_domains(self, model):
         expected = {
             "02e0c435-f085-471f-9f6e-e12fe5f27687": "Computer",

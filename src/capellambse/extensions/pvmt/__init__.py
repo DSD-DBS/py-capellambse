@@ -19,11 +19,20 @@ LOGGER = logging.getLogger(__name__)
 def _get_pvmt_configuration(model: m.MelodyModel) -> PVMTConfiguration:
     pkgs = model.project.property_value_packages
     assert pkgs.is_coupled()
-    try:
-        ext = pkgs.by_name("EXTENSIONS")
-    except KeyError:
+    extension_pkgs = pkgs.by_name("EXTENSIONS", single=False)
+    if not extension_pkgs:
         LOGGER.debug("Creating EXTENSIONS package")
         ext = pkgs.create(name="EXTENSIONS")
+    else:
+        ext = pkgs[0]
+        if len(extension_pkgs) > 1:
+            LOGGER.warning(
+                (
+                    "Model contains %d PVMT configuration packages,"
+                    " only the first one will be used"
+                ),
+                len(extension_pkgs),
+            )
     assert isinstance(ext, mm.capellacore.PropertyValuePkg)
     return PVMTConfiguration.from_model(model, ext._element)
 
