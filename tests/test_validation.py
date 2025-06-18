@@ -9,8 +9,8 @@ from click import testing as clitest
 
 import capellambse.metamodel as mm
 import capellambse.model as m
+from capellambse._scripts import validate as cli_main
 from capellambse.extensions import validation
-from capellambse.extensions.validation import __main__
 
 TEST_UUID = "da12377b-fb70-4441-8faa-3a5c153c5de2"
 TEST_RULE_ID = "Rule-001"
@@ -151,7 +151,7 @@ def test_cli_creates_a_validation_report(tmp_path: pathlib.Path):
     runner = clitest.CliRunner()
 
     result = runner.invoke(
-        __main__._main,
+        cli_main.main,
         ["-mtest-5.0", f"-o{output_file}"],
     )
 

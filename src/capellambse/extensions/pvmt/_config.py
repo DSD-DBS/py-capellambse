@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 __all__ = [
+    "NS",
     "ManagedDomain",
     "ManagedGroup",
     "PVMTConfiguration",

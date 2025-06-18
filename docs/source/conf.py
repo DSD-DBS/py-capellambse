@@ -40,7 +40,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
-    "sphinx_argparse_cli",
+    "sphinx_click",
     "sphinx_autodoc_typehints",
 ]
 
