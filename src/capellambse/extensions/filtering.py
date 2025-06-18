@@ -39,9 +39,7 @@ class FilteringCriterion(m.ModelElement):
 
     _xmltag = "ownedFilteringCriteria"
 
-    filtered_objects = m.Backref[m.ModelElement](
-        (), "filtering_criteria", aslist=m.MixedElementList
-    )
+    filtered_objects = m.Backref[m.ModelElement]((), "filtering_criteria")
 
 
 class FilteringCriterionPkg(m.ModelElement):
@@ -49,16 +47,22 @@ class FilteringCriterionPkg(m.ModelElement):
 
     _xmltag = "ownedFilteringCriterionPkgs"
 
-    criteria = m.DirectProxyAccessor(FilteringCriterion, aslist=m.ElementList)
-    packages: m.Accessor[m.ElementList[FilteringCriterionPkg]]
+    criteria = m.Containment[FilteringCriterion](
+        "ownedFilteringCriteria", (NS, "FilteringCriterion")
+    )
+    packages = m.Containment["FilteringCriterionPkg"](
+        "ownedFilteringCriterionPkgs", (NS, "FilteringCriterionPkg")
+    )
 
 
 class FilteringModel(m.ModelElement):
     """A filtering model containing criteria to filter by."""
 
-    criteria = m.DirectProxyAccessor(FilteringCriterion, aslist=m.ElementList)
-    criterion_packages = m.DirectProxyAccessor(
-        FilteringCriterionPkg, aslist=m.ElementList
+    criteria = m.Containment["FilteringCriterion"](
+        "ownedFilteringCriteria", (NS, "FilteringCriterion")
+    )
+    criterion_packages = m.Containment["FilteringCriterionPkg"](
+        "ownedFilteringCriterionPkgs", (NS, "FilteringCriterionPkg")
     )
 
 
@@ -113,10 +117,6 @@ def init() -> None:
     )
     m.ModelElement.filtering_criteria = AssociatedCriteriaAccessor()
 
-
-FilteringCriterionPkg.packages = m.DirectProxyAccessor(
-    FilteringCriterionPkg, aslist=m.ElementList
-)
 
 try:
     import click
