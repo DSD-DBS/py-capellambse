@@ -65,7 +65,7 @@ except ImportError:
 
 
 @click.command()
-@click.argument("model", type=cli_helpers.ModelInfoCLI())
+@click.argument("modelinfo", type=cli_helpers.ModelInfoCLI())
 @click.option(
     "--disable-diagram-cache",
     is_flag=True,
