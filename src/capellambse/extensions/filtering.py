@@ -10,8 +10,6 @@ import sys
 import typing as t
 import warnings
 
-import typing_extensions as te
-
 import capellambse.model as m
 from capellambse.metamodel import capellacore, capellamodeller
 
@@ -143,38 +141,6 @@ class IntersectionFilteringResultSet(FilteringResultSet):
     pass
 
 
-class AssociatedCriteriaAccessor(m.PhysicalAccessor[FilteringCriterion]):
-    def __init__(self) -> None:
-        super().__init__(FilteringCriterion, aslist=m.ElementList)
-
-    @t.overload
-    def __get__(self, obj: None, objtype: type[t.Any]) -> te.Self: ...
-    @t.overload
-    def __get__(
-        self, obj: m.ModelObject, objtype: type[t.Any] | None = ...
-    ) -> m.ElementList[m.T]: ...
-    def __get__(
-        self,
-        obj: m.ModelObject | None,
-        objtype: type[t.Any] | None = None,
-    ) -> te.Self | m.ElementList[m.T]:
-        del objtype
-        if obj is None:  # pragma: no cover
-            return self
-
-        loader = obj._model._loader
-        try:
-            xt_critset = f"{NS.alias}:AssociatedFilteringCriterionSet"
-            critset = next(loader.iterchildren_xt(obj._element, xt_critset))
-        except StopIteration:
-            elems = []
-        else:
-            links = critset.get("filteringCriteria", "")
-            elems = list(loader.follow_links(obj._element, links))
-
-        return self._make_list(obj, elems)
-
-
 def init() -> None:
     capellamodeller.SystemEngineering.filtering_model = m.DirectProxyAccessor(
         FilteringModel
@@ -182,7 +148,11 @@ def init() -> None:
     m.MelodyModel.filtering_model = property(  # type: ignore[attr-defined]
         operator.attrgetter("project.model_root.filtering_model")
     )
-    m.ModelElement.filtering_criteria = AssociatedCriteriaAccessor()
+    m.ModelElement.filtering_criteria = property(
+        lambda obj: obj.extensions.by_class(
+            AssociatedFilteringCriterionSet
+        ).map("criteria")
+    )
 
 
 def _main() -> None:
