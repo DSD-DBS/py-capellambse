@@ -12,12 +12,7 @@ generate-model-badge:
     - git fetch
     - git reset --hard origin/$CI_COMMIT_BRANCH
     - pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
-    - |
-      python >"$OUTPUT_FILE" <<EOF
-      import os, capellambse
-      model = capellambse.loadcli(os.environ["ENTRYPOINT"])
-      print(model.description_badge, end="")
-      EOF
+    - python >"$OUTPUT_FILE" -c 'import os, capellambse; model = capellambse.loadcli(os.environ["ENTRYPOINT"]); print(model.description_badge, end="")'
     - if [[ "${CAPELLAMBSE_PUSH_MODEL_BADGE:-1}" != 1 ]]; then exit 0; fi
     - git add "$OUTPUT_FILE"
     - "if git diff --cached --exit-code &> /dev/null; then exit 0; fi"
