@@ -64,13 +64,20 @@ def main(
     Currently the only supported COMMAND is "derive", which performs
     project derivation based on an existing filtering result.
 
-    The native Capella installation (options ``--exe`` or
-    ``--docker``) may contain the placeholder '{VERSION}', which
-    will be replaced by the Capella version number that the model
-    was created with (e.g. "6.0.0").
+    The native Capella installation (options ``--exe`` or ``--docker``)
+    may contain the placeholder '{VERSION}', which will be replaced by
+    the Capella version number that the model was created with (e.g.
+    "6.0.0"). If you have docker installed, a good default value is:
+
+    \b
+    --docker ghcr.io/dsd-dbs/capella-dockerimages/capella/base:{VERSION}-selected-dropins-main
 
     Exactly one of ``--exe`` or ``--docker`` must be specified.
-    """
+    """  # noqa: D301
+    if exe and docker:
+        raise click.UsageError("--exe and --docker are mutually exclusive")
+    if not exe and not docker:
+        raise click.UsageError("Exactly one of --exe or --docker is required")
 
     results = _find_results(model_, result_strings)
     output.mkdir(exist_ok=True, parents=True)

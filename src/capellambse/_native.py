@@ -101,7 +101,7 @@ def native_capella(
             docker = docker.replace("{VERSION}", model.info.capella_version)
             runner = _DockerRunner(docker)
         else:
-            raise AssertionError()
+            raise TypeError("No native Capella runner specified")
 
         yield _NativeCapella(workspace, runner)
 
