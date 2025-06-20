@@ -128,6 +128,7 @@ test = [
   "coverage>=7.6.9",
   "jinja2>=3.1.3",
   "pytest>=8.3.4",
+  "pytest-xdist>=3.7.0",
   "requests-mock>=1.12.1",
 ]
 
@@ -185,7 +186,7 @@ enable = "pypy"
 build-frontend = "build"
 before-build = ["rustup default stable", "rustup show"]
 test-groups = ["test"]
-test-command = ["cd {project}", "coverage run", "coverage report"]
+test-command = ["cd {project}", "pytest -n auto"]
 
 [tool.cibuildwheel.linux]
 before-build = [
@@ -198,7 +199,7 @@ repair-wheel-command = [
 ]
 
 [tool.cibuildwheel.windows]
-test-command = ["cd /d {project}", "coverage run", "coverage report"]
+test-command = ["cd /d {project}", "pytest -n auto"]
 
 [tool.coverage.run]
 branch = true

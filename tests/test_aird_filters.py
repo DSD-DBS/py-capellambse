@@ -39,7 +39,7 @@ def test_add_activated_filter_to_diagram(
     assert EX_ITEMS_FILTER in diag.filters
 
 
-@pytest.mark.parametrize("filter_name", DEFAULT_ACTIVATED_FILTERS)
+@pytest.mark.parametrize("filter_name", sorted(DEFAULT_ACTIVATED_FILTERS))
 def test_remove_activated_filter_on_diagram(
     model_5_2: capellambse.MelodyModel, filter_name: str
 ) -> None:
