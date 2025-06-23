@@ -115,10 +115,10 @@ class SelectorRules:
         for match in _RULES_RE.finditer(self.raw):
             if match.group("key") != "CLASS":
                 continue
-            uri = match.group("value")
-            _, clsname = uri.rsplit("/", 1)
-            (cls,) = m.find_wrapper(clsname)
-            classes.append(cls)
+            for uri in match.group("value").split(","):
+                _, clsname = uri.rsplit("/", 1)
+                (cls,) = m.find_wrapper(clsname)
+                classes.append(cls)
 
         return tuple(classes)
 
