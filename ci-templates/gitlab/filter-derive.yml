@@ -31,7 +31,7 @@ derive:
     # considered for the model badge generation.
     - |
       if [[ -n $CI_COMMIT_BRANCH ]]; then
-        git fetch;
+        git fetch --depth 1;
         git reset --hard origin/$CI_COMMIT_BRANCH;
       fi
     - python -m venv /tmp/.venv

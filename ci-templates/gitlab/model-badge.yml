@@ -9,7 +9,7 @@ generate-model-badge:
     # Reset branch. This is helpful when chaining jobs
     # and a previous job pushes changes that should be
     # considered for the model badge generation.
-    - git fetch
+    - git fetch --depth 1
     - git reset --hard origin/$CI_COMMIT_BRANCH
     - pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
     - |
