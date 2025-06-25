@@ -7,6 +7,8 @@ from __future__ import annotations
 import typing as t
 import warnings
 
+from lxml import etree
+
 import capellambse.model as m
 
 from . import capellacore, fa, information, modellingcore
@@ -191,7 +193,8 @@ class Component(
     physical_ports = m.Filter["PhysicalPort"](
         "owned_features", (NS, "PhysicalPort")
     )
-    parts = m.Backref["Part"]((NS, "Part"), "type")
+    owned_parts = m.Filter["Part"]("owned_features", (NS, "Part"))
+    representing_parts = m.Backref["Part"]((NS, "Part"), "type")
     physical_paths = m.Containment["PhysicalPath"](
         "ownedPhysicalPath", (NS, "PhysicalPath")
     )
@@ -212,6 +215,23 @@ class Component(
     if not t.TYPE_CHECKING:
         owner = m.DeprecatedAccessor("parent")
         exchanges = m.DeprecatedAccessor("component_exchanges")
+        parts = m.DeprecatedAccessor("representing_parts")
+
+    def __init__(
+        self,
+        model: m.MelodyModel,
+        parent: etree._Element,
+        /,
+        create_part: bool = True,
+        **kw: t.Any,
+    ) -> None:
+        super().__init__(model, parent, **kw)
+
+        if create_part:
+            if isinstance(self.parent, Component | ComponentPkg):
+                self.parent.owned_parts.create(name=self.name, type=self)
+            else:
+                self.owned_parts.create(type=self)
 
 
 class DeployableElement(capellacore.NamedElement, abstract=True):
@@ -572,6 +592,7 @@ class ComponentPkg(capellacore.Structure, abstract=True):
     """A package containing parts."""
 
     parts = m.Containment["Part"]("ownedParts", (NS, "Part"))
+    owned_parts = m.Alias["m.ElementList[Part]"]("parts")
     exchanges = m.Containment["fa.ComponentExchange"](
         "ownedComponentExchanges", (ns.FA, "ComponentExchange")
     )
