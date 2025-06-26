@@ -26,7 +26,7 @@ class LazyGroup(click.Group):
             cmd = importlib.import_module(
                 f"{_scripts.__name__}.{modname}"
             ).main
-            assert isinstance(cmd, click.BaseCommand)
+            assert isinstance(cmd, click.Command)
             cmd.name = name
             return cmd
 

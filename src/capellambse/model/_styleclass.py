@@ -32,7 +32,7 @@ def get_styleclass(obj: _obj.ModelObject) -> str:
 
 
 def _default(obj: _obj.ModelObject) -> str:
-    from . import _obj
+    from . import _obj  # noqa: PLC0415
 
     if isinstance(obj, _obj.ModelElement) and obj.xtype:
         return obj.xtype.split(":")[-1]
@@ -40,9 +40,9 @@ def _default(obj: _obj.ModelObject) -> str:
 
 
 def _association(obj: _obj.ModelObject) -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
-    from . import _obj
+    from . import _obj  # noqa: PLC0415
 
     assert isinstance(obj, mm.information.Association)
     default_kind = kind = "ASSOCIATION"
@@ -54,7 +54,7 @@ def _association(obj: _obj.ModelObject) -> str:
 
 
 def _functional_chain_involvement(obj: _obj.ModelObject) -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
     assert isinstance(
         obj,
@@ -70,7 +70,7 @@ def _functional_chain_involvement(obj: _obj.ModelObject) -> str:
 
 
 def _functional_exchange(obj: _obj.ModelObject) -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
     assert isinstance(obj, mm.fa.FunctionalExchange)
     styleclass = _default(obj)
@@ -80,7 +80,7 @@ def _functional_exchange(obj: _obj.ModelObject) -> str:
 
 
 def _generic_component(obj: _obj.ModelObject, extra: str = "") -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
     assert isinstance(obj, mm.cs.Component)
     styleclass = _default(obj)
@@ -95,7 +95,7 @@ def _generic_component(obj: _obj.ModelObject, extra: str = "") -> str:
 
 
 def _physical_component(obj: _obj.ModelObject) -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
     assert isinstance(obj, mm.pa.PhysicalComponent)
     nature = (obj.nature.name, "")[obj.nature.name == "UNSET"]
@@ -103,9 +103,9 @@ def _physical_component(obj: _obj.ModelObject) -> str:
 
 
 def _part(obj: _obj.ModelObject) -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
-    from . import _obj
+    from . import _obj  # noqa: PLC0415
 
     assert isinstance(obj, mm.cs.Part)
     assert isinstance(obj.type, _obj.ModelElement)
@@ -118,9 +118,9 @@ def _part(obj: _obj.ModelObject) -> str:
 
 
 def _port_allocation(obj: _obj.ModelObject) -> str:
-    import capellambse.metamodel as mm
+    import capellambse.metamodel as mm  # noqa: PLC0415
 
-    from . import _obj
+    from . import _obj  # noqa: PLC0415
 
     assert isinstance(obj, mm.information.PortAllocation)
     styleclasses = {

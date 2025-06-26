@@ -528,4 +528,4 @@ class _MultiPODValues(cabc.MutableSequence[str]):
         else:
             if e is not None:
                 e.addnext(container)
-            e.append(container)
+                e.append(container)

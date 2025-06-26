@@ -9,6 +9,7 @@ import typing as t
 
 import pytest
 
+import capellambse
 import capellambse.metamodel as mm
 import capellambse.model as m
 from capellambse import helpers
@@ -90,8 +91,6 @@ def test_ReqIFElement_short_repr_(
 
 
 def test_extension_was_loaded():
-    import capellambse
-
     capellambse.load_model_extensions()
 
     assert hasattr(m.ModelElement, "requirements")

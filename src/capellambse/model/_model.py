@@ -38,7 +38,7 @@ class MelodyModel:
 
     @property
     def project(self) -> capellambse.metamodel.capellamodeller.Project:
-        import capellambse.metamodel as mm
+        import capellambse.metamodel as mm  # noqa: PLC0415
 
         cls_project = self.resolve_class((mm.capellamodeller.NS, "Project"))
         if __debug__:
@@ -691,7 +691,7 @@ class MelodyModel:
     @property
     def description_badge(self) -> str:
         """Describe model contents distribution with an SVG badge."""
-        from capellambse.extensions import metrics
+        from capellambse.extensions import metrics  # noqa: PLC0415
 
         return metrics.get_summary_badge(self)
 

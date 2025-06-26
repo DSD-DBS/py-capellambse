@@ -14,12 +14,12 @@ from ._validate import *
 
 from . import rules as rules  # isort: skip
 
+import capellambse
+import capellambse.model as m
+from capellambse.metamodel import cs
+
 
 def init() -> None:
-    import capellambse
-    import capellambse.model as m
-    from capellambse.metamodel import cs
-
     capellambse.MelodyModel.validation = property(  # type: ignore[attr-defined]
         ModelValidation
     )

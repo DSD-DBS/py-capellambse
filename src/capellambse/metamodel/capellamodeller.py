@@ -59,7 +59,7 @@ class SystemEngineering(capellacore.AbstractModellingStructure, ModelRoot):
 
     @property
     def oa(self) -> oa.OperationalAnalysis:
-        from . import oa
+        from . import oa  # noqa: PLC0415
 
         try:
             return next(
@@ -74,7 +74,7 @@ class SystemEngineering(capellacore.AbstractModellingStructure, ModelRoot):
 
     @property
     def sa(self) -> sa.SystemAnalysis:
-        from . import sa
+        from . import sa  # noqa: PLC0415
 
         try:
             return next(
@@ -89,7 +89,7 @@ class SystemEngineering(capellacore.AbstractModellingStructure, ModelRoot):
 
     @property
     def la(self) -> la.LogicalArchitecture:
-        from . import la
+        from . import la  # noqa: PLC0415
 
         try:
             return next(
@@ -104,7 +104,7 @@ class SystemEngineering(capellacore.AbstractModellingStructure, ModelRoot):
 
     @property
     def pa(self) -> pa.PhysicalArchitecture:
-        from . import pa
+        from . import pa  # noqa: PLC0415
 
         try:
             return next(
@@ -119,7 +119,7 @@ class SystemEngineering(capellacore.AbstractModellingStructure, ModelRoot):
 
     @property
     def epbs(self) -> epbs.EPBSArchitecture:
-        from . import epbs
+        from . import epbs  # noqa: PLC0415
 
         try:
             return next(

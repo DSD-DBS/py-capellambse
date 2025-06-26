@@ -513,7 +513,7 @@ class _ModelElementMeta(abc.ABCMeta):
         return cls
 
     def __subclasscheck__(self, subclass) -> bool:
-        import capellambse.metamodel as mm
+        import capellambse.metamodel as mm  # noqa: PLC0415
 
         try:
             replacements = {
@@ -665,7 +665,7 @@ class ModelElement(metaclass=_ModelElementMeta):
         AttributeError
             Raised if this element is not nested below a layer.
         """
-        import capellambse.metamodel as mm
+        import capellambse.metamodel as mm  # noqa: PLC0415
 
         obj: ModelElement | None = self
         assert obj is not None
@@ -962,10 +962,10 @@ class ModelElement(metaclass=_ModelElementMeta):
     def _get_styleclass(self) -> str:
         """Return the styleclass of this object.
 
-        :meta public:
-
         The styleclass determines which set of styles gets applied when
         drawing this object in a diagram.
+
+        :meta public:
         """
         return _styleclass.get_styleclass(self)
 
@@ -997,7 +997,7 @@ class ModelElement(metaclass=_ModelElementMeta):
             The icon (usually as str or bytes object), or None if no
             icon could be found.
         """
-        from capellambse.diagram import get_icon
+        from capellambse.diagram import get_icon  # noqa: PLC0415
 
         sc = self._get_styleclass()
         try:
@@ -1099,6 +1099,8 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
         "_elements",
         "_model",
     )
+
+    __hash__ = None  # type: ignore[assignment]
 
     def is_coupled(self) -> bool:
         return False

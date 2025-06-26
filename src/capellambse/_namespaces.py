@@ -291,6 +291,6 @@ NAMESPACES_PLUGINS: t.Final[cabc.Mapping[str, Plugin]] = {
     "xmi": Plugin("http://www.omg.org/XMI"),
     "xsi": Plugin("http://www.w3.org/2001/XMLSchema-instance"),
 }
-NAMESPACES: t.Final[cabc.Mapping[str, str]] = {
+NAMESPACES: t.Final[dict[str, str]] = {
     nskey: str(plugin) for nskey, plugin in NAMESPACES_PLUGINS.items()
 }

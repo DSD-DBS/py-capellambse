@@ -116,6 +116,7 @@ class FactorySelector:
         factory: cabc.Callable[
             [c.SemanticElementBuilder], diagram.DiagramElement
         ]
+        assert isinstance(seb.data_element.tag, str)
         if seb.data_element.tag == "children":
             factory = self.box
         elif seb.data_element.tag == "edges":

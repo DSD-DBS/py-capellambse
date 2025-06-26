@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import operator
+import os
 import typing as t
 
 import markupsafe
@@ -277,8 +278,8 @@ def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
     elm = model.by_uuid("53c58b24-3938-4d6a-b84a-bb9bff355a41")
     assert isinstance(elm, mm.oa.OperationalCapability)
     expected = (
-        "The actor lives in a world where predators exist\r\n"
-        "AND\r\n"
+        f"The actor lives in a world where predators exist{os.linesep}"
+        f"AND{os.linesep}"
         'A <a href="hlink://e6e4d30c-4d80-4899-8d8d-1350239c15a7">Predator</a>'
         " is near the actor"
     )

@@ -286,7 +286,7 @@ def suppress(
         yield
     except exc_types:
         if log:
-            logging.info("Exception suppressed", exc_info=True)
+            logger.info("Exception suppressed", exc_info=True)
 
 
 def showxml(obj: capellambse.ModelObject | etree._Element) -> None:

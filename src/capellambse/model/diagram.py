@@ -645,6 +645,8 @@ class DRepresentationDescriptor(AbstractDiagram):
     __capella_namespace__: t.ClassVar[_obj.Namespace] = VIEWPOINT_NS
     __capella_abstract__: t.ClassVar[bool] = False
 
+    __hash__ = None  # type: ignore[assignment]
+
     uuid: str = _pods.StringPOD("uid", writable=False)  # type: ignore[assignment]
     xtype = property(lambda self: helpers.xtype_of(self._element))
     name: str = _pods.StringPOD("name")  # type: ignore[assignment]
@@ -702,7 +704,11 @@ class DRepresentationDescriptor(AbstractDiagram):
                 aird.iter_visible(self._model._loader, self._element)
             )
 
-        from capellambse.metamodel import capellacore, cs, interaction
+        from capellambse.metamodel import (  # noqa: PLC0415
+            capellacore,
+            cs,
+            interaction,
+        )
 
         elems: list[etree._Element] = []
         for i in self._node_cache:
@@ -850,7 +856,7 @@ class PNGFormat:
     @staticmethod
     def convert(dg: str) -> bytes:
         try:
-            import cairosvg
+            import cairosvg  # noqa: PLC0415
         except OSError as error:
             raise RuntimeError(
                 "Cannot import cairosvg. You are likely missing .dll's."
