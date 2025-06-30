@@ -28,8 +28,13 @@ if not any(
     )
 
 
-@pytest.fixture(scope="session")
-def session_shared_model() -> capellambse.MelodyModel:
+MODEL_PARAMS = ({"loader_backend": "lxml"},)
+
+
+@pytest.fixture(scope="session", params=MODEL_PARAMS)
+def session_shared_model(
+    request: pytest.FixtureRequest,
+) -> capellambse.MelodyModel:
     """Load the standard test model.
 
     Unlike the ``model`` fixture, this fixture is shared across the
@@ -39,25 +44,46 @@ def session_shared_model() -> capellambse.MelodyModel:
     This fixture exists as a speed optimization for tests that only read
     from the model.
     """
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    return capellambse.MelodyModel(
+        TEST_ROOT / "5_0" / TEST_MODEL,
+        **request.param,
+    )
 
 
-@pytest.fixture
-def model(monkeypatch) -> capellambse.MelodyModel:
+@pytest.fixture(params=MODEL_PARAMS)
+def model(
+    monkeypatch,
+    request: pytest.FixtureRequest,
+) -> capellambse.MelodyModel:
     """Return the Capella 5.0 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_0" / TEST_MODEL)
+    return capellambse.MelodyModel(
+        TEST_ROOT / "5_0" / TEST_MODEL,
+        **request.param,
+    )
 
 
-@pytest.fixture
-def model_5_2(monkeypatch) -> capellambse.MelodyModel:
+@pytest.fixture(params=MODEL_PARAMS)
+def model_5_2(
+    monkeypatch,
+    request: pytest.FixtureRequest,
+) -> capellambse.MelodyModel:
     """Return the Capella 5.2 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "5_2" / TEST_MODEL)
+    return capellambse.MelodyModel(
+        TEST_ROOT / "5_2" / TEST_MODEL,
+        **request.param,
+    )
 
 
-@pytest.fixture
-def model_6_0(monkeypatch) -> capellambse.MelodyModel:
+@pytest.fixture(params=MODEL_PARAMS)
+def model_6_0(
+    monkeypatch,
+    request: pytest.FixtureRequest,
+) -> capellambse.MelodyModel:
     """Return the Capella 6.0 test model."""
     monkeypatch.setattr(sys, "stderr", io.StringIO)
-    return capellambse.MelodyModel(TEST_ROOT / "6_0" / TEST_MODEL)
+    return capellambse.MelodyModel(
+        TEST_ROOT / "6_0" / TEST_MODEL,
+        **request.param,
+    )
