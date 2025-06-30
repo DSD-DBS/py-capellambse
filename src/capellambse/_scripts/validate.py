@@ -15,7 +15,7 @@ import capellambse
 @click.option(
     "-o",
     "--output",
-    type=click.File("w", atomic=True),
+    type=click.File("wb", atomic=True),
     required=True,
     help="Output file to render the template into",
 )
@@ -23,7 +23,7 @@ import capellambse
 def main(
     model: capellambse.MelodyModel,
     template: str | None,
-    output: t.IO[str],
+    output: t.IO[bytes],
 ) -> None:
     """Validate a model against predefined rules."""
     logging.basicConfig()
@@ -40,4 +40,4 @@ def main(
         env.get_template(template).stream(
             model=model,
             results=model.validation.validate(),
-        ).dump(output)
+        ).dump(output, encoding="utf-8")

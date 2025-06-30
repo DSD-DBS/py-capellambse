@@ -388,7 +388,7 @@ class ModelFile:
         )
         new_root.extend(self.root)
 
-        siblings = self.root.itersiblings(preceding=True)
+        siblings = self.root.itersiblings(preceding=True)  # type: ignore[unreachable] # ???
         for i in reversed(list(siblings)):
             new_root.addprevious(i)
 
@@ -813,7 +813,7 @@ class MelodyLoader:
         self,
         query: str | etree.XPath,
         *,
-        namespaces: cabc.Mapping[str, str] | None = None,
+        namespaces: dict[str, str] | None = None,
         roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[etree._Element]:
         """Run an XPath query on all fragments.
@@ -848,7 +848,7 @@ class MelodyLoader:
         self,
         query: str | etree.XPath,
         *,
-        namespaces: cabc.Mapping[str, str] | None = None,
+        namespaces: dict[str, str] | None = None,
         roots: etree._Element | cabc.Iterable[etree._Element] | None = None,
     ) -> list[tuple[pathlib.PurePosixPath, etree._Element]]:
         """Run an XPath query and return the fragments and elements.

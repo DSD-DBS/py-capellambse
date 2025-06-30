@@ -163,6 +163,8 @@ class FakeEntrypoint:
     @property
     def name(self):
         class AlwaysEqual:
+            __hash__ = None  # type: ignore[assignment]
+
             def __eq__(_, name):
                 nonlocal self
                 assert name == self._expected_name

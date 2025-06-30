@@ -26,7 +26,7 @@ from . import abc
 
 LOGGER = logging.getLogger(__name__)
 MAX_SEARCHED_JOBS = (
-    int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", 1000)) or sys.maxsize
+    int(os.environ.get("CAPELLAMBSE_GLART_MAX_JOBS", "1000")) or sys.maxsize
 )
 
 

@@ -36,8 +36,8 @@ def load_model_extensions() -> None:
     explicitly call this function before loading a model.
     """
     # Reduce namespace pollution
-    import importlib.metadata as imm
-    import logging
+    import importlib.metadata as imm  # noqa: PLC0415
+    import logging  # noqa: PLC0415
 
     global _has_loaded_extensions
     if _has_loaded_extensions:

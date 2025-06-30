@@ -429,6 +429,7 @@ def _serialize_element(
     assert None not in element.nsmap
     nsmap = {v: k for k, v in element.nsmap.items() if k}
     buffer.write(b"<")
+    assert isinstance(element.tag, str)
     tag = _unmap_namespace(nsmap, element.tag).encode(encoding, errors)
     buffer.write(tag)
 
