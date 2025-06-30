@@ -66,9 +66,10 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
     assert ebd.target_diagram.styleclass is not None
 
     uid = ebd.data_element.attrib[c.ATT_XMID]
-    element = ebd.data_element.get("element")
-    if element is not None:
-        label = ebd.melodyloader[element].attrib["name"]
+    element_id = ebd.data_element.get("element")
+    if element_id is not None:
+        element = ebd.melodyloader.follow_link(ebd.data_element, element_id)
+        label = element.attrib["name"]
         description = ebd.data_element.get("description", "")
     else:
         label = ebd.data_element.get("description", "")
@@ -108,7 +109,7 @@ def shape_factory(ebd: c.ElementBuilder) -> diagram.Box:
         int(layout.attrib.get("height", "0")),
     )
 
-    if element is not None:
+    if element_id is not None:
         styleclass = "RepresentationLink"
     else:
         styleclass = "Note"

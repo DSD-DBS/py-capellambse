@@ -142,7 +142,7 @@ class FilterArguments:
 
     target_diagram: diagram.Diagram
     diagram_root: etree._Element
-    melodyloader: capellambse.loader.MelodyLoader
+    melodyloader: capellambse.loader.Loader
     params: dict[str, t.Any]
 
 
@@ -174,7 +174,7 @@ def applyfilters(args: FilterArguments) -> None:
                 dgobject.styleclass or dgobject.__class__.__name__,
                 dgobject.uuid,
             )
-            data_element = args.melodyloader[dgobject.uuid]
+            data_element = args.melodyloader.follow_link(None, dgobject.uuid)
             p2flt(
                 c.ElementBuilder(
                     target_diagram=args.target_diagram,
@@ -280,7 +280,9 @@ class ActiveFilters(t.MutableSet[str]):
         self._model = model
         self._diagram = diagram
         assert isinstance(diagram._element, etree._Element)
-        self._target = self._model._loader[diagram._element.attrib["repPath"]]
+        self._target = self._model._loader.follow_link(
+            diagram._element, diagram._element.attrib["repPath"]
+        )
 
     @property
     def _elements(self) -> t.Iterator[etree._Element]:

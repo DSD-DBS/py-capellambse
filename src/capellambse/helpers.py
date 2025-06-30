@@ -845,7 +845,7 @@ def resolve_namespace(tag: str) -> str:
 
 
 def unescape_linked_text(
-    loader: capellambse.loader.MelodyLoader, attr_text: str | None
+    loader: capellambse.loader.Loader, attr_text: str | None
 ) -> markupsafe.Markup:
     """Transform the ``linkedText`` into regular HTML."""
 
@@ -863,7 +863,7 @@ def unescape_linked_text(
             ehref = html.escape(href)
 
             try:
-                target = loader[href]
+                target = loader.follow_link(None, href)
             except KeyError:
                 yield f"&lt;deleted element {ehref}&gt;"
             else:
@@ -887,7 +887,7 @@ def unescape_linked_text(
 
 
 def escape_linked_text(
-    loader: capellambse.loader.MelodyLoader, attr_text: str
+    loader: capellambse.loader.Loader, attr_text: str
 ) -> str:
     """Transform simple HTML with object links into ``LinkedText``.
 

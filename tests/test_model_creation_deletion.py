@@ -39,7 +39,7 @@ def test_created_elements_show_up_in_xml_after_adding_them(
     )
 
     try:
-        writemodel._loader[newobj.uuid]
+        writemodel._loader.follow_link(newobj._element, newobj.uuid)
     except KeyError as err:
         raise AssertionError(
             "Cannot find added element via subscripting"
@@ -66,7 +66,7 @@ def test_deleted_elements_are_removed(
     assert len(comps) != 2, "List length did not change"
 
     with pytest.raises(KeyError):
-        writemodel._loader[olduuid]
+        writemodel._loader.follow_link(None, olduuid)
 
     assert not writemodel._loader.xpath(XPATH_UUID.format(olduuid)), (
         "Element is still present in tree after deleting"
