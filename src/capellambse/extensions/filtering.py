@@ -13,6 +13,7 @@ import warnings
 import typing_extensions as te
 
 import capellambse.model as m
+from capellambse import loader
 from capellambse.metamodel import capellacore, capellamodeller
 
 NS = m.Namespace(
@@ -162,15 +163,20 @@ class AssociatedCriteriaAccessor(m.PhysicalAccessor[FilteringCriterion]):
         if obj is None:  # pragma: no cover
             return self
 
-        loader = obj._model._loader
+        ldr = obj._model._loader
+        if not isinstance(ldr, loader.MelodyLoader):
+            raise TypeError(
+                f"{type(self).__name__} can only be used with the legacy lxml backend"
+            )
+
         try:
             xt_critset = f"{NS.alias}:AssociatedFilteringCriterionSet"
-            critset = next(loader.iterchildren_xt(obj._element, xt_critset))
+            critset = next(ldr.iterchildren_xt(obj._element, xt_critset))
         except StopIteration:
             elems = []
         else:
             links = critset.get("filteringCriteria", "")
-            elems = list(loader.follow_links(obj._element, links))
+            elems = list(ldr.follow_links(obj._element, links))
 
         return self._make_list(obj, elems)
 

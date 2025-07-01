@@ -152,6 +152,7 @@ class MelodyModel:
             | None
         ) = None,
         fallback_render_aird: bool = False,
+        loader_backend: t.Literal["lxml"] = "lxml",
         **kwargs: t.Any,
     ) -> None:
         """Load a project.
@@ -262,10 +263,16 @@ class MelodyModel:
             AIRD diagrams, and only used during cache misses
             (``FileNotFoundError`` from the underlying file handler) for
             all other types of diagrams.
+        loader_backend
+            Choose which Loader backend to use. Currently the only
+            supported option is "lxml", which uses the traditional
+            :class:`~capellambse.loader.core.MelodyLoader`, based on
+            modifying in-memory XML trees loaded with the `lxml`
+            library.
         **kwargs
-            Additional arguments are passed on to the underlying
-            :class:`~capellambse.loader.core.MelodyLoader`, which in
-            turn passes it on to the primary resource's FileHandler.
+            Additional arguments are passed on to the underlying Loader
+            instance, which in turn passes it on to the primary
+            resource's FileHandler.
 
         See Also
         --------
@@ -282,8 +289,15 @@ class MelodyModel:
         """
         capellambse.load_model_extensions()
 
-        self._loader = loader.MelodyLoader(path, **kwargs)
-        self.__viewpoints = dict(self._loader.referenced_viewpoints())
+        if loader_backend == "lxml":
+            self._loader: loader.Loader = loader.MelodyLoader(path, **kwargs)
+            self.__viewpoints = dict(self._loader.referenced_viewpoints())
+        else:
+            raise ValueError(
+                f"Unsupported loader backend {loader_backend!r},"
+                " currently only 'lxml' is supported"
+            )
+
         self._fallback_render_aird = fallback_render_aird
 
         if diagram_cache:
@@ -466,7 +480,7 @@ class MelodyModel:
 
     def by_uuid(self, uuid: str) -> t.Any:
         """Search the entire model for an element with the given UUID."""
-        return _obj.wrap_xml(self, self._loader[uuid])
+        return _obj.wrap_xml(self, self._loader.follow_link(None, uuid))
 
     def find_references(
         self, target: _obj.ModelObject | str, /
@@ -502,14 +516,7 @@ class MelodyModel:
             if not capellambse.helpers.is_uuid_string(uuid):
                 raise ValueError(f"Malformed or missing UUID for {target!r}")
 
-        for elem in self._loader.xpath(
-            f"//*[@*[contains(., '#{uuid}')] | */@*[contains(., '#{uuid}')]]",
-            roots=[
-                i.root
-                for i in self._loader.trees.values()
-                if i.fragment_type != loader.FragmentType.VISUAL
-            ],
-        ):
+        for elem in self._loader.find_references(uuid):
             obj = _obj.wrap_xml(self, elem)
             for attr in _reference_attributes(type(obj)):
                 if attr.startswith("_"):

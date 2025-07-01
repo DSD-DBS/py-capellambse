@@ -9,5 +9,5 @@ the `LXML Documentation`_.
 .. _LXML Documentation: https://lxml.de/
 """
 
+from ._typing import *
 from .core import *
-from .modelinfo import ModelInfo as ModelInfo

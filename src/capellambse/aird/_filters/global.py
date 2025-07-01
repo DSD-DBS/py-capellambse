@@ -179,7 +179,8 @@ def hide_alloc_func_exch(
     for cex in component_exchanges:
         assert cex.uuid is not None
         # Find all allocated functional exchanges
-        for fex in args.melodyloader[cex.uuid].iterchildren(
+        cex_elem = args.melodyloader.follow_link(None, cex.uuid)
+        for fex in cex_elem.iterchildren(
             "ownedComponentExchangeFunctionalExchangeAllocations"
         ):
             target = fex.attrib["targetElement"].rsplit("#", 1)[-1]
@@ -189,7 +190,7 @@ def hide_alloc_func_exch(
 
 def _stringify_exchange_items(
     obj: diagram.DiagramElement,
-    melodyloader: capellambse.loader.MelodyLoader,
+    melodyloader: capellambse.loader.Loader,
     sort_items: bool = False,
 ) -> str:
     assert obj.uuid is not None
@@ -209,11 +210,11 @@ def _stringify_exchange_items(
 def _get_allocated_exchangeitem_names(
     *try_ids: str,
     alloc_attr: str,
-    melodyloader: capellambse.loader.MelodyLoader,
+    melodyloader: capellambse.loader.Loader,
 ) -> tuple[lxml.etree._Element | None, list[str]]:
     for obj_id in try_ids:
         try:
-            elm = melodyloader[obj_id]
+            elm = melodyloader.follow_link(None, obj_id)
         except KeyError:
             pass
         else:
@@ -223,7 +224,7 @@ def _get_allocated_exchangeitem_names(
 
     if elm.tag == "ownedDiagramElements":
         targetlink = next(elm.iterchildren("target"))
-        elm = melodyloader[targetlink.attrib["href"]]
+        elm = melodyloader.follow_link(targetlink, targetlink.attrib["href"])
 
     names = []
     for elem in melodyloader.follow_links(
