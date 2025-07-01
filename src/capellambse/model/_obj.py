@@ -1676,7 +1676,11 @@ class _ListFilter(t.Generic[T]):
             want = True
 
             for attr in attrs:
-                if isinstance(o, cabc.Iterable) and not isinstance(o, str):
+                if (
+                    isinstance(o, cabc.Iterable)
+                    and not isinstance(o, str)
+                    and not isinstance(o, ModelElement)
+                ):
                     o = [getattr(c, attr) for c in o if hasattr(c, attr)]
                     if not o:
                         want = False
