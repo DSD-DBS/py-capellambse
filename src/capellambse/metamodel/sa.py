@@ -160,7 +160,9 @@ class Mission(capellacore.NamedElement, capellacore.InvolverElement):
     involvements = m.Containment["MissionInvolvement"](
         "ownedMissionInvolvements", (NS, "MissionInvolvement")
     )
-    incoming_involvements = m.Backref(MissionInvolvement, "target")
+    incoming_involvements = m.Backref["MissionInvolvement"](
+        (NS, "MissionInvolvement"), "target"
+    )
     capability_exploitations = m.Containment["CapabilityExploitation"](
         "ownedCapabilityExploitations", (NS, "CapabilityExploitation")
     )

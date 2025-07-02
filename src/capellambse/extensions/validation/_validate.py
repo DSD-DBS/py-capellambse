@@ -58,18 +58,18 @@ class VirtualType(t.Generic[_T_co]):
 
 @dataclasses.dataclass(frozen=True)
 class RealType(t.Generic[_T_co]):
-    class_: type[_T_co]
+    clsname: m.ClassName
 
     @property
     def name(self) -> str:
-        return self.class_.__name__
+        return self.clsname[1]
 
     def search(self, model_: capellambse.MelodyModel) -> m.ElementList:
-        assert isinstance(self.class_, str | type(m.ModelElement))
-        return model_.search(self.class_)
+        return model_.search(self.clsname)
 
     def matches(self, obj: m.ModelElement) -> bool:
-        return isinstance(obj, self.class_)
+        cls = obj._model.resolve_class(self.clsname)
+        return isinstance(obj, cls)
 
 
 class _VirtualTypesRegistry(cabc.Mapping[str, VirtualType | RealType]):
@@ -91,8 +91,8 @@ class _VirtualTypesRegistry(cabc.Mapping[str, VirtualType | RealType]):
         except KeyError:
             pass
 
-        (class_,) = m.find_wrapper(key)
-        return RealType(class_)
+        clsname = m.resolve_class_name((None, key))
+        return RealType(clsname)
 
     def register(self, vtype: VirtualType) -> None:
         try:
@@ -126,7 +126,8 @@ def virtual_type(
 @virtual_type(mm.oa.OperationalActivity)
 def OperationalActivity(obj):
     assert hasattr(obj._model, "oa"), "Model doesn't have an OA layer?"
-    return obj != obj._model.oa.root_activity
+    pkg = obj._model.oa.activity_pkg
+    return obj not in pkg.activities
 
 
 @virtual_type(mm.sa.SystemFunction)
@@ -444,7 +445,7 @@ class ModelValidation:
         for i in typenames:
             objs = _types_registry[i].search(self._model)
             found.update((o.uuid, o._element) for o in objs)
-        return m.MixedElementList(self._model, list(found.values()))
+        return m.ElementList(self._model, list(found.values()))
 
 
 class ObjectValidation:
@@ -498,7 +499,7 @@ class LayerValidation(ObjectValidation):
         for i in typenames:
             objs = _types_registry[i].search(self._model).by_layer(self.parent)
             found.update((o.uuid, o._element) for o in objs)
-        return m.MixedElementList(self._model, list(found.values()))
+        return m.ElementList(self._model, list(found.values()))
 
 
 class ElementValidation(ObjectValidation):

@@ -254,7 +254,7 @@ class ManagedGroup(mm.capellacore.PropertyValueGroup):
         )
         for propdef in self.property_values:
             pv = groupobj.property_values.create(
-                m.build_xtype(type(propdef)),
+                type(propdef).__name__,
                 name=propdef.name,
                 applied_property_values=[propdef],
                 value=propdef.value,
@@ -281,14 +281,13 @@ class ManagedDomain(mm.capellacore.PropertyValuePkg):
     version = property(
         lambda self: self.property_values.by_name("version").value
     )
-    types = m.Containment(
+    types = m.Containment[mm.capellacore.EnumerationPropertyType](
         "ownedEnumerationPropertyTypes",
-        mm.capellacore.EnumerationPropertyType,
-        aslist=m.ElementList,
+        (mm.capellacore.NS, "EnumerationPropertyType"),
     )
-    groups: m.Containment[mm.capellacore.PropertyValueGroup] = m.Containment(  # type: ignore[assignment]
+    property_value_groups = m.Containment[mm.capellacore.PropertyValueGroup](
         "ownedPropertyValueGroups",
-        mm.capellacore.PropertyValueGroup,
+        (mm.capellacore.NS, "PropertyValueGroup"),
         mapkey="name",
         alternate=ManagedGroup,
     )
