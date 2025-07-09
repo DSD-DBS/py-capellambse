@@ -66,6 +66,7 @@ nitpick_ignore = [
 nitpick_ignore_regex = [
     ("py:.*", r"^(?:awesomeversion|yaml)\..*"),
     ("py:.*", r"^(?:.*\.)?_[A-Z]$"),  # Single-letter TypeVars (e.g. _T)
+    ("py:.*", r"^(?:.*\.)?(?:_UnspecifiedType|_NOT_SPECIFIED)$"),
     # Super/subclass and "see also" references sometimes break
     ("py:(meth|obj)", r"(?:.*\.)?write_transaction"),
     # Sometimes autodoc_typehints doesn't properly resolve aliases
