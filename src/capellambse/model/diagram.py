@@ -351,7 +351,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
     @property
     def nodes(self) -> _obj.ElementList:
         """Return a list of all nodes visible in this diagram."""
-        allids = {e.uuid for e in self.render(None) if not e.hidden}
+        nodes = self._render if hasattr(self, "_render") else self.render(None)
+        allids = {e.uuid for e in nodes if not e.hidden}
         elems = []
         for elemid in allids:
             assert elemid is not None
