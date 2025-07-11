@@ -337,8 +337,9 @@ class AttributeDefinitionEnumeration(AttributeDefinition):
 
 
 class EnumerationValueAttribute(Attribute):
-    definition = m.Single(  # TODO not in metamodel
-        m.Association(AttributeDefinitionEnumeration, "definition")
+    definition = m.Single["AttributeDefinitionEnumeration"](
+        # TODO not in metamodel
+        m.Association((NS, "AttributeDefinitionEnumeration"), "definition")
     )
     values = m.Association["EnumValue"]((NS, "EnumValue"), "values")
 

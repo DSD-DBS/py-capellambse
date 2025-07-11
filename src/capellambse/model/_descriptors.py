@@ -40,6 +40,7 @@ import contextlib
 import itertools
 import logging
 import operator
+import sys
 import types
 import typing as t
 import warnings
@@ -53,6 +54,11 @@ from capellambse import helpers
 
 from . import T, T_co, U, U_co
 
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 _NotSpecifiedType = t.NewType("_NotSpecifiedType", object)
 _NOT_SPECIFIED = _NotSpecifiedType(object())
 "Used to detect unspecified optional arguments"
@@ -60,6 +66,10 @@ _NOT_SPECIFIED = _NotSpecifiedType(object())
 LOGGER = logging.getLogger(__name__)
 
 
+@deprecated(
+    "@xtype_handler is deprecated and no longer used,"
+    " inherit from ModelElement instead"
+)
 def xtype_handler(
     arch: str | None = None, /, *xtypes: str
 ) -> cabc.Callable[[type[T]], type[T]]:
@@ -72,6 +82,7 @@ def xtype_handler(
     return lambda i: i
 
 
+@deprecated("xsi:type strings are deprecated")
 def build_xtype(class_: type[_obj.ModelObject]) -> str:
     ns: _obj.Namespace | None = getattr(class_, "__capella_namespace__", None)
     if ns is None:
@@ -437,7 +448,7 @@ class Relationship(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         mapvalue: str | None,
         fixed_length: int,
         single_attr: str | None,
-        legacy_by_type: bool,
+        legacy_by_type: bool = False,
     ) -> None:
         self.list_extra_args = {
             "fixed_length": fixed_length,
@@ -612,6 +623,7 @@ class Relationship(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             self.single_attr = super_acc.single_attr
 
 
+@deprecated("WritableAccessor is deprecated, use Relationship instead")
 class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
     """An Accessor that also provides write support on lists it returns."""
 
@@ -712,7 +724,7 @@ class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         **kw: t.Any,
     ) -> T_co:
         if typehint:
-            elmclass, kw["xtype"] = self._match_xtype(typehint)
+            elmclass, kw["xtype"] = self._match_xtype(parent._model, typehint)
         else:
             elmclass, kw["xtype"] = self._guess_xtype()
         assert elmclass is not None
@@ -738,15 +750,20 @@ class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             **self.list_extra_args,
         )
 
-    def _match_xtype(self, hint: str, /) -> tuple[type[T_co], str]:
+    def _match_xtype(
+        self,
+        model: capellambse.MelodyModel,
+        hint: str,
+        /,
+    ) -> tuple[type[T_co], str]:
         """Find the right class for the given ``xsi:type``."""
         if not isinstance(hint, str):
             raise TypeError(
                 f"Expected str as first type, got {type(hint).__name__!r}"
             )
 
-        (cls,) = t.cast(tuple[type[T_co]], _obj.find_wrapper(hint))
-        return (cls, build_xtype(cls))
+        (cls,) = t.cast(tuple[type[T_co]], model.resolve_class(hint))
+        return (cls, build_xtype(cls))  # type: ignore[deprecated]
 
     def _guess_xtype(self) -> tuple[type[T_co], str]:
         try:
@@ -845,6 +862,7 @@ class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         )
 
 
+@deprecated("PhysicalAccessor is deprecated, use Relationship instead")
 class PhysicalAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
     """Helper super class for accessors that work with real elements."""
 
@@ -878,18 +896,19 @@ class PhysicalAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         super().__init__()
         if xtypes is None:
             self.xtypes = (
-                {build_xtype(class_)}
+                {build_xtype(class_)}  # type: ignore[deprecated]
                 if class_ is not _obj.ModelElement
                 else set()
             )
         elif isinstance(xtypes, type):
             assert issubclass(xtypes, _obj.ModelElement)
-            self.xtypes = {build_xtype(xtypes)}
+            self.xtypes = {build_xtype(xtypes)}  # type: ignore[deprecated]
         elif isinstance(xtypes, str):
             self.xtypes = {xtypes}
         else:
             self.xtypes = {
-                i if isinstance(i, str) else build_xtype(i) for i in xtypes
+                i if isinstance(i, str) else build_xtype(i)  # type: ignore[deprecated]
+                for i in xtypes
             }
 
         self.aslist = aslist
@@ -925,6 +944,7 @@ class PhysicalAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         )
 
 
+@deprecated("DirectProxyAccessor is deprecated, use Containment instead")
 class DirectProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Creates proxy objects on the fly."""
 
@@ -1017,10 +1037,11 @@ class DirectProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
         elif isinstance(rootelem, type) and issubclass(
             rootelem, _obj.ModelElement
         ):
-            self.rootelem = [build_xtype(rootelem)]
+            self.rootelem = [build_xtype(rootelem)]  # type: ignore[deprecated]
         else:
             self.rootelem = [
-                i if isinstance(i, str) else build_xtype(i) for i in rootelem
+                i if isinstance(i, str) else build_xtype(i)  # type: ignore[deprecated]
+                for i in rootelem
             ]
 
     def __get__(self, obj, objtype=None):
@@ -1192,6 +1213,9 @@ class DirectProxyAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
         yield
 
 
+@deprecated(
+    "DeepProxyAccessor is deprecated, use @property and model.search() instead"
+)
 class DeepProxyAccessor(PhysicalAccessor[T_co]):
     """A DirectProxyAccessor that searches recursively through the tree."""
 
@@ -1241,9 +1265,9 @@ class DeepProxyAccessor(PhysicalAccessor[T_co]):
         elif isinstance(rootelem, type) and issubclass(
             rootelem, _obj.ModelElement
         ):
-            self.rootelem = (build_xtype(rootelem),)
+            self.rootelem = (build_xtype(rootelem),)  # type: ignore[deprecated]
         elif not isinstance(rootelem, str):  # type: ignore[unreachable]
-            self.rootelem = tuple(build_xtype(i) for i in rootelem)
+            self.rootelem = tuple(build_xtype(i) for i in rootelem)  # type: ignore[deprecated]
         else:
             raise TypeError(
                 "Invalid 'rootelem', expected a type or list of types: "
@@ -1299,6 +1323,10 @@ class Allocation(Relationship[T_co]):
     backattr: str | None
 
     @t.overload
+    @deprecated(
+        "Raw classes, xsi:type strings and 'aslist' are deprecated,"
+        " migrate to (Namespace, 'ClassName') tuples and drop aslist=..."
+    )
     def __init__(
         self,
         tag: str | None,
@@ -2054,6 +2082,10 @@ class Association(Relationship[T_co]):
         self.attr = super_acc.attr
 
 
+@deprecated(
+    "PhysicalLinkEndsAccessor is deprecated,"
+    " use Association(..., fixed_length=2) instead"
+)
 class PhysicalLinkEndsAccessor(Association[T_co]):
     def __init__(
         self,
@@ -2180,6 +2212,7 @@ class ParentAccessor(Accessor["_obj.ModelObject"]):
         return _obj.wrap_xml(obj._model, parent)
 
 
+@deprecated("AttributeMatcherAccessor is deprecated, use Filter instead")
 class AttributeMatcherAccessor(DirectProxyAccessor[T_co]):
     __slots__ = (
         "_AttributeMatcherAccessor__aslist",
@@ -2662,6 +2695,11 @@ class Filter(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
             yield
 
 
+@deprecated(
+    "TypecastAccessor is deprecated,"
+    " use Filter to perform filtering"
+    " or Alias to create an unfiltered Alias"
+)
 class TypecastAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
     """Changes the static type of the value of another accessor.
 
@@ -2758,7 +2796,7 @@ class TypecastAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
         if typehint:
             raise TypeError(f"{self._qualname} does not support type hints")
         acc: WritableAccessor = getattr(self.class_, self.attr)
-        obj = acc.create(elmlist, build_xtype(self.class_), **kw)
+        obj = acc.create(elmlist, build_xtype(self.class_), **kw)  # type: ignore[deprecated]
         assert isinstance(obj, self.class_)
         return obj
 
@@ -2797,9 +2835,14 @@ class TypecastAccessor(WritableAccessor[T_co], PhysicalAccessor[T_co]):
 class Containment(Relationship[T_co]):
     __slots__ = ("classes", "role_tag")
 
+    aslist: type[_obj.ElementListCouplingMixin]
     alternate: type[_obj.ModelObject] | None
 
     @t.overload
+    @deprecated(
+        "Raw classes, xsi:type strings and 'aslist' are deprecated,"
+        " migrate to (Namespace, 'ClassName') tuples and drop aslist=..."
+    )
     def __init__(
         self,
         role_tag: str,

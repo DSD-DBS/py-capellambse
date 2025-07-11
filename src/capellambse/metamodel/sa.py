@@ -71,13 +71,13 @@ class SystemAnalysis(cs.ComponentArchitecture):
             lambda e: (
                 (
                     e.source is not None
-                    and e.source.owner is not None
-                    and e.source.owner.is_actor
+                    and e.source.parent is not None
+                    and e.source.parent.is_actor
                 )
                 or (
                     e.target is not None
-                    and e.target.owner is not None
-                    and e.target.owner.is_actor
+                    and e.target.parent is not None
+                    and e.target.parent.is_actor
                 )
             )
         )
@@ -160,7 +160,9 @@ class Mission(capellacore.NamedElement, capellacore.InvolverElement):
     involvements = m.Containment["MissionInvolvement"](
         "ownedMissionInvolvements", (NS, "MissionInvolvement")
     )
-    incoming_involvements = m.Backref(MissionInvolvement, "target")
+    incoming_involvements = m.Backref["MissionInvolvement"](
+        (NS, "MissionInvolvement"), "target"
+    )
     capability_exploitations = m.Containment["CapabilityExploitation"](
         "ownedCapabilityExploitations", (NS, "CapabilityExploitation")
     )

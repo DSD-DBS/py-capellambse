@@ -538,9 +538,7 @@ def _resolve_findby(
     if typehint is None:
         wanted_types: tuple[type[t.Any], ...] = ()
     else:
-        wanted_types = m.find_wrapper(typehint)
-        if not wanted_types:
-            raise ValueError(f"Unknown type: {typehint}")
+        wanted_types = (parent._model.resolve_class(typehint),)
 
     if isinstance(parent, capellambse.MelodyModel):
         candidates = parent.search(*wanted_types)
