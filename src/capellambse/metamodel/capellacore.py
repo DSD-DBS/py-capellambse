@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 from __future__ import annotations
 
+import collections.abc as cabc
 import enum
 import sys
 import typing as t
@@ -351,10 +352,26 @@ class EnumerationPropertyLiteral(NamedElement):
     _xmltag = "ownedLiterals"
 
 
-class PropertyValueGroup(Namespace):
+class PropertyValueGroup(Namespace, cabc.MutableMapping[str, str]):
     """A group for PropertyValues."""
 
     _xmltag = "ownedPropertyValueGroups"
+
+    def __getitem__(self, k: str, /) -> t.Any:
+        return self.property_values.by_name(k).value
+
+    def __setitem__(self, k: str, v: t.Any, /) -> None:
+        self.property_values.by_name(k).value = v
+
+    def __delitem__(self, k: str, /) -> None:
+        self.property_values.delete_all(name=k)
+
+    def __iter__(self) -> cabc.Iterator[str]:
+        for prop in self.property_values:
+            yield prop.name
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self)
 
     if not t.TYPE_CHECKING:
         values = m.DeprecatedAccessor("property_values")
