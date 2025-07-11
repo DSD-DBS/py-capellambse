@@ -1206,6 +1206,7 @@ def test_lists_of_links_appear_to_contain_target_objects(model: m.MelodyModel):
         "0e71a0d3-0a18-4671-bba0-71b5f88f95dd",
         "264fb47d-67b7-4bdc-8d06-8a0e5139edbf",
     ]
+    assert isinstance(type(hogwarts).allocated_functions, m.Allocation)
 
     actual = [i.uuid for i in hogwarts.allocated_functions]
 
@@ -1214,6 +1215,7 @@ def test_lists_of_links_appear_to_contain_target_objects(model: m.MelodyModel):
 
 def test_lists_of_links_cannot_create_objects(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    assert isinstance(type(hogwarts).allocated_functions, m.Allocation)
 
     with pytest.raises(TypeError, match="create"):
         hogwarts.allocated_functions.create(name="fall to the Death Eaters")
@@ -1222,6 +1224,7 @@ def test_lists_of_links_cannot_create_objects(model: m.MelodyModel):
 def test_lists_of_links_can_be_appended_to(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
     defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
+    assert isinstance(type(hogwarts).allocated_functions, m.Allocation)
 
     hogwarts.allocated_functions.append(defend_the_stone)
 
@@ -1231,6 +1234,7 @@ def test_lists_of_links_can_be_appended_to(model: m.MelodyModel):
 def test_lists_of_links_can_be_inserted_into(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
     defend_the_stone = model.by_uuid("4a2a7f3c-d223-4d44-94a7-50dd2906a70c")
+    assert isinstance(type(hogwarts).allocated_functions, m.Allocation)
 
     hogwarts.allocated_functions.insert(0, defend_the_stone)
 
@@ -1239,6 +1243,7 @@ def test_lists_of_links_can_be_inserted_into(model: m.MelodyModel):
 
 def test_lists_of_links_can_be_removed_from(model: m.MelodyModel):
     hogwarts = model.by_uuid("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
+    assert isinstance(type(hogwarts).allocated_functions, m.Allocation)
     protect_students = model.by_uuid("264fb47d-67b7-4bdc-8d06-8a0e5139edbf")
     assert protect_students in hogwarts.allocated_functions
 
