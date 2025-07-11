@@ -62,8 +62,23 @@ class _DiagramDescriptor(t.NamedTuple):
     target: etree._Element
 
 
+def _iter_views(model: loader.Loader, /) -> cabc.Iterator:
+    # cf. C.XP_VIEWS
+    for tree in model.trees.values():
+        if tree.fragment_type != loader.FragmentType.VISUAL:
+            continue
+        if tree.root.tag == helpers.TAG_XMI:
+            roots = tree.root.iterchildren()
+        else:
+            roots = iter([tree.root])
+        for root in roots:
+            if root.tag != f"{{{_n.NAMESPACES['viewpoint']}}}DAnalysis":
+                continue
+            yield from root.iterchildren("ownedViews")
+
+
 def enumerate_descriptors(
-    model: loader.MelodyLoader,
+    model: loader.Loader,
     *,
     viewpoint: str | None = None,
 ) -> cabc.Iterator[DRepresentationDescriptor]:
@@ -77,7 +92,7 @@ def enumerate_descriptors(
         Only return diagrams of the given viewpoint. If not given, all
         diagrams are returned.
     """
-    for view in model.xpath(C.XP_VIEWS):
+    for view in _iter_views(model):
         if viewpoint and _viewpoint_of(view) != viewpoint:
             continue
 
@@ -89,7 +104,7 @@ def enumerate_descriptors(
                 raise RuntimeError(
                     f"Malformed diagram reference: {rep_path!r}"
                 )
-            diag_root = model[rep_path]
+            diag_root = model.follow_link(d, rep_path)
             if diag_root.tag not in DIAGRAM_ROOTS:
                 continue
 
@@ -130,12 +145,12 @@ def parse_diagrams(
 
 
 def _build_descriptor(
-    model: loader.MelodyLoader,
+    model: loader.Loader,
     descriptor: DRepresentationDescriptor,
 ) -> _DiagramDescriptor:
     assert isinstance(descriptor, etree._Element)
 
-    diag_root = model[descriptor.attrib["repPath"]]
+    diag_root = model.follow_link(descriptor, descriptor.attrib["repPath"])
     styleclass = get_styleclass(descriptor)
     target = find_target(model, descriptor)
 
@@ -151,7 +166,7 @@ def _build_descriptor(
 
 
 def find_target(
-    model: loader.MelodyLoader, descriptor: DRepresentationDescriptor
+    model: loader.Loader, descriptor: DRepresentationDescriptor
 ) -> etree._Element:
     assert isinstance(descriptor, etree._Element)
     target_anchors = list(descriptor.iterchildren("target"))
@@ -180,7 +195,7 @@ def get_styleclass(descriptor: DRepresentationDescriptor) -> str | None:
 
 
 def parse_diagram(
-    model: loader.MelodyLoader,
+    model: loader.Loader,
     descriptor: DRepresentationDescriptor,
     **params: t.Any,
 ) -> diagram.Diagram:
@@ -255,7 +270,11 @@ def parse_diagram(
 def _element_from_xml(ebd: C.ElementBuilder) -> diagram.DiagramElement:
     """Construct a single diagram element from the model XML."""
     element = ebd.data_element.get("element")
-    tag = ebd.melodyloader[element].tag if element else None
+    tag = (
+        ebd.melodyloader.follow_link(ebd.data_element, element).tag
+        if element
+        else None
+    )
     if element is not None and tag != "ownedRepresentationDescriptors":
         factory = _semantic.from_xml
     else:
@@ -264,7 +283,7 @@ def _element_from_xml(ebd: C.ElementBuilder) -> diagram.DiagramElement:
 
 
 def iter_visible(
-    model: loader.MelodyLoader,
+    model: loader.Loader,
     descriptor: DRepresentationDescriptor,
 ) -> cabc.Iterator[etree._Element]:
     r"""Iterate over all semantic elements that are visible in a diagram.
