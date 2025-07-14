@@ -24,7 +24,7 @@ for file in *.ipynb; do
   if ! uv run --no-sync jupyter nbconvert --to notebook --execute "$file" --output "$outfile" --ExecutePreprocessor.timeout "${NOTEBOOK_TIMEOUT_SEC:-300}"; then
     ok=false
   else
-    new_outputs="$(celloutputs "$file")"
+    new_outputs="$(celloutputs "$outfile")"
     if ! diff -u3 <(echo "$old_outputs") <(echo "$new_outputs"); then
       ok=false
     fi
