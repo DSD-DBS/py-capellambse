@@ -277,7 +277,7 @@ jobs:
             uvx --with setuptools_scm python -c \
               "import setuptools_scm as scm; print(scm.get_version())"
           )" >> "$GITHUB_ENV"
-      - run: uv add ./wheelhouse/*.whl && uv sync
-      - run: uv run --with=pytest,pytest-xdist pytest -n auto
+      - run: uv add --dev ./wheelhouse/*.whl pytest pytest-xdist && uv sync
+      - run: uv run pytest -n auto
 
 # vim:set fdm=marker:
