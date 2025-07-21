@@ -19,6 +19,7 @@ import os
 import re
 import sys
 import typing as t
+import warnings
 
 import lxml.etree
 
@@ -37,6 +38,9 @@ except ImportError:
     HAS_NATIVE = False
 else:
     HAS_NATIVE = True
+
+_UnspecifiedType = t.NewType("_UnspecifiedType", object)
+_NOT_SPECIFIED = _UnspecifiedType(object())
 
 INDENT = b"  "
 LINESEP = os.linesep.encode("ascii")
@@ -82,8 +86,8 @@ def to_bytes(
     tree: lxml.etree._Element,
     /,
     *,
-    encoding: str = "utf-8",
-    errors: str = "strict",
+    encoding: str | _UnspecifiedType = _NOT_SPECIFIED,
+    errors: str | _UnspecifiedType = _NOT_SPECIFIED,
     declare_encoding: bool = True,
 ) -> bytes:
     """Serialize an XML tree as a ``str``.
@@ -107,11 +111,21 @@ def to_bytes(
     bytes
         The serialized XML, encoded using ``encoding``.
     """
+    args = {}
+    if encoding is not _NOT_SPECIFIED:
+        assert isinstance(encoding, str)
+        args["encoding"] = encoding
+    else:
+        encoding = "utf-8"
+    if errors is not _NOT_SPECIFIED:
+        assert isinstance(errors, str)
+        args["errors"] = errors
+
     if declare_encoding:
         declaration = _declare(encoding)
     else:
         declaration = b""
-    return declaration + serialize(tree, encoding=encoding, errors=errors)
+    return declaration + serialize(tree, **args)  # type: ignore[call-overload]
 
 
 def write(
@@ -119,8 +133,8 @@ def write(
     /,
     file: HasWrite | os.PathLike | str | bytes,
     *,
-    encoding: str = "utf-8",
-    errors: str = "strict",
+    encoding: str | _UnspecifiedType = _NOT_SPECIFIED,
+    errors: str | _UnspecifiedType = _NOT_SPECIFIED,
     line_length: float | int = LINE_LENGTH,
     siblings: bool = False,
 ) -> None:
@@ -141,6 +155,16 @@ def write(
     siblings
         Also include siblings of the given subtree.
     """
+    args = {}
+    if encoding is not _NOT_SPECIFIED:
+        assert isinstance(encoding, str)
+        args["encoding"] = encoding
+    else:
+        encoding = "utf-8"
+    if errors is not _NOT_SPECIFIED:
+        assert isinstance(errors, str)
+        args["errors"] = errors
+
     ctx: t.ContextManager[HasWrite]
     if isinstance(file, HasWrite):
         ctx = contextlib.nullcontext(file)
@@ -151,8 +175,7 @@ def write(
         f.write(_declare(encoding))
         serialize(
             tree,
-            encoding=encoding,
-            errors=errors,
+            **args,
             line_length=line_length,
             siblings=siblings,
             file=f,
@@ -185,8 +208,8 @@ def serialize(
     tree: lxml.etree._Element | lxml.etree._ElementTree,
     /,
     *,
-    encoding: str = "utf-8",
-    errors: str = "strict",
+    encoding: str | _UnspecifiedType = _NOT_SPECIFIED,
+    errors: str | _UnspecifiedType = _NOT_SPECIFIED,
     line_length: float | int = LINE_LENGTH,
     siblings: bool | None = None,
     file: HasWrite | None = None,
@@ -227,6 +250,24 @@ def serialize(
         if siblings is None:
             siblings = False
         root = tree
+
+    if encoding is not _NOT_SPECIFIED or errors is not _NOT_SPECIFIED:
+        warnings.warn(
+            (
+                "The 'encoding' and 'errors' arguments are deprecated."
+                " The default of strict UTF-8 will soon become the only option."
+                " Please remove the arguments from your calls into exs."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+    if encoding is _NOT_SPECIFIED:
+        encoding = "utf-8"
+    if errors is _NOT_SPECIFIED:
+        errors = "strict"
+    assert isinstance(encoding, str)
+    assert isinstance(errors, str)
 
     if HAS_NATIVE and encoding == "utf-8" and errors == "strict":
         line_length = min(line_length, sys.maxsize)

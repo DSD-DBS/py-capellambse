@@ -35,6 +35,9 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
+_UnspecifiedType = t.NewType("_UnspecifiedType", object)
+_NOT_SPECIFIED = _UnspecifiedType(object())
+
 E = builder.ElementMaker()
 LOGGER = logging.getLogger(__name__)
 PROJECT_NATURE = "org.polarsys.capella.project.nature"
@@ -426,7 +429,7 @@ class ModelFile:
     def write_xml(
         self,
         file: t.BinaryIO,
-        encoding: str = "utf-8",
+        encoding: str | _UnspecifiedType = _NOT_SPECIFIED,
     ) -> None:
         """Write this file's XML into the file specified by ``path``."""
         if self.fragment_type == FragmentType.SEMANTIC:
@@ -434,10 +437,24 @@ class ModelFile:
         else:
             line_length = sys.maxsize
 
+        args = {}
+        if encoding != _NOT_SPECIFIED:
+            warnings.warn(
+                (
+                    "Specifying an encoding to 'ModelFile.write_xml' is deprecated,"
+                    " please remove the 'encoding' parameter from your calls"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            assert isinstance(encoding, str)
+            if encoding != "utf-8":
+                args["encoding"] = encoding
+
         exs.write(
             self.root,
             file,
-            encoding=encoding,
+            **args,
             line_length=line_length,
             siblings=True,
         )
