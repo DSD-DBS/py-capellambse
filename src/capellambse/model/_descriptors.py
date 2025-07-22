@@ -745,9 +745,9 @@ class WritableAccessor(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
         **kw: t.Any,
     ) -> T_co:
         if typehint:
-            elmclass, kw["xtype"] = self._match_xtype(typehint)
+            elmclass, _ = self._match_xtype(typehint)
         else:
-            elmclass, kw["xtype"] = self._guess_xtype()
+            elmclass, _ = self._guess_xtype()
         assert elmclass is not None
 
         want_id: str | None = None

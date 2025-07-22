@@ -44,7 +44,7 @@ class FilteringCriterion(capellacore.NamedElement):
     _xmltag = "ownedFilteringCriteria"
 
     filtered_objects = m.Backref[m.ModelElement](
-        (), "filtering_criteria", aslist=m.MixedElementList
+        (), "filtering_criteria", legacy_by_type=True
     )
 
 
@@ -142,8 +142,8 @@ class IntersectionFilteringResultSet(FilteringResultSet):
 
 
 def init() -> None:
-    capellamodeller.SystemEngineering.filtering_model = m.DirectProxyAccessor(
-        FilteringModel
+    capellamodeller.SystemEngineering.filtering_model = m.Single(
+        m.Filter("extensions", (NS, "FilteringModel"))
     )
     m.MelodyModel.filtering_model = property(  # type: ignore[attr-defined]
         operator.attrgetter("project.model_root.filtering_model")

@@ -12,16 +12,15 @@ from . import requirements as rq
 
 
 def init() -> None:
-    cr.CapellaModule.requirement_types_folders = m.DirectProxyAccessor(  # TODO
-        cr.CapellaTypesFolder, aslist=m.ElementList
-    )
-
     m.ModelElement.requirements = cr.ElementRelationAccessor()
-    cs.BlockArchitecture.requirement_modules = m.DirectProxyAccessor(
-        cr.CapellaModule, aslist=m.ElementList
+    m.ModelElement.requirements_relations = m.Backref[rq.AbstractRelation](
+        (rq.NS, "AbstractRelation"), "source", "target"
     )
-    cs.BlockArchitecture.requirement_types_folders = m.DirectProxyAccessor(
-        cr.CapellaTypesFolder, aslist=m.ElementList
+    cs.BlockArchitecture.requirement_modules = m.Filter(
+        "extensions", (cr.NS, "CapellaModule")
+    )
+    cs.BlockArchitecture.requirement_types_folders = m.Filter(
+        "extensions", (cr.NS, "CapellaTypesFolder")
     )
 
     cs.BlockArchitecture.all_requirements = property(

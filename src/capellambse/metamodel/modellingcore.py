@@ -49,24 +49,6 @@ ModelElement.constraints = m.Containment(
 ModelElement.migrated_elements = m.Containment["ModelElement"](
     "ownedMigratedElements", (NS, "ModelElement")
 )
-ModelElement.property_values = m.Containment(
-    "ownedPropertyValues",
-    (ns.CAPELLACORE, "AbstractPropertyValue"),
-    mapkey="name",
-    mapvalue="value",
-)
-ModelElement.property_value_groups = m.Containment(
-    "ownedPropertyValueGroups",
-    (ns.CAPELLACORE, "PropertyValueGroup"),
-    mapkey="name",
-    mapvalue="values",
-)
-ModelElement.applied_property_values = m.Association(
-    (ns.CAPELLACORE, "AbstractPropertyValue"), "appliedPropertyValues"
-)
-ModelElement.applied_property_value_groups = m.Association(
-    (ns.CAPELLACORE, "PropertyValueGroup"), "appliedPropertyValueGroups"
-)
 
 
 class AbstractRelationship(ModelElement, abstract=True):

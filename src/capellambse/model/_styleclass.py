@@ -32,10 +32,6 @@ def get_styleclass(obj: _obj.ModelObject) -> str:
 
 
 def _default(obj: _obj.ModelObject) -> str:
-    from . import _obj  # noqa: PLC0415
-
-    if isinstance(obj, _obj.ModelElement) and obj.xtype:
-        return obj.xtype.split(":")[-1]
     return type(obj).__name__
 
 
@@ -48,8 +44,8 @@ def _association(obj: _obj.ModelObject) -> str:
     default_kind = kind = "ASSOCIATION"
     assert isinstance(obj.roles, _obj.ElementList)
     for member in obj.roles:
-        if member.kind != default_kind:
-            kind = member.kind.name
+        if member.aggregation_kind != default_kind:
+            kind = member.aggregation_kind.name
     return kind.capitalize()
 
 
@@ -137,7 +133,7 @@ _STYLECLASSES: dict[str, cabc.Callable[..., str]] = {
     "CapellaIncomingRelation": lambda _: "RequirementRelation",
     "CapellaOutgoingRelation": lambda _: "RequirementRelation",
     "Class": lambda o: "Primitive" * o.is_primitive + "Class",
-    "ComponentPort": lambda o: f"CP_{o.direction or 'UNSET'}",
+    "ComponentPort": lambda o: f"CP_{o.orientation or 'UNSET'}",
     "ControlNode": lambda o: o.kind.name.capitalize() + _default(o),
     "Entity": lambda o: (
         ("Entity", "OperationalActor")[o.is_actor and o.is_human]
@@ -151,7 +147,7 @@ _STYLECLASSES: dict[str, cabc.Callable[..., str]] = {
     "Part": _part,
     "PhysicalComponent": _physical_component,
     "PhysicalPort": lambda _: "PP",
-    "Property": lambda o: o.kind.name.capitalize(),
+    "Property": lambda o: o.aggregation_kind.name.capitalize(),
     "PortAllocation": _port_allocation,
     "Region": lambda o: _default(o.parent) + _default(o),
     "SystemComponent": _generic_component,

@@ -196,8 +196,8 @@ def _build_datatypes(
 ) -> cabc.Iterable[etree._Element]:
     visited_types: set[str] = set()
     for attrdef, attrtype in attrdefs:
-        if attrdef and attrdef.data_type:
-            uuid = attrdef.data_type.uuid.upper()
+        if attrdef and attrdef.definition_type:
+            uuid = attrdef.definition_type.uuid.upper()
         else:
             uuid = "NULL-DATATYPE"
 
@@ -209,8 +209,12 @@ def _build_datatypes(
         elem = etree.Element(f"DATATYPE-DEFINITION-{attrtype}")
         elem.set("IDENTIFIER", id)
         elem.set("LAST-CHANGE", timestamp)
-        if attrdef and attrdef.data_type and attrdef.data_type.long_name:
-            elem.set("LONG-NAME", attrdef.data_type.long_name)
+        if (
+            attrdef
+            and attrdef.definition_type
+            and attrdef.definition_type.long_name
+        ):
+            elem.set("LONG-NAME", attrdef.definition_type.long_name)
 
         type_attrs = {
             "STRING": {"MAX-LENGTH": "2147483647"},
@@ -221,7 +225,7 @@ def _build_datatypes(
 
         if isinstance(attrdef, rq.AttributeDefinitionEnumeration):
             values = etree.Element("SPECIFIED-VALUES")
-            for i in getattr(attrdef.data_type, "values", ()):
+            for i in getattr(attrdef.definition_type, "values", ()):
                 v = etree.Element("ENUM-VALUE")
                 v.set("IDENTIFIER", "_" + i.uuid.upper())
                 v.set("LAST-CHANGE", timestamp)
@@ -338,7 +342,7 @@ def _build_spec_object_types(
             attr_elem = etree.Element(f"ATTRIBUTE-DEFINITION-{attr_def.type}")
             if attr_def.modelobj:
                 attid = attr_def.modelobj.uuid.upper()
-                dt = attr_def.modelobj.data_type
+                dt = attr_def.modelobj.definition_type
                 dtid = dt.uuid.upper() if dt else "NULL-DATATYPE"
             else:
                 attid = "NULL-ATTRIBUTE-DEFINITION"
@@ -350,7 +354,7 @@ def _build_spec_object_types(
                 assert attr_def.modelobj is not None
                 attr_elem.set(
                     "MULTI-VALUED",
-                    ("false", "true")[attr_def.modelobj.multi_valued],
+                    ("false", "true")[attr_def.modelobj.is_multi_valued],
                 )
 
             dtref = etree.Element(f"DATATYPE-DEFINITION-{attr_def.type}-REF")
@@ -370,10 +374,10 @@ def _build_spec_objects(
     timestamp: str,
 ) -> cabc.Iterable[etree._Element]:
     for req in parent.requirements:
-        yield _build_spec_object(req, timestamp)
-
-    for folder in parent.folders:
-        yield from _build_spec_objects(folder, timestamp)
+        if isinstance(req, rq.Folder):
+            yield from _build_spec_objects(req, timestamp)
+        else:
+            yield _build_spec_object(req, timestamp)
 
 
 def _build_spec_object(req: rq.Requirement, timestamp: str) -> etree._Element:
@@ -513,9 +517,10 @@ def _build_specifications(
         folder: cr.CapellaModule | rq.Folder,
     ) -> cabc.Iterable[etree._Element]:
         for req in folder.requirements:
-            yield create_hierarchy_object(req)
-        for sub in folder.folders:
-            yield from create_hierarchy_folder(sub)
+            if isinstance(req, rq.Folder):
+                yield from create_hierarchy_folder(req)
+            else:
+                yield create_hierarchy_object(req)
 
     module_type_ref = (
         "NULL-SPECIFICATION-TYPE"
@@ -616,9 +621,10 @@ def _collect_objects(
         i: rq.Folder | cr.CapellaModule,
     ) -> None:
         for req in i.requirements:
-            collect_requirement(req)
-        for fld in i.folders:
-            collect_folder(fld)
+            if isinstance(req, rq.Folder):
+                collect_folder(req)
+            else:
+                collect_requirement(req)
 
     collect_folder(module)
     return req_types

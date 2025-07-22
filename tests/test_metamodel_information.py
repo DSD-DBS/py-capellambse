@@ -16,28 +16,26 @@ FLOAT_TYPE_UUID = "d65e426c-7df0-43df-aaa4-417ae193176a"
 @pytest.mark.parametrize(
     ("name", "super_name", "expected_type"),
     [
-        ("SpecialTwist", "Twist", "Class"),
-        ("1st Specialization of SuperClass", "SuperClass", "Class"),
-        ("SpecialUnion1", "SuperUnion", "Union"),
-        ("StatusEnum", "CmdEnum", "Enumeration"),
-        ("SpecialCollection1", "SuperCollection", "Collection"),
+        ("SpecialTwist", "Twist", information.Class),
+        ("1st Specialization of SuperClass", "SuperClass", information.Class),
+        ("SpecialUnion1", "SuperUnion", information.Union),
+        ("StatusEnum", "CmdEnum", information.datatype.Enumeration),
+        ("SpecialCollection1", "SuperCollection", information.Collection),
     ],
 )
 def test_generalizations(
     model: m.MelodyModel,
     name: str,
     super_name: str,
-    expected_type: str,
+    expected_type: type[m.ModelElement],
 ):
     objects_of_type = model.search(expected_type)
     obj = objects_of_type.by_name(name)
     super_obj = objects_of_type.by_name(super_name)
 
-    assert isinstance(obj.xtype, str)
-    assert obj.xtype.endswith(expected_type)
+    assert type(obj) is expected_type
     assert obj.super == super_obj
-    assert isinstance(super_obj.xtype, str)
-    assert super_obj.xtype.endswith(expected_type)
+    assert type(super_obj) is expected_type
     sub_objects = super_obj.sub
     assert isinstance(sub_objects, m.ElementList)
     assert obj in sub_objects
@@ -105,8 +103,7 @@ class TestClasses:
         elm = model.by_uuid("959b5222-7717-4ee9-bd3a-f8a209899464")
         assert isinstance(elm, information.Class)
 
-        xtype = elm.xtype or ""
-        assert xtype.endswith("Class")
+        assert type(elm) is information.Class
         assert hasattr(elm, "state_machines")
         assert len(elm.state_machines) == 1
 
@@ -233,9 +230,7 @@ class TestClassProperty:
 
 def test_complex_value(model: m.MelodyModel):
     cv = model.by_uuid("3a467d68-f53c-4d66-9d32-fe032a8cb2c5")
-    value_parts = {
-        i.referenced_property.name: i.value.value for i in cv.value_parts
-    }
+    value_parts = {i.referenced_property.name: i.value.value for i in cv.parts}
     assert value_parts == {
         "owner": "Harry Potter",
         "core": "Pheonix Feather",
@@ -244,26 +239,29 @@ def test_complex_value(model: m.MelodyModel):
 
 
 @pytest.mark.parametrize(
-    ("uuid", "expected_value", "expected_cls"),
+    ("uuid", "expected_value", "expected_type"),
     [
         pytest.param(
             "1d24c16d-61ad-40b9-9ce0-80e72320e74f",
             "3",
-            "LiteralNumericValue",
+            information.datavalue.LiteralNumericValue,
         ),
         pytest.param(
             "3c6d9df2-1229-4642-aede-a7ac129035c9",
             "Unknown object",
-            "LiteralStringValue",
+            information.datavalue.LiteralStringValue,
         ),
     ],
 )
 def test_literal_value_has_value(
-    model: m.MelodyModel, uuid: str, expected_value: t.Any, expected_cls
-):
+    model: m.MelodyModel,
+    uuid: str,
+    expected_value: t.Any,
+    expected_type: type[m.ModelElement],
+) -> None:
     obj = model.by_uuid(uuid)
     assert obj.value == expected_value
-    assert str(obj.xtype).endswith(expected_cls)
+    assert type(obj) is expected_type
 
 
 def test_literal_value_has_unit(model: m.MelodyModel):

@@ -177,8 +177,10 @@ def test_deleting_an_object_purges_references_to_children(
     assert port in component.ports
     assert len(current_refs) > 1, "Port has no references before test"
     assert (exchange_id, "target") in current_refs
+    pkg = model50.la.component_pkg
+    assert pkg is not None
 
-    model50.la.component_package.components.remove(component)
+    pkg.components.remove(component)
 
     assert not list(model50.find_references(port))
     assert model50.by_uuid(exchange_id).target is None

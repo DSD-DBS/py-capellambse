@@ -38,7 +38,7 @@ def test_PhysicalPath_has_exchanges(model: MelodyModel):
     exchange = model.pa.all_component_exchanges.by_name("C 6")
     path: cs.PhysicalPath
     path = model.pa.all_physical_paths.by_name("card1 - card2 connection")
-    assert path.exchanges == [exchange]
+    assert path.allocated_component_exchanges == [exchange]
 
 
 def test_PhysicalLink_has_physical_paths(model: MelodyModel):
@@ -50,7 +50,7 @@ def test_PhysicalLink_has_physical_paths(model: MelodyModel):
 def test_PhysicalLink_has_exchanges(model: MelodyModel):
     link = model.pa.all_physical_links.by_name("Eth Cable 2")
     exchange = model.pa.all_component_exchanges.by_name("C 3")
-    assert link.exchanges == [exchange]
+    assert link.allocated_component_exchanges == [exchange]
 
 
 def test_PhysicalLink_setting_ends(model: MelodyModel):

@@ -133,7 +133,7 @@ def test_ElementList_filter_by_type(model: m.MelodyModel):
 def test_filtering_lists_by_the_only_contained_class_doesnt_change_the_content(
     model: m.MelodyModel, filter_arg
 ) -> None:
-    pkg = model.oa.entity_package
+    pkg = model.oa.entity_pkg
     assert pkg is not None
     base = pkg.entities
     base_ids = [i.uuid for i in base]
@@ -212,7 +212,7 @@ def test_MixedElementList_filter_by_type(model: m.MelodyModel):
     ("key", "value"),
     [
         ("uuid", "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422"),
-        ("xtype", "org.polarsys.capella.core.data.oa:OperationalCapability"),
+        ("__class__", mm.oa.OperationalCapability),
         ("name", "Eat food"),
         (
             "description",
@@ -258,8 +258,8 @@ def test_SystemCapability_has_realized_capabilities(model: m.MelodyModel):
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 2
-    xtype = elm.realized_capabilities[0].xtype or ""
-    assert xtype.endswith("OperationalCapability")
+    cap = elm.realized_capabilities[0]
+    assert type(cap) is mm.oa.OperationalCapability
 
 
 def test_Capability_of_logical_layer_has_realized_capabilities(
@@ -270,8 +270,8 @@ def test_Capability_of_logical_layer_has_realized_capabilities(
 
     assert hasattr(elm, "realized_capabilities")
     assert len(elm.realized_capabilities) == 1
-    xtype = elm.realized_capabilities[0].xtype or ""
-    assert xtype.endswith("Capability")
+    cap = elm.realized_capabilities[0]
+    assert type(cap) is mm.sa.Capability
 
 
 def test_Capabilities_conditions_markup_escapes(model: m.MelodyModel):
@@ -321,55 +321,83 @@ def test_model_elements_have_pre_or_post_conditions(
 
 
 @pytest.mark.parametrize(
-    ("uuid", "trg_uuid", "attr_name"),
+    ("uuid", "trg_uuid"),
     [
         pytest.param(
             "3b83b4ba-671a-4de8-9c07-a5c6b1d3c422",
             "83d1334f-6180-46c4-a80d-6839341df688",
-            "extends",
-            id="[Operational] Extends",
-        ),
-        pytest.param(
-            "53c58b24-3938-4d6a-b84a-bb9bff355a41",
-            "83d1334f-6180-46c4-a80d-6839341df688",
-            "includes",
-            id="[Operational] Includes",
-        ),
-        pytest.param(
-            "30bd2c21-b170-40d3-b476-7c2016b58031",
-            "84adfa3f-11c9-43d1-801c-b1535fcba802",
-            "generalizes",
-            id="[Operational] Generalizes",
+            id="oa",
         ),
         pytest.param(
             "9390b7d5-598a-42db-bef8-23677e45ba06",
             "562c5128-5acd-45cc-8b49-1d8d686f450a",
-            "extends",
-            id="[System] Extends",
-        ),
-        pytest.param(
-            "9390b7d5-598a-42db-bef8-23677e45ba06",
-            "9390b7d5-598a-42db-bef8-23677e45ba06",
-            "includes",
-            id="[System] Includes",
-        ),
-        pytest.param(
-            "9390b7d5-598a-42db-bef8-23677e45ba06",
-            "562c5128-5acd-45cc-8b49-1d8d686f450a",
-            "generalizes",
-            id="[System] Generalizes",
+            id="sa",
         ),
     ],
 )
-def test_Capability_exchange(
-    model_5_2: m.MelodyModel, uuid: str, trg_uuid: str, attr_name: str
+def test_CapabilityExtend(model_5_2: m.MelodyModel, uuid: str, trg_uuid: str):
+    cap = model_5_2.by_uuid(uuid)
+    assert isinstance(cap, mm.interaction.AbstractCapability)
+    expected = model_5_2.by_uuid(trg_uuid)
+    assert isinstance(expected, mm.interaction.AbstractCapability)
+
+    actual = [i.extended for i in cap.extends]
+
+    assert expected in actual
+
+
+@pytest.mark.parametrize(
+    ("uuid", "trg_uuid"),
+    [
+        pytest.param(
+            "53c58b24-3938-4d6a-b84a-bb9bff355a41",
+            "83d1334f-6180-46c4-a80d-6839341df688",
+            id="oa",
+        ),
+        pytest.param(
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            id="sa",
+        ),
+    ],
+)
+def test_CapabilityInclude(model_5_2: m.MelodyModel, uuid: str, trg_uuid: str):
+    cap = model_5_2.by_uuid(uuid)
+    assert isinstance(cap, mm.interaction.AbstractCapability)
+    expected = model_5_2.by_uuid(trg_uuid)
+    assert isinstance(expected, mm.interaction.AbstractCapability)
+
+    actual = [i.included for i in cap.includes]
+
+    assert expected in actual
+
+
+@pytest.mark.parametrize(
+    ("uuid", "trg_uuid"),
+    [
+        pytest.param(
+            "30bd2c21-b170-40d3-b476-7c2016b58031",
+            "84adfa3f-11c9-43d1-801c-b1535fcba802",
+            id="oa",
+        ),
+        pytest.param(
+            "9390b7d5-598a-42db-bef8-23677e45ba06",
+            "562c5128-5acd-45cc-8b49-1d8d686f450a",
+            id="sa",
+        ),
+    ],
+)
+def test_CapabilityGeneralization(
+    model_5_2: m.MelodyModel, uuid: str, trg_uuid: str
 ):
     cap = model_5_2.by_uuid(uuid)
     assert isinstance(cap, mm.interaction.AbstractCapability)
     expected = model_5_2.by_uuid(trg_uuid)
-    exchange_targets = (ex.target for ex in getattr(cap, attr_name))
+    assert isinstance(expected, mm.interaction.AbstractCapability)
 
-    assert expected in exchange_targets
+    actual = [i.super for i in cap.generalizations]
+
+    assert expected in actual
 
 
 @pytest.mark.parametrize(
@@ -447,7 +475,6 @@ class TestStateMachines:
         region = entity.state_machines[0].regions[0]
 
         assert len(region.states) == 12
-        assert len(region.modes) == 0
         assert len(region.transitions) == 14
 
     def test_stm_state_mode_regions_well_defined(self, model: m.MelodyModel):
@@ -456,7 +483,7 @@ class TestStateMachines:
 
         assert hasattr(mode, "regions")
         assert len(mode.regions) == 1
-        assert len(mode.regions[0].modes) > 0
+        assert len(mode.regions[0].states) > 0
 
     def test_stm_transition_attributes_well_defined(
         self, model: m.MelodyModel
@@ -468,9 +495,9 @@ class TestStateMachines:
         assert transition.source is not None
         assert transition.source.name == "Cooking"
 
-        assert hasattr(transition, "destination")
-        assert transition.destination is not None
-        assert transition.destination.name == "Eating"
+        assert hasattr(transition, "target")
+        assert transition.target is not None
+        assert transition.target.name == "Eating"
 
         assert hasattr(transition, "guard")
         assert transition.guard is not None
@@ -484,9 +511,9 @@ class TestStateMachines:
         assert transition.triggers is not None
         assert len(transition.triggers) == 1
 
-        assert hasattr(transition, "effects")
-        assert transition.effects is not None
-        assert list(transition.effects.by_name) == ["good advise", "Make Food"]
+        assert hasattr(transition, "effect")
+        assert transition.effect is not None
+        assert list(transition.effect.by_name) == ["good advise", "Make Food"]
 
     def test_stm_transition_multiple_guards(self, model: m.MelodyModel):
         transition = model.by_uuid("6781fb18-6dd1-4b01-95f7-2f896316e46c")
@@ -535,30 +562,30 @@ def test_exchange_items_on_logical_function_exchanges(model: m.MelodyModel):
         "cdc69c5e-ddd8-4e59-8b99-f510400650aa"
     )
     assert isinstance(exchange, mm.fa.FunctionalExchange)
-    exchange_item = exchange.exchange_items.by_name("ExchangeItem 3")
-    assert isinstance(exchange_item, mm.information.ExchangeItem)
+    item = exchange.exchanged_items.by_name("ExchangeItem 3")
+    assert isinstance(item, mm.information.ExchangeItem)
 
-    assert exchange_item.type == "SHARED_DATA"
-    assert exchange in exchange_item.exchanges
+    assert item.exchange_mechanism.name == "SHARED_DATA"
+    assert exchange in item.exchanges
 
 
 def test_exchange_items_on_logical_actor_exchanges(model: m.MelodyModel):
-    aex = model.la.actor_exchanges.by_uuid(
+    aex = model.la.all_actor_exchanges.by_uuid(
         "9cbdd233-aff5-47dd-9bef-9be1277c77c3"
     )
     cex_item = aex.exchange_items.by_name("ExchangeItem 2")
 
-    assert cex_item.type == "FLOW"
+    assert cex_item.exchange_mechanism.name == "FLOW"
     assert aex in cex_item.exchanges
 
 
 def test_exchange_items_on_logical_component_exchanges(model: m.MelodyModel):
-    cex = model.la.component_exchanges.by_uuid(
+    cex = model.la.all_component_exchanges.by_uuid(
         "c31491db-817d-44b3-a27c-67e9cc1e06a2"
     )
     cex_item = cex.exchange_items.by_name("ExchangeItem 1")
 
-    assert cex_item.type == "EVENT"
+    assert cex_item.exchange_mechanism.name == "EVENT"
     assert cex in cex_item.exchanges
 
 
@@ -747,7 +774,7 @@ def test_CommunicationMean(model: m.MelodyModel) -> None:
     assert comm.source == env
     assert comm.target == fhb
     assert wood in comm.allocated_interactions
-    assert cmd in comm.allocated_exchange_items
+    assert cmd in comm.convoyed_informations
 
 
 @pytest.mark.parametrize(
@@ -779,40 +806,35 @@ def test_FunctionalChainInvolvementLink_has_items_and_context(
     ex_item_uuids = [ex.uuid for ex in link.exchanged_items]
     expected_uuids = ["1ca7b206-be29-4315-a036-0b532b26a191"]
     expected_context = "This is a test context."
-    expected_end = f"{target.name} ({target.uuid})"
 
     assert link in chain.involvements
     assert ex_item_uuids == expected_uuids
     spec = markupsafe.escape(link.exchange_context.specification)
     assert spec.startswith(expected_context)
     assert link.involved == target
-    assert link.name == f"[FunctionalChainInvolvementLink] to {expected_end}"
 
 
 @pytest.mark.parametrize(
-    ("trace_uuid", "expected"),
+    ("trace_uuid", "target_uuid"),
     [
-        pytest.param(
+        (
             "9f84f273-1af4-49c2-a9f1-143e94ab816b",
-            (
-                "[GenericTrace] to Class TraceTarget"
-                " (ed272baf-43f2-4fa1-ad50-49c00563258b)"
-            ),
+            "ed272baf-43f2-4fa1-ad50-49c00563258b",
         ),
-        pytest.param(
+        (
             "0880af85-4f96-4a77-b588-2e7a0385629d",
-            "[GenericTrace] to Hunt (01788b49-ccef-4a37-93d2-119287f8dd53)",
+            "01788b49-ccef-4a37-93d2-119287f8dd53",
         ),
     ],
 )
 def test_ModelElement_has_GenericTraces(
-    model_5_2: m.MelodyModel, trace_uuid: str, expected: str
+    model_5_2: m.MelodyModel, trace_uuid: str, target_uuid: str
 ) -> None:
     cls = model_5_2.by_uuid("ad876857-33d3-4f2e-9fe2-71545a78352d")
     trace = model_5_2.by_uuid(trace_uuid)
 
     assert trace in cls.traces
-    assert trace.name == expected
+    assert trace.target.uuid == target_uuid
 
 
 @pytest.mark.parametrize(
@@ -841,32 +863,48 @@ def test_FunctionalChainInvolvementFunction_appears_in_chain_involvements(
     chain = model_5_2.by_uuid(chain_uuid)
     fnc = model_5_2.by_uuid(fnc_uuid)
     target = model_5_2.by_uuid(target_uuid)
-    expected_end = f"{target.name} ({target.uuid})"
 
     assert fnc in chain.involvements
     assert fnc.involved == target
-    assert (
-        fnc.name == f"[FunctionalChainInvolvementFunction] to {expected_end}"
-    )
 
 
 @pytest.mark.parametrize(
-    ("chain_uuid", "control_nodes"),
+    ("chain_uuid", "nodes"),
     [
         pytest.param(
-            "d588e41f-ec4d-4fa9-ad6d-056868c66274", 3, id="OperationalProcess"
+            "d588e41f-ec4d-4fa9-ad6d-056868c66274",
+            [
+                "b4df5cd8-b2c9-4abb-ba72-c93fb92c9e5c",
+                "3fde4705-3ecf-4b7a-ab0e-b983174c5880",
+                "e097eaf9-ca3d-4c3e-a4b3-bd1a5430bd8b",
+            ],
+            id="OperationalProcess",
         ),
         pytest.param(
-            "dfc4341d-253a-4ae9-8a30-63a9d9faca39", 9, id="FunctionalChain"
+            "dfc4341d-253a-4ae9-8a30-63a9d9faca39",
+            [
+                "764c65e0-f522-4be7-80fa-52f43ccb92bd",
+                "75490975-8468-41a0-889b-e37e02296fbd",
+                "b26d943c-e201-4636-90d3-937ddb6b3fbe",
+                "9075d109-ccaf-436f-bc75-f55030808f0b",
+                "8078ec3c-44e4-47da-a4e8-213324a617f5",
+                "1a67b667-a1f7-4a2b-9b10-0a82842fe1d6",
+                "4efb0021-4588-4e9a-8720-75e884a0f3ac",
+                "31f0ac22-ade5-4e77-802e-d920e143ddd8",
+                "ef27c81a-6f51-4c73-9768-ef99d0f2f806",
+            ],
+            id="FunctionalChain",
         ),
     ],
 )
-def test_FunctionalChainInvolvement_has_control_nodes(
-    model_5_2: m.MelodyModel, chain_uuid: str, control_nodes: int
+def test_FunctionalChainInvolvement_has_sequence_nodes(
+    model_5_2: m.MelodyModel, chain_uuid: str, nodes: list[str]
 ) -> None:
     chain = model_5_2.by_uuid(chain_uuid)
 
-    assert len(chain.control_nodes) == control_nodes
+    actual = list(chain.sequence_nodes.by_uuid)
+
+    assert actual == nodes
 
 
 class TestArchitectureLayers:
@@ -878,11 +916,11 @@ class TestArchitectureLayers:
                 [
                     "root_entity",
                     "root_activity",
-                    "activity_package",
-                    "capability_package",
-                    "interface_package",
-                    "data_package",
-                    "entity_package",
+                    "activity_pkg",
+                    "capability_pkg",
+                    "interface_pkg",
+                    "data_pkg",
+                    "entity_pkg",
                     "all_activities",
                     "all_processes",
                     "all_capabilities",
@@ -890,24 +928,22 @@ class TestArchitectureLayers:
                     "all_classes",
                     "all_actors",
                     "all_entities",
-                    # TODO: actor_exchanges
-                    # TODO: component_exchanges
                     "all_activity_exchanges",
                     "all_entity_exchanges",
                 ],
-                id="OperationalArchitectureLayer",
+                id="oa",
             ),
             pytest.param(
                 "sa",
                 [
                     "root_component",
                     "root_function",
-                    "function_package",
-                    "capability_package",
-                    "interface_package",
-                    "data_package",
-                    "component_package",
-                    "mission_package",
+                    "function_pkg",
+                    "capability_pkg",
+                    "interface_pkg",
+                    "data_pkg",
+                    "component_pkg",
+                    "mission_pkg",
                     "all_functions",
                     "all_capabilities",
                     "all_interfaces",
@@ -915,46 +951,47 @@ class TestArchitectureLayers:
                     "all_actors",
                     "all_components",
                     "all_missions",
-                    "actor_exchanges",
+                    "all_actor_exchanges",
                     "component_exchanges",
+                    "all_component_exchanges",
                     "all_function_exchanges",
                     "all_component_exchanges",
                 ],
-                id="SystemArchitectureLayer",
+                id="sa",
             ),
             pytest.param(
                 "la",
                 [
                     "root_component",
                     "root_function",
-                    "function_package",
-                    "capability_package",
-                    "interface_package",
-                    "data_package",
-                    "component_package",
+                    "function_pkg",
+                    "capability_pkg",
+                    "interface_pkg",
+                    "data_pkg",
+                    "component_pkg",
                     "all_functions",
                     "all_capabilities",
                     "all_interfaces",
                     "all_classes",
                     "all_actors",
                     "all_components",
-                    "actor_exchanges",
-                    "component_exchanges",
+                    "all_actor_exchanges",
+                    "all_component_exchanges",
                     "all_function_exchanges",
                     "all_component_exchanges",
                 ],
-                id="LogicalArchitectureLayer",
+                id="la",
             ),
             pytest.param(
                 "pa",
                 [
                     "root_component",
                     "root_function",
-                    "function_package",
-                    "capability_package",
-                    "interface_package",
-                    "data_package",
-                    "component_package",
+                    "function_pkg",
+                    "capability_pkg",
+                    "interface_pkg",
+                    "data_pkg",
+                    "component_pkg",
                     "all_functions",
                     "all_capabilities",
                     "all_interfaces",
@@ -967,7 +1004,7 @@ class TestArchitectureLayers:
                     "all_physical_links",
                     "all_physical_paths",
                 ],
-                id="PhysicalArchitectureLayer",
+                id="pa",
             ),
         ],
     )
@@ -1054,26 +1091,26 @@ class TestArchitectureLayers:
         app1 = model.by_uuid("b80a6fcc-8d35-4675-a2e6-60efcbd61e27")
         app2 = model.by_uuid("ca5af12c-5259-4844-aaac-9ca9f84aa90b")
 
-        assert sensor_comp in vehicle.components
-        assert equip_comp in vehicle.components
-        assert len(sensor_comp.components) == 1
-        assert sensor_comp.components[0] == cam_ass
-        assert net_switch in equip_comp.components
-        assert server in equip_comp.components
-        assert len(cam_ass.components) == 1
-        assert cam_ass.components[0] == cam_fw
-        assert switch_fw in net_switch.components
-        assert switch_conf in net_switch.components
-        assert comp_card1 in server.components
-        assert comp_card2 in server.components
-        assert card_1_os in comp_card1.components
-        assert cool_fan in comp_card1.components
-        assert len(comp_card2.components) == 1
-        assert comp_card2.components[0] == card_2_os
-        assert cam_driver in card_1_os.components
-        assert app1 in card_1_os.components
-        assert len(card_2_os.components) == 1
-        assert card_2_os.components[0] == app2
+        assert sensor_comp in vehicle.related_components
+        assert equip_comp in vehicle.related_components
+        assert len(sensor_comp.related_components) == 1
+        assert sensor_comp.related_components[0] == cam_ass
+        assert net_switch in equip_comp.related_components
+        assert server in equip_comp.related_components
+        assert len(cam_ass.related_components) == 1
+        assert cam_ass.related_components[0] == cam_fw
+        assert switch_fw in net_switch.related_components
+        assert switch_conf in net_switch.related_components
+        assert comp_card1 in server.related_components
+        assert comp_card2 in server.related_components
+        assert card_1_os in comp_card1.related_components
+        assert cool_fan in comp_card1.related_components
+        assert len(comp_card2.related_components) == 1
+        assert comp_card2.related_components[0] == card_2_os
+        assert cam_driver in card_1_os.related_components
+        assert app1 in card_1_os.related_components
+        assert len(card_2_os.related_components) == 1
+        assert card_2_os.related_components[0] == app2
 
     def test_PhysicalComponent_deploying_components(
         self, model: m.MelodyModel
@@ -1146,8 +1183,7 @@ class TestArchitectureLayers:
         link = model.by_uuid("90517d41-da3e-430c-b0a9-e3badf416509")
         assert isinstance(link, mm.cs.PhysicalLink)
 
-        assert cex.owner == link
-        assert cex.allocating_physical_link == link
+        assert link in cex.allocating_physical_links
 
     def test_ComponentExchange_has_allocating_PhysicalPath(
         self, model: m.MelodyModel

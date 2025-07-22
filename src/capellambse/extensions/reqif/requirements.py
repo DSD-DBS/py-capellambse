@@ -37,6 +37,8 @@ import re
 import sys
 import typing as t
 
+from lxml import etree
+
 import capellambse.model as m
 from capellambse import helpers
 
@@ -65,31 +67,18 @@ class ReqIFElement(IdentifiableElement, abstract=True):
     long_name = m.StringPOD("ReqIFLongName")
 
     def _short_repr_(self) -> str:  # pragma: no cover
-        mytype = type(self).__name__
-        parent = self._element
-        if self.xtype in {  # FIXME remove this shit
-            "CapellaRequirements:CapellaTypesFolder",
-            "Requirements:DataTypeDefinition",
-            "Requirements:RequirementType",
-            "Requirements:RelationType",
-            "Requirements:ModuleType",
-            "Requirements:EnumerationDataTypeDefinition",
-            "Requirements:EnumValue",
-            "Requirements:AttributeDefinition",
-            "Requirements:AttributeDefinitionEnumeration",
-        }:
-            return f"<{mytype} {parent.get('ReqIFLongName')!r} ({self.uuid})>"
-
         name = (
-            parent.get("ReqIFName")
-            or parent.get("ReqIFChapterName")
-            or parent.get("ReqIFLongName")
+            self._element.get("ReqIFName")
+            or self._element.get("ReqIFChapterName")
+            or self._element.get("ReqIFLongName")
             or ""
         )
-        return f"<{mytype} {name!r} ({self.uuid})>"
+        return f"<{type(self).__name__} {name!r} ({self.uuid})>"
 
     def _short_html_(self) -> markupsafe.Markup:
-        name = self.name or self.long_name
+        name = self.long_name
+        if isinstance(self, SharedDirectAttributes):
+            name = self.name or name
         return helpers.make_short_html(type(self).__name__, self.uuid, name)
 
 
@@ -115,6 +104,17 @@ class AbstractRelation(ReqIFElement, abstract=True):
 
 class InternalRelation(AbstractRelation):
     _xmltag = "ownedRelations"
+
+    def __init__(
+        self,
+        model: m.MelodyModel,
+        parent: etree._Element,
+        xmltag: str | None = None,
+        /,
+        **kw: t.Any,
+    ) -> None:
+        kw.setdefault("source", m.wrap_xml(model, parent))
+        super().__init__(model, parent, xmltag, **kw)
 
     source = m.Single["Requirement"](
         m.Association((NS, "Requirement"), "source")
@@ -337,8 +337,8 @@ class AttributeDefinitionEnumeration(AttributeDefinition):
 
 
 class EnumerationValueAttribute(Attribute):
-    definition = m.Single(  # TODO not in metamodel
-        m.Association(AttributeDefinitionEnumeration, "definition")
+    definition = m.Single["AttributeDefinitionEnumeration"](
+        m.Association((NS, "AttributeDefinitionEnumeration"), None)
     )
     values = m.Association["EnumValue"]((NS, "EnumValue"), "values")
 

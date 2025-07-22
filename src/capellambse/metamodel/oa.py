@@ -287,9 +287,10 @@ class Entity(
     exchanges = m.Alias["m.ElementList[CommunicationMean]"](
         "communication_means"
     )
-    activities = m.Allocation[OperationalActivity](
+    activities = m.Allocation["OperationalActivity"](
         "ownedFunctionalAllocation",
-        fa.ComponentFunctionalAllocation,
+        (ns.FA, "ComponentFunctionalAllocation"),
+        (NS, "OperationalActivity"),
         attr="targetElement",
         backattr="sourceElement",
     )

@@ -63,7 +63,10 @@ class CapellaElement(
         (NS, "AbstractPropertyValue"), "appliedPropertyValues"
     )
     property_value_groups = m.Containment["PropertyValueGroup"](
-        "ownedPropertyValueGroups", (NS, "PropertyValueGroup")
+        "ownedPropertyValueGroups",
+        (NS, "PropertyValueGroup"),
+        mapkey="name",
+        mapvalue="property_values",
     )
     applied_property_value_groups = m.Association["PropertyValueGroup"](
         (NS, "PropertyValueGroup"), "appliedPropertyValueGroups"
