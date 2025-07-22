@@ -322,27 +322,19 @@ class AbstractCapability(
         states = m.DeprecatedAccessor("available_in_states")
 
 
-class _CapabilityRelation(capellacore.Relationship):
-    # TODO delete this class when removing deprecated features
-
-    if not t.TYPE_CHECKING:
-        source = m.DeprecatedAccessor("parent")
-
-
-class AbstractCapabilityExtend(_CapabilityRelation):
+class AbstractCapabilityExtend(capellacore.Relationship):
     _xmltag = "extends"
 
+    source = m.Alias["m.ModelElement"]("parent")
     extended = m.Single["AbstractCapability"](
         m.Association((NS, "AbstractCapability"), "extended")
     )
+    target = m.Alias["AbstractCapability"]("extended")
     extension_location = m.Single["AbstractCapabilityExtensionPoint"](
         m.Association(
             (NS, "AbstractCapabilityExtensionPoint"), "extensionLocation"
         )
     )
-
-    if not t.TYPE_CHECKING:
-        target = m.DeprecatedAccessor("extended")
 
 
 class AbstractCapabilityExtensionPoint(capellacore.NamedRelationship):
@@ -351,26 +343,24 @@ class AbstractCapabilityExtensionPoint(capellacore.NamedRelationship):
     )
 
 
-class AbstractCapabilityGeneralization(_CapabilityRelation):
+class AbstractCapabilityGeneralization(capellacore.Relationship):
     _xmltag = "superGeneralizations"
 
+    source = m.Alias["m.ModelElement"]("parent")
     super = m.Single["AbstractCapability"](
         m.Association((NS, "AbstractCapability"), "super")
     )
-
-    if not t.TYPE_CHECKING:
-        target = m.DeprecatedAccessor("super")
+    target = m.Alias["AbstractCapability"]("super")
 
 
-class AbstractCapabilityInclude(_CapabilityRelation):
+class AbstractCapabilityInclude(capellacore.Relationship):
     _xmltag = "includes"
 
+    source = m.Alias["m.ModelElement"]("parent")
     included = m.Single["AbstractCapability"](
         m.Association((NS, "AbstractCapability"), "included")
     )
-
-    if not t.TYPE_CHECKING:
-        target = m.DeprecatedAccessor("included")
+    target = m.Alias["AbstractCapability"]("included")
 
 
 class InteractionState(InteractionFragment):
@@ -479,7 +469,7 @@ if not t.TYPE_CHECKING:
                 DeprecationWarning,
                 stacklevel=2,
             )
-            return _CapabilityRelation
+            return capellacore.Relationship
 
         if name == "AbstractInvolvement":
             warnings.warn(
