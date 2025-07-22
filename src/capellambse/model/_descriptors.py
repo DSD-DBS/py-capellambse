@@ -2400,6 +2400,9 @@ class Backref(Accessor["_obj.ElementList[T_co]"], t.Generic[T_co]):
 
         super().__init__()
 
+        if class_ == ():
+            class_ = (_obj.NS, "ModelElement")
+
         if (
             isinstance(class_, tuple)
             and len(class_) == 2
