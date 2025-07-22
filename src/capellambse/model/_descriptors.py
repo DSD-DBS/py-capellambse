@@ -256,6 +256,29 @@ class Alias(Accessor["U"], t.Generic[U]):
     def __delete__(self, obj: _obj.ModelObject) -> None:
         delattr(obj, self.target)
 
+    def __set_name__(self, owner: type[t.Any], name: str) -> None:
+        if not hasattr(owner, self.target):
+            raise TypeError(
+                f"Cannot create alias {owner.__name__}.{name}:"
+                f" Target {self.target!r} is not defined"
+                " (make sure to define the Alias after the target, not before)"
+            )
+
+        alt = getattr(owner, self.target)
+        if isinstance(alt, DeprecatedAccessor) or (
+            isinstance(alt, property) and hasattr(alt.fget, "__deprecated__")
+        ):
+            warnings.warn(
+                (
+                    f"Alias {owner.__name__}.{name}:"
+                    f" Target {self.target!r} is deprecated"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
+        super().__set_name__(owner, name)
+
     def __repr__(self) -> str:
         return (
             f"<{type(self).__name__} {self._qualname!r}"
@@ -307,6 +330,16 @@ class DeprecatedAccessor(Accessor[T_co]):
                 " (make sure to define the DeprecatedAccessor"
                 " after the alternative, not before)"
             )
+
+        alt = getattr(owner, self.alternative)
+        if isinstance(alt, DeprecatedAccessor) or (
+            isinstance(alt, property) and hasattr(alt.fget, "__deprecated__")
+        ):
+            raise TypeError(
+                f"Cannot deprecate {owner.__name__}.{name}:"
+                f" Alternative {self.alternative!r} is also deprecated"
+            )
+
         super().__set_name__(owner, name)
 
     def __warn(self) -> None:
