@@ -34,10 +34,10 @@ class ObjectPVMT:
 
        >>> obj = model.by_uuid("08e02248-504d-4ed8-a295-c7682a614f66")
        >>> obj.pvmt["DarkMagic.Power.Max"]
-       1600
+       1600.0
        >>> obj.pvmt["DarkMagic.Power.Max"] = 2000
        >>> obj.pvmt["DarkMagic.Power.Max"]
-       2000
+       2000.0
 
     2. It's also possible to retrieve a managed group with the same
        syntax, by omitting the 'property' part of the path. The
@@ -46,7 +46,7 @@ class ObjectPVMT:
 
        >>> power = obj.pvmt["DarkMagic.Power"]
        >>> power["Max"]
-       2000
+       2000.0
     """
 
     _model: capellambse.MelodyModel

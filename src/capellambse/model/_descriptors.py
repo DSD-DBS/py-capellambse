@@ -350,8 +350,16 @@ class Single(Accessor[T_co | None], t.Generic[T_co]):
 
     Examples
     --------
-    >>> class Foo(capellacore.CapellaElement):
-    ...     bar = Single["Bar"](Containment("bar", (NS, "Bar")))
+    This example creates two classes Foo and Bar, where Bar may contain
+    a single Foo object:
+
+    >>> import capellambse.model as m
+    >>> from capellambse.metamodel import capellacore
+    >>> TEST_NS = m.Namespace(m.VIRTUAL_NAMESPACE_PREFIX + "/test", "test")
+    >>>
+    >>> class Foo(capellacore.CapellaElement, ns=TEST_NS): ...
+    >>> class Bar(capellacore.CapellaElement, ns=TEST_NS):
+    ...     foo = Single["Foo"](Containment("ownedFoo", (TEST_NS, "Foo")))
     """
 
     def __init__(
