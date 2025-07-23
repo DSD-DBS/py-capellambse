@@ -17,7 +17,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _get_pvmt_configuration(model: m.MelodyModel) -> PVMTConfiguration:
-    pkgs = model.project.property_value_packages
+    pkgs = model.project.property_value_pkgs
     assert pkgs.is_coupled()
     extension_pkgs = pkgs.by_name("EXTENSIONS", single=False)
     if not extension_pkgs:

@@ -632,7 +632,7 @@ class ComponentExchange(
     ) -> m.ElementList[modellingcore.AbstractExchangeItem]:
         return (
             self.convoyed_informations
-            + self.allocated_functional_exchanges.map("exchange_items")
+            + self.allocated_functional_exchanges.map("exchanged_items")
         )
 
     if not t.TYPE_CHECKING:

@@ -86,6 +86,10 @@ class CapellaTypesFolder(requirements.TypesFolder):
 class CapellaModule(requirements.Module):
     _xmltag = "ownedExtensions"
 
+    requirement_types_folders = m.Filter["CapellaTypesFolder"](
+        "extensions", (NS, "CapellaTypesFolder")
+    )
+
     @property
     @deprecated(
         (
@@ -144,6 +148,17 @@ class CapellaRelation(requirements.AbstractRelation, abstract=True):
 class CapellaIncomingRelation(CapellaRelation):
     _xmltag = "ownedRelations"
 
+    def __init__(
+        self,
+        model: m.MelodyModel,
+        parent: etree._Element,
+        xmltag: str | None = None,
+        /,
+        **kw: t.Any,
+    ) -> None:
+        kw.setdefault("source", m.wrap_xml(model, parent))
+        super().__init__(model, parent, xmltag, **kw)
+
     source = m.Single["requirements.Requirement"](
         m.Association((requirements.NS, "Requirement"), "source")
     )
@@ -154,6 +169,17 @@ class CapellaIncomingRelation(CapellaRelation):
 
 class CapellaOutgoingRelation(CapellaRelation):
     _xmltag = "ownedExtensions"
+
+    def __init__(
+        self,
+        model: m.MelodyModel,
+        parent: etree._Element,
+        xmltag: str | None = None,
+        /,
+        **kw: t.Any,
+    ) -> None:
+        kw.setdefault("target", m.wrap_xml(model, parent))
+        super().__init__(model, parent, xmltag, **kw)
 
     # NOTE: source/target are swapped intentionally here,
     # so that 'some_relation.source' is always a Requirement
@@ -252,7 +278,6 @@ class RequirementsRelationAccessor(
                 **kw,
                 source=elmlist._parent,
                 uuid=uuid,
-                xtype=m.build_xtype(cls),
             )
 
     def delete(self, elmlist, obj) -> None:
@@ -375,7 +400,8 @@ class RelationsList(m.ElementList[requirements.AbstractRelation]):
         warnings.warn(
             (
                 "Requirement.related.by_relation_type is deprecated,"
-                "use 'Requirement.relations.by_type(...)' instead"
+                "use 'Requirement.relations.by_type(...)'"
+                " or 'ModelElement.requirements_relations.by_type(...)' instead"
             ),
             category=FutureWarning,
             stacklevel=2,
@@ -383,7 +409,7 @@ class RelationsList(m.ElementList[requirements.AbstractRelation]):
 
         matches = []
         for elm in self._elements:
-            rel_elm = m.ModelElement.from_model(self._model, elm)
+            rel_elm = m.wrap_xml(self._model, elm)
             assert isinstance(rel_elm, requirements.AbstractRelation)
             if rel_elm.type is not None and rel_elm.type.long_name == reltype:
                 matches.append(elm)
@@ -408,7 +434,7 @@ class RelationsList(m.ElementList[requirements.AbstractRelation]):
         }
         matches: list[etree._Element] = []
         for elm in self._elements:
-            rel_elm = m.ModelElement.from_model(self._model, elm)
+            rel_elm = m.wrap_xml(self._model, elm)
             if isinstance(rel_elm, relation_types[class_]):
                 matches.append(rel_elm._element)
         return self._newlist(matches)

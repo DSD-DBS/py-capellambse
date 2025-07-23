@@ -513,7 +513,7 @@ class ExchangeItem(
         """Exchanges using this ExchangeItem."""
         CX = (ns.FA, "ComponentExchange")
         FX = (ns.FA, "FunctionalExchange")
-        cxs = self._model.search(CX).by_allocated_exchange_items(self)
+        cxs = self._model.search(CX).by_convoyed_informations(self)
         fxs = self._model.search(FX).by_exchanged_items(self)
         return cxs + fxs
 

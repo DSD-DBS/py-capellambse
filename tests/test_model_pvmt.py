@@ -2,13 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import pathlib
-import random
 import shutil
 
 import pytest
 
 import capellambse
-from capellambse import helpers, loader
+from capellambse import helpers
 from capellambse.extensions import pvmt
 
 TEST_ROOT = pathlib.Path(__file__).parent / "data" / "pvmt"
@@ -25,8 +24,8 @@ def model(monkeypatch, tmp_path):
 
 class TestPVMTConfiguration:
     def test_the_first_found_pvmt_configuration_is_used(self, model):
-        model.project.property_value_packages.create(name="EXTENSIONS")
-        assert len(model.project.property_value_packages) == 2
+        model.project.property_value_pkgs.create(name="EXTENSIONS")
+        assert len(model.project.property_value_pkgs) == 2
 
         domains = {i.name for i in model.pvmt.domains}
 
@@ -130,9 +129,8 @@ class TestPVMTConfiguration:
         default_values = {i.name: i.value for i in group.property_values}
         assert applied_values == default_values
 
-    def test_applying_sets_type_on_applied_enums(self, model, monkeypatch):
-        monkeypatch.setattr(loader.core, "UUID_GENERATOR", random.Random(0))
-
+    @helpers.deterministic_ids()
+    def test_applying_sets_type_on_applied_enums(self, model):
         obj = model.pa.root_component.owned_components.create(
             name="Test extension card",
             nature="NODE",

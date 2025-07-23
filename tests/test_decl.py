@@ -196,29 +196,29 @@ class TestApplyExtend:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "type",
-        ["AttributeDefinition", "AttributeDefinitionEnumeration"],
+        "cls",
+        [reqif.AttributeDefinition, reqif.AttributeDefinitionEnumeration],
     )
     def test_decl_can_disambiguate_creations_with_type_hints(
-        model: m.MelodyModel, type: str
+        model: m.MelodyModel, cls: type[m.ModelElement]
     ) -> None:
         module_id = "db47fca9-ddb6-4397-8d4b-e397e53d277e"
         module = model.by_uuid(module_id)
         yml = f"""\
             - parent: !uuid {module_id}
               extend:
-                attribute_definitions:
+                attributes:
                   - long_name: New attribute
-                    _type: {type}
+                    _type: {cls.__name__}
             """
-        assert "New attribute" not in module.attribute_definitions.by_long_name
+        assert "New attribute" not in module.attributes.by_long_name
 
         decl.apply(model, io.StringIO(yml))
 
-        attrdefs = module.attribute_definitions
+        attrdefs = module.attributes
         assert "New attribute" in attrdefs.by_long_name
         newdef = attrdefs.by_long_name("New attribute", single=True)
-        assert newdef.xtype.endswith(f":{type}")
+        assert type(newdef) is cls
 
     @staticmethod
     def test_decl_can_create_simple_objects_by_passing_plain_strings(
@@ -715,7 +715,8 @@ class TestApplySync:
 
     @staticmethod
     def test_sync_operation_recursive(model: m.MelodyModel) -> None:
-        root_package = model.la.data_package
+        root_package = model.la.data_pkg
+        assert root_package is not None
         package_name = "The new package"
         subpackage_name = "The new subpackage"
         assert package_name not in root_package.packages.by_name
@@ -773,7 +774,7 @@ class TestApplySync:
                             long_name: Test type
                           promise_id: reqtype
                           sync:
-                            attribute_definitions:
+                            attributes:
                               - find:
                                   _type: AttributeDefinition
                                   long_name: Attribute

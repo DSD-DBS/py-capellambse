@@ -587,18 +587,6 @@ class ModelElement(metaclass=_ModelElementMeta):
     parent = _descriptors.ParentAccessor()
     extensions: _descriptors.Containment[ModelElement]
     constraints: _descriptors.Containment[mm.capellacore.Constraint]
-    property_values: _descriptors.Containment[
-        mm.capellacore.AbstractPropertyValue
-    ]
-    property_value_groups: _descriptors.Containment[
-        mm.capellacore.PropertyValueGroup
-    ]
-    applied_property_values: _descriptors.Association[
-        mm.capellacore.AbstractPropertyValue
-    ]
-    applied_property_value_groups: _descriptors.Association[
-        mm.capellacore.PropertyValueGroup
-    ]
 
     _required_attrs = frozenset({"uuid", "xtype"})
     _xmltag: str | None = None
@@ -1162,18 +1150,16 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
             raise ValueError("Cannot add ElementLists from different models")
 
         if self._elemclass is other._elemclass is not ModelElement:
-            listclass: type[ElementList] = ElementList
-            elemclass: type[ModelObject] = self._elemclass
+            elemclass: type[T] | None = self._elemclass
         else:
-            listclass = MixedElementList
-            elemclass = ModelElement
+            elemclass = None
 
         if not reflected:
             elements = self._elements + other._elements
         else:
             elements = other._elements + self._elements
 
-        return listclass(self._model, elements, elemclass)
+        return ElementList(self._model, elements, elemclass)
 
     def __add__(self, other: object) -> ElementList[T]:
         return self.__add(other)

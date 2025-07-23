@@ -87,7 +87,9 @@ def test_ReqIFElement_short_repr_(
     uuid = matches[-1]
     obj = model_5_2.by_uuid(uuid)
 
-    assert repr(obj).startswith(expected)
+    actual = obj._short_repr_()
+
+    assert actual == expected
 
 
 def test_extension_was_loaded():
@@ -107,16 +109,19 @@ def test_extension_was_loaded():
 def test_path_nesting(model: m.MelodyModel) -> None:
     modules = model.oa.requirement_modules
     assert len(modules) == 2
-    assert len(modules[0].folders) == 1
-    assert len(modules[0].folders[0].folders) == 1
-    assert len(modules[0].folders[0].folders[0].requirements) == 1
+    folders = modules[0].requirements.by_class("Requirements:Folder")
+    assert len(folders) == 1
+    subfolders = folders[0].requirements.by_class("Requirements:Folder")
+    assert len(subfolders) == 1
+    assert len(subfolders[0].requirements) == 1
 
 
 class TestRequirementAttributes:
     @pytest.mark.parametrize(
-        "attributes",
+        ("expected_type", "attributes"),
         [
             pytest.param(
+                reqif.Folder,
                 {
                     "uuid": "e16f5cc1-3299-43d0-b1a0-82d31a137111",
                     "name": "Folder",
@@ -132,6 +137,7 @@ class TestRequirementAttributes:
                 id="Folder",
             ),
             pytest.param(
+                reqif.CapellaModule,
                 {
                     "uuid": "f8e2195d-b5f5-4452-a12b-79233d943d5e",
                     "long_name": "Module",
@@ -145,6 +151,7 @@ class TestRequirementAttributes:
                 id="Module",
             ),
             pytest.param(
+                reqif.Requirement,
                 {
                     "uuid": "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
                     "name": "TestReq1",
@@ -159,10 +166,10 @@ class TestRequirementAttributes:
                 id="Requirement",
             ),
             pytest.param(
+                reqif.CapellaOutgoingRelation,
                 {
                     "uuid": "6af6ff84-8957-481f-8684-2405ffa15804",
                     "long_name": "Test Relation",
-                    "xtype": "CapellaRequirements:CapellaOutgoingRelation",
                     "description": "This is a relation.",
                     "identifier": "1",
                     "source": reqif.Requirement,
@@ -179,9 +186,12 @@ class TestRequirementAttributes:
     def test_well_defined_generics(
         self,
         model: m.MelodyModel,
+        expected_type: type[m.ModelElement],
         attributes: dict[str, t.Any],
     ) -> None:
         obj = model.by_uuid(attributes["uuid"])
+        assert type(obj) is expected_type
+
         for attr_name, value in attributes.items():
             if isinstance(value, type):
                 assert isinstance(operator.attrgetter(attr_name)(obj), value)
@@ -196,15 +206,10 @@ class TestRequirementAttributes:
         attr = module.attributes[0]
 
         assert len(module.attributes) == 1
-        assert isinstance(attr, reqif.EnumerationValueAttribute)
-        xtype = (attr.xtype or "").rsplit(":")[-1]
-        assert xtype == "EnumerationValueAttribute"
-        assert isinstance(
-            attr.definition, reqif.AttributeDefinitionEnumeration
-        )
+        assert type(attr) is reqif.EnumerationValueAttribute
+        assert type(attr.definition) is reqif.AttributeDefinitionEnumeration
         assert attr.definition.long_name == "AttrDefEnum"
         assert attr.values[0].long_name == "enum_val2"
-        assert attr.values[0] == attr.value
 
     def test_well_defined_on_Requirements(self, model: m.MelodyModel) -> None:
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
@@ -298,9 +303,11 @@ class TestRequirementRelations:
 
     def test_filtering_by_relation_type(self, model: m.MelodyModel):
         ge = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        assert isinstance(ge, mm.sa.SystemFunction)
         rel_type = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
+        assert isinstance(rel_type, reqif.RelationType)
 
-        assert len(ge.requirements.by_relation_type(rel_type.long_name)) == 1
+        assert len(ge.requirements_relations.by_type(rel_type.long_name)) == 1
 
     @pytest.mark.parametrize(
         ("obj_uuid", "target_uuids"),
@@ -360,7 +367,7 @@ class TestRequirementRelations:
         target = model.by_uuid(target_uuid)
         req = source if isinstance(source, reqif.Requirement) else target
 
-        relation = req.relations.create(target=target)
+        relation = req.owned_relations.create(target=target)
 
         assert isinstance(relation, expected_type)
 
@@ -370,7 +377,6 @@ class TestReqIFAccess:
         mod = model.by_uuid("f8e2195d-b5f5-4452-a12b-79233d943d5e")
         assert isinstance(mod, reqif.CapellaModule)
 
-        assert len(mod.folders) == 1
         assert len(mod.requirements) == 2
         assert mod.type is not None
         assert mod.type.long_name == "ModuleType"
@@ -387,7 +393,6 @@ class TestReqIFAccess:
         folder = model.by_uuid("e16f5cc1-3299-43d0-b1a0-82d31a137111")
         assert isinstance(folder, reqif.Folder)
 
-        assert len(folder.folders) == 1
         assert len(folder.requirements) == 3
         assert folder.type is not None
         assert folder.type.long_name == "ReqType"
@@ -447,8 +452,8 @@ class TestReqIFAccess:
         attr_def = model.by_uuid("682bd51d-5451-4930-a97e-8bfca6c3a127")
         enum_def = model.by_uuid("c316ab07-c5c3-4866-a896-92e34733055c")
 
-        assert attr_def in reqtype.attribute_definitions
-        assert enum_def in reqtype.attribute_definitions
+        assert attr_def in reqtype.attributes
+        assert enum_def in reqtype.attributes
 
 
 class TestReqIFModification:
@@ -476,27 +481,36 @@ class TestReqIFModification:
     @pytest.mark.parametrize(
         "relcls",
         [
-            pytest.param("CapellaIncomingRelation", id="IncRelation"),
-            pytest.param("CapellaOutgoingRelation", id="OutRelation"),
-            pytest.param("InternalRelation", id="IntRelation"),
+            pytest.param("CapellaIncomingRelation", id="incoming"),
+            pytest.param("CapellaOutgoingRelation", id="outgoing"),
+            pytest.param("InternalRelation", id="internal"),
         ],
     )
-    def test_creating_invalid_Requirements_raises_InvalidModificationError(
+    def test_creating_invalid_Requirements_raises_error(
         self, model: m.MelodyModel, relcls: str
     ):
         req = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
         assert isinstance(req, reqif.Requirement)
 
+        with pytest.raises(TypeError):
+            req.owned_relations.create(relcls)
+
+        if relcls == "CapellaOutgoingRelation":
+            kw: dict = {"source": "e16f5cc1-3299-43d0-b1a0-82d31a137111"}
+        else:
+            kw = {"target": "e16f5cc1-3299-43d0-b1a0-82d31a137111"}
         with pytest.raises(m.InvalidModificationError):
-            req.relations.create(relcls)
+            req.owned_relations.create(relcls, **kw)
+
+        with pytest.raises(TypeError):
+            req.owned_relations.create(relcls, type="RelationType")
+
+        if relcls == "CapellaOutgoingRelation":
+            kw = {"source": req.attributes[0].definition}
+        else:
+            kw = {"target": req.attributes[0].definition}
         with pytest.raises(m.InvalidModificationError):
-            req.relations.create(
-                relcls, target="e16f5cc1-3299-43d0-b1a0-82d31a137111"
-            )
-        with pytest.raises(m.InvalidModificationError):
-            req.relations.create(relcls, type="RelationType")
-        with pytest.raises(m.InvalidModificationError):
-            req.relations.create(relcls, target=req.attributes[0].definition)
+            req.owned_relations.create(relcls, **kw)
 
     def test_created_Requirements_are_found_from_both_sides(
         self, model: m.MelodyModel
@@ -507,7 +521,7 @@ class TestReqIFModification:
         assert isinstance(target, reqif.Requirement)
 
         reltype = model.by_uuid("f1aceb81-5f70-4469-a127-94830eb9be04")
-        new_rel = req.relations.create(target=target, type=reltype)
+        new_rel = req.owned_relations.create(target=target, type=reltype)
 
         assert isinstance(req.relations, m.ElementList)
         assert new_rel in req.relations
@@ -778,36 +792,34 @@ class TestReqIFModification:
         self, model: m.MelodyModel
     ):
         reqtype = model.by_uuid("db47fca9-ddb6-4397-8d4b-e397e53d277e")
-        definitions = reqtype.attribute_definitions
+        definitions = reqtype.attributes
 
-        attr_def = reqtype.attribute_definitions.create(
+        attr_def = reqtype.attributes.create(
             "AttributeDefinition", long_name="First"
         )
-        enum_def = reqtype.attribute_definitions.create(
+        enum_def = reqtype.attributes.create(
             "AttributeDefinitionEnumeration", long_name="Second"
         )
 
-        assert len(definitions) + 2 == len(reqtype.attribute_definitions)
-        assert attr_def in reqtype.attribute_definitions
-        assert enum_def in reqtype.attribute_definitions
+        assert len(definitions) + 2 == len(reqtype.attributes)
+        assert attr_def in reqtype.attributes
+        assert enum_def in reqtype.attributes
 
     def test_create_EnumDataTypeDefinition_setting_EnumValues(
         self, model: m.MelodyModel
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
-        dt_definitions = reqtypesfolder.data_type_definitions
+        dt_definitions = reqtypesfolder.definition_types
 
-        edt_def = reqtypesfolder.data_type_definitions.create(
+        edt_def = reqtypesfolder.definition_types.create(
             "EnumerationDataTypeDefinition",
             long_name="Enum",
         )
         edt_def.values.create(long_name="val")
         edt_def.values.create(long_name="val1")
 
-        assert len(dt_definitions) + 1 == len(
-            reqtypesfolder.data_type_definitions
-        )
-        assert edt_def in reqtypesfolder.data_type_definitions
+        assert len(dt_definitions) + 1 == len(reqtypesfolder.definition_types)
+        assert edt_def in reqtypesfolder.definition_types
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
     def test_create_EnumDataTypeDefinition_creating_EnumValues(
@@ -815,18 +827,16 @@ class TestReqIFModification:
         model: m.MelodyModel,
     ):
         reqtypesfolder = model.by_uuid("67bba9cf-953c-4f0b-9986-41991c68d241")
-        dt_definitions = reqtypesfolder.data_type_definitions
+        dt_definitions = reqtypesfolder.definition_types
 
-        edt_def = reqtypesfolder.data_type_definitions.create(
+        edt_def = reqtypesfolder.definition_types.create(
             "EnumerationDataTypeDefinition",
             long_name="Enum",
             values=["val", "val1"],
         )
 
-        assert len(dt_definitions) + 1 == len(
-            reqtypesfolder.data_type_definitions
-        )
-        assert edt_def in reqtypesfolder.data_type_definitions
+        assert len(dt_definitions) + 1 == len(reqtypesfolder.definition_types)
+        assert edt_def in reqtypesfolder.definition_types
         assert set(edt_def.values.by_long_name) == {"val", "val1"}
 
 
@@ -906,59 +916,69 @@ class TestRequirementsFiltering:
         assert req.uuid == "7e8d0edf-67f0-48c5-82f6-ec9cdb809eee"
 
     @pytest.mark.parametrize(
-        ("obj_uuid", "relation_class", "target_uuids"),
+        ("relation_class", "target_uuids"),
         [
             (
-                "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
-                "outgoing",
+                "CapellaOutgoingRelation",
                 {"85d41db2-9e17-438b-95cf-49342452ddf3"},
             ),
             (
-                "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
-                "incoming",
+                "CapellaIncomingRelation",
                 {
                     "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
                     "79291c33-5147-4543-9398-9077d582576d",
                 },
             ),
-            ("00e7b925-cf4c-4cb0-929e-5409a1cd872b", "internal", set()),
+            ("InternalRelation", set()),
+        ],
+    )
+    def test_filtering_external_relations_by_class(
+        self,
+        model: m.MelodyModel,
+        relation_class: str,
+        target_uuids: set[str],
+    ):
+        obj = model.by_uuid("00e7b925-cf4c-4cb0-929e-5409a1cd872b")
+        relations = obj.requirements_relations
+
+        filtered = relations.by_class(relation_class).map("source")
+
+        assert isinstance(filtered, m.ElementList)
+        assert {i.uuid for i in filtered} == target_uuids
+
+    @pytest.mark.parametrize(
+        ("relation_class", "target_uuids"),
+        [
             (
-                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
-                "outgoing",
+                "CapellaOutgoingRelation",
                 {"0d2edb8f-fa34-4e73-89ec-fb9a63001440"},
             ),
             (
-                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
-                "incoming",
+                "CapellaIncomingRelation",
                 {
                     "4bf0356c-89dd-45e9-b8a6-e0332c026d33",
                     "00e7b925-cf4c-4cb0-929e-5409a1cd872b",
                 },
             ),
-            (
-                "3c2d312c-37c9-41b5-8c32-67578fa52dc3",
-                "internal",
-                {"85d41db2-9e17-438b-95cf-49342452ddf3"},
-            ),
+            ("InternalRelation", {"85d41db2-9e17-438b-95cf-49342452ddf3"}),
         ],
     )
     def test_filtering_by_relation_class(
         self,
         model: m.MelodyModel,
-        obj_uuid: str,
         relation_class: str,
-        target_uuids: t.Sequence[str],
+        target_uuids: set[str],
     ):
-        obj = model.by_uuid(obj_uuid)
+        obj = model.by_uuid("3c2d312c-37c9-41b5-8c32-67578fa52dc3")
+        relations = obj.relations
 
-        if isinstance(obj, reqif.Requirement):
-            related = obj.related
-        else:
-            related = obj.requirements
-        filtered_related = related.by_relation_class(relation_class)
+        filtered = relations.by_class(relation_class)
 
-        assert isinstance(filtered_related, m.ElementList)
-        assert {i.uuid for i in filtered_related} == target_uuids
+        filtered = filtered.map("source") + filtered.map("target")
+        filtered -= [obj]
+
+        assert isinstance(filtered, m.ElementList)
+        assert {i.uuid for i in filtered} == target_uuids
 
     def test_attributes_filtering_by_definition_long_name(
         self, model: m.MelodyModel
