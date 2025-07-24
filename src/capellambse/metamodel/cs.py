@@ -586,7 +586,7 @@ class ComponentPkg(capellacore.Structure, abstract=True):
         "ownedFunctionalAllocations",
         (ns.FA, "ComponentFunctionalAllocation"),
     )
-    allocated_functions = m.Allocation["fa.AbstractFunction"](
+    directly_allocated_functions = m.Allocation["fa.AbstractFunction"](
         "ownedFunctionalAllocations",
         (ns.FA, "ComponentFunctionalAllocation"),
         (ns.FA, "AbstractFunction"),
@@ -615,6 +615,30 @@ class ComponentPkg(capellacore.Structure, abstract=True):
     state_machines = m.Containment["capellacommon.StateMachine"](
         "ownedStateMachines", (ns.CAPELLACOMMON, "StateMachine")
     )
+
+    @property
+    def allocated_functions(
+        self,
+    ) -> m.ElementList[fa.AbstractFunction]:
+        """All functions that are allocated to this ComponentPkg."""
+        allocated: dict[str, None] = {}
+        allocations: dict[str, str] = {}
+        for i in self._model.search(type(self).functional_allocations.class_):
+            allocations[i.target.uuid] = i.source.uuid
+            if i.source == self:
+                allocated[self.target.uuid] = None
+        for fnc in allocated.copy():
+            parent = self._model.by_uuid(fnc)
+            while (parent := parent.parent) is not None:
+                if parent.uuid in allocations:
+                    break
+                if isinstance(parent, fa.AbstractFunction):
+                    allocated[parent.uuid] = None
+
+        return m.ElementList(
+            self._model,
+            [self._model.by_uuid(i)._element for i in allocated],
+        )
 
 
 from . import capellacommon, interaction  # noqa: F401
