@@ -92,6 +92,10 @@ class MelodyModel:
     def pa(self) -> capellambse.metamodel.pa.PhysicalArchitecture:
         return self.project.model_root.pa
 
+    @property
+    def epbs(self) -> capellambse.metamodel.epbs.EPBSArchitecture:
+        return self.project.model_root.epbs
+
     def enumeration_property_types(
         self,
     ) -> _obj.ElementList[
