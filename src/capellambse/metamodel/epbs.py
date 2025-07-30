@@ -62,6 +62,14 @@ class EPBSArchitecture(cs.ComponentArchitecture):
         )
     )
 
+    @property
+    def all_configuration_items(self) -> m.ElementList[ConfigurationItem]:
+        return self._model.search((NS, "ConfigurationItem"), below=self)
+
+    diagrams = m.DiagramAccessor(
+        "EPBS architecture", cacheattr="_MelodyModel__diagram_cache"
+    )
+
 
 class ConfigurationItemPkg(cs.ComponentPkg):
     configuration_items = m.Containment["ConfigurationItem"](
