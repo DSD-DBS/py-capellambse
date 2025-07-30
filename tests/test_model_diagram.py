@@ -17,7 +17,7 @@ def test_diagram_nodes_only_include_visible_elements(
     session_shared_model: capellambse.MelodyModel,
 ):
     diagram = session_shared_model.diagrams.by_name(
-        "[LAB] Hidden Wizzard Education"
+        "[LAB] Wizard Education (hidden functions)"
     )
 
     assert HIDDEN_UUID not in diagram.nodes.by_uuid

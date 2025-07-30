@@ -18,10 +18,9 @@ from capellambse import decl, helpers
 from capellambse.extensions import reqif
 from capellambse.filehandler import git
 
-from .conftest import INSTALLED_PACKAGE, TEST_MODEL, TEST_ROOT  # type: ignore
+from .conftest import INSTALLED_PACKAGE, TEST_DATA, Models  # type: ignore
 
-DATAPATH = pathlib.Path(__file__).parent / "data" / "decl"
-MODELPATH = pathlib.Path(TEST_ROOT / "5_0")
+DATAPATH = TEST_DATA / "decl"
 
 ROOT_COMPONENT = helpers.UUIDString("0d2edb8f-fa34-4e73-89ec-fb9a63001440")
 ROOT_FUNCTION = helpers.UUIDString("f28ec0f8-f3b3-43a0-8af7-79f194b29a2d")
@@ -1087,8 +1086,8 @@ def test_full_example(model: m.MelodyModel, filename: str):
 
 
 def test_cli_applies_a_yaml_and_saves_the_model_back(tmp_path: pathlib.Path):
-    shutil.copytree(MODELPATH, tmp_path / "model")
-    model = tmp_path / "model" / TEST_MODEL
+    shutil.copytree(Models.test7_0, tmp_path / "model")
+    model = next(tmp_path.joinpath("model").glob("*.aird"))
     semmodel = model.with_suffix(".capella")
     oldhash = hashlib.sha256(semmodel.read_bytes()).hexdigest()
     declfile = DATAPATH / "coffee-machine.yml"

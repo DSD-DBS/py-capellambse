@@ -49,10 +49,10 @@ def test_state_realizing_states(model: capellambse.MelodyModel) -> None:
     ],
 )
 def test_state_attributes(
-    model_5_2: capellambse.MelodyModel, attr: str, uuids: cabc.Iterable[str]
+    model: capellambse.MelodyModel, attr: str, uuids: cabc.Iterable[str]
 ) -> None:
-    state = model_5_2.by_uuid("6c48b9c5-0d43-4a43-9e9d-9559cb52c83e")
-    expected_functions = [model_5_2.by_uuid(uuid) for uuid in uuids]
+    state = model.by_uuid("6c48b9c5-0d43-4a43-9e9d-9559cb52c83e")
+    expected_functions = [model.by_uuid(uuid) for uuid in uuids]
 
     functions = getattr(state, attr)
 

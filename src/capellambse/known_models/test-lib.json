@@ -1,6 +1,6 @@
 {
-  "path": "tests/data/Library Project/Library Project.aird",
+  "path": "tests/data/models/library_project",
   "resources": {
-    "Library Test": "tests/data/Library Test"
+    "Library Test": "tests/data/models/library_test"
   }
 }

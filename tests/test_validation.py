@@ -152,7 +152,7 @@ def test_cli_creates_a_validation_report(tmp_path: pathlib.Path):
 
     result = runner.invoke(
         cli_main.main,
-        ["-mtest-5.0", f"-o{output_file}"],
+        ["-mtest-7.0", f"-o{output_file}"],
     )
 
     assert result.exit_code == 0, f"CLI returned code {result.exit_code}"

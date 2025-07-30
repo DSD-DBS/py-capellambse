@@ -778,21 +778,10 @@ class ModelElement(metaclass=_ModelElementMeta):
         header = self._short_repr_()
 
         attrs: list[str] = []
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-
-            acc = getattr(type(self), attr, None)
-            backref: str | None = None
+        for attr, acc in self.__iter_properties():
             if isinstance(acc, _descriptors.Backref):
-                backref = str(acc.class_[1])
-            elif isinstance(acc, _descriptors.Single) and isinstance(
-                acc.wrapped, _descriptors.Backref
-            ):
-                backref = str(acc.wrapped.class_[1])
-            if backref:
                 attrs.append(
-                    f".{attr} = ... # backreference to {backref}"
+                    f".{attr} = ... # backreference to {acc.class_[1]}"
                     " - omitted: can be slow to compute"
                 )
                 continue
@@ -870,31 +859,35 @@ class ModelElement(metaclass=_ModelElementMeta):
         if type(self) is ModelElement:
             fragments.append("Model element")
         else:
-            fragments.append(escape(self.name or type(self).__name__))
+            name = type(self).__name__
+            namegetter = getattr(type(self), "name", None)
+            # TODO remove check against '.name' when removing deprecated features
+            if namegetter is not None and namegetter is not ModelElement.name:  # type: ignore[attr-defined]
+                name = self.name or name
+            fragments.append(escape(name))
         fragments.append(' <span style="font-size: 70%;">(')
-        fragments.append(escape(self.xtype))
+        fragments.append(escape(self.__capella_namespace__.alias))
+        fragments.append(":")
+        fragments.append(escape(type(self).__name__))
         fragments.append(")</span></h1>\n")
 
         fragments.append("<table>\n")
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-
-            acc = getattr(type(self), attr, None)
-            backref: str | None = None
+        for attr, acc in self.__iter_properties():
             if isinstance(acc, _descriptors.Backref):
-                backref = escape(acc.class_[1])
-            elif isinstance(acc, _descriptors.Single) and isinstance(
-                acc.wrapped, _descriptors.Backref
-            ):
-                backref = escape(acc.wrapped.class_[1])
-            if backref:
                 fragments.append('<tr><th style="text-align: right;">')
                 fragments.append(escape(attr))
                 fragments.append('</th><td style="text-align: left;"><em>')
-                fragments.append(f"Backreference to {backref}")
+                fragments.append(f"Backreference to {acc.class_[1]}")
                 fragments.append(" - omitted: can be slow to compute.")
                 fragments.append(" Display this property directly to show.")
+                fragments.append("</em></td></tr>\n")
+                continue
+
+            if attr.startswith("all_"):
+                fragments.append('<tr><th style="text-align: right;">')
+                fragments.append(escape(attr))
+                fragments.append('</th><td style="text-align: left;"><em>')
+                fragments.append("omitted")
                 fragments.append("</em></td></tr>\n")
                 continue
 
@@ -932,13 +925,27 @@ class ModelElement(metaclass=_ModelElementMeta):
             icon = ""
         else:
             assert isinstance(icon, str)
-        value = getattr(self, "value", "")
+        valuegetter = getattr(type(self), "value", None)
+        if (
+            valuegetter is None
+            or isinstance(valuegetter, _descriptors.DeprecatedAccessor)
+            or (
+                isinstance(valuegetter, property)
+                and hasattr(valuegetter.fget, "__deprecated__")
+            )
+        ):
+            value = ""
+        else:
+            value = getattr(self, "value", "")
         if hasattr(value, "_short_html_"):
             value = value._short_html_()
+        name = ""
+        if getattr(type(self), "name", None) is not ModelElement.name:  # type: ignore[attr-defined]
+            name = self.name
         return helpers.make_short_html(
             type(self).__name__,
             self.uuid,
-            self.name,
+            name,
             value,
             icon=icon,
             iconsize=15,
@@ -1004,6 +1011,33 @@ class ModelElement(metaclass=_ModelElementMeta):
             )
         _ICON_CACHE[sc, format, size] = data
         return data
+
+    def __iter_properties(
+        self,
+    ) -> cabc.Iterator[
+        tuple[str, _descriptors.Accessor | _pods.BasePOD | property]
+    ]:
+        cls = type(self)
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            acc = getattr(cls, attr, None)
+            if acc is None:
+                continue
+            if isinstance(acc, _descriptors.DeprecatedAccessor):
+                continue
+            if isinstance(acc, property) and (
+                getattr(acc.fget, "__deprecated__", None) is not None
+                or acc.fget is ModelElement.name.fget  # type: ignore[attr-defined]
+                or acc.fget is ModelElement.description.fget  # type: ignore[attr-defined]
+                or acc.fget is ModelElement.summary.fget  # type: ignore[attr-defined]
+            ):
+                continue
+
+            if isinstance(acc, _descriptors.Single):
+                acc = acc.wrapped
+
+            yield (attr, acc)
 
     if t.TYPE_CHECKING:
 

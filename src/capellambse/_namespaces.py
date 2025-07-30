@@ -21,13 +21,8 @@ class UnsupportedPluginVersionError(ValueError):
     def __str__(self) -> str:
         if len(self.args) != 2:
             return super().__str__()
-        plugin, ns_plugin = self.args
-        assert isinstance(plugin, Plugin)
-        assert isinstance(ns_plugin, Plugin)
-        return (
-            f"Plugin '{plugin.name}' with unsupported version encountered: "
-            f"{plugin.version!r} does not match {ns_plugin.version!r}."
-        )
+        name, version = self.args
+        return f"Plugin {name!r} is not supported in version {version!r}"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -106,15 +101,11 @@ class Plugin:
         if isinstance(self.version, str):
             return self.version == value
 
-        for mymin, mymax, their in zip(
-            self.version[0].split("."),
-            self.version[1].split("."),
-            value.split("."),
-            strict=False,
-        ):
-            if not int(mymin) <= int(their) <= int(mymax):
-                return False
-        return True
+        mymin = tuple(map(int, self.version[0].split(".")))
+        mymax = tuple(map(int, self.version[1].split(".")))
+        their = tuple(map(int, value.split(".")))
+
+        return mymin <= their <= mymax
 
 
 def _tofloat(other: str) -> float:

@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-import pathlib
 import sys
 
 import pytest
@@ -10,15 +9,11 @@ import pytest
 import capellambse
 from capellambse import aird, diagram, loader
 
-EMPTY_MODEL = pathlib.Path(__file__).parent.joinpath(
-    "data/decl/empty_project_52/empty_project_52.aird"
-)
+from .conftest import Models  # type: ignore
 
 
 class TestAIRDBasicFunctionality:
-    test_model = (
-        pathlib.Path(__file__).parent / "data" / "parser" / "TestItems.aird"
-    )
+    (test_model,) = Models.aird_parser.glob("*.aird")
     test_diagram = "[LAB] Logical System"
     test_json = test_model.with_suffix(".json")
     test_repr = test_model.with_suffix(".repr.txt")
@@ -84,7 +79,7 @@ class TestAIRDBasicFunctionality:
         assert actual == expected
 
     def test_enumerate_descriptors_doesnt_crash_if_there_are_no_diagrams(self):
-        model = loader.MelodyLoader(EMPTY_MODEL)
+        model = loader.MelodyLoader(Models.empty)
         for _ in aird.enumerate_descriptors(model):
             pass
 
@@ -105,8 +100,6 @@ def test_airdparser_msm_produces_valid_json_without_error(
         ("_7Ft7QKrxEeqOgqWuHJrXFA", 34),
         ("_KLGoEKyJEeqCdMaqCWkrKg", 14),
         ("_be95kNYrEeqiU8uzTY0Puw", 11),
-        ("_9i56AagWEeujco-rU7ZOtA", 1),
-        ("_GpCVADaWEey5m4gkio8hew", 2),
         ("_-NU3gV2mEey8erljvkS-pQ", 13),
         ("_KZRQIWA9Eey8erljvkS-pQ", 15),
         ("_jofb8WDdEey8erljvkS-pQ", 5),
@@ -115,29 +108,28 @@ def test_airdparser_msm_produces_valid_json_without_error(
         ("_RSYVoXPIEeyW3OIB4qRWZA", 8),
         ("_bNNAAXPIEeyW3OIB4qRWZA", 6),
         ("_sCBdcMn-EeyS2Zr7ZWFrXA", 7),
-        ("_1aihhGpbEe2Scdb2k-Fvhg", 17),
-        ("_fr69QBKnEeuBCogvtwwNBw", 42),
+        ("_1aihhGpbEe2Scdb2k-Fvhg", 18),
+        ("_kqj3UF9REe2rko4oG1H6IQ", 5),
+        ("_fr69QBKnEeuBCogvtwwNBw", 43),
         ("_erzycVIqEeyiRNlyKPJwqw", 44),
         ("_8BQYEYQzEeyxv9w6U6_UQg", 6),
+        ("_L8b8cCoPEe6CTqm4KXEZ8w", 20),
         ("_amKHoKg0EeujRPrkuugYGw", 5),
-        ("_1sGtYOSREeulYvEGRaHazg", 5),
         ("_APOQ0QPhEeynfbzU12yy7w", 11),
         ("_K-BhAIKBEeyd4IW8P6K-AQ", 14),
-        ("_0hjtgB4cEe2Jgqeci1tAhA", 1),
+        ("_yov6wM-ZEeytxdoVf3xHjA", 7),
         ("_hJD6gaWXEeqh-bahrg4jkA", 18),
         ("_u8_YMLB-EeqP7JXhmLvOsg", 26),
         ("_2TLuoAL8EeuogvvqBpYPnQ", 6),
         ("_KVGPoKJwEeusg-blS2y7tg", 18),
         ("_ZN1JAKJxEeusg-blS2y7tg", 21),
-        ("_mKZeQKZwEeuRO5WMG4dh5w", 2),
         ("_MDzzEAWrEeyIAukYgdUX5A", 11),
         ("_VKTjIIQTEeyxv9w6U6_UQg", 26),
         ("_dr0dQLB8EeqLtsTDMgEHBw", 48),
         ("_gRrk4bB_EeqLtsTDMgEHBw", 11),
-        ("__dKYsdZLEeqiU8uzTY0Puw", 14),
+        ("__dKYsdZLEeqiU8uzTY0Puw", 21),
         ("_jGZ6geCUEeu-FsE4WGMncQ", 4),
-        ("_NfMDoAATEeykFulkDFvkrg", 7),
-        ("_I0wRYOQUEe2jpIKbeHI0hw", 14),
+        ("_NfMDoAATEeykFulkDFvkrg", 8),
     ],
 )
 def test_iter_visible(model, diag_uid, num_nodes):
