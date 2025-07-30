@@ -104,7 +104,7 @@ jobs:
           if [[ "$ENV_TAG" == "Linux-x86_64-manylinux" || "$ENV_TAG" == "macOS-arm64-" ]]; then
             echo "CIBW_BUILD=cp*-$MANYLINUX*" >> $GITHUB_ENV
           else
-            echo "CIBW_BUILD=cp310-$MANYLINUX* cp313-$MANYLINUX*" >> $GITHUB_ENV
+            echo "CIBW_BUILD=cp310-$MANYLINUX* cp314-$MANYLINUX*" >> $GITHUB_ENV
           fi
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.1.4
