@@ -1,0 +1,26 @@
+capellambse.extensions.metrics package
+======================================
+
+.. automodule:: capellambse.extensions.metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.extensions.metrics.collector module
+-----------------------------------------------
+
+.. automodule:: capellambse.extensions.metrics.collector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.extensions.metrics.composer module
+----------------------------------------------
+
+.. automodule:: capellambse.extensions.metrics.composer
+   :members:
+   :undoc-members:
+   :show-inheritance:
