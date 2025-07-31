@@ -35,6 +35,11 @@ from capellambse import filehandler, helpers
 from capellambse.loader import exs
 from capellambse.loader.modelinfo import ModelInfo
 
+if sys.version_info >= (3, 13):
+    from warnings import deprecated
+else:
+    from typing_extensions import deprecated
+
 _UnspecifiedType = t.NewType("_UnspecifiedType", object)
 _NOT_SPECIFIED = _UnspecifiedType(object())
 
@@ -73,10 +78,7 @@ RE_VALID_ID = re.compile(
 )
 CAP_VERSION = re.compile(r"Capella_Version_([\d.]+)")
 METADATA_TAG = f"{{{_n.NAMESPACES['metadata']}}}Metadata"
-ROOT_XT = (
-    "org.polarsys.capella.core.data.capellamodeller:Project",
-    "org.polarsys.capella.core.data.capellamodeller:Library",
-)
+_ROOT_NS = "org.polarsys.capella.core.data.capellamodeller"
 
 
 def _derive_entrypoint(
@@ -401,6 +403,10 @@ class ModelFile:
 
         self.root = new_root
 
+    @deprecated(
+        "iterall_xt() is deprecated,"
+        " use iterall() or iter_qtypes() + iter_qtype() instead"
+    )
     def iterall_xt(
         self, xtypes: cabc.Container[str]
     ) -> cabc.Iterator[etree._Element]:
@@ -1376,10 +1382,25 @@ class MelodyLoader:
             metadata.append(vpref)
             self.idcache_index(vpref)
 
+    def find_root(self) -> etree._Element | None:
+        for file, tree in self.trees.items():
+            if file.parts[0] != "\x00":
+                continue
+            try:
+                ns = tree.root.nsmap[_ROOT_NS]
+            except KeyError:
+                continue
+            else:
+                for clsname in ("Project", "Library"):
+                    qtype = etree.QName(ns, clsname)
+                    with contextlib.suppress(StopIteration):
+                        return next(tree.iter_qtype(qtype))
+        return None
+
     def get_model_info(self) -> ModelInfo:
         """Return information about the loaded model."""
         root_handler = self.resources["\x00"].get_model_info()
-        modelroot = next(self.iterall_xt(*ROOT_XT), None)
+        modelroot = self.find_root()
         viewpoints = dict(self.referenced_viewpoints())
 
         return ModelInfo(

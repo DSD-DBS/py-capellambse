@@ -109,16 +109,25 @@ def _matchprops(
 class SelectorRules:
     raw: str
 
+    _model: capellambse.MelodyModel | None = None
+
     @property
     def classes(self) -> tuple[type[m.ModelObject], ...]:
+        if self.raw == "":
+            return ()
+
+        if self._model is None:
+            raise TypeError(
+                f"This {type(self).__name__} is not associated with a model"
+            )
+
         classes = []
         for match in _RULES_RE.finditer(self.raw):
             if match.group("key") != "CLASS":
                 continue
             for uri in match.group("value").split(","):
                 _, clsname = uri.rsplit("/", 1)
-                (cls,) = m.find_wrapper(clsname)
-                classes.append(cls)
+                classes.append(self._model.resolve_class(clsname))
 
         return tuple(classes)
 
@@ -154,8 +163,12 @@ class SelectorRules:
             match = _PROP_RE.fullmatch(value)
             if not match:
                 raise RuntimeError(f"Invalid property spec: {value!r}")
-            propdefs.append(match.group("prop", "op", "val"))
-        return tuple(t.cast("list[tuple[str, str, str]]", propdefs))
+            prop, op, val = match.group("prop", "op", "val")
+            assert isinstance(prop, str)
+            assert isinstance(op, str)
+            assert isinstance(val, str)
+            propdefs.append((prop, op, val))
+        return tuple(propdefs)
 
 
 class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
@@ -164,8 +177,7 @@ class PVMTDescriptionProperty(m.BasePOD[SelectorRules]):
         self.__doc__ = "The element selector rules for this group."
 
     def _from_xml(self, obj: m.ModelElement, data: str, /) -> SelectorRules:
-        del obj
-        return SelectorRules(data)
+        return SelectorRules(data, obj._model)
 
     def _to_xml(
         self,

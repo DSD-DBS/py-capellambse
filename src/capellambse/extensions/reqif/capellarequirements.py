@@ -495,5 +495,5 @@ class ElementRelationAccessor(m.WritableAccessor[m.ModelElement]):
         )
 
 
-requirements.Requirement.relations = RequirementsRelationAccessor()
-requirements.Requirement.related = ElementRelationAccessor()
+requirements.Requirement.relations = RequirementsRelationAccessor()  # type: ignore[deprecated]
+requirements.Requirement.related = ElementRelationAccessor()  # type: ignore[deprecated]

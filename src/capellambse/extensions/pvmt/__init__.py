@@ -34,7 +34,7 @@ def _get_pvmt_configuration(model: m.MelodyModel) -> PVMTConfiguration:
                 len(extension_pkgs),
             )
     assert isinstance(ext, mm.capellacore.PropertyValuePkg)
-    return PVMTConfiguration.from_model(model, ext._element)
+    return m.wrap_xml(model, ext._element, type=PVMTConfiguration)
 
 
 def init() -> None:

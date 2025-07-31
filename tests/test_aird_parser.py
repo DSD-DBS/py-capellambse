@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-import sys
 
 import pytest
 
@@ -15,9 +14,6 @@ from .conftest import Models  # type: ignore
 class TestAIRDBasicFunctionality:
     (test_model,) = Models.aird_parser.glob("*.aird")
     test_diagram = "[LAB] Logical System"
-    test_json = test_model.with_suffix(".json")
-    test_repr = test_model.with_suffix(".repr.txt")
-    test_txt = test_model.with_suffix(".txt")
 
     @pytest.fixture
     def model(self):
@@ -35,48 +31,6 @@ class TestAIRDBasicFunctionality:
         del caplog
         num = sum(1 for _ in aird.parse_diagrams(model))
         assert num == 1
-
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
-    @pytest.mark.skip(reason="Currently broken")
-    def test_json_output_matches_expected_output(
-        self, diagram_under_test, caplog
-    ):
-        del caplog
-        expected = self.test_json.read_text().strip()
-        encoder = diagram.DiagramJSONEncoder(indent=4)
-
-        actual = encoder.encode(diagram_under_test)
-
-        assert actual == expected
-
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
-    @pytest.mark.skip(reason="Currently broken")
-    def test_plain_text_representation_matches_expected_output(
-        self, diagram_under_test, caplog
-    ):
-        del caplog
-        expected = self.test_txt.read_text()
-        actual = str(diagram_under_test)
-        assert actual + "\n" == expected
-
-    @pytest.mark.xfail(
-        sys.platform not in {"win32", "cygwin"},
-        reason="Expected rendering inaccuracies on non-Windows platforms",
-    )
-    @pytest.mark.skip(reason="Currently broken")
-    def test_python_code_representation_matches_expected_output(
-        self, diagram_under_test, caplog
-    ):
-        del caplog
-        expected = self.test_repr.read_text().strip()
-        actual = repr(diagram_under_test)
-        assert actual == expected
 
     def test_enumerate_descriptors_doesnt_crash_if_there_are_no_diagrams(self):
         model = loader.MelodyLoader(Models.empty)
