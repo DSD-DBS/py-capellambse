@@ -672,23 +672,6 @@ def test_specification_linkedText_to_internal_linkedText_transformation(
     )
 
 
-@pytest.mark.skip(
-    reason=(
-        "AttributeError is raised, but the text gets overwritten by the stub"
-        " in `ModelElement`. Solution: Create the relevant XML structures and"
-        " return a real Specification object instead of raising."
-    )
-)
-def test_constraint_without_specification_raises_AttributeError(
-    model: m.MelodyModel,
-) -> None:
-    con = model.by_uuid("0336eae7-21f2-4a73-8d71-c7d5ff550229")
-    assert isinstance(con, mm.capellacore.Constraint)
-
-    with pytest.raises(AttributeError, match="^No specification found$"):
-        con.specification  # noqa: B018
-
-
 @pytest.mark.parametrize(
     "searchkey",
     [
