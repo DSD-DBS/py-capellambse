@@ -427,8 +427,9 @@ def statemode_activities_factory(seb: C.SemanticElementBuilder) -> diagram.Box:
     for elm in seb.diag_element.iterchildren("ownedElements"):
         elm_id = elm.get("uid")
         try:
-            target_id = next(elm.iterchildren("target")).attrib["href"]
-            target = seb.melodyloader[target_id]
+            target_link = next(elm.iterchildren("target"))
+            target_id = target_link.attrib["href"]
+            target = seb.melodyloader.follow_link(target_link, target_id)
             mapping_id = next(elm.iterchildren("actualMapping")).attrib["href"]
         except (KeyError, StopIteration):
             C.LOGGER.error("No usable target or mapping for %r", elm_id)

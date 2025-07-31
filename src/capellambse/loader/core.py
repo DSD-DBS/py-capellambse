@@ -6,7 +6,6 @@ from __future__ import annotations
 
 __all__ = [
     "CorruptModelError",
-    "FragmentType",
     "MelodyLoader",
     "ModelFile",
 ]
@@ -14,7 +13,6 @@ __all__ = [
 import collections
 import collections.abc as cabc
 import contextlib
-import enum
 import itertools
 import logging
 import operator
@@ -33,7 +31,8 @@ from lxml import builder, etree
 import capellambse._namespaces as _n
 from capellambse import filehandler, helpers
 from capellambse.loader import exs
-from capellambse.loader.modelinfo import ModelInfo
+
+from ._typing import FragmentType, ModelInfo
 
 if sys.version_info >= (3, 13):
     from warnings import deprecated
@@ -158,14 +157,6 @@ def _round_version(v: str, prec: int) -> str:
         else:
             dots += 1
     return v[:pos] + re.sub(r"[^.]+", "0", v[pos:])
-
-
-class FragmentType(enum.Enum):
-    """The type of an XML fragment."""
-
-    SEMANTIC = enum.auto()
-    VISUAL = enum.auto()
-    OTHER = enum.auto()
 
 
 class MissingResourceLocationError(KeyError):
@@ -1293,6 +1284,17 @@ class MelodyLoader:
                 if not ignore_broken:
                     raise
         return targets
+
+    def find_references(self, target_id: str) -> cabc.Iterator[etree._Element]:
+        for i in self.xpath(
+            f"//*[@*[contains(., '#{target_id}')] | */@*[contains(., '#{target_id}')]]",
+            roots=[
+                i.root
+                for i in self.trees.values()
+                if i.fragment_type != FragmentType.VISUAL
+            ],
+        ):
+            yield self._follow_href(i)
 
     def _find_fragment(
         self, element: etree._Element
