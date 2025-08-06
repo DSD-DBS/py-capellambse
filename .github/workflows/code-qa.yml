@@ -107,7 +107,7 @@ jobs:
             echo "CIBW_BUILD=cp310-$MANYLINUX* cp313-$MANYLINUX*" >> $GITHUB_ENV
           fi
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1.2
+        uses: pypa/cibuildwheel@v3.1.3
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -172,12 +172,12 @@ jobs:
       id-token: write
     steps:
       - name: Download sdist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist/
           name: sdist
       - name: Download built wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist/
           pattern: wheel-*
@@ -258,7 +258,7 @@ jobs:
           fetch-depth: 0
           filter: tree:0
           repository: ${{matrix.repo}}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           path: wheelhouse/
           name: wheel-Linux-x86_64-manylinux
