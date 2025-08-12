@@ -184,7 +184,7 @@ class MelodyModel:
             * An SCP-style short URL, which will be treated as referring
               to a Git repository.
 
-              Example: ``git@github.com:DSD-DBS/py-capellambse.git``
+              Example: ``git@github.com:dbinfrago/py-capellambse.git``
             * A remote URL, with a protocol or prefix that indicates
               which file handler to invoke (requires ``entrypoint``).
 

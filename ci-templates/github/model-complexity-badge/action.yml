@@ -42,7 +42,7 @@ runs:
       run: |
         if [[ -n "$CAPELLAMBSE_REVISION" ]]; then
           echo "::group::Install capellambse version $CAPELLAMBSE_REVISION"
-          pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
+          pip install "git+https://github.com/dbinfrago/py-capellambse.git@$CAPELLAMBSE_REVISION"
           echo "::endgroup::"
         else
           echo "::group::Install capellambse (latest release)"

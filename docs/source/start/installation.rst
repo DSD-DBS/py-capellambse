@@ -47,7 +47,7 @@ from Github, create a virtual environment and install all the extras:
 
 .. code-block:: bash
 
-   git clone https://github.com/DSD-DBS/py-capellambse.git
+   git clone https://github.com/dbinfrago/py-capellambse.git
    cd py-capellambse
    python3 -m venv .venv
    source .venv/bin/activate
@@ -62,4 +62,4 @@ Install for development
 In case you'd like to contribute to the development or improve documentation,
 sample models or examples collection please follow the `contribution guide`__.
 
-__ https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.md
+__ https://github.com/dbinfrago/py-capellambse/blob/master/CONTRIBUTING.md

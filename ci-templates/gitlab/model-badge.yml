@@ -11,7 +11,7 @@ generate-model-badge:
     # considered for the model badge generation.
     - git fetch --depth 1
     - git reset --hard origin/$CI_COMMIT_BRANCH
-    - pip install "git+https://github.com/DSD-DBS/py-capellambse.git@$CAPELLAMBSE_REVISION"
+    - pip install "git+https://github.com/dbinfrago/py-capellambse.git@$CAPELLAMBSE_REVISION"
     - |
       python >"$OUTPUT_FILE" <<EOF
       import os, capellambse
