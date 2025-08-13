@@ -50,7 +50,7 @@ jobs:
           edit-mode: replace
           body: |
             The pull request does not conform to the conventional commit specification. Please ensure that your commit messages follow the spec: <https://www.conventionalcommits.org/>.
-            We also strongly recommend that you set up your development environment with pre-commit, as described in our [Contributing guidelines](https://github.com/DSD-DBS/py-capellambse/blob/master/CONTRIBUTING.rst#quality-controls). This will run all the important checks right before you commit your changes, and avoids lengthy CI wait time and round trips.
+            We also strongly recommend that you set up your development environment with pre-commit, as described in our [Contributing guidelines](https://github.com/dbinfrago/py-capellambse/blob/master/CONTRIBUTING.rst#quality-controls). This will run all the important checks right before you commit your changes, and avoids lengthy CI wait time and round trips.
 
             This is the commit validation log:
             ```

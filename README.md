@@ -7,9 +7,9 @@ Python-Capellambse
 ==================
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/capellambse)
-![Code QA](https://github.com/DSD-DBS/py-capellambse/actions/workflows/code-qa.yml/badge.svg)
-![License: Apache-2.0](https://img.shields.io/github/license/dsd-dbs/py-capellambse)
-![REUSE status](https://api.reuse.software/badge/github.com/DSD-DBS/py-capellambse)
+![Code QA](https://github.com/dbinfrago/py-capellambse/actions/workflows/code-qa.yml/badge.svg)
+![License: Apache-2.0](https://img.shields.io/github/license/dbinfrago/py-capellambse)
+![REUSE status](https://api.reuse.software/badge/github.com/dbinfrago/py-capellambse)
 ![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
 
 *A Python 3 headless implementation of the Capella modeling tool*
@@ -43,23 +43,23 @@ engineering automations and improvements in the pipeline to share.
 Related projects
 ----------------
 
-- [`capellambse-context-diagrams`](https://github.com/DSD-DBS/capellambse-context-diagrams)
+- [`capellambse-context-diagrams`](https://github.com/dbinfrago/capellambse-context-diagrams)
   — A capellambse extension that visualizes the context of Capella objects, and
   exposes it on element attributes like `.context_diagram`, `.tree_view`, etc.
 
-- [`capella-diff-tools`](https://github.com/DSD-DBS/capella-diff-tools) — A set
+- [`capella-diff-tools`](https://github.com/dbinfrago/capella-diff-tools) — A set
   of tools to compare Capella models.
 
-- [`capella-polarion`](https://github.com/DSD-DBS/capella-polarion/) —
+- [`capella-polarion`](https://github.com/dbinfrago/capella-polarion/) —
   Synchronize information from the Capella model into a
   [Polarion](https://plm.sw.siemens.com/de-DE/polarion/) project
 
-- [`capella-ros-tools`](https://github.com/DSD-DBS/capella-ros-tools) — Import
+- [`capella-ros-tools`](https://github.com/dbinfrago/capella-ros-tools) — Import
   and export ROS `*.msg` files to/from Capella models, or transform `*.msg`
   files into a declarative YAML file.
 
 Did you make something cool that is using or extending capellambse? [Tell us
-about it](https://github.com/DSD-DBS/py-capellambse/issues), so we can add it
+about it](https://github.com/dbinfrago/py-capellambse/issues), so we can add it
 to this list!
 
 Documentation and examples
@@ -67,14 +67,14 @@ Documentation and examples
 
 The library is designed to be easy to use and discover, especially in an
 interactive environment such as JupyterLab. Additionally, [API
-documentation](https://dsd-dbs.github.io/py-capellambse/) is automatically
+documentation](https://dbinfrago.github.io/py-capellambse/) is automatically
 generated and published whenever new features and bug fixes are added.
 
 You are encouraged to explore our test models and demo notebooks. Click on the
 button below to launch a [Jupyter notebook server] on the public myBinder
 service, and get started in seconds:
 
-[![myBinder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DSD-DBS/py-capellambse/HEAD?labpath=docs%2Fsource%2Fexamples%2F01%20Introduction.ipynb)
+[![myBinder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/dbinfrago/py-capellambse/HEAD?labpath=docs%2Fsource%2Fexamples%2F01%20Introduction.ipynb)
 
 *Warning:* [Do not enter confidential
 information](https://github.com/alan-turing-institute/the-turing-way/blob/b36c3ac1c78acbbe18441beaa89514544ed12021/workshops/boost-research-reproducibility-binder/workshop-presentations/zero-to-binder-python.md#private-files),
@@ -90,25 +90,25 @@ lab tab. On Github, you will be shown a statically rendered preview of the
 notebook.
 
 - [01
-  Introduction.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/01%20Introduction.html)
+  Introduction.ipynb](https://dbinfrago.github.io/py-capellambse/examples/01%20Introduction.html)
   provides a high-level overview of the library features. It visualizes
   examples like a Component - Function allocation table by leveraging Jupyter's
   and IPython's rich display functionality.
 
 - [02 Intro to Physical
-  Architecture.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/02%20Intro%20to%20Physical%20Architecture%20API.html)
+  Architecture.ipynb](https://dbinfrago.github.io/py-capellambse/examples/02%20Intro%20to%20Physical%20Architecture%20API.html)
   explores some more advanced concepts on the example of the Physical
   Architecture Layer. It shows how to derive tabular data, like a Bill of
   Materials or a Software to Hardware allocation table, by using `pandas`
   dataframes.
 
 - [03 Data
-  Values.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/03%20Data%20Values.html)
+  Values.ipynb](https://dbinfrago.github.io/py-capellambse/examples/03%20Data%20Values.html)
   shows how the API can be used to explore classes, class instances and other
   objects related to data modeling.
 
 - [04 Intro to Jinja
-  templating.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/04%20Intro%20to%20Jinja%20templating.html)
+  templating.ipynb](https://dbinfrago.github.io/py-capellambse/examples/04%20Intro%20to%20Jinja%20templating.html)
   demonstrates how to effectively combine `capellambse` with the powerful
   [Jinja](https://palletsprojects.com/p/jinja/) templating engine. This enables
   the creation of all sorts of model-derived documents and artifacts, including
@@ -116,13 +116,13 @@ notebook.
   your models.
 
 - [05 Introduction to
-  Libraries.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/05%20Introduction%20to%20Libraries.html)
+  Libraries.ipynb](https://dbinfrago.github.io/py-capellambse/examples/05%20Introduction%20to%20Libraries.html)
   shows how to use Capella Library Projects within capellambse. In this example
   you'll learn how the API can be used to open a project that is based on a
   library and find objects in both models.
 
 - [06 Introduction to Requirement access and
-  management.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html)
+  management.ipynb](https://dbinfrago.github.io/py-capellambse/examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html)
   shows how the API can be used to work with requirements objects, introduced
   by the Capella [Requirements
   Viewpoint](https://www.eclipse.org/capella/addons.html). In this example
@@ -131,7 +131,7 @@ notebook.
   ReqIF formats.
 
 - [07 Code
-  Generation.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/07%20Code%20Generation.html)
+  Generation.ipynb](https://dbinfrago.github.io/py-capellambse/examples/07%20Code%20Generation.html)
   shows how to generate code from class diagrams. In particular, we focus on
   Interface Descriptive Languages with concrete examples for `Class` to [ROS2
   IDL](https://docs.ros.org/en/rolling/Concepts/About-ROS-Interfaces.html) and
@@ -140,25 +140,25 @@ notebook.
   object.
 
 - [08 Property
-  Values.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/08%20Property%20Values.html)
+  Values.ipynb](https://dbinfrago.github.io/py-capellambse/examples/08%20Property%20Values.html)
   shows how to access property values and property value groups, as well as the
   [Property Value Management (PVMT)](https://eclipse.dev/capella/addons.html)
   extension.
 
 - [09 Context
-  Diagrams.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/09%20Context%20Diagrams.html)
+  Diagrams.ipynb](https://dbinfrago.github.io/py-capellambse/examples/09%20Context%20Diagrams.html)
   shows the [capellambse-context-diagrams
   extension](https://capellambse-context-diagrams.readthedocs.io/) that
   visualizes contexts of Capella objects. The extension is external to the
   capellambse library and needs to be installed separately.
 
 - [10 Declarative
-  Modeling.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/10%20Declarative%20Modeling.html)
+  Modeling.ipynb](https://dbinfrago.github.io/py-capellambse/examples/10%20Declarative%20Modeling.html)
   demonstrates a basic application of the declarative approach to modeling on a
   coffee machine example.
 
 - [11 Complexity
-  Assessment.ipynb](https://dsd-dbs.github.io/py-capellambse/examples/11%20Complexity%20Assessment.html)
+  Assessment.ipynb](https://dbinfrago.github.io/py-capellambse/examples/11%20Complexity%20Assessment.html)
   quickly demonstrates how to use and view the model complexity badge for a
   Capella model.
 

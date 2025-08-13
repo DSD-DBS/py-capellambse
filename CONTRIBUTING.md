@@ -16,8 +16,8 @@ issue]. Or go ahead and [open a pull request] to contribute code. In order to
 reduce the burden on our maintainers, please make sure that your code follows
 our style guidelines outlined below.
 
-[open an issue]: https://github.com/DSD-DBS/py-capellambse/issues
-[open a pull request]: https://github.com/DSD-DBS/py-capellambse/pulls
+[open an issue]: https://github.com/dbinfrago/py-capellambse/issues
+[open a pull request]: https://github.com/dbinfrago/py-capellambse/pulls
 
 Developing
 ----------
@@ -26,7 +26,7 @@ Use [uv](https://docs.astral.sh/uv/) to set up a local development environment.
 Additionally, a Rust compiler is required to build the native module.
 
 ```bash
-git clone https://github.com/DSD-DBS/py-capellambse
+git clone https://github.com/dbinfrago/py-capellambse
 cd py-capellambse
 uv sync
 uv run pre-commit install
@@ -110,7 +110,7 @@ CAPELLAMBSE_UUID_SEED=0 uv run jupyter lab
 > The above command provides a static seed for the internal pseudo-random
 > number generator. This is not recommended for production environments. [Read
 > more about
-> CAPELLAMBSE_UUID_SEED.](https://dsd-dbs.github.io/py-capellambse/start/envvars.html)
+> CAPELLAMBSE_UUID_SEED.](https://dbinfrago.github.io/py-capellambse/start/envvars.html)
 
 If your browser did not open automatically, follow the instructions in the
 terminal to start it manually.

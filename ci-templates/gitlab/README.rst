@@ -17,7 +17,7 @@ Please add the following section to your ``.gitlab-ci.yml``:
 .. code:: yaml
 
   include:
-    - remote: https://raw.githubusercontent.com/DSD-DBS/py-capellambse/${CAPELLAMBSE_REVISION}/ci-templates/gitlab/model-badge.yml
+    - remote: https://raw.githubusercontent.com/dbinfrago/py-capellambse/${CAPELLAMBSE_REVISION}/ci-templates/gitlab/model-badge.yml
 
   variables:
     ENTRYPOINT: test/test.aird # Entry point to the .aird file of the model (relative from root level of the repository)
@@ -52,7 +52,7 @@ Add the following code to your ``.gitlab-ci.yml``:
 .. code:: yaml
 
   include:
-    - remote: https://raw.githubusercontent.com/DSD-DBS/py-capellambse/${CAPELLAMBSE_REVISION}/ci-templates/gitlab/filter-derive.yml
+    - remote: https://raw.githubusercontent.com/dbinfrago/py-capellambse/${CAPELLAMBSE_REVISION}/ci-templates/gitlab/filter-derive.yml
 
   variables:
     CAPELLA_VERSION: 6.0.0 # Semantic Capella version

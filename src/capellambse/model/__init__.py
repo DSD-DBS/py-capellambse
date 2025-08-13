@@ -17,7 +17,7 @@ else:
     from typing_extensions import deprecated
 
 VIRTUAL_NAMESPACE_PREFIX = (
-    "https://dsd-dbs.github.io/py-capellambse/virtual-namespace/"
+    "https://dbinfrago.github.io/py-capellambse/virtual-namespace/"
 )
 """The URI prefix to indicate a virtual namespace.
 

@@ -246,10 +246,10 @@ jobs:
       fail-fast: false
       matrix:
         repo:
-          - DSD-DBS/capellambse-context-diagrams
-          - DSD-DBS/capella-polarion
-          - DSD-DBS/json2capella
-          - DSD-DBS/capella-ros-tools
+          - dbinfrago/capellambse-context-diagrams
+          - dbinfrago/capella-polarion
+          - dbinfrago/json2capella
+          - dbinfrago/capella-ros-tools
     permissions:
       contents: read
     steps:
@@ -269,7 +269,7 @@ jobs:
           python-version: "3.13"
       - name: Setup deno (for context-diagrams only)
         uses: denoland/setup-deno@v2
-        if: matrix.repo == 'DSD-DBS/capellambse-context-diagrams'
+        if: matrix.repo == 'dbinfrago/capellambse-context-diagrams'
         with:
           deno-version: "2.3.6"
       - run: |-

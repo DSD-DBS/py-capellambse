@@ -8,9 +8,9 @@ derive:
     entrypoint: [""]
 
   script:
-    - ': ${MODEL_MODIFIER_EMAIL:?MODEL_MODIFIER_EMAIL is required, please set the environment variable}'
-    - ': ${GIT_USERNAME:?GIT_USERNAME and GIT_PASSWORD are required, please set the environment variables}'
-    - ': ${GIT_PASSWORD:?GIT_PASSWORD is required, please set the environment variable}'
+    - ": ${MODEL_MODIFIER_EMAIL:?MODEL_MODIFIER_EMAIL is required, please set the environment variable}"
+    - ": ${GIT_USERNAME:?GIT_USERNAME and GIT_PASSWORD are required, please set the environment variables}"
+    - ": ${GIT_PASSWORD:?GIT_PASSWORD is required, please set the environment variable}"
 
     - if [[ -n $DERIVE_RESULTS ]]; then mapfile -d ";" -t derive_results < <(echo -n "$DERIVE_RESULTS"); else derive_results=(); fi
 
@@ -20,7 +20,7 @@ derive:
     - if [[ -n $CI_COMMIT_BRANCH ]]; then git fetch --depth 1; git reset --hard origin/$CI_COMMIT_BRANCH; fi
     - python -m venv /tmp/.venv
     - source /tmp/.venv/bin/activate
-    - pip install "capellambse[cli] @ git+https://github.com/DSD-DBS/py-capellambse.git@${CAPELLAMBSE_REVISION:-release-0.5}"
+    - pip install "capellambse[cli] @ git+https://github.com/dbinfrago/py-capellambse.git@${CAPELLAMBSE_REVISION:-release-0.5}"
     - export DISPLAY=:99
     - |
       xvfb-run python \
@@ -65,10 +65,10 @@ variables:
   # Variables defined outside of jobs (globally) have a low precedence, so it's easy to overwrite it.
   # When the image is overwritten, the variable is ignored.
   # Otherwise, we recommend to set it to a specific tag.
-  # See the available list of tags here: https://github.com/DSD-DBS/capella-dockerimages/releases
+  # See the available list of tags here: https://github.com/dbinfrago/capella-dockerimages/releases
   CAPELLA_DOCKER_IMAGES_REVISION: main
 
   # Depending on the local environment, images can be tagged differently.
   # In this case, we use the tag, which is also used by the predefined images:
-  # https://dsd-dbs.github.io/capella-dockerimages/capella/introduction/#tagging-schema-for-prebuilt-images
+  # https://dbinfrago.github.io/capella-dockerimages/capella/introduction/#tagging-schema-for-prebuilt-images
   CAPELLA_DOCKER_IMAGES_TAG: ${CAPELLA_VERSION}-selected-dropins-${CAPELLA_DOCKER_IMAGES_REVISION}

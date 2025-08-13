@@ -22,7 +22,7 @@ To use this action, add it as a step to a job in your workflows:
        runs-on: ubuntu-latest
        steps:
          - uses: actions/checkout@v4
-         - uses: DSD-DBS/py-capellambse/ci-templates/github/model-complexity-badge@master
+         - uses: dbinfrago/py-capellambse/ci-templates/github/model-complexity-badge@master
 
 This is the minimal configuration, which will produce a badge with a name of
 ``model-complexity-badge.svg``, push it back to the repository and upload it as

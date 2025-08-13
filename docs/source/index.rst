@@ -18,7 +18,7 @@ Python Capella MBSE Tools
 .. code:: python
 
    >>> import capellambse
-   >>> model = capellambse.MelodyModel("git+https://github.com/DSD-DBS/coffee-machine.git")
+   >>> model = capellambse.MelodyModel("git+https://github.com/dbinfrago/coffee-machine.git")
    >>> model.search("SystemFunction").by_name("make coffee")
    <SystemFunction 'make coffee' (8b0d19df-7446-4c3a-98e7-4a739c974059)>
    .available_in_states = [0] <State 'Ready for request' (15e28744-1a3b-41ce-a2ee-28fb33ed3bda)>

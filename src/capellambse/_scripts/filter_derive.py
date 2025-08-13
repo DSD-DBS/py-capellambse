@@ -70,7 +70,7 @@ def main(
     "6.0.0"). If you have docker installed, a good default value is:
 
     \b
-    --docker ghcr.io/dsd-dbs/capella-dockerimages/capella/base:{VERSION}-selected-dropins-main
+    --docker ghcr.io/dbinfrago/capella-dockerimages/capella/base:{VERSION}-selected-dropins-main
 
     Exactly one of ``--exe`` or ``--docker`` must be specified.
     """  # noqa: D301
