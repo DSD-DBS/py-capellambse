@@ -15,7 +15,7 @@ from capellambse.filehandler import git
 
 def test_gitfilehandler_can_read_remote_files_no_revision():
     fh = capellambse.get_filehandler(
-        "git+https://github.com/DSD-DBS/py-capellambse.git"
+        "git+https://github.com/dbinfrago/py-capellambse.git"
     )
     assert isinstance(fh, git.GitFileHandler)
     assert fh.revision == "refs/heads/master"
@@ -23,7 +23,7 @@ def test_gitfilehandler_can_read_remote_files_no_revision():
 
 def test_gitfilehandler_can_read_remote_files_with_revision():
     fh = capellambse.get_filehandler(
-        "git+https://github.com/DSD-DBS/py-capellambse.git",
+        "git+https://github.com/dbinfrago/py-capellambse.git",
         revision="gh-pages",
     )
 
