@@ -644,7 +644,7 @@ class MelodyModel:
         Capella binary at the image's ENTRYPOINT:
 
         >>> model.update_diagram_cache(
-        ...     "ghcr.io/dsd-dbs/capella-dockerimages/capella/base:{VERSION}-selected-dropins-main",
+        ...     "ghcr.io/dbinfrago/capella-dockerimages/capella/base:{VERSION}-selected-dropins-main",
         ...     "png",
         ... )
         """
