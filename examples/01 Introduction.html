@@ -1,0 +1,853 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="2. Introduction to Physical Architecture API" href="02%20Intro%20to%20Physical%20Architecture%20API.html" /><link rel="prev" title="How Tos" href="../howtos/howtos.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>1. Introduction - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">src</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of src</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.pa.html">capellambse.metamodel.pa package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="Introduction">
+<h1><span class="section-number">1. </span>Introduction<a class="headerlink" href="#Introduction" title="Link to this heading">¶</a></h1>
+<p>Welcome to the py-capella-mbse Showcase notebook. This notebook will show you some basic (and not so basic) things that you can get done using this library. For more advanced features have a look around the nearby notebooks.</p>
+<p>The below code loads the library and one of the test models:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">capellambse</span>
+
+<span class="n">path_to_model</span> <span class="o">=</span> <span class="s2">&quot;../../../tests/data/models/test7_0/Model Test 7.0.aird&quot;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">capellambse</span><span class="o">.</span><span class="n">MelodyModel</span><span class="p">(</span><span class="n">path_to_model</span><span class="p">)</span>
+<span class="n">model</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;capellambse.model._model.MelodyModel at 0x7118bcd06db0&gt;
+</pre></div></div>
+</div>
+<p>Let’s go to the first practical example of working with the library!</p>
+<section id="Example-1:-Actor-functions">
+<h2><span class="section-number">1.1. </span>Example 1: Actor functions<a class="headerlink" href="#Example-1:-Actor-functions" title="Link to this heading">¶</a></h2>
+<p>The below code will print every Actor available in the Logical Architecture layer</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">actor</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">all_actors</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">actor</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Prof. A. P. W. B. Dumbledore
+Prof. S. Snape
+Harry J. Potter
+R. Weasley
+Voldemort
+Multiport
+</pre></div></div>
+</div>
+<p>but we could also “zoom-in” to an actor of interest:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">all_actors</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;Prof. S. Snape&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<h1><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAyMCAyMCIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjIwIiB3aWR0aD0iMjAiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="" width="20" height="20"> Prof. S. Snape <span style="font-size: 70%;">(org.polarsys.capella.core.data.la:LogicalComponent)</span></h1>
+<table>
+<tr><th style="text-align: right;">allocated_functions</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://a7acb298-d14b-4707-a419-fea272434541">&quot;Teaching&quot;</a> (a7acb298-d14b-4707-a419-fea272434541)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://4a2a7f3c-d223-4d44-94a7-50dd2906a70c">&quot;maintain a layer of defense for the Sorcerer&#39;s Stone&quot;</a> (4a2a7f3c-d223-4d44-94a7-50dd2906a70c)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">allocated_interfaces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">applied_property_value_groups</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><strong>PropertyValueGroup</strong> <a href="hlink://2a480409-57d1-46f8-a0ce-e574706a9a7c">&quot;DarkMagic.Power&quot;</a> (2a480409-57d1-46f8-a0ce-e574706a9a7c)</li>
+<li><strong>PropertyValueGroup</strong> <a href="hlink://b1d7453b-69ab-4d81-ab8b-1e48b5870340">&quot;DarkMagic.Power Level&quot;</a> (b1d7453b-69ab-4d81-ab8b-1e48b5870340)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">applied_property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">architectures</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">capability_pkg</th><td style="text-align: left;"><em>None</em></td></tr>
+<tr><th style="text-align: right;">component_exchange_categories</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">component_exchanges</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">component_realizations</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">constraints</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">context_diagram</th><td style="text-align: left;"><b>ContextDiagram of Prof. S. Snape</b> (uuid: 6f463eed-c77b-4568-8078-beec0536f243_context)</td></tr>
+<tr><th style="text-align: right;">data_pkg</th><td style="text-align: left;"><em>None</em></td></tr>
+<tr><th style="text-align: right;">description</th><td style="text-align: left;"><p>Good guy and teacher of brewing arts.</p>
+</td></tr>
+<tr><th style="text-align: right;">diagrams</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">enumeration_property_types</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">extensions</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">features</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">filtering_criteria</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">functional_allocations</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><a href="hlink://b5090138-a5da-4ccd-a791-0226e8ba5eb7"><strong>ComponentFunctionalAllocation</strong></a> (b5090138-a5da-4ccd-a791-0226e8ba5eb7)</li>
+<li><a href="hlink://6be1bdf2-60fc-4729-8388-a381f67765c2"><strong>ComponentFunctionalAllocation</strong></a> (6be1bdf2-60fc-4729-8388-a381f67765c2)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">generalizations</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">implemented_interfaces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">in_exchange_links</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">interface_allocations</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">interface_implementations</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><a href="hlink://cd38f870-39fe-44a3-90c9-1527b11b0b60"><strong>InterfaceImplementation</strong></a> (cd38f870-39fe-44a3-90c9-1527b11b0b60)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">interface_pkg</th><td style="text-align: left;"><em>None</em></td></tr>
+<tr><th style="text-align: right;">interface_uses</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><a href="hlink://43e7fe5c-9fa6-4498-9cc3-9f8f4058db3c"><strong>InterfaceUse</strong></a> (43e7fe5c-9fa6-4498-9cc3-9f8f4058db3c)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">is_abstract</th><td style="text-align: left;"><em>False</em></td></tr>
+<tr><th style="text-align: right;">is_actor</th><td style="text-align: left;"><em>True</em></td></tr>
+<tr><th style="text-align: right;">is_human</th><td style="text-align: left;"><em>True</em></td></tr>
+<tr><th style="text-align: right;">is_visible_in_doc</th><td style="text-align: left;"><em>False</em></td></tr>
+<tr><th style="text-align: right;">is_visible_in_lm</th><td style="text-align: left;"><em>False</em></td></tr>
+<tr><th style="text-align: right;">layer</th><td style="text-align: left;"><strong>LogicalArchitecture</strong> <a href="hlink://853cb005-cba0-489b-8fe3-bb694ad4543b">&quot;Logical Architecture&quot;</a> (853cb005-cba0-489b-8fe3-bb694ad4543b)</td></tr>
+<tr><th style="text-align: right;">links</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">migrated_elements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">name</th><td style="text-align: left;">Prof. S. Snape</td></tr>
+<tr><th style="text-align: right;">naming_rules</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">out_exchange_links</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">owned_features</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><strong>ComponentPort</strong> <a href="hlink://b4e39757-b0fd-41ff-a7b8-c9fc36de2ca9">&quot;CP 1&quot;</a> (b4e39757-b0fd-41ff-a7b8-c9fc36de2ca9)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">packages</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">parent</th><td style="text-align: left;"><strong>LogicalComponentPkg</strong> <a href="hlink://84c0978d-9a32-4f5b-8013-5b0b6adbfd73">&quot;Structure&quot;</a> (84c0978d-9a32-4f5b-8013-5b0b6adbfd73)</td></tr>
+<tr><th style="text-align: right;">parts</th><td style="text-align: left;"><em>Backreference to Part - omitted: can be slow to compute. Display this property directly to show.</em></td></tr>
+<tr><th style="text-align: right;">physical_link_categories</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">physical_links</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">physical_paths</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">physical_ports</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">ports</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><strong>ComponentPort</strong> <a href="hlink://b4e39757-b0fd-41ff-a7b8-c9fc36de2ca9">&quot;CP 1&quot;</a> (b4e39757-b0fd-41ff-a7b8-c9fc36de2ca9)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">progress_status</th><td style="text-align: left;">NOT_SET</td></tr>
+<tr><th style="text-align: right;">property_value_groups</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><strong>PropertyValueGroup</strong> <a href="hlink://2a480409-57d1-46f8-a0ce-e574706a9a7c">&quot;DarkMagic.Power&quot;</a> (2a480409-57d1-46f8-a0ce-e574706a9a7c)</li>
+<li><strong>PropertyValueGroup</strong> <a href="hlink://b1d7453b-69ab-4d81-ab8b-1e48b5870340">&quot;DarkMagic.Power Level&quot;</a> (b1d7453b-69ab-4d81-ab8b-1e48b5870340)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">property_values</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">pvmt</th><td style="text-align: left;">Property Value Management for <img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="LogicalComponent" title="LogicalComponent" width="15" height="15" style="display: inline-block"> <a href="hlink://6f463eed-c77b-4568-8078-beec0536f243">&quot;Prof. S. Snape&quot;</a> (6f463eed-c77b-4568-8078-beec0536f243)</td></tr>
+<tr><th style="text-align: right;">realization_view</th><td style="text-align: left;"><b>Realization view of Prof. S. Snape</b> (uuid: 6f463eed-c77b-4568-8078-beec0536f243_realization_view)</td></tr>
+<tr><th style="text-align: right;">realized_components</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">realizing_components</th><td style="text-align: left;"><em>Backreference to Component - omitted: can be slow to compute. Display this property directly to show.</em></td></tr>
+<tr><th style="text-align: right;">realizing_physical_components</th><td style="text-align: left;"><em>Backreference to PhysicalComponent - omitted: can be slow to compute. Display this property directly to show.</em></td></tr>
+<tr><th style="text-align: right;">related_exchanges</th><td style="text-align: left;"><em>Backreference to ComponentExchange - omitted: can be slow to compute. Display this property directly to show.</em></td></tr>
+<tr><th style="text-align: right;">requirements</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">requirements_relations</th><td style="text-align: left;"><em>Backreference to AbstractRelation - omitted: can be slow to compute. Display this property directly to show.</em></td></tr>
+<tr><th style="text-align: right;">review</th><td style="text-align: left;"></td></tr>
+<tr><th style="text-align: right;">sid</th><td style="text-align: left;"></td></tr>
+<tr><th style="text-align: right;">state_machines</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">status</th><td style="text-align: left;"><em>None</em></td></tr>
+<tr><th style="text-align: right;">sub</th><td style="text-align: left;"><em>Backreference to GeneralizableElement - omitted: can be slow to compute. Display this property directly to show.</em></td></tr>
+<tr><th style="text-align: right;">summary</th><td style="text-align: left;"></td></tr>
+<tr><th style="text-align: right;">super</th><td style="text-align: left;"><em>None</em></td></tr>
+<tr><th style="text-align: right;">traces</th><td style="text-align: left;"><p><em>(Empty list)</em></p></td></tr>
+<tr><th style="text-align: right;">used_interfaces</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><strong>Interface</strong> <a href="hlink://53ec6898-5c1c-4f4c-bcd7-46e2e9adff30">&quot;Prof. S. Snape &lt;3 Whomping Willow&quot;</a> (53ec6898-5c1c-4f4c-bcd7-46e2e9adff30)</li>
+</ol></td></tr>
+<tr><th style="text-align: right;">uuid</th><td style="text-align: left;">6f463eed-c77b-4568-8078-beec0536f243</td></tr>
+<tr><th style="text-align: right;">validation</th><td style="text-align: left;"><em>&lt;capellambse.extensions.validation._validate.ElementValidation object at 0x7118b7385400&gt;</em></td></tr>
+<tr><th style="text-align: right;">visible_on_diagrams</th><td style="text-align: left;"><ol start="0" style="text-align: left;">
+<li><b>[LAB] Wizard Education</b> (uuid: _dr0dQLB8EeqLtsTDMgEHBw)</li>
+<li><b>[LAB] Wizard Education (hidden functions)</b> (uuid: _RbiKABt5EfCcxdZjq4yTeQ)</li>
+</ol></td></tr>
+</table></div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">pandas</span></code> library, we can also easily export the data above in tabular format.</p>
+<p>For that, first build up the table as pandas DataFrame:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">actor</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">all_actors</span><span class="p">:</span>
+    <span class="n">actor_functions</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">function</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">function</span> <span class="ow">in</span> <span class="n">actor</span><span class="o">.</span><span class="n">allocated_functions</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="s2">&quot;no functions assigned&quot;</span>
+    <span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;actor&quot;</span><span class="p">:</span> <span class="n">actor</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;functions&quot;</span><span class="p">:</span> <span class="n">actor_functions</span><span class="p">})</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>actor</th>
+      <th>functions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Prof. A. P. W. B. Dumbledore</td>
+      <td>manage the school; advise Harry</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Prof. S. Snape</td>
+      <td>Teaching; maintain a layer of defense for the ...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Harry J. Potter</td>
+      <td>kill He Who Must Not Be Named</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>R. Weasley</td>
+      <td>assist Harry; break school rules</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Voldemort</td>
+      <td>no functions assigned</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>Multiport</td>
+      <td>LAF 1</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>This DataFrame can then be processed as usual. For example, to export it as Excel Spreadsheet:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="s2">&quot;01_intro_actor_functions.xlsx&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>you can check the resulting file in the folder next to this notebook (right after you run the above cell)</p>
+<p>Now that we’ve seen the basics, lets do something visually cool.</p>
+</section>
+<section id="Example-2:-working-with-diagrams">
+<h2><span class="section-number">1.2. </span>Example 2: working with diagrams<a class="headerlink" href="#Example-2:-working-with-diagrams" title="Link to this heading">¶</a></h2>
+<p>The below code will find some diagrams for us.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">diagram</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">diagrams</span><span class="o">.</span><span class="n">by_type</span><span class="p">(</span><span class="s2">&quot;LAB&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">diagram</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[LAB] Wizard Education
+[LAB] Test Component Port Filter
+[LAB] Wizard Education (hidden functions)
+</pre></div></div>
+</div>
+<p>We can analyze which model objects are shown in a particular diagram.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diagram</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">diagrams</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span><span class="s2">&quot;[LAB] Wizard Education&quot;</span><span class="p">)</span>
+<span class="n">diagram</span><span class="o">.</span><span class="n">nodes</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;">
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxDb21wb25lbnRTeW1ib2wiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgNzkgNzkiPjxwYXRoIGQ9Ik0xOCAyMzdoNDZ2NDNIMTh6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjxwYXRoIGQ9Ik0xMiAyNDdoMTF2OEgxMnoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI2MWgxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48ZyB0cmFuc2Zvcm09InNjYWxlKDAuOTA3MDUxMzUsMS4xMDI0NzM0KSI+PHBhdGggZD0ibSAzNy40Mjc0NTYsMjAuODIxMzUzIGggNC4yMjE0NzUgViA1MC45MDk3MSBIIDM3LjQyNzQ1NiBaIE0gMzkuNTM4MTk0LDQ2Ljg5NTE3IEggNTYuNzU1MTkgdiA0LjAxNDU0IEggMzkuNTM4MTk0IFoiIGZpbGw9IiMwMDAiIHN0cm9rZS13aWR0aD0iMC4xIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsQ29tcG9uZW50U3ltYm9sIiB5PSIwIiAvPjwvc3ZnPg==" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://101ffa60-f8a2-4ea2-a0d8-d10910ceac06">&quot;Hogwarts&quot;</a> (101ffa60-f8a2-4ea2-a0d8-d10910ceac06)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://0e71a0d3-0a18-4671-bba0-71b5f88f95dd">&quot;produce Great Wizards&quot;</a> (0e71a0d3-0a18-4671-bba0-71b5f88f95dd)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://264fb47d-67b7-4bdc-8d06-8a0e5139edbf">&quot;protect Students against the Death Eaters&quot;</a> (264fb47d-67b7-4bdc-8d06-8a0e5139edbf)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxDb21wb25lbnRTeW1ib2wiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgNzkgNzkiPjxwYXRoIGQ9Ik0xOCAyMzdoNDZ2NDNIMTh6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjxwYXRoIGQ9Ik0xMiAyNDdoMTF2OEgxMnoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI2MWgxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48ZyB0cmFuc2Zvcm09InNjYWxlKDAuOTA3MDUxMzUsMS4xMDI0NzM0KSI+PHBhdGggZD0ibSAzNy40Mjc0NTYsMjAuODIxMzUzIGggNC4yMjE0NzUgViA1MC45MDk3MSBIIDM3LjQyNzQ1NiBaIE0gMzkuNTM4MTk0LDQ2Ljg5NTE3IEggNTYuNzU1MTkgdiA0LjAxNDU0IEggMzkuNTM4MTk0IFoiIGZpbGw9IiMwMDAiIHN0cm9rZS13aWR0aD0iMC4xIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsQ29tcG9uZW50U3ltYm9sIiB5PSIwIiAvPjwvc3ZnPg==" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://a3194240-cd17-4998-8f8b-785233487ec3">&quot;Campus&quot;</a> (a3194240-cd17-4998-8f8b-785233487ec3)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxDb21wb25lbnRTeW1ib2wiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiB2aWV3Qm94PSIwIDAgNzkgNzkiPjxwYXRoIGQ9Ik0xOCAyMzdoNDZ2NDNIMTh6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjxwYXRoIGQ9Ik0xMiAyNDdoMTF2OEgxMnoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI2MWgxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48ZyB0cmFuc2Zvcm09InNjYWxlKDAuOTA3MDUxMzUsMS4xMDI0NzM0KSI+PHBhdGggZD0ibSAzNy40Mjc0NTYsMjAuODIxMzUzIGggNC4yMjE0NzUgViA1MC45MDk3MSBIIDM3LjQyNzQ1NiBaIE0gMzkuNTM4MTk0LDQ2Ljg5NTE3IEggNTYuNzU1MTkgdiA0LjAxNDU0IEggMzkuNTM4MTk0IFoiIGZpbGw9IiMwMDAiIHN0cm9rZS13aWR0aD0iMC4xIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsQ29tcG9uZW50U3ltYm9sIiB5PSIwIiAvPjwvc3ZnPg==" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://018a8ae9-8e8e-4aea-8191-4abf844a79e3">&quot;School&quot;</a> (018a8ae9-8e8e-4aea-8191-4abf844a79e3)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://957c5799-1d4a-4ac0-b5de-33a65bf1519c">&quot;educate Wizards&quot;</a> (957c5799-1d4a-4ac0-b5de-33a65bf1519c)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkNvbXBvbmVudFN5bWJvbCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHZpZXdCb3g9IjAgMCA3OSA3OSI+PHBhdGggZD0iTTE4IDIzN2g0NnY0M0gxOHoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI0N2gxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjYxaDExdjhIMTJ6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjx1c2UgdHJhbnNmb3JtPSJtYXRyaXgoMC42MiwwLDAsMC42MiwyMy44MiwxNi41MSkiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgLz48L3N5bWJvbD48c3ltYm9sIGlkPSJTdGlja0ZpZ3VyZVN5bWJvbCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHZpZXdCb3g9IjM2Mi44NjEgMjEwLjg5MiA3NSA3NSI+PGcgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIuNDk0NCIgdHJhbnNmb3JtPSJtYXRyaXgoMS4wNjExMzM4LDAsMCwxLjA2MTEzMzgsLTI0LjQ3NjY1LC0xMi4yNDE2NzMpIj48bGluZSBmaWxsPSJub25lIiB4MT0iNDAwLjM2MiIgeDI9IjQwMC4zNjIiIHkxPSIyMzIuNTg2IiB5Mj0iMjU3LjUzNCIgLz48bGluZSBmaWxsPSJub25lIiB4MT0iNDAwLjgzNDAxIiB4Mj0iMzg4LjQyMyIgeTE9IjI1NC4yOTkiIHkyPSIyNzUuMDA5IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMjUyMDEiIHgyPSI0MTMuOTciIHkxPSIyNTQuNDYwMDEiIHkyPSIyNzQuOTg3IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSIzODUuNjM0IiB4Mj0iNDE1LjcwMyIgeTE9IjI0NC41NjkiIHkyPSIyNDQuNDk2OTkiIC8+PGVsbGlwc2UgY3g9IjQwMC41MzIwMSIgY3k9IjIyMy4zNTg5OSIgZmlsbD0ibm9uZSIgcng9IjkuMjE4MDAwNCIgcnk9IjguNTA4MDAwNCIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjU3RpY2tGaWd1cmVTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://1188fc31-789b-424f-a2d4-06791873a351">&quot;Whomping Willow&quot;</a> (1188fc31-789b-424f-a2d4-06791873a351)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://7f2936ab-0b54-4e92-9f0c-85a9f0981959">&quot;defend the surrounding area against Intruders&quot;</a> (7f2936ab-0b54-4e92-9f0c-85a9f0981959)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://4c1f2b5d-0641-42c7-911f-7a42928580b8">&quot;Prof. A. P. W. B. Dumbledore&quot;</a> (4c1f2b5d-0641-42c7-911f-7a42928580b8)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://f708bc29-d69f-42a0-90cc-11fc01054cd0">&quot;manage the school&quot;</a> (f708bc29-d69f-42a0-90cc-11fc01054cd0)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://beaf5ba4-8fa9-4342-911f-0266bb29be45">&quot;advise Harry&quot;</a> (beaf5ba4-8fa9-4342-911f-0266bb29be45)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://ccbad61a-39dc-4af8-8199-3fee30de2f1d">&quot;Prof. S. Snape&quot;</a> (ccbad61a-39dc-4af8-8199-3fee30de2f1d)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://a7acb298-d14b-4707-a419-fea272434541">&quot;Teaching&quot;</a> (a7acb298-d14b-4707-a419-fea272434541)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://4a2a7f3c-d223-4d44-94a7-50dd2906a70c">&quot;maintain a layer of defense for the Sorcerer&#39;s Stone&quot;</a> (4a2a7f3c-d223-4d44-94a7-50dd2906a70c)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIGZpbGw9IiNBM0JDRDAiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="ComponentExchange" title="ComponentExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://c0bc49e1-8043-4418-8c0a-de6c6b749eab">&quot;Headmaster Responsibilities&quot;</a> (c0bc49e1-8043-4418-8c0a-de6c6b749eab)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIGZpbGw9IiNBM0JDRDAiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="ComponentExchange" title="ComponentExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://9cbdd233-aff5-47dd-9bef-9be1277c77c3">&quot;Teacher Responsibilities&quot;</a> (9cbdd233-aff5-47dd-9bef-9be1277c77c3)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxBY3RvclN5bWJvbCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHZpZXdCb3g9IjAgMCA3OSA3OSI+PHBhdGggZD0iTTE4IDIzN2g0NnY0M0gxOHoiIGZpbGw9IiNkYmU2ZjQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgLTIxOCkiIC8+PHBhdGggZD0iTTEyIDI0N2gxMXY4SDEyeiIgZmlsbD0iI2RiZTZmNCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAtMjE4KSIgLz48cGF0aCBkPSJNMTIgMjYxaDExdjhIMTJ6IiBmaWxsPSIjZGJlNmY0IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0yMTgpIiAvPjxnIGZpbGw9IiMwMDAiIHN0cm9rZS13aWR0aD0iMC4xIiB0cmFuc2Zvcm09InNjYWxlKDAuODMwMTA4OTYsMS4yMDQ2NjExKSI+PHBhdGggZD0ibSAzMS4wNjM2NzYsMTkuOTQyNjI4IGggMy43NTQ0MjcgdiAyNi43NTk0OTQgaCAtMy43NTQ0MjcgeiBtIDEuODc3MjEzLDIzLjE4OTEwNyBoIDE1LjMxMjE3MyB2IDMuNTcwMzg3IEggMzIuOTQwODg5IFoiIC8+PHBhdGggZD0ibSA2MC4zMjYxMiwxOS45NDI2MjggaCAzLjIwMjMwNiBsIDkuODY0NTcyLDI2Ljc1OTQ5NCBIIDY5LjM0NDEwNyBMIDYxLjkyNzI3MywyNS4xMTQxNjcgNTQuNTEwNDQsNDYuNzAyMTIyIEggNTAuNDYxNTQ4IFogTSA1NS4wMDczNDksMzcuMjYwODQyIEggNjkuMDg2NDUgdiAzLjU3MDM4NyBIIDU1LjAwNzM0OSBaIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsQWN0b3JTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://26543596-7646-4d81-8f15-c4e01ec930a7">&quot;Harry J. Potter&quot;</a> (26543596-7646-4d81-8f15-c4e01ec930a7)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://aa9931e3-116c-461e-8215-6b9fdbdd4a1b">&quot;kill He Who Must Not Be Named&quot;</a> (aa9931e3-116c-461e-8215-6b9fdbdd4a1b)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxIdW1hbkFjdG9yU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDc5IDc5Ij48dXNlIHRyYW5zZm9ybT0ibWF0cml4KDAuODE3NjI0NTYsMCwwLDAuODE3NjI0NTYsLTIuNTIwNzU4NCwwLjQ3MDkxNjk2KSIgeGxpbms6aHJlZj0iI1N0aWNrRmlndXJlU3ltYm9sIiAvPjwvc3ltYm9sPjxzeW1ib2wgaWQ9IlN0aWNrRmlndXJlU3ltYm9sIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMzYyLjg2MSAyMTAuODkyIDc1IDc1Ij48ZyBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMi40OTQ0IiB0cmFuc2Zvcm09Im1hdHJpeCgxLjA2MTEzMzgsMCwwLDEuMDYxMTMzOCwtMjQuNDc2NjUsLTEyLjI0MTY3MykiPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuMzYyIiB4Mj0iNDAwLjM2MiIgeTE9IjIzMi41ODYiIHkyPSIyNTcuNTM0IiAvPjxsaW5lIGZpbGw9Im5vbmUiIHgxPSI0MDAuODM0MDEiIHgyPSIzODguNDIzIiB5MT0iMjU0LjI5OSIgeTI9IjI3NS4wMDkiIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjQwMC4yNTIwMSIgeDI9IjQxMy45NyIgeTE9IjI1NC40NjAwMSIgeTI9IjI3NC45ODciIC8+PGxpbmUgZmlsbD0ibm9uZSIgeDE9IjM4NS42MzQiIHgyPSI0MTUuNzAzIiB5MT0iMjQ0LjU2OSIgeTI9IjI0NC40OTY5OSIgLz48ZWxsaXBzZSBjeD0iNDAwLjUzMjAxIiBjeT0iMjIzLjM1ODk5IiBmaWxsPSJub25lIiByeD0iOS4yMTgwMDA0IiByeT0iOC41MDgwMDA0IiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGlja0ZpZ3VyZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="Part" title="Part" width="15" height="15" style="display: inline-block"> <a href="hlink://4d31caaf-210e-4bdf-982e-cdecbc80c947">&quot;R. Weasley&quot;</a> (4d31caaf-210e-4bdf-982e-cdecbc80c947)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://c1a42acc-1f53-42bb-8404-77a5c08c414b">&quot;assist Harry&quot;</a> (c1a42acc-1f53-42bb-8404-77a5c08c414b)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkxvZ2ljYWxGdW5jdGlvblN5bWJvbCIgdmlld0JveD0iMCAwIDc5IDc5Ij48bGluZWFyR3JhZGllbnQgaWQ9IkxGX2dyZWVuIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMCI+PHN0b3Agb2Zmc2V0PSIwLjAiIHN0b3AtY29sb3I9IiM2Q0IzNUIiIHN0b3Atb3BhY2l0eT0iMSIgLz48c3RvcCBvZmZzZXQ9IjEuMCIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIiAvPjwvbGluZWFyR3JhZGllbnQ+PGVsbGlwc2UgY3g9IjM5LjUiIGN5PSIzOS41IiBmaWxsPSJ1cmwoI0xGX2dyZWVuKSIgcng9IjI2IiByeT0iMjEiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiAvPjx0ZXh0IGZpbGw9IiMwMDAiIGZvbnQtZmFtaWx5PSInT3BlbiBTYW5zJywnU2Vnb2UgVUknLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjVweCIgZm9udC13ZWlnaHQ9ImJvbGQiIHN0cm9rZT0ibm9uZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgeD0iNDAiIHk9IjUwIj5MRjwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNMb2dpY2FsRnVuY3Rpb25TeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="LogicalFunction" title="LogicalFunction" width="15" height="15" style="display: inline-block"> <a href="hlink://edbd1ad4-31c0-4d53-b856-3ffa60e0e99b">&quot;break school rules&quot;</a> (edbd1ad4-31c0-4d53-b856-3ffa60e0e99b)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIGZpbGw9IiNBM0JDRDAiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="ComponentExchange" title="ComponentExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://85a1fb20-38ea-4d77-acd7-90a8c44dc695">&quot;Punishment&quot;</a> (85a1fb20-38ea-4d77-acd7-90a8c44dc695)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://6545a77d-d224-4662-a5b2-3c016b78e33d">&quot;wizardry&quot;</a> (6545a77d-d224-4662-a5b2-3c016b78e33d)</li>
+<li><a href="hlink://a4e2bf11-0705-4f20-bf73-5fa5519954f7"><strong>PortAllocation</strong></a> (a4e2bf11-0705-4f20-bf73-5fa5519954f7)</li>
+<li><a href="hlink://7d31ab50-63d6-46bb-bf53-1716175beae3"><strong>PortAllocation</strong></a> (7d31ab50-63d6-46bb-bf53-1716175beae3)</li>
+<li><a href="hlink://317715cb-376c-4df6-a32c-433e3c081f8d"><strong>PortAllocation</strong></a> (317715cb-376c-4df6-a32c-433e3c081f8d)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIGZpbGw9IiNBM0JDRDAiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="ComponentExchange" title="ComponentExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://3b3fc202-be5c-49ae-bf2f-1d61daf3bb50">&quot;Learning&quot;</a> (3b3fc202-be5c-49ae-bf2f-1d61daf3bb50)</li>
+<li><a href="hlink://c1019d06-f376-48e3-832e-634a8ec59463"><strong>PortAllocation</strong></a> (c1019d06-f376-48e3-832e-634a8ec59463)</li>
+<li><a href="hlink://4cbdf5fd-7268-470b-9811-b62ad67fded1"><strong>PortAllocation</strong></a> (4cbdf5fd-7268-470b-9811-b62ad67fded1)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://241f3901-11f0-4b00-a903-ed158cce73de">&quot;assistance&quot;</a> (241f3901-11f0-4b00-a903-ed158cce73de)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://1bbb9b2d-517c-4f77-a35c-b3aa3f9422b8">&quot;friendship&quot;</a> (1bbb9b2d-517c-4f77-a35c-b3aa3f9422b8)</li>
+<li><a href="hlink://18fa81ee-8b16-4815-86ea-0c287ace43d8"><strong>PortAllocation</strong></a> (18fa81ee-8b16-4815-86ea-0c287ace43d8)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIGZpbGw9IiNBM0JDRDAiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="ComponentExchange" title="ComponentExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://d8655737-39ab-4482-a934-ee847c7ff6bd">&quot;Help for Harry&quot;</a> (d8655737-39ab-4482-a934-ee847c7ff6bd)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://96a0cf4c-adfe-4490-92d1-bcf75ee77004">&quot;punish&quot;</a> (96a0cf4c-adfe-4490-92d1-bcf75ee77004)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://09efaeb7-2d50-40ed-a4da-46afcb9ca7a1">&quot;educate &amp; mature&quot;</a> (09efaeb7-2d50-40ed-a4da-46afcb9ca7a1)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://b1a817bc-40a9-4fc4-b62c-8dea4aa28915">&quot;Knowledge&quot;</a> (b1a817bc-40a9-4fc4-b62c-8dea4aa28915)</li>
+<li><a href="hlink://dda7a62a-f25f-46d8-8f05-867c616914c1"><strong>PortAllocation</strong></a> (dda7a62a-f25f-46d8-8f05-867c616914c1)</li>
+<li><a href="hlink://fee1fff5-d751-401b-bb3c-2114a74f0c8a"><strong>PortAllocation</strong></a> (fee1fff5-d751-401b-bb3c-2114a74f0c8a)</li>
+<li><a href="hlink://0f6e1aa0-942a-40a9-930f-c7df34b9d8eb"><strong>PortAllocation</strong></a> (0f6e1aa0-942a-40a9-930f-c7df34b9d8eb)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sIiB2aWV3Qm94PSIwIDAgNDAgMzAiPjxsaW5lYXJHcmFkaWVudCBpZD0iQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQiIHgxPSIwIiB4Mj0iMSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzhGQTVCNiIgc3RvcC1vcGFjaXR5PSIxIiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9IkNvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjRTBFOUYzIiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM4RkE1QjYiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSkiIC8+PHBhdGggZD0ibSAxNC4zNzIxMDcsMTAgaCAxMi42MjI0MzUgYyAwLjkyNjE4OSwwLjU4NTI2NyAxLjgzNjAyMiwxLjI3NDUwOSAyLjI2ODE3OCw1IC0wLjIwODY1NywyLjgxMjQ3MyAtMC45NTQ2MDEsNC41MDM4MDkgLTIuMjczMjk3LDUgSCAxNC4yOTY5NDgiIGZpbGw9IiNBM0JDRDAiIC8+PHBhdGggZD0iTSAzLjk0NjQ5MDgsNS4wMDQ4MjQ2IFYgMjQuOTk1MTc1IEggMTAuODc1MTggQyAxMi40MzM3MTMsMjQuMTU5MTM5IDE1LjE1ODI2NywyMC4yOTEyNDEgMTUuMzEzNzk1LDE1IDE1LjQ5ODYxNCwxMS41ODMxNDIgMTQuMDU5NjU5LDYuNjI0MDkxMyAxMC44NzUxOCw1LjAwNDgyNDYgYyAtMi4yMTc5NTA5LDAgLTQuNTkwODM0MSwwIC02LjkyODY4OTIsMCB6IiBmaWxsPSJ1cmwoI0NvbXBvbmVudEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50KSIgLz48L2c+PC9zeW1ib2w+PC9kZWZzPjx1c2UgaGVpZ2h0PSIxNSIgd2lkdGg9IjE1IiB4PSIwIiB4bGluazpocmVmPSIjQ29tcG9uZW50RXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="ComponentExchange" title="ComponentExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://c31491db-817d-44b3-a27c-67e9cc1e06a2">&quot;Care&quot;</a> (c31491db-817d-44b3-a27c-67e9cc1e06a2)</li>
+<li><a href="hlink://98760017-b3a3-46ca-b1ef-87eee9ea1600"><strong>PortAllocation</strong></a> (98760017-b3a3-46ca-b1ef-87eee9ea1600)</li>
+<li><a href="hlink://74bd0ab3-6a28-4025-822e-90201445a56e"><strong>PortAllocation</strong></a> (74bd0ab3-6a28-4025-822e-90201445a56e)</li>
+<li><a href="hlink://3ed5ae4f-8a4e-4690-9088-655990a1b77b"><strong>PortAllocation</strong></a> (3ed5ae4f-8a4e-4690-9088-655990a1b77b)</li>
+<li><a href="hlink://299b98b8-8716-4dbc-bc7e-4b9349778c26"><strong>PortAllocation</strong></a> (299b98b8-8716-4dbc-bc7e-4b9349778c26)</li>
+<li><a href="hlink://14cabdd9-c36f-4e01-ad09-110f906ad725"><strong>PortAllocation</strong></a> (14cabdd9-c36f-4e01-ad09-110f906ad725)</li>
+<li><a href="hlink://6d882e28-4208-41d0-b8a5-3a19e1805a34"><strong>PortAllocation</strong></a> (6d882e28-4208-41d0-b8a5-3a19e1805a34)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbCIgdmlld0JveD0iMCAwIDQwIDMwIj48bGluZWFyR3JhZGllbnQgaWQ9IkZ1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudCIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjNEY3QzQ1IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiNCQ0REQjQiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iRnVuY3Rpb25hbEV4Y2hhbmdlU3ltYm9sLWdyYWRpZW50cmV2ZXJzZSIgeDE9IjAiIHgyPSIxIiB5MT0iMCIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMC4wIiBzdG9wLWNvbG9yPSIjQkNEREI0IiBzdG9wLW9wYWNpdHk9IjEiIC8+PHN0b3Agb2Zmc2V0PSIxLjAiIHN0b3AtY29sb3I9IiM0RjdDNDUiIHN0b3Atb3BhY2l0eT0iMSIgLz48L2xpbmVhckdyYWRpZW50PjxnIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBkPSJNIDM2LjE5MDA2NSw1LjAzNzc3MjQgViAyNC45NjIyMjggSCAyNi4xNzQ4MiBWIDUuMDM3NzcyNCBaIiBmaWxsPSJ1cmwoI0Z1bmN0aW9uYWxFeGNoYW5nZVN5bWJvbC1ncmFkaWVudHJldmVyc2UpIiAvPjxwYXRoIGQ9Im0gMTQuMzcyMTA3LDEwIGggMTIuNjIyNDM1IGMgMC45MjYxODksMC41ODUyNjcgMS44MzYwMjIsMS4yNzQ1MDkgMi4yNjgxNzgsNSAtMC4yMDg2NTcsMi44MTI0NzMgLTAuOTU0NjAxLDQuNTAzODA5IC0yLjI3MzI5Nyw1IEggMTQuMjk2OTQ4IiBmaWxsPSIjNjFjMzRjIiAvPjxwYXRoIGQ9Ik0gMy45NDY0OTA4LDUuMDA0ODI0NiBWIDI0Ljk5NTE3NSBIIDEwLjg3NTE4IEMgMTIuNDMzNzEzLDI0LjE1OTEzOSAxNS4xNTgyNjcsMjAuMjkxMjQxIDE1LjMxMzc5NSwxNSAxNS40OTg2MTQsMTEuNTgzMTQyIDE0LjA1OTY1OSw2LjYyNDA5MTMgMTAuODc1MTgsNS4wMDQ4MjQ2IGMgLTIuMjE3OTUwOSwwIC00LjU5MDgzNDEsMCAtNi45Mjg2ODkyLDAgeiIgZmlsbD0idXJsKCNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wtZ3JhZGllbnQpIiAvPjwvZz48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNGdW5jdGlvbmFsRXhjaGFuZ2VTeW1ib2wiIHk9IjAiIC8+PC9zdmc+" alt="FunctionalExchange" title="FunctionalExchange" width="15" height="15" style="display: inline-block"> <a href="hlink://cdc69c5e-ddd8-4e59-8b99-f510400650aa">&quot;educate&quot;</a> (cdc69c5e-ddd8-4e59-8b99-f510400650aa)</li>
+<li><a href="hlink://c90bb30d-e36b-46a3-a3a1-e39fdcb519be"><strong>PortAllocation</strong></a> (c90bb30d-e36b-46a3-a3a1-e39fdcb519be)</li>
+</ol></div>
+</div>
+<p>And again there are warnings - there are quite a few visual filters in Capella and we are not handling all of those yet but mostly those that are used in our projects. The filter coverage will eventally improve, stay tuned.</p>
+<p>And finally, you can display the diagram right in the notebook.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diagram</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_01_Introduction_18_0.svg" src="../_images/examples_01_Introduction_18_0.svg" />
+</div>
+</div>
+<p>We use SVG diagrams a lot since they look great in documentation, are zoomable and really light-weight. To make integrating them into a pipeline easier, we also support some derived formats, which you can access using <code class="docutils literal notranslate"><span class="pre">.as_&lt;format&gt;</span></code> style attributes. With some additional dependencies set up (see the README), capellambse can also automatically convert these images to PNG format.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># fmt: off</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span>  <span class="n">diagram</span><span class="o">.</span><span class="n">as_svg</span>          <span class="p">)[:</span><span class="mi">100</span><span class="p">],</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># The raw SVG format as simple python `str`</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span>  <span class="n">diagram</span><span class="o">.</span><span class="n">as_datauri_svg</span>  <span class="p">)[:</span><span class="mi">100</span><span class="p">],</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># An SVG, base64-encoded as `data:` URI</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span>  <span class="n">diagram</span><span class="o">.</span><span class="n">as_html_img</span>     <span class="p">)[:</span><span class="mi">100</span><span class="p">],</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># An HTML `&lt;img&gt;` tag, using the above `data:` URI as `src`</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span>  <span class="n">diagram</span><span class="o">.</span><span class="n">as_png</span>          <span class="p">)[:</span><span class="mi">100</span><span class="p">],</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># A raw PNG byte stream, which can be written to a `.png` file</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&#39;&lt;svg baseProfile=&#34;full&#34; class=&#34;LogicalArchitectureBlank&#34; font-family=&#34;\&#39;Open Sans\&#39;,\&#39;Segoe UI\&#39;,Ar ...
+&#39;data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IkxvZ2ljYWxBcmNoaXRlY3R1cmVCbGFua ...
+Markup(&#39;&lt;img src=&#34;data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgY2xhc3M9IkxvZ2ljYWxBcmNo ...
+b&#39;\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x04\x8a\x00\x00\x02c\x08\x02\x00\x00\x00\xec\xe8m\xd2\ ...
+</pre></div></div>
+</div>
+<p>It’s also possible to directly save a diagram to a file by calling its <code class="docutils literal notranslate"><span class="pre">save</span></code> method:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diagram</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;[LAB] Wizard Education.svg&quot;</span><span class="p">,</span> <span class="s2">&quot;svg&quot;</span><span class="p">,</span> <span class="n">pretty_print</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;[LAB] Wizard Education.svg&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[:</span><span class="mi">10</span><span class="p">],</span> <span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34; ?&gt;
+&lt;svg xmlns=&#34;http://www.w3.org/2000/svg&#34; xmlns:ev=&#34;http://www.w3.org/2001/xml-events&#34; xmlns:xlink=&#34;http://www.w3.org/1999/xlink&#34; baseProfile=&#34;full&#34; class=&#34;LogicalArchitectureBlank&#34; font-family=&#34;&#39;Open Sans&#39;,&#39;Segoe UI&#39;,Arial,sans-serif&#34; font-size=&#34;10px&#34; height=&#34;611&#34; shape-rendering=&#34;geometricPrecision&#34; version=&#34;1.1&#34; viewBox=&#34;15 15 1162 611&#34; width=&#34;1162&#34;&gt;
+  &lt;defs&gt;
+    &lt;symbol id=&#34;LogicalComponentSymbol&#34; stroke=&#34;#000&#34; stroke-width=&#34;2&#34; viewBox=&#34;0 0 79 79&#34;&gt;
+      &lt;path d=&#34;M18 237h46v43H18z&#34; fill=&#34;#dbe6f4&#34; transform=&#34;translate(0 -218)&#34;/&gt;
+      &lt;path d=&#34;M12 247h11v8H12z&#34; fill=&#34;#dbe6f4&#34; transform=&#34;translate(0 -218)&#34;/&gt;
+      &lt;path d=&#34;M12 261h11v8H12z&#34; fill=&#34;#dbe6f4&#34; transform=&#34;translate(0 -218)&#34;/&gt;
+      &lt;g transform=&#34;scale(0.90705135,1.1024734)&#34;&gt;
+        &lt;path d=&#34;m 37.427456,20.821353 h 4.221475 V 50.90971 H 37.427456 Z M 39.538194,46.89517 H 56.75519 v 4.01454 H 39.538194 Z&#34; fill=&#34;#000&#34; stroke-width=&#34;0.1&#34;/&gt;
+      &lt;/g&gt;
+...
+</pre></div></div>
+</div>
+<p>Lets now try something else - we check if function port has any protocols (state machines) underneath:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fnc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">la</span><span class="o">.</span><span class="n">all_functions</span><span class="o">.</span><span class="n">by_name</span><span class="p">(</span>
+    <span class="s2">&quot;defend the surrounding area against Intruders&quot;</span>
+<span class="p">)</span>
+<span class="n">stms</span> <span class="o">=</span> <span class="n">fnc</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">protocols</span>
+<span class="n">stms</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;">
+<li><strong>StateMachine</strong> <a href="hlink://06cefb2b-534e-4453-9aba-fe53329197ad">&quot;FaultStates&quot;</a> (06cefb2b-534e-4453-9aba-fe53329197ad)</li>
+</ol></div>
+</div>
+<p>and we can also check what states it could have:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">regions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">states</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<ol start="0" style="text-align: left;">
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IlN0YXRlU3ltYm9sIiB2aWV3Qm94PSItMSAtMSA0LjY0NTggNC42NDU4Ij48bGluZWFyR3JhZGllbnQgaWQ9InN0YXRlLWdyZXkiIHgxPSIxIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzAwMCIgc3RvcC1vcGFjaXR5PSIwLjQ1IiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9IjAiIC8+PC9saW5lYXJHcmFkaWVudD48cmVjdCBmaWxsPSJ1cmwoI3N0YXRlLWdyZXkpIiBoZWlnaHQ9IjIuNjMyNyIgcnk9IjAuMjU0NzQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIwLjAwNSIgd2lkdGg9IjIuNjMyNyIgeD0iMCIgeT0iMCIgLz48dGV4dCBmaWxsPSIjMDAwIiBmb250LXNpemU9IjMuMjc0cHgiIHN0cm9rZS13aWR0aD0iMC4wODIiIHRyYW5zZm9ybT0ic2NhbGUoMS4yNTc4IC43OTUwMikiIHg9IjAiIHk9IjIuNjQ1OCI+UzwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGF0ZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="State" title="State" width="15" height="15" style="display: inline-block"> <a href="hlink://e494e247-efce-4258-9cc6-fd799dbb0adf">&quot;normal defence&quot;</a> (e494e247-efce-4258-9cc6-fd799dbb0adf)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IlN0YXRlU3ltYm9sIiB2aWV3Qm94PSItMSAtMSA0LjY0NTggNC42NDU4Ij48bGluZWFyR3JhZGllbnQgaWQ9InN0YXRlLWdyZXkiIHgxPSIxIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzAwMCIgc3RvcC1vcGFjaXR5PSIwLjQ1IiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9IjAiIC8+PC9saW5lYXJHcmFkaWVudD48cmVjdCBmaWxsPSJ1cmwoI3N0YXRlLWdyZXkpIiBoZWlnaHQ9IjIuNjMyNyIgcnk9IjAuMjU0NzQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIwLjAwNSIgd2lkdGg9IjIuNjMyNyIgeD0iMCIgeT0iMCIgLz48dGV4dCBmaWxsPSIjMDAwIiBmb250LXNpemU9IjMuMjc0cHgiIHN0cm9rZS13aWR0aD0iMC4wODIiIHRyYW5zZm9ybT0ic2NhbGUoMS4yNTc4IC43OTUwMikiIHg9IjAiIHk9IjIuNjQ1OCI+UzwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGF0ZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="State" title="State" width="15" height="15" style="display: inline-block"> <a href="hlink://81f3de46-4596-41b0-8569-c3c21161a2f6">&quot;erroneous defence&quot;</a> (81f3de46-4596-41b0-8569-c3c21161a2f6)</li>
+<li><img src="data:image/svg+xml;base64,PHN2ZyBiYXNlUHJvZmlsZT0iZnVsbCIgaGVpZ2h0PSIxMDAlIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxNSAxNSIgd2lkdGg9IjEwMCUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6ZXY9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEveG1sLWV2ZW50cyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPjxkZWZzPjxzeW1ib2wgaWQ9IlN0YXRlU3ltYm9sIiB2aWV3Qm94PSItMSAtMSA0LjY0NTggNC42NDU4Ij48bGluZWFyR3JhZGllbnQgaWQ9InN0YXRlLWdyZXkiIHgxPSIxIiB4Mj0iMCIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAuMCIgc3RvcC1jb2xvcj0iIzAwMCIgc3RvcC1vcGFjaXR5PSIwLjQ1IiAvPjxzdG9wIG9mZnNldD0iMS4wIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9IjAiIC8+PC9saW5lYXJHcmFkaWVudD48cmVjdCBmaWxsPSJ1cmwoI3N0YXRlLWdyZXkpIiBoZWlnaHQ9IjIuNjMyNyIgcnk9IjAuMjU0NzQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIwLjAwNSIgd2lkdGg9IjIuNjMyNyIgeD0iMCIgeT0iMCIgLz48dGV4dCBmaWxsPSIjMDAwIiBmb250LXNpemU9IjMuMjc0cHgiIHN0cm9rZS13aWR0aD0iMC4wODIiIHRyYW5zZm9ybT0ic2NhbGUoMS4yNTc4IC43OTUwMikiIHg9IjAiIHk9IjIuNjQ1OCI+UzwvdGV4dD48L3N5bWJvbD48L2RlZnM+PHVzZSBoZWlnaHQ9IjE1IiB3aWR0aD0iMTUiIHg9IjAiIHhsaW5rOmhyZWY9IiNTdGF0ZVN5bWJvbCIgeT0iMCIgLz48L3N2Zz4=" alt="State" title="State" width="15" height="15" style="display: inline-block"> <a href="hlink://5b6a03d8-0ef9-4b2b-9a50-a745f490d663">&quot;no defence&quot;</a> (5b6a03d8-0ef9-4b2b-9a50-a745f490d663)</li>
+</ol></div>
+</div>
+<p>This concludes our introduction. There is a lot more you can do with the library - feel free to explore the examples collection or create an issue to ask for a specific use-case example and you may see it around pretty soon.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="02%20Intro%20to%20Physical%20Architecture%20API.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title"><span class="section-number">2. </span>Introduction to Physical Architecture API</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../howtos/howtos.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">How Tos</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/dbinfrago/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">1. Introduction</a><ul>
+<li><a class="reference internal" href="#Example-1:-Actor-functions">1.1. Example 1: Actor functions</a></li>
+<li><a class="reference internal" href="#Example-2:-working-with-diagrams">1.2. Example 2: working with diagrams</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>
