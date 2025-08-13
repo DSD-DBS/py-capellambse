@@ -52,7 +52,7 @@ class ElementBuilder:
     target_diagram: diagram.Diagram
     diagram_tree: etree._Element
     data_element: etree._Element
-    melodyloader: capellambse.loader.MelodyLoader
+    melodyloader: capellambse.loader.Loader
     fragment: pathlib.PurePosixPath
 
 
