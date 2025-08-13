@@ -18,7 +18,7 @@ jobs:
   pre-commit: # {{{1
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
@@ -33,7 +33,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
@@ -92,7 +92,7 @@ jobs:
       CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
       MACOSX_DEPLOYMENT_TARGET: '10.13'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Determine which Python versions to test against
@@ -107,7 +107,7 @@ jobs:
             echo "CIBW_BUILD=cp310-$MANYLINUX* cp313-$MANYLINUX*" >> $GITHUB_ENV
           fi
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1.2
+        uses: pypa/cibuildwheel@v3.1.3
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -119,7 +119,7 @@ jobs:
     name: Build pure-Python wheel
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
@@ -172,12 +172,12 @@ jobs:
       id-token: write
     steps:
       - name: Download sdist
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist/
           name: sdist
       - name: Download built wheels
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: dist/
           pattern: wheel-*
@@ -197,7 +197,7 @@ jobs:
     name: Run and verify the example notebooks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
@@ -215,7 +215,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
@@ -253,12 +253,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           filter: tree:0
           repository: ${{matrix.repo}}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           path: wheelhouse/
           name: wheel-Linux-x86_64-manylinux
