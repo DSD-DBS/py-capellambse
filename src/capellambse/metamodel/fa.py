@@ -292,29 +292,23 @@ class FunctionalChain(
 
     @property
     def involved_functions(self) -> m.ElementList[AbstractFunction]:
-        objs = self.involvements.by_class(
-            FunctionalChainInvolvementFunction,
-        ).map("involved")
+        objs = self.involvements.map("involved").by_class(AbstractFunction)
         return m.ElementList(self._model, objs._elements, legacy_by_type=True)
 
     @property
     def involved_links(self) -> m.ElementList[FunctionalExchange]:
-        objs = self.involvements.by_class(
-            FunctionalChainInvolvementLink,
-        ).map("involved")
+        objs = self.involvements.map("involved").by_class(FunctionalExchange)
         return m.ElementList(self._model, objs._elements, legacy_by_type=True)
 
     @property
     def involved_chains(self) -> m.ElementList[FunctionalChain]:
-        return self.involvements.by_class(
-            FunctionalChainReference,
-        ).map("involved")
+        return self.involvements.map("involved").by_class(FunctionalChain)
 
     @property
     def involved(self) -> m.ElementList[AbstractFunction | FunctionalExchange]:
-        objs = self.involvements.by_class(
-            FunctionalChainInvolvementFunction, FunctionalChainInvolvementLink
-        ).map("involved")
+        objs = self.involvements.map("involved").by_class(
+            AbstractFunction, FunctionalExchange
+        )
         return m.ElementList(self._model, objs._elements, legacy_by_type=True)
 
     involving_chains = m.Backref["FunctionalChain"](
