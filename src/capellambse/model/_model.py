@@ -420,7 +420,8 @@ class MelodyModel:
         trees = [
             t
             for t in self._loader.trees.values()
-            if t.fragment_type is loader.FragmentType.SEMANTIC
+            if isinstance(t, loader.ModelFile)
+            and t.fragment_type is loader.FragmentType.SEMANTIC
         ]
         matches: cabc.Iterable[etree._Element]
         if not classes:

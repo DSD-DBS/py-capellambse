@@ -48,7 +48,7 @@ import typing_extensions as te
 from lxml import etree
 
 import capellambse
-from capellambse import helpers
+from capellambse import helpers, loader
 
 from . import VIRTUAL_NAMESPACE_PREFIX, T, U, _descriptors, _pods, _styleclass
 
@@ -725,6 +725,7 @@ class ModelElement(metaclass=_ModelElementMeta):
             ns = self.__capella_namespace__
             qtype = model.qualify_classname((ns, type(self).__name__))
             assert qtype.namespace is not None
+            assert isinstance(fragment, loader.ModelFile)
             fragment.add_namespace(qtype.namespace, ns.alias)
             self._element.set(helpers.ATT_XT, qtype)
             for key, val in kw.items():
