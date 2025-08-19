@@ -532,6 +532,10 @@ class AbstractFunction(
         (ns.INTERACTION, "Scenario"), "related_functions"
     )
 
+    owner = m.Single["cs.Component"](
+        m.Backref((ns.CS, "Component"), "allocated_functions")
+    )
+
     @property
     def is_leaf(self) -> bool:
         return not self.functions
