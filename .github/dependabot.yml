@@ -25,3 +25,15 @@ updates:
         patterns: ["*"]
     commit-message:
       prefix: chore
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+    allow:
+      - dependency-type: all
+    groups:
+      rust-deps:
+        patterns: ["*"]
+    commit-message:
+      prefix: build(rust)
