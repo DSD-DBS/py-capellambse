@@ -34,34 +34,27 @@ try:
     with contextlib.suppress(ImportError):
         import rlcompleter  # noqa: F401
 
-    class _ReadlineHistory:
-        def __init__(self, histfile):
-            self.histfile = histfile
+    @contextlib.contextmanager
+    def _readline_history(histfile: pathlib.Path, /) -> cabc.Iterator[None]:
+        with contextlib.suppress(FileNotFoundError):
+            readline.read_history_file(histfile)
+        readline.parse_and_bind("tab: complete")
 
-        def __enter__(self) -> None:
-            with contextlib.suppress(FileNotFoundError):
-                readline.read_history_file(self.histfile)
-            readline.parse_and_bind("tab: complete")
-
-        def __exit__(self, *_) -> None:
+        try:
+            yield
+        finally:
             try:
-                self.histfile.parent.mkdir(parents=True, exist_ok=True)
-                self.histfile.open("wb").close()
+                histfile.parent.mkdir(parents=True, exist_ok=True)
+                histfile.open("wb").close()
             except OSError:
                 pass
-            readline.append_history_file(100_000, self.histfile)
+            readline.append_history_file(100_000, histfile)
 
 except ImportError:
 
-    class _ReadlineHistory:  # type: ignore[no-redef]
-        def __init__(self, *__, **_):
-            pass
-
-        def __enter__(self):
-            pass
-
-        def __exit__(self, *_):
-            pass
+    @contextlib.contextmanager
+    def _readline_history(_histfile, /) -> cabc.Iterator[None]:
+        yield
 
 
 @click.command()
@@ -192,7 +185,7 @@ def main(
     )
 
     history_file = capellambse.dirs.user_state_path / "model_exploration.hist"
-    with _ReadlineHistory(history_file), suppress(BrokenPipeError):
+    with _readline_history(history_file), suppress(BrokenPipeError):
         code.interact(banner=banner, local=interactive_locals, exitmsg="")
 
 
