@@ -34,38 +34,50 @@ try:
     with contextlib.suppress(ImportError):
         import rlcompleter  # noqa: F401
 
-    class _ReadlineHistory:
-        def __init__(self, histfile):
-            self.histfile = histfile
-
-        def __enter__(self) -> None:
-            with contextlib.suppress(FileNotFoundError):
-                readline.read_history_file(self.histfile)
-            readline.parse_and_bind("tab: complete")
-
-        def __exit__(self, *_) -> None:
+    @contextlib.contextmanager
+    def _readline_history(histfile: pathlib.Path, /) -> cabc.Iterator[None]:
+        try:
+            readline.read_history_file(histfile)
+        except FileNotFoundError:
+            pass
+        except OSError:
+            backupfile = histfile.with_suffix(".hist.bak")
+            logger.exception(
+                "Cannot restore prompt history from %r, renaming to %r and starting fresh",
+                os.fspath(histfile),
+                backupfile.name,
+            )
             try:
-                self.histfile.parent.mkdir(parents=True, exist_ok=True)
-                self.histfile.open("wb").close()
+                histfile.rename(backupfile)
+            except OSError as err:
+                logger.error(
+                    "Could not rename history file, disabling history saving: %s: %s",
+                    type(err).__name__,
+                    err,
+                )
+                histfile = pathlib.Path(os.devnull)
+
+        readline.parse_and_bind("tab: complete")
+
+        try:
+            yield
+        finally:
+            try:
+                histfile.parent.mkdir(parents=True, exist_ok=True)
+                histfile.open("wb").close()
             except OSError:
                 pass
-            readline.append_history_file(100_000, self.histfile)
+            readline.append_history_file(100_000, histfile)
 
 except ImportError:
 
-    class _ReadlineHistory:  # type: ignore[no-redef]
-        def __init__(self, *__, **_):
-            pass
-
-        def __enter__(self):
-            pass
-
-        def __exit__(self, *_):
-            pass
+    @contextlib.contextmanager
+    def _readline_history(_histfile, /) -> cabc.Iterator[None]:
+        yield
 
 
 @click.command()
-@click.argument("modelinfo", type=cli_helpers.ModelInfoCLI())
+@click.argument("modelinfo", type=cli_helpers.ModelInfoCLI(), required=False)
 @click.option(
     "--disable-diagram-cache",
     is_flag=True,
@@ -192,7 +204,7 @@ def main(
     )
 
     history_file = capellambse.dirs.user_state_path / "model_exploration.hist"
-    with _ReadlineHistory(history_file), suppress(BrokenPipeError):
+    with _readline_history(history_file), suppress(BrokenPipeError):
         code.interact(banner=banner, local=interactive_locals, exitmsg="")
 
 
