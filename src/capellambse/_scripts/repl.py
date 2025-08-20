@@ -36,8 +36,27 @@ try:
 
     @contextlib.contextmanager
     def _readline_history(histfile: pathlib.Path, /) -> cabc.Iterator[None]:
-        with contextlib.suppress(FileNotFoundError):
+        try:
             readline.read_history_file(histfile)
+        except FileNotFoundError:
+            pass
+        except OSError:
+            backupfile = histfile.with_suffix(".hist.bak")
+            logger.exception(
+                "Cannot restore prompt history from %r, renaming to %r and starting fresh",
+                os.fspath(histfile),
+                backupfile.name,
+            )
+            try:
+                histfile.rename(backupfile)
+            except OSError as err:
+                logger.error(
+                    "Could not rename history file, disabling history saving: %s: %s",
+                    type(err).__name__,
+                    err,
+                )
+                histfile = pathlib.Path(os.devnull)
+
         readline.parse_and_bind("tab: complete")
 
         try:
