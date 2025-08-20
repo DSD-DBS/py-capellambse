@@ -109,7 +109,9 @@ def _matchprops(
 class SelectorRules:
     raw: str
 
-    _model: capellambse.MelodyModel | None = None
+    _model: capellambse.MelodyModel | None = dataclasses.field(
+        default=None, repr=False
+    )
 
     @property
     def classes(self) -> tuple[type[m.ModelObject], ...]:
