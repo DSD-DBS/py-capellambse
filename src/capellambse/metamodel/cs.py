@@ -428,20 +428,45 @@ class PhysicalLink(
     )
 
     @property
-    def source(self) -> AbstractPhysicalLinkEnd:
-        return self.ends[0]
+    def source(self) -> AbstractPhysicalLinkEnd | None:
+        try:
+            return self.ends[0]
+        except IndexError:
+            return None
 
     @source.setter
-    def source(self, end: AbstractPhysicalLinkEnd) -> None:
-        self.ends[0] = end
+    def source(self, end: AbstractPhysicalLinkEnd | None) -> None:
+        if end is None:
+            raise TypeError(f"Cannot delete 'source' of {type(self).__name__}")
+
+        ends = self.ends
+        if len(ends) == 0:
+            ends.append(end)
+        else:
+            ends[0] = end
 
     @property
-    def target(self) -> AbstractPhysicalLinkEnd:
-        return self.ends[1]
+    def target(self) -> AbstractPhysicalLinkEnd | None:
+        try:
+            return self.ends[1]
+        except IndexError:
+            return None
 
     @target.setter
-    def target(self, end: AbstractPhysicalLinkEnd) -> None:
-        self.ends[1] = end
+    def target(self, end: AbstractPhysicalLinkEnd | None) -> None:
+        if end is None:
+            raise TypeError(f"Cannot delete 'target' of {type(self).__name__}")
+
+        ends = self.ends
+        if len(ends) == 0:
+            raise TypeError(
+                f"Cannot set 'target' on a {type(self).__name__}"
+                " that has no 'source'"
+            )
+        if len(ends) == 1:
+            ends.append(end)
+        else:
+            ends[1] = end
 
     def links(self) -> m.ElementList[m.ModelElement]:
         warnings.warn(
