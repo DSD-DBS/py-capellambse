@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: CC0-1.0
 
 extends:
-  - '@commitlint/config-conventional'
+  - "@commitlint/config-conventional"
 rules:
   body-leading-blank: [2, always]
   footer-leading-blank: [2, always]

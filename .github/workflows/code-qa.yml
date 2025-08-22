@@ -90,7 +90,7 @@ jobs:
       CIBW_ARCHS: ${{matrix.arch}}
       CIBW_ENVIRONMENT: 'PATH="$HOME/.cargo/bin:$PATH"'
       CIBW_ENVIRONMENT_WINDOWS: 'PATH="$UserProfile\.cargo\bin;$PATH"'
-      MACOSX_DEPLOYMENT_TARGET: '10.13'
+      MACOSX_DEPLOYMENT_TARGET: "10.13"
     steps:
       - uses: actions/checkout@v5
         with:
@@ -229,7 +229,7 @@ jobs:
         run: make -C docs apidoc
       - name: Create docs
         env:
-          SPHINXOPTS: ''
+          SPHINXOPTS: ""
         run: make -C docs html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
@@ -279,5 +279,4 @@ jobs:
           )" >> "$GITHUB_ENV"
       - run: uv add --dev ./wheelhouse/*.whl pytest pytest-xdist && uv sync
       - run: uv run pytest -n auto
-
 # vim:set fdm=marker:
