@@ -46,6 +46,15 @@ class SystemAnalysis(cs.ComponentArchitecture):
     )
 
     @property
+    def root_function(self) -> SystemFunction:
+        """Returns the first function in the function_pkg."""
+        pkg = self.function_pkg
+        assert pkg is not None
+        if not pkg.functions:
+            raise RuntimeError(f"Package {pkg._short_repr_()} is empty")
+        return pkg.functions[0]
+
+    @property
     def root_component(self) -> SystemComponent:
         if self.component_pkg is None:
             raise m.BrokenModelError("No root SystemComponentPkg found")

@@ -1328,11 +1328,17 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
                 except Exception:
                     continue
                 for attr in obj_attrs:
-                    if not no_dir_attr.search(attr) and isinstance(
-                        getattr(obj, attr), str
-                    ):
-                        yield f"by_{attr}"
-                        yield f"exclude_{attr}s"
+                    if no_dir_attr.search(attr):
+                        continue
+                    try:
+                        value = getattr(obj, attr)
+                    except Exception:
+                        pass
+                    else:
+                        if not isinstance(value, str):
+                            continue
+                    yield f"by_{attr}"
+                    yield f"exclude_{attr}s"
 
         attrs = list(super().__dir__())
         attrs.extend(filterable_attrs())
