@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright DB InfraGO AG
+# SPDX-License-Identifier: CC0-1.0
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{py,pyi,rs}]
+indent_size = 4
+
+[*.ipynb]
+indent_size = 1
+
+[*.{md,rst}]
+max_line_length = 79
+
+[Makefile]
+indent_size = 8
+indent_style = tab
