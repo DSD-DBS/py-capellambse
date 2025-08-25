@@ -145,15 +145,6 @@ class AbstractFunctionalArchitecture(
     )
 
     @property
-    def root_function(self) -> AbstractFunction:
-        """Returns the first function in the function_pkg."""
-        pkg = self.function_pkg
-        assert pkg is not None
-        if not pkg.functions:
-            raise RuntimeError(f"Package {pkg._short_repr_()} is empty")
-        return pkg.functions[0]
-
-    @property
     def all_functions(self) -> m.ElementList[AbstractFunction]:
         return self._model.search((NS, "AbstractFunction"), below=self)
 
