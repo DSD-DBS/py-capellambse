@@ -618,7 +618,8 @@ class ModelElement(metaclass=_ModelElementMeta):
         if uuid is None:
             return "NOT_SET"
 
-        return wrap_xml(self._model, self._model._loader[uuid]).name
+        elem = self._model._loader.follow_link(self._element, uuid)
+        return wrap_xml(self._model, elem).name
 
     @classmethod
     @deprecated("ModelElement.from_model is deprecated, use wrap_xml instead")

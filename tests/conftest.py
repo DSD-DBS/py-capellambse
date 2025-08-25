@@ -5,6 +5,7 @@
 import importlib.metadata as imm
 import pathlib
 import shutil
+import typing as t
 
 import pytest
 
@@ -12,6 +13,7 @@ import capellambse
 
 INSTALLED_PACKAGE = pathlib.Path(capellambse.__file__).parent
 TEST_DATA = pathlib.Path(__file__).parent / "data"
+MODEL_PARAMS = (pytest.param({"loader_backend": "lxml"}, id="lxml-loader"),)
 
 capellambse.load_model_extensions()
 
@@ -36,8 +38,10 @@ class Models:
     writemodel = TEST_DATA.joinpath("models", "writemodel")
 
 
-@pytest.fixture(scope="session")
-def session_shared_model() -> capellambse.MelodyModel:
+@pytest.fixture(scope="session", params=MODEL_PARAMS)
+def session_shared_model(
+    request: pytest.FixtureRequest,
+) -> capellambse.MelodyModel:
     """Load the standard test model.
 
     Unlike the ``model`` fixture, this fixture is shared across the
@@ -47,24 +51,27 @@ def session_shared_model() -> capellambse.MelodyModel:
     This fixture exists as a speed optimization for tests that only read
     from the model.
     """
-    return capellambse.MelodyModel(Models.test7_0)
+    return capellambse.MelodyModel(Models.test7_0, **request.param)
 
 
-@pytest.fixture
-def model() -> capellambse.MelodyModel:
+@pytest.fixture(params=MODEL_PARAMS)
+def model(request: pytest.FixtureRequest) -> capellambse.MelodyModel:
     """Load the Capella 7.0 test model."""
-    return capellambse.MelodyModel(Models.test7_0)
+    return capellambse.MelodyModel(Models.test7_0, **request.param)
 
 
-@pytest.fixture
-def empty_model() -> capellambse.MelodyModel:
+@pytest.fixture(params=MODEL_PARAMS)
+def empty_model(request: pytest.FixtureRequest) -> capellambse.MelodyModel:
     """Load the empty test model."""
-    return capellambse.MelodyModel(Models.empty)
+    return capellambse.MelodyModel(Models.empty, **request.param)
 
 
-@pytest.fixture
-def tmp_model(tmp_path: pathlib.Path) -> pathlib.Path:
+@pytest.fixture(params=MODEL_PARAMS)
+def tmp_model(
+    request: pytest.FixtureRequest,
+    tmp_path: pathlib.Path,
+) -> tuple[pathlib.Path, dict[str, t.Any]]:
     """Copy the Capella 7.0 test model to a temporary directory."""
     path = tmp_path / "model"
     shutil.copytree(Models.test7_0, path)
-    return path
+    return path, request.param
