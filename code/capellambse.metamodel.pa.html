@@ -1,0 +1,1047 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="capellambse.model package" href="capellambse.model.html" /><link rel="prev" title="capellambse.metamodel.information package" href="capellambse.metamodel.information.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>capellambse.metamodel.pa package - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">src</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of src</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="capellambse.html">capellambse package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 current has-children"><a class="reference internal" href="capellambse.metamodel.html">capellambse.metamodel package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+<li class="toctree-l4 current current-page"><a class="current reference internal" href="#">capellambse.metamodel.pa package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-capellambse.metamodel.pa">
+<span id="capellambse-metamodel-pa-package"></span><h1>capellambse.metamodel.pa package<a class="headerlink" href="#module-capellambse.metamodel.pa" title="Link to this heading">¶</a></h1>
+<p>Tools for the Physical Architecture layer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.LogicalArchitectureRealization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">LogicalArchitectureRealization</span></span><a class="headerlink" href="#capellambse.metamodel.pa.LogicalArchitectureRealization" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.ArchitectureAllocation" title="capellambse.metamodel.cs.ArchitectureAllocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArchitectureAllocation</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.LogicalInterfaceRealization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">LogicalInterfaceRealization</span></span><a class="headerlink" href="#capellambse.metamodel.pa.LogicalInterfaceRealization" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.InterfaceAllocation" title="capellambse.metamodel.cs.InterfaceAllocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterfaceAllocation</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalArchitecture</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.ComponentArchitecture" title="capellambse.metamodel.cs.ComponentArchitecture"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentArchitecture</span></code></a></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_actors">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_actors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><span class="pre">PhysicalComponent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_actors" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_component_exchanges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_component_exchanges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.fa.ComponentExchange" title="capellambse.metamodel.fa.ComponentExchange"><span class="pre">ComponentExchange</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_component_exchanges" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><span class="pre">PhysicalComponent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_components" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_function_exchanges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_function_exchanges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.fa.FunctionalExchange" title="capellambse.metamodel.fa.FunctionalExchange"><span class="pre">FunctionalExchange</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_function_exchanges" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_functional_chains">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_functional_chains</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.fa.FunctionalChain" title="capellambse.metamodel.fa.FunctionalChain"><span class="pre">FunctionalChain</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_functional_chains" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_functions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_functions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction" title="capellambse.metamodel.pa.PhysicalFunction"><span class="pre">PhysicalFunction</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_functions" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_physical_exchanges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_physical_exchanges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.fa.FunctionalExchange" title="capellambse.metamodel.fa.FunctionalExchange"><span class="pre">FunctionalExchange</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_physical_exchanges" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_physical_links">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_physical_links</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.PhysicalLink" title="capellambse.metamodel.cs.PhysicalLink"><span class="pre">PhysicalLink</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_physical_links" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.all_physical_paths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_physical_paths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.PhysicalPath" title="capellambse.metamodel.cs.PhysicalPath"><span class="pre">PhysicalPath</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_physical_paths" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.component_package">
+<span class="sig-name descname"><span class="pre">component_package</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.component_package" title="Link to this definition">¶</a></dt>
+<dd><p>The component package of this PhysicalArchitecture.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.component_pkg">
+<span class="sig-name descname"><span class="pre">component_pkg</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.component_pkg" title="Link to this definition">¶</a></dt>
+<dd><p>The component pkg of this PhysicalArchitecture.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.deployments">
+<span class="sig-name descname"><span class="pre">deployments</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.deployments" title="Link to this definition">¶</a></dt>
+<dd><p>The deployments of this PhysicalArchitecture.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.diagrams">
+<span class="sig-name descname"><span class="pre">diagrams</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_descriptors.Accessor[ElementList[capellambse.model.diagram.Diagram]]</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.diagrams" title="Link to this definition">¶</a></dt>
+<dd><p>The diagrams of this PhysicalArchitecture.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.logical_architecture_realizations">
+<span class="sig-name descname"><span class="pre">logical_architecture_realizations</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.logical_architecture_realizations" title="Link to this definition">¶</a></dt>
+<dd><p>The logical architecture realizations of this PhysicalArchitecture.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.realized_logical_architectures">
+<span class="sig-name descname"><span class="pre">realized_logical_architectures</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.realized_logical_architectures" title="Link to this definition">¶</a></dt>
+<dd><p>The realized logical architectures of this PhysicalArchitecture.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.root_component">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root_component</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><span class="pre">PhysicalComponent</span></a></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.root_component" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecture.root_function">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">root_function</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction" title="capellambse.metamodel.pa.PhysicalFunction"><span class="pre">PhysicalFunction</span></a></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecture.root_function" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the first function in the function_pkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecturePkg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalArchitecturePkg</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecturePkg" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.BlockArchitecturePkg" title="capellambse.metamodel.cs.BlockArchitecturePkg"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockArchitecturePkg</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecturePkg.architectures">
+<span class="sig-name descname"><span class="pre">architectures</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecturePkg.architectures" title="Link to this definition">¶</a></dt>
+<dd><p>The architectures of this PhysicalArchitecturePkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalArchitecturePkg.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalArchitecturePkg.packages" title="Link to this definition">¶</a></dt>
+<dd><p>The packages of this PhysicalArchitecturePkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalComponent</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.AbstractPhysicalArtifact" title="capellambse.metamodel.cs.AbstractPhysicalArtifact"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractPhysicalArtifact</span></code></a>, <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.Component" title="capellambse.metamodel.cs.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a>, <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacommon.CapabilityRealizationInvolvedElement" title="capellambse.metamodel.capellacommon.CapabilityRealizationInvolvedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">CapabilityRealizationInvolvedElement</span></code></a>, <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.DeployableElement" title="capellambse.metamodel.cs.DeployableElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeployableElement</span></code></a>, <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.DeploymentTarget" title="capellambse.metamodel.cs.DeploymentTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeploymentTarget</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.allocated_functions">
+<span class="sig-name descname"><span class="pre">allocated_functions</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.allocated_functions" title="Link to this definition">¶</a></dt>
+<dd><p>The allocated functions of this PhysicalComponent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.component_pkgs">
+<span class="sig-name descname"><span class="pre">component_pkgs</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.component_pkgs" title="Link to this definition">¶</a></dt>
+<dd><p>The component pkgs of this PhysicalComponent.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><span class="pre">PhysicalComponent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.components" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.deployed_components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">deployed_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><span class="pre">PhysicalComponent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.deployed_components" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.deploying_components">
+<span class="sig-name descname"><span class="pre">deploying_components</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.deploying_components" title="Link to this definition">¶</a></dt>
+<dd><p>The deploying components of this PhysicalComponent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.deployment_links">
+<span class="sig-name descname"><span class="pre">deployment_links</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.deployment_links" title="Link to this definition">¶</a></dt>
+<dd><p>The deployment links of this PhysicalComponent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.kind">
+<span class="sig-name descname"><span class="pre">kind</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.kind" title="Link to this definition">¶</a></dt>
+<dd><p>A POD that can have one of a pretermined set of values.</p>
+<p>This works in much the same way as the StringPOD, except that the
+returned and consumed values are not simple strings, but members of
+the Enum that was passed into the constructor.</p>
+<p>When assigning, this property also accepts the string name of one of
+the enum members. In either case, the corresponding enum member’s
+value will be placed in the underlying XML element.</p>
+<p>The <em>default</em> constructor argument determines which member will be
+used if the attribute is missing from the XML. If no <em>default</em> is
+passed exlicitly, the first declared enum member will be used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.nature">
+<span class="sig-name descname"><span class="pre">nature</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.nature" title="Link to this definition">¶</a></dt>
+<dd><p>A POD that can have one of a pretermined set of values.</p>
+<p>This works in much the same way as the StringPOD, except that the
+returned and consumed values are not simple strings, but members of
+the Enum that was passed into the constructor.</p>
+<p>When assigning, this property also accepts the string name of one of
+the enum members. In either case, the corresponding enum member’s
+value will be placed in the underlying XML element.</p>
+<p>The <em>default</em> constructor argument determines which member will be
+used if the attribute is missing from the XML. If no <em>default</em> is
+passed exlicitly, the first declared enum member will be used.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.owned_components">
+<span class="sig-name descname"><span class="pre">owned_components</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.owned_components" title="Link to this definition">¶</a></dt>
+<dd><p>The owned components of this PhysicalComponent.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.realized_logical_components">
+<span class="sig-name descname"><span class="pre">realized_logical_components</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.realized_logical_components" title="Link to this definition">¶</a></dt>
+<dd><p>The realized logical components of this PhysicalComponent.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponent.related_components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">related_components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="capellambse.model.html#capellambse.model.ElementList" title="capellambse.model._obj.ElementList"><span class="pre">ElementList</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><span class="pre">PhysicalComponent</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponent.related_components" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalComponentKind</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Categories of physical components.</p>
+<p>Allows to categorize a physical component, with respect to real life
+physical entities.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.DATA">
+<span class="sig-name descname"><span class="pre">DATA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DATA'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.DATA" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component represents a set of data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.FACILITIES">
+<span class="sig-name descname"><span class="pre">FACILITIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FACILITIES'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.FACILITIES" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component refers to Facilities.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.FIRMWARE">
+<span class="sig-name descname"><span class="pre">FIRMWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'FIRMWARE'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.FIRMWARE" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a firmware part.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.HARDWARE">
+<span class="sig-name descname"><span class="pre">HARDWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HARDWARE'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.HARDWARE" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a hardware resource.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.HARDWARE_COMPUTER">
+<span class="sig-name descname"><span class="pre">HARDWARE_COMPUTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HARDWARE_COMPUTER'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.HARDWARE_COMPUTER" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a computing resource.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.MATERIALS">
+<span class="sig-name descname"><span class="pre">MATERIALS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MATERIALS'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.MATERIALS" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component represents a bunch of materials.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.PERSON">
+<span class="sig-name descname"><span class="pre">PERSON</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PERSON'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.PERSON" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a person.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.PROCESSES">
+<span class="sig-name descname"><span class="pre">PROCESSES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PROCESSES'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.PROCESSES" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component represents a set of processes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.SERVICES">
+<span class="sig-name descname"><span class="pre">SERVICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SERVICES'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.SERVICES" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component represents a set of services.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE">
+<span class="sig-name descname"><span class="pre">SOFTWARE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SOFTWARE'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a software entity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_APPLICATION">
+<span class="sig-name descname"><span class="pre">SOFTWARE_APPLICATION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SOFTWARE_APPLICATION'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_APPLICATION" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a software application.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_DEPLOYMENT_UNIT">
+<span class="sig-name descname"><span class="pre">SOFTWARE_DEPLOYMENT_UNIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SOFTWARE_DEPLOYMENT_UNIT'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_DEPLOYMENT_UNIT" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a software deployment unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_EXECUTION_UNIT">
+<span class="sig-name descname"><span class="pre">SOFTWARE_EXECUTION_UNIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SOFTWARE_EXECUTION_UNIT'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_EXECUTION_UNIT" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a software execution unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentKind.UNSET">
+<span class="sig-name descname"><span class="pre">UNSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UNSET'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentKind.UNSET" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component kind is not specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentNature">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalComponentNature</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentNature" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>The nature of a physical component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentNature.BEHAVIOR">
+<span class="sig-name descname"><span class="pre">BEHAVIOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BEHAVIOR'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentNature.BEHAVIOR" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component nature is behavioral.</p>
+<p>This typically means a piece of software.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentNature.NODE">
+<span class="sig-name descname"><span class="pre">NODE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'NODE'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentNature.NODE" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component is a host for behavioral components.</p>
+<p>This typically means a computing resource.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentNature.UNSET">
+<span class="sig-name descname"><span class="pre">UNSET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UNSET'</span></em><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentNature.UNSET" title="Link to this definition">¶</a></dt>
+<dd><p>The physical component nature is not specified.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentPkg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalComponentPkg</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentPkg" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.ComponentPkg" title="capellambse.metamodel.cs.ComponentPkg"><code class="xref py py-class docutils literal notranslate"><span class="pre">ComponentPkg</span></code></a>, <a class="reference internal" href="capellambse.metamodel.information.html#capellambse.metamodel.information.AssociationPkg" title="capellambse.metamodel.information.AssociationPkg"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssociationPkg</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentPkg.components">
+<span class="sig-name descname"><span class="pre">components</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentPkg.components" title="Link to this definition">¶</a></dt>
+<dd><p>The components of this PhysicalComponentPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentPkg.deployments">
+<span class="sig-name descname"><span class="pre">deployments</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentPkg.deployments" title="Link to this definition">¶</a></dt>
+<dd><p>The deployments of this PhysicalComponentPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentPkg.key_parts">
+<span class="sig-name descname"><span class="pre">key_parts</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentPkg.key_parts" title="Link to this definition">¶</a></dt>
+<dd><p>The key parts of this PhysicalComponentPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalComponentPkg.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalComponentPkg.packages" title="Link to this definition">¶</a></dt>
+<dd><p>The packages of this PhysicalComponentPkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalFunction</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunction" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.fa.AbstractFunction" title="capellambse.metamodel.fa.AbstractFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractFunction</span></code></a></p>
+<p>A physical function on the Physical Architecture layer.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunction.functions">
+<span class="sig-name descname"><span class="pre">functions</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunction.functions" title="Link to this definition">¶</a></dt>
+<dd><p>The functions of this PhysicalFunction.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunction.owner">
+<span class="sig-name descname"><span class="pre">owner</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunction.owner" title="Link to this definition">¶</a></dt>
+<dd><p>The owner of this PhysicalFunction.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunction.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunction.packages" title="Link to this definition">¶</a></dt>
+<dd><p>The packages of this PhysicalFunction.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunction.realized_logical_functions">
+<span class="sig-name descname"><span class="pre">realized_logical_functions</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunction.realized_logical_functions" title="Link to this definition">¶</a></dt>
+<dd><p>The realized logical functions of this PhysicalFunction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunctionPkg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalFunctionPkg</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunctionPkg" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.fa.FunctionPkg" title="capellambse.metamodel.fa.FunctionPkg"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionPkg</span></code></a></p>
+<p>A logical component package.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunctionPkg.functions">
+<span class="sig-name descname"><span class="pre">functions</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunctionPkg.functions" title="Link to this definition">¶</a></dt>
+<dd><p>The functions of this PhysicalFunctionPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalFunctionPkg.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalFunctionPkg.packages" title="Link to this definition">¶</a></dt>
+<dd><p>The packages of this PhysicalFunctionPkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.PhysicalNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.</span></span><span class="sig-name descname"><span class="pre">PhysicalNode</span></span><a class="headerlink" href="#capellambse.metamodel.pa.PhysicalNode" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent" title="capellambse.metamodel.pa.PhysicalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysicalComponent</span></code></a></p>
+</dd></dl>
+
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-capellambse.metamodel.pa.deployment">
+<span id="capellambse-metamodel-pa-deployment-module"></span><h2>capellambse.metamodel.pa.deployment module<a class="headerlink" href="#module-capellambse.metamodel.pa.deployment" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.AbstractPhysicalInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">AbstractPhysicalInstance</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.AbstractPhysicalInstance" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.CapellaElement" title="capellambse.metamodel.capellacore.CapellaElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">CapellaElement</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ComponentInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">ComponentInstance</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ComponentInstance" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.metamodel.pa.deployment.AbstractPhysicalInstance" title="capellambse.metamodel.pa.deployment.AbstractPhysicalInstance"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractPhysicalInstance</span></code></a>, <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.DeployableElement" title="capellambse.metamodel.cs.DeployableElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeployableElement</span></code></a>, <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.DeploymentTarget" title="capellambse.metamodel.cs.DeploymentTarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeploymentTarget</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ComponentInstance.abstract_physical_instances">
+<span class="sig-name descname"><span class="pre">abstract_physical_instances</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ComponentInstance.abstract_physical_instances" title="Link to this definition">¶</a></dt>
+<dd><p>The abstract physical instances of this ComponentInstance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ComponentInstance.instance_deployment_links">
+<span class="sig-name descname"><span class="pre">instance_deployment_links</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ComponentInstance.instance_deployment_links" title="Link to this definition">¶</a></dt>
+<dd><p>The instance deployment links of this ComponentInstance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ComponentInstance.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ComponentInstance.type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of this ComponentInstance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ConnectionInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">ConnectionInstance</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ConnectionInstance" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.metamodel.pa.deployment.AbstractPhysicalInstance" title="capellambse.metamodel.pa.deployment.AbstractPhysicalInstance"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractPhysicalInstance</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ConnectionInstance.connection_ends">
+<span class="sig-name descname"><span class="pre">connection_ends</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ConnectionInstance.connection_ends" title="Link to this definition">¶</a></dt>
+<dd><p>The connection ends of this ConnectionInstance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.ConnectionInstance.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.ConnectionInstance.type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of this ConnectionInstance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.DeploymentAspect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">DeploymentAspect</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.DeploymentAspect" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.Structure" title="capellambse.metamodel.capellacore.Structure"><code class="xref py py-class docutils literal notranslate"><span class="pre">Structure</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.DeploymentAspect.configurations">
+<span class="sig-name descname"><span class="pre">configurations</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.DeploymentAspect.configurations" title="Link to this definition">¶</a></dt>
+<dd><p>The configurations of this DeploymentAspect.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.DeploymentAspect.deployment_aspects">
+<span class="sig-name descname"><span class="pre">deployment_aspects</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.DeploymentAspect.deployment_aspects" title="Link to this definition">¶</a></dt>
+<dd><p>The deployment aspects of this DeploymentAspect.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.DeploymentConfiguration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">DeploymentConfiguration</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.DeploymentConfiguration" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.DeploymentConfiguration.deployment_links">
+<span class="sig-name descname"><span class="pre">deployment_links</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.DeploymentConfiguration.deployment_links" title="Link to this definition">¶</a></dt>
+<dd><p>The deployment links of this DeploymentConfiguration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.DeploymentConfiguration.physical_instances">
+<span class="sig-name descname"><span class="pre">physical_instances</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.DeploymentConfiguration.physical_instances" title="Link to this definition">¶</a></dt>
+<dd><p>The physical instances of this DeploymentConfiguration.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.InstanceDeploymentLink">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">InstanceDeploymentLink</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.InstanceDeploymentLink" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.AbstractDeploymentLink" title="capellambse.metamodel.cs.AbstractDeploymentLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDeploymentLink</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.PartDeploymentLink">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">PartDeploymentLink</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.PartDeploymentLink" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.AbstractDeploymentLink" title="capellambse.metamodel.cs.AbstractDeploymentLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDeploymentLink</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.PortInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">PortInstance</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.PortInstance" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.metamodel.pa.deployment.AbstractPhysicalInstance" title="capellambse.metamodel.pa.deployment.AbstractPhysicalInstance"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractPhysicalInstance</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.PortInstance.connections">
+<span class="sig-name descname"><span class="pre">connections</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.PortInstance.connections" title="Link to this definition">¶</a></dt>
+<dd><p>The connections of this PortInstance.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.PortInstance.type">
+<span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.PortInstance.type" title="Link to this definition">¶</a></dt>
+<dd><p>The type of this PortInstance.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.metamodel.pa.deployment.TypeDeploymentLink">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.metamodel.pa.deployment.</span></span><span class="sig-name descname"><span class="pre">TypeDeploymentLink</span></span><a class="headerlink" href="#capellambse.metamodel.pa.deployment.TypeDeploymentLink" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.cs.AbstractDeploymentLink" title="capellambse.metamodel.cs.AbstractDeploymentLink"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDeploymentLink</span></code></a></p>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="capellambse.model.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">capellambse.model package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="capellambse.metamodel.information.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">capellambse.metamodel.information package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/dbinfrago/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">capellambse.metamodel.pa package</a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.LogicalArchitectureRealization"><code class="docutils literal notranslate"><span class="pre">LogicalArchitectureRealization</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.LogicalInterfaceRealization"><code class="docutils literal notranslate"><span class="pre">LogicalInterfaceRealization</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_actors"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_actors</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_component_exchanges"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_component_exchanges</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_components"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_function_exchanges"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_function_exchanges</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_functional_chains"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_functional_chains</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_functions"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_functions</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_physical_exchanges"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_physical_exchanges</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_physical_links"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_physical_links</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.all_physical_paths"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.all_physical_paths</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.component_package"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.component_package</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.component_pkg"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.component_pkg</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.deployments"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.deployments</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.diagrams"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.diagrams</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.logical_architecture_realizations"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.logical_architecture_realizations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.realized_logical_architectures"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.realized_logical_architectures</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.root_component"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.root_component</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecture.root_function"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecture.root_function</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecturePkg"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecturePkg</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecturePkg.architectures"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecturePkg.architectures</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalArchitecturePkg.packages"><code class="docutils literal notranslate"><span class="pre">PhysicalArchitecturePkg.packages</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.allocated_functions"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.allocated_functions</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.component_pkgs"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.component_pkgs</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.deployed_components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.deployed_components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.deploying_components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.deploying_components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.deployment_links"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.deployment_links</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.kind"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.kind</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.nature"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.nature</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.owned_components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.owned_components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.realized_logical_components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.realized_logical_components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponent.related_components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponent.related_components</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.DATA"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.DATA</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.FACILITIES"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.FACILITIES</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.FIRMWARE"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.FIRMWARE</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.HARDWARE"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.HARDWARE</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.HARDWARE_COMPUTER"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.HARDWARE_COMPUTER</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.MATERIALS"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.MATERIALS</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.PERSON"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.PERSON</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.PROCESSES"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.PROCESSES</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.SERVICES"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.SERVICES</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.SOFTWARE</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_APPLICATION"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.SOFTWARE_APPLICATION</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_DEPLOYMENT_UNIT"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.SOFTWARE_DEPLOYMENT_UNIT</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.SOFTWARE_EXECUTION_UNIT"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.SOFTWARE_EXECUTION_UNIT</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentKind.UNSET"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentKind.UNSET</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentNature"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentNature</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentNature.BEHAVIOR"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentNature.BEHAVIOR</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentNature.NODE"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentNature.NODE</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentNature.UNSET"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentNature.UNSET</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentPkg"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentPkg</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentPkg.components"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentPkg.components</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentPkg.deployments"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentPkg.deployments</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentPkg.key_parts"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentPkg.key_parts</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalComponentPkg.packages"><code class="docutils literal notranslate"><span class="pre">PhysicalComponentPkg.packages</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction"><code class="docutils literal notranslate"><span class="pre">PhysicalFunction</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction.functions"><code class="docutils literal notranslate"><span class="pre">PhysicalFunction.functions</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction.owner"><code class="docutils literal notranslate"><span class="pre">PhysicalFunction.owner</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction.packages"><code class="docutils literal notranslate"><span class="pre">PhysicalFunction.packages</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunction.realized_logical_functions"><code class="docutils literal notranslate"><span class="pre">PhysicalFunction.realized_logical_functions</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunctionPkg"><code class="docutils literal notranslate"><span class="pre">PhysicalFunctionPkg</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunctionPkg.functions"><code class="docutils literal notranslate"><span class="pre">PhysicalFunctionPkg.functions</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalFunctionPkg.packages"><code class="docutils literal notranslate"><span class="pre">PhysicalFunctionPkg.packages</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.PhysicalNode"><code class="docutils literal notranslate"><span class="pre">PhysicalNode</span></code></a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-capellambse.metamodel.pa.deployment">capellambse.metamodel.pa.deployment module</a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.AbstractPhysicalInstance"><code class="docutils literal notranslate"><span class="pre">AbstractPhysicalInstance</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ComponentInstance"><code class="docutils literal notranslate"><span class="pre">ComponentInstance</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ComponentInstance.abstract_physical_instances"><code class="docutils literal notranslate"><span class="pre">ComponentInstance.abstract_physical_instances</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ComponentInstance.instance_deployment_links"><code class="docutils literal notranslate"><span class="pre">ComponentInstance.instance_deployment_links</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ComponentInstance.type"><code class="docutils literal notranslate"><span class="pre">ComponentInstance.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ConnectionInstance"><code class="docutils literal notranslate"><span class="pre">ConnectionInstance</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ConnectionInstance.connection_ends"><code class="docutils literal notranslate"><span class="pre">ConnectionInstance.connection_ends</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.ConnectionInstance.type"><code class="docutils literal notranslate"><span class="pre">ConnectionInstance.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.DeploymentAspect"><code class="docutils literal notranslate"><span class="pre">DeploymentAspect</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.DeploymentAspect.configurations"><code class="docutils literal notranslate"><span class="pre">DeploymentAspect.configurations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.DeploymentAspect.deployment_aspects"><code class="docutils literal notranslate"><span class="pre">DeploymentAspect.deployment_aspects</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.DeploymentConfiguration"><code class="docutils literal notranslate"><span class="pre">DeploymentConfiguration</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.DeploymentConfiguration.deployment_links"><code class="docutils literal notranslate"><span class="pre">DeploymentConfiguration.deployment_links</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.DeploymentConfiguration.physical_instances"><code class="docutils literal notranslate"><span class="pre">DeploymentConfiguration.physical_instances</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.InstanceDeploymentLink"><code class="docutils literal notranslate"><span class="pre">InstanceDeploymentLink</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.PartDeploymentLink"><code class="docutils literal notranslate"><span class="pre">PartDeploymentLink</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.PortInstance"><code class="docutils literal notranslate"><span class="pre">PortInstance</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.PortInstance.connections"><code class="docutils literal notranslate"><span class="pre">PortInstance.connections</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.PortInstance.type"><code class="docutils literal notranslate"><span class="pre">PortInstance.type</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.metamodel.pa.deployment.TypeDeploymentLink"><code class="docutils literal notranslate"><span class="pre">TypeDeploymentLink</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

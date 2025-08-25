@@ -1,0 +1,34 @@
+capellambse.metamodel.information package
+=========================================
+
+.. automodule:: capellambse.metamodel.information
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.metamodel.information.communication module
+------------------------------------------------------
+
+.. automodule:: capellambse.metamodel.information.communication
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.metamodel.information.datatype module
+-------------------------------------------------
+
+.. automodule:: capellambse.metamodel.information.datatype
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.metamodel.information.datavalue module
+--------------------------------------------------
+
+.. automodule:: capellambse.metamodel.information.datavalue
+   :members:
+   :undoc-members:
+   :show-inheritance:
