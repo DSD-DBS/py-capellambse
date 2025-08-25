@@ -65,7 +65,7 @@ class BlockArchitecture(fa.AbstractFunctionalArchitecture, abstract=True):
         self,
     ) -> m.ElementList[information.datavalue.AbstractComplexValue]:
         return self._model.search(
-            (ns.INFORMATION_DATATYPE, "AbstractComplexValue"), below=self
+            (ns.INFORMATION_DATAVALUE, "AbstractComplexValue"), below=self
         )
 
     @property
