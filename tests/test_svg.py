@@ -67,18 +67,19 @@ class TestSVG:
         cp_reference_exists = False
 
         for item in tree.iter():
+            classes = set(item.get("class", "").split())
             # The class CP should not exist anymore as it has been replaced
             # with CP_IN, CP_OUT, CP_UNSET or CP_INOUT
-            assert not item.get("class", "").startswith("Box CP ")
+            assert "CP" not in classes
 
             # Check that the classes CP_IN, CP_OUT, CP_UNSET and CP_INOUT exist
-            if item.get("class", "").startswith("Box CP_IN "):
+            if classes >= {"Box", "CP_IN"}:
                 cp_in_exists = True
-            elif item.get("class", "").startswith("Box CP_OUT "):
+            elif classes >= {"Box", "CP_OUT"}:
                 cp_out_exists = True
-            elif item.get("class", "").startswith("Box CP_INOUT "):
+            elif classes >= {"Box", "CP_INOUT"}:
                 cp_inout_exists = True
-            elif item.get("class", "").startswith("Box CP_UNSET "):
+            elif classes >= {"Box", "CP_UNSET"}:
                 cp_unset_exists = True
 
             # Check that reference symbol for CP exists
