@@ -56,6 +56,7 @@ class Drawing:
         font_family: str = "'Open Sans','Segoe UI',Arial,sans-serif",
         font_size: int = chelpers.DEFAULT_FONT_SIZE,
         transparent_background: bool = False,
+        context_groups: bool = False,
     ):
         superparams = {
             "filename": f"{metadata.name}.svg",
@@ -74,6 +75,7 @@ class Drawing:
         if not transparent_background:
             self._add_backdrop(pos=metadata.pos, size=metadata.size)
 
+        self.context_groups = context_groups
         self.obj_cache: dict[str | None, t.Any] = {}
 
     @property
@@ -128,7 +130,11 @@ class Drawing:
         children: bool = False,
     ) -> container.Group:
         """Add a rectangle with auto-aligned text to the group."""
-        gcls = "".join(f" context-{i}" for i in context_)
+        gcls = (
+            "".join(f" context-{i}" for i in context_)
+            if self.context_groups
+            else ""
+        )
         grp: container.Group = self.__drawing.g(
             class_=f"Box {class_}{gcls}", id_=id_
         )
@@ -410,7 +416,11 @@ class Drawing:
         labels: list[LabelDict] | None = None,
         id_: str | None = None,
     ) -> container.Group:
-        gcls = "".join(f" context-{i}" for i in context_)
+        gcls = (
+            "".join(f" context-{i}" for i in context_)
+            if self.context_groups
+            else ""
+        )
         grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
         if class_ in decorations.all_directed_ports:
             port_id = "Error"
@@ -559,7 +569,11 @@ class Drawing:
             self.__drawing.add(grp)
             return
 
-        gcls = "".join(f" context-{i}" for i in context_)
+        gcls = (
+            "".join(f" context-{i}" for i in context_)
+            if self.context_groups
+            else ""
+        )
         grp = self.__drawing.g(class_=f"Box {class_}{gcls}", id_=id_)
         grp.add(
             self.__drawing.use(
@@ -717,7 +731,11 @@ class Drawing:
         center_ = (center_[0] + 0.5, center_[1] + 0.5)
         obj_style.fill = obj_style.stroke or diagram.RGB(0, 0, 0)
         del obj_style.stroke
-        gcls = "".join(f" context-{i}" for i in context_)
+        gcls = (
+            "".join(f" context-{i}" for i in context_)
+            if self.context_groups
+            else ""
+        )
         grp = self.__drawing.g(class_=f"Circle {class_}{gcls}", id_=id_)
         circle = self.__drawing.circle(
             center=center_, r=radius_, **obj_style._to_dict()
@@ -739,7 +757,11 @@ class Drawing:
     ) -> container.Group:
         del kw
         points: list = [(x + 0.5, y + 0.5) for x, y in points_]
-        gcls = "".join(f" context-{i}" for i in context_)
+        gcls = (
+            "".join(f" context-{i}" for i in context_)
+            if self.context_groups
+            else ""
+        )
         grp = self.__drawing.g(class_=f"Edge {class_}{gcls}", id_=id_)
         path = self.__drawing.path(
             d=["M", *points], class_="Edge", **obj_style._to_dict()
