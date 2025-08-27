@@ -250,8 +250,8 @@ class AbstractDiagram(metaclass=abc.ABCMeta):
 
     def __dir__(self) -> list[str]:
         return dir(type(self)) + [
-            f"as_{i.name}"
-            for i in imm.entry_points()["capellambse.diagram.formats"]
+            f"as_{ep.name}"
+            for ep in imm.entry_points(group="capellambse.diagram.formats")
         ]
 
     def __getattr__(self, attr: str) -> t.Any:
