@@ -1318,7 +1318,7 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
 
         return getattr(super(), attr)
 
-    def __dir__(self) -> list[str]:  # pragma: no cover
+    def __dir__(self) -> cabc.Iterable[str]:  # pragma: no cover
         no_dir_attr = re.compile(r"^(_|as_|pvmt$|diagrams?$)")
 
         def filterable_attrs() -> cabc.Iterator[str]:
@@ -1340,10 +1340,10 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
                     yield f"by_{attr}"
                     yield f"exclude_{attr}s"
 
-        attrs = list(super().__dir__())
-        attrs.extend(filterable_attrs())
+        attrs = set(super().__dir__())
+        attrs.update(filterable_attrs())
         if self.__legacy_by_type:
-            attrs.extend(("by_type", "exclude_types"))
+            attrs.update(("by_type", "exclude_types"))
         return attrs
 
     def __repr__(self) -> str:  # pragma: no cover
