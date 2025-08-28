@@ -1,0 +1,7 @@
+capellambse.extensions.pvmt package
+===================================
+
+.. automodule:: capellambse.extensions.pvmt
+   :members:
+   :undoc-members:
+   :show-inheritance:

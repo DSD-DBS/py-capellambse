@@ -1,0 +1,1050 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="How to explore Capella meta-model" href="how-to-explore-capella-mm.html" /><link rel="prev" title="The py-capellambse Sphinx extension" href="../tools/sphinx-extension.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Low-level API - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../code/modules.html">src</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of src</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../code/capellambse.html">capellambse package</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.extensions.html">capellambse.extensions package</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../code/capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../code/capellambse.metamodel.pa.html">capellambse.metamodel.pa package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../code/capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="low-level-api">
+<h1>Low-level API<a class="headerlink" href="#low-level-api" title="Link to this heading">¶</a></h1>
+<p>The high level <a class="reference internal" href="../code/capellambse.model.html#capellambse.model.MelodyModel" title="capellambse.model.MelodyModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MelodyModel</span></code></a>-based API is largely
+manually designed, and therefore sometimes does not cover all interesting
+objects to a usable level. While we are constantly working on improving the
+situation, it’s also possible to use the low-level API based directly on the
+XML files in order to temporarily work around these shortcomings. This
+documentation sheds some light on the inner workings of this low-level API.</p>
+<p>In order to effectively work with it, you need to understand the basics of XML.
+It also helps to be familiar with <a class="reference external" href="https://lxml.de/">LXML</a>, which is used to parse and manipulate
+the XML trees in memory.</p>
+<p>Unfortunately it’s not possible to use LXML’s built-in XML serializer. It
+produces different whitespace in the XML tree, which confuses Capella’s XML
+diff-merge algorithm. This is why py-capellambse ships with a custom serializer that
+produces the same output format as Capella. It resides in the
+<a class="reference internal" href="../code/capellambse.loader.html#module-capellambse.loader.exs" title="capellambse.loader.exs"><code class="xref py py-mod docutils literal notranslate"><span class="pre">capellambse.loader.exs</span></code></a> module.</p>
+<section id="the-melodyloader-object">
+<h2>The MelodyLoader object<a class="headerlink" href="#the-melodyloader-object" title="Link to this heading">¶</a></h2>
+<p>While the main object of interest for the high-level API is the
+<a class="reference internal" href="../code/capellambse.model.html#capellambse.model.MelodyModel" title="capellambse.model.MelodyModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">capellambse.model.MelodyModel</span></code></a> class, for the low-level API it is
+the <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader" title="capellambse.loader.core.MelodyLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">capellambse.loader.core.MelodyLoader</span></code></a>. It offers numerous
+methods to search elements, resolve references, ensure model integrity during
+certain modifications, and many more.</p>
+<p>The following sections categorize and document the various methods.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">MelodyLoader</span></code> closely works together with its auxiliary class
+<a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.ModelFile" title="capellambse.loader.core.ModelFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelFile</span></code></a>. However, the <code class="docutils literal notranslate"><span class="pre">ModelFile</span></code>
+mainly plays a role while loading or saving a model from/to disk (or other data
+stores), and isn’t used much when interacting with an already loaded model.</p>
+</section>
+<section id="shifting-between-api-levels">
+<span id="api-level-shift"></span><h2>Shifting between API levels<a class="headerlink" href="#shifting-between-api-levels" title="Link to this heading">¶</a></h2>
+<section id="high-to-low-level-shift">
+<h3>High to low-level shift<a class="headerlink" href="#high-to-low-level-shift" title="Link to this heading">¶</a></h3>
+<p>Every model object (i.e. instance of <code class="docutils literal notranslate"><span class="pre">ModelElement</span></code> or one of its subclasses)
+has an attribute <code class="docutils literal notranslate"><span class="pre">_element</span></code>, which holds a reference to the corresponding
+<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">lxml.etree._Element</span></code></a> instance. The low-level API works directly with
+these <code class="docutils literal notranslate"><span class="pre">_Element</span></code> instances.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">MelodyModel</span></code> object stores a reference to the
+<a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader" title="capellambse.loader.core.MelodyLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">MelodyLoader</span></code></a> instance.</p>
+</section>
+<section id="low-to-high-level-shift">
+<h3>Low to high-level shift<a class="headerlink" href="#low-to-high-level-shift" title="Link to this heading">¶</a></h3>
+<p>The ModelElement class offers the
+<a class="reference internal" href="../code/capellambse.model.html#capellambse.model.ModelElement.from_model" title="capellambse.model.ModelElement.from_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_model()</span></code></a> class method, which takes
+a <code class="docutils literal notranslate"><span class="pre">MelodyModel</span></code> instance and a low-level LXML <code class="docutils literal notranslate"><span class="pre">_Element</span></code> as arguments and
+constructs a high-level API proxy object from them. This is the way “back up”
+to the high-level API.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Always call <code class="docutils literal notranslate"><span class="pre">from_model</span></code> on the base <code class="docutils literal notranslate"><span class="pre">ModelElement</span></code> class, not on its
+subclasses. The base class automatically searches for the correct subclass
+to instantiate, based on the <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> of the passed XML element. Calling
+the method on a subclass directly may inadvertently cause the wrong class to
+be picked.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalFunction&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">el</span> <span class="o">=</span> <span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">el</span>
+<span class="go">&lt;Element ownedFunctions at 0x7f9e3742b840&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">capellambse.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelElement</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">high_el</span> <span class="o">=</span> <span class="n">ModelElement</span><span class="o">.</span><span class="n">from_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">el</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">high_el</span> <span class="o">==</span> <span class="n">myfunc</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>When working with multiple objects, it can be desirable to directly construct a
+high-level <a class="reference internal" href="../code/capellambse.model.html#capellambse.model.ElementList" title="capellambse.model.ElementList"><code class="xref py py-class docutils literal notranslate"><span class="pre">ElementList</span></code></a> with them. The
+ElementList constructor works similar to <code class="docutils literal notranslate"><span class="pre">ModelElement.from_model</span></code>, but it
+takes a list of elements instead of only a single one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mycomp</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalComponent&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">children</span> <span class="o">=</span> <span class="n">mycomp</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">getchildren</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">children</span><span class="p">)</span>
+<span class="go">7</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mylist</span> <span class="o">=</span> <span class="n">ElementList</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mylist</span>
+<span class="go">[0] &lt;Constraint &#39;Chamber of secrets closed&#39; (7a5b8b30-f596-43d9-b810-45ab02f4a81c)&gt;</span>
+<span class="go">[1] &lt;ComponentExchange &#39;Care&#39; (c31491db-817d-44b3-a27c-67e9cc1e06a2)&gt;</span>
+<span class="go">[2] &lt;InterfacePkg &#39;Interfaces&#39; (c8f33066-2801-4970-8aea-6aadc189b9f3)&gt;</span>
+<span class="go">[3] &lt;Part &#39;Whomping Willow&#39; (1188fc31-789b-424f-a2d4-06791873a351)&gt;</span>
+<span class="go">[4] &lt;Part &#39;School&#39; (018a8ae9-8e8e-4aea-8191-4abf844a79e3)&gt;</span>
+<span class="go">[5] &lt;LogicalComponent &#39;Whomping Willow&#39; (3bdd4fa2-5646-44a1-9fa6-80c68433ddb7)&gt;</span>
+<span class="go">[6] &lt;LogicalComponent &#39;School&#39; (a58821df-c5b4-4958-9455-0d30755be6b1)&gt;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="moving-along-the-xml-tree">
+<h2>Moving along the XML tree<a class="headerlink" href="#moving-along-the-xml-tree" title="Link to this heading">¶</a></h2>
+<p>In most simple cases, you can use the standard LXML methods in order to select
+parent, child and sibling elements.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalFunction&quot;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">getparent</span><span class="p">()</span>
+<span class="go">&lt;Element ownedLogicalFunctions at 0x7f9e3742ad00&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">getchildren</span><span class="p">()</span>
+<span class="go">[&lt;Element outputs at 0x7f9e3742b9d0&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">getprevious</span><span class="p">()</span>
+<span class="go">&lt;Element ownedFunctions at 0x7f9e3742b6b0&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">getnext</span><span class="p">()</span>
+<span class="go">&lt;Element ownedFunctions at 0x7f9e3742bca0&gt;</span>
+</pre></div>
+</div>
+<p>These elements and lists of elements can then be fed into
+<code class="docutils literal notranslate"><span class="pre">ModelElement.from_model</span></code> or the <code class="docutils literal notranslate"><span class="pre">ElementList</span></code> constructor respectively in
+order to <a class="reference internal" href="#api-level-shift"><span class="std std-ref">return to the high-level API</span></a>.</p>
+<p>Capella models support fragmentation into multiple files, which results in
+multiple XML trees being loaded into memory. This makes it difficult to
+traverse up and down the hierarchy, because in theory every element can be a
+fragment boundary – in this case, it does not have a physical parent element,
+and <code class="docutils literal notranslate"><span class="pre">getparent()</span></code> will return <code class="docutils literal notranslate"><span class="pre">None</span></code>. A call to <code class="docutils literal notranslate"><span class="pre">getchildren()</span></code> or
+similar on the (logical) parent element will yield a placeholder which only
+contains a reference to the real element, but does not hold any other
+information.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MelodyLoader</span></code> provides methods to traverse upwards or downwards in the
+model’s XML tree, while also taking into account fragment boundaries and the
+aforementioned placeholder elements.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">iterancestors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Iterate over the ancestors of <code class="docutils literal notranslate"><span class="pre">element</span></code>.</p>
+<p>This method will follow fragment links back to the origin point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The element to start at.</p></li>
+<li><p><strong>tags</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Only yield elements that have the given XML tag.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">iterchildren_xt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Iterate over the children of <code class="docutils literal notranslate"><span class="pre">element</span></code>.</p>
+<p>This method will follow links into different fragment files and
+yield those elements as if they were direct children.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The parent element under which to search for children.</p></li>
+<li><p><strong>xtypes</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Only yield elements whose <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> matches one of those
+given here. If no types are given, all elements are yielded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">iterdescendants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_elm</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Iterate over all descendants of <code class="docutils literal notranslate"><span class="pre">root_elm</span></code>.</p>
+<p>This method will follow links into different fragment files and
+yield those elements as if they were part of the origin subtree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_elm</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The root element of the tree</p></li>
+<li><p><strong>tags</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Only yield elements with a matching XML tag. If none are
+given, all elements are yielded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">iterdescendants_xt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Iterate over all descendants of <code class="docutils literal notranslate"><span class="pre">element</span></code> by <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>.</p>
+<p>This method will follow links into different fragment files and
+yield those elements as if they were part of the origin subtree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The root element of the tree</p></li>
+<li><p><strong>xtypes</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Only yield elements whose <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> matches one of those
+given here. If no types are given, all elements are yielded.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="resolving-references">
+<h2>Resolving references<a class="headerlink" href="#resolving-references" title="Link to this heading">¶</a></h2>
+<p>You will often encounter attributes that contain references to other elements.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">MelodyLoader</span></code> provides the following methods to work with references:</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">follow_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">link</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Follow a single link and return the target element.</p>
+<p>Valid links have one of the following two formats:</p>
+<ul class="simple">
+<li><p>Within the same fragment, a reference is the target’s UUID
+prepended with a <code class="docutils literal notranslate"><span class="pre">#</span></code>, for example
+<code class="docutils literal notranslate"><span class="pre">#7a5b8b30-f596-43d9-b810-45ab02f4a81c</span></code>.</p></li>
+<li><p>A reference to a different fragment contains the target’s
+<code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> and the path of the fragment, relative to the
+current one. For example, to link from <code class="docutils literal notranslate"><span class="pre">main.capella</span></code> into
+<code class="docutils literal notranslate"><span class="pre">frag/logical.capellafragment</span></code>, the reference could be:
+<code class="docutils literal notranslate"><span class="pre">org.polarsys.capella.core.data.capellacore:Constraint</span>
+<span class="pre">frag/logical.capellafragment#7a5b8b30-f596-43d9-b810-45ab02f4a81c</span></code>.
+To link back to the project root from there, it could look
+like: <code class="docutils literal notranslate"><span class="pre">org.polarsys.capella.core.data.pa:PhysicalArchitecture</span>
+<span class="pre">../main.capella#26e187b6-72e7-4872-8d8d-70b96243c96c</span></code>.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – The element at the start of the link. This is needed to verify
+cross-fragment links.</p></li>
+<li><p><strong>link</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – A string containing a valid link to another model element.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the link is malformed</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.13)"><strong>FileNotFoundError</strong></a> – If the target fragment is not loaded (only applicable if
+    <code class="docutils literal notranslate"><span class="pre">from_element</span></code> is not None and <code class="docutils literal notranslate"><span class="pre">fragment</span></code> is part of the
+    link)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If the expected <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> does not match the actual
+    <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> of the found target</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – If the target cannot be found</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">follow_links</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">links</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_broken</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Follow multiple links and return all results as list.</p>
+<p>The format for an individual link is the same as accepted by
+<a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.follow_link" title="capellambse.loader.core.MelodyLoader.follow_link"><code class="xref py py-meth docutils literal notranslate"><span class="pre">follow_link()</span></code></a>. Multiple links are separated by a single space.</p>
+<p>If any target cannot be found, <code class="docutils literal notranslate"><span class="pre">None</span></code> will be inserted at that
+point in the returned list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – The element at the start of the link. This is needed to verify
+cross-fragment links.</p></li>
+<li><p><strong>links</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – A string containing space-separated links as described in
+<a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.follow_link" title="capellambse.loader.core.MelodyLoader.follow_link"><code class="xref py py-meth docutils literal notranslate"><span class="pre">follow_link()</span></code></a>.</p></li>
+<li><p><strong>ignore_broken</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – Ignore broken references instead of raising a KeyError.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – If any link points to a non-existing target. Can be
+    suppressed with <code class="docutils literal notranslate"><span class="pre">ignore_broken</span></code>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If any link is malformed.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If any expected <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> does not match the actual
+    <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code> of the found target.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">create_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_element</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_target_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Create a link to <code class="docutils literal notranslate"><span class="pre">to_element</span></code> from <code class="docutils literal notranslate"><span class="pre">from_element</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>from_element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The source element of the link.</p></li>
+<li><p><strong>to_element</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The target element of the link.</p></li>
+<li><p><strong>include_target_type</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – <p>Whether to include the target type in cross-fragment link
+definitions.</p>
+<p>If set to True, it will always be included, False will
+always exclude it. Setting it to None (the default) will use
+a simple heuristic: It will be added <em>unless</em> the
+<code class="docutils literal notranslate"><span class="pre">from_element</span></code> is in a visual-only fragment (aird /
+airdfragment).</p>
+<p>Regardless of this setting, the target type will never be
+included if the link does not cross fragment boundaries.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A link in one of the formats described by <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.follow_link" title="capellambse.loader.core.MelodyLoader.follow_link"><code class="xref py py-meth docutils literal notranslate"><span class="pre">follow_link()</span></code></a>.
+Which format is used depends on whether <code class="docutils literal notranslate"><span class="pre">from_element</span></code> and
+<code class="docutils literal notranslate"><span class="pre">to_element</span></code> live in the the same fragment, and whether the
+<code class="docutils literal notranslate"><span class="pre">include_target_type</span></code> parameter is set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="finding-elements-elsewhere">
+<h2>Finding elements elsewhere<a class="headerlink" href="#finding-elements-elsewhere" title="Link to this heading">¶</a></h2>
+<p>The low-level API implements the fundamentals for looking up model objects or
+finding them by their type. The following methods are involved in these
+operations:</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">iterall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">tags</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Iterate over all elements in all trees by tags.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tags</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Optionally restrict the iterator to the given tags.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">iterall_xt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">xtypes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trees</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Iterate over all elements in all trees by <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xtypes</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Optionally restrict the iterator to these <code class="docutils literal notranslate"><span class="pre">xsi:type</span></code>s</p></li>
+<li><p><strong>trees</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Container" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Container</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePosixPath" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PurePosixPath</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Optionally restrict the iterator to elements that reside in
+any of the named trees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">xpath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run an XPath query on all fragments.</p>
+<p>Note that, unlike the <code class="docutils literal notranslate"><span class="pre">iter_*</span></code> methods, placeholder elements
+are not followed into their respective fragment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree.XPath" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">XPath</span></code></a></span>) – The XPath query</p></li>
+<li><p><strong>namespaces</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Namespaces used in the query. Defaults to all known
+namespaces.</p></li>
+<li><p><strong>roots</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – A list of XML elements to use as roots for the query.
+Defaults to all tree roots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all matching elements.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)">lxml.etree._Element</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">xpath2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run an XPath query and return the fragments and elements.</p>
+<p>Note that, unlike the <code class="docutils literal notranslate"><span class="pre">iter_*</span></code> methods, placeholder elements
+are not followed into their respective fragment.</p>
+<p>The tuples have the fragment where the match was found as first
+element, and the LXML element as second one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree.XPath" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">XPath</span></code></a></span>) – The XPath query</p></li>
+<li><p><strong>namespaces</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Namespaces used in the query. Defaults to all known
+namespaces.</p></li>
+<li><p><strong>roots</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a>] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – A list of XML elements to use as roots for the query.
+Defaults to all tree roots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A list of 2-tuples, containing:</p>
+<ol class="arabic simple">
+<li><p>The fragment name where the match was found.</p></li>
+<li><p>The matching element.</p></li>
+</ol>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.PurePosixPath" title="(in Python v3.13)">pathlib.PurePosixPath</a>, <a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)">lxml.etree._Element</a>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="manipulating-objects">
+<h2>Manipulating objects<a class="headerlink" href="#manipulating-objects" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The low-level API by itself does not do any consistency or validity checks
+when modifying a model. Therefore it is very easy to break a model using it,
+which can be very hard to recover from. Proceed with caution.</p>
+</div>
+<p>As <code class="docutils literal notranslate"><span class="pre">ModelElement</span></code> instances are simply wrappers around the raw XML elements,
+any changes to their attributes are directly reflected by changes to the
+attributes or children of the underlying XML element and vice versa. This means
+that no special care needs to be taken to keep the high-level and low-level
+parts of the API synchronized.</p>
+<p>In many cases, the attribute names of the high-level API match those in the
+XML, with the difference that the former uses <code class="docutils literal notranslate"><span class="pre">snake_case</span></code> naming (as is
+conventional in the Python world), while the latter uses <code class="docutils literal notranslate"><span class="pre">camelCase</span></code> naming.
+This example shows how the name of a function is accessed and modified using
+the low-level API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s2">&quot;LogicalFunction&quot;</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;defend the surrounding area against Intruders&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+<span class="go">&#39;defend the surrounding area against Intruders&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">attrib</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;My Function&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">myfunc</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;My Function&#39;</span>
+</pre></div>
+</div>
+<p>Be aware that the XML usually does not explicitly store attributes that are set
+to their default value (as defined by the meta model). In addition to that, the
+high-level API often offers convenience shortcuts and reverse lookups that are
+not directly reflected by XML attributes. Without at the detailed definitions,
+it can therefore be difficult to infer the correct attributes for the low-level
+API objects.</p>
+</section>
+<section id="creating-and-deleting-objects">
+<h2>Creating and deleting objects<a class="headerlink" href="#creating-and-deleting-objects" title="Link to this heading">¶</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Creating or deleting objects through the low-level API is highly
+discouraged, as it bears a very high risk of breaking the model. It’s
+unlikely that we can support you with any breakage that you encounter as a
+result of using the low-level API.</p>
+<p>If you need access to model elements and relations that are not yet covered
+by our high-level API, please consider contributing and extending it instead
+– it’s probably easier anyway. ;)</p>
+</div>
+<section id="the-id-cache">
+<h3>The ID cache<a class="headerlink" href="#the-id-cache" title="Link to this heading">¶</a></h3>
+<p>In order to provide instantaneous access to any model element via its UUID, the
+MelodyLoader maintains a hashmap containing all UUIDs. This hashmap needs to be
+updated when inserting or removing elements in the tree. The following methods
+take care of that:</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">idcache_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtree</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Index the IDs of <code class="docutils literal notranslate"><span class="pre">subtree</span></code>.</p>
+<p>This method must be called after adding <code class="docutils literal notranslate"><span class="pre">subtree</span></code> to the XML
+tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subtree</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The new element that was just inserted.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">idcache_remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subtree</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove the <code class="docutils literal notranslate"><span class="pre">subtree</span></code> from the ID cache.</p>
+<p>This method must be called before actually removing <code class="docutils literal notranslate"><span class="pre">subtree</span></code>
+from the XML tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>subtree</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The element that is about to be removed.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">idcache_rebuild</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Rebuild the ID caches of all loaded <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.ModelFile" title="capellambse.loader.core.ModelFile"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelFile</span></code></a> instances.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="creating-objects">
+<h3>Creating objects<a class="headerlink" href="#creating-objects" title="Link to this heading">¶</a></h3>
+<p>Creating a new object with the low-level API is a rather complex process. The
+<code class="docutils literal notranslate"><span class="pre">MelodyLoader</span></code> does provide some basic integrity checks, but most of the
+meta-model-aware logic is implemented within the high-level API.</p>
+<p>Before creating a new object, you need to generate and reserve a UUID for it.
+This is done using the <code class="docutils literal notranslate"><span class="pre">generate_uuid</span></code> method. <code class="docutils literal notranslate"><span class="pre">new_uuid</span></code> provides a
+context manager around it, which automatically cleans up the model in case
+anything went wrong. It also checks that the UUID was properly registered with
+the ID cache (see below). It is therefore highly recommended to use
+<code class="docutils literal notranslate"><span class="pre">new_uuid</span></code> over directly calling <code class="docutils literal notranslate"><span class="pre">generate_uuid</span></code>. Note that even when using
+<code class="docutils literal notranslate"><span class="pre">new_uuid</span></code>, you still need to manually call <code class="docutils literal notranslate"><span class="pre">idcache_index</span></code> on the newly
+inserted element.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">generate_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">want</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Generate a unique UUID for a new child of <code class="docutils literal notranslate"><span class="pre">parent</span></code>.</p>
+<p>The generated ID is guaranteed to be unique across all currently
+loaded fragments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The parent element below which the new UUID will be used.</p></li>
+<li><p><strong>want</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Try this UUID first, and use it if it satisfies all other
+constraints. If it does not satisfy all constraints (e.g. it
+would be non-unique), a random UUID will be generated as
+normal.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new UUID.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">new_uuid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">want</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Context Manager around <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.generate_uuid" title="capellambse.loader.core.MelodyLoader.generate_uuid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_uuid()</span></code></a>.</p>
+<p>This context manager yields a newly generated model-wide unique
+UUID that can be inserted into a new element during the <code class="docutils literal notranslate"><span class="pre">with</span></code>
+block. It tries to keep the ID cache consistent in some harder
+to manage edge cases, like exceptions being thrown. Additionally
+it checks that the generated UUID was actually used in the tree;
+not using it before the <code class="docutils literal notranslate"><span class="pre">with</span></code> block ends is an error and
+provokes an Exception.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You still need to call <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.idcache_index" title="capellambse.loader.core.MelodyLoader.idcache_index"><code class="xref py py-meth docutils literal notranslate"><span class="pre">idcache_index()</span></code></a> on the
+newly inserted element!</p>
+</div>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">ldr</span><span class="o">.</span><span class="n">new_uuid</span><span class="p">(</span><span class="n">parent_elm</span><span class="p">)</span> <span class="k">as</span> <span class="n">obj_id</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">child_elm</span> <span class="o">=</span> <span class="n">parent_elm</span><span class="o">.</span><span class="n">makeelement</span><span class="p">(</span><span class="s2">&quot;ownedObjects&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">child_elm</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">obj_id</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">parent_elm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_elm</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">ldr</span><span class="o">.</span><span class="n">idcache_index</span><span class="p">(</span><span class="n">child_elm</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you intend to reserve a UUID that should be inserted later,
+use <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.generate_uuid" title="capellambse.loader.core.MelodyLoader.generate_uuid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">generate_uuid()</span></code></a> directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://lxml.de/apidoc/lxml.etree.html#lxml.etree._Element" title="(in lxml v6.0.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Element</span></code></a></span>) – The parent element below which the new UUID will be used.</p></li>
+<li><p><strong>want</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span>) – Request this UUID. The request may or may not be fulfilled;
+always use the actual UUID returned by the context manager.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="deleting-objects">
+<h3>Deleting objects<a class="headerlink" href="#deleting-objects" title="Link to this heading">¶</a></h3>
+<p>Inversely to creating new ones, when deleting an object from the XML tree it
+also needs to be removed from the ID cache. This is done by calling
+<code class="docutils literal notranslate"><span class="pre">idcache_remove</span></code> (see above) on the element to be removed. Afterwards, delete
+the element from its parent using the standard LXML API.</p>
+</section>
+</section>
+<section id="saving-modifications">
+<h2>Saving modifications<a class="headerlink" href="#saving-modifications" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">MelodyLoader</span></code> provides the same <code class="docutils literal notranslate"><span class="pre">save()</span></code> method as the high-level
+<code class="docutils literal notranslate"><span class="pre">MelodyModel</span></code>.</p>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.loader.core.</span></span><span class="sig-name descname"><span class="pre">MelodyLoader</span></span></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kw</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Save all model files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>kw</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – Additional keyword arguments accepted by the file handler in
+use. Please see the respective documentation for more info.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../code/capellambse.filehandler.html#capellambse.filehandler.local.LocalFileHandler.write_transaction" title="capellambse.filehandler.local.LocalFileHandler.write_transaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">capellambse.filehandler.local.LocalFileHandler.write_transaction</span></code></a></dt><dd><p>Accepted <code class="docutils literal notranslate"><span class="pre">**kw</span></code> when using local directories</p>
+</dd>
+<dt><a class="reference internal" href="../code/capellambse.filehandler.html#capellambse.filehandler.git.GitFileHandler.write_transaction" title="capellambse.filehandler.git.GitFileHandler.write_transaction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">capellambse.filehandler.git.GitFileHandler.write_transaction</span></code></a></dt><dd><p>Accepted <code class="docutils literal notranslate"><span class="pre">**kw</span></code> when using <code class="docutils literal notranslate"><span class="pre">git://</span></code> and similar URLs</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>With a <a class="reference internal" href="../code/capellambse.loader.html#capellambse.loader.core.MelodyLoader.filehandler" title="capellambse.loader.core.MelodyLoader.filehandler"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filehandler</span></code></a> that contacts a remote location (such
+as the <a class="reference internal" href="../code/capellambse.filehandler.html#capellambse.filehandler.git.GitFileHandler" title="capellambse.filehandler.git.GitFileHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">capellambse.filehandler.git.GitFileHandler</span></code></a> with
+non-local repositories), saving might fail if the local state
+has gone out of sync with the remote state. To avoid this,
+always leave the <code class="docutils literal notranslate"><span class="pre">update_cache</span></code> parameter at its default value
+of <code class="docutils literal notranslate"><span class="pre">True</span></code> if you intend to save changes.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="how-to-explore-capella-mm.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">How to explore Capella meta-model</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../tools/sphinx-extension.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">The py-capellambse Sphinx extension</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/dbinfrago/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Low-level API</a><ul>
+<li><a class="reference internal" href="#the-melodyloader-object">The MelodyLoader object</a></li>
+<li><a class="reference internal" href="#shifting-between-api-levels">Shifting between API levels</a><ul>
+<li><a class="reference internal" href="#high-to-low-level-shift">High to low-level shift</a></li>
+<li><a class="reference internal" href="#low-to-high-level-shift">Low to high-level shift</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#moving-along-the-xml-tree">Moving along the XML tree</a></li>
+<li><a class="reference internal" href="#resolving-references">Resolving references</a></li>
+<li><a class="reference internal" href="#finding-elements-elsewhere">Finding elements elsewhere</a></li>
+<li><a class="reference internal" href="#manipulating-objects">Manipulating objects</a></li>
+<li><a class="reference internal" href="#creating-and-deleting-objects">Creating and deleting objects</a><ul>
+<li><a class="reference internal" href="#the-id-cache">The ID cache</a></li>
+<li><a class="reference internal" href="#creating-objects">Creating objects</a></li>
+<li><a class="reference internal" href="#deleting-objects">Deleting objects</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#saving-modifications">Saving modifications</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

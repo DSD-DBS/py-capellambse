@@ -1,0 +1,1083 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="capellambse.extensions.metrics package" href="capellambse.extensions.metrics.html" /><link rel="prev" title="capellambse.diagram package" href="capellambse.diagram.html" />
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>capellambse.extensions package - py-capellambse documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #272822;
+  --color-code-foreground: #f8f8f2;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">py-capellambse  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">py-capellambse  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Start</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../start/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/specifying-models.html">Specifying models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/envvars.html">Environment variables affecting py-capellambse</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/intro-to-api.html">Introduction to py-capellambse API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/declarative.html">Declarative modelling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../start/migrating-0.6.html">Migrating from py-capellambse v0.5.x to v0.6.x</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../howtos/howtos.html">How Tos</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of How Tos</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../examples/01%20Introduction.html">1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/02%20Intro%20to%20Physical%20Architecture%20API.html">2. Introduction to Physical Architecture API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/03%20Data%20Values.html">3. Data Types and Data Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/04%20Intro%20to%20Jinja%20templating.html">4. Using capellambse with Jinja2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/05%20Introduction%20to%20Libraries.html">5. Introduction to Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/06%20Introduction%20to%20Requirement%20access%20and%20management.html">6. Introduction to Requirement access and management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/07%20Code%20Generation.html">7. Introduction to Code Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html">8. Property Values and Property Value Management Tool (PVMT) support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/08%20Property%20Values.html#Property-Value-Management-(PVMT)">9. Property Value Management (PVMT)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/09%20Context%20Diagrams.html">10. Context Diagrams Extension</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/10%20Declarative%20Modeling.html">11. Declarative Modeling Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../examples/11%20Complexity%20Assessment.html">12. Complexity Assessment</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">src</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of src</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="capellambse.html">capellambse package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of capellambse package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="capellambse.aird.html">capellambse.aird package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.diagram.html">capellambse.diagram package</a></li>
+<li class="toctree-l3 current has-children current-page"><a class="current reference internal" href="#">capellambse.extensions package</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of capellambse.extensions package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.validation.html">capellambse.extensions.validation package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.filehandler.html">capellambse.filehandler package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.loader.html">capellambse.loader package</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="capellambse.metamodel.html">capellambse.metamodel package</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of capellambse.metamodel package</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.metamodel.information.html">capellambse.metamodel.information package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.metamodel.pa.html">capellambse.metamodel.pa package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.model.html">capellambse.model package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.svg.html">capellambse.svg package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Integration with other tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tools/sphinx-extension.html">The py-capellambse Sphinx extension</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/low-level-api.html">Low-level API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/how-to-explore-capella-mm.html">How to explore Capella meta-model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/developing-docs.html">Documentation development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/repl.html">The py-capellambse REPL</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-capellambse.extensions">
+<span id="capellambse-extensions-package"></span><h1>capellambse.extensions package<a class="headerlink" href="#module-capellambse.extensions" title="Link to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.extensions.metrics.html">capellambse.extensions.metrics package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.get_summary_badge"><code class="docutils literal notranslate"><span class="pre">get_summary_badge()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.metrics.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.metrics.html#module-capellambse.extensions.metrics.collector">capellambse.extensions.metrics.collector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.collector.quantify_model_layers"><code class="docutils literal notranslate"><span class="pre">quantify_model_layers()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.metrics.html#module-capellambse.extensions.metrics.composer">capellambse.extensions.metrics.composer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.LEGEND"><code class="docutils literal notranslate"><span class="pre">LEGEND</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_bar"><code class="docutils literal notranslate"><span class="pre">draw_bar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_diagrams_icon"><code class="docutils literal notranslate"><span class="pre">draw_diagrams_icon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_group"><code class="docutils literal notranslate"><span class="pre">draw_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_labeled_bar"><code class="docutils literal notranslate"><span class="pre">draw_labeled_bar()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_legend"><code class="docutils literal notranslate"><span class="pre">draw_legend()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_objects_icon"><code class="docutils literal notranslate"><span class="pre">draw_objects_icon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_rect"><code class="docutils literal notranslate"><span class="pre">draw_rect()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_summary_badge"><code class="docutils literal notranslate"><span class="pre">draw_summary_badge()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.metrics.html#capellambse.extensions.metrics.composer.draw_text"><code class="docutils literal notranslate"><span class="pre">draw_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.extensions.pvmt.html">capellambse.extensions.pvmt package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedDomain"><code class="docutils literal notranslate"><span class="pre">ManagedDomain</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedDomain.__init__"><code class="docutils literal notranslate"><span class="pre">ManagedDomain.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedDomain.from_model"><code class="docutils literal notranslate"><span class="pre">ManagedDomain.from_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedDomain.groups"><code class="docutils literal notranslate"><span class="pre">ManagedDomain.groups</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedDomain.types"><code class="docutils literal notranslate"><span class="pre">ManagedDomain.types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedDomain.version"><code class="docutils literal notranslate"><span class="pre">ManagedDomain.version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedGroup"><code class="docutils literal notranslate"><span class="pre">ManagedGroup</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedGroup.applies_to"><code class="docutils literal notranslate"><span class="pre">ManagedGroup.applies_to()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedGroup.apply"><code class="docutils literal notranslate"><span class="pre">ManagedGroup.apply()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedGroup.find_applicable"><code class="docutils literal notranslate"><span class="pre">ManagedGroup.find_applicable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedGroup.fullname"><code class="docutils literal notranslate"><span class="pre">ManagedGroup.fullname</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ManagedGroup.selector"><code class="docutils literal notranslate"><span class="pre">ManagedGroup.selector</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ObjectPVMT"><code class="docutils literal notranslate"><span class="pre">ObjectPVMT</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ObjectPVMT.__init__"><code class="docutils literal notranslate"><span class="pre">ObjectPVMT.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ObjectPVMT.applied_groups"><code class="docutils literal notranslate"><span class="pre">ObjectPVMT.applied_groups</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ObjectPVMT.from_model"><code class="docutils literal notranslate"><span class="pre">ObjectPVMT.from_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ObjectPVMT.groupdefs"><code class="docutils literal notranslate"><span class="pre">ObjectPVMT.groupdefs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ObjectPVMT.owner"><code class="docutils literal notranslate"><span class="pre">ObjectPVMT.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTConfiguration"><code class="docutils literal notranslate"><span class="pre">PVMTConfiguration</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTConfiguration.domains"><code class="docutils literal notranslate"><span class="pre">PVMTConfiguration.domains</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTDescriptionProperty"><code class="docutils literal notranslate"><span class="pre">PVMTDescriptionProperty</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTDescriptionProperty.__init__"><code class="docutils literal notranslate"><span class="pre">PVMTDescriptionProperty.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTDescriptionProperty.attribute"><code class="docutils literal notranslate"><span class="pre">PVMTDescriptionProperty.attribute</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTDescriptionProperty.default"><code class="docutils literal notranslate"><span class="pre">PVMTDescriptionProperty.default</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.PVMTDescriptionProperty.writable"><code class="docutils literal notranslate"><span class="pre">PVMTDescriptionProperty.writable</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ScopeError"><code class="docutils literal notranslate"><span class="pre">ScopeError</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ScopeError.group"><code class="docutils literal notranslate"><span class="pre">ScopeError.group</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.ScopeError.obj"><code class="docutils literal notranslate"><span class="pre">ScopeError.obj</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.SelectorRules"><code class="docutils literal notranslate"><span class="pre">SelectorRules</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.SelectorRules.__init__"><code class="docutils literal notranslate"><span class="pre">SelectorRules.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.SelectorRules.classes"><code class="docutils literal notranslate"><span class="pre">SelectorRules.classes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.SelectorRules.layers"><code class="docutils literal notranslate"><span class="pre">SelectorRules.layers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.SelectorRules.properties"><code class="docutils literal notranslate"><span class="pre">SelectorRules.properties</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.pvmt.html#capellambse.extensions.pvmt.SelectorRules.raw"><code class="docutils literal notranslate"><span class="pre">SelectorRules.raw</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.extensions.reqif.html">capellambse.extensions.reqif package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractRelation"><code class="docutils literal notranslate"><span class="pre">AbstractRelation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractRelation.relation_type_proxy"><code class="docutils literal notranslate"><span class="pre">AbstractRelation.relation_type_proxy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractRelation.type"><code class="docutils literal notranslate"><span class="pre">AbstractRelation.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractType"><code class="docutils literal notranslate"><span class="pre">AbstractType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractType.attribute_definitions"><code class="docutils literal notranslate"><span class="pre">AbstractType.attribute_definitions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractType.attributes"><code class="docutils literal notranslate"><span class="pre">AbstractType.attributes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AbstractType.owner"><code class="docutils literal notranslate"><span class="pre">AbstractType.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Attribute"><code class="docutils literal notranslate"><span class="pre">Attribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Attribute.definition"><code class="docutils literal notranslate"><span class="pre">Attribute.definition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Attribute.definition_proxy"><code class="docutils literal notranslate"><span class="pre">Attribute.definition_proxy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinition"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinition.data_type"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.data_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinition.default_value"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.default_value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinition.definition_type"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.definition_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinitionEnumeration"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinitionEnumeration.is_multi_valued"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration.is_multi_valued</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeDefinitionEnumeration.multi_valued"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration.multi_valued</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeOwner"><code class="docutils literal notranslate"><span class="pre">AttributeOwner</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.AttributeOwner.attributes"><code class="docutils literal notranslate"><span class="pre">AttributeOwner.attributes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.BooleanValueAttribute"><code class="docutils literal notranslate"><span class="pre">BooleanValueAttribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.BooleanValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">BooleanValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaIncomingRelation"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaIncomingRelation.__init__"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaIncomingRelation.source"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation.source</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaIncomingRelation.target"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaModule"><code class="docutils literal notranslate"><span class="pre">CapellaModule</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaModule.folders"><code class="docutils literal notranslate"><span class="pre">CapellaModule.folders</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaModule.requirement_types_folders"><code class="docutils literal notranslate"><span class="pre">CapellaModule.requirement_types_folders</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaModule.to_reqif"><code class="docutils literal notranslate"><span class="pre">CapellaModule.to_reqif()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaOutgoingRelation"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaOutgoingRelation.__init__"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaOutgoingRelation.source"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.source</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaOutgoingRelation.target"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaRelation"><code class="docutils literal notranslate"><span class="pre">CapellaRelation</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaTypesFolder"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaTypesFolder.data_type_definitions"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.data_type_definitions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaTypesFolder.module_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.module_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaTypesFolder.relation_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.relation_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.CapellaTypesFolder.requirement_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.requirement_types</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.DataTypeDefinition"><code class="docutils literal notranslate"><span class="pre">DataTypeDefinition</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.DateValueAttribute"><code class="docutils literal notranslate"><span class="pre">DateValueAttribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.DateValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">DateValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ElementRelationAccessor"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ElementRelationAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ElementRelationAccessor.aslist"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.aslist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ElementRelationAccessor.purge_references"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.purge_references()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumValue"><code class="docutils literal notranslate"><span class="pre">EnumValue</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumerationDataTypeDefinition"><code class="docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumerationDataTypeDefinition.values"><code class="docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition.values</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumerationValueAttribute"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumerationValueAttribute.definition"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.definition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumerationValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.value</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.EnumerationValueAttribute.values"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.values</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Folder"><code class="docutils literal notranslate"><span class="pre">Folder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Folder.folders"><code class="docutils literal notranslate"><span class="pre">Folder.folders</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Folder.requirements"><code class="docutils literal notranslate"><span class="pre">Folder.requirements</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.IdentifiableElement"><code class="docutils literal notranslate"><span class="pre">IdentifiableElement</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.IntegerValueAttribute"><code class="docutils literal notranslate"><span class="pre">IntegerValueAttribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.IntegerValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">IntegerValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.InternalRelation"><code class="docutils literal notranslate"><span class="pre">InternalRelation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.InternalRelation.__init__"><code class="docutils literal notranslate"><span class="pre">InternalRelation.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.InternalRelation.source"><code class="docutils literal notranslate"><span class="pre">InternalRelation.source</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.InternalRelation.target"><code class="docutils literal notranslate"><span class="pre">InternalRelation.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Module.requirements"><code class="docutils literal notranslate"><span class="pre">Module.requirements</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Module.type"><code class="docutils literal notranslate"><span class="pre">Module.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ModuleType"><code class="docutils literal notranslate"><span class="pre">ModuleType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RealValueAttribute"><code class="docutils literal notranslate"><span class="pre">RealValueAttribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RealValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">RealValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RelationType"><code class="docutils literal notranslate"><span class="pre">RelationType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RelationsList"><code class="docutils literal notranslate"><span class="pre">RelationsList</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RelationsList.__init__"><code class="docutils literal notranslate"><span class="pre">RelationsList.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RelationsList.by_relation_class"><code class="docutils literal notranslate"><span class="pre">RelationsList.by_relation_class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RelationsList.by_relation_type"><code class="docutils literal notranslate"><span class="pre">RelationsList.by_relation_type()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ReqIFElement"><code class="docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ReqIFElement.description"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ReqIFElement.identifier"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.identifier</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.ReqIFElement.long_name"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.long_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement"><code class="docutils literal notranslate"><span class="pre">Requirement</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.chapter_name"><code class="docutils literal notranslate"><span class="pre">Requirement.chapter_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.foreign_id"><code class="docutils literal notranslate"><span class="pre">Requirement.foreign_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.owned_relations"><code class="docutils literal notranslate"><span class="pre">Requirement.owned_relations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.owner"><code class="docutils literal notranslate"><span class="pre">Requirement.owner</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.related"><code class="docutils literal notranslate"><span class="pre">Requirement.related</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.relations"><code class="docutils literal notranslate"><span class="pre">Requirement.relations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.requirement_type_proxy"><code class="docutils literal notranslate"><span class="pre">Requirement.requirement_type_proxy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.text"><code class="docutils literal notranslate"><span class="pre">Requirement.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.Requirement.type"><code class="docutils literal notranslate"><span class="pre">Requirement.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementType"><code class="docutils literal notranslate"><span class="pre">RequirementType</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor.aslist"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.aslist</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor.create"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.create()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor.delete"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.delete()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor.insert"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.insert()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.RequirementsRelationAccessor.purge_references"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.purge_references()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.SharedDirectAttributes"><code class="docutils literal notranslate"><span class="pre">SharedDirectAttributes</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.SharedDirectAttributes.name"><code class="docutils literal notranslate"><span class="pre">SharedDirectAttributes.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.SharedDirectAttributes.prefix"><code class="docutils literal notranslate"><span class="pre">SharedDirectAttributes.prefix</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.StringValueAttribute"><code class="docutils literal notranslate"><span class="pre">StringValueAttribute</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.StringValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">StringValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.TypesFolder"><code class="docutils literal notranslate"><span class="pre">TypesFolder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.TypesFolder.definition_types"><code class="docutils literal notranslate"><span class="pre">TypesFolder.definition_types</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.TypesFolder.types"><code class="docutils literal notranslate"><span class="pre">TypesFolder.types</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#module-capellambse.extensions.reqif.capellarequirements">capellambse.extensions.reqif.capellarequirements module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaIncomingRelation"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaIncomingRelation.__init__"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaIncomingRelation.source"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation.source</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaIncomingRelation.target"><code class="docutils literal notranslate"><span class="pre">CapellaIncomingRelation.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaModule"><code class="docutils literal notranslate"><span class="pre">CapellaModule</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaModule.folders"><code class="docutils literal notranslate"><span class="pre">CapellaModule.folders</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaModule.requirement_types_folders"><code class="docutils literal notranslate"><span class="pre">CapellaModule.requirement_types_folders</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaModule.to_reqif"><code class="docutils literal notranslate"><span class="pre">CapellaModule.to_reqif()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaOutgoingRelation"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaOutgoingRelation.__init__"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaOutgoingRelation.source"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.source</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaOutgoingRelation.target"><code class="docutils literal notranslate"><span class="pre">CapellaOutgoingRelation.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaRelation"><code class="docutils literal notranslate"><span class="pre">CapellaRelation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaTypesFolder"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaTypesFolder.data_type_definitions"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.data_type_definitions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaTypesFolder.module_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.module_types</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaTypesFolder.relation_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.relation_types</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.CapellaTypesFolder.requirement_types"><code class="docutils literal notranslate"><span class="pre">CapellaTypesFolder.requirement_types</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor.aslist"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.aslist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor.class_"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.class_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor.list_extra_args"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.list_extra_args</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor.purge_references"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.purge_references()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.ElementRelationAccessor.single_attr"><code class="docutils literal notranslate"><span class="pre">ElementRelationAccessor.single_attr</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RelationsList"><code class="docutils literal notranslate"><span class="pre">RelationsList</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RelationsList.__init__"><code class="docutils literal notranslate"><span class="pre">RelationsList.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RelationsList.by_relation_class"><code class="docutils literal notranslate"><span class="pre">RelationsList.by_relation_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RelationsList.by_relation_type"><code class="docutils literal notranslate"><span class="pre">RelationsList.by_relation_type()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.__init__"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.aslist"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.aslist</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.class_"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.class_</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.create"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.create()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.delete"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.delete()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.insert"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.insert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.list_extra_args"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.list_extra_args</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.purge_references"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.purge_references()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.capellarequirements.RequirementsRelationAccessor.single_attr"><code class="docutils literal notranslate"><span class="pre">RequirementsRelationAccessor.single_attr</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#module-capellambse.extensions.reqif.exporter">capellambse.extensions.reqif.exporter module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.exporter.export_module"><code class="docutils literal notranslate"><span class="pre">export_module()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.reqif.html#module-capellambse.extensions.reqif.requirements">capellambse.extensions.reqif.requirements module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractRelation"><code class="docutils literal notranslate"><span class="pre">AbstractRelation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractRelation.relation_type_proxy"><code class="docutils literal notranslate"><span class="pre">AbstractRelation.relation_type_proxy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractRelation.type"><code class="docutils literal notranslate"><span class="pre">AbstractRelation.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractType"><code class="docutils literal notranslate"><span class="pre">AbstractType</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractType.attribute_definitions"><code class="docutils literal notranslate"><span class="pre">AbstractType.attribute_definitions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractType.attributes"><code class="docutils literal notranslate"><span class="pre">AbstractType.attributes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AbstractType.owner"><code class="docutils literal notranslate"><span class="pre">AbstractType.owner</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Attribute"><code class="docutils literal notranslate"><span class="pre">Attribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Attribute.definition"><code class="docutils literal notranslate"><span class="pre">Attribute.definition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Attribute.definition_proxy"><code class="docutils literal notranslate"><span class="pre">Attribute.definition_proxy</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinition"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinition.data_type"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.data_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinition.default_value"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.default_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinition.definition_type"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.definition_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinitionEnumeration"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinitionEnumeration.is_multi_valued"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration.is_multi_valued</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeDefinitionEnumeration.multi_valued"><code class="docutils literal notranslate"><span class="pre">AttributeDefinitionEnumeration.multi_valued</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeOwner"><code class="docutils literal notranslate"><span class="pre">AttributeOwner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.AttributeOwner.attributes"><code class="docutils literal notranslate"><span class="pre">AttributeOwner.attributes</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.BooleanValueAttribute"><code class="docutils literal notranslate"><span class="pre">BooleanValueAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.BooleanValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">BooleanValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.DataTypeDefinition"><code class="docutils literal notranslate"><span class="pre">DataTypeDefinition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.DateValueAttribute"><code class="docutils literal notranslate"><span class="pre">DateValueAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.DateValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">DateValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumValue"><code class="docutils literal notranslate"><span class="pre">EnumValue</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumerationDataTypeDefinition"><code class="docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumerationDataTypeDefinition.values"><code class="docutils literal notranslate"><span class="pre">EnumerationDataTypeDefinition.values</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumerationValueAttribute"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumerationValueAttribute.definition"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.definition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumerationValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.EnumerationValueAttribute.values"><code class="docutils literal notranslate"><span class="pre">EnumerationValueAttribute.values</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Folder"><code class="docutils literal notranslate"><span class="pre">Folder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Folder.folders"><code class="docutils literal notranslate"><span class="pre">Folder.folders</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Folder.requirements"><code class="docutils literal notranslate"><span class="pre">Folder.requirements</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.IdentifiableElement"><code class="docutils literal notranslate"><span class="pre">IdentifiableElement</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.IntegerValueAttribute"><code class="docutils literal notranslate"><span class="pre">IntegerValueAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.IntegerValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">IntegerValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.InternalRelation"><code class="docutils literal notranslate"><span class="pre">InternalRelation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.InternalRelation.__init__"><code class="docutils literal notranslate"><span class="pre">InternalRelation.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.InternalRelation.source"><code class="docutils literal notranslate"><span class="pre">InternalRelation.source</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.InternalRelation.target"><code class="docutils literal notranslate"><span class="pre">InternalRelation.target</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Module"><code class="docutils literal notranslate"><span class="pre">Module</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Module.requirements"><code class="docutils literal notranslate"><span class="pre">Module.requirements</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Module.type"><code class="docutils literal notranslate"><span class="pre">Module.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.ModuleType"><code class="docutils literal notranslate"><span class="pre">ModuleType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.RealValueAttribute"><code class="docutils literal notranslate"><span class="pre">RealValueAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.RealValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">RealValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.RelationType"><code class="docutils literal notranslate"><span class="pre">RelationType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.ReqIFElement"><code class="docutils literal notranslate"><span class="pre">ReqIFElement</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.ReqIFElement.description"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.ReqIFElement.identifier"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.identifier</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.ReqIFElement.long_name"><code class="docutils literal notranslate"><span class="pre">ReqIFElement.long_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement"><code class="docutils literal notranslate"><span class="pre">Requirement</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.chapter_name"><code class="docutils literal notranslate"><span class="pre">Requirement.chapter_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.foreign_id"><code class="docutils literal notranslate"><span class="pre">Requirement.foreign_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.owned_relations"><code class="docutils literal notranslate"><span class="pre">Requirement.owned_relations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.owner"><code class="docutils literal notranslate"><span class="pre">Requirement.owner</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.related"><code class="docutils literal notranslate"><span class="pre">Requirement.related</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.relations"><code class="docutils literal notranslate"><span class="pre">Requirement.relations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.requirement_type_proxy"><code class="docutils literal notranslate"><span class="pre">Requirement.requirement_type_proxy</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.text"><code class="docutils literal notranslate"><span class="pre">Requirement.text</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.Requirement.type"><code class="docutils literal notranslate"><span class="pre">Requirement.type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.RequirementType"><code class="docutils literal notranslate"><span class="pre">RequirementType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.SharedDirectAttributes"><code class="docutils literal notranslate"><span class="pre">SharedDirectAttributes</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.SharedDirectAttributes.name"><code class="docutils literal notranslate"><span class="pre">SharedDirectAttributes.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.SharedDirectAttributes.prefix"><code class="docutils literal notranslate"><span class="pre">SharedDirectAttributes.prefix</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.StringValueAttribute"><code class="docutils literal notranslate"><span class="pre">StringValueAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.StringValueAttribute.value"><code class="docutils literal notranslate"><span class="pre">StringValueAttribute.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.TypesFolder"><code class="docutils literal notranslate"><span class="pre">TypesFolder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.TypesFolder.definition_types"><code class="docutils literal notranslate"><span class="pre">TypesFolder.definition_types</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="capellambse.extensions.reqif.html#capellambse.extensions.reqif.requirements.TypesFolder.types"><code class="docutils literal notranslate"><span class="pre">TypesFolder.types</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="capellambse.extensions.validation.html">capellambse.extensions.validation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.validation.html#capellambse.extensions.validation.init"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.validation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="capellambse.extensions.validation.html#module-capellambse.extensions.validation.rules">capellambse.extensions.validation.rules module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-capellambse.extensions.filtering">
+<span id="capellambse-extensions-filtering-module"></span><h2>capellambse.extensions.filtering module<a class="headerlink" href="#module-capellambse.extensions.filtering" title="Link to this heading">¶</a></h2>
+<p>Implements the Capella Filtering extension.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.AbstractFilteringResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">AbstractFilteringResult</span></span><a class="headerlink" href="#capellambse.extensions.filtering.AbstractFilteringResult" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.AssociatedFilteringCriterionSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">AssociatedFilteringCriterionSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.AssociatedFilteringCriterionSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionSet" title="capellambse.extensions.filtering.FilteringCriterionSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringCriterionSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.ComposedFilteringResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">ComposedFilteringResult</span></span><a class="headerlink" href="#capellambse.extensions.filtering.ComposedFilteringResult" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.AbstractFilteringResult" title="capellambse.extensions.filtering.AbstractFilteringResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractFilteringResult</span></code></a></p>
+<p>A result obtained from boolean operations of other results.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.ComposedFilteringResult.exclusion">
+<span class="sig-name descname"><span class="pre">exclusion</span></span><a class="headerlink" href="#capellambse.extensions.filtering.ComposedFilteringResult.exclusion" title="Link to this definition">¶</a></dt>
+<dd><p>The exclusion of this ComposedFilteringResult.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.ComposedFilteringResult.intersection">
+<span class="sig-name descname"><span class="pre">intersection</span></span><a class="headerlink" href="#capellambse.extensions.filtering.ComposedFilteringResult.intersection" title="Link to this definition">¶</a></dt>
+<dd><p>The intersection of this ComposedFilteringResult.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.ComposedFilteringResult.union">
+<span class="sig-name descname"><span class="pre">union</span></span><a class="headerlink" href="#capellambse.extensions.filtering.ComposedFilteringResult.union" title="Link to this definition">¶</a></dt>
+<dd><p>The union of this ComposedFilteringResult.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.CreationDefaultFilteringCriterionSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">CreationDefaultFilteringCriterionSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.CreationDefaultFilteringCriterionSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionSet" title="capellambse.extensions.filtering.FilteringCriterionSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringCriterionSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.ExclusionFilteringResultSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">ExclusionFilteringResultSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.ExclusionFilteringResultSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultSet" title="capellambse.extensions.filtering.FilteringResultSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringResultSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringCriterion</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterion" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterion.filtered_objects">
+<span class="sig-name descname"><span class="pre">filtered_objects</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterion.filtered_objects" title="Link to this definition">¶</a></dt>
+<dd><p>The filtered objects of this FilteringCriterion.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterionPkg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringCriterionPkg</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterionPkg" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.Namespace" title="capellambse.metamodel.capellacore.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a></p>
+<p>A package containing multiple filtering criteria.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterionPkg.criteria">
+<span class="sig-name descname"><span class="pre">criteria</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterionPkg.criteria" title="Link to this definition">¶</a></dt>
+<dd><p>The criteria of this FilteringCriterionPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterionPkg.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterionPkg.packages" title="Link to this definition">¶</a></dt>
+<dd><p>The packages of this FilteringCriterionPkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterionSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringCriterionSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterionSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterionSet.criteria">
+<span class="sig-name descname"><span class="pre">criteria</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterionSet.criteria" title="Link to this definition">¶</a></dt>
+<dd><p>The criteria of this FilteringCriterionSet.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringCriterionSet.variability_features">
+<span class="sig-name descname"><span class="pre">variability_features</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringCriterionSet.variability_features" title="Link to this definition">¶</a></dt>
+<dd><p>The variability features of this FilteringCriterionSet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringModel</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringModel" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringModel.criteria">
+<span class="sig-name descname"><span class="pre">criteria</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringModel.criteria" title="Link to this definition">¶</a></dt>
+<dd><p>The criteria of this FilteringModel.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringModel.criterion_packages">
+<span class="sig-name descname"><span class="pre">criterion_packages</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringModel.criterion_packages" title="Link to this definition">¶</a></dt>
+<dd><p>The criterion packages of this FilteringModel.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringModel.criterion_pkgs">
+<span class="sig-name descname"><span class="pre">criterion_pkgs</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringModel.criterion_pkgs" title="Link to this definition">¶</a></dt>
+<dd><p>The criterion pkgs of this FilteringModel.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringModel.variability_features">
+<span class="sig-name descname"><span class="pre">variability_features</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringModel.variability_features" title="Link to this definition">¶</a></dt>
+<dd><p>The variability features of this FilteringModel.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResult">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringResult</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResult" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionSet" title="capellambse.extensions.filtering.FilteringCriterionSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringCriterionSet</span></code></a>, <a class="reference internal" href="#capellambse.extensions.filtering.AbstractFilteringResult" title="capellambse.extensions.filtering.AbstractFilteringResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractFilteringResult</span></code></a></p>
+<p>A filtering result.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResultPkg">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringResultPkg</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResultPkg" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.Namespace" title="capellambse.metamodel.capellacore.Namespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">Namespace</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResultPkg.packages">
+<span class="sig-name descname"><span class="pre">packages</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResultPkg.packages" title="Link to this definition">¶</a></dt>
+<dd><p>The packages of this FilteringResultPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResultPkg.result_pkgs">
+<span class="sig-name descname"><span class="pre">result_pkgs</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResultPkg.result_pkgs" title="Link to this definition">¶</a></dt>
+<dd><p>The result pkgs of this FilteringResultPkg.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResultPkg.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResultPkg.results" title="Link to this definition">¶</a></dt>
+<dd><p>The results of this FilteringResultPkg.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResultSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringResultSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResultSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResultSet.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResultSet.results" title="Link to this definition">¶</a></dt>
+<dd><p>The results of this FilteringResultSet.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">FilteringResults</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResults" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="capellambse.metamodel.html#capellambse.metamodel.capellacore.NamedElement" title="capellambse.metamodel.capellacore.NamedElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedElement</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResults.configurations">
+<span class="sig-name descname"><span class="pre">configurations</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResults.configurations" title="Link to this definition">¶</a></dt>
+<dd><p>The configurations of this FilteringResults.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResults.result_pkgs">
+<span class="sig-name descname"><span class="pre">result_pkgs</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResults.result_pkgs" title="Link to this definition">¶</a></dt>
+<dd><p>The result pkgs of this FilteringResults.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.FilteringResults.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#capellambse.extensions.filtering.FilteringResults.results" title="Link to this definition">¶</a></dt>
+<dd><p>The results of this FilteringResults.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.IntersectionFilteringResultSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">IntersectionFilteringResultSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.IntersectionFilteringResultSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultSet" title="capellambse.extensions.filtering.FilteringResultSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringResultSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.UnionFilteringResultSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">UnionFilteringResultSet</span></span><a class="headerlink" href="#capellambse.extensions.filtering.UnionFilteringResultSet" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultSet" title="capellambse.extensions.filtering.FilteringResultSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">FilteringResultSet</span></code></a></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="capellambse.extensions.filtering.init">
+<span class="sig-prename descclassname"><span class="pre">capellambse.extensions.filtering.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#capellambse.extensions.filtering.init" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="capellambse.extensions.metrics.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">capellambse.extensions.metrics package</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="capellambse.diagram.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">capellambse.diagram package</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; DB InfraGO AG and the capellambse contributors
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              <a class="muted-link " href="https://github.com/dbinfrago/py-capellambse" aria-label="GitHub"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHN0cm9rZT0iY3VycmVudENvbG9yIiBmaWxsPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMCIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik04IDBDMy41OCAwIDAgMy41OCAwIDhjMCAzLjU0IDIuMjkgNi41MyA1LjQ3IDcuNTkuNC4wNy41NS0uMTcuNTUtLjM4IDAtLjE5LS4wMS0uODItLjAxLTEuNDktMi4wMS4zNy0yLjUzLS40OS0yLjY5LS45NC0uMDktLjIzLS40OC0uOTQtLjgyLTEuMTMtLjI4LS4xNS0uNjgtLjUyLS4wMS0uNTMuNjMtLjAxIDEuMDguNTggMS4yMy44Mi43MiAxLjIxIDEuODcuODcgMi4zMy42Ni4wNy0uNTIuMjgtLjg3LjUxLTEuMDctMS43OC0uMi0zLjY0LS44OS0zLjY0LTMuOTUgMC0uODcuMzEtMS41OS44Mi0yLjE1LS4wOC0uMi0uMzYtMS4wMi4wOC0yLjEyIDAgMCAuNjctLjIxIDIuMi44Mi42NC0uMTggMS4zMi0uMjcgMi0uMjcuNjggMCAxLjM2LjA5IDIgLjI3IDEuNTMtMS4wNCAyLjItLjgyIDIuMi0uODIuNDQgMS4xLjE2IDEuOTIuMDggMi4xMi41MS41Ni44MiAxLjI3LjgyIDIuMTUgMCAzLjA3LTEuODcgMy43NS0zLjY1IDMuOTUuMjkuMjUuNTQuNzMuNTQgMS40OCAwIDEuMDctLjAxIDEuOTMtLjAxIDIuMiAwIC4yMS4xNS40Ni41NS4zOEE4LjAxMyA4LjAxMyAwIDAgMCAxNiA4YzAtNC40Mi0zLjU4LTgtOC04eiIvPjwvc3ZnPg=="/></a>
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">capellambse.extensions package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-capellambse.extensions.filtering">capellambse.extensions.filtering module</a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.AbstractFilteringResult"><code class="docutils literal notranslate"><span class="pre">AbstractFilteringResult</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.AssociatedFilteringCriterionSet"><code class="docutils literal notranslate"><span class="pre">AssociatedFilteringCriterionSet</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.ComposedFilteringResult"><code class="docutils literal notranslate"><span class="pre">ComposedFilteringResult</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.ComposedFilteringResult.exclusion"><code class="docutils literal notranslate"><span class="pre">ComposedFilteringResult.exclusion</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.ComposedFilteringResult.intersection"><code class="docutils literal notranslate"><span class="pre">ComposedFilteringResult.intersection</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.ComposedFilteringResult.union"><code class="docutils literal notranslate"><span class="pre">ComposedFilteringResult.union</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.CreationDefaultFilteringCriterionSet"><code class="docutils literal notranslate"><span class="pre">CreationDefaultFilteringCriterionSet</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.ExclusionFilteringResultSet"><code class="docutils literal notranslate"><span class="pre">ExclusionFilteringResultSet</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterion"><code class="docutils literal notranslate"><span class="pre">FilteringCriterion</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterion.filtered_objects"><code class="docutils literal notranslate"><span class="pre">FilteringCriterion.filtered_objects</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionPkg"><code class="docutils literal notranslate"><span class="pre">FilteringCriterionPkg</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionPkg.criteria"><code class="docutils literal notranslate"><span class="pre">FilteringCriterionPkg.criteria</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionPkg.packages"><code class="docutils literal notranslate"><span class="pre">FilteringCriterionPkg.packages</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionSet"><code class="docutils literal notranslate"><span class="pre">FilteringCriterionSet</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionSet.criteria"><code class="docutils literal notranslate"><span class="pre">FilteringCriterionSet.criteria</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringCriterionSet.variability_features"><code class="docutils literal notranslate"><span class="pre">FilteringCriterionSet.variability_features</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringModel"><code class="docutils literal notranslate"><span class="pre">FilteringModel</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringModel.criteria"><code class="docutils literal notranslate"><span class="pre">FilteringModel.criteria</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringModel.criterion_packages"><code class="docutils literal notranslate"><span class="pre">FilteringModel.criterion_packages</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringModel.criterion_pkgs"><code class="docutils literal notranslate"><span class="pre">FilteringModel.criterion_pkgs</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringModel.variability_features"><code class="docutils literal notranslate"><span class="pre">FilteringModel.variability_features</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResult"><code class="docutils literal notranslate"><span class="pre">FilteringResult</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultPkg"><code class="docutils literal notranslate"><span class="pre">FilteringResultPkg</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultPkg.packages"><code class="docutils literal notranslate"><span class="pre">FilteringResultPkg.packages</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultPkg.result_pkgs"><code class="docutils literal notranslate"><span class="pre">FilteringResultPkg.result_pkgs</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultPkg.results"><code class="docutils literal notranslate"><span class="pre">FilteringResultPkg.results</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultSet"><code class="docutils literal notranslate"><span class="pre">FilteringResultSet</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResultSet.results"><code class="docutils literal notranslate"><span class="pre">FilteringResultSet.results</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResults"><code class="docutils literal notranslate"><span class="pre">FilteringResults</span></code></a><ul>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResults.configurations"><code class="docutils literal notranslate"><span class="pre">FilteringResults.configurations</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResults.result_pkgs"><code class="docutils literal notranslate"><span class="pre">FilteringResults.result_pkgs</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.FilteringResults.results"><code class="docutils literal notranslate"><span class="pre">FilteringResults.results</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.IntersectionFilteringResultSet"><code class="docutils literal notranslate"><span class="pre">IntersectionFilteringResultSet</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.UnionFilteringResultSet"><code class="docutils literal notranslate"><span class="pre">UnionFilteringResultSet</span></code></a></li>
+<li><a class="reference internal" href="#capellambse.extensions.filtering.init"><code class="docutils literal notranslate"><span class="pre">init()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>

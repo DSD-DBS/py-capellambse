@@ -1,0 +1,34 @@
+capellambse.extensions.reqif package
+====================================
+
+.. automodule:: capellambse.extensions.reqif
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+capellambse.extensions.reqif.capellarequirements module
+-------------------------------------------------------
+
+.. automodule:: capellambse.extensions.reqif.capellarequirements
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.extensions.reqif.exporter module
+--------------------------------------------
+
+.. automodule:: capellambse.extensions.reqif.exporter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+capellambse.extensions.reqif.requirements module
+------------------------------------------------
+
+.. automodule:: capellambse.extensions.reqif.requirements
+   :members:
+   :undoc-members:
+   :show-inheritance:
