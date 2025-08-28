@@ -1330,13 +1330,6 @@ class ElementList(cabc.MutableSequence[T], t.Generic[T]):
                 for attr in obj_attrs:
                     if no_dir_attr.search(attr):
                         continue
-                    try:
-                        value = getattr(obj, attr)
-                    except Exception:
-                        pass
-                    else:
-                        if not isinstance(value, str):
-                            continue
                     yield f"by_{attr}"
                     yield f"exclude_{attr}s"
 
