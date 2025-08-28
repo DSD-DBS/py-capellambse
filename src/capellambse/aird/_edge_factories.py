@@ -608,7 +608,9 @@ def req_relation_factory(seb: C.SemanticElementBuilder) -> diagram.Edge:
     if not label:
         try:
             reltype_id = seb.melodyobjs[0].attrib["relationType"]
-            reltype = seb.melodyloader[reltype_id]
+            reltype = seb.melodyloader.follow_link(
+                seb.melodyobjs[0], reltype_id
+            )
             label = reltype.attrib["ReqIFLongName"]
         except KeyError:
             C.LOGGER.warning(

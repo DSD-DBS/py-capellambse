@@ -3,17 +3,11 @@
 
 from __future__ import annotations
 
-import dataclasses
-import pathlib
+import warnings
 
-from capellambse import filehandler
+from ._typing import ModelInfo as ModelInfo
 
-
-@dataclasses.dataclass
-class ModelInfo:
-    url: str | None
-    title: str | None
-    entrypoint: pathlib.PurePosixPath
-    resources: dict[str, filehandler.abc.HandlerInfo]
-    capella_version: str
-    viewpoints: dict[str, str]
+warnings.warn(
+    f"{__name__} is deprecated, import ModelInfo from capellambse.loader directly instead",
+    stacklevel=2,
+)

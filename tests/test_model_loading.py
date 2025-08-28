@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+import typing as t
 from importlib import metadata
 
 import pytest
@@ -673,9 +674,10 @@ def test_model_diagram_visible_nodes_can_be_accessed_when_a_cache_was_specified(
 
 
 def test_updated_namespaces_use_rounded_versions(
-    tmp_model: pathlib.Path,
+    tmp_model: tuple[pathlib.Path, dict[str, t.Any]],
 ):
-    (afm,) = tmp_model.glob("*.afm")
+    modelpath, params = tmp_model
+    (afm,) = modelpath.glob("*.afm")
     data = etree.parse(afm)
     for child in data.getroot().iterchildren("viewpointReferences"):
         if child.get("vpId") == capellambse.model.CORE_VIEWPOINT:
@@ -683,7 +685,7 @@ def test_updated_namespaces_use_rounded_versions(
     with afm.open("wb") as f:
         exs.write(data, f, line_length=sys.maxsize)
 
-    model = capellambse.MelodyModel(tmp_model)
+    model = capellambse.MelodyModel(modelpath, **params)
     model._loader.update_namespaces()
 
     assert model.info.capella_version == "7.1.0"
